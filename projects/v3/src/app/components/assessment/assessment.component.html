@@ -64,21 +64,19 @@
             <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
           </ion-list-header>
 
-          <ion-item lines="none" *ngIf="question.info || question.description">
+          <ion-item lines="none" *ngIf="question.info || question.description" class="explanation">
             <ion-icon *ngIf="question.info"
               color="primary"
               class="icon-info vertical-middle"
               (click)="showQuestionInfo(question.info)" name="information-circle-outline"
             ></ion-icon>
 
-            <ion-text class="paragraph ion-text-left gray-2">
-              <app-description
-                [name]="randomCode('reviewer-' + question.name)"
-                class="q-description"
-                *ngIf="question.description"
-                [content]="question.description"
-              ></app-description>
-            </ion-text>
+            <app-description
+              [name]="randomCode('reviewer-' + question.name)"
+              class="q-description paragraph ion-text-left gray-2"
+              *ngIf="question.description"
+              [content]="question.description"
+            ></app-description>
           </ion-item>
 
           <ng-container [ngSwitch]="question.type">
