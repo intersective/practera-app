@@ -213,11 +213,15 @@ export class ActivityService {
     }
     switch (task.type) {
       case 'Assessment':
-        this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
-        break;
+        if (this.utils.isMobile()) {
+          return this.router.navigate(['assessment-mobile', 'assessment', this.activity.id, task.contextId, task.id]);
+        }
+        return this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
       case 'Topic':
-        this.topic.getTopic(task.id);
-        break;
+        if (this.utils.isMobile()) {
+          return this.router.navigate(['topic-mobile', this.activity.id, task.id]);
+        }
+        return this.topic.getTopic(task.id);
     }
   }
 
