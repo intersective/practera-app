@@ -19,7 +19,7 @@
       [labelColor]="labelColor(task)"
       [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
       [leadingIcon]="leadIcon(task)"
-      [active]="currentTask && currentTask.type == task.type && currentTask.id == task.id"
+      [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
       lines="full"
       (click)="goto(task)"
       [endingIcon]="endingIcon(task)"
