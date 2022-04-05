@@ -6,7 +6,7 @@
           <ng-container *ngIf="choice.id === submission.answer">
             <ion-item lines="none">
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-              <ion-radio [value]="choice.id" disabled slot="start"></ion-radio>
+              <ion-radio color="success" [value]="choice.id" disabled slot="start"></ion-radio>
             </ion-item>
             <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
               <div class="white-space-normal explanation">
@@ -33,14 +33,14 @@
             <ng-container *ngIf="choice.id === review.answer">
               <ion-item lines="none">
                 <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-                <ion-radio [value]="choice.id" disabled slot="start"></ion-radio>
+                <ion-radio color="success" [value]="choice.id" disabled slot="start"></ion-radio>
               </ion-item>
             </ng-container>
           </ng-container>
           <ng-template #showAllAnswers>
             <ion-item [ngClass]="{'item-bottom-border': i != review.answer.length - 1}" lines="none">
               <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-              <ion-radio [value]="choice.id" disabled slot="start"></ion-radio>
+              <ion-radio color="success" [value]="choice.id" disabled slot="start"></ion-radio>
             </ion-item>
           </ng-template>
         </ng-container>
@@ -59,7 +59,7 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item class="choice-item" [lines]="i == question.choices.length - 1 ? 'none' : ''|| checkInnerValue(choice.id) ? 'none': ''">
             <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
-            <ion-radio [value]="choice.id" [disabled]="control.disabled" slot="start"></ion-radio>
+            <ion-radio color="success" [value]="choice.id" [disabled]="control.disabled" slot="start"></ion-radio>
           </ion-item>
           <ng-container
           *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
