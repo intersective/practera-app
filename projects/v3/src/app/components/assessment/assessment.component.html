@@ -5,10 +5,6 @@
 
     <app-label *ngIf="task" [task]="task"></app-label>
 
-    <pre>{{task | json}}</pre>
-    <pre>{{submission | json}}</pre>
-    <pre>{{review | json}}</pre>
-
     <p class="due-date assessment subtitle-1 gray-2">
       Due date: {{ task.dueDate | date : 'd MMMM y' }}
     </p>
