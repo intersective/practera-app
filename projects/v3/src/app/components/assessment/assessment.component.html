@@ -2,9 +2,15 @@
   <div class="ion-padding">
     <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
       assessment.name }}</h1>
-    <ion-label color="green">Waiting Feedback</ion-label>
+
+    <app-label *ngIf="task" [task]="task"></app-label>
+
+    <pre>{{task | json}}</pre>
+    <pre>{{submission | json}}</pre>
+    <pre>{{review | json}}</pre>
+
     <p class="due-date assessment subtitle-1 gray-2">
-      Due date: 22 September 2023
+      Due date: {{ task.dueDate | date : 'd MMMM y' }}
     </p>
 
     <ion-text class="ion-text-left">
