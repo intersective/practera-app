@@ -59,7 +59,11 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item class="choice-item" [lines]="i == question.choices.length - 1 ? 'none' : ''|| checkInnerValue(choice.id) ? 'none': ''">
             <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
-            <ion-radio color="success" [value]="choice.id" [disabled]="control.disabled" slot="start"></ion-radio>
+            <ion-radio color="success"
+              [value]="choice.id"
+              [disabled]="control.disabled"
+              slot="start"
+            ></ion-radio>
           </ion-item>
           <ng-container
           *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
