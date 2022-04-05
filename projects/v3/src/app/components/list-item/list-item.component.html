@@ -24,7 +24,9 @@
     <ng-container *ngIf="subtitle2">
       <br/><ion-text class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</ion-text>
     </ng-container>
-    <app-label [task]="task"></app-label>
+    <ng-container *ngIf="label">
+      <br/><span class="label body-3" [ngClass]="'bg-color-' + labelColor">{{ label }}</span>
+    </ng-container>
   </div>
 
   <ion-text *ngIf="endingText" class="item-ending-text caption gray-2" slot="end">{{ endingText }}</ion-text>

@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Task } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-list-item',
@@ -18,7 +17,8 @@ export class ListItemComponent {
   @Input() subtitle1: string;
   @Input() subtitle1Color: string;
   @Input() subtitle2: string;
-  @Input() task?: Task;
+  @Input() label: string;
+  @Input() labelColor: string;
   @Input() endingText: string | number;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;

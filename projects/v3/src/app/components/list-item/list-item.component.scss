@@ -49,6 +49,22 @@ ion-avatar {
   min-width: 30px;
 }
 
+.bg-color-danger {
+  color: white;
+  background: var(--ion-color-danger) !important;
+}
+.bg-color-warning {
+  background: var(--ion-color-warning) !important;
+}
+.bg-color-success {
+  color: white;
+  background: var(--ion-color-success) !important;
+}
+.bg-color-dark-blue {
+  color: white;
+  background: var(--practera-dark-blue-100) !important;
+}
+
 /******************
   Event Card
 ******************/
