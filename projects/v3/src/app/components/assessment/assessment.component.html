@@ -1,12 +1,12 @@
 <ng-container *ngIf="assessment">
   <div class="ion-padding">
-    <h1 class="headline-4"
-      [attr.aria-describedby]="randomCode(assessment.name)"
-      role="title"
-      tabindex="0">{{ assessment.name }}</h1>
-    <ion-label color="green">Waiting Feedback</ion-label>
+    <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
+      assessment.name }}</h1>
+
+    <app-label *ngIf="task" [task]="task"></app-label>
+
     <p class="due-date assessment subtitle-1 gray-2">
-      Due date: 22 September 2023
+      Due date: {{ task.dueDate | date : 'd MMMM y' }}
     </p>
 
     <ion-text class="ion-text-left">
@@ -19,7 +19,33 @@
       {{ this.utils.dueDateFormatter(assessment.dueDate) }}
     </p>
 
+    <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked"
+      class="review-submitter ion-text-left">
+      <p class="subtitle-1">
+        Submitted by {{ submission.submitterName }}
+      </p>
+    </div>
 
+    <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'"
+      class="review-submitter ion-text-left">
+      <p class="subtitle-1 gray-3">
+        Reviewed by {{ submission.reviewerName }}
+      </p>
+    </div>
+
+    <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
+      <ion-item lines="none">
+        <ion-avatar slot="start">
+          <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
+            alt="submitter indicator">
+        </ion-avatar>
+
+        <ion-label>
+          <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
+          <p class="caption gray-2">Please wait until the user finishes editing</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
 
     <form [formGroup]="questionsForm">
       <ng-container *ngFor="let group of assessment.groups">
@@ -31,11 +57,13 @@
 
         <ng-container *ngFor="let question of group.questions">
           <ion-list>
-            <ion-list-header class="question-title"
+            <ion-list-header class="question-title ion-no-padding"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
+              <div class="ion-padding">
                 {{ question.name }}
-              <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
+                <ion-text class="required-indicator ion-no-padding ion-no-margin" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
+              </div>
             </ion-list-header>
 
             <ion-item lines="none" *ngIf="question.info || question.description" class="explanation">
