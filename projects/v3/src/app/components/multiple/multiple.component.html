@@ -6,7 +6,7 @@
           i == submission.answer.length - 1 ||
           (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity))}" lines="none">
           <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-          <ion-checkbox
+          <ion-checkbox color="success"
             [checked]="submission.answer.includes(choice.id)"
             disabled
             slot="start"
@@ -34,14 +34,14 @@
           <ng-container *ngIf="review.answer.includes(choice.id)">
             <ion-item  [ngClass]="{'item-bottom-border': (i != review.answer.length - 1)}" lines="none">
               <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-              <ion-checkbox checked disabled slot="start"></ion-checkbox>
+              <ion-checkbox color="success" checked disabled slot="start"></ion-checkbox>
             </ion-item>
           </ng-container>
         </ng-container>
         <ng-template #showAllAnswers>
           <ion-item class="item-bottom-border" lines="none">
             <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-            <ion-checkbox [checked]="review.answer.includes(choice.id)" disabled slot="start"></ion-checkbox>
+            <ion-checkbox color="success" [checked]="review.answer.includes(choice.id)" disabled slot="start"></ion-checkbox>
           </ion-item>
         </ng-template>
       </ng-container>
@@ -60,7 +60,7 @@
           [ngClass]="{'item-bottom-border': (i != question.choices.length - 1 || !checkInnerValue(choice.id))}"
           lines='none'>
           <ion-label class="ion-text-wrap white-space-normal body-2 black">{{ choice.name }}</ion-label>
-          <ion-checkbox [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
+          <ion-checkbox color="success" [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
             [value]="choice.id"
             slot="start"
             (ionChange)="onChange(choice.id)"
@@ -92,7 +92,7 @@
         [ngClass]="{'item-bottom-border': i != question.choices.length - 1}"
         lines="none">
         <ion-label class="ion-text-wrap white-space-normal body-2 black">{{ choice.name }}</ion-label>
-        <ion-checkbox
+        <ion-checkbox color="success"
           [checked]="review.answer ? review.answer.includes(choice.id) : false"
           [value]="choice.id"
           slot="start"
