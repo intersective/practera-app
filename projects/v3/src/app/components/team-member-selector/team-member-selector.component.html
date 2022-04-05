@@ -4,8 +4,8 @@
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
         <ng-container *ngIf="teamMember.key === submission.answer">
           <ion-item lines="none">
+            <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
             <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
-            <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
           </ion-item>
         </ng-container>
       </ng-container>
@@ -22,8 +22,8 @@
         <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
           <ng-container *ngIf="teamMember.key === review.answer">
             <ion-item lines="none">
+              <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
               <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
-              <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
             </ion-item>
           </ng-container>
         </ng-container>
@@ -40,8 +40,8 @@
     <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
       <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index"
         [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+        <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
         <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
-        <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-item>
@@ -56,8 +56,8 @@
         </ion-list-header>
         <ion-item class="choice-item no-bg" *ngFor="let teamMember of question.teamMembers;let i = index"
           [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+          <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
           <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
-          <ion-radio [value]="teamMember.key" mode="md" [disabled]="control.disabled"></ion-radio>
         </ion-item>
       </ion-radio-group>
     </ion-item>
