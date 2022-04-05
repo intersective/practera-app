@@ -5,6 +5,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
+import { Task } from '@v3/app/services/activity.service';
 
 const SAVE_PROGRESS_TIMEOUT = 5000;
 
@@ -30,6 +31,7 @@ export class AssessmentComponent implements OnChanges {
   @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
+  @Input() task: Task;
 
   // save the assessment/review answers
   @Output() save = new EventEmitter();
