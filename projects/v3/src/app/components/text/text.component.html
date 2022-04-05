@@ -1,10 +1,10 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
   <div class="ion-padding-horizontal ion-padding-bottom">
-      <p class="paragraph body-2 gray-3">{{ submission.answer }}</p>
+    <p class="paragraph body-2 gray-3">{{ submission.answer }}</p>
   </div>
   </ng-container>
 
-  <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding"
+  <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding-horizontal"
   [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
     <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
     <ng-container *ngIf="review.answer">

@@ -19,36 +19,9 @@
       {{ this.utils.dueDateFormatter(assessment.dueDate) }}
     </p>
 
-    <div *ngIf="!doAssessment && submission && submission.submitterName && !submission.isLocked"
-      class="review-submitter ion-text-left">
-      <p class="subtitle-1">
-        Submitted by {{ submission.submitterName }}
-      </p>
-    </div>
 
-    <div *ngIf="submission && submission.reviewerName && review && submission.status === 'published'"
-      class="review-submitter ion-text-left">
-      <p class="subtitle-1 gray-3">
-        Reviewed by {{ submission.reviewerName }}
-      </p>
-    </div>
-
-    <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
-            alt="submitter indicator">
-        </ion-avatar>
-
-        <ion-label>
-          <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
-          <p class="caption gray-2">Please wait until the user finishes editing</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
 
     <form [formGroup]="questionsForm">
-
       <ng-container *ngFor="let group of assessment.groups">
         <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
         <ion-text color="dark" class="ion-text-left">
@@ -65,21 +38,19 @@
               <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
             </ion-list-header>
 
-            <ion-item lines="none" *ngIf="question.info || question.description">
+            <ion-item lines="none" *ngIf="question.info || question.description" class="explanation">
               <ion-icon *ngIf="question.info"
                 color="primary"
                 class="icon-info vertical-middle"
                 (click)="showQuestionInfo(question.info)" name="information-circle-outline"
               ></ion-icon>
 
-              <ion-text class="paragraph ion-text-left gray-2">
-                <app-description
-                  [name]="randomCode('reviewer-' + question.name)"
-                  class="q-description"
-                  *ngIf="question.description"
-                  [content]="question.description"
-                ></app-description>
-              </ion-text>
+              <app-description
+                [name]="randomCode('reviewer-' + question.name)"
+                class="q-description paragraph ion-text-left gray-2"
+                *ngIf="question.description"
+                [content]="question.description"
+              ></app-description>
             </ion-item>
 
             <ng-container [ngSwitch]="question.type">

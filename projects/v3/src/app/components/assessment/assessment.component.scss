@@ -38,6 +38,12 @@ ion-header ion-toolbar {
   }
 }
 
+ion-item {
+  &.explanation {
+    --background: var(--practera-grey-25);
+  }
+}
+
 .member-detail-container {
   margin-bottom: 0px;
   margin-top: 15px;
