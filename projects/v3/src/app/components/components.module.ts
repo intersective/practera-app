@@ -30,7 +30,6 @@ import { FileDisplayComponent } from './file-display/file-display.component';
 import { ActivityComponent } from './activity/activity.component';
 import { TopicComponent } from './topic/topic.component';
 import { ReviewListComponent } from './review-list/review-list.component';
-import { LabelComponent } from './label/label.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -75,7 +74,6 @@ const largeCircleDefaultConfig = {
     FilestackPreviewComponent,
     FloatDirective,
     ImgComponent,
-    LabelComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
     MultipleComponent,
@@ -110,7 +108,6 @@ const largeCircleDefaultConfig = {
     FloatDirective,
     ImgComponent,
     IonicModule,
-    LabelComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
     MultipleComponent,
