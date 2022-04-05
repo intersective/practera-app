@@ -21,7 +21,7 @@ export class ActivityMobilePage implements OnInit {
   ngOnInit() {
     this.activity$.subscribe(res => this.activity = res);
     this.route.params.subscribe(params => {
-      this.activityService.getActivity(params.id, false);
+      this.activityService.getActivity(+params.id, false);
     });
   }
 

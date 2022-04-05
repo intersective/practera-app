@@ -37,9 +37,7 @@
     --height: 360px;
   }
   &.activity-complete-popup {
-    --height: auto;
-    --width: auto;
-    min-height: 200px;
+    --height: 200px;
   }
   &.mobile-view {
     position: fixed;
