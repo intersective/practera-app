@@ -11,6 +11,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule)
   },
   {
+    path: 'topic-mobile',
+    loadChildren: () => import('./pages/topic-mobile/topic-mobile.module').then(m => m.TopicMobilePageModule)
+  },
+  {
+    path: 'assessment-mobile',
+    loadChildren: () => import('./pages/assessment-mobile/assessment-mobile.module').then(m => m.AssessmentMobilePageModule)
+  },
+  {
     path: 'devtool',
     loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule)
   },

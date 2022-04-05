@@ -1,5 +1,5 @@
 import { Topic } from '@v3/services/topic.service';
-import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange } from '@angular/core';
+import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange, OnChanges } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -15,7 +15,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent {
+export class TopicComponent implements OnChanges {
   @Input() topic: Topic;
   continuing: boolean;
   @Output() continue = new EventEmitter();

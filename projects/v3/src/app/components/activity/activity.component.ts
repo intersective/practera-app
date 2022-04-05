@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Activity, Task } from '@v3/app/services/activity.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 
@@ -7,15 +7,13 @@ import { UtilsService } from '@v3/app/services/utils.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss'],
 })
-export class ActivityComponent implements OnInit {
+export class ActivityComponent {
   @Input() activity: Activity;
   @Input() currentTask: Task;
   @Output() navigate = new EventEmitter();
   constructor(
     private utils: UtilsService
   ) { }
-
-  ngOnInit() {}
 
   leadIcon(task: Task) {
     switch (task.type) {

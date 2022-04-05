@@ -41,6 +41,10 @@ const routes: Routes = [
         path: 'activity-desktop',
         loadChildren: () => import('../activity-desktop/activity-desktop.module').then(m => m.ActivityDesktopPageModule)
       },
+      {
+        path: 'activity-mobile',
+        loadChildren: () => import('../activity-mobile/activity-mobile.module').then(m => m.ActivityMobilePageModule)
+      },
     ]
   }
 ];

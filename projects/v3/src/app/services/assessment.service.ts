@@ -188,6 +188,9 @@ export class AssessmentService {
   }
 
   private _handleAssessmentResponse(res, action) {
+    if (!res) {
+      return null;
+    }
     const assessment = this._normaliseAssessment(res.data, action);
     const submission = this._normaliseSubmission(res.data);
     const review = this._normaliseReview(res.data, action);
