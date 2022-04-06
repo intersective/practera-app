@@ -95,9 +95,25 @@ export class HomeService {
 
   getExperience() {
     if (environment.demo) {
-      this._experience$.next(this.demo.experience);
-      this._experienceProgress$.next(+Math.random().toFixed(2));
+      this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
+    return this.apolloService.graphQLWatch(`
+      query {
+        experience{
+          name
+          description
+          leadImage
+        }
+      }`,
+    ).pipe(map(res => this._normaliseExperience(res))).subscribe();
+  }
+
+  private _normaliseExperience(res) {
+    if (!res) {
+      return null;
+    }
+    this._experience$.next(res.data.experience);
+    return res.data.experience;
   }
 
   getMilestones() {
