@@ -3,8 +3,8 @@
     <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
       assessment.name }}</h1>
 
-    <ion-chip color="success" *ngIf="submission.status">
-      <ion-label>{{submission.status | titlecase}}</ion-label>
+    <ion-chip [class]="'label '+ labelColor" *ngIf="label">
+      <ion-label>{{ label }}</ion-label>
     </ion-chip>
 
     <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
