@@ -468,6 +468,43 @@ export class AssessmentComponent implements OnChanges {
     return this.elIdentities[type];
   }
 
+  get label() {
+    if (this.submission.status === 'done') {
+      return '';
+    }
+    // for locked team assessment
+    if (this.assessment.isForTeam && this.submission.isLocked) {
+      return 'in progress';
+    }
+    if (!this.submission.status || this.submission.status === 'in progress') {
+      if (this.assessment.isOverdue) {
+        return 'overdue';
+      }
+      return '';
+    }
+    return this.submission.status;
+  }
+
+  get labelColor() {
+    if (this.submission.status === 'done') {
+      return '';
+    }
+    // for locked team assessment
+    if (this.assessment.isForTeam && this.submission.isLocked) {
+      return 'dark-blue';
+    }
+    switch (this.submission.status) {
+      case 'pending review':
+        return 'warning';
+      case 'feedback available':
+        return 'success';
+    }
+    if ((!this.submission.status || this.submission.status === 'in progress') && this.assessment.isOverdue) {
+      return 'danger';
+    }
+    return '';
+  }
+
   /**
    * When user click on the back button
    */
