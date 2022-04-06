@@ -13,12 +13,16 @@ export class DemoService {
 
   constructor() { }
 
-  get experience() {
-    return {
-      image: this.image,
-      name: 'Welcome to the Global Trade Accelerator',
-      description: this.description
-    }
+  experience() {
+    return of({
+      data: {
+        experience: {
+          name: 'Welcome to the Global Trade Accelerator',
+          description: this.description,
+          leadImage: this.image,
+        }
+      }
+    }).pipe(delay(1000));
   }
 
   milestones() {
