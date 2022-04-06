@@ -131,3 +131,23 @@ ion-button {
   bottom: 0;
   z-index: 30;
 }
+
+ion-chip.label {
+  border-radius: 8px;
+  padding: 2px 10px;
+  height: 22px;
+  text-transform: capitalize;
+  --color: white;
+  &.danger {
+    --background: var(--ion-color-danger) !important;
+  }
+  &.warning {
+    background: var(--ion-color-warning) !important;
+  }
+  &.success {
+    --background: var(--ion-color-success) !important;
+  }
+  &.dark-blue {
+    --background: var(--practera-dark-blue-100) !important;
+  }
+}
