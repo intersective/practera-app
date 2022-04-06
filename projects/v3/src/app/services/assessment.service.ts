@@ -295,7 +295,7 @@ export class AssessmentService {
     const firstSubmission = data.assessment.submissions[0];
     let submission: Submission = {
       id: firstSubmission.id,
-      status: firstSubmission.status,
+      status: this._submissionStatus(firstSubmission.status),
       submitterName: firstSubmission.submitter.name,
       submitterImage: firstSubmission.submitter.image,
       modified: firstSubmission.modified,
@@ -314,6 +314,17 @@ export class AssessmentService {
       }
     });
     return submission;
+  }
+
+  private _submissionStatus(status: string) {
+    switch (status) {
+      case 'pending approval':
+        return 'pending review';
+      case 'published':
+        return 'feedback available';
+      default:
+        return status;
+    }
   }
 
   private _normaliseReview(data, action): AssessmentReview {
