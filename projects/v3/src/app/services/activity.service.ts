@@ -62,7 +62,9 @@ export class ActivityService {
   ) {}
 
   public getActivity(id: number, goToNextTask = false, afterTask?: Task) {
-    this._activity$.next(null);
+    if (!this.activity || this.activity.id !== id) {
+      this._activity$.next(null);
+    }
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
@@ -161,6 +163,7 @@ export class ActivityService {
     // and is allowed to access for this user
     let skipTask = !!afterTask;
     let nextTask: Task;
+    let hasUnfinishedTask = false;
     for (const task of tasks) {
       // if we need to find the first task after a specific task,
       // loop through the tasks array until we find this specific task
@@ -168,42 +171,48 @@ export class ActivityService {
         if (afterTask.id === task.id && afterTask.type === task.type) {
           skipTask = false;
         }
+        if (!['done', 'pending review'].includes(task.status)) {
+          hasUnfinishedTask = true;
+        }
         continue;
       }
-      // get the next task after a specific task
-      if (afterTask) {
-        nextTask = task;
-        break;
-      }
-      // find the first unfinished task
-      if (!['done', 'pending review'].includes(task.status) &&
-        task.type !== 'Locked' &&
+      if (task.type !== 'Locked' &&
         !(task.isForTeam && !this.storage.getUser().teamId) &&
         !task.isLocked) {
-        nextTask = task;
-        break;
+        // get the next task after a specific task
+        if (afterTask) {
+          nextTask = task;
+          break;
+        }
+        // find the first unfinished task
+        if (!['done', 'pending review'].includes(task.status)) {
+          nextTask = task;
+          break;
+        }
       }
     }
     // if there is no next task
     if (!nextTask) {
       if (afterTask) {
-        return this._goBack();
+        return this._activityCompleted(hasUnfinishedTask);
       }
       nextTask = tasks[0];
     }
     this.goToTask(nextTask);
   }
 
-  private _goBack() {
+  private _activityCompleted(showPopup: boolean) {
     // check if we need to redirect user to external url
     const referrer = this.storage.getReferrer();
     if (this.utils.has(referrer, 'activityTaskUrl')) {
       this.utils.redirectToUrl(referrer.activityTaskUrl);
       return ;
     }
-    // pop up activity completed modal
-    this.notification.activityCompletePopUp(this.activity.id, false);
-    this.router.navigate(['v3', 'home']);
+    if (showPopup) {
+      // pop up activity completed modal
+      return this.notification.activityCompletePopUp(this.activity.id, false);
+    }
+    return this.router.navigate(['v3', 'home']);
   }
 
   goToTask(task: Task, getData = true) {

@@ -31,7 +31,7 @@ export class ActivityDesktopPage implements OnInit {
     this.activity$.subscribe(res => this.activity = res);
     this.assessment$.subscribe(res => this.assessment = res);
     this.route.params.subscribe(params => {
-      this.activityService.getActivity(params.id, true);
+      this.activityService.getActivity(+params.id, true);
     });
   }
 
