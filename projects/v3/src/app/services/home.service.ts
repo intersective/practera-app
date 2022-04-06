@@ -7,7 +7,7 @@ import { map, mergeMap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 
 export interface Experience {
-  image: string;
+  leadImage: string;
   name: string;
   description: string;
 }
@@ -95,7 +95,7 @@ export class HomeService {
 
   getExperience() {
     if (environment.demo) {
-      this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
+      return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
     return this.apolloService.graphQLWatch(`
       query {
