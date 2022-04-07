@@ -6,9 +6,11 @@
   ></app-file-display>
 </ng-container>
 
-<div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)"
-[ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
-  <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
+<div *ngIf="reviewStatus !== 'in progress' && review && (review.answer || review.comment)">
+  <ion-label
+    *ngIf="audienceContainReviewer()"
+    class="q-title subtitle-2 black ion-padding-vertical"
+  >Reviewer’s feedback</ion-label>
   <ng-container *ngIf="review.answer">
     <app-file-display
       [file]="review.answer"

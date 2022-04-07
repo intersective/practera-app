@@ -3,9 +3,7 @@
     <ng-container *ngFor="let choice of question.choices; let i = index">
       <ng-container>
         <ion-item class="ion-padding-horizontal"
-          [ngClass]="{'item-bottom-border': (
-          i == submission?.answer.length - 1 ||
-          (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity))}" lines="none">
+          [ngClass]="{'item-bottom-border': (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}" lines="none">
           <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
             {{ choice.name }}
             <p *ngIf="submission?.answer.includes(choice.id) || review?.answer.includes(choice.id)">
