@@ -1,19 +1,30 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
   <div class="ion-padding-horizontal ion-padding-bottom">
     <ion-chip>Learner's answer</ion-chip>
-    <p class="paragraph body-2 gray-3">{{ submission.answer }}</p>
+    <p class="body-2 gray-3">{{ submission.answer }}</p>
   </div>
 
   <div class="ion-padding-horizontal" *ngIf="(review.answer || review.comment)">
     <ion-chip>Expert's answer</ion-chip>
+    <ng-container *ngIf="review.answer">
+      <p class="body-2 gray-3">{{ review.answer }}</p>
+    </ng-container>
+    <ng-container *ngIf="review.comment">
+      <p class="body-2 gray-3">{{ review.comment }}</p>
+    </ng-container>
+  </div>
+</ng-container>
+
+<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding-horizontal"
+  [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+    <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
     <ng-container *ngIf="review.answer">
       <p class="paragraph body-2 gray-3">{{ review.answer }}</p>
     </ng-container>
     <ng-container *ngIf="review.comment">
       <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
     </ng-container>
-  </div>
-</ng-container>
+</div>
 
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding-horizontal ion-padding-bottom">
