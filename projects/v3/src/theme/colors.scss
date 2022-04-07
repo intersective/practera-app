@@ -50,7 +50,9 @@ $colors: (
   light-grey-100: var(--practera-light-grey-100),
   light-grey-75: var(--practera-light-grey-75),
   light-grey-50: var(--practera-light-grey-50),
-  light-grey-25: var(--practera-light-grey-25)
+  light-grey-25: var(--practera-light-grey-25),
+  orange: darken(orange, 100),
+  yellow: ligthen(yellow, 50),
 );
 
 @mixin get-font-color-style($class-name) {
