@@ -3,6 +3,10 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: 'auth',
+    loadChildren: () => import('./pages/auth/auth.module').then(m => m.AuthModule)
+  },
+  {
     path: 'experiences',
     loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule)
   },
@@ -24,7 +28,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/v3/home',
+    redirectTo: 'auth',
     pathMatch: 'full'
   },
   {
