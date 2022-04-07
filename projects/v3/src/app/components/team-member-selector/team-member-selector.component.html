@@ -1,6 +1,6 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <ion-item class="no-bg">
-    <ion-radio-group [value]="submission.answer">
+  <ion-item class="no-bg ion-no-padding">
+    <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
         <ng-container *ngIf="teamMember.key === submission.answer">
           <ion-item lines="none">
@@ -17,8 +17,8 @@
 [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
   <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
   <ng-container *ngIf="review.answer">
-    <ion-item class="no-bg">
-      <ion-radio-group [value]="review.answer">
+    <ion-item class="no-bg ion-no-padding">
+      <ion-radio-group class="ion-padding-horizontal" [value]="review.answer">
         <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
           <ng-container *ngIf="teamMember.key === review.answer">
             <ion-item lines="none">
@@ -36,9 +36,9 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <ion-item class="no-bg">
-    <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index"
+  <ion-item class="no-bg ion-no-padding">
+    <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
+      <ion-item *ngFor="let teamMember of question.teamMembers;let i = index"
         [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
         <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
         <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
@@ -49,12 +49,12 @@
 
 <ng-container *ngIf="doReview">
   <div [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
-    <ion-item class="no-bg" *ngIf="question.canAnswer">
-      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+    <ion-item class="no-bg ion-no-padding" *ngIf="question.canAnswer">
+      <ion-radio-group class="ion-padding-horizontal" #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
           <ion-label class="subtitle-2 black">Your Answer is</ion-label>
         </ion-list-header>
-        <ion-item class="choice-item no-bg" *ngFor="let teamMember of question.teamMembers;let i = index"
+        <ion-item class="no-bg" *ngFor="let teamMember of question.teamMembers;let i = index"
           [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
           <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
           <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
