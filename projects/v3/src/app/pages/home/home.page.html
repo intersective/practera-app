@@ -22,7 +22,7 @@
 
       <ion-col size="12" size-md="5">
         <ng-container *ngIf="(experience$ | async ) as experience">
-          <img [src]="experience.image" />
+          <img [src]="experience.leadImage" />
           <ion-progress-bar *ngIf="(experienceProgress$ | async) as progress" color="primary" [value]="progress"></ion-progress-bar>
           <h1 class="headline-2">{{ experience.name }}</h1>
           <ion-text class="subtitle-3" color="medium">
@@ -51,15 +51,18 @@
 
         <ng-container *ngIf="display === 'activities' && (milestones$ | async ) as milestones">
           <ng-container *ngFor="let milestone of milestones">
-            <ion-item class="headline-4 milestone-name" lines="none">{{ milestone.name }}</ion-item>
+            <ion-item class="headline-4 milestone-name" lines="none">
+              {{ milestone.name }}
+              <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
+            </ion-item>
             <ion-item class="body-3 milestone-des" color="light" lines="none">{{ milestone.description }}</ion-item>
             <app-list-item *ngFor="let activity of milestone.activities; let i = index"
               [title]="activity.name"
               [leadImage]="activity.leadImage"
               [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-              (click)="gotoActivity(activity.id)"
-              [endingIcon]="endingIcon(activity.progress)"
-              [endingIconColor]="endingIconColor(activity.progress)"
+              (click)="gotoActivity(activity)"
+              [endingIcon]="endingIcon(activity)"
+              [endingIconColor]="endingIconColor(activity)"
               [endingProgress]="endingProgress(activity.progress)"
             ></app-list-item>
           </ng-container>
