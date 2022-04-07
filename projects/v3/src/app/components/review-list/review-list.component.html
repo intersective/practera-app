@@ -34,7 +34,7 @@
       <ion-list>
         <ng-container *ngFor="let review of reviews; let i = index">
           <app-list-item *ngIf="review.isDone == showDone" leadingIcon="clipboard-outline" [title]="review.name"
-            [subtitle1]="'submitted by ' + review.submitterName" [subtitle2]="review.teamName"
+            [subtitle1]="review.submitterName" [subtitle2]="review.teamName"
             [endingText]="review.date" [active]="submissionId === review.submissionId"
             [lines]="i == reviews.length - 1 ? 'none' : ''"
             (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"></app-list-item>
