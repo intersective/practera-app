@@ -432,6 +432,9 @@ export class AssessmentService {
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (environment.demo) {
       console.log('save answers', assessment, answers, action);
+      if (hasPulseCheck) {
+        this.pullFastFeedback();
+      }
       return of(true);
     }
     if (!['assessment', 'review'].includes(action)) {
