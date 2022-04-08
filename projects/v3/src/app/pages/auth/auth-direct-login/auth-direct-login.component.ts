@@ -6,6 +6,7 @@ import { ExperienceService } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-auth-direct-login',
@@ -38,7 +39,13 @@ export class AuthDirectLoginComponent implements OnInit {
         // save the auth token to compare with future use
         this.storage.set('authToken', authToken);
       }
-      return this._redirect();
+      if (environment.demo) {
+        setTimeout(() => {
+          return this._redirect();
+        }, 3000);
+      } else {
+        return this._redirect();
+      }
     } catch (err) {
       console.error(err);
       this._error(err);
@@ -72,7 +79,7 @@ export class AuthDirectLoginComponent implements OnInit {
 
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
-      return this._saveOrRedirect(['switcher', 'switcher-program'], redirectLater);
+      return this._saveOrRedirect(['experiences'], redirectLater);
     }
 
     // purpose of return_url
@@ -92,7 +99,7 @@ export class AuthDirectLoginComponent implements OnInit {
       });
       if (this.utils.isEmpty(program)) {
         // if the timeline id is not found
-        return this._saveOrRedirect(['switcher', 'switcher-program']);
+        return this._saveOrRedirect(['experiences']);
       }
       // switch to the program
       await this.experienceService.switchProgram(program).toPromise();
@@ -100,17 +107,19 @@ export class AuthDirectLoginComponent implements OnInit {
     let referrerUrl = '';
     switch (redirect) {
       case 'home':
-        return this._saveOrRedirect(['app', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectLater);
       case 'project':
-        return this._saveOrRedirect(['app', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectLater);
       case 'activity':
         if (!activityId) {
-          return this._saveOrRedirect(['app', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        } else if (this.utils.isMobile()){
+          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectLater);
         }
-        return this._saveOrRedirect(['app', 'activity', activityId], redirectLater);
+        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectLater);
       case 'activity_task':
         if (!activityId) {
-          return this._saveOrRedirect(['app', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectLater);
         }
         referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
@@ -120,10 +129,13 @@ export class AuthDirectLoginComponent implements OnInit {
             url: referrerUrl
           });
         }
-        return this._saveOrRedirect(['activity-task', activityId], redirectLater);
+        if (this.utils.isMobile()){
+          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectLater);
+        }
+        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectLater);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
-          return this._saveOrRedirect(['app', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectLater);
         }
 
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
@@ -137,26 +149,26 @@ export class AuthDirectLoginComponent implements OnInit {
 
         if (this.utils.isMobile() || restrictedAccess) {
           if (submissionId) {
-            return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId, submissionId], redirectLater);
+            return this._saveOrRedirect(['assessment-mobile', activityId, contextId, assessmentId, submissionId], redirectLater);
           }
-          return this._saveOrRedirect(['assessment', 'assessment', activityId, contextId, assessmentId], redirectLater);
+          return this._saveOrRedirect(['assessment-mobile', activityId, contextId, assessmentId], redirectLater);
         } else {
-          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
         }
       case 'topic':
         if (!activityId || !topicId) {
-          return this._saveOrRedirect(['app', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectLater);
         }
         if (this.utils.isMobile() || restrictedAccess) {
-          return this._saveOrRedirect(['topic', activityId, topicId], redirectLater);
+          return this._saveOrRedirect(['topic-mobile', activityId, topicId], redirectLater);
         } else {
-          return this._saveOrRedirect(['app', 'activity', activityId, { task: 'topic', task_id: topicId }], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'topic', task_id: topicId }], redirectLater);
         }
       case 'reviews':
-        return this._saveOrRedirect(['app', 'reviews'], redirectLater);
+        return this._saveOrRedirect(['v3', 'reviews'], redirectLater);
       case 'review':
         if (!contextId || !assessmentId || !submissionId) {
-          return this._saveOrRedirect(['app', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectLater);
         }
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
         if (referrerUrl) {
@@ -166,15 +178,15 @@ export class AuthDirectLoginComponent implements OnInit {
             url: referrerUrl
           });
         }
-        return this._saveOrRedirect(['assessment', 'review', contextId, assessmentId, submissionId], redirectLater);
+        return this._saveOrRedirect(['v3', 'reviews', contextId, assessmentId, submissionId], redirectLater);
       case 'chat':
-        return this._saveOrRedirect(['app', 'chat'], redirectLater);
+        return this._saveOrRedirect(['v3', 'messages'], redirectLater);
       case 'settings':
-        return this._saveOrRedirect(['app', 'settings'], redirectLater);
+        return this._saveOrRedirect(['v3', 'settings'], redirectLater);
       case 'settings-embed':
-        return this._saveOrRedirect(['settings-embed'], redirectLater);
+        return this._saveOrRedirect(['v3', 'settings'], redirectLater); // need to add this route
       default:
-        return this._saveOrRedirect(['app', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectLater);
     }
   }
 

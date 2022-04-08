@@ -35,7 +35,7 @@ export class AuthForgotPasswordComponent {
           'forgotPasswordConfirmation', {
             email: this.email
           },
-          ['/login']
+          ['auth', 'login']
         );
       },
       err => {

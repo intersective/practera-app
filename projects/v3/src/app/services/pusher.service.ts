@@ -15,11 +15,6 @@ const api = {
   channels: 'api/v2/message/notify/channels.json'
 };
 
-export class PusherConfig {
-  pusherKey = '';
-  apiurl = '';
-}
-
 export interface SendMessageParam {
   channelUuid:  string;
   uuid: string;
@@ -56,17 +51,14 @@ export class PusherService {
 
   constructor(
     private http: HttpClient,
-    @Optional() config: PusherConfig,
     private request: RequestService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
     private ngZone: NgZone,
     private apolloService: ApolloService,
   ) {
-    if (config) {
-      this.pusherKey = config.pusherKey;
-      this.apiurl = config.apiurl;
-    }
+    this.pusherKey = environment.pusherKey;
+    this.apiurl = environment.APIEndpoint;
   }
 
   // initialise + subscribe to channels at one go

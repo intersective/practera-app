@@ -151,3 +151,70 @@ ion-chip.label {
     --background: var(--practera-dark-blue-100) !important;
   }
 }
+
+// used in login, forgot password, regestration page
+.div-logo {
+  margin: 10vh auto 7vh;
+  max-width: 320px;
+
+  &.registration {
+    margin-top: 5vh;
+  }
+}
+
+.div-after-logo {
+  margin: 0 30px 50px;
+  ion-list {
+    max-width: 480px;
+    margin: auto;
+    border-radius: 8px;
+    ion-button {
+      margin: auto;
+      ion-icon {
+        margin: 0;
+      }
+    }
+  }
+  p {
+    max-width: 480px;
+    margin: auto auto 16px auto;
+  }
+  ion-button {
+    max-width: 256px;
+    margin: 16px auto;
+  }
+}
+
+.img-inline {
+  margin-left: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+  width: auto !important;
+}
+
+.vertical-middle {
+  vertical-align: middle;
+}
+
+.text-split {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  a {
+    text-decoration: none;
+  }
+}
+
+.clearfix {
+  clear: both;
+}
+
+.for-accessibility {
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
