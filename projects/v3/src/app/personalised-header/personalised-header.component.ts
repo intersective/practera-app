@@ -17,7 +17,6 @@ export class PersonalisedHeaderComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('personalised header')
   }
 
   async notifications(): Promise<void> {
