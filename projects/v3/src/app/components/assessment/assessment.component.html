@@ -20,6 +20,7 @@
       {{ this.utils.dueDateFormatter(assessment.dueDate) }}
     </p>
 
+
     <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
       <ion-item lines="none">
         <ion-avatar slot="start">
