@@ -39,9 +39,6 @@ export class AchievementService {
   private _achievements$ = new BehaviorSubject<Achievement[]>([]);
   achievements$ = this._achievements$.asObservable();
 
-  earnedPoints = 0;
-  totalPoints = 0;
-  isPointsConfigured = false;
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -65,15 +62,12 @@ export class AchievementService {
         if (!Array.isArray(data)) {
           return this.request.apiResponseFormatError('Achievement format error');
         }
-        this.earnedPoints = 0;
-        this.totalPoints = 0;
-        this.isPointsConfigured = false;
         const achievements: Array<Achievement> = [];
         data.forEach(achievement => {
           if (!this.utils.has(achievement, 'id') ||
             !this.utils.has(achievement, 'name') ||
             !this.utils.has(achievement, 'description') ||
-            !this.utils.has(achievement, 'achievement') ||
+            !this.utils.has(achievement, 'badge') ||
             !this.utils.has(achievement, 'points') ||
             !this.utils.has(achievement, 'isEarned') ||
             !this.utils.has(achievement, 'earnedDate')) {
@@ -88,32 +82,16 @@ export class AchievementService {
             isEarned: achievement.isEarned,
             earnedDate: achievement.earnedDate,
           });
-          if (achievement.points) {
-            this.totalPoints += +achievement.points;
-            this.isPointsConfigured = true;
-            if (achievement.isEarned) {
-              this.earnedPoints += +achievement.points;
-            }
-          }
         });
         this._achievements$.next(achievements);
       })
       ).subscribe();
   }
 
-  getEarnedPoints() {
-    return this.earnedPoints;
-  }
-
-  getTotalPoints() {
-    return this.totalPoints;
-  }
-
-  getIsPointsConfigured() {
-    return this.isPointsConfigured;
-  }
-
   markAchievementAsSeen(achievementId) {
+    if (environment.demo) {
+      return this.demo.normalResponse();
+    }
     const postData = {
       project_id: this.storage.getUser().projectId,
       identifier: 'Achievement-' + achievementId,

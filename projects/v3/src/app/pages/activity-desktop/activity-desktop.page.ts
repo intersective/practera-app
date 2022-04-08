@@ -29,13 +29,17 @@ export class ActivityDesktopPage implements OnInit {
 
   ngOnInit() {
     this.activity$.subscribe(res => this.activity = res);
-    this.assessment$.subscribe(res => this.assessment = res);
+    this.assessment$.subscribe(res => {
+      this.assessment = res;
+      console.log('assessment', res);
+    });
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, true);
     });
   }
 
   goToTask(task: Task) {
+    console.log('task::', task);
     this.activityService.goToTask(task);
   }
 
