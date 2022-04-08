@@ -8,6 +8,7 @@ import {
   CanLoad, Route
 } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
+import { environment } from '@v3/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +29,9 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   }
 
   checkLogin(): boolean {
+    if (environment.demo) {
+      return true
+    }
     if (this.authService.isAuthenticated()) {
       return true;
     }
