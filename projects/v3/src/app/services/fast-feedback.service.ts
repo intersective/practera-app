@@ -5,6 +5,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
 import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
+import { environment } from '@v3/environments/environment';
+import { DemoService } from './demo.service';
 
 const api = {
   fastFeedback: 'api/v2/observation/slider/list.json',
@@ -20,9 +22,13 @@ export class FastFeedbackService {
     private notificationsService: NotificationsService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
+    private demo: DemoService
   ) {}
 
   getFastFeedback() {
+    if (environment.demo) {
+      return this.demo.fastFeedback();
+    }
     return this.request.get(api.fastFeedback);
   }
 
