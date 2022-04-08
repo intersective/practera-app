@@ -473,16 +473,16 @@ export class AssessmentComponent implements OnChanges {
       return '';
     }
     // for locked team assessment
-    if (this.assessment.isForTeam && this.submission.isLocked) {
+    if (this.assessment.isForTeam && this.submission?.isLocked) {
       return 'in progress';
     }
-    if (!this.submission.status || this.submission.status === 'in progress') {
+    if (!this.submission?.status || this.submission?.status === 'in progress') {
       if (this.assessment.isOverdue) {
         return 'overdue';
       }
       return '';
     }
-    return this.submission.status;
+    return this.submission?.status;
   }
 
   get labelColor() {
@@ -490,16 +490,16 @@ export class AssessmentComponent implements OnChanges {
       return '';
     }
     // for locked team assessment
-    if (this.assessment.isForTeam && this.submission.isLocked) {
+    if (this.assessment?.isForTeam && this.submission?.isLocked) {
       return 'dark-blue';
     }
-    switch (this.submission.status) {
+    switch (this.submission?.status) {
       case 'pending review':
         return 'warning';
       case 'feedback available':
         return 'success';
     }
-    if ((!this.submission.status || this.submission.status === 'in progress') && this.assessment.isOverdue) {
+    if ((!this.submission?.status || this.submission?.status === 'in progress') && this.assessment?.isOverdue) {
       return 'danger';
     }
     return '';

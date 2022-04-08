@@ -1,7 +1,6 @@
 <ng-container *ngIf="assessment">
   <div class="ion-padding">
-    <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{
-      assessment.name }}</h1>
+    <h1 class="headline-4" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{ assessment.name }}</h1>
 
     <ion-chip [class]="'label '+ labelColor" *ngIf="label">
       <ion-label>{{ label }}</ion-label>
@@ -35,7 +34,7 @@
       </ion-item>
     </ion-list>
 
-    <form [formGroup]="questionsForm">
+    <form [formGroup]="questionsForm" id="formgroup">
       <ng-container *ngFor="let group of assessment.groups">
         <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
         <ion-text color="dark" class="ion-text-left">
