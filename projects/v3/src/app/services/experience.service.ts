@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of, pipe } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap } from 'rxjs/operators';
@@ -8,6 +8,8 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { PusherService } from '@v3/services/pusher.service';
+import { ReviewListService } from '@v3/services/review-list.service';
+import { RequestService } from 'request';
 
 /**
  * @name api
@@ -76,18 +78,23 @@ export class ExperienceService {
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
 
-  programsWithProgress$ = this._programs$.asObservable().pipe(map(
-    programs => {
-      const projectIds = programs.map(program => program.project.id);
-      const progressList = this.getProgresses(projectIds);
-      progressList.forEach(progress => {
-        const i = programs.findIndex(program => program.project.id === progress.id);
-        programs[i].progress = (progress.progress * 100);
-        programs[i].todoItems = progress.todoItems;
-      });
-      return programs;
-    }
-  ));
+  programsWithProgress$ = this._programs$.asObservable().pipe(
+    mergeMap(
+      async programs => {
+        const projectIds = programs.map(program => program.project.id);
+        await this.getProgresses(projectIds).subscribe(
+          res => {
+            res.forEach(progress => {
+              const i = programs.findIndex(program => program.project.id === progress.id);
+              programs[i].progress = (progress.progress * 100);
+              programs[i].todoItems = progress.todoItems;
+            });
+          }
+        );
+        return programs;
+      }
+    )
+  );
 
   constructor(
     private demo: DemoService,
@@ -95,7 +102,7 @@ export class ExperienceService {
     private apolloService: ApolloService,
     private sharedService: SharedService,
     private storage: BrowserStorageService,
-    private pusherService: PusherService
+    private requestService: RequestService
   ) { }
 
   async getPrograms() {
@@ -105,7 +112,7 @@ export class ExperienceService {
     if (environment.demo) {
       programs = this.demo.programs;
     } else {
-      // programs = this.storage.get('programs');
+      programs = this.storage.get('programs');
     }
     if (programs.length > 0) {
       programs.forEach(program => {
@@ -116,6 +123,7 @@ export class ExperienceService {
           }
           program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
         }
+        program.progress = 0;
       });
     }
     this._programs$.next(programs);
@@ -127,9 +135,34 @@ export class ExperienceService {
    */
   getProgresses(projectIds: number[]) {
     if (environment.demo) {
-      return this.demo.projectsProgress;
+      return of(this.demo.projectsProgress);
     }
-    // GraphQL API call
+    return this.apolloService.graphQLWatch(
+      `query getProjectList($ids: [Int]!) {
+        projects(ids: $ids) {
+          id
+          progress
+          todoItems{
+            isDone
+          }
+        }
+      }`,
+      {
+        ids: projectIds
+      },
+      {
+        noCache: true
+      }
+    )
+    .pipe(map(res => {
+      return res.data.projects.map(v => {
+        return {
+          id: +v.id,
+          progress: v.progress,
+          todoItems: v.todoItems.filter(ti => !ti.isDone).length
+        };
+      });
+    }));
   }
 
   extractColors(programObj: ProgramObj) {
@@ -149,7 +182,7 @@ export class ExperienceService {
 
   switchProgram(programObj: ProgramObj): Observable<any> {
     // initialise Pusher
-    // this.sharedService.initWebServices();
+    this.sharedService.initWebServices();
 
     const colors = this.extractColors(programObj);
 
@@ -183,10 +216,10 @@ export class ExperienceService {
       hasReviews: false
     });
 
-    // this.sharedService.onPageLoad();
+    this.sharedService.onPageLoad();
     return forkJoin([
       this.getNewJwt(),
-      // this.sharedService.getTeamInfo(),
+      this.sharedService.getTeamInfo(),
       this.getMyInfo(),
       this.getReviews(),
       this.getEvents()
@@ -209,6 +242,35 @@ export class ExperienceService {
       });
       return of(this.demo.myInfo);
     }
+    return this.apolloService.graphQLFetch(
+      `query user {
+        user {
+          name
+          email
+          image
+          role
+          contactNumber
+          userHash
+        }
+      }`,
+      {
+        noCache: true
+      }
+    ).pipe(map(response => {
+      if (response.data && response.data.user) {
+        const thisUser = response.data.user;
+
+        this.storage.setUser({
+          name: thisUser.name,
+          email: thisUser.email,
+          image: thisUser.image,
+          role: thisUser.role,
+          contactNumber: thisUser.contactNumber,
+          userHash: thisUser.userHash
+        });
+      }
+      return response;
+    }));
   }
 
   getReviews() {
@@ -218,6 +280,12 @@ export class ExperienceService {
       });
       return of([]);
     }
+    // return this.reviewListService.getReviews().pipe(map(data => {
+    //   this.storage.setUser({
+    //     hasReviews: (data && data.length > 0)
+    //   });
+    //   return data;
+    // }));
   }
 
   getEvents() {
@@ -227,6 +295,12 @@ export class ExperienceService {
       });
       return of([]);
     }
+    // return this.eventsService.getEvents().pipe(map(events => {
+    //   this.storage.setUser({
+    //     hasEvents: !this.utils.isEmpty(events)
+    //   });
+    //   return events;
+    // }));
   }
 
   checkIsOneProgram(programs?) {
@@ -256,6 +330,9 @@ export class ExperienceService {
    * if method got 'empty value', do nothing.
    */
   async switchProgramAndNavigate(programs): Promise<any> {
+    if (environment.demo) {
+      return ['experiences'];
+    }
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects -> [{},{},{},{}]
       if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
@@ -287,7 +364,7 @@ export class ExperienceService {
   }
 
   getNewJwt() {
-    return of('asas');
+    return this.requestService.get(api.get.jwt);
   }
 
 }

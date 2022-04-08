@@ -30,6 +30,7 @@ import { FileDisplayComponent } from './file-display/file-display.component';
 import { ActivityComponent } from './activity/activity.component';
 import { TopicComponent } from './topic/topic.component';
 import { ReviewListComponent } from './review-list/review-list.component';
+import { BrandingLogoComponent } from './branding-logo/branding-logo.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -83,7 +84,8 @@ const largeCircleDefaultConfig = {
     ReviewRatingComponent,
     TeamMemberSelectorComponent,
     TextComponent,
-    TopicComponent
+    TopicComponent,
+    BrandingLogoComponent
   ],
   exports: [
     AchievementPopUpComponent,
@@ -117,7 +119,8 @@ const largeCircleDefaultConfig = {
     ReviewRatingComponent,
     TeamMemberSelectorComponent,
     TextComponent,
-    TopicComponent
+    TopicComponent,
+    BrandingLogoComponent
   ],
 })
 export class ComponentsModule {}
