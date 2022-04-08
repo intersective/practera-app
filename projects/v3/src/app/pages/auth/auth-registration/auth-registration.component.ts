@@ -14,6 +14,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { TermsConditionsPreviewComponent } from '../terms-conditions-preview/terms-conditions-preview.component';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-auth-registration',
@@ -76,12 +77,15 @@ export class AuthRegistrationComponent implements OnInit {
 
   validateQueryParams() {
     let redirect = [];
-    redirect = ['login'];
+    redirect = ['auth', 'login'];
 
     // access query params
     this.route.queryParamMap.subscribe(queryParams => {
       this.user.email = this.route.snapshot.paramMap.get('email');
       this.user.key = this.route.snapshot.paramMap.get('key');
+      if (environment.demo && (this.user.key === 'unRegister')) {
+        this.unRegisteredDirectLink = true;
+      }
       if (this.user.email && this.user.key) {
         // check is Url valid or not.
         this.authService.verifyRegistration({

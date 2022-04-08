@@ -5,6 +5,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-auth-global-login',
@@ -34,7 +35,13 @@ export class AuthGlobalLoginComponent implements OnInit {
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
       }
-      return this.navigate(['switcher', 'switcher-program']);
+      if (environment.demo) {
+        setTimeout(() => {
+          return this.navigate(['experiences']);
+        }, 3000);
+      } else {
+        return this.navigate(['experiences']);
+      }
     } catch (err) {
       this._error(err);
     }
@@ -55,7 +62,7 @@ export class AuthGlobalLoginComponent implements OnInit {
           text: 'OK',
           role: 'cancel',
           handler: () => {
-            this.navigate(['login']);
+            this.navigate(['auth', 'login']);
           }
         }
       ]

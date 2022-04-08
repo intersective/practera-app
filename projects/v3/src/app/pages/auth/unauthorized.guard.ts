@@ -28,7 +28,7 @@ export class UnauthorizedGuard implements CanActivate {
     }
 
     // navigate to not found page
-    this.router.navigate(['/app']);
+    this.router.navigate(['/v3']);
     return false;
   }
 
