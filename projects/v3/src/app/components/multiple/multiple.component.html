@@ -8,11 +8,11 @@
             {{ choice.name }}
             <p *ngIf="submission?.answer.includes(choice.id) || review?.answer.includes(choice.id)">
               <ion-chip
-                class="yellow"
+                class="label orange"
                 *ngIf="submission?.answer.includes(choice.id)"
               >Learner's answer</ion-chip>
               <ion-chip
-                class="orange"
+                class="label yellow"
                 *ngIf="review?.answer.includes(choice.id)"
               >Expert's answer</ion-chip>
             </p>
@@ -47,8 +47,8 @@
         <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
           {{ choice.name }}
           <p *ngIf="submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)">
-            <ion-chip class="yellow" *ngIf="submission?.answer?.includes(choice.id)">Learner's answer</ion-chip>
-            <ion-chip class="orange" *ngIf="review?.answer?.includes(choice.id)">Expert's answer</ion-chip>
+            <ion-chip class="label orange" *ngIf="submission?.answer?.includes(choice.id)">Learner's answer</ion-chip>
+            <ion-chip class="label yellow" *ngIf="review?.answer?.includes(choice.id)">Expert's answer</ion-chip>
           </p>
         </ion-label>
       </ion-item>
