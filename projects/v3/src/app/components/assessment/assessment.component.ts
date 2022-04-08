@@ -469,7 +469,7 @@ export class AssessmentComponent implements OnChanges {
   }
 
   get label() {
-    if (this.submission.status === 'done') {
+    if (!this.submission || this.submission.status === 'done') {
       return '';
     }
     // for locked team assessment
@@ -486,7 +486,7 @@ export class AssessmentComponent implements OnChanges {
   }
 
   get labelColor() {
-    if (this.submission.status === 'done') {
+    if (!this.submission || this.submission.status === 'done') {
       return '';
     }
     // for locked team assessment
