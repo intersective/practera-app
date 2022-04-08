@@ -33,15 +33,21 @@ export class TopicService {
   private _topic$ = new BehaviorSubject<Topic>(null);
   topic$ = this._topic$.asObservable();
 
+  topic: Topic;
+
   constructor(
     private request: RequestService,
     private utils: UtilsService,
     public sanitizer: DomSanitizer,
     private demo: DemoService
-  ) { }
+  ) {
+    this.topic$.subscribe(res => this.topic = res);
+  }
 
   getTopic(id: number) {
-    this._topic$.next(null);
+    if (!this.topic || this.topic.id !== id) {
+      this._topic$.next(null);
+    }
     if (environment.demo) {
       return setTimeout(
         () => {

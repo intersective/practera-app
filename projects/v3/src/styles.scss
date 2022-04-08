@@ -150,6 +150,12 @@ ion-chip.label {
   &.dark-blue {
     --background: var(--practera-dark-blue-100) !important;
   }
+  &.yellow {
+    --background: #FECD5B !important;
+  }
+  &.orange {
+    --background: #FD8339 !important;
+  }
 }
 
 // used in login, forgot password, regestration page
