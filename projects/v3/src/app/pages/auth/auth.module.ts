@@ -7,8 +7,8 @@ import { AuthRoutingModule } from './auth-routing.module';
 
 import { AuthService } from '@v3/services/auth.service';
 
-import { UnauthorizedGuard } from './unauthorized.guard';
-import { ProgramSelectedGuard } from './program-selected.guard';
+import { UnauthorizedGuard } from '@v3/app/guards/unauthorized.guard';
+import { ProgramSelectedGuard } from '@v3/app/guards/program-selected.guard';
 import { AuthComponent } from './auth.component';
 import { AuthLoginComponent } from './auth-login/auth-login.component';
 import { AuthLogoutComponent } from './auth-logout/auth-logout.component';

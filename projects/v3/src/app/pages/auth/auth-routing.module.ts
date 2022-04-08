@@ -9,7 +9,7 @@ import { AuthRegistrationComponent } from './auth-registration/auth-registration
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
 import { AuthGlobalLoginComponent } from './auth-global-login/auth-global-login.component';
-import { UnauthorizedGuard } from './unauthorized.guard';
+import { UnauthorizedGuard } from '@v3/app/guards/unauthorized.guard';
 
 const routes: Routes = [
   {
