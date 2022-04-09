@@ -134,7 +134,10 @@
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-team-member-selector>
-              <div *ngSwitchDefault>no question type found</div>
+
+              <div *ngSwitchDefault>
+                <p class="ion-padding-horizontal" style="color:red;">Unsupported question type: {{ question.type }}</p>
+              </div>
             </ng-container>
           </ion-list>
         </ng-container>
