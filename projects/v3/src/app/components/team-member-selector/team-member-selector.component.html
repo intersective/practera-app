@@ -43,14 +43,15 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  {{123}}
   <ion-list class="no-bg">
     <ion-radio-group
       [value]="submission.answer"
       #answerEle
       (ionChange)="onChange(answerEle.value)">
-      <ion-item  class="ion-padding-horizontal" *ngFor="let teamMember of question.teamMembers;let i = index"
-        [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+      <ion-item  class="ion-padding-horizontal"
+        *ngFor="let teamMember of question.teamMembers;let i = index"
+        lines="none"
+        [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1}">
         <ion-radio
           color="success"
           slot="start"
