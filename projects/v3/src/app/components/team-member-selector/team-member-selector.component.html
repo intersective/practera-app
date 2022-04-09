@@ -2,18 +2,16 @@
   <ion-item class="no-bg ion-no-padding">
     <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
-        <ng-container>
-          <ion-item lines="none" lines="none">
-            <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
-            <ion-label class="white-space-normal body-2 gray-3">
-              {{ teamMember.userName }}
-              <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-                <ion-chip class="yellow" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
-                <ion-chip class="orange" *ngIf="teamMember.key === review.answer">Expert's answer</ion-chip>
-              </p>
-            </ion-label>
-          </ion-item>
-        </ng-container>
+        <ion-item lines="none" lines="none">
+          <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
+          <ion-label class="white-space-normal body-2 gray-3">
+            {{ teamMember.userName }}
+            <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
+              <ion-chip class="yellow" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
+              <ion-chip class="orange" *ngIf="teamMember.key === review.answer">Expert's answer</ion-chip>
+            </p>
+          </ion-label>
+        </ion-item>
       </ng-container>
     </ion-radio-group>
   </ion-item>
@@ -45,15 +43,24 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <ion-item class="no-bg ion-no-padding" lines="none">
-    <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item *ngFor="let teamMember of question.teamMembers;let i = index"
+  {{123}}
+  <ion-list class="no-bg">
+    <ion-radio-group
+      [value]="submission.answer"
+      #answerEle
+      (ionChange)="onChange(answerEle.value)">
+      <ion-item  class="ion-padding-horizontal" *ngFor="let teamMember of question.teamMembers;let i = index"
         [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
+        <ion-radio
+          color="success"
+          slot="start"
+          [value]="teamMember.key"
+          [disabled]="control.disabled"
+        ></ion-radio>
         <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
       </ion-item>
     </ion-radio-group>
-  </ion-item>
+  </ion-list>
 </ng-container>
 
 <ng-container *ngIf="doReview">
