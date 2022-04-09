@@ -60,7 +60,9 @@
     <ion-list class="no-bg">
       <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
         <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ion-item class="ion-padding-horizontal" [lines]="i == question.choices.length - 1 ? 'none' : ''|| checkInnerValue(choice.id) ? 'none': ''">
+          <ion-item class="ion-padding-horizontal"
+            lines="none"
+            [ngClass]="{'item-bottom-border': i != question.choices.length - 1 || !checkInnerValue(choice.id)}">
             <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
               [value]="choice.id"
