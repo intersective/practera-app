@@ -39,15 +39,16 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <div class="ion-padding-horizontal ion-padding-bottom">
-      <ion-textarea
-      class="background-white ion-margin-top textarea"
+  <div class="ion-padding-horizontal ion-padding-top textarea-border">
+    <ion-textarea
       [formControl]="answer"
       #answerEle
       rows="4"
       (ionFocus)="onFocus($event)"
       (ionChange)="onChange()"
-      [disabled]="control.disabled"></ion-textarea>
+      [disabled]="control.disabled"
+      placeholder="Please add your answer here"
+    ></ion-textarea>
     <ion-text *ngFor="let error of errors" color="danger">
       <p>{{error}}</p>
     </ion-text>
