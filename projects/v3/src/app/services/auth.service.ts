@@ -8,6 +8,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { ApolloService } from './apollo.service';
+import { environment } from '@v3/environments/environment';
+import { DemoService } from './demo.service';
 
 /**
  * @name api
@@ -74,7 +76,8 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private apolloService: ApolloService
+    private apolloService: ApolloService,
+    private demo: DemoService
   ) {}
 
   private _clearCache(): any {
@@ -88,6 +91,11 @@ export class AuthService {
     };
     if (!serviceHeader) {
       delete headers.service;
+    }
+    if (environment.demo) {
+      return of({
+        programs: []
+      });
     }
     return this.request.post({
       endPoint: API.login,
@@ -220,6 +228,9 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   forgotPassword(email: string): Observable<any> {
+    if (environment.demo) {
+      return of({});
+    }
     return this.request.post({
       endPoint: API.forgotPassword,
       data: {
@@ -246,6 +257,9 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   resetPassword(data): Observable<any> {
+    if (environment.demo) {
+      return of({});
+    }
     return this.request.post({
       endPoint: API.resetPassword, data
     });
@@ -314,6 +328,9 @@ export class AuthService {
   }
 
   saveRegistration(data: RegisterData): Observable<any> {
+    if (environment.demo) {
+      return of({});
+    }
     return this.request.post(
       {
         endPoint: API.register,
@@ -325,6 +342,9 @@ export class AuthService {
   }
 
   verifyRegistration(data: VerifyParams): Observable<any> {
+    if (environment.demo) {
+      return of({});
+    }
     return this.request.post(
       {
         endPoint: API.verifyRegistration,
@@ -342,6 +362,9 @@ export class AuthService {
    * @return {Observable<any>}      [description]
   */
   verifyResetPassword(data: VerifyParams): Observable<any> {
+    if (environment.demo) {
+      return of({});
+    }
     return this.request.post({
       endPoint: API.verifyResetPassword,
       data,
