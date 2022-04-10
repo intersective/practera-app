@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment } from '@v3/services/assessment.service';
@@ -20,6 +20,8 @@ export class AssessmentMobilePage implements OnInit {
   action: string;
 
   currentTask: Task
+
+  @ViewChild('assessmentEle') assessmentEle;
 
   constructor(
     private route: ActivatedRoute,
@@ -61,6 +63,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   goBack() {
+    this.assessmentEle.btnBackClicked();
     this.router.navigate(['v3', 'activity-mobile', this.activityId]);
   }
 

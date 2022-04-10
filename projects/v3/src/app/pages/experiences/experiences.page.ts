@@ -5,6 +5,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-experiences',
@@ -40,6 +41,9 @@ export class ExperiencesPage implements OnInit {
     try {
       const route = await this.service.switchProgramAndNavigate(program);
       loading.dismiss().then(() => {
+        if (environment.demo) {
+          return this.router.navigate(['v3','home']);
+        }
         this.router.navigate(route);
       });
     } catch (err) {
