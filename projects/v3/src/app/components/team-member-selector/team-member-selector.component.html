@@ -1,9 +1,8 @@
-<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
+<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
   <ion-item class="no-bg ion-no-padding">
     <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
         <ion-item lines="none" lines="none">
-          <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
           <ion-label class="white-space-normal body-2 gray-3">
             {{ teamMember.userName }}
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
@@ -19,28 +18,6 @@
     <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
   </ng-container>
 </ng-container>
-
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)"
-[ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
-  <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
-  <ng-container *ngIf="review.answer">
-    <ion-item class="no-bg ion-no-padding" lines="none">
-      <ion-radio-group class="ion-padding-horizontal" [value]="review.answer">
-        <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
-          <ng-container *ngIf="teamMember.key === review.answer">
-            <ion-item lines="none">
-              <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
-              <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
-            </ion-item>
-          </ng-container>
-        </ng-container>
-      </ion-radio-group>
-    </ion-item>
-  </ng-container>
-  <ng-container *ngIf="review.comment">
-    <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
-  </ng-container>
-</div>
 
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg">
