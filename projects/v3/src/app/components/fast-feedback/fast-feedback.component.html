@@ -1,13 +1,57 @@
-<ion-header mode="ios">
+<ion-header>
   <ion-toolbar>
-    <ion-title text-center>Pulse Check</ion-title>
+    <ion-title class="ion-text-center">Pulse Check</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
-  <div class="ion-text-center" style="margin: 16px;">
+  <div class="ion-text-center ion-margin">
     <p class="body-1 ion-margin">Please help us to improve your experience.<br>We want to know how are you doing?</p>
   </div>
 
-  test
+  <form (ngSubmit)="submit()"
+    [formGroup]="fastFeedbackForm"
+    style="margin: 0 1em;"
+  >
+    <ng-container *ngFor="let question of questions">
+      <ion-card class="practera-card ion-text-left"
+        [formGroup]="fastFeedbackForm">
+        <ion-card-header class="q-title">
+          {{ question.title }}
+          <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+          <ion-text color="medium">
+            <p><i>{{ question.description }}</i></p>
+          </ion-text>
+        </ion-card-header>
+
+        <ion-card-content class="q-content ion-padding-horizontal">
+          <ion-list>
+            <ion-radio-group [formControlName]="question.id">
+              <ion-item *ngFor="let choice of question.choices" color="light">
+                <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
+                <ion-radio [value]="choice.id" mode="md"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </ng-container>
+
+    <div class="ion-text-center">
+      <ion-button type="submit"
+        [disabled]="fastFeedbackForm.invalid || loading"
+        shape="round"
+        class="btn-cta"
+      >
+        <ng-container *ngIf="!loading">Submit</ng-container>
+        <ng-container *ngIf="loading && !submissionCompleted">
+          <ion-spinner name="dots"></ion-spinner>
+        </ng-container>
+        <ng-container *ngIf="loading && submissionCompleted">
+          <ion-icon src="/assets/checkmark.svg"></ion-icon>
+        </ng-container>
+      </ion-button>
+    </div>
+  </form>
 
 </ion-content>

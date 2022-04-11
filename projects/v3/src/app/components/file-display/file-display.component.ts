@@ -24,7 +24,9 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   constructor(
     private filestackService: FilestackService,
     private utils: UtilsService
-  ) { }
+  ) {
+    this.file = { "filename": "pexels-startup-stock-photos-7096.jpg.png", "handle": "qICo2b4ARuGcuaw6xSSX", "mimetype": "image/png", "originalPath": "pexels-startup-stock-photos-7096.jpg", "size": 9324941, "source": "local_file_system", "url": "https://cdn.filestackcontent.com/qICo2b4ARuGcuaw6xSSX", "uploadId": "zQotOtl4RB715IYU", "originalFile": { "name": "pexels-startup-stock-photos-7096.jpg", "type": "image/jpeg", "size": 1511454 }, "status": "Stored", "key": "appv2/stage/uploads/undefined/N8qORD1vTcya3ykT1cuN_pexels-startup-stock-photos-7096.jpg.png", "container": "practera-aus", "cropped": { "originalImageSize": [5472, 3648], "cropArea": { "position": [0, 0], "size": [3648, 3648] } }, "workflows": { "3c38ef53-a9d0-4aa4-9234-617d9f03c0de": { "jobid": "c1a08144-d9c5-4c1f-8c3d-8e1f0fb1f38a" } } };
+  }
 
   ngOnInit() {
     if (this.file && this.file.workflows) {
