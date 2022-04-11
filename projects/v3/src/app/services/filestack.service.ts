@@ -130,6 +130,12 @@ export class FilestackService {
     try {
       metadata = await this.metadata(file);
     } catch (e) {
+      if (e.status === 0) {
+        return this.notificationsService.alert({
+          subHeader: 'No Filestack responses',
+          message: e.message,
+        });
+      }
       return this.notificationsService.alert({
         subHeader: 'Inaccessible file',
         message: 'The uploaded file is suspicious and being scanned for potential risk. Please try again later.',

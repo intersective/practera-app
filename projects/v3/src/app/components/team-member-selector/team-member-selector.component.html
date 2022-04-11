@@ -1,19 +1,16 @@
-<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
+<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ion-item class="no-bg ion-no-padding">
     <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
-        <ng-container>
-          <ion-item lines="none" lines="none">
-            <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
-            <ion-label class="white-space-normal body-2 gray-3">
-              {{ teamMember.userName }}
-              <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-                <ion-chip class="yellow" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
-                <ion-chip class="orange" *ngIf="teamMember.key === review.answer">Expert's answer</ion-chip>
-              </p>
-            </ion-label>
-          </ion-item>
-        </ng-container>
+        <ion-item lines="none" lines="none">
+          <ion-label class="white-space-normal body-2 gray-3">
+            {{ teamMember.userName }}
+            <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
+              <ion-chip class="yellow" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
+              <ion-chip class="orange" *ngIf="teamMember.key === review.answer">Expert's answer</ion-chip>
+            </p>
+          </ion-label>
+        </ion-item>
       </ng-container>
     </ion-radio-group>
   </ion-item>
@@ -22,38 +19,26 @@
   </ng-container>
 </ng-container>
 
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)"
-[ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
-  <ion-label *ngIf="audienceContainReviewer()" class="q-title subtitle-2 black ion-padding-vertical">Reviewer’s feedback</ion-label>
-  <ng-container *ngIf="review.answer">
-    <ion-item class="no-bg ion-no-padding" lines="none">
-      <ion-radio-group class="ion-padding-horizontal" [value]="review.answer">
-        <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
-          <ng-container *ngIf="teamMember.key === review.answer">
-            <ion-item lines="none">
-              <ion-radio color="success" slot="start" [value]="teamMember.key" disabled></ion-radio>
-              <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
-            </ion-item>
-          </ng-container>
-        </ng-container>
-      </ion-radio-group>
-    </ion-item>
-  </ng-container>
-  <ng-container *ngIf="review.comment">
-    <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
-  </ng-container>
-</div>
-
 <ng-container *ngIf="doAssessment">
-  <ion-item class="no-bg ion-no-padding" lines="none">
-    <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
-      <ion-item *ngFor="let teamMember of question.teamMembers;let i = index"
-        [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
-        <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
+  <ion-list class="no-bg">
+    <ion-radio-group
+      [value]="submission.answer"
+      #answerEle
+      (ionChange)="onChange(answerEle.value)">
+      <ion-item  class="ion-padding-horizontal"
+        *ngFor="let teamMember of question.teamMembers;let i = index"
+        lines="none"
+        [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1}">
+        <ion-radio
+          color="success"
+          slot="start"
+          [value]="teamMember.key"
+          [disabled]="control.disabled"
+        ></ion-radio>
         <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
       </ion-item>
     </ion-radio-group>
-  </ion-item>
+  </ion-list>
 </ng-container>
 
 <ng-container *ngIf="doReview">
