@@ -1,4 +1,4 @@
-<ion-header>
+<ion-header class=" ion-no-border">
   <ion-toolbar>
     <ion-title class="ion-text-center">Pulse Check</ion-title>
   </ion-toolbar>
@@ -9,12 +9,9 @@
     <p class="body-1 ion-margin">Please help us to improve your experience.<br>We want to know how are you doing.</p>
   </div>
 
-  <form (ngSubmit)="submit()"
-    [formGroup]="fastFeedbackForm"
-    style="margin: 0 1em;"
-  >
+  <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
     <ng-container *ngFor="let question of questions">
-      <ion-list class="practera-card ion-text-left"
+      <ion-list class="practera-card ion-text-left ion-no-padding ion-padding-horizontal"
         [formGroup]="fastFeedbackForm">
         <ion-list-header class="question-title">
           {{ question.title }}
@@ -25,7 +22,7 @@
         </ion-list-header>
 
         <ion-radio-group [formControlName]="question.id">
-          <ion-item class="ion-no-padding ion-no-margin item-bottom-border"
+          <ion-item class="item-bottom-border"
             *ngFor="let choice of question.choices"
             lines="none"
           >
