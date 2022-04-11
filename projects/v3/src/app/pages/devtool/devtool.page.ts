@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
+import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 
 @Component({
@@ -11,10 +12,10 @@ export class DevtoolPage implements OnInit {
   doneLogin: boolean = false;
   user: any = {};
 
-
   constructor(
     private authService: AuthService,
     private storageService: BrowserStorageService,
+    private fastFeedbackService: FastFeedbackService,
   ) { }
 
   ngOnInit() {
@@ -32,5 +33,14 @@ export class DevtoolPage implements OnInit {
       this.doneLogin = true;
       this.user = res;
     });
+  }
+
+  async pulsecheck() {
+    this.storageService.set('fastFeedbackOpening', false);
+    const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    if (modal && modal.present) {
+      await modal.present();
+      await modal.onDidDismiss();
+    }
   }
 }
