@@ -7,8 +7,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { PusherService } from '@v3/services/pusher.service';
-import { ReviewListService } from '@v3/services/review-list.service';
 import { RequestService } from 'request';
 
 /**

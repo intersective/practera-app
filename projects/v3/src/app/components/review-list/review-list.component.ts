@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AssessmentReview } from '@v3/app/services/assessment.service';
-import { Review } from '@v3/services/review-list.service';
+import { Review } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Subject } from 'rxjs';
 
 enum STATUSES {
   PENDING = 'pending',
@@ -18,15 +17,11 @@ enum STATUSES {
 })
 export class ReviewListComponent implements OnInit {
   @Input() reviews: Review[];
-  public showDone = false;
-  @Input() loadingReviews: boolean;
-  @Input() submissionId: number;
+  @Input() currentReview: Review;
   @Output() navigate = new EventEmitter();
-  selectedReview: any = {};
+  public showDone = false;
 
   public status: string = STATUSES.PENDING;
-
-  testBoolean = 0;
 
   constructor(
     public router: Router,
@@ -35,10 +30,6 @@ export class ReviewListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.onEnter();
-  }
-
-  onEnter() {
     this.showDone = false;
   }
 
@@ -50,7 +41,6 @@ export class ReviewListComponent implements OnInit {
   // open a review in detailed page
   read(review: Review) {
     console.log('REVIEW::', review);
-    this.testBoolean = this.testBoolean === 0 ? 1 : 0;
     this.navigate.emit(review);
   }
 
@@ -102,7 +92,6 @@ export class ReviewListComponent implements OnInit {
       return;
     }
     this.showDone = false;
-    this.submissionId = null;
     this.gotoFirstReview();
   }
 
@@ -114,11 +103,13 @@ export class ReviewListComponent implements OnInit {
       return;
     }
     this.showDone = true;
-    this.submissionId = null;
     this.gotoFirstReview();
   }
 
   noReviewsToDo() {
+    if (this.reviews === null) {
+      return false;
+    }
     const reviewTodo = this.reviews.find(review => {
       return review.isDone === false;
     });
@@ -126,6 +117,9 @@ export class ReviewListComponent implements OnInit {
   }
 
   noReviewsDone() {
+    if (this.reviews === null) {
+      return false;
+    }
     const reviewDone = this.reviews.find(review => {
       return review.isDone === true;
     });
