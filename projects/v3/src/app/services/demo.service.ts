@@ -566,4 +566,506 @@ export class DemoService {
     }
     return of(sets);
   }
+
+  get channels() {
+    return {
+      "channels": [
+        {
+          "uuid": "d715a07d-e217-4330-aa82-c214f9e6a137",
+          "name": "Team 1 + Mentor + Admins",
+          "avatar": "https://admin.p2-stage.practera.com//img/team-white.png",
+          "isAnnouncement": false,
+          "isDirectMessage": false,
+          "readonly": false,
+          "roles": [
+            "sysadmin",
+            "participant",
+            "mentor",
+            "coordinator",
+            "admin"
+          ],
+          "unreadMessageCount": 6,
+          "lastMessage": "team 1 test mesage 06",
+          "lastMessageCreated": "2022-04-11 03:18:48",
+          "pusherChannel": "private-chat-dcf52471-c7f3-4d9b-b53a-d4fd7775bb7e",
+          "canEdit": false,
+          "__typename": "Channel"
+        },
+        {
+          "uuid": "49e06b09-d2ca-4f44-8426-eb56a3c8fa4a",
+          "name": "Team 1",
+          "avatar": "https://admin.p2-stage.practera.com//img/team-white.png",
+          "isAnnouncement": false,
+          "isDirectMessage": false,
+          "readonly": false,
+          "roles": [
+            "sysadmin",
+            "participant"
+          ],
+          "unreadMessageCount": 0,
+          "lastMessage": null,
+          "lastMessageCreated": null,
+          "pusherChannel": "private-chat-dcc44692-c3e4-436c-a2e8-4d564a6ab70b",
+          "canEdit": false,
+          "__typename": "Channel"
+        },
+        {
+          "uuid": "06786aee-4654-4f31-8656-9e4bc31b0d04",
+          "name": "Team 1 + Mentor",
+          "avatar": "https://admin.p2-stage.practera.com//img/team-white.png",
+          "isAnnouncement": false,
+          "isDirectMessage": false,
+          "readonly": false,
+          "roles": [
+            "sysadmin",
+            "participant",
+            "mentor"
+          ],
+          "unreadMessageCount": 0,
+          "lastMessage": null,
+          "lastMessageCreated": null,
+          "pusherChannel": "private-chat-a6518010-816d-42a9-862b-7b78726bac89",
+          "canEdit": false,
+          "__typename": "Channel"
+        },
+        {
+          "uuid": "77743103-75e4-4e33-9083-aa9ba712423a",
+          "name": "Sasanga+L002",
+          "avatar": "https://www.gravatar.com/avatar/9dadda393165062286c26a533d4ba61f?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+          "isAnnouncement": false,
+          "isDirectMessage": true,
+          "readonly": false,
+          "roles": [
+            "sysadmin",
+            "participant"
+          ],
+          "unreadMessageCount": 0,
+          "lastMessage": null,
+          "lastMessageCreated": null,
+          "pusherChannel": "private-chat-bffc2265-6fa2-4e41-8063-70bafce7554f",
+          "canEdit": false,
+          "__typename": "Channel"
+        },
+        {
+          "uuid": "bea01edc-d3c2-47b0-8f54-2f45c2d2050d",
+          "name": "Sasanga Dev",
+          "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+          "isAnnouncement": false,
+          "isDirectMessage": true,
+          "readonly": false,
+          "roles": [
+            "sysadmin",
+            "participant"
+          ],
+          "unreadMessageCount": 0,
+          "lastMessage": null,
+          "lastMessageCreated": null,
+          "pusherChannel": "private-chat-8fbe55a1-3aa4-4f18-bd26-0da0284fa5b6",
+          "canEdit": false,
+          "__typename": "Channel"
+        },
+        {
+          "uuid": "53fd8516-8b6b-49d3-9258-75a93303f5fc",
+          "name": "GTA - Testing for Sasanga",
+          "avatar": "https://admin.p2-stage.practera.com//img/team-white.png",
+          "isAnnouncement": false,
+          "isDirectMessage": false,
+          "readonly": false,
+          "roles": [
+            "sysadmin",
+            "participant",
+            "mentor",
+            "coordinator",
+            "admin"
+          ],
+          "unreadMessageCount": 6,
+          "lastMessage": "file received",
+          "lastMessageCreated": "2022-04-11 03:21:44",
+          "pusherChannel": "private-chat-93699394-f46f-45f4-9369-7a9b2385bba1",
+          "canEdit": false,
+          "__typename": "Channel"
+        }
+      ]
+    }
+  }
+
+  get pusherChannels() {
+    return {
+      "channels": [
+        {
+          "pusherChannel": "private-chat-dcf52471-c7f3-4d9b-b53a-d4fd7775bb7e",
+          "__typename": "Channel"
+        },
+        {
+          "pusherChannel": "private-chat-dcc44692-c3e4-436c-a2e8-4d564a6ab70b",
+          "__typename": "Channel"
+        },
+        {
+          "pusherChannel": "private-chat-a6518010-816d-42a9-862b-7b78726bac89",
+          "__typename": "Channel"
+        },
+        {
+          "pusherChannel": "private-chat-bffc2265-6fa2-4e41-8063-70bafce7554f",
+          "__typename": "Channel"
+        },
+        {
+          "pusherChannel": "private-chat-8fbe55a1-3aa4-4f18-bd26-0da0284fa5b6",
+          "__typename": "Channel"
+        },
+        {
+          "pusherChannel": "private-chat-93699394-f46f-45f4-9369-7a9b2385bba1",
+          "__typename": "Channel"
+        }
+      ]
+    }
+  }
+
+  get allUnreadMessages() {
+    return {
+      "channels": [
+        {
+          "unreadMessageCount": 6,
+          "__typename": "Channel"
+        },
+        {
+          "unreadMessageCount": 0,
+          "__typename": "Channel"
+        },
+        {
+          "unreadMessageCount": 0,
+          "__typename": "Channel"
+        },
+        {
+          "unreadMessageCount": 0,
+          "__typename": "Channel"
+        },
+        {
+          "unreadMessageCount": 0,
+          "__typename": "Channel"
+        },
+        {
+          "unreadMessageCount": 6,
+          "__typename": "Channel"
+        }
+      ]
+    }
+  }
+
+  channelLogs(uuid) {
+    if (uuid === "53fd8516-8b6b-49d3-9258-75a93303f5fc") {
+      return {
+        "channel": {
+          "chatLogsConnection": {
+            "cursor": "{\"t\":\"2022-04-11T03:20:34.000Z\",\"u\":[\"6895443a-9356-49e1-ac06-177cea5436b4\"]}",
+            "chatLogs": [
+              {
+                "uuid": "41fe20fc-48e3-4c93-97fa-ec165571eee9",
+                "isSender": true,
+                "message": "cohort chat test message 07",
+                "file": null,
+                "created": "2022-04-11 03:37:15",
+                "sender": {
+                  "uuid": "4685083d-4da9-4b78-941e-7930510b34c0",
+                  "name": "sasanga+L002",
+                  "role": "participant",
+                  "avatar": "https://www.gravatar.com/avatar/9c28dee4c06b0ee859d7093d3dd12168?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "d54f41cd-c8a2-46a9-9ee6-b8c6c7e43d6b",
+                "isSender": false,
+                "message": "",
+                "file": "{\"filename\":\"file-sample_150kB.pdf\",\"handle\":\"KRZuK6cQR2uwdSTaLgs8\",\"mimetype\":\"application/pdf\",\"originalPath\":\"file-sample_150kB.pdf\",\"size\":142786,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/KRZuK6cQR2uwdSTaLgs8\",\"uploadId\":\"uGCcrLd1wEQBEMQg\",\"originalFile\":{\"name\":\"file-sample_150kB.pdf\",\"type\":\"application/pdf\",\"size\":142786},\"status\":\"Stored\",\"key\":\"cutie/any/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/TfYfh1G9QnWGbdil4Ulk_file-sample_150kB.pdf\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"3146b363-85f3-40c6-b477-2887687d1bd4\"}}}",
+                "created": "2022-04-11 03:21:44",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "520e9f6f-0766-4262-89f0-91bd7d6afc13",
+                "isSender": false,
+                "message": "",
+                "file": "{\"filename\":\"Sample_Video_1280_x_720_1mb.mp4\",\"handle\":\"VNgnRX3tRzaAmcprcNuS\",\"mimetype\":\"video/mp4\",\"originalPath\":\"Sample Video 1280 x 720 1mb.mp4\",\"size\":1055736,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/VNgnRX3tRzaAmcprcNuS\",\"uploadId\":\"WkwmtENlUQZmr9ZP\",\"originalFile\":{\"name\":\"Sample Video 1280 x 720 1mb.mp4\",\"type\":\"video/mp4\",\"size\":1055736},\"status\":\"Stored\",\"key\":\"cutie/video/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/B8VBKdasT0KgID5tAYaQ_Sample_Video_1280_x_720_1mb.mp4\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"6810b2b6-1bb3-4bb9-83e0-2b1078bbdf4c\"}}}",
+                "created": "2022-04-11 03:21:26",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "0213a367-b984-43f5-9f45-705844a1200b",
+                "isSender": false,
+                "message": "",
+                "file": "{\"filename\":\"983794168.jpg\",\"handle\":\"mhmmAWsSbyDddEKnTGqq\",\"mimetype\":\"image/jpeg\",\"originalPath\":\"983794168.jpg\",\"size\":98468,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/mhmmAWsSbyDddEKnTGqq\",\"uploadId\":\"GjlJa3G9Ed5Lj46e\",\"originalFile\":{\"name\":\"983794168.jpg\",\"type\":\"image/jpeg\",\"size\":98468},\"status\":\"Stored\",\"key\":\"cutie/image/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/o9d9AcSmRZiQQ1WJmySF_983794168.jpg\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"046a6e7d-340a-4d63-b025-b5796018d40e\"}}}",
+                "created": "2022-04-11 03:21:04",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "dc0649a5-5ea5-4872-a098-7a2d5a5b78f9",
+                "isSender": false,
+                "message": "cohort chat test mesage 03",
+                "file": null,
+                "created": "2022-04-11 03:20:46",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "e2a8e11a-a9e0-4ebb-8a77-8ec00d1d4a06",
+                "isSender": false,
+                "message": "cohort chat test mesage 02",
+                "file": null,
+                "created": "2022-04-11 03:20:42",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "6895443a-9356-49e1-ac06-177cea5436b4",
+                "isSender": false,
+                "message": "cohort chat test mesage 01",
+                "file": null,
+                "created": "2022-04-11 03:20:34",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              }
+            ],
+            "__typename": "ChatLogsConnection"
+          },
+          "__typename": "Channel"
+        }
+      }
+    }
+    if (uuid === "d715a07d-e217-4330-aa82-c214f9e6a137") {
+      return {
+        "channel": {
+          "chatLogsConnection": {
+            "cursor": "{\"t\":\"2022-04-11T03:17:16.000Z\",\"u\":[\"62a4ef3e-3115-4fc4-a102-06268406a423\"]}",
+            "chatLogs": [
+              {
+                "uuid": "198882ac-5f8f-4a89-91da-42b88053b7b4",
+                "isSender": false,
+                "message": "team 1 test mesage 06",
+                "file": null,
+                "created": "2022-04-11 03:18:48",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "9c2a645c-7858-4eef-9fe0-9e0257215ac4",
+                "isSender": false,
+                "message": "",
+                "file": "{\"filename\":\"file-sample_150kB.pdf\",\"handle\":\"NYDxgksTUqC2mOZfnzw4\",\"mimetype\":\"application/pdf\",\"originalPath\":\"file-sample_150kB.pdf\",\"size\":142786,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/NYDxgksTUqC2mOZfnzw4\",\"uploadId\":\"Mp3jjK0DjM1J25Q0\",\"originalFile\":{\"name\":\"file-sample_150kB.pdf\",\"type\":\"application/pdf\",\"size\":142786},\"status\":\"Stored\",\"key\":\"cutie/any/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/gtLLmyliTrGwkFz0aNgh_file-sample_150kB.pdf\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"d70a16fd-9deb-4e44-9993-294be0657627\"}}}",
+                "created": "2022-04-11 03:18:34",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "afa55e65-d67a-457d-8d26-b8abb1b51dab",
+                "isSender": false,
+                "message": "",
+                "file": "{\"filename\":\"Sample_Video_1280_x_720_1mb.mp4\",\"handle\":\"XIzbiabRScyqqSITNrnm\",\"mimetype\":\"video/mp4\",\"originalPath\":\"Sample Video 1280 x 720 1mb.mp4\",\"size\":1055736,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/XIzbiabRScyqqSITNrnm\",\"uploadId\":\"57HMHoiW43POq7Fe\",\"originalFile\":{\"name\":\"Sample Video 1280 x 720 1mb.mp4\",\"type\":\"video/mp4\",\"size\":1055736},\"status\":\"Stored\",\"key\":\"cutie/video/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/o5SZaFRTlSc33o0i9ce2_Sample_Video_1280_x_720_1mb.mp4\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"43ca9aa9-564a-4e19-ba2a-5d89025f7e39\"}}}",
+                "created": "2022-04-11 03:18:17",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "33f9b903-6b37-4f99-84c4-ff5c4c4cee7f",
+                "isSender": false,
+                "message": "",
+                "file": "{\"filename\":\"download.png\",\"handle\":\"3z9QukvRj6zJIXolueGh\",\"mimetype\":\"image/png\",\"originalPath\":\"download.png\",\"size\":1949,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/3z9QukvRj6zJIXolueGh\",\"uploadId\":\"Ib0F87SXOW043em1\",\"originalFile\":{\"name\":\"download.png\",\"type\":\"image/png\",\"size\":1949},\"status\":\"Stored\",\"key\":\"cutie/image/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/oatBvxFhRrWUmlEhrXKI_download.png\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"c9d06e8c-b4b2-4dca-b792-f7c7ec9ef378\"}}}",
+                "created": "2022-04-11 03:17:50",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "df9752ba-0c82-468d-9f76-90ccf0163f5f",
+                "isSender": false,
+                "message": "team 1 test mesage 02",
+                "file": null,
+                "created": "2022-04-11 03:17:24",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
+                "uuid": "62a4ef3e-3115-4fc4-a102-06268406a423",
+                "isSender": false,
+                "message": "team 1 test mesage 01",
+                "file": null,
+                "created": "2022-04-11 03:17:16",
+                "sender": {
+                  "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+                  "name": "Sasanga Dev",
+                  "role": "inst_admin",
+                  "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              }
+            ],
+            "__typename": "ChatLogsConnection"
+          },
+          "__typename": "Channel"
+        }
+      }
+    }
+    return {
+      "channel": {
+        "chatLogsConnection": {
+          "cursor": "null",
+          "chatLogs": [],
+          "__typename": "ChatLogsConnection"
+        },
+        "__typename": "Channel"
+      }
+    }
+  }
+
+  get channelMenbers() {
+    return {
+      "channel": {
+        "members": [
+          {
+            "uuid": "4685083d-4da9-4b78-941e-7930510b34c0",
+            "name": "sasanga+L002",
+            "role": "participant",
+            "avatar": "https://www.gravatar.com/avatar/9c28dee4c06b0ee859d7093d3dd12168?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+            "email": "sasanga+l002@practera.com",
+            "__typename": "ChannelMember"
+          },
+          {
+            "uuid": "2ec168ad-4a22-41ab-ac21-f25a916905f5",
+            "name": "Sasanga+L002",
+            "role": "participant",
+            "avatar": "https://www.gravatar.com/avatar/9dadda393165062286c26a533d4ba61f?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+            "email": "sasanga+l001@practera.com",
+            "__typename": "ChannelMember"
+          },
+          {
+            "uuid": "8ce9d6bf-2c26-21fc-166c-10346aa55fc9",
+            "name": "Sasanga Dev",
+            "role": "admin",
+            "avatar": "https://www.gravatar.com/avatar/cfcfe4cfd55845de5a93c12438e71487?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+            "email": "sasanga+dev@practera.com",
+            "__typename": "ChannelMember"
+          }
+        ],
+        "__typename": "Channel"
+      }
+    }
+  }
+
+  get markAsSeen() {
+    return {
+      "readChatLogs": {
+        "success": true,
+        "__typename": "Response"
+      }
+    }
+  }
+
+  createChatLog(message, file) {
+    if (file !== null || file !== undefined) {
+      return {
+        "createChatLog": {
+          "uuid": "cda4433a-54c5-4f56-9dd7-3643de66bc35",
+          "isSender": true,
+          "message": "",
+          "file": file,
+          "created": "2022-04-11 03:54:00",
+          "sender": {
+            "uuid": "4685083d-4da9-4b78-941e-7930510b34c0",
+            "name": "sasanga+L002",
+            "role": "participant",
+            "avatar": "https://www.gravatar.com/avatar/9c28dee4c06b0ee859d7093d3dd12168?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+            "__typename": "ChannelMember"
+          },
+          "__typename": "ChatLog"
+        }
+      }
+    } else {
+      return {
+        "createChatLog": {
+          "uuid": "41fe20fc-48e3-4c93-97fa-ec165571eee9",
+          "isSender": true,
+          "message": message,
+          "file": null,
+          "created": "2022-04-11 03:37:15",
+          "sender": {
+            "uuid": "4685083d-4da9-4b78-941e-7930510b34c0",
+            "name": "sasanga+L002",
+            "role": "participant",
+            "avatar": "https://www.gravatar.com/avatar/9c28dee4c06b0ee859d7093d3dd12168?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+            "__typename": "ChannelMember"
+          },
+          "__typename": "ChatLog"
+        }
+      }
+    }
+  }
+
 }
