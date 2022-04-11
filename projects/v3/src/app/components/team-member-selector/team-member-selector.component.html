@@ -1,4 +1,4 @@
-<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
+<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ion-item class="no-bg ion-no-padding">
     <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
