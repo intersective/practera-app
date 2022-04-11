@@ -1,3 +1,20 @@
 form ion-button {
   margin-bottom: 16px;
 }
+
+.question-title {
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+}
+
+ion-item {
+  --padding-start: 0;
+
+  &.item-bottom-border {
+    border-bottom: 1px solid var(--border-color);
+
+    .item-lines- {
+      border-bottom: none;
+    }
+  }
+}

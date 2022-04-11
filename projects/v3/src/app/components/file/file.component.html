@@ -29,14 +29,15 @@
     [fileType]="question.fileType"
     (complete)="onFileUploadCompleted($event)"
     [disabled]="control.disabled"
-  >
-  </file-stack>
+  ></file-stack>
+
   <ion-text *ngFor="let error of errors" color="danger">
     <p>{{error}}</p>
   </ion-text>
+
   <app-file-display
-    [file]="uploadedFile ? uploadedFile : submission.answer"
-    [fileType]="question.fileType"
+    [file]="uploadedFile ? uploadedFile : submission?.answer"
+    [fileType]="question.fileType || 'any'"
     [isFileComponent]="true"
     (removeFile)="removeSubmitFile($event)"
     [disabled]="control.disabled"
