@@ -1,4 +1,4 @@
-<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
+<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <div class="ion-padding-horizontal ion-padding-bottom">
     <ion-chip class="label orange">Learner's answer</ion-chip>
 

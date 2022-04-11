@@ -1,11 +1,11 @@
-<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
+<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ng-container class="ion-no-padding ion-no-margin">
     <ion-list class="no-bg">
       <ion-radio-group [value]="submission?.answer || review?.answer">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container>
             <ion-item class="ion-padding-horizontal item-bottom-border" lines="none">
-              <ion-label class="white-space-normal body-2 gray-3">
+              <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
                 {{ choice.name }}
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
                   <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
