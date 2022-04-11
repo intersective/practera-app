@@ -433,7 +433,7 @@ export class AssessmentService {
     if (environment.demo) {
       console.log('save answers', assessment, answers, action);
       if (hasPulseCheck) {
-        this.pullFastFeedback();
+        this._pullFastFeedback();
       }
       return of(true);
     }
@@ -466,7 +466,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (hasPulseCheck) {
-        this.pullFastFeedback();
+        this._pullFastFeedback();
       }
       return res;
     }));
@@ -476,7 +476,7 @@ export class AssessmentService {
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-   private async pullFastFeedback() {
+   private async _pullFastFeedback() {
     try {
       const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
       if (modal && modal.present) {
