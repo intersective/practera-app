@@ -14,7 +14,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   } | any;
   private quarantine: any;
 
-  @Input() fileType = 'any';
+  @Input() fileType: string = 'any';
   @Input() file: any;
   @Input() isFileComponent?: boolean; // flag parent component is FileComponent
   @ViewChild('videoEle') videoEle: ElementRef;
