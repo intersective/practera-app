@@ -6,7 +6,7 @@
 
 <ion-content>
   <div class="ion-text-center ion-margin">
-    <p class="body-1 ion-margin">Please help us to improve your experience.<br>We want to know how are you doing?</p>
+    <p class="body-1 ion-margin">Please help us to improve your experience.<br>We want to know how are you doing.</p>
   </div>
 
   <form (ngSubmit)="submit()"
@@ -14,27 +14,26 @@
     style="margin: 0 1em;"
   >
     <ng-container *ngFor="let question of questions">
-      <ion-card class="practera-card ion-text-left"
+      <ion-list class="practera-card ion-text-left"
         [formGroup]="fastFeedbackForm">
-        <ion-card-header class="q-title">
+        <ion-list-header class="question-title">
           {{ question.title }}
           <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
           <ion-text color="medium">
             <p><i>{{ question.description }}</i></p>
           </ion-text>
-        </ion-card-header>
+        </ion-list-header>
 
-        <ion-card-content class="q-content ion-padding-horizontal">
-          <ion-list>
-            <ion-radio-group [formControlName]="question.id">
-              <ion-item *ngFor="let choice of question.choices" color="light">
-                <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
-                <ion-radio [value]="choice.id" mode="md"></ion-radio>
-              </ion-item>
-            </ion-radio-group>
-          </ion-list>
-        </ion-card-content>
-      </ion-card>
+        <ion-radio-group [formControlName]="question.id">
+          <ion-item class="ion-no-padding ion-no-margin item-bottom-border"
+            *ngFor="let choice of question.choices"
+            lines="none"
+          >
+            <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
+            <ion-radio [value]="choice.id" slot="start"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
     </ng-container>
 
     <div class="ion-text-center">
