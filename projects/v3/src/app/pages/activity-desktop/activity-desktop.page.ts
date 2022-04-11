@@ -39,7 +39,6 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   goToTask(task: Task) {
-    console.log('task::', task);
     this.activityService.goToTask(task);
   }
 
