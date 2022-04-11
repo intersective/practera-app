@@ -210,7 +210,7 @@ export class AuthDirectLoginComponent implements OnInit {
     ].includes(res.data.message)) {
       this._redirect(true);
       this.storage.set('unRegisteredDirectLink', true);
-      return this.navigate(['registration', res.data.user.email, res.data.user.key]);
+      return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
     return this.notificationsService.alert({
       message: 'Your link is invalid or expired.',
