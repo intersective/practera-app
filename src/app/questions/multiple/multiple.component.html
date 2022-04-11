@@ -3,8 +3,8 @@
     <ion-list class="no-bg">
       <ng-container *ngFor="let choice of question.choices; let i = index">
         <ng-container *ngIf="submission.answer.includes(choice.id)">
-          <ion-item [lines]="i == submission.answer.length - 1 ||
-           (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity) ? 'none' : ''">
+          <ion-item lines="none" [ngClass]="{'item-bottom-border': i != submission.answer.length - 1 ||
+           !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}">
             <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
             <ion-checkbox [checked]="submission.answer.includes(choice.id)" disabled mode="md"></ion-checkbox>
           </ion-item>
