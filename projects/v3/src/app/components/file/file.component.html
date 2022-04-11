@@ -34,8 +34,9 @@
   <ion-text *ngFor="let error of errors" color="danger">
     <p>{{error}}</p>
   </ion-text>
+  {{uploadedFile | json}}
   <app-file-display
-    [file]="uploadedFile ? uploadedFile : submission.answer"
+    [file]="uploadedFile ? uploadedFile : submission?.answer"
     [fileType]="question.fileType"
     [isFileComponent]="true"
     (removeFile)="removeSubmitFile($event)"
