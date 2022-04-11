@@ -1,18 +1,18 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <div class="ion-padding-horizontal ion-padding-bottom">
-      <ion-list class="no-bg">
-          <ion-radio-group [value]="submission.answer">
-            <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
-              <ng-container *ngIf="teamMember.key === submission.answer">
-                <ion-item lines="none">
-                  <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
-                  <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
-                </ion-item>
-              </ng-container>
-            </ng-container>
-          </ion-radio-group>
-        </ion-list>
-  </div>
+  <ng-container class="ion-padding-horizontal ion-padding-bottom">
+    <ion-list class="no-bg">
+      <ion-radio-group [value]="submission.answer">
+        <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
+          <ng-container *ngIf="teamMember.key === submission.answer">
+            <ion-item lines="none">
+              <ion-label class="white-space-normal body-2 gray-3">{{ teamMember.userName }}</ion-label>
+              <ion-radio [value]="teamMember.key" disabled mode="md"></ion-radio>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ion-radio-group>
+    </ion-list>
+  </ng-container>
 </ng-container>
 
 <div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)" class="ion-padding-horizontal ion-padding-bottom"

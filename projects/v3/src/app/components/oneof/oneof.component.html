@@ -1,18 +1,17 @@
-<ng-container *ngIf="submissionStatus !== 'in progress' && submission.answer">
-  <div class="ion-no-padding ion-no-margin">
+<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+  <ng-container class="ion-no-padding ion-no-margin">
     <ion-list class="no-bg">
-      <ion-radio-group [value]="submission.answer">
+      <ion-radio-group [value]="submission?.answer || review?.answer">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container>
-            <ion-item class="ion-padding-horizontal" lines="none">
-              <ion-label class="white-space-normal body-2 gray-3">
+            <ion-item class="ion-padding-horizontal item-bottom-border" lines="none">
+              <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
                 {{ choice.name }}
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
                   <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
                   <ion-chip class="label yellow" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
                 </p>
               </ion-label>
-              <ion-radio color="success" [value]="choice.id" disabled slot="start"></ion-radio>
             </ion-item>
             <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
               <div class="white-space-normal explanation">
@@ -24,50 +23,20 @@
         </ng-container>
       </ion-radio-group>
     </ion-list>
-  </div>
+  </ng-container>
   <ng-container *ngIf="review.comment">
     <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
   </ng-container>
 </ng-container>
-
-<!-- after feedback is provided and status=done -->
-<div *ngIf="reviewStatus !== 'in progress' && (review.answer || review.comment)"
-  class="ion-no-padding ion-no-margin"
-  [ngClass]="{ 'audience-mentor': audienceContainReviewer() }">
-  <ng-container *ngIf="review.answer">
-    <ion-list class="no-bg">
-      <ion-radio-group [value]="review.answer">
-        <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ion-item class="ion-padding-horizontal item-bottom-border" lines="none">
-            <ion-label class="white-space-normal body-2 gray-3">
-              {{ choice.name }}
-              <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
-                <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
-                <ion-chip class="label yellow" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
-              </p>
-            </ion-label>
-          </ion-item>
-          <ng-template #showAllAnswers>
-            <ion-item class="ion-padding-horizontal" [ngClass]="{'item-bottom-border': i != review.answer.length - 1}" lines="none">
-              <ion-label class="white-space-normal body-2 gray-3">{{ choice.name }}</ion-label>
-              <ion-radio color="success" [value]="choice.id" disabled slot="start"></ion-radio>
-            </ion-item>
-          </ng-template>
-        </ng-container>
-      </ion-radio-group>
-    </ion-list>
-  </ng-container>
-  <ng-container *ngIf="review.comment">
-     <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
-  </ng-container>
-</div>
 
 <ng-container *ngIf="doAssessment">
   <div class="ion-no-padding">
     <ion-list class="no-bg">
       <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
         <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ion-item class="ion-padding-horizontal" [lines]="i == question.choices.length - 1 ? 'none' : ''|| checkInnerValue(choice.id) ? 'none': ''">
+          <ion-item class="ion-padding-horizontal"
+            lines="none"
+            [ngClass]="{'item-bottom-border': i != question.choices.length - 1 || !checkInnerValue(choice.id)}">
             <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
               [value]="choice.id"
