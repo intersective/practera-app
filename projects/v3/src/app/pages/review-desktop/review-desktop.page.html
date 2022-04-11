@@ -18,9 +18,7 @@
     <ion-row>
       <ion-col size="12" size-lg class="border-right">
         <app-review-list
-          [submissionId]="submissionId"
           [reviews]="reviews$ | async"
-          [loadingReviews]="loadingAssessment"
           (navigate)="goto($event)"
         ></app-review-list>
       </ion-col>

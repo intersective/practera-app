@@ -30,17 +30,15 @@
 
 <ng-template #reviewsTmpl>
   <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
-    <ion-card class="practera-card">
-      <ion-list>
-        <ng-container *ngFor="let review of reviews; let i = index">
-          <app-list-item *ngIf="review.isDone == showDone" leadingIcon="clipboard-outline" [title]="review.name"
-            [subtitle1]="review.submitterName" [subtitle2]="review.teamName"
-            [endingText]="review.date" [active]="submissionId === review.submissionId"
-            [lines]="i == reviews.length - 1 ? 'none' : ''"
-            (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"></app-list-item>
-        </ng-container>
-      </ion-list>
-    </ion-card>
+    <ion-list>
+      <ng-container *ngFor="let review of reviews; let i = index">
+        <app-list-item *ngIf="review.isDone == showDone" leadingIcon="clipboard-outline" [title]="review.name"
+          [subtitle1]="review.submitterName" [subtitle2]="review.teamName"
+          [endingText]="review.date" [active]="submissionId === review.submissionId"
+          [lines]="i == reviews.length - 1 ? 'none' : ''"
+          (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"></app-list-item>
+      </ng-container>
+    </ion-list>
   </ng-container>
 
 </ng-template>

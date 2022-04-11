@@ -1,25 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssessmentService, AssessmentReview } from '@v3/app/services/assessment.service';
-import { ReviewListService } from '@v3/app/services/review-list.service';
-import { BrowserStorageService } from '@v3/app/services/storage.service';
+import { ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
-  selector: 'app-reviews',
-  templateUrl: './reviews.page.html',
-  styleUrls: ['./reviews.page.scss'],
+  selector: 'app-review-desktop',
+  templateUrl: './review-desktop.page.html',
+  styleUrls: ['./review-desktop.page.scss'],
 })
-export class ReviewsPage {
-  assessmentId: number;
-  submissionId: number;
-  contextId: number;
-
+export class ReviewDesktopPage implements OnInit {
   currentReview$ = this.assessmentService.review$;
-  reviews$ = this.reviewsService.reviews$;
+  reviews$ = this.reviewService.reviews$;
   submission$ = this.assessmentService.submission$;
   assessment$ = this.assessmentService.assessment$;
-  loadingAssessment: boolean = true;
 
   currentReview: AssessmentReview = {
     id: 0,
@@ -33,23 +27,17 @@ export class ReviewsPage {
     readonly utils: UtilsService,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
-    private storage: BrowserStorageService,
-    private reviewsService: ReviewListService,
-  ) {
+    private reviewService: ReviewService,
+  ) { }
+
+  ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      console.log('ReviewsPageParams::', params);
-      // this.submissionId = params.submissionId;
-      this.onEnter();
+      this.reviewService.getReviews();
     });
   }
 
   get isMobile() {
     return this.utils.isMobile();
-  }
-
-  onEnter(): void {
-    this.reviewsService.getReviews();
-    this.loadingAssessment = false;
   }
 
   goto(currentReview) {

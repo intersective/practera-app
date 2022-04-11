@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
@@ -21,7 +20,6 @@ export interface Review {
   contextId: number;
   status: string;
   icon: string;
-  title: string;
   submitter: string;
   team: string;
 }
@@ -29,7 +27,7 @@ export interface Review {
 @Injectable({
   providedIn: 'root',
 })
-export class ReviewListService {
+export class ReviewService {
   private _reviews$ = new BehaviorSubject<Review[]>([]);
   reviews$ = this._reviews$.asObservable();
 
@@ -40,34 +38,20 @@ export class ReviewListService {
   ) { }
 
   getReviews() {
+    this._reviews$.next(null);
     if (environment.demo) {
-      return this.demoService.getReviews().pipe(map(response => {
-        if (response.success && response.data) {
-          return this._reviews$.next(this._normaliseReviews(response.data));
-        } else {
-          return [];
-        }
-      })).subscribe();
+      return this.demoService.getReviews().subscribe(res => this._normaliseReviews(res));
     }
-
-    return this.request.get(api.reviews)
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._reviews$.next(this._normaliseReviews(response.data));
-        } else {
-          return [];
-        }
-      })
-    );
+    return this.request.get(api.reviews).subscribe(res => this._normaliseReviews(res));
   }
 
-  private _normaliseReviews(data): Review[] {
-    if (!Array.isArray(data)) {
+  private _normaliseReviews(response): Review[] {
+    if (!response || !response.success || !response.data || !Array.isArray(response.data)) {
       throw this.request.apiResponseFormatError('Reviews format error');
     }
 
     const reviews = [];
-    data.forEach(review => {
+    response.data.forEach(review => {
       if (!this.utils.has(review, 'Assessment.id') ||
           !this.utils.has(review, 'Assessment.name') ||
           !this.utils.has(review, 'AssessmentReview.is_done') ||
@@ -89,8 +73,8 @@ export class ReviewListService {
         contextId: review.AssessmentSubmission.context_id
       });
     });
+    this._reviews$.next(reviews);
     return reviews;
   }
-
 
 }
