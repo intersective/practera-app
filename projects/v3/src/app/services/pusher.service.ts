@@ -241,6 +241,11 @@ export class PusherService {
    * @param channelName The name of the Pusher channel
    */
   subscribeChannel(type: string, channelName: string) {
+
+    if (environment.demo) {
+      return;
+    }
+
     if (!channelName) {
       return false;
     }

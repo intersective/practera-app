@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
+import { DemoService } from './demo.service';
 
 export interface ChatChannel {
   uuid: string;
@@ -76,13 +77,19 @@ export class ChatService {
     private apolloService: ApolloService,
     private request: RequestService,
     private utils: UtilsService,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private demo: DemoService
   ) {}
 
   /**
    * this method return chat list data.
    */
   getChatList(): Observable<ChatChannel[]> {
+
+    if (environment.demo) {
+      return of(this._normaliseChatListResponse(this.demo.channels));
+    }
+
     return this.apolloService.chatGraphQLQuery(
       `query getChannels {
         channels{
@@ -149,6 +156,11 @@ export class ChatService {
    * }
    */
   getMessageList(data: MessageListParams): Observable<MessageListResult> {
+
+    if (environment.demo) {
+      return of(this._normaliseMessageListResponse(this.demo.channelLogs(data.channelUuid)));
+    }
+
     return this.apolloService.chatGraphQLQuery(
       `query getChannellogs($uuid:String!, $cursor:String!, $size:Int!) {
         channel(uuid:$uuid){
@@ -233,6 +245,11 @@ export class ChatService {
    * this method return members of a chat channels.
    */
   getChatMembers(channelId): Observable<ChannelMembers[]> {
+
+    if (environment.demo) {
+      return of(this._normaliseChatMembersResponse(this.demo.channelMenbers));
+    }
+
     return this.apolloService.chatGraphQLQuery(
       `query getChannelmembers($uuid:String!) {
         channel(uuid:$uuid){
@@ -274,6 +291,11 @@ export class ChatService {
    * This method is returning pusher channel list to subscribe.
    */
   getPusherChannels(): Observable<any[]> {
+
+    if (environment.demo) {
+      return of(this._normalisePusherChannelsResponse(this.demo.pusherChannels));
+    }
+
     return this.apolloService.chatGraphQLQuery(
       `query getPusherChannels {
         channels {
@@ -304,6 +326,11 @@ export class ChatService {
   }
 
   markMessagesAsSeen(uuids: string[]): Observable<any> {
+
+    if (environment.demo) {
+      return of(this.demo.markAsSeen);
+    }
+
     return this.apolloService.chatGraphQLMutate(
       `mutation markAsSeen($uuids: [String]!) {
         readChatLogs(uuids: $uuids) {
@@ -321,6 +348,11 @@ export class ChatService {
    * @description post new text message (with text) or attachment (with file)
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
+
+    if (environment.demo) {
+      return of(this._normalisePostMessageResponse(this.demo.createChatLog(data.message, data.file)));
+    }
+
     return this.apolloService.chatGraphQLMutate(
       `mutation createChatLogs($channelUuid: String!, $message: String, $file: String) {
         createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
