@@ -16,15 +16,15 @@
 
   <ion-grid when="xs">
     <ion-row>
-      <ion-col size="12" size-lg class="border-right">
+      <ion-col size="12" size-md="5" class="border-right">
         <app-review-list
           [reviews]="reviews$ | async"
           (navigate)="goto($event)"
         ></app-review-list>
       </ion-col>
 
-      <ion-col size="12" size-lg>
-        <ion-list  class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission$ | async as submission">
+      <ion-col size="12" size-md="7">
+        <!-- <ion-list  class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission$ | async as submission">
           <ion-item-group>
             <ion-item-divider>
               <ion-label color="primary">Submission Details</ion-label>
@@ -46,14 +46,21 @@
               </ion-grid>
             </ion-item>
           </ion-item-group>
-        </ion-list>
+        </ion-list> -->
 
         <app-assessment
+          *ngIf="!noReview"
           [assessment]="assessment$ | async"
           [submission]="submission$ | async"
           [review]="currentReview$ | async"
           action="review"
         ></app-assessment>
+
+        <div *ngIf="noReview" class="ion-text-center no-review">
+          <ion-icon class="large-icon" color="primary" name="clipboard-outline"></ion-icon>
+          <p class="headline-2">It's empty here.</p>
+          <ion-text class="subtitle-2" color="grey-75">Oops! Seems like there's nothing in this yet.</ion-text>
+        </div>
       </ion-col>
     </ion-row>
   </ion-grid>
