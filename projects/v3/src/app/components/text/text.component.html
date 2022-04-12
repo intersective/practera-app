@@ -21,12 +21,12 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding-horizontal ion-padding-top textarea-border">
     <ion-textarea
-      [formControl]="answer"
+      [(ngModel)]="answer"
       #answerEle
       rows="4"
       (ionFocus)="onFocus($event)"
       (ionChange)="onChange()"
-      [disabled]="control.disabled"
+      [disabled]="control?.disabled"
       placeholder="Please add your answer here"
     ></ion-textarea>
     <ion-text *ngFor="let error of errors" color="danger">
@@ -41,7 +41,7 @@
       *ngIf="question.canAnswer"
       class="textarea"
       rows="4"
-      [formControl]="answer"
+      [(ngModel)]="answer"
       #answerEle
       (ionFocus)="onFocus($event)"
       (ionChange)="onChange('answer')"
@@ -51,7 +51,7 @@
     <ion-textarea
       *ngIf="question.canComment && submission?.answer"
       class="textarea"
-      [formControl]="comment"
+      [(ngModel)]="comment"
       #commentEle
       rows="4"
       (ionFocus)="onFocus($event)"

@@ -29,9 +29,12 @@ export interface FilestackUploaded {
 export class FilestackComponent {
   @Input() accept: any;
   @Input() fileType: string;
-  @Output() complete: EventEmitter<any> = new EventEmitter();
   @Input() type?: string;
   @Input() disabled: boolean;
+
+  // upon fileupload success
+  @Output() complete: EventEmitter<any> = new EventEmitter();
+
   uploadingFile = {
     uploadProgress: 0,
     fileName: '',
@@ -108,7 +111,6 @@ export class FilestackComponent {
         }
       });
     }
-
   }
 
   cancelFileUpload() {
