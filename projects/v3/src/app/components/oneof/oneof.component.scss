@@ -3,9 +3,18 @@ ion-radio-group ion-item ion-label {
 }
 
 ion-item {
-  --padding-start: 0;
+  &.no-answers {
+    --background: #FDE0CE;
+    color: var(--ion-text-color);
+
+    ion-label {
+      font-size: smaller;
+    }
+  }
+
   &.item-bottom-border {
     border-bottom: 1px solid var(--border-color);
+
     .item-lines- {
       border-bottom: none;
     }

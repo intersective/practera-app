@@ -3,13 +3,13 @@ form ion-button {
 }
 
 .question-title {
+  align-items: center;
+  font-size: inherit;
   background: var(--ion-color-primary);
   color: var(--ion-color-primary-contrast);
 }
 
 ion-item {
-  --padding-start: 0;
-
   &.item-bottom-border {
     border-bottom: 1px solid var(--border-color);
 
