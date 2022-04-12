@@ -25,6 +25,10 @@ export class FastFeedbackComponent implements OnInit {
     public storage: BrowserStorageService,
   ) {}
 
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
   ngOnInit() {
     const group: any = {};
     this.questions.forEach(question => {
