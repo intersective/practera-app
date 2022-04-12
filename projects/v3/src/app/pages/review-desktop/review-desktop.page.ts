@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssessmentService, AssessmentReview } from '@v3/app/services/assessment.service';
-import { ReviewService } from '@v3/app/services/review.service';
+import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
@@ -21,7 +21,8 @@ export class ReviewDesktopPage implements OnInit {
     status: '',
     modified: '',
   };
-  doAssessment = false;
+  noReview = false;
+
 
   constructor(
     readonly utils: UtilsService,
@@ -36,11 +37,12 @@ export class ReviewDesktopPage implements OnInit {
     });
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
-  goto(currentReview) {
-    this.assessmentService.getAssessment(11150, 'review', 1, 1);
+  goto(review: Review) {
+    if (!review) {
+      this.noReview = true;
+      return;
+    }
+    this.noReview = false;
+    this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 }
