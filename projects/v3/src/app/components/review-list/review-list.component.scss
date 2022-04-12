@@ -1,7 +1,11 @@
-.icon-large {
-  font-size: 164px;
+.large-icon {
+  font-size: 80px;
+}
+.no-review {
+  padding: 10px 15%;
 }
 
-ion-icon {
-  --ionicon-stroke-width: 64px;
+ion-segment {
+  --background: var(--ion-color-light);
+  padding: 10px;
 }

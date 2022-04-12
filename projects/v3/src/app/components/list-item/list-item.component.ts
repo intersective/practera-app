@@ -17,9 +17,11 @@ export class ListItemComponent {
   @Input() subtitle1: string;
   @Input() subtitle1Color: string;
   @Input() subtitle2: string;
+  @Input() subtitle2Color: string;
   @Input() label: string;
   @Input() labelColor: string;
   @Input() endingText: string | number;
+  @Input() endingTextColor: string;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
   @Input() endingProgress: number;

@@ -5,11 +5,6 @@ import { Review } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 
-enum STATUSES {
-  PENDING = 'pending',
-  COMPLETED = 'completed'
-}
-
 @Component({
   selector: 'app-review-list',
   templateUrl: './review-list.component.html',
@@ -21,8 +16,6 @@ export class ReviewListComponent implements OnInit {
   @Output() navigate = new EventEmitter();
   public showDone = false;
 
-  public status: string = STATUSES.PENDING;
-
   constructor(
     public router: Router,
     public utils: UtilsService,
@@ -33,96 +26,69 @@ export class ReviewListComponent implements OnInit {
     this.showDone = false;
   }
 
-  statusUpdate(event) {
-    console.log(event);
-    this.status = event.detail.value;
-  }
-
-  // open a review in detailed page
-  read(review: Review) {
-    console.log('REVIEW::', review);
+  // go to the review
+  goto(review: Review) {
     this.navigate.emit(review);
   }
 
-  /**
-   * Go to the first review of the review list for desktop
-   */
-  gotoFirstReview() {
-    if (this.utils.isMobile()) {
-      return;
-    }
-    let review;
-    if (this.submissionId) {
-      // go to the review if submission id is passed in
-      review = this.reviews.find(re => re.submissionId === this.submissionId);
-    } else {
-      // go to the first review if submission id is not passed in
-      review = this.reviews.find(re => re.isDone === this.showDone);
-    }
-    if (!review) {
-      return this.navigate.emit();
-    }
-    this.gotoReview(review.contextId, review.assessmentId, review.submissionId);
+  switchStatus() {
+    this.showDone = !this.showDone;
+    this.navigate.emit(this.reviews.find(review => {
+      return review.isDone === this.showDone;
+    }));
   }
 
-  /**
-   * Go to a review
-   * @param contextId
-   * @param assessmentId
-   * @param submissionId
-   */
-  gotoReview(contextId, assessmentId, submissionId) {
-    if (this.utils.isMobile()) {
-      // navigate to the assessment page for mobile
-      return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId, { from: 'reviews' }]);
-    }
-    // emit the navigate event to the parent event for desktop
-    return this.navigate.emit({
-      assessmentId: assessmentId,
-      submissionId: submissionId,
-      contextId: contextId
-    });
-  }
+  // /**
+  //  * Go to the first review of the review list for desktop
+  //  */
+  // gotoFirstReview() {
+  //   if (this.utils.isMobile()) {
+  //     return;
+  //   }
+  //   let review;
+  //   if (this.submissionId) {
+  //     // go to the review if submission id is passed in
+  //     review = this.reviews.find(re => re.submissionId === this.submissionId);
+  //   } else {
+  //     // go to the first review if submission id is not passed in
+  //     review = this.reviews.find(re => re.isDone === this.showDone);
+  //   }
+  //   if (!review) {
+  //     return this.navigate.emit();
+  //   }
+  //   this.gotoReview(review.contextId, review.assessmentId, review.submissionId);
+  // }
 
-  /**
-   * Click the To Do tab
-   */
-  clickToDo() {
-    if (!this.showDone) {
-      return;
-    }
-    this.showDone = false;
-    this.gotoFirstReview();
-  }
+  // /**
+  //  * Go to a review
+  //  * @param contextId
+  //  * @param assessmentId
+  //  * @param submissionId
+  //  */
+  // gotoReview(contextId, assessmentId, submissionId) {
+  //   if (this.utils.isMobile()) {
+  //     // navigate to the assessment page for mobile
+  //     return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId, { from: 'reviews' }]);
+  //   }
+  //   // emit the navigate event to the parent event for desktop
+  //   return this.navigate.emit({
+  //     assessmentId: assessmentId,
+  //     submissionId: submissionId,
+  //     contextId: contextId
+  //   });
+  // }
 
-  /**
-   * Click the Done tab
-   */
-  clickDone() {
-    if (this.showDone) {
-      return;
-    }
-    this.showDone = true;
-    this.gotoFirstReview();
-  }
-
-  noReviewsToDo() {
+  // return the message if there is no review to display
+  get noReviews() {
     if (this.reviews === null) {
-      return false;
+      return '';
     }
-    const reviewTodo = this.reviews.find(review => {
-      return review.isDone === false;
+    const review = this.reviews.find(review => {
+      return review.isDone === this.showDone;
     });
-    return !reviewTodo && !this.showDone;
-  }
-
-  noReviewsDone() {
-    if (this.reviews === null) {
-      return false;
+    if (review) {
+      return '';
     }
-    const reviewDone = this.reviews.find(review => {
-      return review.isDone === true;
-    });
-    return !reviewDone && this.showDone;
+    return this.showDone ? 'completed' : 'pending';
   }
 }
