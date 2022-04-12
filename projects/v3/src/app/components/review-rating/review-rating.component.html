@@ -1,16 +1,17 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title class="ion-text-center" size="large">Is this feedback helpful?</ion-title>
+    <ion-title class="ion-text-center" size="small">Please rank this feedback from 1 (Not useful) to 5 (Very useful)</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content class="review-rating ion-padding-horizontal">
-  <div class="header-detail">
-    <h1 class="title">Rating</h1>
-    <!-- AV2-169 review rating is compulsory -->
-   <!--  <ion-icon class="close-button" name="close-circle-outline" (click)="closeReviewRating()"></ion-icon> -->
-  </div>
-
-  <hr class="separator">
-
-  <h2 class="title">How helpful was the feedback?</h2>
-
   <div>
-    <ion-range mode="ios" min="0" max="1" step="0.1" snaps="true" [(ngModel)]="ratingData.rating"></ion-range>
+    <div class="inline">
+      <ion-icon size="large" slot="start" name="sad-outline"></ion-icon>
+      <ion-range mode="ios" min="0" max="1" step="0.1" snaps="true" [(ngModel)]="ratingData.rating"></ion-range>
+      <ion-icon size="large" slot="end" name="happy-outline"></ion-icon>
+    </div>
 
     <div class="range-text">
       <p>Not helpful</p>
@@ -18,7 +19,6 @@
     </div>
   </div>
 
-  <hr *ngIf="ratingData.rating !== 0.5" class="separator">
   <h2 *ngIf="ratingData.rating !== 0.5" class="subTitle">Send a quick thank you note!</h2>
   <div *ngIf="ratingData.rating !== 0.5" class="quick-tagging">
     <a class="toggle" [class.active]="ratingData.tags.includes('Thanks')" (click)="addOrRemoveTags('Thanks')">Thanks</a>
