@@ -69,7 +69,7 @@
               ></app-description>
             </ion-item>
 
-            <ng-container [ngSwitch]="question.type">
+            <ng-container *ngIf="question" [ngSwitch]="question.type">
               <p class="ion-padding" *ngIf="!doAssessment && (
                 (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
                 (!(isPendingReview) && question.reviewerOnly && review && !review.answers[question.id])
@@ -84,7 +84,7 @@
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
-                [control]="questionsForm.controls['q-' + question.id]"
+                [control]="questionsForm?.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-text>
 
               <app-oneof *ngSwitchCase="'oneof'"
@@ -96,7 +96,7 @@
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
-                [control]="questionsForm.controls['q-' + question.id]"
+                [control]="questionsForm?.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-oneof>
 
               <app-multiple *ngSwitchCase="'multiple'"
@@ -108,7 +108,7 @@
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
-                [control]="questionsForm.controls['q-' + question.id]"
+                [control]="questionsForm?.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-multiple>
 
               <app-file *ngSwitchCase="'file'"
@@ -120,7 +120,7 @@
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
-                [control]="questionsForm.controls['q-' + question.id]"
+                [control]="questionsForm?.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-file>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
@@ -132,7 +132,7 @@
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
-                [control]="questionsForm.controls['q-' + question.id]"
+                [control]="questionsForm?.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-team-member-selector>
 
               <div *ngSwitchDefault>
