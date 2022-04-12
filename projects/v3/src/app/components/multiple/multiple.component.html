@@ -2,8 +2,7 @@
   <ion-list class="no-bg">
     <ng-container *ngFor="let choice of question.choices; let i = index">
       <ng-container>
-        <ion-item class="ion-padding-horizontal"
-          [ngClass]="{'item-bottom-border': (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}" lines="none">
+        <ion-item [ngClass]="{'item-bottom-border': (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}" lines="none">
           <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
             {{ choice.name }}
             <p *ngIf="submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)">
@@ -37,8 +36,7 @@
   <div>
     <ion-list class="no-bg">
       <ng-container *ngFor="let choice of question.choices; let i = index">
-        <ion-item class="ion-padding-horizontal"
-          [ngClass]="{'item-bottom-border': (i != question.choices.length - 1 || !checkInnerValue(choice.id))}"
+        <ion-item [ngClass]="{'item-bottom-border': (i != question.choices.length - 1 || !checkInnerValue(choice.id))}"
           lines='none'>
           <ion-label class="ion-text-wrap white-space-normal body-2 black">{{ choice.name }}</ion-label>
           <ion-checkbox color="success" [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
@@ -67,8 +65,7 @@
     <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
       <ion-label class="ion-text-wrap subtitle-2 black">Your Answer is</ion-label>
     </ion-list-header>
-    <ion-item class="ion-padding-horizontal no-bg"
-      *ngFor="let choice of question.choices; let i = index"
+    <ion-item *ngFor="let choice of question.choices; let i = index"
       [ngClass]="{'item-bottom-border': i != question.choices.length - 1}"
       lines="none">
       <ion-label class="ion-text-wrap white-space-normal body-2 black">{{ choice.name }}</ion-label>

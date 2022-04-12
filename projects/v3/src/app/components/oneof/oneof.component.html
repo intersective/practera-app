@@ -4,7 +4,7 @@
       <ion-radio-group [value]="submission?.answer || review?.answer">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ng-container>
-            <ion-item class="ion-padding-horizontal item-bottom-border" lines="none">
+            <ion-item class="item-bottom-border" lines="none">
               <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
                 {{ choice.name }}
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
@@ -34,8 +34,7 @@
     <ion-list class="no-bg">
       <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
         <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ion-item class="ion-padding-horizontal"
-            lines="none"
+          <ion-item lines="none"
             [ngClass]="{'item-bottom-border': i != question.choices.length - 1 || !checkInnerValue(choice.id)}">
             <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
@@ -64,9 +63,9 @@
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
           <ion-label class="subtitle-2 black">Your Answer is</ion-label>
         </ion-list-header>
-        <ion-item class="no-bg ion-padding-horizontal"
-          *ngFor="let choice of question.choices; let i = index"
-          [lines]="i == question.choices.length - 1 ? 'none' : ''">
+        <ion-item *ngFor="let choice of question.choices; let i = index"
+          lines="none"
+          [ngClass]="{'item-bottom-border': i != question.choices.length - 1}">
           <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
           <ion-radio
             [value]="choice.id"
