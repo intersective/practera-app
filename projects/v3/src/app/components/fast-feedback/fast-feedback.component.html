@@ -11,12 +11,13 @@
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
     <ng-container *ngFor="let question of questions">
-      <ion-list class="practera-card ion-text-left ion-no-padding ion-padding-horizontal"
+      <ion-list class="practera-card ion-text-left ion-no-padding"
+        [ngClass]="{'ion-padding-horizontal': !isMobile }"
         [formGroup]="fastFeedbackForm">
         <ion-list-header class="question-title">
           {{ question.title }}
           <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
-          <ion-text color="medium">
+          <ion-text>
             <p><i>{{ question.description }}</i></p>
           </ion-text>
         </ion-list-header>
