@@ -24,28 +24,32 @@
 </div>
 
 <ng-container *ngIf="doAssessment">
-  <file-stack *ngIf="!uploadedFile && !submission.answer"
-    [accept]="fileTypes"
-    [fileType]="question.fileType"
-    (complete)="onFileUploadCompleted($event)"
-    [disabled]="control.disabled"
-  ></file-stack>
+  <div class="ion-padding">
+    <file-stack *ngIf="!uploadedFile && !submission.answer"
+      [accept]="fileTypes"
+      [fileType]="question.fileType"
+      (complete)="onFileUploadCompleted($event)"
+      [disabled]="control.disabled"
+    ></file-stack>
 
-  <ion-text *ngFor="let error of errors" color="danger">
-    <p>{{error}}</p>
-  </ion-text>
+    <ion-text *ngFor="let error of errors" color="danger">
+      <p>{{error}}</p>
+    </ion-text>
 
-  <app-file-display
-    [file]="uploadedFile ? uploadedFile : submission?.answer"
-    [fileType]="question.fileType || 'any'"
-    [isFileComponent]="true"
-    (removeFile)="removeSubmitFile($event)"
-    [disabled]="control.disabled"
-  ></app-file-display>
+    <app-file-display
+      [file]="uploadedFile ? uploadedFile : submission?.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
+      (removeFile)="removeSubmitFile($event)"
+      [disabled]="control.disabled"
+    ></app-file-display>
+  </div>
+
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <div [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+  <div class="ion-padding"
+   [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
     <ng-container *ngIf="question.canAnswer">
       <file-stack *ngIf="!uploadedFile && !review.answer"
         [accept]="fileTypes"
