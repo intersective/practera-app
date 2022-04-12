@@ -1,8 +1,16 @@
 <ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
-  <ion-list class="no-bg">
+  <ion-list class="ion-no-padding">
+    <ion-item *ngIf="!submission?.answer"
+      class="no-answers item-bottom-border"
+      lines="none"
+    >
+      <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
+      <ion-label size="small">No answers were submitted.</ion-label>
+    </ion-item>
     <ng-container *ngFor="let choice of question.choices; let i = index">
       <ng-container>
-        <ion-item [ngClass]="{'item-bottom-border': (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}" lines="none">
+        <ion-item lines="none"
+          [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}">
           <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
             {{ choice.name }}
             <p *ngIf="submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)">
@@ -34,7 +42,7 @@
 
 <ng-container *ngIf="doAssessment">
   <div>
-    <ion-list class="no-bg">
+    <ion-list class="ion-no-padding">
       <ng-container *ngFor="let choice of question.choices; let i = index">
         <ion-item [ngClass]="{'item-bottom-border': (i != question.choices.length - 1 || !checkInnerValue(choice.id))}"
           lines='none'>
@@ -61,7 +69,7 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-list class="no-bg" *ngIf="question.canAnswer">
+  <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
     <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
       <ion-label class="ion-text-wrap subtitle-2 black">Your Answer is</ion-label>
     </ion-list-header>
