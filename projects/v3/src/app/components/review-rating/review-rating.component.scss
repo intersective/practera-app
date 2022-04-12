@@ -13,13 +13,19 @@
       padding-left: 10px;
       margin-left: 0;
       font-size: 20px;
-      font-weight: normal;      
+      font-weight: normal;
     }
+  }
+
+  .inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .close-button {
     padding-right:10px;
-    font-size: 20px;    
+    font-size: 20px;
   }
 
   hr.separator {
@@ -47,9 +53,9 @@
 
     p {
       margin: auto;
-      font-size: 14px;   
+      font-size: 14px;
       padding-left:10px;
-      padding-right:10px; 
+      padding-right:10px;
     }
 
     p:nth-child(1) {
@@ -71,7 +77,7 @@
     margin-top: 16px;
     padding: 0 0 0 10px;
 
-    a.toggle {      
+    a.toggle {
       background-color: var(--ion-color-light);
       font-size: 14px;
       padding: 12px;
@@ -90,7 +96,7 @@
 
   }
 
-  .comment-box {    
+  .comment-box {
     font-size:14px;
     width: 100%;
     border: none;
