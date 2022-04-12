@@ -18,7 +18,10 @@
   }
 
   .drop-zone {
-    height: 52px;
+    height: 6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     border: dashed 1px var(--practera-30-Percent-gray);
     position: relative;
@@ -26,9 +29,6 @@
     vertical-align: -webkit-baseline-middle;
     border-radius: 12px;
     p {
-      height: inherit;
-      margin: 0;
-      padding: 5px;
       ion-icon {
         vertical-align: middle;
       }

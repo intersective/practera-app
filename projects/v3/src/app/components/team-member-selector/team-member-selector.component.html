@@ -1,8 +1,8 @@
 <ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ion-item class="no-bg ion-no-padding">
-    <ion-radio-group class="ion-padding-horizontal" [value]="submission.answer">
+    <ion-radio-group [value]="submission.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
-        <ion-item lines="none" lines="none">
+        <ion-item class="item-bottom-border" lines="none">
           <ion-label class="white-space-normal body-2 gray-3">
             {{ teamMember.userName }}
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
@@ -25,9 +25,8 @@
       [value]="submission.answer"
       #answerEle
       (ionChange)="onChange(answerEle.value)">
-      <ion-item  class="ion-padding-horizontal"
+      <ion-item lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
-        lines="none"
         [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1}">
         <ion-radio
           color="success"
@@ -44,12 +43,13 @@
 <ng-container *ngIf="doReview">
   <div [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
     <ion-item class="no-bg ion-no-padding" *ngIf="question.canAnswer" lines="none">
-      <ion-radio-group class="ion-padding-horizontal" #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
           <ion-label class="subtitle-2 black">Your Answer is</ion-label>
         </ion-list-header>
-        <ion-item class="no-bg" *ngFor="let teamMember of question.teamMembers;let i = index"
-          [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
+        <ion-item lines="none"
+          *ngFor="let teamMember of question.teamMembers;let i = index"
+          [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1 }">
           <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
           <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
         </ion-item>
