@@ -1,11 +1,23 @@
-<ion-header class="ion-no-border ion-padding-bottom">
+<ion-header translucent="true" class="ion-no-border ion-padding-bottom">
   <ion-toolbar>
-    <ion-title class="ion-text-center" size="large">Is this feedback helpful?</ion-title>
-    <ion-title class="ion-text-center" size="small">Please rank this feedback from 1 (Not useful) to 5 (Very useful)</ion-title>
+    <ion-title class="ion-text-center ion-padding-horizontal" [size]="isMobile ? '' : 'large'">Is this feedback helpful?</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-title class="ion-text-center ion-padding-horizontal" size="small">Please rank this feedback from 1 (Not useful) to 5 (Very useful)</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="review-rating ion-padding">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title class="ion-text-center ion-padding-horizontal">Is this feedback helpful?</ion-title>
+    </ion-toolbar>
+    <ion-toolbar>
+      <ion-title class="ion-text-center ion-padding-horizontal" size="small">Please rank this feedback from 1 (Not useful) to 5 (Very useful)
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
   <div class="ion-padding-top ion-padding-bottom">
     <div class="ion-padding-top">
       <ion-range mode="ios" min="0" max="1"
