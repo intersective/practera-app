@@ -40,7 +40,7 @@
 
   <div class="div-after-logo ion-text-center ion-padding-top">
     <ion-button
-      [disabled]="ratingData.rating === 0.5 || isSubmitting"
+      [disabled]="isSubmitting"
       (click)="submitReviewRating()"
       shape="round"
       class="btn-cta">
