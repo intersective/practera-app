@@ -26,30 +26,6 @@
       </ion-col>
 
       <ion-col size="12" size-lg>
-        <ion-list  class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission$ | async as submission">
-          <ion-item-group>
-            <ion-item-divider>
-              <ion-label color="primary">Submission Details</ion-label>
-            </ion-item-divider>
-            <ion-item class="ion-no-padding">
-              <ion-grid class="ion-padding-horizontal">
-                <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-                  <ion-col size="6" class="ion-align-self-center">Learner</ion-col>
-                  <ion-col size="6" class="ion-align-self-center">{{ submission.submitterName }}</ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-            <ion-item class="ion-no-padding">
-              <ion-grid class="ion-padding-horizontal">
-                <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-                  <ion-col size="6" class="ion-align-self-center">Team</ion-col>
-                  <ion-col size="6" class="ion-align-self-center">Team 1</ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-          </ion-item-group>
-        </ion-list>
-
         <app-assessment
           [assessment]="assessment$ | async"
           [submission]="submission$ | async"
