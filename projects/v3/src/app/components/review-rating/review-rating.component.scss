@@ -17,12 +17,6 @@
     }
   }
 
-  .inline {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .close-button {
     padding-right:10px;
     font-size: 20px;
@@ -60,11 +54,12 @@
 
     p:nth-child(1) {
       margin-left: 0;
-      color: #AFB5D2;
+      color: #666666;
     }
 
     p:nth-child(2) {
       margin-right: 0;
+      color: #666666;
     }
 
   }
