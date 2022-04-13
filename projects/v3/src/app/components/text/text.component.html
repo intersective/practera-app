@@ -4,12 +4,9 @@
     <ion-label size="small">No answers were submitted.</ion-label>
   </ion-item>
 
-  <div class="ion-padding-horizontal ion-padding-bottom">
+  <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
-
-    <ng-template *ngIf="submission?.answer">
-      <p class="body-2 gray-3">{{ submission?.answer }}</p>
-    </ng-template>
+    <p class="body-2 gray-3">{{ submission?.answer }}</p>
   </div>
 
   <div class="ion-padding-horizontal" *ngIf="(review?.answer || review?.comment)">

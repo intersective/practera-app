@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 
 @Component({
@@ -16,6 +17,7 @@ export class DevtoolPage implements OnInit {
     private authService: AuthService,
     private storageService: BrowserStorageService,
     private fastFeedbackService: FastFeedbackService,
+    private notificationsService: NotificationsService
   ) { }
 
   ngOnInit() {
@@ -42,5 +44,9 @@ export class DevtoolPage implements OnInit {
       await modal.present();
       await modal.onDidDismiss();
     }
+  }
+
+  async reviewrating() {
+    this.notificationsService.popUpReviewRating(1, false);
   }
 }
