@@ -1,26 +1,30 @@
-<ion-header class="ion-no-border">
+<ion-header class="ion-no-border ion-padding-bottom">
   <ion-toolbar>
     <ion-title class="ion-text-center" size="large">Is this feedback helpful?</ion-title>
     <ion-title class="ion-text-center" size="small">Please rank this feedback from 1 (Not useful) to 5 (Very useful)</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="review-rating ion-padding-horizontal">
-  <div>
-    <div class="inline">
-      <ion-icon size="large" slot="start" name="sad-outline"></ion-icon>
-      <ion-range mode="ios" min="0" max="1" step="0.1" snaps="true" [(ngModel)]="ratingData.rating"></ion-range>
-      <ion-icon size="large" slot="end" name="happy-outline"></ion-icon>
+<ion-content class="review-rating ion-padding">
+  <div class="ion-padding-top ion-padding-bottom">
+    <div class="ion-padding-top">
+      <ion-range mode="ios" min="0" max="1"
+        step="0.25" snaps="true"
+        [(ngModel)]="ratingData.rating"
+        debounce="300">
+        <ion-icon size="large" slot="start" name="sad-outline"></ion-icon>
+        <ion-icon size="large" slot="end" name="happy-outline"></ion-icon>
+      </ion-range>
     </div>
 
-    <div class="range-text">
+    <div class="range-text ion-padding-top">
       <p>Not helpful</p>
       <p>Very helpful</p>
     </div>
   </div>
 
-  <h2 *ngIf="ratingData.rating !== 0.5" class="subTitle">Send a quick thank you note!</h2>
-  <div *ngIf="ratingData.rating !== 0.5" class="quick-tagging">
+  <h2 class="subTitle">Send a quick thank you note!</h2>
+  <div class="quick-tagging">
     <a class="toggle" [class.active]="ratingData.tags.includes('Thanks')" (click)="addOrRemoveTags('Thanks')">Thanks</a>
     <a class="toggle" [class.active]="ratingData.tags.includes('Thank You')" (click)="addOrRemoveTags('Thank You')">Thank You</a>
     <a class="toggle" [class.active]="ratingData.tags.includes('You are awesome!')" (click)="addOrRemoveTags('You are awesome!')">You are awesome!</a>
@@ -28,18 +32,19 @@
     <a class="toggle" [class.active]="ratingData.tags.includes('Very helpful')" (click)="addOrRemoveTags('Very helpful')">Very helpful</a>
     <a class="toggle" [class.active]="ratingData.tags.includes('Friendly')" (click)="addOrRemoveTags('Friendly')">Friendly</a>
   </div>
-  <br>
 
-  <ion-input *ngIf="ratingData.rating !== 0.5" placeholder="Add a personal thank you" class="comment-box ion-padding-horizontal" [(ngModel)]="ratingData.comment"></ion-input>
+  <ion-input placeholder="Add a personal thank you"
+    class="comment-box ion-padding"
+    [(ngModel)]="ratingData.comment"
+  ></ion-input>
 
-  <br>
-  <div class="div-after-logo ion-text-center">
+  <div class="div-after-logo ion-text-center ion-padding-top">
     <ion-button
       [disabled]="ratingData.rating === 0.5 || isSubmitting"
       (click)="submitReviewRating()"
       shape="round"
       class="btn-cta">
-      <ng-container *ngIf="!isSubmitting">Submit</ng-container>
+      <ng-container *ngIf="!isSubmitting">Submit Feedback</ng-container>
       <ng-container *ngIf="isSubmitting">Submitting...</ng-container>
     </ion-button>
   </div>
