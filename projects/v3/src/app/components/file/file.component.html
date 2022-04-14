@@ -1,7 +1,7 @@
 <ng-container *ngIf="submissionStatus !== 'in progress' && submission && submission.answer">
   <app-file-display
     [file]="submission.answer"
-    [fileType]="question.fileType"
+    [fileType]="question.fileType || 'any'"
     [isFileComponent]="true"
   ></app-file-display>
 </ng-container>
@@ -14,7 +14,7 @@
   <ng-container *ngIf="review.answer">
     <app-file-display
       [file]="review.answer"
-      [fileType]="question.fileType"
+      [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
     ></app-file-display>
   </ng-container>
@@ -27,7 +27,7 @@
   <div class="ion-padding">
     <file-stack *ngIf="!uploadedFile && !submission.answer"
       [accept]="fileTypes"
-      [fileType]="question.fileType"
+      [fileType]="question.fileType || 'any'"
       (complete)="onFileUploadCompleted($event)"
       [disabled]="control.disabled"
     ></file-stack>
@@ -53,13 +53,13 @@
     <ng-container *ngIf="question.canAnswer">
       <file-stack *ngIf="!uploadedFile && !review.answer"
         [accept]="fileTypes"
-        [fileType]="question.fileType"
+        [fileType]="question.fileType || 'any'"
         (complete)="onFileUploadCompleted($event, 'answer')"
         [disabled]="control.disabled"
       ></file-stack>
       <app-file-display
         [file]="uploadedFile ? uploadedFile : review.answer"
-        [fileType]="question.fileType"
+        [fileType]="question.fileType || 'any'"
         [isFileComponent]="true"
         (removeFile)="removeSubmitFile($event)"
         [disabled]="control.disabled"
