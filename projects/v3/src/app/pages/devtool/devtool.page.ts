@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -17,7 +18,8 @@ export class DevtoolPage implements OnInit {
     private authService: AuthService,
     private storageService: BrowserStorageService,
     private fastFeedbackService: FastFeedbackService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private experienceService: ExperienceService,
   ) { }
 
   ngOnInit() {
@@ -34,6 +36,7 @@ export class DevtoolPage implements OnInit {
     }).subscribe(res => {
       this.doneLogin = true;
       this.user = res;
+      this.experienceService.getMyInfo();
     });
   }
 
