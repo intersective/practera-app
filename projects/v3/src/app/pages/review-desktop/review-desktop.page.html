@@ -16,43 +16,22 @@
 
   <ion-grid when="xs">
     <ion-row>
+
       <ion-col size="12" size-md="5" class="border-right">
         <app-review-list
           [reviews]="reviews$ | async"
+          [currentReview]="currentReview"
           (navigate)="goto($event)"
         ></app-review-list>
       </ion-col>
 
       <ion-col size="12" size-md="7">
-        <!-- <ion-list  class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission$ | async as submission">
-          <ion-item-group>
-            <ion-item-divider>
-              <ion-label color="primary">Submission Details</ion-label>
-            </ion-item-divider>
-            <ion-item class="ion-no-padding">
-              <ion-grid class="ion-padding-horizontal">
-                <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-                  <ion-col size="6" class="ion-align-self-center">Learner</ion-col>
-                  <ion-col size="6" class="ion-align-self-center">{{ submission.submitterName }}</ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-            <ion-item class="ion-no-padding">
-              <ion-grid class="ion-padding-horizontal">
-                <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-                  <ion-col size="6" class="ion-align-self-center">Team</ion-col>
-                  <ion-col size="6" class="ion-align-self-center">Team 1</ion-col>
-                </ion-row>
-              </ion-grid>
-            </ion-item>
-          </ion-item-group>
-        </ion-list> -->
 
         <app-assessment
           *ngIf="!noReview"
           [assessment]="assessment$ | async"
           [submission]="submission$ | async"
-          [review]="currentReview$ | async"
+          [review]="review$ | async"
           action="review"
         ></app-assessment>
 
@@ -61,6 +40,7 @@
           <p class="headline-2">It's empty here.</p>
           <ion-text class="subtitle-2" color="grey-75">Oops! Seems like there's nothing in this yet.</ion-text>
         </div>
+
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -39,27 +39,6 @@ export class ReviewListComponent implements OnInit {
   }
 
   // /**
-  //  * Go to the first review of the review list for desktop
-  //  */
-  // gotoFirstReview() {
-  //   if (this.utils.isMobile()) {
-  //     return;
-  //   }
-  //   let review;
-  //   if (this.submissionId) {
-  //     // go to the review if submission id is passed in
-  //     review = this.reviews.find(re => re.submissionId === this.submissionId);
-  //   } else {
-  //     // go to the first review if submission id is not passed in
-  //     review = this.reviews.find(re => re.isDone === this.showDone);
-  //   }
-  //   if (!review) {
-  //     return this.navigate.emit();
-  //   }
-  //   this.gotoReview(review.contextId, review.assessmentId, review.submissionId);
-  // }
-
-  // /**
   //  * Go to a review
   //  * @param contextId
   //  * @param assessmentId
