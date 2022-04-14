@@ -23,7 +23,7 @@ export class V3Page {
     },
     {
       title: 'Reviews',
-      url: '/v3/reviews',
+      url: '/v3/review-desktop',
       icon: 'eye'
     },
     {

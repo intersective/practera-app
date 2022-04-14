@@ -16,22 +16,31 @@
 
   <ion-grid when="xs">
     <ion-row>
-      <ion-col size="12" size-lg class="border-right">
+
+      <ion-col size="12" size-md="5" class="border-right">
         <app-review-list
-          [submissionId]="submissionId"
           [reviews]="reviews$ | async"
-          [loadingReviews]="loadingAssessment"
+          [currentReview]="currentReview"
           (navigate)="goto($event)"
         ></app-review-list>
       </ion-col>
 
-      <ion-col size="12" size-lg>
+      <ion-col size="12" size-md="7">
+
         <app-assessment
+          *ngIf="!noReview"
           [assessment]="assessment$ | async"
           [submission]="submission$ | async"
-          [review]="currentReview$ | async"
+          [review]="review$ | async"
           action="review"
         ></app-assessment>
+
+        <div *ngIf="noReview" class="ion-text-center no-review">
+          <ion-icon class="large-icon" color="primary" name="clipboard-outline"></ion-icon>
+          <p class="headline-2">It's empty here.</p>
+          <ion-text class="subtitle-2" color="grey-75">Oops! Seems like there's nothing in this yet.</ion-text>
+        </div>
+
       </ion-col>
     </ion-row>
   </ion-grid>

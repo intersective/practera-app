@@ -1,46 +1,38 @@
-<ion-segment (ionChange)="statusUpdate($event)" value="pending">
-  <ion-segment-button value="pending">
+<ion-segment (ionChange)="switchStatus()" value="pending">
+  <ion-segment-button value="pending" mode="ios">
     <ion-label>Pending</ion-label>
   </ion-segment-button>
-  <ion-segment-button value="completed">
+  <ion-segment-button value="completed" mode="ios">
     <ion-label>Completed</ion-label>
   </ion-segment-button>
 </ion-segment>
 
-<ion-list>
-  <ng-container *ngFor="let item of reviews">
-    <ion-item button *ngIf="item.status === status" (click)="read(item)">
-      <ion-icon [name]="item.icon" slot="start" size="large"></ion-icon>
-      <ion-label>
-        <h2>{{ item.title }}</h2>
-        <p>{{ item.submitter }}</p>
-        <p>{{ item.team }}</p>
-      </ion-label>
-      <ion-note slot="end">{{ item.date }}</ion-note>
-    </ion-item>
+<ion-list *ngIf="reviews">
+  <ng-container *ngFor="let review of reviews">
+    <app-list-item
+      *ngIf="review.isDone === showDone"
+      [title]="review.name"
+      [subtitle1]="review.submitterName"
+      subtitle1Color="grey-75"
+      [subtitle2]="review.teamName"
+      subtitle2Color="grey-75"
+      leadingIcon="eye"
+      [active]="currentReview && currentReview.submissionId === review.submissionId"
+      lines="full"
+      (click)="goto(review)"
+      [endingText]="review.date"
+      endingTextColor="grey-75"
+    ></app-list-item>
   </ng-container>
 </ion-list>
 
-<ion-card *ngIf="loadingReviews; else reviewsTmpl" class="practera-card">
-  <ion-list>
-    <app-list-item [loading]="true"></app-list-item>
-    <app-list-item [loading]="true" lines="none"></app-list-item>
-  </ion-list>
-</ion-card>
+<ion-list *ngIf="reviews === null">
+  <app-list-item [loading]="true"></app-list-item>
+  <app-list-item [loading]="true"></app-list-item>
+</ion-list>
 
-<ng-template #reviewsTmpl>
-  <ng-container *ngIf="!noReviewsToDo() && !noReviewsDone()">
-    <ion-card class="practera-card">
-      <ion-list>
-        <ng-container *ngFor="let review of reviews; let i = index">
-          <app-list-item *ngIf="review.isDone == showDone" leadingIcon="clipboard-outline" [title]="review.name"
-            [subtitle1]="review.submitterName" [subtitle2]="review.teamName"
-            [endingText]="review.date" [active]="submissionId === review.submissionId"
-            [lines]="i == reviews.length - 1 ? 'none' : ''"
-            (click)="gotoReview(review.contextId, review.assessmentId, review.submissionId)"></app-list-item>
-        </ng-container>
-      </ion-list>
-    </ion-card>
-  </ng-container>
-
-</ng-template>
+<div *ngIf="noReviews" class="ion-text-center no-review">
+  <ion-icon class="large-icon" color="primary" name="chatbox-ellipses-outline"></ion-icon>
+  <p class="body-1">You have no {{ noReviews }} review yet!</p>
+  <ion-text class="subtitle-2" color="grey-75">Reviews show up here, so you can easily view them here later.</ion-text>
+</div>

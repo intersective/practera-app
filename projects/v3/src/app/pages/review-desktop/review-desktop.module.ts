@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
-import { ReviewsPageRoutingModule } from './reviews-routing.module';
-import { ReviewsPage } from './reviews.page';
+import { ReviewDesktopPageRoutingModule } from './review-desktop-routing.module';
+import { ReviewDesktopPage } from './review-desktop.page';
 import { ComponentsModule } from '@v3/app/components/components.module';
 
 @NgModule({
@@ -13,8 +13,8 @@ import { ComponentsModule } from '@v3/app/components/components.module';
     FormsModule,
     IonicModule,
     ComponentsModule,
-    ReviewsPageRoutingModule,
+    ReviewDesktopPageRoutingModule,
   ],
-  declarations: [ReviewsPage]
+  declarations: [ReviewDesktopPage]
 })
-export class ReviewsPageModule {}
+export class ReviewDesktopPageModule {}
