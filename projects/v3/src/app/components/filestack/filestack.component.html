@@ -1,8 +1,8 @@
 <ng-container [ngSwitch]="type">
   <ng-container *ngSwitchCase="'profileImage'">
-    <p class="upload-icon" (click)="uploadFile()">
-      <ion-icon name="camera-outline"></ion-icon>
-    </p>
+    <ion-button fill="outline" expand="block" (click)="uploadFile()">
+      Upload Profile Image
+    </ion-button>
   </ng-container>
 
   <ng-container *ngSwitchDefault>

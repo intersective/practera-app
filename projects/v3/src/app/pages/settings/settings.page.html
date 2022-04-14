@@ -24,25 +24,25 @@
           <ion-avatar>
             <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
           </ion-avatar>
-          <ion-button fill="outline" expand="block">
-            Upload Profile Image
-          </ion-button>
+
+          <file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
+            (complete)="uploadProfileImage($event)"></file-stack>
         </div>
       </ion-item>
       <ion-item>
         <ion-label>Name</ion-label>
-        <ion-input slot="end" placeholder="John Doe" [disabled]="true"></ion-input>
+        <ion-input slot="end" [placeholder]="profile.name" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label>Email</ion-label>
-        <ion-input slot="end" placeholder="john@doe.university.com" [disabled]="true"></ion-input>
+        <ion-input slot="end" [placeholder]="profile.email" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item-divider>
         <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
       </ion-item-divider>
-      <ion-item>
+      <ion-item *ngIf="profile.contactNumber">
         <ion-label>Mobile Number</ion-label>
-        <ion-input slot="end" placeholder="john@doe.university.com"></ion-input>
+        <ion-input slot="end" [placeholder]="profile.contactNumber"></ion-input>
       </ion-item>
       <ion-item-divider>
         <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>

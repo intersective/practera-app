@@ -1,9 +1,9 @@
 <ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
-  <ion-item class="no-bg ion-no-padding">
-    <ion-radio-group [value]="submission.answer">
+  <ion-list class="no-bg ion-no-padding">
+    <ion-radio-group [value]="submission?.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
         <ion-item class="item-bottom-border" lines="none">
-          <ion-label class="white-space-normal body-2 gray-3">
+          <ion-label>
             {{ teamMember.userName }}
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
               <ion-chip class="yellow" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
@@ -13,8 +13,8 @@
         </ion-item>
       </ng-container>
     </ion-radio-group>
-  </ion-item>
-  <ng-container *ngIf="review.comment">
+  </ion-list>
+  <ng-container *ngIf="review?.comment">
     <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
   </ng-container>
 </ng-container>
@@ -42,7 +42,8 @@
 
 <ng-container *ngIf="doReview">
   <div [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
-    <ion-item class="no-bg ion-no-padding" *ngIf="question.canAnswer" lines="none">
+    <ion-list class="no-bg ion-no-padding"
+      *ngIf="question.canAnswer" lines="none">
       <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
           <ion-label class="subtitle-2 black">Your Answer is</ion-label>
@@ -54,7 +55,7 @@
           <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
         </ion-item>
       </ion-radio-group>
-    </ion-item>
+    </ion-list>
     <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
       (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
       [disabled]="control.disabled"></ion-textarea>

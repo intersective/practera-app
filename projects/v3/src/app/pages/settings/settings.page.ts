@@ -45,7 +45,7 @@ export class SettingsPage {
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
     private filestackService: FilestackService,
-    private fastFeedbackService: FastFeedbackService,
+    // private fastFeedbackService: FastFeedbackService,
   ) {
     this.route.queryParams.subscribe(() => {
       this.onEnter();
@@ -74,7 +74,7 @@ export class SettingsPage {
 
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
-    this.fastFeedbackService.pullFastFeedback().subscribe();
+    // this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   // loading pragram image to settings page by resizing it depend on device.
