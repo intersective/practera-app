@@ -40,6 +40,10 @@ export class ReviewRatingComponent {
     this.ratingData.assessment_review_id = reviewId;
   }
 
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
   submitReviewRating() {
     this.isSubmitting = true;
     // round to 2 decimal place
