@@ -7,22 +7,20 @@
       </ion-item>
       <ion-radio-group [value]="submission?.answer || review?.answer">
         <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ng-container>
-            <ion-item class="item-bottom-border" lines="none">
-              <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
-                {{ choice.name }}
-                <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
-                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
-                  <ion-chip class="label yellow" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
-                </p>
-              </ion-label>
-            </ion-item>
-            <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
-              <div class="white-space-normal explanation">
-                <p class="subtitle-2 title">Explanation</p>
-                <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
-              </div>
-            </ng-container>
+          <ion-item class="item-bottom-border" lines="none">
+            <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
+              {{ choice.name }}
+              <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
+                <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
+                <ion-chip class="label yellow" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
+              </p>
+            </ion-label>
+          </ion-item>
+          <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
+            <div class="white-space-normal explanation">
+              <p class="subtitle-2 title">Explanation</p>
+              <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
+            </div>
           </ng-container>
         </ng-container>
       </ion-radio-group>
