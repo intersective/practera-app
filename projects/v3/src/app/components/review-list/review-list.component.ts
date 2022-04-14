@@ -86,6 +86,7 @@ export class ReviewListComponent implements OnInit {
       // navigate to the assessment page for mobile
       return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId, { from: 'reviews' }]);
     }
+
     // emit the navigate event to the parent event for desktop
     return this.navigate.emit({
       assessmentId: assessmentId,

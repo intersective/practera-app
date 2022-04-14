@@ -551,12 +551,66 @@ export class DemoService {
   }
 
   getReviews(): Observable<any> {
-    return of({ "success": true, "status": "success", "cache": false, "data": [{ "AssessmentReview": { "id": 6106, "assessment_id": 11150, "assessment_submission_id": 36842, "reviewer_id": 14469, "reviewer_team_id": 1799, "score": "0", "is_done": false, "created": "2022-03-30 17:33:46", "modified": "2022-03-30 17:33:46", "status": "not start", "meta": null, "uuid": "7b3d72c2-a82d-40ef-a525-35ee4725e438" }, "Assessment": { "id": 11150, "name": "All question type" }, "AssessmentSubmission": { "id": 36842, "submitter_id": 13905, "created": "2022-03-29 02:34:41", "modified": "2022-03-30 17:33:48", "status": "pending review", "assessment_id": 11150, "order": null, "submitted": "2022-03-29 08:42:21", "team_id": 1799, "program_id": 961, "activity_id": 16417, "score": "0.75", "moderated_score": "0.5", "publish_date": "2022-03-29 08:44:54", "review_score": "0", "timeline_id": 1294, "context_id": 15796, "publisher_id": 13901, "locked": false, "uuid": "e5d5fa03-8ff7-4861-8c3f-d230e8fbb1e0", "Activity": { "name": "My Style" }, "Submitter": { "id": 13905, "name": "learner 008", "email": "learner_008@practera.com" }, "Team": { "id": 1799, "name": "Team 2" } } }] });
+    return of({ "success": true, "status": "success", "cache": false, "data": [{ "AssessmentReview": { "id": 6106, "assessment_id": 11150, "assessment_submission_id": 36842, "reviewer_id": 14469, "reviewer_team_id": 1799, "score": "0", "is_done": false, "created": "2022-03-30 17:33:46", "modified": "2022-03-30 17:33:46", "status": "not start", "meta": null, "uuid": "7b3d72c2-a82d-40ef-a525-35ee4725e438" }, "Assessment": { "id": 11150, "name": "All question type" }, "AssessmentSubmission": { "id": 36842, "submitter_id": 13905, "created": "2022-03-29 02:34:41", "modified": "2022-03-30 17:33:48", "status": "pending review", "assessment_id": 11150, "order": null, "submitted": "2022-03-29 08:42:21", "team_id": 1799, "program_id": 961, "activity_id": 16417, "score": "0.75", "moderated_score": "0.5", "publish_date": "2022-03-29 08:44:54", "review_score": "0", "timeline_id": 1294, "context_id": 15796, "publisher_id": 13901, "locked": false, "uuid": "e5d5fa03-8ff7-4861-8c3f-d230e8fbb1e0", "Activity": { "name": "My Style" }, "Submitter": { "id": 13905, "name": "learner 008", "email": "learner_008@practera.com" }, "Team": { "id": 1799, "name": "Team 2" } } }, {
+        "AssessmentReview": {
+            "id": 5985,
+            "assessment_id": 11812,
+            "assessment_submission_id": 36860,
+            "reviewer_id": 14201,
+            "reviewer_team_id": 1941,
+            "score": "0",
+            "is_done": false,
+            "created": "2022-04-13 19:25:40",
+            "modified": "2022-04-13 19:25:40",
+            "status": "not start",
+            "meta": null,
+            "uuid": "6db0a427-5480-4405-8dfd-1df235470988"
+        },
+        "Assessment": {
+            "id": 11812,
+            "name": "New feedback"
+        },
+        "AssessmentSubmission": {
+            "id": 36860,
+            "submitter_id": 14042,
+            "created": "2022-04-10 14:39:29",
+            "modified": "2022-04-13 19:25:41",
+            "status": "pending review",
+            "assessment_id": 11812,
+            "order": null,
+            "submitted": "2022-04-13 19:25:11",
+            "team_id": 1941,
+            "program_id": 1096,
+            "activity_id": 17429,
+            "score": "1",
+            "moderated_score": "1",
+            "publish_date": null,
+            "review_score": "0",
+            "timeline_id": 1429,
+            "context_id": 16963,
+            "publisher_id": null,
+            "locked": false,
+            "uuid": "b77c86a5-be78-4bca-ae97-89c2a3ff9e19",
+            "Activity": {
+                "name": "New Activity"
+            },
+            "Submitter": {
+                "id": 14042,
+                "name": "learner 008",
+                "email": "learner_008@practera.com"
+            },
+            "Team": {
+                "id": 1941,
+                "name": "Team 1"
+            }
+        }
+    }] });
   }
 
   getAssessmentReviewed(id?): Observable<any> {
     const sets = [
       { "data": { "assessment": { "name": "All question type", "type": "moderated", "description": null, "dueDate": null, "isTeam": false, "pulseCheck": true, "groups": [{ "name": "New Group", "description": "", "questions": [{ "id": 92804, "name": "Team member selector", "description": "", "type": "team member selector", "isRequired": false, "hasComment": false, "audience": ["reviewer", "submitter"], "fileType": null, "choices": null, "teamMembers": [{ "userId": 13914, "userName": "Learner 031", "teamId": 1799, "__typename": "AssessmentQuestionTeamMember" }], "__typename": "AssessmentQuestion" }, { "id": 92805, "name": "File upload", "description": "", "type": "file", "isRequired": false, "hasComment": false, "audience": ["reviewer", "submitter"], "fileType": "any", "choices": null, "teamMembers": null, "__typename": "AssessmentQuestion" }, { "id": 92806, "name": "Checkboxes", "description": "", "type": "multiple", "isRequired": false, "hasComment": false, "audience": ["reviewer", "submitter"], "fileType": null, "choices": [{ "id": 295742, "name": "New Choice 1", "explanation": null, "description": "", "__typename": "AssessmentChoice" }, { "id": 295743, "name": "New Choice 2", "explanation": null, "description": "", "__typename": "AssessmentChoice" }, { "id": 295744, "name": "New Choice 3", "explanation": null, "description": "", "__typename": "AssessmentChoice" }], "teamMembers": null, "__typename": "AssessmentQuestion" }, { "id": 92807, "name": "Multiple choice", "description": "", "type": "oneof", "isRequired": false, "hasComment": false, "audience": ["reviewer", "submitter"], "fileType": null, "choices": [{ "id": 295745, "name": "New Choice 1", "explanation": null, "description": "", "__typename": "AssessmentChoice" }, { "id": 295746, "name": "New Choice 2", "explanation": null, "description": "", "__typename": "AssessmentChoice" }, { "id": 295747, "name": "New Choice 3", "explanation": null, "description": "", "__typename": "AssessmentChoice" }], "teamMembers": null, "__typename": "AssessmentQuestion" }, { "id": 92808, "name": "Text", "description": "", "type": "text", "isRequired": false, "hasComment": false, "audience": ["reviewer", "submitter"], "fileType": null, "choices": null, "teamMembers": null, "__typename": "AssessmentQuestion" }], "__typename": "AssessmentGroup" }], "submissions": [{ "id": 36842, "status": "published", "completed": false, "modified": "2022-03-29 08:44:54", "locked": false, "submitter": { "name": "learner 008", "image": null, "__typename": "User" }, "answers": [{ "questionId": 92805, "answer": { "filename": "P_20161110_094003.jpg.png", "handle": "Hr1hxmq0SRevtIz1rbRS", "mimetype": "image/png", "originalPath": "P_20161110_094003.jpg", "size": 3621112, "source": "local_file_system", "url": "https://cdn.filestackcontent.com/Hr1hxmq0SRevtIz1rbRS", "uploadId": "1CML5sZFk250ykGY", "originalFile": { "name": "P_20161110_094003.jpg", "type": "image/jpeg", "size": 1662080 }, "status": "Stored", "key": "appv2/dev/any/7251cca1e7a1b8e1022af89eac9e08c6/0DDec3cVTSG0BByNx548_P_20161110_094003.jpg.png", "container": "files.p2-sandbox.practera.com", "cropped": { "originalImageSize": [4096, 2304], "cropArea": { "position": [235, 275], "size": [1762, 1762] } }, "workflows": { "3c38ef53-a9d0-4aa4-9234-617d9f03c0de": { "jobid": "de236eb3-6776-4e46-869d-6548c3ceb506" } } }, "__typename": "AssessmentSubmissionAnswer" }, { "questionId": 92808, "answer": "testing", "__typename": "AssessmentSubmissionAnswer" }, { "questionId": 92807, "answer": "295747", "__typename": "AssessmentSubmissionAnswer" }, { "questionId": 92806, "answer": [295743, 295742], "__typename": "AssessmentSubmissionAnswer" }, { "questionId": 92804, "answer": "{\"userId\":13914,\"userName\":\"Learner 031\",\"teamId\":1799,\"__typename\":\"AssessmentQuestionTeamMember\"}", "__typename": "AssessmentSubmissionAnswer" }], "review": { "id": 6105, "status": "done", "modified": "2022-03-29 08:44:53", "reviewer": { "name": "Chaw Admin", "__typename": "User" }, "answers": [{ "questionId": 92805, "answer": { "filename": "P_20161015_121331.jpg.png", "handle": "N5bxByVSfK42QhLjyaAm", "mimetype": "image/png", "originalPath": "P_20161015_121331.jpg", "size": 5481101, "source": "local_file_system", "url": "https://cdn.filestackcontent.com/N5bxByVSfK42QhLjyaAm", "uploadId": "Twgq9uEGQEa0dp5T", "originalFile": { "name": "P_20161015_121331.jpg", "type": "image/jpeg", "size": 1339688 }, "status": "Stored", "key": "appv2/dev/any/e9de065c86c70baa8005dfbcf3cb692e/1PkwPQS0Cz9wb6Mz7HwK_P_20161015_121331.jpg.png", "container": "files.p2-sandbox.practera.com", "cropped": { "originalImageSize": [4096, 2304], "cropArea": { "position": [896, 0], "size": [2304, 2304] } }, "workflows": { "3c38ef53-a9d0-4aa4-9234-617d9f03c0de": { "jobid": "77402285-21ff-4e6d-93c1-531e911f9361" } } }, "comment": "", "__typename": "AssessmentReviewAnswer" }, { "questionId": 92806, "answer": [295743], "comment": "", "__typename": "AssessmentReviewAnswer" }, { "questionId": 92807, "answer": 295745, "comment": "", "__typename": "AssessmentReviewAnswer" }, { "questionId": 92808, "answer": "testing passed!", "comment": "", "__typename": "AssessmentReviewAnswer" }], "__typename": "AssessmentSubmissionReview" }, "__typename": "AssessmentSubmission" }], "__typename": "Assessment" } } },
+
       { "data": { "assessment": { "name": "Pulse Check - Team Assessment", "type": "moderated", "description": "Description", "dueDate": null, "isTeam": true, "pulseCheck": true, "groups": [{ "name": "Group 1", "description": "Group Description", "questions": [{ "id": 89673, "name": "Q1", "description": "", "type": "oneof", "isRequired": false, "hasComment": false, "audience": ["reviewer", "submitter"], "fileType": null, "choices": [{ "id": 286318, "name": "A", "explanation": "Choice A explanation", "description": "Choice A description", "__typename": "AssessmentChoice" }, { "id": 286319, "name": "B", "explanation": "Choice B explanation", "description": "Choice B description", "__typename": "AssessmentChoice" }], "teamMembers": null, "__typename": "AssessmentQuestion" }], "__typename": "AssessmentGroup" }], "submissions": [{ "id": 36435, "status": "published", "completed": false, "modified": "2021-10-01 06:07:25", "locked": false, "submitter": { "name": "Learner 031", "image": null, "__typename": "User" }, "answers": [{ "questionId": 89673, "answer": "286318", "__typename": "AssessmentSubmissionAnswer" }], "review": { "id": 5729, "status": "done", "modified": "2021-10-01 06:07:24", "reviewer": { "name": "Expert 003", "__typename": "User" }, "answers": [{ "questionId": 89673, "answer": 286318, "comment": "", "__typename": "AssessmentReviewAnswer" }], "__typename": "AssessmentSubmissionReview" }, "__typename": "AssessmentSubmission" }], "__typename": "Assessment" } } }
 
     ];

@@ -53,6 +53,6 @@ export class ReviewsPage {
   }
 
   goto(currentReview) {
-    this.assessmentService.getAssessment(11150, 'review', 1, 1);
+    this.assessmentService.getAssessment(currentReview.assessmentId, 'review', currentReview.contextId, currentReview.submissionId);
   }
 }
