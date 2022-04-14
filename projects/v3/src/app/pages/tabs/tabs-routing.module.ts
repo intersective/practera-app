@@ -30,8 +30,8 @@ const routes: Routes = [
         ]
       },
       {
-        path: 'reviews',
-        loadChildren: () => import('../reviews/reviews.module').then(m => m.ReviewsPageModule)
+        path: 'review-desktop',
+        loadChildren: () => import('../review-desktop/review-desktop.module').then(m => m.ReviewDesktopPageModule)
       },
       {
         path: 'events',

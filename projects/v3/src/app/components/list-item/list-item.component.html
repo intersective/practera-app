@@ -22,7 +22,7 @@
       <br/><ion-text class="item-subtitle-1 subtitle-2" [color]="subtitle1Color">{{ subtitle1 }}</ion-text>
     </ng-container>
     <ng-container *ngIf="subtitle2">
-      <br/><ion-text class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</ion-text>
+      <br/><ion-text class="item-subtitle-2 caption" [color]="subtitle2Color">{{ subtitle2 }}</ion-text>
     </ng-container>
     <ng-container *ngIf="label">
       <br/>
@@ -32,7 +32,7 @@
     </ng-container>
   </div>
 
-  <ion-text *ngIf="endingText" class="item-ending-text caption gray-2" slot="end">{{ endingText }}</ion-text>
+  <ion-text *ngIf="endingText" class="item-ending-text caption" [color]="endingTextColor" slot="end">{{ endingText }}</ion-text>
 
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
