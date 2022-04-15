@@ -1,4 +1,4 @@
-<ng-container *ngIf="submissionStatus !== 'in progress' && submission && submission.answer">
+<ng-container *ngIf="!doReview && submissionStatus !== 'in progress' && submission && submission.answer">
   <app-file-display
     [file]="submission.answer"
     [fileType]="question.fileType || 'any'"
@@ -48,8 +48,7 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <div class="ion-padding"
-   [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+  <div class="ion-padding">
     <ng-container *ngIf="question.canAnswer">
       <file-stack *ngIf="!uploadedFile && !review.answer"
         [accept]="fileTypes"
@@ -57,13 +56,13 @@
         (complete)="onFileUploadCompleted($event, 'answer')"
         [disabled]="control.disabled"
       ></file-stack>
-      <app-file-display
+      <!-- <app-file-display
         [file]="uploadedFile ? uploadedFile : review.answer"
         [fileType]="question.fileType || 'any'"
         [isFileComponent]="true"
         (removeFile)="removeSubmitFile($event)"
         [disabled]="control.disabled"
-      ></app-file-display>
+      ></app-file-display> -->
     </ng-container>
     <ion-textarea
       *ngIf="question.canComment && submission.answer"

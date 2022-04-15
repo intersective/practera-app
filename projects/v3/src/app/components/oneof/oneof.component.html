@@ -1,4 +1,4 @@
-<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+<ng-container *ngIf="!doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ng-container class="ion-no-padding ion-no-margin">
     <ion-list class="ion-no-padding">
       <ion-item *ngIf="!submission?.answer" class="no-answers item-bottom-border" lines="none">
@@ -59,7 +59,7 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <div class="ion-no-padding" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+  <div class="ion-no-padding">
     <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
       <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
@@ -68,8 +68,13 @@
         <ion-item *ngFor="let choice of question.choices; let i = index"
           lines="none"
           [ngClass]="{'item-bottom-border': i != question.choices.length - 1}">
-          <ion-label class="white-space-normal body-2 black">{{ choice.name }}</ion-label>
-          <ion-radio
+          <ion-label class="white-space-normal body-2 black">
+            {{ choice.name }}
+            <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
+              <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
+            </p>
+          </ion-label>
+          <ion-radio color="success"
             [value]="choice.id"
             [disabled]="control.disabled"
             slot="start"
