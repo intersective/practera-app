@@ -1,4 +1,3 @@
-
 .audience-mentor {
   padding-top: 16px;
   border: 2px solid var(--practera-review-border-color);
@@ -9,7 +8,24 @@
   }
 }
 
-ion-textarea {
-  padding-left: 5px;
-  padding-right: 5px;
+.feedback-field {
+  --ion-item-background: #FFF7E3;
+  --ion-background-color: #FFF7E3;
+  background-color: #FFF7E3;
+
+  .feedback-title {
+    --min-height: 1em;
+    font-size: smaller;
+    ion-icon, ion-label {
+      background-color: #FFF7E3;
+    }
+  }
+
+  ion-textarea {
+    background: white;
+    &.textarea {
+      border: 1px solid var(--practera-review-border-color);
+      border-radius: 8px;
+    }
+  }
 }
