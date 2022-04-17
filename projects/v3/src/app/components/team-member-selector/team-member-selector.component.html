@@ -1,4 +1,4 @@
-<ng-container *ngIf="(submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+<ng-container *ngIf="!doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ion-list class="no-bg ion-no-padding">
     <ion-radio-group [value]="submission?.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
@@ -41,23 +41,23 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <div [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
-    <ion-list class="no-bg ion-no-padding"
-      *ngIf="question.canAnswer" lines="none">
-      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
-        <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
-          <ion-label class="subtitle-2 black">Your Answer is</ion-label>
-        </ion-list-header>
-        <ion-item lines="none"
-          *ngFor="let teamMember of question.teamMembers;let i = index"
-          [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1 }">
-          <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
-          <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
-        </ion-item>
-      </ion-radio-group>
-    </ion-list>
-    <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
-      (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
-      [disabled]="control.disabled"></ion-textarea>
-  </div>
+  <ion-list class="no-bg ion-no-padding"
+    *ngIf="question.canAnswer" lines="none">
+    <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+      <ion-item lines="none"
+        *ngFor="let teamMember of question.teamMembers;let i = index"
+        [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1 }">
+        <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
+        <ion-label class="white-space-normal body-2 black">
+          {{ teamMember.userName }}
+          <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
+            <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
+          </p>
+        </ion-label>
+      </ion-item>
+    </ion-radio-group>
+  </ion-list>
+  <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
+    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
+    [disabled]="control.disabled"></ion-textarea>
 </ng-container>
