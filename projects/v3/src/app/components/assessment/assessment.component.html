@@ -88,7 +88,7 @@
         </ion-text>
 
         <ng-container *ngFor="let question of group.questions">
-          <ion-list>
+          <ion-list class="ion-no-padding">
             <ion-list-header class="question-title ion-no-padding"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
