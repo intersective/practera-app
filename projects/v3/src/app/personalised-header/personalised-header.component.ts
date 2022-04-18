@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
-import { NotificationsComponent } from '../components/notifications/notifications.component';
+import { NotificationsPage } from '../pages/notifications/notifications.page';
 
 @Component({
   selector: 'app-personalised-header',
@@ -21,7 +21,7 @@ export class PersonalisedHeaderComponent implements OnInit {
 
   async notifications(): Promise<void> {
     const modal = await this.modalController.create({
-      component: NotificationsComponent,
+      component: NotificationsPage,
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed',
