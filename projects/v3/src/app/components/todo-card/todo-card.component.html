@@ -1,0 +1,16 @@
+<app-list-item
+  *ngIf="todoItem.type"
+  [leadingIcon]="icons[todoItem.type] || 'information-circle-outline'"
+  [title]="todoItem.name"
+  [subtitle1]="todoItem.description"
+  [endingText]="todoItem.time"
+  lines="none"
+  tabindex="0"
+></app-list-item>
+
+<app-list-item *ngIf="loading" [loading]="true" lines="none"></app-list-item>
+
+<ion-item button *ngIf="!todoItem.type && !loading" lines="none">
+  <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
+  <ion-text color="medium">You have no new notifications.</ion-text>
+</ion-item>

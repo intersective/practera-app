@@ -10,11 +10,6 @@ const routes: Routes = [
     component: V3Page,
     children: [
       {
-        path: 'settings',
-        loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule),
-        outlet: 'settings'
-      },
-      {
         path: '',
         loadChildren: () => import('../tabs/tabs.module').then(m => m.TabsPageModule),
       },

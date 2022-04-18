@@ -36,6 +36,25 @@ export interface Meta {
   assessment_name: string;
 }
 
+export interface TodoItem {
+  type?: string;
+  name?: string;
+  description?: string;
+  time?: string;
+  meta?: {
+    activity_id?: number;
+    context_id?: number;
+    assessment_id?: number;
+    assessment_submission_id?: number;
+    assessment_name?: string;
+    reviewer_name?: string;
+    team_id?: number;
+    team_member_id?: number;
+    participants_only?: boolean;
+    due_date?: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
