@@ -31,6 +31,7 @@ import { ActivityComponent } from './activity/activity.component';
 import { TopicComponent } from './topic/topic.component';
 import { ReviewListComponent } from './review-list/review-list.component';
 import { BrandingLogoComponent } from './branding-logo/branding-logo.component';
+import { TodoCardComponent } from './todo-card/todo-card.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -84,6 +85,7 @@ const largeCircleDefaultConfig = {
     ReviewRatingComponent,
     TeamMemberSelectorComponent,
     TextComponent,
+    TodoCardComponent,
     TopicComponent,
     BrandingLogoComponent
   ],
@@ -119,6 +121,7 @@ const largeCircleDefaultConfig = {
     ReviewRatingComponent,
     TeamMemberSelectorComponent,
     TextComponent,
+    TodoCardComponent,
     TopicComponent,
     BrandingLogoComponent
   ],
