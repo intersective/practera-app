@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content>
-  <ng-container *ngIf="utils.isMobile(); else notificationsDesktop" aria-labelledby="notifications">
+  <ng-container *ngIf="isMobile; else notificationsDesktop" aria-labelledby="notifications">
     <ion-item lines="none" color="transparent" class="ion-no-padding">
       <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-label="notifications"
         id="notifications">Notifications</ion-label>
@@ -19,8 +19,12 @@
 
     <ng-template #doneLoading>
       <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
-        <app-slidable *ngIf="notices.length > 0; else noNotices" [notifications]="notices" (goto)="clickTodoItem($event)">
-        </app-slidable>
+        <app-todo-card [todoItem]="{
+          name: event.name,
+          description: '',
+          type: 'event',
+          time: timeFormattervent.startTime)
+        }" (click)="showEventDetail(event)"></app-todo-card>
 
         <ng-template #noNotices>
           <div class="margin-left-right ion-padding-bottom">
@@ -46,11 +50,11 @@
 <ng-template #todoItemsTpl>
   <ng-container *ngFor="let event of eventReminders" @newLoaded>
     <app-todo-card [todoItem]="{
-        name: event.name,
-        description: '',
-        type: 'event',
-        time: utils.timeFormatter(event.startTime)
-      }" (click)="showEventDetail(event)"></app-todo-card>
+      name: event.name,
+      description: '',
+      type: 'event',
+      time: timeFormattervent.startTime)
+    }" (click)="showEventDetail(event)"></app-todo-card>
   </ng-container>
 
   <ng-container *ngIf="todoItems.length; else noItemsTpl">
