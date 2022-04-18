@@ -31,7 +31,7 @@
 
 
 <ng-template #notificationsDesktop>
-  <ion-list class="todo-list" lines="none">
+  <ion-list lines="full">
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
       <app-todo-card class="ion-padding-bottom" [loading]="true" [todoItem]="{}"></app-todo-card>
     </ng-container>
