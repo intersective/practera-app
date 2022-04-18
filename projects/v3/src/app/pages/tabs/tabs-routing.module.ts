@@ -30,6 +30,19 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'notifications',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../notifications/notifications.module').then(m => m.NotificationsPageModule)
+          },
+          {
+            path: 'slide',
+            loadChildren: () => import('../notifications-slide/notifications-slide.module').then(m => m.NotificationsSlidePageModule)
+          }
+        ]
+      },
+      {
         path: 'review-desktop',
         loadChildren: () => import('../review-desktop/review-desktop.module').then(m => m.ReviewDesktopPageModule)
       },
