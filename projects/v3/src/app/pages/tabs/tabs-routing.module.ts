@@ -47,6 +47,10 @@ const routes: Routes = [
         loadChildren: () => import('../review-desktop/review-desktop.module').then(m => m.ReviewDesktopPageModule)
       },
       {
+        path: 'reviews',
+        loadChildren: () => import('../review-mobile/review-mobile.module').then(m => m.ReviewMobilePageModule)
+      },
+      {
         path: 'events',
         loadChildren: () => import('../events/events.module').then(m => m.EventsPageModule)
       },

@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { ReviewDesktopPageRoutingModule } from './review-desktop-routing.module';
 import { ReviewDesktopPage } from './review-desktop.page';
 import { ComponentsModule } from '@v3/app/components/components.module';
+import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 
 @NgModule({
   imports: [
@@ -13,6 +14,7 @@ import { ComponentsModule } from '@v3/app/components/components.module';
     FormsModule,
     IonicModule,
     ComponentsModule,
+    PersonalisedHeaderModule,
     ReviewDesktopPageRoutingModule,
   ],
   declarations: [ReviewDesktopPage]
