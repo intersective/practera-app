@@ -1,0 +1,26 @@
+
+ion-content {
+  > ion-grid, ion-row, ion-col {
+    padding: 0px;
+    overflow: hidden;
+    height: 100%;
+    ion-row {
+      height: 100%;
+      ion-col {
+        overflow-y: auto;
+        height: 100%;
+      }
+    }
+  }
+}
+
+.border-right {
+  border-right: var(--border);
+}
+
+.large-icon {
+  font-size: 80px;
+}
+.no-review {
+  padding: 30% 15%;
+}

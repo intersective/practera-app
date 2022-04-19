@@ -18,6 +18,7 @@ export class AssessmentMobilePage implements OnInit {
   contextId: number;
   submissionId: number;
   action: string;
+  fromPage: string;
 
   currentTask: Task
 
@@ -34,6 +35,10 @@ export class AssessmentMobilePage implements OnInit {
     this.assessment$.subscribe(res => this.assessment = res);
     this.route.params.subscribe(params => {
       this.action = this.route.snapshot.data.action;
+      this.fromPage = this.route.snapshot.data.from;
+      if (!this.fromPage) {
+        this.fromPage = this.route.snapshot.paramMap.get('from');
+      }
       this.activityId = +params.activityId;
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
@@ -64,7 +69,13 @@ export class AssessmentMobilePage implements OnInit {
 
   goBack() {
     this.assessmentEle.btnBackClicked();
-    this.router.navigate(['v3', 'activity-mobile', this.activityId]);
+    if (this.fromPage === 'reviews') {
+      return this.router.navigate(['v3', 'reviews']);
+    }
+    if (!this.activityId) {
+      return this.router.navigate(['v3', 'home']);
+    }
+    return this.router.navigate(['v3', 'activity-mobile', this.activityId]);
   }
 
   async saveAssessment(event) {

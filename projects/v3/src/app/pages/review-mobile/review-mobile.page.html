@@ -1,0 +1,16 @@
+<ion-header class="ion-no-border header-border">
+  <ion-toolbar>
+    <ion-title>Reviews</ion-title>
+    <ion-buttons slot="end">
+      <app-personalised-header></app-personalised-header>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-review-list
+    [reviews]="reviews$ | async"
+    (navigate)="goto($event)"
+  ></app-review-list>
+</ion-content>
+

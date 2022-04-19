@@ -13,6 +13,7 @@ import { UtilsService } from '@v3/services/utils.service';
 export class ReviewListComponent implements OnInit {
   @Input() reviews: Review[];
   @Input() currentReview: Review;
+  @Input() goToFirstOnSwitch: boolean;
   @Output() navigate = new EventEmitter();
   public showDone = false;
 
@@ -33,29 +34,12 @@ export class ReviewListComponent implements OnInit {
 
   switchStatus() {
     this.showDone = !this.showDone;
-    this.navigate.emit(this.reviews.find(review => {
-      return review.isDone === this.showDone;
-    }));
+    if (this.goToFirstOnSwitch) {
+      this.navigate.emit(this.reviews.find(review => {
+        return review.isDone === this.showDone;
+      }));
+    }
   }
-
-  // /**
-  //  * Go to a review
-  //  * @param contextId
-  //  * @param assessmentId
-  //  * @param submissionId
-  //  */
-  // gotoReview(contextId, assessmentId, submissionId) {
-  //   if (this.utils.isMobile()) {
-  //     // navigate to the assessment page for mobile
-  //     return this.router.navigate(['assessment', 'review', contextId, assessmentId, submissionId, { from: 'reviews' }]);
-  //   }
-  //   // emit the navigate event to the parent event for desktop
-  //   return this.navigate.emit({
-  //     assessmentId: assessmentId,
-  //     submissionId: submissionId,
-  //     contextId: contextId
-  //   });
-  // }
 
   // return the message if there is no review to display
   get noReviews() {
