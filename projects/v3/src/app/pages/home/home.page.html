@@ -41,12 +41,16 @@
         </ion-segment>
 
         <ng-container *ngIf="display === 'activities' && (milestones$ | async ) as milestones">
+          <ng-container *ngIf="milestones === null">
+            <ion-item><ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text></ion-item>
+            <ion-item><ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text></ion-item>
+          </ng-container>
           <ng-container *ngFor="let milestone of milestones">
             <ion-item class="headline-4 milestone-name" lines="none">
               {{ milestone.name }}
               <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
             </ion-item>
-            <ion-item class="body-3 milestone-des" color="light" lines="none">{{ milestone.description }}</ion-item>
+            <ion-item class="body-3 milestone-des" color="light" lines="none" [innerHTML]="milestone.description"></ion-item>
             <app-list-item *ngFor="let activity of milestone.activities; let i = index"
               [title]="activity.name"
               [leadImage]="activity.leadImage"
