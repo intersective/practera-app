@@ -62,6 +62,10 @@ export class AchievementService {
         if (!Array.isArray(data)) {
           return this.request.apiResponseFormatError('Achievement format error');
         }
+        if (!data.length) {
+          this._achievements$.next([]);
+          return [];
+        }
         const achievements: Array<Achievement> = [];
         data.forEach(achievement => {
           if (!this.utils.has(achievement, 'id') ||
@@ -84,6 +88,7 @@ export class AchievementService {
           });
         });
         this._achievements$.next(achievements);
+        return achievements;
       })
       ).subscribe();
   }

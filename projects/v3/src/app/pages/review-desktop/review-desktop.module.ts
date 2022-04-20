@@ -14,8 +14,8 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
     FormsModule,
     IonicModule,
     ComponentsModule,
-    PersonalisedHeaderModule,
     ReviewDesktopPageRoutingModule,
+    PersonalisedHeaderModule,
   ],
   declarations: [ReviewDesktopPage]
 })
