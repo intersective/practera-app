@@ -1,15 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { UtilsService } from '@v3/services/utils.service';
+import { UtilsService } from '@services/utils.service';
+import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventGroup } from '@app/event-list/event-list.service';
 
 @Component({
   selector: 'app-events',
-  templateUrl: './events.page.html',
-  styleUrls: ['./events.page.scss'],
+  templateUrl: './events.component.html',
+  styleUrls: ['./events.component.scss']
 })
-export class EventsPage implements OnInit {
-
+export class EventsComponent extends RouterEnter {
   // used in RouteEnter to trigger onEnter() of this component
   routeUrl = '/app/events';
   // activity id from the route
@@ -30,14 +30,15 @@ export class EventsPage implements OnInit {
   @ViewChild('eventDetail') eventDetail;
   // assessment component
   @ViewChild('assessment') assessment;
-
   constructor(
     public router: Router,
     private route: ActivatedRoute,
     public utils: UtilsService
-  ) { }
+  ) {
+    super(router);
+  }
 
-  ngOnInit() {
+  onEnter() {
     // get activity and event id from route
     this.activityId = +this.route.snapshot.paramMap.get('activity_id');
     this.eventId = +this.route.snapshot.paramMap.get('event_id');
@@ -60,9 +61,9 @@ export class EventsPage implements OnInit {
     this.contextId = null;
   }
 
-  checkin(params: { assessmentId: number; contextId: number }) {
+  checkin(params: {assessmentId: number; contextId: number}) {
     if (!params.assessmentId || !params.contextId) {
-      return;
+      return ;
     }
     this.assessmentId = params.assessmentId;
     this.contextId = params.contextId;
@@ -71,5 +72,4 @@ export class EventsPage implements OnInit {
       this.assessment.onEnter();
     });
   }
-
 }

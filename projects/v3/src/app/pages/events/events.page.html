@@ -11,10 +11,47 @@
 </ion-header>
 
 <ion-content>
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Events</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-split-pane *ngIf="!utils.isMobile()" contentId="main-events" when="xs">
+    <app-event-list
+      #eventList
+      style="display: flex"
+      [activityId]="activityId"
+      [eventId]="eventId"
+      [multiDayId]="multiDayId"
+      (navigate)="goto($event)"
+    ></app-event-list>
+    <ion-content color="light" id="main-events">
+      <app-event-detail
+        #eventDetail
+        *ngIf="!assessmentId && currentEvent"
+        [event]="currentEvent"
+        (checkin)="checkin($event)"
+      ></app-event-detail>
+      <!-- <app-assessment
+        #assessment
+        *ngIf="assessmentId"
+        [inputId]="assessmentId"
+        [inputContextId]="contextId"
+        [inputAction]="'assessment'"
+        [fromPage]="'events'"
+        (navigate)="assessmentId = null;eventList.onEnter()"
+      ></app-assessment> -->
+      <ng-container *ngIf="!currentEvent">
+        <ion-header mode="ios">
+          <ion-toolbar class="ion-toolbar-absolute">
+            <ion-title class="ion-text-center title-small" aria-label="event" tabindex="0">Event</ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-content color="light" class="ion-text-center ion-content-absolute">
+          <ion-icon id="calendar-icon" name="calendar-outline" color="medium"></ion-icon>
+        </ion-content>
+      </ng-container>
+    </ion-content>
+  </ion-split-pane>
+
+  <ion-content *ngIf="utils.isMobile()">
+    <app-event-list #eventList [activityId]="activityId"></app-event-list>
+  </ion-content>
+
 
 </ion-content>
