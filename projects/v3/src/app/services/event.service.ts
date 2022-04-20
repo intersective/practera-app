@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { NotificationService } from '@shared/notification/notification.service';
-import { EventDetailComponent } from '@app/event-detail/event-detail.component';
+import { RequestService } from 'request';
+import { UtilsService } from '@v3/services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { EventDetailComponent } from '@v3/pages/events/event-detail/event-detail.component';
 
 /**
  * @name api
@@ -17,6 +17,12 @@ const api = {
     events: 'api/v2/act/event/list.json',
     submissions: 'api/submissions.json',
     activities: 'api/v2/plan/activity/list.json'
+  },
+  post: {
+    book: 'api/book_events.json'
+  },
+  delete: {
+    cancel: 'api/book_events.json'
   }
 };
 
@@ -72,12 +78,12 @@ export interface Activity {
   providedIn: 'root'
 })
 
-export class EventListService {
+export class EventService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notificationService: NotificationService
+    private notificationService: NotificationsService
   ) {}
 
   /**
@@ -360,4 +366,24 @@ export class EventListService {
     }
     return multiDayEvents;
   }
+
+  bookEvent(event: Event) {
+    return this.request.post(
+      {
+        endPoint: api.post.book,
+        data: {
+          event_id: event.id,
+          delete_previous: event.singleBooking
+        }
+      });
+  }
+
+  cancelEvent(event: Event) {
+    return this.request.delete(api.delete.cancel, {
+      params: {
+        event_id: event.id
+      }
+    });
+  }
+
 }

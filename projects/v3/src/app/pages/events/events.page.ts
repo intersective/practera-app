@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
-import { Event, EventGroup } from '@app/event-list/event-list.service';
+import { Event, EventGroup } from '@v3/services/event.service';
 
 @Component({
   selector: 'app-events',

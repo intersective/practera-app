@@ -1,12 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { UtilsService } from '@services/utils.service';
-import { Event } from '@app/event-list/event-list.service';
-import { EventDetailService } from './event-detail.service';
-import { NotificationService } from '@shared/notification/notification.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { EventService, Event } from '@v3/services/event.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
   selector: 'app-event-detail',
@@ -22,16 +20,14 @@ export class EventDetailComponent implements OnInit {
   constructor(
     private router: Router,
     public modalController: ModalController,
-    public eventDetailService: EventDetailService,
-    private notificationService: NotificationService,
+    public eventService: EventService,
+    private notificationService: NotificationsService,
     public utils: UtilsService,
-    private newRelic: NewRelicService,
     private storage: BrowserStorageService,
   ) {}
 
   ngOnInit() {
     this.ctaIsActing = false;
-    this.newRelic.setPageViewName('event-detail');
   }
 
   confirmed(event) {
@@ -39,7 +35,6 @@ export class EventDetailComponent implements OnInit {
       return;
     }
 
-    this.newRelic.addPageAction(`Action: ${this.buttonText()}`);
     this.ctaIsActing = true;
     switch (this.buttonText()) {
       case 'Book':
@@ -69,7 +64,7 @@ export class EventDetailComponent implements OnInit {
         break;
 
       case 'Cancel Booking':
-        this.eventDetailService.cancelEvent(this.event).subscribe(response => {
+        this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.notificationService.alert({
               message: 'Booking cancelled Successfully!',
@@ -112,7 +107,7 @@ export class EventDetailComponent implements OnInit {
   }
 
   private _bookEvent() {
-    this.eventDetailService.bookEvent(this.event).subscribe(
+    this.eventService.bookEvent(this.event).subscribe(
       response => {
         this.notificationService.alert({
           message: 'Booked Successfully!',

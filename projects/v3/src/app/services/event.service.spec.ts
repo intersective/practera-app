@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { EventListService } from './event-list.service';
+import { EventService } from './event.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -8,7 +8,7 @@ import { TestUtils } from '@testing/utils';
 import { BrowserStorageService } from '@services/storage.service';
 import * as moment from 'moment';
 
-describe('EventListService', () => {
+describe('EventService', () => {
   moment.updateLocale('en', {
     monthsShort: [
       // customised shortened month to accommodate Intl date format
@@ -16,7 +16,7 @@ describe('EventListService', () => {
       'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
     ]
   });
-  let service: EventListService;
+  let service: EventService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
   let utils: UtilsService;
@@ -26,14 +26,14 @@ describe('EventListService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        EventListService,
+        EventService,
         {
           provide: UtilsService,
           useClass: TestUtils,
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', ['get', 'delete', 'post', 'apiResponseFormatError'])
         },
         {
           provide: NotificationService,
@@ -49,7 +49,7 @@ describe('EventListService', () => {
         },
       ]
     });
-    service = TestBed.inject(EventListService);
+    service = TestBed.inject(EventService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utils = TestBed.inject(UtilsService);
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
@@ -58,6 +58,25 @@ describe('EventListService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  const mockEvent = {
+    id: 1,
+    name: 'event',
+    description: 'des',
+    location: 'location',
+    activityId: 2,
+    activityName: 'activity2',
+    startTime: testUtils.getDateString(-2, 0),
+    endTime: testUtils.getDateString(-2, 0),
+    capacity: 10,
+    remainingCapacity: 1,
+    isBooked: false,
+    singleBooking: true,
+    canBook: true,
+    isPast: true,
+    assessment: null,
+    allDay: false
+  };
 
   describe('when testing getEvents()', () => {
     let startTimes;
@@ -374,4 +393,24 @@ describe('EventListService', () => {
       expect(time).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
     });
   });
+
+  it('should pass correct parameter to bookEvent()', () => {
+    requestSpy.post.and.returnValue(of({}));
+    service.bookEvent(mockEvent).subscribe();
+    expect(requestSpy.post.calls.first().args[0].data).toEqual({
+      event_id: mockEvent.id,
+      delete_previous: mockEvent.singleBooking
+    });
+  });
+
+  it('should pass correct parameter to cancelEvent()', () => {
+    requestSpy.delete.and.returnValue(of({}));
+    service.cancelEvent(mockEvent).subscribe();
+    expect(requestSpy.delete.calls.first().args[1]).toEqual({
+      params: {
+        event_id: mockEvent.id
+      }
+    });
+  });
+
 });

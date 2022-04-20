@@ -1,16 +1,16 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventDetailComponent } from './event-detail.component';
-import { EventDetailService } from './event-detail.service';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { UtilsService } from '@services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
+import { EventService } from '@v3/services/event.service';
+import { ComponentsModule } from '@v3/components/components.module';
+import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalController } from '@ionic/angular';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 class Page {
   get eventName() {
@@ -55,16 +55,16 @@ describe('EventDetailComponent', () => {
   let component: EventDetailComponent;
   let fixture: ComponentFixture<EventDetailComponent>;
   let page: Page;
-  let serviceSpy: jasmine.SpyObj<EventDetailService>;
+  let serviceSpy: jasmine.SpyObj<EventService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let utils: UtilsService;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let modalSpy: jasmine.SpyObj<ModalController>;
   const testUtils = new TestUtils();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, BrowserAnimationsModule],
+      imports: [ComponentsModule, BrowserAnimationsModule],
       declarations: [EventDetailComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -73,8 +73,8 @@ describe('EventDetailComponent', () => {
           useClass: TestUtils,
         },
         {
-          provide: EventDetailService,
-          useValue: jasmine.createSpyObj('EventDetailService', ['cancelEvent', 'bookEvent'])
+          provide: EventService,
+          useValue: jasmine.createSpyObj('EventService', ['cancelEvent', 'bookEvent'])
         },
         {
           provide: Router,
@@ -94,8 +94,8 @@ describe('EventDetailComponent', () => {
           })
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ModalController,
@@ -112,10 +112,10 @@ describe('EventDetailComponent', () => {
     fixture = TestBed.createComponent(EventDetailComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    serviceSpy = TestBed.inject(EventDetailService) as jasmine.SpyObj<EventDetailService>;
+    serviceSpy = TestBed.inject(EventService) as jasmine.SpyObj<EventService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     utils = TestBed.inject(UtilsService);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
   });
 
