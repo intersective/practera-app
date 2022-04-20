@@ -6,6 +6,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { EventDetailComponent } from '@v3/pages/events/event-detail/event-detail.component';
+import { environment } from '@v3/environments/environment';
+import { DemoService } from './demo.service';
 
 /**
  * @name api
@@ -83,7 +85,8 @@ export class EventService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notificationService: NotificationsService
+    private notificationService: NotificationsService,
+    private demo: DemoService
   ) {}
 
   /**
@@ -92,6 +95,11 @@ export class EventService {
    * @returns {Observable}
    */
   getEvents(activityId?): Observable<any> {
+
+    if (environment.demo) {
+      return of(this.normaliseEvents(this.demo.eventList));
+    }
+
     const params: any = {
       types: ['activity_session', 'other']
     };
@@ -175,6 +183,12 @@ export class EventService {
   }
 
   getSubmission(assessmentId, contextId): Observable<any> {
+    if (environment.demo) {
+      return this.demo.assessment(33)
+      .pipe(map(response => {
+        return !this.utils.isEmpty(response.data.submissions[0]);
+      }));
+    }
     return this.request.get(api.get.submissions, {params: {
         assessment_id: assessmentId,
         context_id: contextId,
@@ -210,6 +224,14 @@ export class EventService {
   }
 
   getActivities() {
+    if (environment.demo) {
+      return this.demo.activity()
+      .pipe(map(response => {
+        if (response.data) {
+          return this._normaliseActivities(response.data);
+        }
+      }));
+    }
     return this.request.get(api.get.activities)
       .pipe(map(response => {
         if (response.success && response.data) {
