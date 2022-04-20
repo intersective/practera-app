@@ -217,7 +217,7 @@ export class AuthService {
     this.storage.setConfig(config);
 
     if (redirect) {
-      return this.router.navigate(['login'], navigationParams);
+      return this.router.navigate(['/'], navigationParams);
     }
   }
 
