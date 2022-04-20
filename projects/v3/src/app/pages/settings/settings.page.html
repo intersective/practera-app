@@ -55,12 +55,17 @@
       <ion-item-divider>
         <ion-label color="primary">Support</ion-label>
       </ion-item-divider>
-      <ion-item detail="true">Contact support</ion-item>
-      <ion-item detail="true">Terms and Conditions</ion-item>
+      <ion-item detail="true" button (click)="mailTo($event)" (keydown)="mailTo($event)">Contact support</ion-item>
+      <ion-item detail="true" button (click)="openLink($event)" (keydown)="openLink($event)">Terms and Conditions</ion-item>
     </ion-item-group>
     <ion-item lines="none">
       <div class="xc">
-        <ion-button size="large" fill="outline" expand="block">Log Out</ion-button>
+        <ion-button size="large"
+          fill="outline"
+          expand="block"
+          (click)="logout($event)"
+          (keydown)="logout($event)"
+        >Log Out</ion-button>
       </div>
     </ion-item>
   </ion-list>
