@@ -50,7 +50,7 @@ export class HomeService {
   private _activityCount$ = new BehaviorSubject<number>(null);
   activityCount$ = this._activityCount$.asObservable();
 
-  private _milestones$ = new BehaviorSubject<Milestone[]>([]);
+  private _milestones$ = new BehaviorSubject<Milestone[]>(null);
   milestones$ = this._milestones$.asObservable();
 
   private _projectProgress$ = new BehaviorSubject<ProjectProgress>(null);
@@ -58,8 +58,9 @@ export class HomeService {
 
   milestonesWithProgress$ = this._milestones$.asObservable().pipe(
     mergeMap(
-      milestones => this._projectProgress$.asObservable().pipe(map(
+      mRes => this._projectProgress$.asObservable().pipe(map(
         progress => {
+          const milestones = JSON.parse(JSON.stringify(mRes));
           if (!milestones || !milestones.length) {
             return null;
           }
