@@ -1,0 +1,59 @@
+<ion-header mode="ios" *ngIf="utils.isMobile()">
+  <ion-toolbar>
+    <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+    <ion-title *ngIf="utils.isMobile()" class="ion-text-center" tabindex="0" aria-label="event">Event</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content color="light">
+  <div class="ion-text-center ion-margin">
+    <h1 class="headline-4" tabindex="0">{{ event.name }}</h1>
+    <div class="div-activity-name subtitle-1 gray-2" tabindex="0" [attr.aria-label]="event.activityName">{{ event.activityName }}</div>
+    <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
+  </div>
+  <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
+
+  <ion-list lines="full">
+    <ion-item>
+      <ion-icon class="leading-icon gray-2" name="calendar-outline"></ion-icon>
+      <div id="date" class="subtitle-1">{{ getEventDate() }}</div>
+    </ion-item>
+    <ng-container *ngIf="event.videoConference">
+      <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
+        <img src="../../assets/icon_zoom_24.svg" alt="booked zoom meeting">
+        <div class="subtitle-1 ion-text-capitalize"> {{ event.videoConference.provider }} Meeting </div>
+      </ion-item>
+      <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
+        <img src="../../assets/icon_zoom_24.svg" alt="open zoom meeting">
+        <div class="item-content">
+          <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
+          <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
+        </div>
+        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+      </ion-item>
+    </ng-container>
+    <ion-item *ngIf="event.location">
+      <ion-icon class="leading-icon gray-2" name="location-outline"></ion-icon>
+      <div id="location" class="subtitle-1">{{ event.location }}</div>
+    </ion-item>
+    <ion-item lines="none" *ngIf="event.capacity">
+      <ion-icon class="leading-icon gray-2" name="people-outline"></ion-icon>
+      <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+    </ion-item>
+  </ion-list>
+
+  <div class="ion-margin-top ion-text-center" *ngIf="buttonText()">
+    <ion-button
+      class="btn-cta"
+      (click)="confirmed($event)"
+      [disabled]="(event.isPast && !event.isBooked) || (event.remainingCapacity === 0 && !event.isBooked) || ctaIsActing"
+      shape="round"
+      [color]="(event.isPast && !event.isBooked) || (event.remainingCapacity === 0 && !event.isBooked) ? 'medium' : 'primary'"
+      tabindex="0"
+      role="button"
+      (keydown)="confirmed($event)">
+      {{ buttonText() }}
+
+    </ion-button>
+  </div>
+
+</ion-content>
