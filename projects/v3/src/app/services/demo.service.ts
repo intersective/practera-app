@@ -1068,4 +1068,47 @@ export class DemoService {
     }
   }
 
+  get eventList() {
+    return [
+      {
+        "id": 33552,
+        "activity_id": null,
+        "activity_name": null,
+        "start": "2022-04-25 18:30:00",
+        "end": "2022-04-27 18:30:00",
+        "location": "efojfojf",
+        "title": "New Event 02",
+        "description": "<p>wodwdwodjwd</p>",
+        "capacity": 10,
+        "type": "other",
+        "all_day": true,
+        "remaining_capacity": 10,
+        "is_booked": false,
+        "single_booking": false,
+        "can_book": true,
+        "assessment": null,
+        "video_conference": null
+      },
+      {
+        "id": 33551,
+        "activity_id": null,
+        "activity_name": null,
+        "start": "2022-04-20 11:05:00",
+        "end": "2022-04-21 11:05:00",
+        "location": "sdsdsdsdsdsd",
+        "title": "New Event",
+        "description": "<p>sdsdsdsdsdsdsd</p>",
+        "capacity": 100,
+        "type": "other",
+        "all_day": false,
+        "remaining_capacity": 100,
+        "is_booked": false,
+        "single_booking": false,
+        "can_book": true,
+        "assessment": null,
+        "video_conference": null
+      }
+    ]
+  }
+
 }
