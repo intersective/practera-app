@@ -50,7 +50,7 @@ export class HomeService {
   private _activityCount$ = new BehaviorSubject<number>(null);
   activityCount$ = this._activityCount$.asObservable();
 
-  private _milestones$ = new BehaviorSubject<Milestone[]>([]);
+  private _milestones$ = new BehaviorSubject<Milestone[]>(null);
   milestones$ = this._milestones$.asObservable();
 
   private _projectProgress$ = new BehaviorSubject<ProjectProgress>(null);
