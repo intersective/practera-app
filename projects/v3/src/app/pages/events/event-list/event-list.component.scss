@@ -1,0 +1,17 @@
+.item-filter {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+.btn-filter {
+  ion-button {
+    width: 32%;
+  }
+  .btn-middle {
+    width: calc(36% - 4px);
+  }
+}
+.btn-focused {
+  --background-focused: var(--ion-color-primary-tint) !important;
+  --background-focused-opacity: 0.44;
+
+}

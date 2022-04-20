@@ -1,0 +1,35 @@
+ion-icon {
+  margin-right: 10px;
+  font-size: 24px;
+}
+.close-icon {
+  font-size: x-large;
+}
+h1 {
+  margin: 0;
+}
+
+.zoom-meeting {
+  img {
+    width: 24px !important;
+    height: 24px !important;
+    margin-right: 10px;
+  }
+  .item-content {
+    width: 100%;
+    p {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    p:nth-child(1) {
+      margin-bottom: 0 !important;
+      margin-top: 12px !important;
+      color: var(--practera-event-zoom-color);
+    }
+    p:nth-child(2) {
+      margin-top: 0 !important;
+      margin-bottom: 12px !important;
+    }
+  }
+}
