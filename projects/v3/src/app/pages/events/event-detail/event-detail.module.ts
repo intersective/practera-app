@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core';
-import { SharedModule } from '@shared/shared.module';
+import { ComponentsModule } from '@v3/components/components.module';
 import { EventDetailComponent } from './event-detail.component';
-import { EventDetailService } from './event-detail.service';
+import { EventService } from '@v3/services/event.service';
 
 @NgModule({
   imports: [
-    SharedModule
+    ComponentsModule
   ],
   declarations: [
     EventDetailComponent
   ],
-  providers: [ EventDetailService ],
+  providers: [ EventService ],
   exports: [ EventDetailComponent ],
   entryComponents: [ EventDetailComponent ]
 })

@@ -1,12 +1,10 @@
 <ion-header mode="ios">
-  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
+  <ion-toolbar>
     <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
-    <ion-title class="ion-text-center" [ngClass]="{
-      'subtitle-2': !utils.isMobile()
-    }" tabindex="0" aria-label="event">Event</ion-title>
+    <ion-title *ngIf="utils.isMobile()" class="ion-text-center" tabindex="0" aria-label="event">Event</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light" [ngClass]="{ 'ion-content-absolute': !utils.isMobile() }">
+<ion-content color="light">
   <div class="ion-text-center ion-margin">
     <h1 class="headline-4" tabindex="0">{{ event.name }}</h1>
     <div class="div-activity-name subtitle-1 gray-2" tabindex="0" [attr.aria-label]="event.activityName">{{ event.activityName }}</div>

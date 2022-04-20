@@ -1,8 +1,7 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { EventListService, Event, EventGroup, Activity } from './event-list.service';
-import { UtilsService } from '@services/utils.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { EventService, Event, EventGroup, Activity } from '@v3/services/event.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-event-list',
@@ -40,10 +39,8 @@ export class EventListComponent {
   constructor (
     public router: Router,
     private route: ActivatedRoute,
-    public eventListService: EventListService,
+    public eventService: EventService,
     public utils: UtilsService,
-    private ngZone: NgZone,
-    private newRelic: NewRelicService
   ) {
     // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
@@ -66,9 +63,8 @@ export class EventListComponent {
   }
 
   onEnter() {
-    this.newRelic.setPageViewName('event-list');
     this._initialise();
-    this.eventListService.getEvents().subscribe(events => {
+    this.eventService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
         this.loadingEvents = false;
         return;
@@ -163,7 +159,7 @@ export class EventListComponent {
       }
       this.loadingEvents = false;
       // get activity list
-      this.eventListService.getActivities().subscribe(activities => {
+      this.eventService.getActivities().subscribe(activities => {
         // only display activity that has event
         this.activities = activities.filter(activity => activityIdsWithEvent.includes(activity.id));
       });
@@ -234,7 +230,7 @@ export class EventListComponent {
   goto(event) {
     // pop up event detail for mobile
     if (this.utils.isMobile()) {
-      return this.eventListService.eventDetailPopUp(event);
+      return this.eventService.eventDetailPopUp(event);
     }
     // goto an event for desktop view
     return this.navigate.emit(event);
@@ -300,19 +296,16 @@ export class EventListComponent {
 
 
   showBrowse() {
-    this.newRelic.addPageAction('show browse');
     this.activated = 'browse';
     this.goToFirstEvent = true;
     this._rearrangeEvents();
   }
   showBooked() {
-    this.newRelic.addPageAction('show booked');
     this.activated = 'booked';
     this.goToFirstEvent = true;
     this._rearrangeEvents();
   }
   showAttended() {
-    this.newRelic.addPageAction('show attended');
     this.activated = 'attended';
     this.goToFirstEvent = true;
     this._rearrangeEvents();

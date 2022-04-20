@@ -1,17 +1,11 @@
-<ion-header mode="ios">
-  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-title class="ion-text-center" aria-label="events" tabindex="0" id="events">Events</ion-title>
-  </ion-toolbar>
-</ion-header>
-<ion-content color="light" class="ion-text-center ion-padding" [ngClass]="{
-  'ion-content-absolute': !utils.isMobile(),
+<ion-content class="ion-text-center ion-padding" [ngClass]="{
   'ion-content-mobile': utils.isMobile()
 }" appFloat>
 
   <div class="btn-filter">
     <ion-button
       class="btn-left-half btn-focused"
-      [ngClass]="{'btn-activated': activated == 'browse'}"
+      [ngClass]="{'btn-activated': activated === 'browse'}"
       (click)="showBrowse()"
       aria-label="Browse">
       <ion-ripple-effect type="unbounded"></ion-ripple-effect>
@@ -19,7 +13,7 @@
     </ion-button>
     <ion-button
       class="btn-middle btn-focused"
-      [ngClass]="{'btn-activated': activated == 'booked'}"
+      [ngClass]="{'btn-activated': activated === 'booked'}"
       (click)="showBooked()"
       aria-label="booked">
       <ion-ripple-effect type="unbounded"></ion-ripple-effect>
@@ -27,7 +21,7 @@
     </ion-button>
     <ion-button
       class="btn-right-half btn-focused"
-      [ngClass]="{'btn-activated': activated == 'attended'}"
+      [ngClass]="{'btn-activated': activated === 'attended'}"
       (click)="showAttended()"
       aria-label="attended">
       <ion-ripple-effect type="unbounded"></ion-ripple-effect>
@@ -51,14 +45,14 @@
     <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
     <ion-card class="practera-card">
       <ion-list>
-        <app-list-item loading="true"></app-list-item>
-        <app-list-item loading="true" lines="none"></app-list-item>
+        <app-list-item [loading]="true"></app-list-item>
+        <app-list-item [loading]="true" lines="none"></app-list-item>
       </ion-list>
     </ion-card>
   </ng-container>
 
   <ng-container *ngFor="let eventObj of events">
-    <p class="sutitle-2 gray-2 ion-text-left">{{ eventObj.date }}</p>
+    <p class="sutitle-2 grey-100 ion-text-left">{{ eventObj.date }}</p>
     <ion-card class="practera-card">
       <ion-list>
         <!-- @TODO add isVideoConference by checking event zoom object -->
@@ -66,16 +60,16 @@
           *ngFor="let event of eventObj.events; let i = index"
           leadingIcon="calendar-outline"
           [isEventItem]="true"
-          [leadingIconColor]="eventListService.isNotActionable(event) ? 'medium' : 'primary'"
+          [leadingIconColor]="eventService.isNotActionable(event) ? 'medium' : 'primary'"
           [title]="event.name"
-          [titleColor]="eventListService.isNotActionable(event) ? 'gray-2' : ''"
+          [titleColor]="eventService.isNotActionable(event) ? 'grey-100' : ''"
           [subtitle1]="event.activityName"
-          [subtitle2]="eventListService.timeDisplayed(event)"
+          [subtitle2]="eventService.timeDisplayed(event)"
           [eventVideoConference]="event.videoConference"
           [eventExpired]="event.isPast && !event.isBooked"
           [eventFullyBooked]="event.remainingCapacity === 0"
           [active]="event.isMultiDay ? (event.multiDayInfo.id === multiDayId) : (eventId === event.id)"
-          [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
+          [lines]="i === eventObj.events.length - 1 ? 'none' : ''"
           (click)="goto(event)"
           (keyup.enter)="goto(event)"
           [eventDayCount]="event.isMultiDay ? event.multiDayInfo.dayCount : null"

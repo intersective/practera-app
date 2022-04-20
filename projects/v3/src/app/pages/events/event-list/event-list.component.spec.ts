@@ -1,14 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { EventListComponent } from './event-list.component';
-import { EventListService, Event } from './event-list.service';
+import { EventService, Event } from '@v3/services/event.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { UtilsService } from '@services/utils.service';
+import { ComponentsModule } from '@v3/components/components.module';
+import { UtilsService } from '@v3/services/utils.service';
 import { ActivatedRouteStub } from '@testing/activated-route-stub';
 import { TestUtils } from '@testing/utils';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 
 class Page {
@@ -33,13 +32,13 @@ describe('EventListComponent', () => {
   let component: EventListComponent;
   let fixture: ComponentFixture<EventListComponent>;
   let page: Page;
-  let eventsSpy: jasmine.SpyObj<EventListService>;
+  let eventsSpy: jasmine.SpyObj<EventService>;
   let utils: UtilsService;
   const testUtils = new TestUtils();
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [ComponentsModule],
       declarations: [EventListComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -47,10 +46,9 @@ describe('EventListComponent', () => {
           provide: UtilsService,
           useClass: TestUtils,
         },
-        NewRelicService,
         {
-          provide: EventListService,
-          useValue: jasmine.createSpyObj('EventListService', ['getEvents', 'getActivities'])
+          provide: EventService,
+          useValue: jasmine.createSpyObj('EventService', ['getEvents', 'getActivities'])
         },
         {
           provide: Router,
@@ -69,7 +67,7 @@ describe('EventListComponent', () => {
     fixture = TestBed.createComponent(EventListComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    eventsSpy = TestBed.inject(EventListService) as jasmine.SpyObj<EventListService>;
+    eventsSpy = TestBed.inject(EventService) as jasmine.SpyObj<EventService>;
     utils = TestBed.inject(UtilsService);
   });
 
