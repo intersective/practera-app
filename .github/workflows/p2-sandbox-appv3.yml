@@ -203,7 +203,7 @@ jobs:
 ##############################################################
       - name: Build Web Packages
         run: |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+          test -f projects/v3/environments/environment.ts && echo "environment here" || cp projects/v3/environments/environment.local.ts projects/v3/environments/environment.ts
           node_modules/.bin/ng build request --configuration=${{ env.BUILD_CONFIG }}
           node_modules/.bin/ng build v3 --configuration=${{ env.BUILD_CONFIG }}
 
