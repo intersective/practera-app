@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { Assessment, AssessmentService } from '@v3/app/services/assessment.service';
-import { TopicService } from '@v3/app/services/topic.service';
+import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { Topic, TopicService } from '@v3/app/services/topic.service';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -10,15 +10,12 @@ import { TopicService } from '@v3/app/services/topic.service';
   styleUrls: ['./activity-desktop.page.scss'],
 })
 export class ActivityDesktopPage implements OnInit {
-  activity$ = this.activityService.activity$;
-  currentTask$ = this.activityService.currentTask$;
-  topic$ = this.topicService.topic$;
-  assessment$ = this.assessmentService.assessment$;
-  submission$ = this.assessmentService.submission$;
-  review$ = this.assessmentService.review$;
-
   activity: Activity;
+  currentTask: Task;
   assessment: Assessment;
+  submission: Submission;
+  review: AssessmentReview;
+  topic: Topic;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,10 +25,12 @@ export class ActivityDesktopPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activity$.subscribe(res => this.activity = res);
-    this.assessment$.subscribe(res => {
-      this.assessment = res;
-    });
+    this.activityService.activity$.subscribe(res => this.activity = res);
+    this.activityService.currentTask$.subscribe(res => this.currentTask = res);
+    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
+    this.assessmentService.submission$.subscribe(res => this.submission = res);
+    this.assessmentService.review$.subscribe(res => this.review = res);
+    this.topicService.topic$.subscribe(res => this.topic = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, true);
     });

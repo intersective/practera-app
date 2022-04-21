@@ -40,8 +40,8 @@
           </ion-segment-button>
         </ion-segment>
 
-        <ng-container *ngIf="display === 'activities' && (milestones$ | async ) as milestones">
-          <ng-container *ngIf="milestones === null">
+        <ng-container *ngIf="display === 'activities'">
+          <ng-container *ngIf="!milestones">
             <ion-item><ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text></ion-item>
             <ion-item><ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text></ion-item>
           </ng-container>
