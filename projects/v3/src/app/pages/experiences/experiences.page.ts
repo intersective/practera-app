@@ -14,22 +14,26 @@ import { environment } from '@v3/environments/environment';
 })
 export class ExperiencesPage implements OnInit {
 
-  programs$ = this.service.programsWithProgress$;
+  programs$ = this.experienceService.programsWithProgress$;
 
   constructor(
     private router: Router,
-    private service: ExperienceService,
+    private experienceService: ExperienceService,
     public loadingController: LoadingController,
     private notificationsService: NotificationsService,
     private utils: UtilsService,
-    public storage: BrowserStorageService
+    private readonly storage: BrowserStorageService,
   ) { }
 
   ngOnInit() {
-    this.service.getPrograms();
+    this.experienceService.getPrograms();
   }
   get isMobile() {
     return this.utils.isMobile();
+  }
+
+  get instituteLogo() {
+    return this.storage.getConfig().instituteLogo;
   }
 
   async switchProgram(program: ProgramObj) {
@@ -39,7 +43,7 @@ export class ExperiencesPage implements OnInit {
     await loading.present();
 
     try {
-      const route = await this.service.switchProgramAndNavigate(program);
+      const route = await this.experienceService.switchProgramAndNavigate(program);
       loading.dismiss().then(() => {
         if (environment.demo) {
           return this.router.navigate(['v3','home']);
