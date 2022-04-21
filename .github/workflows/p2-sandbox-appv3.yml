@@ -184,7 +184,7 @@ jobs:
           CUSTOM_PATH_VIDEO: /appv3/dev/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
-          CUSTOM_S3_BUCKET: appv3-files.${{ env.PUBLICZONENAME }}
+          CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
@@ -239,8 +239,8 @@ jobs:
           rm serverless.yml .env
         env:
           APPV2S3BUCKET: appv3.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: appv3-files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: false
+          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKETEXIST: true
           S3VERSIONING: true
           NONCURRENTVERSION_EXPIREINDAYS: 30
 
