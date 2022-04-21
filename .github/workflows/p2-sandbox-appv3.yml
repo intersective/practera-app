@@ -213,7 +213,7 @@ jobs:
 ##########################################################
       - name: AWS S3 Sync operation
         run: |
-
+          mv serverless-appv3.yml serverless.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
