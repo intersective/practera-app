@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { Activity } from '@v3/app/services/activity.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { HomeService } from '@v3/services/home.service';
+import { HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
@@ -17,8 +17,9 @@ export class HomePage implements OnInit {
   experience$ = this.service.experience$;
   activityCount$ = this.service.activityCount$;
   experienceProgress$ = this.service.experienceProgress$;
-  milestones$ = this.service.milestonesWithProgress$;
   achievements$ = this.achievementService.achievements$;
+
+  milestones: Milestone[];
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +31,7 @@ export class HomePage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.service.milestonesWithProgress$.subscribe(res => this.milestones = res);
     this.route.params.subscribe(params => {
       this.service.getExperience();
       this.service.getMilestones();
