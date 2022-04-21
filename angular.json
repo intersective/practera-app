@@ -124,9 +124,6 @@
             },
             "dev": {
               "browserTarget": "app:build:dev"
-            },
-            "ci": {
-              "progress": false
             }
           }
         },
@@ -378,6 +375,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
+            "custom": {
+              "browserTarget": "v3:build:custom"
+            },
             "production": {
               "browserTarget": "v3:build:production"
             },
@@ -434,6 +434,9 @@
             "project": "projects/request/ng-package.json"
           },
           "configurations": {
+            "custom": {
+              "tsConfig": "projects/request/tsconfig.lib.prod.json"
+            },
             "production": {
               "tsConfig": "projects/request/tsconfig.lib.prod.json"
             },
