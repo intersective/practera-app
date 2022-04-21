@@ -1,8 +1,7 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(programs$ | async ) as programs">
-
     <div class="institute-logo-container">
-      <img [src]="storage.getConfig().instituteLogo || '/assets/logo.svg'" width="100%" [attr.alt]="'branding logo'">
+      <img [src]="instituteLogo || '/assets/logo.svg'" width="100%" [attr.alt]="'branding logo'">
     </div>
 
     <ion-grid class="ion-no-padding ion-no-margin">
