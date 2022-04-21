@@ -224,3 +224,16 @@ ion-chip.label {
   position: absolute;
   width: 1px;
 }
+
+/******************
+  list empty message
+******************/
+.list-empty-message {
+  text-align: center;
+  padding: 0 12px 18px;
+  border: 1px solid var(--practera-color-card-border);
+  box-shadow: none;
+  p {
+    margin: 20px 0 8px;
+  }
+}
