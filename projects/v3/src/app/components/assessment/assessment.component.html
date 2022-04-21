@@ -96,15 +96,14 @@
                 {{ question.name }}
                 <ion-text class="required-indicator ion-no-padding ion-no-margin" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
               </div>
-            </ion-list-header>
 
-            <ion-item lines="none" *ngIf="question.info || question.description" class="explanation">
               <ion-icon *ngIf="question.info"
-                color="primary"
                 class="icon-info vertical-middle"
                 (click)="showQuestionInfo(question.info)" name="information-circle-outline"
               ></ion-icon>
+            </ion-list-header>
 
+            <ion-item lines="none" *ngIf="question.description" class="explanation">
               <app-description
                 [name]="randomCode('reviewer-' + question.name)"
                 class="q-description paragraph ion-text-left gray-2"

@@ -8,6 +8,7 @@
 }
 .icon-info {
   font-size: 20px;
+  cursor: pointer;
 }
 .icon-backward {
   font-size: 20px !important;
@@ -40,7 +41,7 @@ ion-header ion-toolbar {
 
 ion-item {
   &.explanation {
-    --background: var(--practera-grey-25);
+    --background: var(--practera-light-grey-50);
   }
 }
 
