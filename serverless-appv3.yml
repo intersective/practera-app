@@ -150,7 +150,7 @@ resources:
       Properties: 
         ResponseHeadersPolicyConfig: 
           Comment: "practera-security-headers-for-${env:AppV3S3Bucket}"
-          Name: "practera-security-headers-for-APPv3"
+          Name: "practera-security-headers-for-APPv2"
           SecurityHeadersConfig: 
             StrictTransportSecurity: 
               AccessControlMaxAgeSec: 31536000
