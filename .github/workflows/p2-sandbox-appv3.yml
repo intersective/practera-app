@@ -17,8 +17,8 @@ on:
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  deploy-p2-sandbox:
-    name: deploy-p2-sandbox
+  deploy-p2-sandbox-appv3:
+    name: deploy-p2-sandbox-appv3
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -238,7 +238,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: appv3.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true
@@ -251,7 +251,7 @@ jobs:
 ##########################################################
       - name: AWS S3 Sync Operations
         run: |
-          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
+          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
           aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
 
 
@@ -261,7 +261,7 @@ jobs:
 ##########################################################
       - name: AWS Cloudfront Cache invalidation
         run: |
-          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
+          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
           for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
@@ -280,7 +280,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: deploy-p2-sandbox # Match the name above.
+          job_name: deploy-p2-sandbox-appv3 # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
