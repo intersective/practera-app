@@ -31,7 +31,7 @@ provider:
 resources:
 
   Conditions:
-    HasAPPv2BucketName: !Not [!Equals [ '${env:APPV2S3BUCKET}', '']]
+    HasAPPv2BucketName: !Not [!Equals [ '${env:AppV3S3Bucket}', '']]
     HasFilev2BucketName: !Not [!Equals [ '${env:FILESS3BUCKET}', '']]
     HasFilev2BucketAlreadyExist: !Equals [ '${env:FILESS3BUCKETEXIST}', false]
     HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
@@ -41,10 +41,10 @@ resources:
   
     
   Resources:
-    AppV2S3Bucket:
+    AppV3S3Bucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: !If [HasAPPv2BucketName, '${env:APPV2S3BUCKET}', !Ref 'AWS::NoValue']
+        BucketName: !If [HasAPPv2BucketName, '${env:AppV3S3Bucket}', !Ref 'AWS::NoValue']
         BucketEncryption: 
           ServerSideEncryptionConfiguration: 
           - ServerSideEncryptionByDefault:
@@ -60,18 +60,18 @@ resources:
 
 
     ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
-    AppV2S3BucketPolicy:
+    AppV3S3BucketPolicy:
       DependsOn: [AppV2CloudFrontOriginAccessIdentity]
       Type: AWS::S3::BucketPolicy
       Properties:
         Bucket:
-          Ref: AppV2S3Bucket
+          Ref: AppV3S3Bucket
         PolicyDocument:
           Statement:
           - Sid: S3-Bucket-Accesible via CDN OAI only
             Action: 's3:GetObject'
             Effect: Allow
-            Resource: !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
+            Resource: !Sub 'arn:aws:s3:::${AppV3S3Bucket}/*'
             Principal:
               CanonicalUser: !GetAtt AppV2CloudFrontOriginAccessIdentity.S3CanonicalUserId 
           - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5
@@ -79,8 +79,8 @@ resources:
             Principal: '*'
             Action: 's3:*'
             Resource:
-            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}'
-            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
+            - !Sub 'arn:aws:s3:::${AppV3S3Bucket}'
+            - !Sub 'arn:aws:s3:::${AppV3S3Bucket}/*'
             Condition:
               Bool:
                 'aws:SecureTransport': false
@@ -90,7 +90,7 @@ resources:
       Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
       Properties:
         CloudFrontOriginAccessIdentityConfig:
-          Comment: "Cloudfront Origin identity for ${env:APPV2S3BUCKET}"
+          Comment: "Cloudfront Origin identity for ${env:AppV3S3Bucket}"
 
     ## Specifying the CloudFront Distribution to server your Web Application
     AppV2CloudFrontDistribution:
@@ -99,8 +99,8 @@ resources:
       Properties:
         DistributionConfig:
           Aliases:
-            - ${env:APPV2S3BUCKET}
-          Comment: "Cloudfront Origin identity for ${env:APPV2S3BUCKET}"
+            - ${env:AppV3S3Bucket}
+          Comment: "Cloudfront Origin identity for ${env:AppV3S3Bucket}"
           DefaultCacheBehavior:
             AllowedMethods:
             - GET
@@ -118,7 +118,7 @@ resources:
               QueryString: false
             MaxTTL: 86400 # in seconds
             MinTTL: 60 # in seconds
-            TargetOriginId: ${env:APPV2S3BUCKET}
+            TargetOriginId: ${env:AppV3S3Bucket}
             ViewerProtocolPolicy: 'redirect-to-https'
             ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
           DefaultRootObject: index.html
@@ -133,8 +133,8 @@ resources:
           HttpVersion: http2
           IPV6Enabled: true
           Origins:
-          - DomainName: !GetAtt 'AppV2S3Bucket.RegionalDomainName'
-            Id: ${env:APPV2S3BUCKET}
+          - DomainName: !GetAtt 'AppV3S3Bucket.RegionalDomainName'
+            Id: ${env:AppV3S3Bucket}
             S3OriginConfig:
               OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
           PriceClass: 'PriceClass_All'
@@ -149,7 +149,7 @@ resources:
       Type: AWS::CloudFront::ResponseHeadersPolicy
       Properties: 
         ResponseHeadersPolicyConfig: 
-          Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
+          Comment: "practera-security-headers-for-${env:AppV3S3Bucket}"
           Name: "practera-security-headers-for-APPv2"
           SecurityHeadersConfig: 
             StrictTransportSecurity: 
@@ -187,7 +187,7 @@ resources:
       Properties:
         HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
         RecordSets:
-        - Name: ${env:APPV2S3BUCKET}
+        - Name: ${env:AppV3S3Bucket}
           Type: CNAME
           TTL: '3200'
           ResourceRecords:
@@ -198,7 +198,7 @@ resources:
       Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        AlarmDescription: '${env:APPV2S3BUCKET} - receives 4XX HTTP status codes from CDN'
+        AlarmDescription: '${env:AppV3S3Bucket} - receives 4XX HTTP status codes from CDN'
         Namespace: 'AWS/CloudFront'
         MetricName: 4xxErrorRate
         Statistic: Average
@@ -220,7 +220,7 @@ resources:
       Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        AlarmDescription: '${env:APPV2S3BUCKET} - receives 5XX HTTP status codes from CDN'
+        AlarmDescription: '${env:AppV3S3Bucket} - receives 5XX HTTP status codes from CDN'
         Namespace: 'AWS/CloudFront'
         MetricName: 5xxErrorRate
         Statistic: Average
@@ -242,7 +242,7 @@ resources:
       Condition: LiveServerOnly
       Type: 'AWS::CloudWatch::Alarm'
       Properties:
-        AlarmDescription: '${env:APPV2S3BUCKET} - receives Total Error Rate HTTP status codes from CDN'
+        AlarmDescription: '${env:AppV3S3Bucket} - receives Total Error Rate HTTP status codes from CDN'
         Namespace: 'AWS/CloudFront'
         MetricName: TotalErrorRate
         Statistic: Average
@@ -341,33 +341,22 @@ resources:
           
 
   Outputs:
-    AppV2CloudFrontDistributionOutput:
-      Value:
-        'Fn::GetAtt': [ AppV2CloudFrontDistribution, DomainName ]
-      Export:
-        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionOutput-${env:ENV}
     
-    AppV2S3Bucket:
+    AppV3S3Bucket:
       Description: 'Name of the S3 bucket storing the static files.'
-      Value: !Ref AppV2S3Bucket
+      Value: !Ref AppV3S3Bucket
       Export:
-        Name: ${env:STACK_NAME}-AppV2S3Bucket-${env:ENV}
+        Name: ${env:STACK_NAME}-AppV3S3Bucket-${env:ENV}
 
-    AppV2S3BucketURL:
+    AppV3S3BucketURL:
       Description: 'URL to static website.'
-      Value: https://${env:APPV2S3BUCKET}
+      Value: https://${env:AppV3S3Bucket}
       Export:
-        Name: ${env:STACK_NAME}-AppV2S3BucketURL-${env:ENV}
+        Name: ${env:STACK_NAME}-AppV3S3BucketURL-${env:ENV}
 
-    AppV2CloudFrontDistributionID:
+    AppV3CloudFrontDistributionID:
       Description: 'CloudFront distribution id'
       Value: !Ref AppV2CloudFrontDistribution
       Export:
-        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionID-${env:ENV}
+        Name: ${env:STACK_NAME}-AppV3CloudFrontDistributionID-${env:ENV}
 
-
-    FileV2S3Bucket:
-      Description: 'Name of the S3 bucket storing the static files.'
-      Value: '${env:FILESS3BUCKET}'
-      Export:
-        Name: ${env:STACK_NAME}-FileV2S3Bucket-${env:ENV}
