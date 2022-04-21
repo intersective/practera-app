@@ -1,0 +1,373 @@
+service: ${env:STACK_NAME}-${env:ROOTSTACK}
+frameworkVersion: '2'
+useDotenv: true
+enableLocalInstallationFallback: true
+
+
+provider:
+  logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
+  name: aws
+  runtime: nodejs14.x
+  region: ${env:REGION}
+  stage: ${env:ENV}
+  deploymentBucket:
+    maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
+    blockPublicAccess: true 
+    serverSideEncryption: AES256 
+    tags: 
+      StackName: ${env:STACK_NAME}
+      Env: ${env:ENV}
+      RootStack: ${env:ROOTSTACK}
+  stackTags: # Optional CF stack tags
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    RootStack: ${env:ROOTSTACK}
+  tags: # Optional service wide function tags
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    RootStack: ${env:ROOTSTACK}
+
+
+resources:
+
+  Conditions:
+    HasAPPv2BucketName: !Not [!Equals [ '${env:APPV2S3BUCKET}', '']]
+    HasFilev2BucketName: !Not [!Equals [ '${env:FILESS3BUCKET}', '']]
+    HasFilev2BucketAlreadyExist: !Equals [ '${env:FILESS3BUCKETEXIST}', false]
+    HasVersioning: !Equals [ '${env:S3VERSIONING}', true]
+    HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
+    HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
+    LiveServerOnly: !Equals [ '${env:ENV}', 'live']
+  
+    
+  Resources:
+    AppV2S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !If [HasAPPv2BucketName, '${env:APPV2S3BUCKET}', !Ref 'AWS::NoValue']
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+          - AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            Status: Enabled
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+            Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
+        VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
+
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    AppV2S3BucketPolicy:
+      DependsOn: [AppV2CloudFrontOriginAccessIdentity]
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: AppV2S3Bucket
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket-Accesible via CDN OAI only
+            Action: 's3:GetObject'
+            Effect: Allow
+            Resource: !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
+            Principal:
+              CanonicalUser: !GetAtt AppV2CloudFrontOriginAccessIdentity.S3CanonicalUserId 
+          - Sid: AllowSSLRequestsOnly # AWS Foundational Security Best Practices v1.0.0 S3.5
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${AppV2S3Bucket}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+    ## Specifying the CloudFront Origin Access Identity CDN Distribution to server your Web Application
+    AppV2CloudFrontOriginAccessIdentity:
+      Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: "Cloudfront Origin identity for ${env:APPV2S3BUCKET}"
+
+    ## Specifying the CloudFront Distribution to server your Web Application
+    AppV2CloudFrontDistribution:
+      DependsOn: [AppV2CloudFrontSecurityHeaderResponse]
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${env:APPV2S3BUCKET}
+          Comment: "Cloudfront Origin identity for ${env:APPV2S3BUCKET}"
+          DefaultCacheBehavior:
+            AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+            Compress: true
+            DefaultTTL: 3600 # in seconds
+            ForwardedValues:
+              Cookies:
+                Forward: none
+              QueryString: false
+            MaxTTL: 86400 # in seconds
+            MinTTL: 60 # in seconds
+            TargetOriginId: ${env:APPV2S3BUCKET}
+            ViewerProtocolPolicy: 'redirect-to-https'
+            ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
+          DefaultRootObject: index.html
+          CustomErrorResponses:
+            - ErrorCode: 404
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+            - ErrorCode: 403
+              ResponseCode: 200
+              ResponsePagePath: /index.html
+          Enabled: true
+          HttpVersion: http2
+          IPV6Enabled: true
+          Origins:
+          - DomainName: !GetAtt 'AppV2S3Bucket.RegionalDomainName'
+            Id: ${env:APPV2S3BUCKET}
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${AppV2CloudFrontOriginAccessIdentity}'
+          PriceClass: 'PriceClass_All'
+          ViewerCertificate:
+            AcmCertificateArn: '${env:CDNSharedACMCertificateArn}'
+            MinimumProtocolVersion: 'TLSv1.2_2021'  # OLD VALUE:'TLSv1.2_2019'
+            SslSupportMethod: 'sni-only'
+
+
+    # Specifying the CloudFront Distribution Security Response Header
+    AppV2CloudFrontSecurityHeaderResponse:
+      Type: AWS::CloudFront::ResponseHeadersPolicy
+      Properties: 
+        ResponseHeadersPolicyConfig: 
+          Comment: "practera-security-headers-for-${env:APPV2S3BUCKET}"
+          Name: "practera-security-headers-for-APPv2"
+          SecurityHeadersConfig: 
+            StrictTransportSecurity: 
+              AccessControlMaxAgeSec: 31536000
+              IncludeSubdomains: true
+              Override: true
+              Preload: true
+            ContentSecurityPolicy: 
+              ContentSecurityPolicy: "frame-ancestors 'self' https://*.practera.com;"
+              Override: true
+            ContentTypeOptions: 
+              Override: true
+            ReferrerPolicy: 
+              ReferrerPolicy: "strict-origin-when-cross-origin"
+              Override: true
+            XSSProtection: 
+              ModeBlock: true
+              Override: true
+              Protection: true
+          CustomHeadersConfig: 
+            Items: 
+              - 
+                Header: "Server"
+                Override: true
+                Value: "Server"
+              -  
+                Header: "Permissions-Policy"
+                Override: true
+                Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()"
+
+# Security Header Response CFN END
+
+    Route53RecordV2:
+      Type: 'AWS::Route53::RecordSetGroup'
+      Properties:
+        HostedZoneId: {'Fn::ImportValue': '${env:STACK_NAME}-PublicHostedZoneId-${env:ENV}'}
+        RecordSets:
+        - Name: ${env:APPV2S3BUCKET}
+          Type: CNAME
+          TTL: '3200'
+          ResourceRecords:
+            - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
+
+
+    HTTPCode4XXTooHighAlarm:
+      Condition: LiveServerOnly
+      Type: 'AWS::CloudWatch::Alarm'
+      Properties:
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives 4XX HTTP status codes from CDN'
+        Namespace: 'AWS/CloudFront'
+        MetricName: 4xxErrorRate
+        Statistic: Average
+        Period: 60
+        EvaluationPeriods: 3
+        ComparisonOperator: GreaterThanThreshold
+        Threshold: 3
+        AlarmActions:
+        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+        Dimensions:
+        - Name: Region
+          Value: Global
+        - Name: DistributionId
+          Value: !Ref AppV2CloudFrontDistribution
+        TreatMissingData: notBreaching
+        Unit: Percent
+    
+    HTTPCode5XXTooHighAlarm:
+      Condition: LiveServerOnly
+      Type: 'AWS::CloudWatch::Alarm'
+      Properties:
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives 5XX HTTP status codes from CDN'
+        Namespace: 'AWS/CloudFront'
+        MetricName: 5xxErrorRate
+        Statistic: Average
+        Period: 60
+        EvaluationPeriods: 3
+        ComparisonOperator: GreaterThanThreshold
+        Threshold: 3
+        AlarmActions:
+        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+        Dimensions:
+        - Name: Region
+          Value: Global
+        - Name: DistributionId
+          Value: !Ref AppV2CloudFrontDistribution
+        TreatMissingData: notBreaching
+        Unit: Percent
+
+    HTTPCodeTotalErrorRateTooHighAlarm:
+      Condition: LiveServerOnly
+      Type: 'AWS::CloudWatch::Alarm'
+      Properties:
+        AlarmDescription: '${env:APPV2S3BUCKET} - receives Total Error Rate HTTP status codes from CDN'
+        Namespace: 'AWS/CloudFront'
+        MetricName: TotalErrorRate
+        Statistic: Average
+        Period: 60
+        EvaluationPeriods: 3
+        ComparisonOperator: GreaterThanThreshold
+        Threshold: 3
+        AlarmActions:
+        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+        Dimensions:
+        - Name: Region
+          Value: Global
+        - Name: DistributionId
+          Value: !Ref AppV2CloudFrontDistribution
+        TreatMissingData: notBreaching
+        Unit: Percent
+
+
+  # FILE storage Bucket 
+    FileV2S3Bucket:
+      Condition: HasFilev2BucketAlreadyExist
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: !If [HasFilev2BucketName, '${env:FILESS3BUCKET}', !Ref 'AWS::NoValue']
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+          - AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            Status: Enabled
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+            Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
+        VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins: 
+                - 'https://*.practera.app'
+              AllowedMethods: 
+                - POST
+                - GET
+                - PUT
+              AllowedHeaders: 
+                - '*'
+              Id: CORSRule1
+              MaxAge: 3000
+              ExposedHeaders: [ETag]
+            -
+              AllowedOrigins: 
+                - 'https://*.practera.com'
+              AllowedMethods: 
+                - POST
+                - GET
+                - PUT
+              AllowedHeaders: 
+                - '*'
+              Id: CORSRule2
+              MaxAge: 3000
+              ExposedHeaders: [ETag]
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    FileV2S3BucketPolicy:
+      Condition: HasFilev2BucketAlreadyExist
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: '${env:FILESS3BUCKET}'
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket-Accesible to filestack uploads
+            Action: 
+              - 's3:PutObjectAcl'
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
+            Principal:
+              AWS: 
+                - 'arn:aws:iam::${env:FILESTACKAWSID}:user/filestack-uploads'
+          - Sid: S3-Bucket-Accesible to main practera account
+            Action: 
+              - 's3:PutObjectAcl'
+              - 's3:PutObject'
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
+            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
+            Principal:
+              AWS: 
+                - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
+          
+
+  Outputs:
+    AppV2CloudFrontDistributionOutput:
+      Value:
+        'Fn::GetAtt': [ AppV2CloudFrontDistribution, DomainName ]
+      Export:
+        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionOutput-${env:ENV}
+    
+    AppV2S3Bucket:
+      Description: 'Name of the S3 bucket storing the static files.'
+      Value: !Ref AppV2S3Bucket
+      Export:
+        Name: ${env:STACK_NAME}-AppV2S3Bucket-${env:ENV}
+
+    AppV2S3BucketURL:
+      Description: 'URL to static website.'
+      Value: https://${env:APPV2S3BUCKET}
+      Export:
+        Name: ${env:STACK_NAME}-AppV2S3BucketURL-${env:ENV}
+
+    AppV2CloudFrontDistributionID:
+      Description: 'CloudFront distribution id'
+      Value: !Ref AppV2CloudFrontDistribution
+      Export:
+        Name: ${env:STACK_NAME}-AppV2CloudFrontDistributionID-${env:ENV}
+
+
+    FileV2S3Bucket:
+      Description: 'Name of the S3 bucket storing the static files.'
+      Value: '${env:FILESS3BUCKET}'
+      Export:
+        Name: ${env:STACK_NAME}-FileV2S3Bucket-${env:ENV}
