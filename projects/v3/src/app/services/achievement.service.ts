@@ -48,7 +48,7 @@ export class AchievementService {
 
   getAchievements(order?) {
     if (environment.demo) {
-      return setTimeout(() => this._achievements$.next(this.demo.achievements), 1000);
+      return setTimeout(() => this._achievements$.next(this.demo.achievements.data), 1000);
     }
     if (!order) {
       order = 'asc';
@@ -58,7 +58,8 @@ export class AchievementService {
         order: order
       }
     })
-      .pipe(map((data: any) => {
+      .pipe(map((res: any) => {
+        const data = res.data;
         if (!Array.isArray(data)) {
           return this.request.apiResponseFormatError('Achievement format error');
         }
