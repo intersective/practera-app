@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AssessmentService } from '@v3/app/services/assessment.service';
+import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 
@@ -15,6 +15,10 @@ export class ReviewDesktopPage implements OnInit {
   submission$ = this.assessmentService.submission$;
   assessment$ = this.assessmentService.assessment$;
 
+  reviews: Review[];
+  assessment: Assessment;
+  submission: Submission;
+  review: AssessmentReview;
   // the current review in the review list
   currentReview: Review;
   submissionId: number;
@@ -29,6 +33,10 @@ export class ReviewDesktopPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.reviewService.reviews$.subscribe(res => this.reviews = res);
+    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
+    this.assessmentService.submission$.subscribe(res => this.submission = res);
+    this.assessmentService.review$.subscribe(res => this.review = res);
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     this.route.queryParams.subscribe(params => {
       this.reviewService.getReviews();

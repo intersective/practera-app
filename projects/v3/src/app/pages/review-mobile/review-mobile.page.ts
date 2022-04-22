@@ -9,8 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
   styleUrls: ['./review-mobile.page.scss'],
 })
 export class ReviewMobilePage implements OnInit {
-  reviews$ = this.reviewService.reviews$;
-
+  reviews: Review[];
   constructor(
     readonly utils: UtilsService,
     private route: ActivatedRoute,
@@ -19,6 +18,7 @@ export class ReviewMobilePage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.reviewService.reviews$.subscribe(res => this.reviews = res);
     this.route.queryParams.subscribe(params => {
       this.reviewService.getReviews();
     });

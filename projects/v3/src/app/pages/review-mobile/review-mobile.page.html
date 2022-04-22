@@ -9,7 +9,7 @@
 
 <ion-content>
   <app-review-list
-    [reviews]="reviews$ | async"
+    [reviews]="reviews"
     (navigate)="goto($event)"
   ></app-review-list>
 </ion-content>

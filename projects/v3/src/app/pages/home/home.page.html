@@ -63,7 +63,7 @@
           </ng-container>
         </ng-container>
 
-        <ng-container *ngIf="display === 'badges' && (achievements$ | async ) as achievements">
+        <ng-container *ngIf="display === 'badges'">
           <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
             <ion-icon class="large-icon" color="primary" name="ribbon-outline"></ion-icon>
             <p class="body-1">You have no badges yet!</p>

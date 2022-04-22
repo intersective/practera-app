@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
+import { Review, ReviewService } from '@v3/app/services/review.service';
 
 @Component({
   selector: 'app-tabs',
@@ -7,10 +8,15 @@ import { Platform } from '@ionic/angular';
   styleUrls: ['./tabs.page.scss'],
 })
 export class TabsPage implements OnInit {
-
-  constructor(private platform: Platform) { }
+  reviews: Review[];
+  constructor(
+    private platform: Platform,
+    private reviewService: ReviewService
+  ) { }
 
   ngOnInit() {
+    this.reviewService.reviews$.subscribe(res => this.reviews = res);
+    this.reviewService.getReviews();
   }
 
   get isMobile() {
