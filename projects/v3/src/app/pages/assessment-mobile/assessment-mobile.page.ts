@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task } from '@v3/services/activity.service';
-import { AssessmentService, Assessment } from '@v3/services/assessment.service';
+import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 
 @Component({
   selector: 'app-assessment-mobile',
@@ -9,11 +9,11 @@ import { AssessmentService, Assessment } from '@v3/services/assessment.service';
   styleUrls: ['./assessment-mobile.page.scss'],
 })
 export class AssessmentMobilePage implements OnInit {
-  assessment$ = this.assessmentService.assessment$;
-  submission$ = this.assessmentService.submission$;
-  review$ = this.assessmentService.review$;
+
 
   assessment: Assessment;
+  submission: Submission;
+  review: AssessmentReview;
   activityId: number;
   contextId: number;
   submissionId: number;
@@ -32,7 +32,9 @@ export class AssessmentMobilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.assessment$.subscribe(res => this.assessment = res);
+    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
+    this.assessmentService.submission$.subscribe(res => this.submission = res);
+    this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
       this.action = this.route.snapshot.data.action;
       this.fromPage = this.route.snapshot.data.from;

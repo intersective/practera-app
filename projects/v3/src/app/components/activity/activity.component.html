@@ -6,7 +6,7 @@
     <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75">{{ activity.tasks.length }} Tasks</ion-text>
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"></ion-skeleton-text>
 
-    <app-description [content]="activity.description"></app-description>
+    <app-description *ngIf="activity.description" [content]="activity.description"></app-description>
   </div>
 
   <ion-item class="headline-4 task-header" lines="none">Tasks</ion-item>

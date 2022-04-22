@@ -12,22 +12,22 @@
 
 <ion-content>
   <ion-grid class="ion-no-padding">
-    <ion-row *ngIf="(activity$ | async) as activity">
+    <ion-row>
       <ion-col size="12" size-md="5" size-lg>
         <app-activity
           [activity]="activity"
-          [currentTask]="currentTask$ | async"
+          [currentTask]="currentTask"
           (navigate)="goToTask($event)"
         ></app-activity>
       </ion-col>
 
       <ion-col size="12" size-md="7" class="border-left">
-        <ng-container *ngIf="(currentTask$ | async ) as currentTask">
+        <ng-container *ngIf="currentTask">
           <app-assessment
             *ngIf="currentTask.type === 'Assessment'"
-            [assessment]="assessment$ | async"
-            [submission]="submission$ | async"
-            [review]="review$ | async"
+            [assessment]="assessment"
+            [submission]="submission"
+            [review]="review"
             [contextId]="currentTask.contextId"
             action="assessment"
             (save)="saveAssessment($event, currentTask)"
@@ -37,7 +37,7 @@
 
           <app-topic
             *ngIf="currentTask.type === 'Topic'"
-            [topic]="topic$ | async"
+            [topic]="topic"
             (continue)="topicComplete(currentTask)"
           ></app-topic>
         </ng-container>

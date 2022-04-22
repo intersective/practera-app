@@ -15,9 +15,9 @@
 <ion-content>
   <app-assessment
     #assessmentEle
-    [assessment]="assessment$ | async"
-    [submission]="submission$ | async"
-    [review]="review$ | async"
+    [assessment]="assessment"
+    [submission]="submission"
+    [review]="review"
     [contextId]="contextId"
     [action]="action"
     (save)="saveAssessment($event)"

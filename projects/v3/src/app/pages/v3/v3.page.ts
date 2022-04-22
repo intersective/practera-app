@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ModalController, PopoverController } from '@ionic/angular';
+import { Review, ReviewService } from '@v3/app/services/review.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { SettingsPage } from '../settings/settings.page';
 
@@ -8,7 +9,8 @@ import { SettingsPage } from '../settings/settings.page';
   templateUrl: './v3.page.html',
   styleUrls: ['./v3.page.scss'],
 })
-export class V3Page {
+export class V3Page implements OnInit {
+  reviews: Review[];
   appPages = [
     {
       title: 'Home',
@@ -21,11 +23,6 @@ export class V3Page {
       icon: 'calendar'
     },
     {
-      title: 'Reviews',
-      url: '/v3/review-desktop',
-      icon: 'eye'
-    },
-    {
       title: 'Messages',
       url: '/v3/messages',
       icon: 'mail'
@@ -34,8 +31,39 @@ export class V3Page {
   constructor(
     private modalController: ModalController,
     private popoverController: PopoverController,
-    private animationService: AnimationsService
+    private animationService: AnimationsService,
+    private reviewService: ReviewService
   ) {
+  }
+
+  ngOnInit(): void {
+    this.reviewService.reviews$.subscribe(res => {
+      if (res && res.length) {
+        this.appPages = [
+          {
+            title: 'Home',
+            url: '/v3/home',
+            icon: 'home'
+          },
+          {
+            title: 'Events',
+            url: '/v3/events',
+            icon: 'calendar'
+          },
+          {
+            title: 'Reviews',
+            url: '/v3/review-desktop',
+            icon: 'eye'
+          },
+          {
+            title: 'Messages',
+            url: '/v3/messages',
+            icon: 'mail'
+          }
+        ];
+      }
+    });
+    this.reviewService.getReviews();
   }
 
   async presentModal() {
