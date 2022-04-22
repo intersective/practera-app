@@ -8,8 +8,6 @@ import { ActivityService, Task, Activity } from '@v3/app/services/activity.servi
   styleUrls: ['./activity-mobile.page.scss'],
 })
 export class ActivityMobilePage implements OnInit {
-  activity$ = this.activityService.activity$;
-
   activity: Activity;
 
   constructor(
@@ -19,7 +17,7 @@ export class ActivityMobilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activity$.subscribe(res => this.activity = res);
+    this.activityService.activity$.subscribe(res => this.activity = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, false);
     });

@@ -17,9 +17,9 @@ export class HomePage implements OnInit {
   experience$ = this.service.experience$;
   activityCount$ = this.service.activityCount$;
   experienceProgress$ = this.service.experienceProgress$;
-  achievements$ = this.achievementService.achievements$;
 
   milestones: Milestone[];
+  achievements: Achievement[];
 
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +32,7 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.service.milestonesWithProgress$.subscribe(res => this.milestones = res);
+    this.achievementService.achievements$.subscribe(res => this.achievements = res);
     this.route.params.subscribe(params => {
       this.service.getExperience();
       this.service.getMilestones();

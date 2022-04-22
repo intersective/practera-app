@@ -13,7 +13,7 @@
 
       <ion-col size="12" size-md="5" class="border-right">
         <app-review-list
-          [reviews]="reviews$ | async"
+          [reviews]="reviews"
           [currentReview]="currentReview"
           [goToFirstOnSwitch]="true"
           (navigate)="goto($event)"
@@ -23,9 +23,9 @@
       <ion-col size="12" size-md="7">
         <app-assessment
           *ngIf="!noReview"
-          [assessment]="assessment$ | async"
-          [submission]="submission$ | async"
-          [review]="review$ | async"
+          [assessment]="assessment"
+          [submission]="submission"
+          [review]="review"
           action="review"
         ></app-assessment>
 
