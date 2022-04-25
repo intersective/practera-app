@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, forkJoin, Observable, of, pipe } from 'rxjs';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap } from 'rxjs/operators';
@@ -215,11 +215,11 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
-    return forkJoin([
+    return from([
+      this.getReviews(),
       this.getNewJwt(),
       this.sharedService.getTeamInfo(),
       this.getMyInfo(),
-      this.getReviews(),
       this.getEvents()
     ]);
   }
