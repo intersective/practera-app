@@ -52,13 +52,14 @@
       "@v3/environments/*": [
         "projects/v3/src/environments/*"
       ],
-      "@v3/shared/*": [
-        "projects/v3/src/app/shared/*"
-      ],
       "apollo": [
         "dist/apollo/apollo",
         "dist/apollo"
-      ]
+      ],
+      "request": [
+        "dist/request/request",
+        "dist/request"
+      ],
     },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
