@@ -1,4 +1,4 @@
-<ng-container *ngIf="!doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
   <ion-list class="ion-no-padding">
     <ion-item *ngIf="!submission?.answer"
       class="no-answers item-bottom-border"
