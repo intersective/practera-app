@@ -2,13 +2,11 @@
   --background: #f7f7f9 !important;
 
   ion-grid,
-  ion-row {
+  .card-row {
     height: -webkit-fill-available;
   }
   .institute-logo-container {
-    position: absolute;
-    top: 20px;
-    left: 20px;
+    padding: 20px;
     img {
       height: 88px;
     }
@@ -25,7 +23,7 @@
     min-width: 576px;
     min-height: 675px;
     max-width: 1016px;
-    max-height: 724px;
+    margin-bottom: 40px;
 
     h1 {
       margin-bottom: 6px;

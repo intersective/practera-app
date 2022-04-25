@@ -1,11 +1,15 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(programs$ | async ) as programs">
-    <div class="institute-logo-container">
-      <img [src]="instituteLogo || '/assets/logo.svg'" width="100%" [attr.alt]="'branding logo'">
-    </div>
 
     <ion-grid class="ion-no-padding ion-no-margin">
-      <ion-row class="ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
+      <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
+        <ion-col class="ion-no-padding ion-no-margin">
+          <div class="institute-logo-container">
+            <img [src]="instituteLogo || '/assets/logo.svg'" width="100%" [attr.alt]="'branding logo'">
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
         <ion-col class="ion-no-padding ion-no-margin">
 
           <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none">Experiences</ion-item>
