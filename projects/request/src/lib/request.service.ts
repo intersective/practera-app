@@ -250,7 +250,7 @@ export class RequestService {
         },
         2000
       );
-      this.router.navigate(['logout']);
+      this.router.navigate(['auth', 'logout']);
     }
     // if error.error is a html template error (when try to read remote version.txt)
     if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
