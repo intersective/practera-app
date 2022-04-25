@@ -21,7 +21,7 @@
 </ng-container>
 
 <ng-container *ngIf="doAssessment">
-  <div class="ion-padding-horizontal ion-padding-top textarea-border">
+  <div class="ion-padding textarea-border">
     <ion-textarea
       [(ngModel)]="answer"
       #answerEle
@@ -29,6 +29,7 @@
       (ionFocus)="onFocus($event)"
       (ionChange)="onChange()"
       [disabled]="control?.disabled"
+      class="ion-no-margin"
       placeholder="Please add your answer here"
     ></ion-textarea>
     <ion-text *ngFor="let error of errors" color="danger">
