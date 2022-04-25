@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, from, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -84,7 +84,7 @@ export class ExperienceService {
     mergeMap(
       async programs => {
         const projectIds = programs.map(program => program.project.id);
-        await this.getProgresses(projectIds).subscribe(
+        this.getProgresses(projectIds).subscribe(
           res => {
             res.forEach(progress => {
               const i = programs.findIndex(program => program.project.id === progress.id);
@@ -221,13 +221,13 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
-    return from([
-      this.getReviews(),
+    return forkJoin([
       this.getNewJwt(),
+      this.getReviews(),
       this.sharedService.getTeamInfo(),
       this.getMyInfo(),
       this.getEvents()
-    ]);
+    ]).pipe(catchError(error => of(error)));;
   }
 
   /**
@@ -277,20 +277,20 @@ export class ExperienceService {
     }));
   }
 
-  getReviews() {
+  getReviews(): Observable<any> {
     if (environment.demo) {
       this.storage.setUser({
         hasReviews: false
       });
       return of([]);
     }
+
     this.reviewService.getReviews();
-    this.reviewService.reviews$.subscribe(res => {
+    return this.reviewService.reviews$.pipe(tap(res => {
       this.storage.setUser({
         hasReviews: (res && res.length > 0)
       });
-      return res;
-    });
+    }));
   }
 
   getEvents() {
@@ -344,7 +344,9 @@ export class ExperienceService {
         return ['experiences'];
       } else {
         // one program object -> {}
-        await this.switchProgram(programs).toPromise();
+        this.switchProgram(programs).subscribe(res => {
+          console.log('res::', res);
+        });
       }
 
       // await this.pusherService.initialise({ unsubscribe: true });

@@ -113,6 +113,6 @@ export class NotificationsPage implements OnInit {
   }
 
   goToChat(todoItem?: TodoItem) {
-    return this.router.navigate(['app', 'chat']);
+    return this.router.navigate(['v3', 'chat']);
   }
 }
