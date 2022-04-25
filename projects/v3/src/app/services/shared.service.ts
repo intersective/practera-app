@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
-import { RequestService } from '@v3/shared/request/request.service';
+import { RequestService } from 'request';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';

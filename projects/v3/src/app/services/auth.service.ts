@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { QueryEncoder, RequestService } from '@v3/shared/request/request.service';
+import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
@@ -217,7 +217,7 @@ export class AuthService {
     this.storage.setConfig(config);
 
     if (redirect) {
-      window.location.href = '/';
+      return this.router.navigate(['/'], navigationParams);
     }
   }
 

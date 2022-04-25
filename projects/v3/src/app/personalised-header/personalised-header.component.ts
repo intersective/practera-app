@@ -30,8 +30,7 @@ export class PersonalisedHeaderComponent implements OnInit {
   }
 
   async settings(): Promise<void> {
-    let modal;
-    modal = await this.modalController.create({
+    const modal = await this.modalController.create({
       component: SettingsPage,
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
