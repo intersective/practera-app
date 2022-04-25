@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { RequestService } from '@v3/shared/request/request.service';
+import { RequestService } from 'request';
 import { map, mergeMap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 

@@ -4,7 +4,7 @@ import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
-import { RequestService } from '@v3/shared/request/request.service';
+import { RequestService } from 'request';
 import { catchError, concatMap, map } from 'rxjs/operators';
 
 enum ClientType {
