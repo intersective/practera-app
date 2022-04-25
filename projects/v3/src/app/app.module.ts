@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RequestInterceptor } from '@v3/services/request.interceptor';
 import { IonicModule } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
-import { RequestModule } from '@v3/shared/request/request.module';
+import { RequestModule } from 'request';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
