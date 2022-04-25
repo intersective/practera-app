@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from 'request';
+import { RequestService } from '@v3/shared/request/request.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';

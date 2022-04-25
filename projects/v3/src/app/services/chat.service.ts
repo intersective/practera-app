@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ApolloService } from '@v3/services/apollo.service';
-import { RequestService } from 'request';
+import { RequestService } from '@v3/shared/request/request.service';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';

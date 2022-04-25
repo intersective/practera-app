@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RequestService } from 'request';
+import { RequestService } from '@v3/shared/request/request.service';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';

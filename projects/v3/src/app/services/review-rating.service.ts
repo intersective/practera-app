@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { RequestService } from 'request';
+import { RequestService } from '@v3/shared/request/request.service';
 
 const api = {
   post: {
