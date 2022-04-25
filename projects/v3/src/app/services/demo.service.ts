@@ -129,15 +129,17 @@ export class DemoService {
   }
 
   get achievements() {
-    return Array(5).fill(1).map((v, i) => ({
-      id: i + 1,
-      name: `Badge${ i + 1 }`,
-      description: `Badge description${ i + 1 }`,
-      image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
-      points: Math.floor(Math.random() * 1000),
-      isEarned: i < 3,
-      earnedDate: '2021-10-04 05:44:49'
-    }));
+    return {
+      data: Array(5).fill(1).map((v, i) => ({
+        id: i + 1,
+        name: `Badge${ i + 1 }`,
+        description: `Badge description${ i + 1 }`,
+        image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
+        points: Math.floor(Math.random() * 1000),
+        isEarned: i < 3,
+        earnedDate: '2021-10-04 05:44:49'
+      }))
+    };
   }
 
   get notifications() {
