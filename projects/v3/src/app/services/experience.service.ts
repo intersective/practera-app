@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { BehaviorSubject, forkJoin, from, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap } from 'rxjs/operators';
@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
-import { RequestService } from 'request';
+import { RequestService } from '@v3/shared/request/request.service';
 
 /**
  * @name api
@@ -221,7 +221,7 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
-    return from([
+    return forkJoin([
       this.getReviews(),
       this.getNewJwt(),
       this.sharedService.getTeamInfo(),
