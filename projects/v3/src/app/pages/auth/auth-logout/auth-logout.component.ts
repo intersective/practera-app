@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { switchMap } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 
 @Component({
@@ -8,13 +7,10 @@ import { AuthService } from '@v3/services/auth.service';
   template: '',
 })
 export class AuthLogoutComponent implements OnInit {
-  routeUrl = '/logout';
   constructor(
-    public router: Router,
     private authService: AuthService,
     private route: ActivatedRoute
   ) {
-
   }
 
   ngOnInit() {
