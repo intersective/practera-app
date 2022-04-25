@@ -104,6 +104,7 @@ export class AuthDirectLoginComponent implements OnInit {
       // switch to the program
       await this.experienceService.switchProgram(program).toPromise();
     }
+
     let referrerUrl = '';
     switch (redirect) {
       case 'home':

@@ -63,7 +63,6 @@ export class V3Page implements OnInit {
         ];
       }
     });
-    this.reviewService.getReviews();
   }
 
   async presentModal() {
