@@ -7,6 +7,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
+import { EventService } from '@v3/services/event.service';
+import { ReviewService } from '@v3/services/review.service';
 import { RequestService } from 'request';
 
 /**
@@ -73,6 +75,8 @@ export interface ProjectProgress {
 })
 export class ExperienceService {
 
+  review$ = this.reviewService.reviews$;
+
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
 
@@ -100,7 +104,9 @@ export class ExperienceService {
     private apolloService: ApolloService,
     private sharedService: SharedService,
     private storage: BrowserStorageService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private eventService: EventService,
+    private reviewService: ReviewService
   ) { }
 
   async getPrograms() {
@@ -278,12 +284,13 @@ export class ExperienceService {
       });
       return of([]);
     }
-    // return this.reviewListService.getReviews().pipe(map(data => {
-    //   this.storage.setUser({
-    //     hasReviews: (data && data.length > 0)
-    //   });
-    //   return data;
-    // }));
+    this.reviewService.getReviews();
+    this.reviewService.reviews$.subscribe(res => {
+      this.storage.setUser({
+        hasReviews: (res && res.length > 0)
+      });
+      return res;
+    });
   }
 
   getEvents() {
@@ -293,12 +300,12 @@ export class ExperienceService {
       });
       return of([]);
     }
-    // return this.eventsService.getEvents().pipe(map(events => {
-    //   this.storage.setUser({
-    //     hasEvents: !this.utils.isEmpty(events)
-    //   });
-    //   return events;
-    // }));
+    return this.eventService.getEvents().pipe(map(events => {
+      this.storage.setUser({
+        hasEvents: !this.utils.isEmpty(events)
+      });
+      return events;
+    }));
   }
 
   checkIsOneProgram(programs?) {
@@ -332,12 +339,9 @@ export class ExperienceService {
       return ['experiences'];
     }
     if (!this.utils.isEmpty(programs)) {
-      // Array with multiple program objects -> [{},{},{},{}]
-      if (Array.isArray(programs) && !this.checkIsOneProgram(programs)) {
+      // Array with multiple program objects or one program object -> [{},{},{},{}] pr [{}]
+      if (Array.isArray(programs)) {
         return ['experiences'];
-        // Array with one program object -> [{}]
-      } else if (Array.isArray(programs) && this.checkIsOneProgram(programs)) {
-        await this.switchProgram(programs[0]).toPromise();
       } else {
         // one program object -> {}
         await this.switchProgram(programs).toPromise();
