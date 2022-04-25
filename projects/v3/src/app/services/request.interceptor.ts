@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@angular/core';
 import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
-import { RequestConfig } from 'request';
+import { RequestConfig } from '@v3/shared/request/request.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
 
@@ -53,7 +53,7 @@ export class RequestInterceptor implements HttpInterceptor {
     return next.handle(req.clone({
       headers: new HttpHeaders(headers),
       params: paramsInject,
-    })).pipe(response => {
+    })).pipe((response) => {
       this._refreshApikey(response);
       return response;
     });
