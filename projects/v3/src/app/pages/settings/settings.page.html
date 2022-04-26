@@ -30,19 +30,23 @@
         </div>
       </ion-item>
       <ion-item>
-        <ion-label>Name</ion-label>
+        <ion-label style="font-weight: bolder;opacity: 1;">Name</ion-label>
         <ion-input slot="end" [placeholder]="profile.name" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label>Email</ion-label>
+        <ion-label style="font-weight: bolder;opacity: 1;">Email</ion-label>
         <ion-input slot="end" [placeholder]="profile.email" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item-divider>
         <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
       </ion-item-divider>
-      <ion-item *ngIf="profile.contactNumber">
-        <ion-label>Mobile Number</ion-label>
-        <ion-input slot="end" [placeholder]="profile.contactNumber"></ion-input>
+      <ion-item>
+        <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
+        <ion-input slot="end" [placeholder]="profile.contactNumber || 0123456789"></ion-input>
+      </ion-item>
+      <ion-item *ngIf="false">
+        <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
+        <app-contact-number-form [page]="'settings'"></app-contact-number-form>
       </ion-item>
       <ion-item-divider>
         <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>
