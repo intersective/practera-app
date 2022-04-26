@@ -70,7 +70,7 @@ export class HomeService {
           }
           // add the progress to the activities
           const activityProgress = [];
-          progress.milestones.forEach(m => m.activities.forEach(a => activityProgress[a.id] = a.progress));
+          progress.milestones.forEach(m => m.activities ? m.activities.forEach(a => activityProgress[a.id] = a.progress) : null);
           milestones.forEach((milestone, mIndex) => {
             if (!milestone.activities || !milestone.activities.length) {
               return;
