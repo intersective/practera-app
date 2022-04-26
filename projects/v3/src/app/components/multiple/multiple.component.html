@@ -1,4 +1,4 @@
-<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
   <ion-list class="ion-no-padding">
     <ion-item *ngIf="!submission?.answer"
       class="no-answers item-bottom-border"
@@ -7,6 +7,7 @@
       <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
       <ion-label size="small">No answers were submitted.</ion-label>
     </ion-item>
+
     <ng-container *ngFor="let choice of question.choices; let i = index">
       <ng-container>
         <ion-item lines="none"
@@ -26,7 +27,7 @@
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
-          <div class="white-space-normal explanation"
+          <div class="white-space-normal explanation ion-padding-horizontal"
           [ngClass]="{ 'explanation-container': i !== question.choices.length - 1 }">
             <p class="subtitle-2 title">Explanation</p>
             <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
@@ -55,7 +56,7 @@
         </ion-item>
         <ng-container
         *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
-          <div class="white-space-normal explanation" [ngClass]="{ 'explanation-container': i !== question.choices.length - 1}">
+          <div class="white-space-normal explanation ion-padding-horizontal" [ngClass]="{ 'explanation-container': i !== question.choices.length - 1}">
             <p class="subtitle-2 title">Explanation</p>
             <p class="white-space-normal body-2 gray-3" [innerHtml]="choice.explanation"></p>
           </div>
