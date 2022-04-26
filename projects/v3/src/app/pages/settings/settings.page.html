@@ -44,7 +44,7 @@
         <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
         <ion-input slot="end" [placeholder]="profile.contactNumber || 0123456789"></ion-input>
       </ion-item>
-      <ion-item>
+      <ion-item *ngIf="false">
         <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
         <app-contact-number-form [page]="'settings'"></app-contact-number-form>
       </ion-item>
