@@ -99,7 +99,7 @@ export class TopicService {
       topic.videolink = thisTopic.Story.videolink;
     }
     topic.files = thisTopic.Filestore.map(item => ({url: item.slug , name: item.name}));
-
+    this._topic$.next(topic);
     return topic;
   }
 
