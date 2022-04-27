@@ -61,7 +61,7 @@
 
     <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}"
       *ngIf="doAssessment">
-      {{ this.utils.dueDateFormatter(assessment.dueDate) }}
+      {{ utils.dueDateFormatter(assessment.dueDate) }}
     </p>
 
 
@@ -114,7 +114,7 @@
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
               <ion-item *ngIf="!doAssessment && (
-                (!question.reviewerOnly && !submission?.answers[question.id]) ||
+                (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
               )" class="no-answers item-bottom-border ion-padding-bottom" lines="none">
                 <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
