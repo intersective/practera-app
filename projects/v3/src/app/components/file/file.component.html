@@ -1,12 +1,7 @@
 <div *ngIf="!doAssessment && !doReview && submissionStatus !== 'in progress' && reviewStatus !== 'in progress'">
-  <ion-item *ngIf="!(submission?.answer)" class="no-answers item-bottom-border" lines="none">
-    <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
-    <ion-label size="small">No answers were submitted.</ion-label>
-  </ion-item>
-
   <ng-container *ngIf="submission?.answer">
-    <ion-item class="item-bottom-border" lines="none">
-      <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
+    <ion-item lines="none">
+      <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label orange">Learner's answer</ion-chip></p>
       </ion-label>
     </ion-item>
@@ -15,8 +10,8 @@
   </ng-container>
 
   <ng-container *ngIf="review?.answer">
-    <ion-item class="item-bottom-border" lines="none">
-      <ion-label class="ion-text-wrap white-space-normal body-2 gray-3">
+    <ion-item lines="none">
+      <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label yellow">Expert's answer</ion-chip></p>
       </ion-label>
     </ion-item>

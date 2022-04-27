@@ -1,9 +1,4 @@
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
-  <ion-item *ngIf="!submission?.answer" class="no-answers item-bottom-border" lines="none">
-    <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
-    <ion-label size="small">No answers were submitted.</ion-label>
-  </ion-item>
-
   <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
     <p class="body-2 gray-3">{{ submission?.answer }}</p>

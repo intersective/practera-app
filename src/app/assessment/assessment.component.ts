@@ -721,6 +721,7 @@ export class AssessmentComponent extends RouterEnter {
     if (!this.storage.getUser().hasReviewRating) {
       return;
     }
+
     this.continueBtnLoading = true;
     this.newRelic.actionText('Waiting for review rating API response.');
     try {
