@@ -1,6 +1,9 @@
-<ion-button (click)="notifications()">
-  <ion-icon slot="icon-only" name="notifications"></ion-icon>
-</ion-button>
-<ion-button (click)="settings()">
-  <ion-icon slot="icon-only" name="person-circle"></ion-icon>
-</ion-button>
+<div class="buttons">
+  <ion-button (click)="notifications()">
+    <ion-icon slot="icon-only" name="notifications"></ion-icon>
+  </ion-button>
+  <ion-avatar (click)="settings()" class="ion-margin-horizontal">
+    <img *ngIf="user?.image" [src]="user?.image" alt="Profile Image">
+    <ion-icon *ngIf="!user?.image" slot="icon-only" name="person-circle"></ion-icon>
+  </ion-avatar>
+</div>
