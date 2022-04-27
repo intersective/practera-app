@@ -3,13 +3,6 @@ ion-item ion-label {
 }
 
 ion-item {
-  &.no-answers {
-    --background: #FDE0CE;
-    color: var(--ion-text-color);
-    ion-label {
-      font-size: smaller;
-    }
-  }
   &.item-bottom-border {
     border-bottom: 1px solid var(--border-color);
     .item-lines- {
@@ -32,7 +25,7 @@ ion-textarea {
 .explanation {
   &.explanation-container {
     padding-bottom: 8px;
-    border-bottom: 1px solid var(--practera-30-Percent-gray);
+    border-bottom: 1px solid var(--practera-15-percent-gray);
   }
 
   .title {

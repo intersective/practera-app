@@ -7,15 +7,6 @@ ion-textarea {
 }
 
 ion-item {
-  &.no-answers {
-    --background: #FDE0CE;
-    color: var(--ion-text-color);
-
-    ion-label {
-      font-size: smaller;
-    }
-  }
-
   &.item-bottom-border {
     border-bottom: 1px solid var(--border-color);
 
