@@ -43,6 +43,23 @@ ion-item {
   &.explanation {
     --background: var(--practera-light-grey-50);
   }
+
+  &.no-answers {
+    --background: #FDE0CE;
+    color: var(--ion-text-color);
+
+    ion-label {
+      font-size: smaller;
+    }
+  }
+
+  &.item-bottom-border {
+    border-bottom: 1px solid var(--border-color);
+
+    .item-lines- {
+      border-bottom: none;
+    }
+  }
 }
 
 .member-detail-container {

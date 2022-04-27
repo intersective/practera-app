@@ -5,7 +5,7 @@ import { UtilsService } from '@v3/services/utils.service';
 @Component({
   selector: 'app-oneof',
   templateUrl: 'oneof.component.html',
-  styleUrls: ['oneof.component.scss'],
+  styleUrls: ['./oneof.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
