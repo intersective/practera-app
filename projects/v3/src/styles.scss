@@ -234,3 +234,33 @@ ion-chip.label {
     margin: 20px 0 8px;
   }
 }
+
+ion-note.helper {
+  padding: 1em;
+}
+
+/******************
+  ion-button
+******************/
+ion-button.practera-btn {
+  --border-radius: 8px;
+  --box-shadow: none;
+  --background-focused: rgb(245, 66, 108) !important;
+  text-transform: uppercase;
+
+  &.mobile-btn {
+    height: 32px;
+    width: 94px;
+  }
+}
+@media (max-width: 768px) {
+  ion-button.btn-cta {
+    width: 311px;
+  }
+}
+@media (min-width: 768px) {
+  ion-button.btn-cta {
+    width: 420px;
+  }
+}
+
