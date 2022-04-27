@@ -22,7 +22,7 @@ export class AppComponent {
   }
 
   initializeApp() {
-    this.platform.ready().then(async () => {
+    this.platform.ready().then(() => {
       // if (environment.production) {
       //   // watch version update
       //   this.versionCheckService.initiateVersionCheck();
