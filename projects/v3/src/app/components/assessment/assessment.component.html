@@ -113,10 +113,13 @@
             </ion-item>
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
-              <p class="ion-padding" *ngIf="!doAssessment && (
-                (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
-                (!(isPendingReview) && question.reviewerOnly && review && !review.answers[question.id])
-              )"><i>No Answer Submitted</i></p>
+              <ion-item *ngIf="!doAssessment && (
+                (!question.reviewerOnly && !submission?.answers[question.id]) ||
+                (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
+              )" class="no-answers item-bottom-border ion-padding-bottom" lines="none">
+                <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
+                <ion-label size="small">No answers were submitted.</ion-label>
+              </ion-item>
 
               <app-text *ngSwitchCase="'text'"
                 [question]="question"
