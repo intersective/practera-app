@@ -37,12 +37,14 @@ export class TopicComponent implements OnChanges {
 
   ngOnChanges(): void {
     this.continuing = false;
-    if (this.topic && this.topic.videolink) {
-      this._setVideoUrlElelemts();
+    if (this.topic) {
+      if (this.topic.videolink) {
+        this._setVideoUrlElelemts();
+      }
+      this._initVideoPlayer();
     }
     // mark topic as started after topic load
     // this._markAsStartStop('started');
-    this._initVideoPlayer();
   }
 
   ionViewWillLeave() {
@@ -52,6 +54,7 @@ export class TopicComponent implements OnChanges {
   }
 
   private _setVideoUrlElelemts() {
+    this.iframeHtml = null;
     if (this.topic.videolink.includes('vimeo') || this.topic.videolink.includes('youtube')) {
       this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' } }) || null;
     }
