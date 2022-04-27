@@ -23,39 +23,32 @@
         <div class="avatar-and-profile">
           <ion-avatar>
             <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+            <p *ngIf="imageUpdating" class="loading-icon">
+              <ion-spinner name="bubbles"></ion-spinner>
+            </p>
           </ion-avatar>
 
-          <file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
-            (complete)="uploadProfileImage($event)"></file-stack>
+          <file-stack
+            [accept]="acceptFileTypes"
+            [fileType]="'image'"
+            [type]="'profileImage'"
+            (complete)="uploadProfileImage($event)"
+          ></file-stack>
+
         </div>
       </ion-item>
       <ion-item>
         <ion-label style="font-weight: bolder;opacity: 1;">Name</ion-label>
-        <ion-input slot="end" [placeholder]="profile.name" [disabled]="true"></ion-input>
+        <ion-input class="ion-no-padding ion-no-margin" slot="end" [placeholder]="profile.name" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item>
         <ion-label style="font-weight: bolder;opacity: 1;">Email</ion-label>
-        <ion-input slot="end" [placeholder]="profile.email" [disabled]="true"></ion-input>
+        <ion-input class="ion-no-padding ion-no-margin" slot="end" [placeholder]="profile.email" [disabled]="true"></ion-input>
       </ion-item>
       <ion-item-divider>
         <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
       </ion-item-divider>
-      <ion-item>
-        <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
-        <ion-input slot="end" [placeholder]="profile.contactNumber || 0123456789"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
-        <app-contact-number-form [page]="'settings'"></app-contact-number-form>
-      </ion-item>
-      <ion-item-divider>
-        <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>
-      </ion-item-divider>
-      <ion-item>
-        <div class="xc">
-          <ion-button fill="outline" expand="block">Update Profile</ion-button>
-        </div>
-        </ion-item>
+      <app-contact-number-form [page]="'settings'"></app-contact-number-form>
       <ion-item-divider>
         <ion-label color="primary">Support</ion-label>
       </ion-item-divider>

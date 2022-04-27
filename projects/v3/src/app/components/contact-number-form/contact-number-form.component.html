@@ -1,33 +1,58 @@
-<ng-container class='ion-padding' *ngIf="page === 'settings'">
-  <ion-card class="practera-card" [ngClass]="{'desktop-view': !utils.isMobile()}">
-    <ion-item lines="none">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="5">
-            <ion-select class="subtitle-1" [(ngModel)]="countryModel" (ionChange)="updateCountry()">
-              <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">{{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
-            </ion-select>
-          </ion-col>
-          <ion-col>
-            <input type="text"
-              [attr.maxlength]="activeCountryModelInfo.length"
-              pattern="{{activeCountryModelInfo.pattern}}"
-              placeholder="{{activeCountryModelInfo.placeholder}}"
-              [(ngModel)]="contactNumber"
-              class="contact-input subtitle-1 gray-1"
-              (keydown)="disableArrowKeys($event)"
-              (keyup)="formatContactNumber()" />
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-item>
-  </ion-card>
-  <ion-button class="practera-btn" [ngClass]="{'mobile-btn': utils.isMobile()}" [disabled]="updating" (click)="updateContactNumber()" aria-label="update contact number" role="button">
-    <ng-container *ngIf="!updating">Update</ng-container>
-    <ng-container *ngIf="updating">Updating..</ng-container>
-  </ion-button>
+<ng-container [ngSwitch]="page">
+  <ng-container *ngSwitchCase="'settings'">
+    <ng-container *ngTemplateOutlet="settings"></ng-container>
+  </ng-container>
+  <ng-container *ngSwitchCase="'go-mobile'">
+    <ng-container *ngTemplateOutlet="goMobile"></ng-container>
+  </ng-container>
 </ng-container>
-<ng-container *ngIf="page === 'go-mobile'">
+
+<ng-template #settings>
+  <ion-item>
+    <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col class="ion-align-self-center" size-sm="3" size="12">
+          <ion-select class="subtitle-1 ion-no-padding ion-no-margin" [(ngModel)]="countryModel" (ionChange)="updateCountry()">
+            <ion-select-option [value]="countryCode.code"
+              *ngFor="let countryCode of contactNumberFormat.countryCodes">
+              {{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
+          </ion-select>
+        </ion-col>
+        <ion-col class="ion-align-self-center ion-no-padding ion-no-margin">
+          <input type="text"
+            [attr.maxlength]="activeCountryModelInfo.length"
+            pattern="{{activeCountryModelInfo.pattern}}"
+            placeholder="{{activeCountryModelInfo.placeholder}}"
+            [(ngModel)]="contactNumber"
+            class="ion-no-padding contact-input subtitle-1 gray-1"
+            (keydown)="disableArrowKeys($event)"
+            (keyup)="formatContactNumber()" />
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-item>
+  <ion-item-divider>
+    <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>
+  </ion-item-divider>
+  <ion-item>
+    <div class="xc">
+      <ion-button fill="outline"
+        expand="block"
+        [ngClass]="{'mobile-btn': utils.isMobile()}"
+        [disabled]="updating"
+        (click)="updateContactNumber()"
+        aria-label="update contact number"
+        role="button"
+      >
+        <ng-container *ngIf="!updating">Update contact number</ng-container>
+        <ng-container *ngIf="updating">Updating..</ng-container>
+      </ion-button>
+    </div>
+  </ion-item>
+</ng-template>
+
+<ng-template #goMobile>
   <ion-item lines="none" class="text-field">
     <ion-grid>
       <ion-row class="contact-details">
@@ -58,4 +83,4 @@
       </ion-row>
     </ion-grid>
   </ion-item>
-</ng-container>
+</ng-template>
