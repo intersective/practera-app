@@ -366,7 +366,7 @@ export class DemoService {
         program: {
           id: 1,
           experience_id: 1,
-          name: 'Global Trade Accelerator - 01',
+          name: 'Global Trade Accelerator-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz-abcdefghijklmnopqrstuvwxyz',
           config: {
             theme_color: '#2bbfd4',
             card_style: 'waves-light.png',

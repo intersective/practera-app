@@ -8,7 +8,7 @@
   .institute-logo-container {
     padding: 20px;
     img {
-      height: 88px;
+      height: 60px;
     }
   }
 
@@ -69,6 +69,10 @@
 
           .exp-title {
             margin-bottom: 8px !important;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
           }
 
           .exp-info {
@@ -105,7 +109,7 @@
         height: 76px;
       }
     }
-    .exp-card-container{
+    .exp-card-container {
       border-radius: 0;
       padding: 20px;
       min-width: auto;
@@ -131,5 +135,4 @@
     --background: var(--ion-color-primary-tint);
     height: 40px;
   }
-
 }
