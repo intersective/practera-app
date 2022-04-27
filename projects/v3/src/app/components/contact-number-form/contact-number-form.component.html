@@ -12,7 +12,7 @@
     <ion-label style="font-weight: bolder;opacity: 1;">Mobile Number</ion-label>
     <ion-grid class="ion-no-padding">
       <ion-row>
-        <ion-col class="ion-align-self-center" size-sm="3" size="12">
+        <ion-col class="ion-align-self-center" size-sm="4" size="12">
           <ion-select class="subtitle-1 ion-no-padding ion-no-margin" [(ngModel)]="countryModel" (ionChange)="updateCountry()">
             <ion-select-option [value]="countryCode.code"
               *ngFor="let countryCode of contactNumberFormat.countryCodes">
