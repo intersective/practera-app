@@ -1,27 +1,4 @@
-ion-card {
-  box-shadow: none;
-  ion-select {
-    padding-left: 0px;
-    padding-right: 10px;
-  }
-  ion-select:after {
-    content: "";
-    position: absolute;
-    right: 5px;
-    width: 1px;
-    background-color: var(--practera-color-card-border);
-    height: 80%;
-    top: 10%;
-  }
-  margin: 16px 0 10px;
-  &.desktop-view {
-    max-width: 342px !important;
-  }
-}
-
 .contact-input {
-  margin-top: 8px;
-  width: 100%;
   border: none;
   &:focus {
     outline: none;
@@ -51,5 +28,7 @@ ion-card {
 }
 
 ion-select {
-  max-width: 100%;
+  max-width: 6em;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
 }
