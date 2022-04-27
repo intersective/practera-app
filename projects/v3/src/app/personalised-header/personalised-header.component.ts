@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
 import { NotificationsPage } from '../pages/notifications/notifications.page';
+import { BrowserStorageService, User } from '../services/storage.service';
 
 @Component({
   selector: 'app-personalised-header',
@@ -10,13 +11,16 @@ import { NotificationsPage } from '../pages/notifications/notifications.page';
   styleUrls: ['./personalised-header.component.scss'],
 })
 export class PersonalisedHeaderComponent implements OnInit {
+  user: User;
 
   constructor(
     private modalController: ModalController,
-    private readonly animationService: AnimationsService
+    private readonly animationService: AnimationsService,
+    private readonly storageService: BrowserStorageService,
   ) { }
 
   ngOnInit() {
+    this.user = this.storageService.getUser();
   }
 
   async notifications(): Promise<void> {
