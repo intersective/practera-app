@@ -2,7 +2,10 @@
   <ion-button (click)="notifications()">
     <ion-icon slot="icon-only" name="notifications"></ion-icon>
   </ion-button>
-  <ion-button class="avatar-btn" (click)="settings()">
+  <ion-button class="avatar-btn"
+    (click)="settings()"
+    [ngClass]="{'no-hover-effect': user?.image}"
+  >
     <ion-avatar class="ion-margin-horizontal" *ngIf="user?.image">
       <img [src]="user?.image" alt="Profile Image">
     </ion-avatar>
