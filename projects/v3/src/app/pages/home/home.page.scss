@@ -4,6 +4,7 @@ img {
 ion-segment {
   --background: var(--ion-color-light);
   padding: 10px;
+  z-index: 1;
 }
 .milestone-name {
   --color: var(--ion-color-primary);
