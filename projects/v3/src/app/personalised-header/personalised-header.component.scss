@@ -10,7 +10,7 @@ ion-avatar {
   align-items: center;
   .avatar-btn {
     height: 100%;
-    .no-hover-effect {
+    &.no-hover-effect {
       --background-hover: none;
     }
   }
