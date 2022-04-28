@@ -1,8 +1,8 @@
 <div class="container">
-  <div class="text-content body-2">
-    <p id="{{name}}" #description [innerHtml]="content"
+  <div class="text-content">
+    <div id="{{name}}" #description [innerHtml]="content"
       [ngClass]="{ 'limit-height': isTruncating || heightExceeded, 'full-height': !isTruncating && !isInPopup, 'full-height-popup': !isTruncating && isInPopup }">
-    </p>
+    </div>
   </div>
 
   <ng-container *ngIf="heightExceeded">
