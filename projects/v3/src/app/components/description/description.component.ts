@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange, ViewEncapsulation } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
@@ -6,6 +6,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
   selector: 'app-description',
   templateUrl: 'description.component.html',
   styleUrls: ['./description.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   /*animations: [
     trigger('truncation', [
       state('show', style({

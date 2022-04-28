@@ -45,3 +45,75 @@
 ion-button {
   --background-hover: transparent !important;
 }
+
+// copied from admin wysiwyg editor's post-rendering styling
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+blockquote {
+  margin: 0 0 1rem;
+}
+
+dl,
+ol,
+ul {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+ol,
+ul {
+  padding-left: 2rem;
+}
+
+ul {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+}
+
+ol {
+  display: block;
+  list-style-type: decimal;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+}
+
+li {
+  display: list-item;
+  text-align: -webkit-match-parent;
+}
+
+pre {
+  display: block;
+  padding: 1rem;
+  font-size: .875rem;
+  color: #4d6593;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #fff;
+  border: 1px solid #dae0ec;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  overflow: auto;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--bs-font-monospace);
+  font-size: 1em;
+  direction: ltr;
+  unicode-bidi: bidi-override;
+}
