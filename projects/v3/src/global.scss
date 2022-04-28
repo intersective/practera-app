@@ -26,7 +26,7 @@
 // affix modal to right position of screen
 .right-affixed {
   --height: 100% !important;
-  justify-content: right !important;
+  justify-content: flex-end !important;
 }
 
 ion-item-divider {
