@@ -12,9 +12,10 @@
           </ion-item>
         </ion-menu-toggle>
 
-        <ion-item (click)="presentModal()">
+        <ion-item (click)="presentModal()" button detail="false">
           <ion-icon slot="start" name="settings-outline"></ion-icon>
           <ion-label>Settings</ion-label>
+          <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
         </ion-item>
 
         <ion-item-divider mode="md"></ion-item-divider>
