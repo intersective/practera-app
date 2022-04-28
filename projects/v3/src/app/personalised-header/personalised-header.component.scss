@@ -1,5 +1,4 @@
 ion-avatar {
-  margin-right: 0.5em;
   width: 48px;
   height: 48px;
   cursor: pointer;
@@ -9,4 +8,10 @@ ion-avatar {
   display: flex;
   justify-content: center;
   align-items: center;
+  .avatar-btn {
+    height: 100%;
+    &.no-hover-effect {
+      --background-hover: none;
+    }
+  }
 }

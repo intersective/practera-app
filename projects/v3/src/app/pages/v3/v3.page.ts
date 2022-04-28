@@ -10,6 +10,7 @@ import { SettingsPage } from '../settings/settings.page';
   styleUrls: ['./v3.page.scss'],
 })
 export class V3Page implements OnInit {
+  wait: boolean = false; // loading flag
   reviews: Review[];
   appPages = [
     {
@@ -65,14 +66,17 @@ export class V3Page implements OnInit {
     });
   }
 
-  async presentModal() {
+  async presentModal(): Promise<void> {
+    this.wait = true;
     const modal = await this.modalController.create({
       component: SettingsPage,
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed'
     });
-    return await modal.present();
+    await modal.present();
+    this.wait = false;
+    return;
   }
 
   async presentPopover() {
