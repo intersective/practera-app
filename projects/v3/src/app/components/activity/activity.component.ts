@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Activity, Task } from '@v3/app/services/activity.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
@@ -12,7 +13,8 @@ export class ActivityComponent {
   @Input() currentTask: Task;
   @Output() navigate = new EventEmitter();
   constructor(
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notificationService: NotificationsService
   ) { }
 
   leadIcon(task: Task) {
@@ -110,6 +112,17 @@ export class ActivityComponent {
   }
 
   goto(task: Task) {
+    if (task.type === 'Locked') {
+      return this.notificationService.alert({
+        message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.',
+        buttons: [
+          {
+            text: 'OK',
+            role: 'cancel'
+          }
+        ]
+      });
+    }
     this.navigate.emit(task);
   }
 }
