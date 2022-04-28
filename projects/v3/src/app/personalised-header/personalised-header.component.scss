@@ -9,4 +9,7 @@ ion-avatar {
   display: flex;
   justify-content: center;
   align-items: center;
+  .avatar-btn {
+    height: 100%;
+  }
 }
