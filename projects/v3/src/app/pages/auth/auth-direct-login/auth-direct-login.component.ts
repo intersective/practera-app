@@ -102,7 +102,7 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['experiences']);
       }
       // switch to the program
-      await this.experienceService.switchProgram(program).toPromise();
+      await this.experienceService.switchProgram(program);
     }
 
     let referrerUrl = '';

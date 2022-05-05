@@ -6,6 +6,7 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-experiences',
@@ -13,7 +14,7 @@ import { environment } from '@v3/environments/environment';
   styleUrls: ['./experiences.page.scss'],
 })
 export class ExperiencesPage implements OnInit {
-
+  subscriptions: Subscription[] = [];
   programs$ = this.experienceService.programsWithProgress$;
 
   constructor(
@@ -28,6 +29,7 @@ export class ExperiencesPage implements OnInit {
   ngOnInit() {
     this.experienceService.getPrograms();
   }
+
   get isMobile() {
     return this.utils.isMobile();
   }
