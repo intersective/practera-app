@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ExperienceService, ProgramObj } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { LoadingController } from '@ionic/angular';
@@ -13,12 +13,13 @@ import { Subscription } from 'rxjs';
   templateUrl: './experiences.page.html',
   styleUrls: ['./experiences.page.scss'],
 })
-export class ExperiencesPage implements OnInit {
+export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   programs$ = this.experienceService.programsWithProgress$;
 
   constructor(
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private experienceService: ExperienceService,
     public loadingController: LoadingController,
     private notificationsService: NotificationsService,
@@ -27,7 +28,13 @@ export class ExperiencesPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.experienceService.getPrograms();
+    this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
+      this.experienceService.getPrograms();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions[0].unsubscribe();
   }
 
   get isMobile() {
