@@ -40,6 +40,7 @@ export class PersonalisedHeaderComponent implements OnInit {
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed',
     });
+
     return modal.present();
   }
 }

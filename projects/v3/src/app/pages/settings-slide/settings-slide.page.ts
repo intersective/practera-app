@@ -6,7 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./settings-slide.page.scss'],
 })
 export class SettingsSlidePage {
-
   constructor() { }
-
 }

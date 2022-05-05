@@ -1,21 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
-import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FilestackService } from '@v3/services/filestack.service';
+import { Subscription } from 'rxjs';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
 })
-export class SettingsPage {
-
-  routeUrl = '/settings';
-  mode: string;
+export class SettingsPage implements OnInit, OnDestroy {
+  subscriptions: Subscription[] = [];
   profile = {
     contactNumber: '',
     email: '',
@@ -45,16 +44,11 @@ export class SettingsPage {
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
     private filestackService: FilestackService,
-    // private fastFeedbackService: FastFeedbackService,
+    private modalController: ModalController,
   ) {
-    this.route.queryParams.subscribe(() => {
-      this.onEnter();
-    });
   }
 
-  onEnter() {
-    this.mode = this.route.snapshot.data.mode;
-
+  ngOnInit() {
     const user = this.storage.getUser();
     const {
       email,
@@ -75,6 +69,16 @@ export class SettingsPage {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
     // this.fastFeedbackService.pullFastFeedback().subscribe();
+  }
+
+  dismiss() {
+    this.modalController.dismiss({
+      'dismissed': true
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions[0]?.unsubscribe();
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -127,13 +131,15 @@ export class SettingsPage {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
+
+    this.dismiss();
     return this.authService.logout({}, true);
   }
 
   async uploadProfileImage(file, type = null) {
     if (file.success) {
       this.imageUpdating = true;
-      this.authService.updateProfileImage({
+      this.subscriptions[0] = this.authService.updateProfileImage({
         image: file.data.url
       }).subscribe(
         () => {
