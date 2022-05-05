@@ -143,7 +143,7 @@ export class ExperienceService {
     if (environment.demo) {
       return of(this.demo.projectsProgress);
     }
-    return this.apolloService.graphQLWatch(
+    return this.apolloService.graphQLFetch(
       `query getProjectList($ids: [Int]!) {
         projects(ids: $ids) {
           id
@@ -156,9 +156,6 @@ export class ExperienceService {
       {
         ids: projectIds
       },
-      {
-        noCache: true
-      }
     )
     .pipe(map(res => {
       return res.data.projects.map(v => {
@@ -186,7 +183,7 @@ export class ExperienceService {
     };
   }
 
-  switchProgram(programObj: ProgramObj): Observable<any> {
+  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
     // initialise Pusher
     this.sharedService.initWebServices();
 
@@ -224,21 +221,18 @@ export class ExperienceService {
 
     this.sharedService.onPageLoad();
     this.homeService.clearExperience();
+    try {
+      const jwt = await this.getNewJwt().toPromise();
+      console.log('jwt:', jwt);
 
-    return from([
-      this.getNewJwt(),
-      forkJoin([
-        this.getReviews(),
-        this.sharedService.getTeamInfo(),
-        this.getMyInfo(),
-        this.getEvents(),
-      ]),
-    ]).pipe(
-      mergeMap(obj => {
-        return of(obj.subscribe());
-      }),
-      catchError(error => of(error))
-    );
+      // this.getEvents(),
+      const teamInfo = await this.sharedService.getTeamInfo().toPromise();
+      const me = await this.getMyInfo().toPromise();
+
+      return of([jwt, teamInfo, me]);
+    } catch (err) {
+      throw Error(err);
+    }
   }
 
   /**
@@ -311,6 +305,7 @@ export class ExperienceService {
       });
       return of([]);
     }
+
     return this.eventService.getEvents().pipe(map(events => {
       this.storage.setUser({
         hasEvents: !this.utils.isEmpty(events)
@@ -355,7 +350,7 @@ export class ExperienceService {
         return ['experiences'];
       } else {
         // one program object -> {}
-        await this.switchProgram(programs).toPromise();
+        await this.switchProgram(programs);
       }
 
       // await this.pusherService.initialise({ unsubscribe: true });
