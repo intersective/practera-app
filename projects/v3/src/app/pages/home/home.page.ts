@@ -1,17 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { Activity } from '@v3/app/services/activity.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { HomeService, Milestone } from '@v3/services/home.service';
+import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
   experience$ = this.service.experience$;
@@ -20,6 +21,9 @@ export class HomePage implements OnInit {
 
   milestones: Milestone[];
   achievements: Achievement[];
+  experience: Experience;
+
+  subscriptions: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -31,14 +35,18 @@ export class HomePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.service.milestonesWithProgress$.subscribe(res => this.milestones = res);
-    this.achievementService.achievements$.subscribe(res => this.achievements = res);
-    this.route.params.subscribe(params => {
+    this.subscriptions[1] = this.service.milestonesWithProgress$.subscribe(res => this.milestones = res);
+    this.subscriptions[2] = this.achievementService.achievements$.subscribe(res => this.achievements = res);
+    this.subscriptions[3] = this.route.params.subscribe(params => {
       this.service.getExperience();
       this.service.getMilestones();
       this.service.getProjectProgress();
       this.achievementService.getAchievements();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subs => subs.unsubscribe());
   }
 
   switchContent(event) {

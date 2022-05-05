@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { RequestService } from 'request';
@@ -89,22 +89,23 @@ export class HomeService {
   );
 
   constructor(
-    private request: RequestService,
     private apolloService: ApolloService,
     private demo: DemoService
   ) { }
 
   clearExperience() {
-    this._experience$.next(null);
-    this._activityCount$.next(null);
-    this._milestones$.next(null);
+    return of([
+      this._experience$.next(null),
+      this._activityCount$.next(null),
+      this._milestones$.next(null),
+    ]);
   }
 
   getExperience() {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
-    return this.apolloService.graphQLWatch(`
+    return this.apolloService.graphQLFetch(`
       query {
         experience{
           name
