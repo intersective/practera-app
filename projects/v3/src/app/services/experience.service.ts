@@ -225,13 +225,20 @@ export class ExperienceService {
     this.sharedService.onPageLoad();
     this.homeService.clearExperience();
 
-    return forkJoin([
+    return from([
       this.getNewJwt(),
-      this.getReviews(),
-      this.sharedService.getTeamInfo(),
-      this.getMyInfo(),
-      this.getEvents()
-    ]).pipe(catchError(error => of(error)));;
+      forkJoin([
+        this.getReviews(),
+        this.sharedService.getTeamInfo(),
+        this.getMyInfo(),
+        this.getEvents(),
+      ]),
+    ]).pipe(
+      mergeMap(obj => {
+        return of(obj.subscribe());
+      }),
+      catchError(error => of(error))
+    );
   }
 
   /**
@@ -348,9 +355,7 @@ export class ExperienceService {
         return ['experiences'];
       } else {
         // one program object -> {}
-        this.switchProgram(programs).subscribe(res => {
-          console.log('res::', res);
-        });
+        await this.switchProgram(programs).toPromise();
       }
 
       // await this.pusherService.initialise({ unsubscribe: true });
