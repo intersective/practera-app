@@ -10,7 +10,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
 import { RequestService } from 'request';
-import { HomeService } from './home.service';
 
 /**
  * @name api
@@ -107,8 +106,7 @@ export class ExperienceService {
     private storage: BrowserStorageService,
     private requestService: RequestService,
     private eventService: EventService,
-    private reviewService: ReviewService,
-    private homeService: HomeService
+    private reviewService: ReviewService
   ) { }
 
   async getPrograms() {
@@ -186,7 +184,7 @@ export class ExperienceService {
     };
   }
 
-  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
+  switchProgram(programObj: ProgramObj): Observable<any> {
     // initialise Pusher
     this.sharedService.initWebServices();
 
@@ -223,14 +221,13 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
-    this.homeService.clearExperience();
-    await this.getNewJwt().toPromise();
     return forkJoin([
+      this.getNewJwt(),
       this.getReviews(),
       this.sharedService.getTeamInfo(),
       this.getMyInfo(),
       this.getEvents()
-    ]).pipe(catchError(error => of(error)));
+    ]).pipe(catchError(error => of(error)));;
   }
 
   /**
@@ -347,7 +344,9 @@ export class ExperienceService {
         return ['experiences'];
       } else {
         // one program object -> {}
-        await this.switchProgram(programs);
+        this.switchProgram(programs).subscribe(res => {
+          console.log('res::', res);
+        });
       }
 
       // await this.pusherService.initialise({ unsubscribe: true });
