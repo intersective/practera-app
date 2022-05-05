@@ -10,6 +10,7 @@ import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
 import { RequestService } from 'request';
+import { HomeService } from './home.service';
 
 /**
  * @name api
@@ -106,7 +107,8 @@ export class ExperienceService {
     private storage: BrowserStorageService,
     private requestService: RequestService,
     private eventService: EventService,
-    private reviewService: ReviewService
+    private reviewService: ReviewService,
+    private homeService: HomeService,
   ) { }
 
   async getPrograms() {
@@ -221,6 +223,8 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
+    this.homeService.clearExperience();
+
     return forkJoin([
       this.getNewJwt(),
       this.getReviews(),

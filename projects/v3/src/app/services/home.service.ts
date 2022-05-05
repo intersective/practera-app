@@ -94,6 +94,12 @@ export class HomeService {
     private demo: DemoService
   ) { }
 
+  clearExperience() {
+    this._experience$.next(null);
+    this._activityCount$.next(null);
+    this._milestones$.next(null);
+  }
+
   getExperience() {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
