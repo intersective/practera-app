@@ -51,6 +51,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          ref: d5861f539bde108708514e9479a8fd8687059a76
 
 
 
