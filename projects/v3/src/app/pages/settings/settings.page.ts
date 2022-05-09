@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -14,6 +14,8 @@ import { ModalController } from '@ionic/angular';
   styleUrls: ['./settings.page.scss'],
 })
 export class SettingsPage implements OnInit, OnDestroy {
+  @Input() mode?: string; // indicate parents element: modal
+
   subscriptions: Subscription[] = [];
   profile = {
     contactNumber: '',
@@ -69,6 +71,10 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
     // this.fastFeedbackService.pullFastFeedback().subscribe();
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
   }
 
   dismiss() {
