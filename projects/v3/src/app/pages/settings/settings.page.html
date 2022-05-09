@@ -10,62 +10,82 @@
 
 <ion-content fullscreen="true">
   <ion-list lines="full" class="ion-no-margin ion-no-padding">
-    <ion-item-group>
-      <ion-item-divider lines="none">
-        <ion-label color="primary">Your Details</ion-label>
-      </ion-item-divider>
-      <ion-item>
-        <div class="avatar-and-profile">
-          <ion-avatar>
-            <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
-            <p *ngIf="imageUpdating" class="loading-icon">
-              <ion-spinner name="bubbles"></ion-spinner>
-            </p>
-          </ion-avatar>
+    <ion-item-divider lines="none">
+      <ion-label color="primary">Your Details</ion-label>
+    </ion-item-divider>
 
-          <file-stack
-            [accept]="acceptFileTypes"
-            [fileType]="'image'"
-            [type]="'profileImage'"
-            (complete)="uploadProfileImage($event)"
-          ></file-stack>
+    <ng-container *ngIf="!isMobile; else mobileProfile">
+      <div class="avatar-and-profile">
+        <ion-avatar class="avatar" slot="start">
+          <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+          <p *ngIf="imageUpdating" class="loading-icon">
+            <ion-spinner name="bubbles"></ion-spinner>
+          </p>
+        </ion-avatar>
 
-        </div>
-      </ion-item>
-      <ion-item>
-        <ion-label style="font-weight: bolder;opacity: 1;">Name</ion-label>
-        <ion-label>{{profile.name}}</ion-label>
-      </ion-item>
-      <ion-item id="user-email">
-        <ion-label style="font-weight: bolder;opacity: 1;">Email</ion-label>
-        <ion-label>{{profile.email}}</ion-label>
-      </ion-item>
-
-      <ion-popover trigger="user-email" side="bottom" alignment="end">
-        <ng-template>
-          <ion-content>{{profile.email}}</ion-content>
-        </ng-template>
-      </ion-popover>
-      <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
-        <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
-      </ion-item-divider>
-      <app-contact-number-form [page]="'settings'"></app-contact-number-form>
-      <ion-item-divider>
-        <ion-label color="primary">Support</ion-label>
-      </ion-item-divider>
-      <ion-item detail="true" button (click)="mailTo($event)" (keydown)="mailTo($event)">Contact support</ion-item>
-      <ion-item detail="true" button (click)="openLink($event)" (keydown)="openLink($event)">Terms and Conditions</ion-item>
-    </ion-item-group>
-    <ion-item lines="none">
-      <div class="xc">
-        <ion-button size="large"
-          fill="outline"
-          expand="block"
-          (click)="logout($event)"
-          (keydown)="logout($event)"
-        >Log Out</ion-button>
+        <ion-label>
+          <file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
+            (complete)="uploadProfileImage($event)"></file-stack>
+        </ion-label>
       </div>
+    </ng-container>
+
+    <ng-template #mobileProfile>
+      <ion-item>
+        <ion-avatar class="avatar" slot="start">
+          <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+          <p *ngIf="imageUpdating" class="loading-icon">
+            <ion-spinner name="bubbles"></ion-spinner>
+          </p>
+        </ion-avatar>
+
+        <ion-label>
+          <file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
+            (complete)="uploadProfileImage($event)"></file-stack>
+        </ion-label>
+      </ion-item>
+    </ng-template>
+
+
+    <ion-item>
+      <ion-label style="font-weight: bolder;opacity: 1;">Name</ion-label>
+      <ion-label>{{profile.name}}</ion-label>
     </ion-item>
+
+    <ion-item id="user-email">
+      <ion-label style="font-weight: bolder;opacity: 1;">Email</ion-label>
+      <ion-label>{{profile.email}}</ion-label>
+    </ion-item>
+
+    <ion-popover trigger="user-email" side="bottom" alignment="end">
+      <ng-template>
+        <ion-content>{{profile.email}}</ion-content>
+      </ng-template>
+    </ion-popover>
+
+    <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
+      <ion-note class="ion-padding">If you need to update your name or email please contact the experience administrator.</ion-note>
+    </ion-item-divider>
+
+    <app-contact-number-form [page]="'settings'"></app-contact-number-form>
+
+    <ion-item-divider>
+      <ion-label color="primary">Support</ion-label>
+    </ion-item-divider>
+
+    <ion-item detail="true" button (click)="mailTo($event)" (keydown)="mailTo($event)">Contact support</ion-item>
+
+    <ion-item detail="true" button (click)="openLink($event)" (keydown)="openLink($event)">Terms and Conditions</ion-item>
+
+    <div [class]="{'xc': !isMobile }">
+      <ion-button
+      class="ion-padding-horizontal ion-text-center"
+      fill="outline"
+      expand="block"
+      (click)="logout($event)"
+      (keydown)="logout($event)"
+      >Log Out</ion-button>
+    </div>
   </ion-list>
 </ion-content>
 

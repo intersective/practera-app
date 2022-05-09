@@ -38,23 +38,25 @@
     </ion-grid>
   </ion-item>
   <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
-    <ion-note class="helper">Your mobile number is important to get SMS notifications.</ion-note>
+    <ion-note class="ion-padding">Your mobile number is important to get SMS notifications.</ion-note>
   </ion-item-divider>
-  <ion-item>
-    <div class="xc">
-      <ion-button fill="outline"
-        expand="block"
-        [ngClass]="{'mobile-btn': isMobile}"
-        [disabled]="updating"
-        (click)="updateContactNumber()"
-        aria-label="update contact number"
-        role="button"
-      >
-        <ng-container *ngIf="!updating">Update contact number</ng-container>
-        <ng-container *ngIf="updating">Updating..</ng-container>
-      </ion-button>
-    </div>
-  </ion-item>
+
+  <div [class]="{'xc': !isMobile }">
+    <ion-button size="large"
+      fill="outline"
+      expand="block"
+      class="ion-padding-horizontal"
+      [ngClass]="{'mobile-btn': isMobile}"
+      [disabled]="updating"
+      (click)="updateContactNumber()"
+      aria-label="update contact number"
+      role="button"
+    >
+      <ng-container *ngIf="!updating">Update contact number</ng-container>
+      <ng-container *ngIf="updating">Updating..</ng-container>
+    </ion-button>
+  </div>
+
 </ng-template>
 
 <ng-template #goMobile>

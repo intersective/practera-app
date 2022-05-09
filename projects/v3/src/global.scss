@@ -42,6 +42,10 @@ ion-item-divider {
   align-items: center;
   justify-content: center;
   width: 100%;
+
+  ion-button {
+    min-width: 20em;
+  }
 }
 
 .vcs {
