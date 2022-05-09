@@ -32,3 +32,7 @@ ion-select {
   justify-content: flex-start;
   flex-wrap: nowrap;
 }
+
+ion-item.higher {
+  --min-height: 60px;
+}
