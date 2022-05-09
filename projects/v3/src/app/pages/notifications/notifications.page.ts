@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationsService, TodoItem } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeIn } from '@v3/app/animations';
+import { ModalController } from '@ionic/angular';
 
 @Component({
   selector: 'app-notifications',
@@ -20,6 +21,7 @@ import { fadeIn } from '@v3/app/animations';
   ]
 })
 export class NotificationsPage implements OnInit {
+  @Input() mode?: string; // optional value: "modal"
   loadingTodoItems: boolean;
   todoItems: TodoItem[] = [];
   eventReminders = [];
@@ -28,6 +30,7 @@ export class NotificationsPage implements OnInit {
     private utils: UtilsService,
     private notificationsService: NotificationsService,
     private router: Router,
+    private modalController: ModalController,
   ) { }
 
   ngOnInit() {
@@ -35,6 +38,12 @@ export class NotificationsPage implements OnInit {
 
   get isMobile() {
     return this.utils.isMobile();
+  }
+
+  dismiss() {
+    this.modalController.dismiss({
+      'dismissed': true
+    });
   }
 
   showEventDetail(event) {

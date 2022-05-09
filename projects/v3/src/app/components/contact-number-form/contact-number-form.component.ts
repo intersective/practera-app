@@ -92,13 +92,17 @@ export class ContactNumberFormComponent implements OnInit {
 
   constructor(
     public storage: BrowserStorageService,
-    public utils: UtilsService,
+    readonly utils: UtilsService,
     private readonly authService: AuthService,
     private notificationsService: NotificationsService
   ) { }
 
   ngOnInit() {
     this._initcomponent();
+  }
+
+  get isMobile(): boolean {
+    return this.utils.isMobile();
   }
 
   private _initcomponent() {
