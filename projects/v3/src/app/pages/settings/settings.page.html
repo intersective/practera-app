@@ -47,7 +47,7 @@
         </ng-template>
       </ion-popover>
       <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
-        <ion-note class="helper">If you need to update your name or email please contact the experience administrator.</ion-note>
+        <ion-note class="ion-padding">If you need to update your name or email please contact the experience administrator.</ion-note>
       </ion-item-divider>
       <app-contact-number-form [page]="'settings'"></app-contact-number-form>
       <ion-item-divider>
@@ -56,16 +56,16 @@
       <ion-item detail="true" button (click)="mailTo($event)" (keydown)="mailTo($event)">Contact support</ion-item>
       <ion-item detail="true" button (click)="openLink($event)" (keydown)="openLink($event)">Terms and Conditions</ion-item>
     </ion-item-group>
-    <ion-item lines="none">
-      <div class="xc">
-        <ion-button size="large"
-          fill="outline"
-          expand="block"
-          (click)="logout($event)"
-          (keydown)="logout($event)"
-        >Log Out</ion-button>
-      </div>
-    </ion-item>
+
+    <div [class]="{'xc': !isMobile }">
+      <ion-button
+      class="ion-padding-horizontal ion-text-center"
+      fill="outline"
+      expand="block"
+      (click)="logout($event)"
+      (keydown)="logout($event)"
+      >Log Out</ion-button>
+    </div>
   </ion-list>
 </ion-content>
 
