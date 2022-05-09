@@ -1,7 +1,9 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-buttons slot="end" *ngIf="mode == 'modal'">
-      <ion-button (click)="dismiss()">Close</ion-button>
+    <ion-buttons slot="start" *ngIf="mode == 'modal'">
+      <ion-button (click)="dismiss()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
     </ion-buttons>
 
     <ion-title>Notifications</ion-title>
