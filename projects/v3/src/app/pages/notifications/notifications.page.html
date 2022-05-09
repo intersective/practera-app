@@ -1,10 +1,14 @@
 <ion-header class="ion-no-border">
   <ion-toolbar>
+    <ion-buttons slot="end" *ngIf="mode == 'modal'">
+      <ion-button (click)="dismiss()">Close</ion-button>
+    </ion-buttons>
+
     <ion-title>Notifications</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content fullscreen="true">
   <ng-container *ngIf="isMobile; else notificationsDesktop">
     <ng-container *ngIf="loadingTodoItems; else doneLoading">
       <div class="margin-left-right ion-padding-bottom">

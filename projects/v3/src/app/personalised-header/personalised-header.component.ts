@@ -26,6 +26,9 @@ export class PersonalisedHeaderComponent implements OnInit {
   async notifications(): Promise<void> {
     const modal = await this.modalController.create({
       component: NotificationsPage,
+      componentProps: {
+        mode: 'modal',
+      },
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed',
@@ -36,6 +39,9 @@ export class PersonalisedHeaderComponent implements OnInit {
   async settings(): Promise<void> {
     const modal = await this.modalController.create({
       component: SettingsPage,
+      componentProps: {
+        mode: 'modal',
+      },
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed',
