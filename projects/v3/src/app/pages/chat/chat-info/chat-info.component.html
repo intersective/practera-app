@@ -31,7 +31,7 @@
       <div class="member-list">
         <ion-list lines="none" color="light" class="ion-no-padding">
           <ng-container *ngFor="let member of memberList">
-            <ion-item>
+            <ion-item *ngIf="member">
               <ion-avatar slot="start">
                 <img [src]="member.avatar" alt="{{member.name}}">
               </ion-avatar>
