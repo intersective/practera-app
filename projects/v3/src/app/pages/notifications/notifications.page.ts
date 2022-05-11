@@ -1,10 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationsService, TodoItem } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeIn } from '@v3/app/animations';
 import { ModalController } from '@ionic/angular';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-notifications',
@@ -25,13 +26,17 @@ export class NotificationsPage implements OnInit {
   loadingTodoItems: boolean;
   todoItems: TodoItem[] = [];
   eventReminders = [];
+  window; // document view
 
   constructor(
     private utils: UtilsService,
     private notificationsService: NotificationsService,
     private router: Router,
     private modalController: ModalController,
-  ) { }
+    @Inject(DOCUMENT) private document: Document
+  ) {
+    this.window = this.document.defaultView;
+  }
 
   ngOnInit() {
   }
@@ -123,5 +128,9 @@ export class NotificationsPage implements OnInit {
 
   goToChat(todoItem?: TodoItem) {
     return this.router.navigate(['v3', 'chat']);
+  }
+
+  goBack(): void {
+    return this.window.history.back();
   }
 }
