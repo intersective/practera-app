@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
 import { NotificationsPage } from '../pages/notifications/notifications.page';
 import { BrowserStorageService, User } from '../services/storage.service';
+import { UtilsService } from '../services/utils.service';
 
 @Component({
   selector: 'app-personalised-header',
@@ -17,13 +19,23 @@ export class PersonalisedHeaderComponent implements OnInit {
     private modalController: ModalController,
     private readonly animationService: AnimationsService,
     private readonly storageService: BrowserStorageService,
+    private readonly utilService: UtilsService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
     this.user = this.storageService.getUser();
   }
 
-  async notifications(): Promise<void> {
+  get isMobile(): boolean {
+    return this.utilService.isMobile();
+  }
+
+  async notifications(): Promise<void | boolean> {
+    if (this.isMobile) {
+      return this.router.navigate(['v3', 'notifications']);
+    }
+
     const modal = await this.modalController.create({
       component: NotificationsPage,
       componentProps: {
@@ -36,7 +48,11 @@ export class PersonalisedHeaderComponent implements OnInit {
     return modal.present();
   }
 
-  async settings(): Promise<void> {
+  async settings(): Promise<void | boolean> {
+    if (this.isMobile) {
+      return this.router.navigate(['v3', 'settings']);
+    }
+
     const modal = await this.modalController.create({
       component: SettingsPage,
       componentProps: {
