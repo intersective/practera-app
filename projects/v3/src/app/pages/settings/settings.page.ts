@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FilestackService } from '@v3/services/filestack.service';
 import { Subscription } from 'rxjs';
 import { ModalController } from '@ionic/angular';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-settings',
@@ -15,6 +16,7 @@ import { ModalController } from '@ionic/angular';
 })
 export class SettingsPage implements OnInit, OnDestroy {
   @Input() mode?: string; // indicate parents element: modal
+  window; // document window
 
   subscriptions: Subscription[] = [];
   profile = {
@@ -47,7 +49,9 @@ export class SettingsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    @Inject(DOCUMENT) private document: Document,
   ) {
+    this.window = this.document.defaultView;
   }
 
   ngOnInit() {
@@ -189,4 +193,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     }
   }
 
+  goBack(): void {
+    return this.window.history.back();
+  }
 }
