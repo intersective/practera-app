@@ -61,8 +61,12 @@ export class ActivityDesktopPage implements OnInit {
 
   async readFeedback(event, task: Task) {
     await this.assessmentService.saveFeedbackReviewed(event).subscribe();
-    // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activity.id, true, task);
+    setTimeout(
+      // get the latest activity tasks and navigate to the next task
+      () => this.activityService.getActivity(this.activity.id, true, task),
+      500
+    )
+    return true;
   }
 
   nextTask(task: Task) {
