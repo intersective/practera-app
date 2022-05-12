@@ -63,6 +63,7 @@ export class ActivityDesktopPage implements OnInit {
     await this.assessmentService.saveFeedbackReviewed(event).subscribe();
     setTimeout(
       // get the latest activity tasks and navigate to the next task
+      // wait for a while for the server to save the "read feedback" status
       () => this.activityService.getActivity(this.activity.id, true, task),
       500
     )
