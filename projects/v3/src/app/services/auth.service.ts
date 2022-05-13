@@ -92,11 +92,11 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
-    /* if (environment.demo) {
+    if (environment.demo) {
       return of({
         programs: []
       });
-    } */
+    }
     return this.request.post({
       endPoint: API.login,
       data: body.toString(),
