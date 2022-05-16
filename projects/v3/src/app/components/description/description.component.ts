@@ -23,8 +23,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 })
 export class DescriptionComponent implements AfterViewInit, OnChanges {
   heightLimit = 120;
-  isTruncating = false;
-  heightExceeded = false;
+  isTruncating: boolean;
+  heightExceeded: boolean;
   elementHeight: number;
 
   @Input() name; // unique identity of parent element
@@ -35,9 +35,14 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   constructor(
     private storage: BrowserStorageService,
     private sanitizer: DomSanitizer
-  ) {}
+  ) {
+  }
 
   ngOnChanges(changes: { [propKey: string]: SimpleChange}) {
+    // reset to default
+    this.isTruncating = false;
+    this.heightExceeded = false;
+
     this.content = this.sanitizer.bypassSecurityTrustHtml(changes.content.currentValue);
     this.calculateHeight();
   }
@@ -54,11 +59,12 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
       () => {
         this.elementHeight = this.descriptionRef.nativeElement.clientHeight;
         this.heightExceeded = this.elementHeight >= this.heightLimit;
+
         if (this.heightExceeded) {
           this.isTruncating = true;
         }
       },
-      1000
+      700
     );
   }
 }
