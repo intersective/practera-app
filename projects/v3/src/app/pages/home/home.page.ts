@@ -23,7 +23,7 @@ export class HomePage implements OnInit, OnDestroy {
   achievements: Achievement[];
   experience: Experience;
 
-  subscriptions: any[] = [];
+  subscriptions: Subscription[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -35,14 +35,15 @@ export class HomePage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.subscriptions[1] = this.service.milestonesWithProgress$.subscribe(res => this.milestones = res);
-    this.subscriptions[2] = this.achievementService.achievements$.subscribe(res => this.achievements = res);
-    this.subscriptions[3] = this.route.params.subscribe(params => {
+    this.subscriptions = [];
+    this.subscriptions.push(this.service.milestonesWithProgress$.subscribe(res => this.milestones = res));
+    this.subscriptions.push(this.achievementService.achievements$.subscribe(res => this.achievements = res));
+    this.subscriptions.push(this.route.params.subscribe(params => {
       this.service.getExperience();
       this.service.getMilestones();
       this.service.getProjectProgress();
       this.achievementService.getAchievements();
-    });
+    }));
   }
 
   ngOnDestroy(): void {

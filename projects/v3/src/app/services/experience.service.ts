@@ -282,22 +282,6 @@ export class ExperienceService {
     }));
   }
 
-  getReviews(): Observable<any> {
-    if (environment.demo) {
-      this.storage.setUser({
-        hasReviews: false
-      });
-      return of([]);
-    }
-
-    this.reviewService.getReviews();
-    return this.reviewService.reviews$.pipe(tap(res => {
-      this.storage.setUser({
-        hasReviews: (res && res.length > 0)
-      });
-    }));
-  }
-
   getEvents() {
     if (environment.demo) {
       this.storage.setUser({
