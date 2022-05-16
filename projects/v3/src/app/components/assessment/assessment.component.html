@@ -1,3 +1,8 @@
+<div *ngIf="!assessment" class="ion-padding-horizontal">
+  <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+  <ion-skeleton-text animated ></ion-skeleton-text>
+  <ion-skeleton-text animated ></ion-skeleton-text>
+</div>
 <ng-container *ngIf="action=='assessment' && submission?.status === 'feedback available'">
   <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission.reviewerName">
     <ion-item-group>
@@ -5,7 +10,7 @@
         <ion-label color="primary">Reviewer Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
-        <ion-grid class=" ion-padding-horizontal">
+        <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
             <ion-col size="6" class="ion-align-self-center">Expert</ion-col>
             <ion-col size="6" class="ion-align-self-center">{{ submission.reviewerName }}</ion-col>
