@@ -21,9 +21,6 @@ export class TabsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions = [];
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
-    this.subscriptions.push(this.route.params.subscribe(params => {
-      this.reviewService.getReviews();
-    }));
 
   }
 
