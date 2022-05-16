@@ -430,15 +430,13 @@ export class AssessmentService {
   }
 
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
-    if (environment.demo) {
-      console.log('save answers', assessment, answers, action);
-      if (hasPulseCheck) {
-        this._pullFastFeedback();
-      }
-      return of(true);
-    }
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
+    }
+    if (environment.demo) {
+      console.log('save answers', assessment, answers, action);
+      this._afterSubmit(assessment, answers, action, hasPulseCheck);
+      return this.demo.normalResponse();
     }
     let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${(action === 'assessment' ? 'AssessmentSubmissionAnswerInput' : 'AssessmentReviewAnswerInput')}]`;
     let params = 'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
@@ -465,11 +463,15 @@ export class AssessmentService {
       }`,
       variables
     ).pipe(map(res => {
-      if (hasPulseCheck) {
-        this._pullFastFeedback();
-      }
+      this._afterSubmit(assessment, answers, action, hasPulseCheck);
       return res;
     }));
+  }
+
+  private _afterSubmit(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
+    if (hasPulseCheck && !assessment.inProgress && action === 'assessment') {
+      this._pullFastFeedback();
+    }
   }
 
   /**

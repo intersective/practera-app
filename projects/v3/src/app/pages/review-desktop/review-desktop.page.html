@@ -27,6 +27,7 @@
           [submission]="submission"
           [review]="review"
           action="review"
+          (save)="saveAssessment($event)"
         ></app-assessment>
 
         <div *ngIf="noReview" class="ion-text-center no-review">

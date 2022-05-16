@@ -25,7 +25,7 @@ export class FastFeedbackService {
     private demo: DemoService
   ) {}
 
-  getFastFeedback() {
+  private _getFastFeedback() {
     if (environment.demo) {
       return this.demo.fastFeedback();
     }
@@ -35,7 +35,7 @@ export class FastFeedbackService {
   pullFastFeedback(options= {
     modalOnly: false
   }): Observable<any> {
-    return this.getFastFeedback().pipe(
+    return this._getFastFeedback().pipe(
       switchMap(res => {
         // don't open it again if there's one opening
         const fastFeedbackIsOpened = this.storage.get('fastFeedbackOpening');
@@ -70,6 +70,10 @@ export class FastFeedbackService {
   }
 
   submit(data, params) {
+    if (environment.demo) {
+      console.log('data', data, 'params', params);
+      return this.demo.normalResponse();
+    }
     return this.request.post(
       {
         endPoint: api.submit,
