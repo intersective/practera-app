@@ -89,6 +89,7 @@ export class AssessmentComponent implements OnChanges {
     this.btnDisabled = false;
     this.savingMessage = '';
     this.isNotInATeam = false;
+    this.isPendingReview = false;
   }
 
   // Populate the question form with FormControls.

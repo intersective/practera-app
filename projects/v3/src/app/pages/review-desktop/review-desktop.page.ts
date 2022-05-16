@@ -72,4 +72,15 @@ export class ReviewDesktopPage implements OnInit {
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 
+  async saveAssessment(event) {
+    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    if (!event.assessment.inProgress) {
+      setTimeout(
+        () => this.reviewService.getReviews(),
+        500
+      );
+      return ;
+    }
+  }
+
 }
