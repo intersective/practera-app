@@ -223,9 +223,6 @@ export class ExperienceService {
     this.homeService.clearExperience();
     try {
       const jwt = await this.getNewJwt().toPromise();
-      console.log('jwt:', jwt);
-
-      // this.getEvents(),
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
