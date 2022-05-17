@@ -82,7 +82,7 @@ export class AchievementService {
             id: achievement.id,
             name: achievement.name,
             description: achievement.description,
-            points: achievement.points,
+            points: +achievement.points,
             image: achievement.badge,
             isEarned: achievement.isEarned,
             earnedDate: achievement.earnedDate,
