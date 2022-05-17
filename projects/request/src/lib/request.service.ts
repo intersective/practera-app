@@ -153,21 +153,21 @@ export class RequestService {
     }
 
     const endpoint = this.getEndpointUrl(params.endPoint);
-    const request = this.http.post<any>(endpoint, params.data, {
+    return this.http.post<any>(endpoint, params.data, {
       headers: this.appendHeaders(params.httpOptions.headers),
       params: this.setParams(params.httpOptions.params)
     })
-      .pipe(concatMap(response => {
+    .pipe(
+      concatMap(response => {
         return of(response);
-      }));
-
-    if (typeof params.customErrorHandler == "function") {
-      request.pipe(catchError((error) => params.customErrorHandler(error)));
-    } else {
-      request.pipe(catchError((error) => this.handleError(error)));
-    }
-
-    return request;
+      }),
+      catchError((error) => {
+        if (typeof params.customErrorHandler == "function") {
+          return params.customErrorHandler(error);
+        }
+        return this.handleError(error);
+      })
+    );
   }
 
   put(endPoint: string, data, httpOptions?: any): Observable<any> {
