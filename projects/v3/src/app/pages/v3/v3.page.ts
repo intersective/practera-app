@@ -70,6 +70,9 @@ export class V3Page implements OnInit {
     this.wait = true;
     const modal = await this.modalController.create({
       component: SettingsPage,
+      componentProps: {
+        mode: 'modal',
+      },
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed'
@@ -77,15 +80,5 @@ export class V3Page implements OnInit {
     await modal.present();
     this.wait = false;
     return;
-  }
-
-  async presentPopover() {
-    const popover = await this.popoverController.create({
-      component: SettingsPage,
-      size: 'cover',
-      side: 'right',
-      alignment: 'end',
-    });
-    return await popover.present();
   }
 }
