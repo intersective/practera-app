@@ -469,7 +469,7 @@ export class AssessmentService {
   }
 
   private _afterSubmit(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
-    if (hasPulseCheck && !assessment.inProgress && action === 'assessment') {
+    if (hasPulseCheck && !assessment.inProgress) {
       this._pullFastFeedback();
     }
   }
