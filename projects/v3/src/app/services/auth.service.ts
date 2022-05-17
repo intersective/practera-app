@@ -234,8 +234,7 @@ export class AuthService {
     return this.request.post({
       endPoint: API.forgotPassword,
       data: {
-        email: email,
-        domain: this.getDomain(),
+        email
       }
     });
   }
