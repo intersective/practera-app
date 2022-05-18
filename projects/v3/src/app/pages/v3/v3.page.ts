@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController, PopoverController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { Subscription } from 'rxjs';
@@ -18,10 +19,10 @@ export class V3Page implements OnInit, OnDestroy {
   appPages: any[];
   constructor(
     private modalController: ModalController,
-    private popoverController: PopoverController,
     private animationService: AnimationsService,
     private reviewService: ReviewService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private notificationsService: NotificationsService,
   ) {
   }
   ngOnDestroy(): void {
@@ -88,6 +89,12 @@ export class V3Page implements OnInit, OnDestroy {
     this.subscriptions.push(this.route.params.subscribe(params => {
       this.reviewService.getReviews();
     }));
+
+    this.subscriptions.push(this.notificationsService.notification$.subscribe(res => {
+      console.log('notifications::', res);
+    }));
+
+    this.notificationsService.getTodoItems().subscribe();
   }
 
   async presentModal(): Promise<void> {
