@@ -27,7 +27,7 @@ export class TopicMobilePage implements OnInit {
     this.activityService.currentTask$.subscribe(res => this.currentTask = res);
     this.route.params.subscribe(params => {
       this.topicService.getTopic(params.id);
-      this.activityId = Number(params.activityId);
+      this.activityId = +params.activityId;
     });
   }
 
