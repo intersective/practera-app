@@ -14,6 +14,7 @@ import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
+import { EventService } from './event.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -75,8 +76,8 @@ const api = {
   providedIn: 'root'
 })
 export class NotificationsService {
-  private _newMessage$ = new BehaviorSubject([]);
-  newMessage$ = this._newMessage$.asObservable();
+  private _newMessage$ = new Subject<TodoItem>();
+  newMessage$ = this._newMessage$.pipe(shareReplay(1));
 
   private _notification$ = new Subject<TodoItem[]>();
   notification$ = this._notification$.pipe(shareReplay(1));
@@ -94,7 +95,7 @@ export class NotificationsService {
     private request: RequestService,
     private storage: BrowserStorageService,
     private apolloService: ApolloService,
-    // private eventsService: EventService,
+    private eventsService: EventService,
   ) { }
 
   dismiss() {
@@ -448,7 +449,9 @@ export class NotificationsService {
       }
     ).pipe(map(response => {
       if (response.data) {
-        return this._normaliseChatMessage(response.data);
+        const normalized = this._normaliseChatMessage(response.data);
+        this._newMessage$.next(normalized);
+        return normalized;
       }
     }));
   }
@@ -583,7 +586,7 @@ export class NotificationsService {
    * When we get a notification event from Pusher about event reminder, we are querying API to get the event detail and normalise it
    * @param {Obj} data [The event data from Pusher notification]
    */
-  /* getReminderEvent(data) {
+  getReminderEvent(data) {
     if (!this.utils.has(data, 'meta.id')) {
       this.request.apiResponseFormatError('Pusher notification event format error');
       return of(null);
@@ -606,7 +609,7 @@ export class NotificationsService {
         }
         return event;
       }));
-  } */
+  }
 
   postEventReminder(event) {
     return this.request.post(
