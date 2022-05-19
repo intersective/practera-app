@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController, PopoverController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { Subscription } from 'rxjs';
@@ -18,10 +19,10 @@ export class V3Page implements OnInit, OnDestroy {
   appPages: any[];
   constructor(
     private modalController: ModalController,
-    private popoverController: PopoverController,
     private animationService: AnimationsService,
     private reviewService: ReviewService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private notificationsService: NotificationsService,
   ) {
   }
   ngOnDestroy(): void {
@@ -88,12 +89,21 @@ export class V3Page implements OnInit, OnDestroy {
     this.subscriptions.push(this.route.params.subscribe(params => {
       this.reviewService.getReviews();
     }));
+
+    this.subscriptions.push(this.notificationsService.notification$.subscribe());
+    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
+
+    this.notificationsService.getTodoItems().subscribe();
+    this.notificationsService.getChatMessage().subscribe();
   }
 
   async presentModal(): Promise<void> {
     this.wait = true;
     const modal = await this.modalController.create({
       component: SettingsPage,
+      componentProps: {
+        mode: 'modal',
+      },
       enterAnimation: this.animationService.enterAnimation,
       leaveAnimation: this.animationService.leaveAnimation,
       cssClass: 'right-affixed'
@@ -101,15 +111,5 @@ export class V3Page implements OnInit, OnDestroy {
     await modal.present();
     this.wait = false;
     return;
-  }
-
-  async presentPopover() {
-    const popover = await this.popoverController.create({
-      component: SettingsPage,
-      size: 'cover',
-      side: 'right',
-      alignment: 'end',
-    });
-    return await popover.present();
   }
 }

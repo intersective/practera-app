@@ -4,8 +4,6 @@ import { map } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { NotificationsService } from '@v3/services/notifications.service';
-import { EventDetailComponent } from '@v3/pages/events/event-detail/event-detail.component';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 
@@ -85,7 +83,6 @@ export class EventService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notificationService: NotificationsService,
     private demo: DemoService
   ) {}
 
@@ -258,14 +255,6 @@ export class EventService {
       };
       // sort activity by name alphabetically
     }).sort((a, b) => a.name.localeCompare(b.name));
-  }
-
-  eventDetailPopUp(event: Event) {
-    return this.notificationService.modal(
-      EventDetailComponent,
-      { event },
-      { cssClass: 'event-detail-popup' }
-    );
   }
 
   /******************

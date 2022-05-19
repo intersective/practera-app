@@ -1,7 +1,9 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventService, Event, EventGroup, Activity } from '@v3/services/event.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { EventDetailComponent } from '../event-detail/event-detail.component';
 
 @Component({
   selector: 'app-event-list',
@@ -39,6 +41,7 @@ export class EventListComponent {
   constructor (
     public router: Router,
     private route: ActivatedRoute,
+    private notificationsService: NotificationsService,
     public eventService: EventService,
     public utils: UtilsService,
   ) {
@@ -230,7 +233,9 @@ export class EventListComponent {
   goto(event) {
     // pop up event detail for mobile
     if (this.utils.isMobile()) {
-      return this.eventService.eventDetailPopUp(event);
+      return this.notificationsService.modal(EventDetailComponent, { event }, {
+        cssClass: 'event-detail-popup'
+      });
     }
     // goto an event for desktop view
     return this.navigate.emit(event);
