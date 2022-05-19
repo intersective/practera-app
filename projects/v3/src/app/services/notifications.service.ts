@@ -304,7 +304,6 @@ export class NotificationsService {
         project_id: this.storage.getUser().projectId
       }
     }).pipe(map(response => {
-      console.log('response todo:', response);
       if (response.success && response.data) {
         const normalised = this._normaliseTodoItems(response.data);
         this._notification$.next(normalised);
