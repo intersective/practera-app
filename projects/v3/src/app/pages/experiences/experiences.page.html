@@ -19,10 +19,10 @@
             <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down">Access and check the progress of your experiences below</p>
             <div class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
               <ng-container *ngFor="let program of programs">
-                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.program.name" (click)="switchProgram(program)">
-                  <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}">
+                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.experience.name" (click)="switchProgram(program)">
+                  <img [src]="program.experience.lead_image ? program.experience.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.experience.name }}">
                   <ion-card-content>
-                    <p class="m-0 headline-3 exp-title black">{{ program.program.name }}</p>
+                    <p class="m-0 headline-3 exp-title black">{{ program.experience.name }}</p>
                     <div class="exp-info subtitle-3 grey-50">
                       <p class="m-0 subtitle-3 grey-50">{{program.progress}}% Progress</p>
                     </div>

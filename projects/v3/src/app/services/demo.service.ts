@@ -400,6 +400,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 01',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -437,6 +438,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 02',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -474,6 +476,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 03',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -511,6 +514,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 04',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -548,6 +552,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 05',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -585,6 +590,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 06',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -622,6 +628,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 07',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -659,6 +666,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 08',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -696,6 +704,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 09',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -733,6 +742,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 10',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -770,6 +780,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 11',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -807,6 +818,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 12',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -844,6 +856,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 13',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',
@@ -881,6 +894,7 @@ export class DemoService {
         },
         experience: {
           id: 1,
+          name: 'Global Trade Accelerator - 14',
           config: {
             primary_color: '#2bc1d9',
             secondary_color: '#9fc5e8',

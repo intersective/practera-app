@@ -58,6 +58,8 @@ export interface Timeline {
 
 export interface Experience {
   id: number;
+  name: string;
+  lead_image: string;
   config: any;
 }
 
