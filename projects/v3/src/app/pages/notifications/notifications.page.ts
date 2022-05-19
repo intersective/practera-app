@@ -42,6 +42,14 @@ export class NotificationsPage implements OnInit {
     this.notificationsService.notification$.subscribe(items => {
       this.todoItems = this.todoItems.concat(items);
     });
+
+    /* this.notificationsService.getChatMessage().subscribe(chatMessage => {
+      if (!this.utils.isEmpty(chatMessage)) {
+        this._addChatTodoItem(chatMessage);
+      }
+      this.loadingTodoItems = false;
+    });*/
+
     this.notificationsService.newMessage$.subscribe(chatMessage => {
       if (!this.utils.isEmpty(chatMessage)) {
         this._addChatTodoItem(chatMessage);
@@ -55,18 +63,22 @@ export class NotificationsPage implements OnInit {
         this.todoItems.push(todoItem);
       }
     });
+
     this.utils.getEvent('chat:new-message').subscribe(event => {
       this.notificationsService.getChatMessage().subscribe(chatMessage => {
-        // this.notificationsService.newMessage$.next(chatMessage);
+        if (!this.utils.isEmpty(chatMessage)) {
+          this._addChatTodoItem(chatMessage);
+        }
       });
     });
-    /* this.utils.getEvent('event-reminder').subscribe(event => {
+
+    this.utils.getEvent('event-reminder').subscribe(event => {
       this.notificationsService.getReminderEvent(event).subscribe(session => {
         if (!this.utils.isEmpty(session)) {
           this.eventReminders.push(session);
         }
       });
-    }); */
+    });
   }
 
   private _addChatTodoItem(chatTodoItem) {
