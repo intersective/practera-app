@@ -1,26 +1,25 @@
+.image-content {
+  margin-top: 5px;
+  margin-bottom: -45px;
 
-  .image-content {
-    margin-top: 5px;
-    margin-bottom: -45px;
+  .image {
+    padding: 12px;
 
-    .image {
-      padding: 12px;
-
-      img {
-        max-width: 100px;
-        &.default {
-          filter: invert(.5);
-        }
+    img {
+      max-width: 100px;
+      &.default {
+        filter: invert(.5);
       }
     }
   }
+}
 
-  .details-container {
-    padding: 20px;
-    border-radius: 12px;
-  }
+.details-container {
+  padding: 20px;
+  border-radius: 12px;
+}
 
-  .div-after-img {
-    margin: 0;
-    margin-bottom: 15px;
-  }
+.div-after-img {
+  margin: 0;
+  margin-bottom: 15px;
+}
