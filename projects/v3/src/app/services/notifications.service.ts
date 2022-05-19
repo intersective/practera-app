@@ -596,32 +596,30 @@ export class NotificationsService {
         type: 'activity_session',
         id: data.meta.id
       }
-    })
-      .pipe(map(response => {
-        if (this.utils.isEmpty(response.data)) {
-          return null;
-        }
-        const event = this.eventsService.normaliseEvents(response.data)[0];
-        if (event.isPast) {
-          // mark the todo item as done if event starts
-          this.postEventReminder(event);
-          return null;
-        }
+    }).pipe(map(response => {
+      if (this.utils.isEmpty(response.data)) {
+        return null;
+      }
+      const event = this.eventsService.normaliseEvents(response.data)[0];
+      if (event.isPast) {
+        // mark the todo item as done if event starts
+        this.postEventReminder(event);
+        return null;
+      }
 
-        this._eventReminder$.next(event);
-        return event;
-      }));
+      this._eventReminder$.next(event);
+      return event;
+    }));
   }
 
   postEventReminder(event) {
-    return this.request.post(
-      {
-        endPoint: api.post.todoItem,
-        data: {
-          project_id: this.storage.getUser().projectId,
-          identifier: 'EventReminder-' + event.id,
-          is_done: true
-        }
-      }).subscribe();
+    return this.request.post({
+      endPoint: api.post.todoItem,
+      data: {
+        project_id: this.storage.getUser().projectId,
+        identifier: 'EventReminder-' + event.id,
+        is_done: true
+      }
+    }).subscribe();
   }
 }
