@@ -10,6 +10,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApolloService } from './services/apollo.service';
 import { FilterPipe } from './pipes/filter.pipe';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { FilterPipe } from './pipes/filter.pipe';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     IonicModule.forRoot(),
     RequestModule.forRoot({
