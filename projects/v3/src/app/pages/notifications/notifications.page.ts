@@ -48,13 +48,6 @@ export class NotificationsPage implements OnInit {
       }
     });
 
-    /* this.notificationsService.getChatMessage().subscribe(chatMessage => {
-      if (!this.utils.isEmpty(chatMessage)) {
-        this._addChatTodoItem(chatMessage);
-      }
-      this.loadingTodoItems = false;
-    });*/
-
     this.notificationsService.newMessage$.subscribe(chatMessage => {
       if (!this.utils.isEmpty(chatMessage)) {
         this._addChatTodoItem(chatMessage);
@@ -119,7 +112,7 @@ export class NotificationsPage implements OnInit {
       );
     } else {
       // go to the events page with the event selected
-      this.router.navigate(['app', 'events', { event_id: event.id }]);
+      this.router.navigate(['v3', 'events', { event_id: event.id }]);
     }
   }
 
@@ -155,8 +148,8 @@ export class NotificationsPage implements OnInit {
       ]);
     } else {
       this.router.navigate([
-        'app',
-        'activity',
+        'v3',
+        'activity-desktop',
         activityId,
         {
           task: 'assessment',
@@ -178,15 +171,15 @@ export class NotificationsPage implements OnInit {
       ]);
     } else {
       this.router.navigate([
-        'app',
-        'reviews',
+        'v3',
+        'review-desktop',
         submissionId
       ]);
     }
   }
 
   goToChat(todoItem?: TodoItem) {
-    return this.router.navigate(['v3', 'chat']);
+    return this.router.navigate(['v3', 'messages']);
   }
 
   goBack(): Promise<boolean | void> {
