@@ -42,6 +42,11 @@ export class NotificationsPage implements OnInit {
     this.notificationsService.notification$.subscribe(items => {
       this.todoItems = this.todoItems.concat(items);
     });
+    this.notificationsService.eventReminder$.subscribe(session => {
+      if (!this.utils.isEmpty(session)) {
+        this.eventReminders.push(session);
+      }
+    });
 
     /* this.notificationsService.getChatMessage().subscribe(chatMessage => {
       if (!this.utils.isEmpty(chatMessage)) {

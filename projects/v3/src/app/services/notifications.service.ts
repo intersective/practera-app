@@ -9,7 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -82,8 +82,8 @@ export class NotificationsService {
   private _notification$ = new Subject<TodoItem[]>();
   notification$ = this._notification$.pipe(shareReplay(1));
 
-  private _eventReminder$ = new BehaviorSubject([]);
-  eventReminder$ = this._eventReminder$.asObservable();
+  private _eventReminder$ = new Subject<any>();
+  eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
   constructor(
     private modalController: ModalController,
@@ -607,6 +607,8 @@ export class NotificationsService {
           this.postEventReminder(event);
           return null;
         }
+
+        this._eventReminder$.next(event);
         return event;
       }));
   }
