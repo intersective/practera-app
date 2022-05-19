@@ -9,12 +9,11 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
-import { EventService } from './event.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -79,8 +78,8 @@ export class NotificationsService {
   private _newMessage$ = new BehaviorSubject([]);
   newMessage$ = this._newMessage$.asObservable();
 
-  private _notification$ = new BehaviorSubject([]);
-  notification$ = this._notification$.asObservable();
+  private _notification$ = new Subject<TodoItem[]>();
+  notification$ = this._notification$.pipe(shareReplay(1));
 
   private _eventReminder$ = new BehaviorSubject([]);
   eventReminder$ = this._eventReminder$.asObservable();
