@@ -39,14 +39,73 @@ export class NotificationsPage implements OnInit {
   }
 
   ngOnInit() {
+    this.notificationsService.notification$.subscribe(items => {
+      this.todoItems = this.todoItems.concat(items);
+    });
+    this.notificationsService.eventReminder$.subscribe(session => {
+      if (!this.utils.isEmpty(session)) {
+        this.eventReminders.push(session);
+      }
+    });
+
+    /* this.notificationsService.getChatMessage().subscribe(chatMessage => {
+      if (!this.utils.isEmpty(chatMessage)) {
+        this._addChatTodoItem(chatMessage);
+      }
+      this.loadingTodoItems = false;
+    });*/
+
+    this.notificationsService.newMessage$.subscribe(chatMessage => {
+      if (!this.utils.isEmpty(chatMessage)) {
+        this._addChatTodoItem(chatMessage);
+      }
+    });
+
+    this.utils.getEvent('notification').subscribe(event => {
+      const todoItem = this.notificationsService.getTodoItemFromEvent(event);
+      if (!this.utils.isEmpty(todoItem)) {
+        // add todo item to the list if it is not empty
+        this.todoItems.push(todoItem);
+      }
+    });
+
+    this.utils.getEvent('chat:new-message').subscribe(() => {
+      this.notificationsService.getChatMessage().subscribe(chatMessage => {
+        if (!this.utils.isEmpty(chatMessage)) {
+          this._addChatTodoItem(chatMessage);
+        }
+      });
+    });
+
+    this.utils.getEvent('event-reminder').subscribe(event => {
+      this.notificationsService.getReminderEvent(event).subscribe(session => {
+        if (!this.utils.isEmpty(session)) {
+          this.eventReminders.push(session);
+        }
+      });
+    });
+  }
+
+  private _addChatTodoItem(chatTodoItem) {
+    let currentChatTodoIndex = -1;
+    const currentChatTodo = this.todoItems.find((todoItem, index) => {
+      if (todoItem.type === 'chat') {
+        currentChatTodoIndex = index;
+        return true;
+      }
+    });
+    if (currentChatTodo) {
+      this.todoItems.splice(currentChatTodoIndex, 1);
+    }
+    this.todoItems.push(chatTodoItem);
   }
 
   get isMobile() {
     return this.utils.isMobile();
   }
 
-  dismiss() {
-    this.modalController.dismiss({
+  async dismiss(): Promise<boolean> {
+    return this.modalController.dismiss({
       'dismissed': true
     });
   }
@@ -130,7 +189,10 @@ export class NotificationsPage implements OnInit {
     return this.router.navigate(['v3', 'chat']);
   }
 
-  goBack(): void {
+  goBack(): Promise<boolean | void> {
+    if (!this.isMobile) {
+      return this.dismiss();
+    }
     return this.window.history.back();
   }
 }
