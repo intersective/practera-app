@@ -186,7 +186,7 @@ export class AuthService {
             program: timeline.Program,
             project: timeline.Project,
             timeline: timeline.Timeline,
-            experience: timeline.Experience,
+            experience: {...timeline.Experience, lead_image: timeline.Experience.lead_url},
           };
         },
         this

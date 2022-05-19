@@ -410,7 +410,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
           support_email: 'help@practera.com'
         }
       },
@@ -448,7 +448,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
+          lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
           support_email: 'help@practera.com'
         }
       },
@@ -486,7 +486,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
+          lead_image: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
           support_email: 'help@practera.com'
         }
       },
@@ -524,7 +524,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
           support_email: 'help@practera.com'
         }
       },
@@ -562,7 +562,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
+          lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
           support_email: 'help@practera.com'
         }
       },
@@ -600,7 +600,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
+          lead_image: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
           support_email: 'help@practera.com'
         }
       },
@@ -638,7 +638,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
           support_email: 'help@practera.com'
         }
       },
@@ -676,7 +676,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
+          lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
           support_email: 'help@practera.com'
         }
       },
@@ -714,7 +714,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
+          lead_image: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
           support_email: 'help@practera.com'
         }
       },
@@ -752,7 +752,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
           support_email: 'help@practera.com'
         }
       },
@@ -790,7 +790,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
+          lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
           support_email: 'help@practera.com'
         }
       },
@@ -828,7 +828,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
+          lead_image: 'https://cdn.filestackcontent.com/EF0cRcRUuvKqg8r4X0Hg',
           support_email: 'help@practera.com'
         }
       },
@@ -866,7 +866,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
           support_email: 'help@practera.com'
         }
       },
@@ -904,7 +904,7 @@ export class DemoService {
             design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
             overview_url: 'https://vimeo.com/325554048'
           },
-          lead_url: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
+          lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
           support_email: 'help@practera.com'
         }
       },
