@@ -90,11 +90,11 @@ export class V3Page implements OnInit, OnDestroy {
       this.reviewService.getReviews();
     }));
 
-    this.subscriptions.push(this.notificationsService.notification$.subscribe(res => {
-      console.log('notifications::', res);
-    }));
+    this.subscriptions.push(this.notificationsService.notification$.subscribe());
+    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
 
     this.notificationsService.getTodoItems().subscribe();
+    this.notificationsService.getChatMessage().subscribe();
   }
 
   async presentModal(): Promise<void> {
