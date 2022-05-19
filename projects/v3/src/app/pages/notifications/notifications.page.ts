@@ -69,7 +69,7 @@ export class NotificationsPage implements OnInit {
       }
     });
 
-    this.utils.getEvent('chat:new-message').subscribe(event => {
+    this.utils.getEvent('chat:new-message').subscribe(() => {
       this.notificationsService.getChatMessage().subscribe(chatMessage => {
         if (!this.utils.isEmpty(chatMessage)) {
           this._addChatTodoItem(chatMessage);
