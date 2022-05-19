@@ -133,7 +133,7 @@ export class DemoService {
       data: Array(5).fill(1).map((v, i) => ({
         id: i + 1,
         name: `Badge${ i + 1 }`,
-        description: `Badge description${ i + 1 }`,
+        description: i < 2 ? `Badge description${ i + 1 }` : this.description,
         image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
         points: Math.floor(Math.random() * 1000),
         isEarned: i < 3,
