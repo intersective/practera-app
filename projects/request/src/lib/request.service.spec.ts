@@ -15,7 +15,6 @@ import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
 import { BrowserStorageServiceMock } from '@testing/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
-import { of, throwError } from 'rxjs';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';

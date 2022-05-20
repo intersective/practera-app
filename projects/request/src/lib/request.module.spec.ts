@@ -1,4 +1,3 @@
-import { NgModule } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { RequestModule } from './request.module';
 
