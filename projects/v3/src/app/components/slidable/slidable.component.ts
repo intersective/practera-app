@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, OnChanges, SimpleChanges, EventEmitter } from '@angular/core';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/app/services/utils.service';
 import * as moment from 'moment';
 
 @Component({
