@@ -3,7 +3,7 @@
   <ion-skeleton-text animated ></ion-skeleton-text>
   <ion-skeleton-text animated ></ion-skeleton-text>
 </div>
-<ng-container *ngIf="action=='assessment' && submission?.status === 'feedback available'">
+<ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
   <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission.reviewerName">
     <ion-item-group>
       <ion-item-divider>
@@ -21,7 +21,7 @@
   </ion-list>
 </ng-container>
 
-<ng-container *ngIf="action == 'review'">
+<ng-container *ngIf="action === 'review'">
   <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission">
     <ion-item-group>
       <ion-item-divider>
