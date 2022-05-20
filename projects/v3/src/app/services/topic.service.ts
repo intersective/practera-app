@@ -44,9 +44,13 @@ export class TopicService {
     this.topic$.subscribe(res => this.topic = res);
   }
 
+  clearTopic() {
+    this._topic$.next(null);
+  }
+
   getTopic(id: number) {
     if (!this.topic || this.topic.id !== id) {
-      this._topic$.next(null);
+      this.clearTopic();
     }
     if (environment.demo) {
       return setTimeout(

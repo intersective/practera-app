@@ -134,9 +134,13 @@ export class AssessmentService {
     this.assessment$.subscribe(res => this.assessment = res);
   }
 
+  clearAssessment() {
+    this._assessment$.next(null);
+  }
+
   getAssessment(id, action, activityId, contextId, submissionId?) {
     if (!this.assessment || this.assessment.id !== id) {
-      this._assessment$.next(null);
+      this.clearAssessment();
     }
     if (environment.demo) {
       return this.demo.assessment(id).pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
