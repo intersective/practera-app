@@ -22,7 +22,7 @@ export interface FilestackUploaded {
 }
 
 @Component({
-  selector: 'file-stack',
+  selector: 'app-file-stack',
   templateUrl: 'filestack.component.html',
   styleUrls: ['filestack.component.scss']
 })

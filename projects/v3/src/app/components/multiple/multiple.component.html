@@ -35,7 +35,7 @@
   <div>
     <ion-list class="ion-no-padding">
       <ng-container *ngFor="let choice of question.choices; let i = index">
-        <ion-item [ngClass]="{'item-bottom-border': (i != question.choices.length - 1 || !checkInnerValue(choice.id))}"
+        <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
           lines='none'>
           <ion-label class="ion-text-wrap body-2 black">{{ choice.name }}</ion-label>
           <ion-checkbox color="success" [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
@@ -65,7 +65,7 @@
       <ion-label class="ion-text-wrap subtitle-2 black">Your Answer is</ion-label>
     </ion-list-header>
     <ion-item *ngFor="let choice of question.choices; let i = index"
-      [ngClass]="{'item-bottom-border': i != question.choices.length - 1}"
+      [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
       lines="none">
       <ion-label class="ion-text-wrap body-2 black">
         {{ choice.name }}

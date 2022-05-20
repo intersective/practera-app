@@ -27,7 +27,7 @@
       (ionChange)="onChange(answerEle.value)">
       <ion-item lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
-        [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1}">
+        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
         <ion-radio
           color="success"
           slot="start"
@@ -46,7 +46,7 @@
     <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
       <ion-item lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
-        [ngClass]="{'item-bottom-border': i != question.teamMembers.length - 1 }">
+        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
         <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
         <ion-label class="white-space-normal body-2 black">
           {{ teamMember.userName }}

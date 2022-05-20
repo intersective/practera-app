@@ -33,12 +33,12 @@
 
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding">
-    <file-stack *ngIf="!uploadedFile && !submission.answer"
+    <app-file-stack *ngIf="!uploadedFile && !submission.answer"
       [accept]="fileTypes"
       [fileType]="question.fileType || 'any'"
       (complete)="onFileUploadCompleted($event)"
       [disabled]="control.disabled"
-    ></file-stack>
+    ></app-file-stack>
 
     <ion-text *ngFor="let error of errors" color="danger">
       <p>{{error}}</p>
@@ -57,12 +57,12 @@
 
 <ng-container *ngIf="doReview && question.canAnswer">
   <ng-container *ngIf="false && question.canAnswer">
-    <!-- <file-stack *ngIf="!uploadedFile && !review.answer"
+    <!-- <app-file-stack *ngIf="!uploadedFile && !review.answer"
       [accept]="fileTypes"
       [fileType]="question.fileType || 'any'"
       (complete)="onFileUploadCompleted($event, 'answer')"
       [disabled]="control.disabled"
-    ></file-stack> -->
+    ></app-file-stack> -->
     <!-- <app-file-display
       [file]="uploadedFile ? uploadedFile : review.answer"
       [fileType]="question.fileType || 'any'"
