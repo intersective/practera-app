@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'clickable-item',
+  selector: 'app-clickable-item',
   templateUrl: './clickable-item.component.html',
   styleUrls: ['./clickable-item.component.scss']
 })

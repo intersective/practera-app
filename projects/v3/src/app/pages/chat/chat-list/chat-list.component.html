@@ -5,11 +5,11 @@
     </div>
   </ng-container>
   <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !utils.isMobile()}">
-    <clickable-item
+    <app-clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"
       (keyup.enter)="goToChatRoom(chat)"
-      [active]="currentChat && currentChat.uuid == chat.uuid"
+      [active]="currentChat && currentChat.uuid === chat.uuid"
       [ngClass]="{'unread': chat.unreadMessageCount > 0}"
       [lines]="'none'"
       [isCustomizedCard]="true"
@@ -35,6 +35,6 @@
           <ion-badge class="caption">{{ chat.unreadMessageCount }}</ion-badge>
         </ng-container>
       </div>
-    </clickable-item>
+    </app-clickable-item>
   </ion-list>
 </ion-content>

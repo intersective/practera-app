@@ -31,7 +31,7 @@
       <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item lines="none"
-            [ngClass]="{'item-bottom-border': i != question.choices.length - 1 || !checkInnerValue(choice.id)}">
+            [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
             <ion-label class="body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
               [value]="choice.id"
@@ -61,7 +61,7 @@
         </ion-list-header>
         <ion-item *ngFor="let choice of question.choices; let i = index"
           lines="none"
-          [ngClass]="{'item-bottom-border': i != question.choices.length - 1}">
+          [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}">
           <ion-label class="body-2 black">
             {{ choice.name }}
             <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">

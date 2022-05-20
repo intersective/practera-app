@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'chat-preview',
+  selector: 'app-chat-preview',
   templateUrl: 'chat-preview.component.html',
   styleUrls: ['chat-preview.component.scss']
 })
