@@ -14,12 +14,12 @@
       <ion-col size="12" size-md="5">
         <ng-container *ngIf="(experience$ | async ) as experience">
           <img [src]="experience.leadImage" />
-          <ion-progress-bar *ngIf="(experienceProgress$ | async) as progress" color="primary" [value]="progress"></ion-progress-bar>
+          <ion-progress-bar *ngIf="experienceProgress" color="primary" [value]="experienceProgress"></ion-progress-bar>
           <h1 class="headline-2">{{ experience.name }}</h1>
           <ion-text class="subtitle-3" color="medium">
             <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
             <span style="margin: 0 10px">|</span>
-            <ng-container *ngIf="(experienceProgress$ | async) as progress; else loadingProgress">{{ progress * 100 }}% Progress</ng-container>
+            <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress * 100 }}% Progress</ng-container>
             <ng-template #loadingProgress>
               <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
             </ng-template>

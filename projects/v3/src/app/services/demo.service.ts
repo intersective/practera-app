@@ -90,7 +90,7 @@ export class DemoService {
     return of({
       data: {
         project: {
-          progress: 0.65,
+          progress: 0,
           milestones: [
             {
               id: 1,

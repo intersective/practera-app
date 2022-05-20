@@ -17,7 +17,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   experience$ = this.service.experience$;
   activityCount$ = this.service.activityCount$;
-  experienceProgress$ = this.service.experienceProgress$;
+  experienceProgress: number;
 
   milestones: Milestone[];
   achievements: Achievement[];
@@ -38,6 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.subscriptions = [];
     this.subscriptions.push(this.service.milestonesWithProgress$.subscribe(res => this.milestones = res));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(res => this.achievements = res));
+    this.subscriptions.push(this.service.experienceProgress$.subscribe(res => this.experienceProgress = res));
     this.subscriptions.push(this.route.params.subscribe(params => {
       this.service.getExperience();
       this.service.getMilestones();
