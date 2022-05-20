@@ -455,37 +455,6 @@
           }
         }
       }
-    },
-    "apollo": {
-      "projectType": "library",
-      "root": "projects/apollo",
-      "sourceRoot": "projects/apollo/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
-          "options": {
-            "project": "projects/apollo/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/apollo/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/apollo/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "projects/apollo/src/test.ts",
-            "tsConfig": "projects/apollo/tsconfig.spec.json",
-            "karmaConfig": "projects/apollo/karma.conf.js"
-          }
-        }
-      }
     }
   },
   "cli": {
