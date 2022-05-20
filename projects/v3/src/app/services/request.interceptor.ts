@@ -18,7 +18,8 @@ export class RequestInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (
       req.url.includes('ipapi.co') ||
-      req.url.includes('filestackapi.com')
+      req.url.includes('filestackapi.com') ||
+      req.url.includes('filestackcontent')
     ) {
       return next.handle(req);
     }
