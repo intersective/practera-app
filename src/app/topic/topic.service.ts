@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from 'request';
-import { UtilsService } from '@v3/services/utils.service';
+import { RequestService } from '@shared/request/request.service';
+import { UtilsService } from '@app/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 
 export interface Topic {
