@@ -36,9 +36,9 @@
 
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
-  <ion-avatar *ngIf="endingProgress" slot="end">
+  <div *ngIf="endingProgress" slot="end" style="width: 2em;">
     <app-circle-progress [data]='{ percent: endingProgress * 100 }'></app-circle-progress>
-  </ion-avatar>
+  </div>
 
   <div *ngIf="isEventItem">
     <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
