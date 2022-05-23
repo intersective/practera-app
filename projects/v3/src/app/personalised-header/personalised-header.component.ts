@@ -12,8 +12,7 @@ import { UtilsService } from '../services/utils.service';
   templateUrl: './personalised-header.component.html',
   styleUrls: ['./personalised-header.component.scss'],
 })
-export class PersonalisedHeaderComponent implements OnInit {
-  user: User;
+export class PersonalisedHeaderComponent {
 
   constructor(
     private modalController: ModalController,
@@ -23,12 +22,12 @@ export class PersonalisedHeaderComponent implements OnInit {
     private router: Router,
   ) { }
 
-  ngOnInit() {
-    this.user = this.storageService.getUser();
-  }
-
   get isMobile(): boolean {
     return this.utilService.isMobile();
+  }
+
+  get user(): User {
+    return this.storageService.getUser();
   }
 
   async notifications(): Promise<void | boolean> {
