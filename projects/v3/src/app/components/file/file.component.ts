@@ -15,7 +15,7 @@ import { FilestackService } from '@v3/services/filestack.service';
   ]
 })
 export class FileComponent implements ControlValueAccessor, OnInit {
-
+  @Input() videoOnly?: boolean;
   @Input() question: {
     name: string;
     description: string;
@@ -66,7 +66,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   ) {}
 
   ngOnInit() {
-    this.fileTypes = this.filestackService.getFileTypes(this.question.fileType);
+    this.fileTypes = this.filestackService.getFileTypes(this.videoOnly ? 'video' : this.question.fileType);
     this._showSavedAnswers();
   }
 

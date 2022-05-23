@@ -162,6 +162,19 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 (saveProgress)="btnSaveClicked()"></app-multiple>
 
+              <app-file *ngSwitchCase="'video'"
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="isPendingReview"
+                [submission]="submission?.answers[question.id] || {}"
+                [review]="review?.answers[question.id] || {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm?.controls['q-' + question.id]"
+                [videoOnly]="true"
+                (saveProgress)="btnSaveClicked()"></app-file>
+
               <app-file *ngSwitchCase="'file'"
                 [question]="question"
                 [doAssessment]="doAssessment"
