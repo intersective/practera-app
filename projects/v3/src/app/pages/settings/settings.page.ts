@@ -52,9 +52,12 @@ export class SettingsPage implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
+    this.subscriptions[0] = this.route.queryParams.subscribe(_params => {
+      this._retrieveUserInfo();
+    });
   }
 
-  ngOnInit() {
+  private _retrieveUserInfo(): void {
     const user = this.storage.getUser();
     const {
       email,
@@ -77,6 +80,10 @@ export class SettingsPage implements OnInit, OnDestroy {
     // this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
+  ngOnInit() {
+    this._retrieveUserInfo();
+  }
+
   get isMobile() {
     return this.utils.isMobile();
   }
@@ -88,7 +95,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions[0]?.unsubscribe();
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -149,7 +156,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   async uploadProfileImage(file, type = null) {
     if (file.success) {
       this.imageUpdating = true;
-      this.subscriptions[0] = this.authService.updateProfileImage({
+      this.subscriptions[1] = this.authService.updateProfileImage({
         image: file.data.url
       }).subscribe(
         () => {
