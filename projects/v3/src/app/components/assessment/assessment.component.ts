@@ -173,7 +173,7 @@ export class AssessmentComponent implements OnChanges {
   private _handleReviewData() {
     if (!this.review && this.action === 'review' && !this.isPendingReview) {
       return this.notifications.alert({
-        message: 'There is no assessment to review.',
+        message: 'There is no assessments to review.',
         buttons: [
           {
             text: 'OK',
