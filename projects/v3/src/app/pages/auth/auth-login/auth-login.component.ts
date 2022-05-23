@@ -51,6 +51,7 @@ export class AuthLoginComponent {
       password: this.loginForm.value.password,
     }).subscribe(
       res => {
+        this.loginForm.reset();
         return this._handleNavigation(res.programs);
       },
       err => {
