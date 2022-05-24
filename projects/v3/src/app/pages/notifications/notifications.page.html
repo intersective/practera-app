@@ -24,8 +24,9 @@
 
     <ng-template #doneLoading>
       <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
-        <app-slidable *ngIf="notices.length > 0; else noNotices" [notifications]="notices" (goto)="clickTodoItem($event)">
-        </app-slidable>
+        <ng-container *ngIf="notices.length > 0; else noNotices">
+          <app-todo-card *ngFor="let notice of notices" [todoItem]="notice" [ngStyle]="{width: '100%'}" (click)="clickTodoItem(notice)"></app-todo-card>
+        </ng-container>
 
         <ng-template #noNotices>
           <div class="margin-left-right ion-padding-bottom">
