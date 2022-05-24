@@ -236,7 +236,7 @@ export class AssessmentComponent implements OnChanges {
   /**
    * When user click the bottom button
    */
-  btnClicked() {
+  continueToNextTask() {
     this.btnDisabled = true;
     switch (this._btnAction) {
       case 'submit':
@@ -434,9 +434,19 @@ export class AssessmentComponent implements OnChanges {
     if (this.doAssessment || this.isPendingReview) {
       return 'submit';
     }
-    if (this.submission && this.submission.status === 'published' && !this.feedbackReviewed) {
-      return 'readFeedback';
+
+    if (this.submission) {
+      // condition: Published && feedbackReview is true
+      if (this.submission.status == 'published' && !this.feedbackReviewed) {
+        return 'readFeedback';
+      }
+
+      // condition: status not always = "Published", so we need to check by the submission status (completed = true means completed)
+      if (this.submission.status == 'feedback available' && this.submission.completed === false) {
+        return 'readFeedback';
+      }
     }
+
     return 'continue';
   }
 
