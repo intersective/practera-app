@@ -23,7 +23,7 @@
     </ng-container>
 
     <ng-template #doneLoading>
-      <ng-container @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
+      <div @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
         <ng-container *ngIf="notices.length > 0; else noNotices">
           <app-todo-card *ngFor="let notice of notices" [todoItem]="notice" [ngStyle]="{width: '100%'}" (click)="clickTodoItem(notice)"></app-todo-card>
         </ng-container>
@@ -33,7 +33,7 @@
             <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
           </div>
         </ng-template>
-      </ng-container>
+      </div>
     </ng-template>
   </ng-container>
 </ion-content>
@@ -47,14 +47,14 @@
 </ng-template>
 
 <ng-template #todoItemsTpl>
-  <ng-container *ngFor="let event of eventReminders" @newLoaded>
+  <div *ngFor="let event of eventReminders" @newLoaded>
     <app-todo-card [todoItem]="{
       name: event.name,
       description: '',
       type: 'event',
       time: timeFormatter(event.startTime)
     }" (click)="showEventDetail(event)"></app-todo-card>
-  </ng-container>
+  </div>
 
   <ng-container *ngIf="todoItems.length; else noItemsTpl">
     <div *ngFor="let todoItem of todoItems" @newLoaded>
