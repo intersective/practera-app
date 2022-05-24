@@ -1,5 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationsService } from '@v3/app/services/notifications.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 
@@ -28,7 +30,9 @@ export class AssessmentMobilePage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private assessmentService: AssessmentService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private storageService: BrowserStorageService,
+    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit() {
@@ -89,7 +93,8 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async readFeedback(event) {
-    await this.assessmentService.saveFeedbackReviewed(event).subscribe();
+    await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+    await this.reviewRatingPopUp();
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activityId, true, this.task);
   }
@@ -98,4 +103,21 @@ export class AssessmentMobilePage implements OnInit {
     this.activityService.goToNextTask(null, this.task);
   }
 
+  async reviewRatingPopUp(): Promise<void> {
+    if (this.storageService.getUser().hasReviewRating === false) {
+      return;
+    }
+
+    try {
+      // display review rating modal
+      return await this.assessmentService.popUpReviewRating(this.review.id, false);
+    } catch (err) {
+      const header = 'Can not get review rating information';
+      await this.notificationsService.alert({
+        header,
+        message: err.msg || JSON.stringify(err)
+      });
+      throw new Error(err);
+    }
+  }
 }
