@@ -146,7 +146,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
   goToAssessment(activityId, contextId, assessmentId) {
     if (this.utils.isMobile()) {
       this.router.navigate([
-        'assessment',
+        'assessment-mobile',
         'assessment',
         activityId,
         contextId,
@@ -169,8 +169,8 @@ export class NotificationsPage implements OnInit, OnDestroy {
   goToReview(contextId, assessmentId, submissionId) {
     if (this.utils.isMobile()) {
       this.router.navigate([
-        'assessment',
-        'review',
+        'v3',
+        'reviews',
         contextId,
         assessmentId,
         submissionId
