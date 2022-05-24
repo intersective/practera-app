@@ -48,7 +48,7 @@ export class ActivityDesktopPage implements OnInit {
       return this.activityService.goToNextTask(this.activity.tasks, task);
     }
     // mark the topic as complete
-    await this.topicService.updateTopicProgress(task.id, 'completed').subscribe();
+    await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activity.id, true, task);
   }
@@ -62,7 +62,7 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   async readFeedback(event, task: Task) {
-    await this.assessmentService.saveFeedbackReviewed(event).subscribe();
+    await this.assessmentService.saveFeedbackReviewed(event).toPromise();
     setTimeout(
       // get the latest activity tasks and navigate to the next task
       // wait for a while for the server to save the "read feedback" status
