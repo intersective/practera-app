@@ -210,7 +210,7 @@
   </div>
 
   <div class="ion-text-center">
-    <ion-button [disabled]="btnDisabled" color="secondary" (click)="btnClicked()" shape="round">{{ btnText }}</ion-button>
+    <ion-button [disabled]="btnDisabled" color="secondary" (click)="continueToNextTask()" shape="round">{{ btnText }}</ion-button>
   </div>
 
   <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">

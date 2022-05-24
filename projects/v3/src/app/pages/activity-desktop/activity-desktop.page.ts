@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 
 @Component({
@@ -21,7 +23,9 @@ export class ActivityDesktopPage implements OnInit {
     private route: ActivatedRoute,
     private activityService: ActivityService,
     private topicService: TopicService,
-    private assessmentService: AssessmentService
+    private assessmentService: AssessmentService,
+    private notificationsService: NotificationsService,
+    private storageService: BrowserStorageService,
   ) { }
 
   ngOnInit() {
@@ -68,7 +72,8 @@ export class ActivityDesktopPage implements OnInit {
       // wait for a while for the server to save the "read feedback" status
       () => this.activityService.getActivity(this.activity.id, true, task),
       500
-    )
+    );
+    await this.reviewRatingPopUp();
     return true;
   }
 
@@ -76,4 +81,21 @@ export class ActivityDesktopPage implements OnInit {
     this.activityService.goToNextTask(this.activity.tasks, task);
   }
 
+  async reviewRatingPopUp(): Promise<void> {
+    if (this.storageService.getUser().hasReviewRating === false) {
+      return;
+    }
+
+    try {
+      // display review rating modal
+      return await this.assessmentService.popUpReviewRating(this.review.id, false);
+    } catch (err) {
+      const header = 'Can not get review rating information';
+      await this.notificationsService.alert({
+        header,
+        message: err.msg || JSON.stringify(err)
+      });
+      throw new Error(err);
+    }
+  }
 }
