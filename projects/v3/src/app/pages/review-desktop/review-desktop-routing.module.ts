@@ -7,6 +7,10 @@ const routes: Routes = [
   {
     path: '',
     component: ReviewDesktopPage
+  },
+  {
+    path: ':submissionId',
+    component: ReviewDesktopPage
   }
 ];
 
