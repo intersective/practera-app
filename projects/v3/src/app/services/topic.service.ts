@@ -114,7 +114,7 @@ export class TopicService {
     }
     const postData = {
       model: 'topic',
-      model_id: id,
+      model_id: +id,
       state: state
     };
     return this.request.post({
@@ -126,7 +126,7 @@ export class TopicService {
   getTopicProgress(activityId, topicId): Observable<any> {
     return this.request.get(api.get.progress, {params: {
       model: 'Activity',
-      model_id: activityId,
+      model_id: +activityId,
       scope: 'Task'
     }})
     .pipe(map((response: any) => {

@@ -80,7 +80,7 @@ export class ActivityService {
         }
       }`,
       {
-        id: id
+        id: +id
       }
     ).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
   }
