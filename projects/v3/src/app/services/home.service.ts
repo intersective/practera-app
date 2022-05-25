@@ -184,7 +184,7 @@ export class HomeService {
       return ;
     }
     this._projectProgress$.next(data.data.project);
-    this._experienceProgress$.next(Math.round(data.data.project.progress));
+    this._experienceProgress$.next(Math.round(data.data.project.progress * 100));
   }
 
 }
