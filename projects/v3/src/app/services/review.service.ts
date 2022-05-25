@@ -4,6 +4,7 @@ import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
+import { shareReplay } from 'rxjs/operators';
 
 const api = {
   reviews: 'api/reviews.json',
@@ -29,7 +30,7 @@ export interface Review {
 })
 export class ReviewService {
   private _reviews$ = new BehaviorSubject<Review[]>([]);
-  reviews$ = this._reviews$.asObservable();
+  reviews$ = this._reviews$.pipe(shareReplay(1));
 
   constructor(
     private request: RequestService,
@@ -38,7 +39,6 @@ export class ReviewService {
   ) { }
 
   getReviews() {
-    this._reviews$.next(null);
     if (environment.demo) {
       return this.demoService.getReviews().subscribe(res => this._normaliseReviews(res));
     }
