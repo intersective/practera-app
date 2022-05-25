@@ -41,7 +41,13 @@ export class ReviewDesktopPage implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.reviewService.getReviews();
     });
-    this.reviews$.subscribe(reviews => this.gotoFirstReview(reviews));
+    this.reviews$.subscribe(reviews => {
+      if (this.utils.isEmpty(this.submissionId) || this.submissionId == 0) {
+        this.gotoFirstReview(reviews);
+      } else if (reviews.length > 0) { // handle directlink
+        this.goto(reviews.find(re => re.submissionId === this.submissionId));
+      }
+    });
   }
 
   /**
