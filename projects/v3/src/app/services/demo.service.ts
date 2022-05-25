@@ -90,7 +90,7 @@ export class DemoService {
     return of({
       data: {
         project: {
-          progress: 0,
+          progress: 0.5800000,
           milestones: [
             {
               id: 1,
@@ -915,7 +915,7 @@ export class DemoService {
     return [
       {
         id: 1,
-        progress: 0.4,
+        progress: 0.40000,
         todoItems: 4
       },
       {

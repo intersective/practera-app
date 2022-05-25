@@ -91,7 +91,7 @@ export class ExperienceService {
           res => {
             res.forEach(progress => {
               const i = programs.findIndex(program => program.project.id === progress.id);
-              programs[i].progress = (progress.progress * 100);
+              programs[i].progress = Math.round(progress.progress * 100);
               programs[i].todoItems = progress.todoItems;
             });
           }
