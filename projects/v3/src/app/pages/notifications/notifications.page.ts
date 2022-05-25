@@ -126,26 +126,28 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return this.utils.timeFormatter(startTime);
   }
 
-  clickTodoItem(eventOrTodoItem) {
+  async clickTodoItem(eventOrTodoItem) {
     switch (eventOrTodoItem.type) {
       case 'feedback_available':
-        return this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        return await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+
       case 'review_submission':
-        return this.goToReview(eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id, eventOrTodoItem.meta.assessment_submission_id);
+        return await this.goToReview(eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id, eventOrTodoItem.meta.assessment_submission_id);
+
       case 'chat':
         return this.goToChat(eventOrTodoItem);
+
       case 'assessment_submission_reminder':
         return this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
 
       default: // event doesnt has type
-        this.showEventDetail(eventOrTodoItem);
-        break;
+        return this.showEventDetail(eventOrTodoItem);
     }
   }
 
-  goToAssessment(activityId, contextId, assessmentId) {
+  async goToAssessment(activityId, contextId, assessmentId): Promise<void> {
     if (this.utils.isMobile()) {
-      this.router.navigate([
+      await this.router.navigate([
         'assessment-mobile',
         'assessment',
         activityId,
@@ -153,7 +155,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
         assessmentId
       ]);
     } else {
-      this.router.navigate([
+      await this.router.navigate([
         'v3',
         'activity-desktop',
         activityId,
@@ -166,9 +168,9 @@ export class NotificationsPage implements OnInit, OnDestroy {
     }
   }
 
-  goToReview(contextId, assessmentId, submissionId) {
+  async goToReview(contextId, assessmentId, submissionId): Promise<void> {
     if (this.utils.isMobile()) {
-      this.router.navigate([
+      await this.router.navigate([
         'v3',
         'reviews',
         contextId,
@@ -176,12 +178,13 @@ export class NotificationsPage implements OnInit, OnDestroy {
         submissionId
       ]);
     } else {
-      this.router.navigate([
+      await this.router.navigate([
         'v3',
         'review-desktop',
         submissionId
       ]);
     }
+    await this.dismiss();
   }
 
   goToChat(todoItem?: TodoItem) {
