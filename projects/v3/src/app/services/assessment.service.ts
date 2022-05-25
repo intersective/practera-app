@@ -180,11 +180,11 @@ export class AssessmentService {
         }
       }`,
       {
-        assessmentId: id,
+        assessmentId: +id,
         reviewer: action === 'review',
-        activityId: activityId,
-        submissionId: submissionId || null,
-        contextId: contextId
+        activityId: +activityId,
+        submissionId: +submissionId || null,
+        contextId: +contextId
       },
       {
         noCache: true
