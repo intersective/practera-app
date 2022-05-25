@@ -10,7 +10,8 @@ name: Deploy to p2-aus-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'TODO' ]
+    # branches: [ 'feature/av2-999/App-enhancement-V3' ]
+    branches: [ 'deploy/live-appv3' ]
 
 
 ################################################
