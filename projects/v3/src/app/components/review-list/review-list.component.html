@@ -1,4 +1,4 @@
-<ion-segment (ionChange)="switchStatus()" value="pending">
+<ion-segment (ionChange)="switchStatus($event)" [value]="selectedGroup">
   <ion-segment-button value="pending" mode="ios">
     <ion-label>Pending</ion-label>
   </ion-segment-button>
@@ -7,10 +7,9 @@
   </ion-segment-button>
 </ion-segment>
 
-<ion-list *ngIf="reviews">
-  <ng-container *ngFor="let review of reviews">
+<ion-list *ngIf="filteredReviews">
+  <ng-container *ngFor="let review of filteredReviews">
     <app-list-item
-      *ngIf="review.isDone === showDone"
       [title]="review.name"
       [subtitle1]="review.submitterName"
       subtitle1Color="grey-75"
