@@ -17,32 +17,6 @@ const routes: Routes = [
         loadChildren: () => import('../chat/chat.module').then(m => m.ChatModule)
       },
       {
-        path: 'settings',
-        children: [
-          {
-            path: '',
-            loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
-          },
-          {
-            path: 'slide',
-            loadChildren: () => import('../settings-slide/settings-slide.module').then(m => m.SettingsSlidePageModule)
-          }
-        ]
-      },
-      {
-        path: 'notifications',
-        children: [
-          {
-            path: '',
-            loadChildren: () => import('../notifications/notifications.module').then(m => m.NotificationsPageModule)
-          },
-          {
-            path: 'slide',
-            loadChildren: () => import('../notifications-slide/notifications-slide.module').then(m => m.NotificationsSlidePageModule)
-          }
-        ]
-      },
-      {
         path: 'review-desktop',
         loadChildren: () => import('../review-desktop/review-desktop.module').then(m => m.ReviewDesktopPageModule)
       },
@@ -61,6 +35,32 @@ const routes: Routes = [
       {
         path: 'activity-mobile',
         loadChildren: () => import('../activity-mobile/activity-mobile.module').then(m => m.ActivityMobilePageModule)
+      },
+      {
+        path: 'notifications',
+        children: [
+          {
+            path: '',
+            loadChildren: () => import('../notifications/notifications.module').then(m => m.NotificationsPageModule)
+          },
+          {
+            path: 'slide',
+            loadChildren: () => import('../notifications-slide/notifications-slide.module').then(m => m.NotificationsSlidePageModule)
+          }
+        ]
+      },
+      {
+        path: 'settings',
+        children: [
+          {
+            path: 'slide',
+            loadChildren: () => import('../settings-slide/settings-slide.module').then(m => m.SettingsSlidePageModule)
+          },
+          {
+            path: '',
+            loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
+          },
+        ]
       },
       {
         path: '',
