@@ -78,7 +78,6 @@ export class AssessmentComponent implements OnChanges {
     this._initialise();
     this._populateQuestionsForm();
     this._handleSubmissionData();
-    this._validateTeamAssessment();
     this._handleReviewData();
   }
 
@@ -149,25 +148,6 @@ export class AssessmentComponent implements OnChanges {
     }
 
     this.feedbackReviewed = this.submission.completed;
-  }
-
-  private _validateTeamAssessment() {
-    // display pop up if it is team assessment and user is not in team
-    if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
-      this.isNotInATeam = true;
-      return this.notifications.alert({
-        message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              this.continue.emit();
-            }
-          }
-        ]
-      });
-    }
   }
 
   private _handleReviewData() {
