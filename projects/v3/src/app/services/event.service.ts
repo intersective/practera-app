@@ -199,8 +199,8 @@ export class EventService {
 
   private _sortEvent(events) {
     return events.sort((a, b) => {
-      const dateA = new Date((a.isMultiDay ? a.multiDayInfo.startTime : a.startTime) + 'Z');
-      const dateB = new Date((b.isMultiDay ? b.multiDayInfo.startTime : b.startTime) + 'Z');
+      const dateA = new Date(this.utils.iso8601Formatter((a.isMultiDay ? a.multiDayInfo.startTime : a.startTime)));
+      const dateB = new Date(this.utils.iso8601Formatter((b.isMultiDay ? b.multiDayInfo.startTime : b.startTime)));
       const now = new Date();
       if (dateA.getTime() === dateB.getTime()) {
         return 0;
