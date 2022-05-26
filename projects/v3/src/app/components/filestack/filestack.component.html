@@ -7,7 +7,16 @@
 
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="utils.isMobile()">
-      <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <ion-text>Upload file(s)</ion-text>
+        <ion-button size="small"
+          class="upload-button"
+          shape="round"
+          fill="outline"
+          (click)="uploadFile()"
+          [disabled]="disabled"
+        >UPLOAD</ion-button>
+      </div>
     </ng-container>
     <ng-container *ngIf="!utils.isMobile()">
       <div *ngIf="!isDroped"
