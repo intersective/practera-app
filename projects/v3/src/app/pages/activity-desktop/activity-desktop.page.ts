@@ -5,6 +5,7 @@ import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
+import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -26,6 +27,7 @@ export class ActivityDesktopPage implements OnInit {
     private assessmentService: AssessmentService,
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
+    private utils: UtilsService,
   ) { }
 
   ngOnInit() {
@@ -43,7 +45,7 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   goToTask(task: Task) {
-    this.activityService.goToTask(task);
+    return this.activityService.goToTask(task);
   }
 
   async topicComplete(task: Task) {
