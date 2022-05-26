@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
+import { AssessmentService, Submission } from '@v3/app/services/assessment.service';
 
 @Component({
   selector: 'app-activity-mobile',
@@ -9,15 +10,18 @@ import { ActivityService, Task, Activity } from '@v3/app/services/activity.servi
 })
 export class ActivityMobilePage implements OnInit {
   activity: Activity;
+  submission: Submission;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private activityService: ActivityService,
+    private assessmentService: AssessmentService,
   ) { }
 
   ngOnInit() {
     this.activityService.activity$.subscribe(res => this.activity = res);
+    this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, false);
     });
