@@ -10,8 +10,8 @@ name: Deploy to p2-usa-appv3 environment
 on:
   workflow_dispatch:
   push:
-    # branches: [ 'feature/av2-999/App-enhancement-V3' ]
-    branches: [ 'deploy/live-appv3' ]
+    branches: [ 'feature/av2-999/App-enhancement-V3' ]
+
 
 
 ################################################
