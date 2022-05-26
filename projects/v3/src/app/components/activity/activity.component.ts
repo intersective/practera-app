@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Activity, Task } from '@v3/app/services/activity.service';
+import { Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
@@ -11,10 +13,13 @@ import { UtilsService } from '@v3/app/services/utils.service';
 export class ActivityComponent {
   @Input() activity: Activity;
   @Input() currentTask: Task;
+  @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
   constructor(
     private utils: UtilsService,
-    private notificationService: NotificationsService
+    private notificationService: NotificationsService,
+    private storageService: BrowserStorageService,
+    private notificationsService: NotificationsService,
   ) { }
 
   leadIcon(task: Task) {
@@ -112,17 +117,39 @@ export class ActivityComponent {
   }
 
   goto(task: Task) {
-    if (task.type === 'Locked') {
-      return this.notificationService.alert({
-        message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.',
+    return this._validateTeamAssessment(task, () => {
+      if (task.type === 'Locked') {
+        return this.notificationService.alert({
+          message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel'
+            }
+          ]
+        });
+      }
+      this.navigate.emit(task);
+    });
+  }
+
+  private _validateTeamAssessment(task: Task, proceedCB) {
+    const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
+    const teamId = this.storageService.getUser().teamId;
+
+    // display pop up if it is team assessment and user is not in team
+    if (doAssessment && task.isForTeam && !teamId) {
+      return this.notificationsService.alert({
+        message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
         buttons: [
           {
             text: 'OK',
-            role: 'cancel'
+            role: 'cancel',
           }
         ]
       });
+    } else {
+      return proceedCB();
     }
-    this.navigate.emit(task);
   }
 }

@@ -45,27 +45,7 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   goToTask(task: Task) {
-    return this._validateTeamAssessment(task, () => this.activityService.goToTask(task));
-  }
-
-  private _validateTeamAssessment(task: Task, proceedCB) {
-    const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
-    const teamId = this.storageService.getUser().teamId;
-
-    // display pop up if it is team assessment and user is not in team
-    if (doAssessment && task.isForTeam && !teamId) {
-      return this.notificationsService.alert({
-        message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-          }
-        ]
-      });
-    } else {
-      return proceedCB();
-    }
+    return this.activityService.goToTask(task);
   }
 
   async topicComplete(task: Task) {
