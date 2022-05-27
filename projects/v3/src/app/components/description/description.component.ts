@@ -1,12 +1,11 @@
 import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange, ViewEncapsulation } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
   selector: 'app-description',
   templateUrl: 'description.component.html',
   styleUrls: ['./description.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.ShadowDom,
   /*animations: [
     trigger('truncation', [
       state('show', style({
@@ -30,20 +29,19 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   @Input() name; // unique identity of parent element
   @Input() content;
   @Input() isInPopup;
+  @Input() nonCollapsible?: boolean;
   @ViewChild('description') descriptionRef: ElementRef;
 
   constructor(
     private storage: BrowserStorageService,
-    private sanitizer: DomSanitizer
-  ) {
-  }
+  ) {}
 
   ngOnChanges(changes: { [propKey: string]: SimpleChange}) {
     // reset to default
     this.isTruncating = false;
     this.heightExceeded = false;
 
-    this.content = this.sanitizer.bypassSecurityTrustHtml(changes.content.currentValue);
+    this.content = changes.content.currentValue;
     this.calculateHeight();
   }
 
@@ -52,6 +50,10 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   }
 
   calculateHeight(): void {
+    if (this.nonCollapsible === true) {
+      return;
+    }
+
     if (!this.storage.getUser().truncateDescription) {
       return;
     }
