@@ -32,7 +32,8 @@
     .cards {
       margin-top: 57px;
       width: -webkit-fill-available;
-      height: -webkit-fill-available;
+      height: 100%;
+      max-height: -webkit-fill-available;
       display: flex;
       flex-wrap: wrap;
       flex-direction: row;
