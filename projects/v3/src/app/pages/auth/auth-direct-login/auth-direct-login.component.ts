@@ -179,7 +179,10 @@ export class AuthDirectLoginComponent implements OnInit {
             url: referrerUrl
           });
         }
-        return this._saveOrRedirect(['v3', 'reviews', contextId, assessmentId, submissionId], redirectLater);
+        if (this.utils.isMobile()) {
+          return this._saveOrRedirect(['assessment-mobile', 'review', contextId, assessmentId, submissionId, { from: 'reviews' }], redirectLater);
+        }
+        return this._saveOrRedirect(['v3', 'review-desktop', submissionId], redirectLater);
       case 'chat':
         return this._saveOrRedirect(['v3', 'messages'], redirectLater);
       case 'settings':

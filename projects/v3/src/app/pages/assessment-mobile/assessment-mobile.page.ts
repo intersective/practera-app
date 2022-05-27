@@ -45,7 +45,7 @@ export class AssessmentMobilePage implements OnInit {
       if (!this.fromPage) {
         this.fromPage = this.route.snapshot.paramMap.get('from');
       }
-      this.activityId = +params.activityId;
+      this.activityId = +params.activityId || 0;
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
       this.assessmentService.getAssessment(+params.id, this.action, this.activityId, this.contextId, this.submissionId);

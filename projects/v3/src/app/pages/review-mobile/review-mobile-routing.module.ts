@@ -7,10 +7,6 @@ const routes: Routes = [
   {
     path: '',
     component: ReviewMobilePage
-  },
-  {
-    path: ':submissionId',
-    component: ReviewMobilePage
   }
 ];
 
