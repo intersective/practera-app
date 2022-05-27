@@ -117,3 +117,7 @@ code, kbd, pre, samp {
   direction: ltr;
   unicode-bidi: bidi-override;
 }
+
+img {
+  max-width: 100%;
+}
