@@ -23,3 +23,13 @@
   margin: 0;
   margin-bottom: 15px;
 }
+
+.upper-space {
+  position: relative;
+  top: 2em;
+}
+
+.light {
+  background: var(--ion-color-light, #f4f5f8);
+  color: var(--ion-color-light-contrast, #000);
+}
