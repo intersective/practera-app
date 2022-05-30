@@ -1,22 +1,22 @@
 <ion-tabs>
   <ion-tab-bar slot="bottom" *ngIf="isMobile">
     <ion-tab-button tab="home">
-      <ion-icon name="calendar"></ion-icon>
+      <ion-icon name="home"></ion-icon>
       <ion-label>Home</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="events">
-      <ion-icon name="information-circle"></ion-icon>
+      <ion-icon name="calendar"></ion-icon>
       <ion-label>Events</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="reviews" *ngIf="reviews && reviews.length">
-      <ion-icon name="information-circle"></ion-icon>
+      <ion-icon name="eye"></ion-icon>
       <ion-label>Reviews</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="messages">
-      <ion-icon name="people"></ion-icon>
+      <ion-icon name="mail"></ion-icon>
       <ion-label>Messages</ion-label>
     </ion-tab-button>
 
