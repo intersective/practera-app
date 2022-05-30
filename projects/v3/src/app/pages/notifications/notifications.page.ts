@@ -171,11 +171,12 @@ export class NotificationsPage implements OnInit, OnDestroy {
   async goToReview(contextId, assessmentId, submissionId): Promise<void> {
     if (this.utils.isMobile()) {
       await this.router.navigate([
-        'v3',
-        'reviews',
+        'assessment-mobile',
+        'review',
         contextId,
         assessmentId,
-        submissionId
+        submissionId,
+        { from: 'reviews' }
       ]);
     } else {
       await this.router.navigate([
