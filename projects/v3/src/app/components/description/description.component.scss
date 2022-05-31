@@ -18,6 +18,13 @@
   animation-duration: 0.5s;
 }
 
+.limit-height-popup {
+  max-height: 90px;
+  text-overflow: ellipsis;
+  animation-name: collapse-popup;
+  animation-duration: 0.5s;
+}
+
 .full-height {
   max-height: 100%;
   overflow: visible;
@@ -28,7 +35,7 @@
 .full-height-popup {
   max-height: 200px;
   overflow: auto;
-  animation-name: expand;
+  animation-name: expand-popup;
   animation-duration: 0.5s;
 }
 
@@ -37,9 +44,34 @@
   to { max-height: 90px;}
 }
 
+@keyframes collapse-popup {
+  from {
+    max-height: 200px;
+  }
+
+  to {
+    max-height: 90px;
+  }
+}
+
 @keyframes expand {
   from { max-height: 90px;}
   to { max-height: 1000px;}
+}
+
+@keyframes expand {
+  from { max-height: 90px;}
+  to { max-height: 1000px;}
+}
+
+@keyframes expand-popup {
+  from {
+    max-height: 90px;
+  }
+
+  to {
+    max-height: 200px;
+  }
 }
 
 ion-button {

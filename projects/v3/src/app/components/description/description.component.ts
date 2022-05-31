@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChange, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
@@ -30,6 +30,7 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
   @Input() content;
   @Input() isInPopup;
   @Input() nonCollapsible?: boolean;
+  @Output() hasExpanded? = new EventEmitter();
   @ViewChild('description') descriptionRef: ElementRef;
 
   constructor(
@@ -68,6 +69,12 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
       },
       700
     );
+  }
+
+  openShut(): void {
+    this.isTruncating = !this.isTruncating;
+    this.hasExpanded.emit(!this.isTruncating);
+    return;
   }
 }
 
