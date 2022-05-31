@@ -1,4 +1,4 @@
-<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !utils.isMobile()}"
+<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !isMobile}"
   text-center
   role="dialog"
   aria-modal="true"
@@ -14,20 +14,20 @@
     </div>
   </div>
 
-  <div class="details-container ion-text-center" [class]="{'upper-space': !achievement.description}">
+  <div class="details-container ion-text-center" [class]="{'upper-space': !(achievement.description)}">
     <div class="div-after-img" *ngIf="type === 'notification'">
       <p class="headline-6">Congratulations</p>
       <p class="body-1">You have earned a new badge</p>
       <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" #achievementName>{{achievement.name}}</div>
     </div>
 
-    <div class="div-after-img" *ngIf="type !== 'notification'" [class]="{'upper-space': !achievement.description}">
+    <div class="div-after-img" *ngIf="type !== 'notification'" [class]="{'upper-space': !(achievement.description)}">
       <p class="headline-6" *ngIf="achievement.name" tabindex="0" [attr.aria-label]="achievement.name" #achievementName>{{achievement.name}}</p>
       <p class="body-1" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
     </div>
 
-    <ion-text color="medium" *ngIf="achievement.description" text-center>
-      <app-description *ngIf="achievement.description" class="body-1 gray-2" [content]="achievement.description" [isInPopup]="true"></app-description>
+    <ion-text class="vertical-centralized" color="medium" *ngIf="achievement.description" text-center>
+      <app-description class="body-1 gray-2" [content]="achievement.description" [isInPopup]="true"></app-description>
     </ion-text>
   </div>
 </ion-content>
