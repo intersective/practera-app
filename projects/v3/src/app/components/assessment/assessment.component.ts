@@ -30,6 +30,7 @@ export class AssessmentComponent implements OnChanges {
   @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
+  @Input() isMobile?: boolean;
 
   // save the assessment/review answers
   @Output() save = new EventEmitter();
