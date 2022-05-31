@@ -1,6 +1,6 @@
 .image-content {
   margin-top: 5px;
-  margin-bottom: -45px;
+  margin-bottom: -1em;
 
   .image {
     padding: 12px;
@@ -15,7 +15,7 @@
 }
 
 .details-container {
-  padding: 20px;
+  padding: 0 20px;
   border-radius: 12px;
 }
 
@@ -32,4 +32,11 @@
 .light {
   background: var(--ion-color-light, #f4f5f8);
   color: var(--ion-color-light-contrast, #000);
+}
+
+.vertical-centralized {
+  display: flex;
+  flex-direction: column;
+  height: 10em;
+  justify-content: center;
 }
