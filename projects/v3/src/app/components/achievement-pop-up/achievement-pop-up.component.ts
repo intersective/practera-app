@@ -17,9 +17,13 @@ export class AchievementPopUpComponent {
   @ViewChild('dismissButton') dismissButton;
 
   constructor(
-    public modalController: ModalController,
-    public utils: UtilsService
+    private modalController: ModalController,
+    private utils: UtilsService,
   ) {}
+
+  get isMobile() {
+    return this.utils.isMobile();
+  }
 
   ionViewDidEnter() {
     const interactiveEl = [
