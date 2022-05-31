@@ -48,52 +48,58 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div class="ion-padding">
-    <h1 class="headline-2" [attr.aria-describedby]="randomCode(assessment.name)" role="title" tabindex="0">{{ assessment.name }}</h1>
+  <div [ngClass]="{'ion-padding': !isMobile}">
+    <div [ngClass]="{'ion-padding-horizontal': isMobile}">
+      <h1 class="headline-2"
+        [attr.aria-describedby]="randomCode(assessment.name)"
+        role="title"
+        tabindex="0">{{ assessment.name }}</h1>
 
-    <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label">
-      <ion-label>{{ label }}</ion-label>
-    </ion-chip>
+      <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label">
+        <ion-label>{{ label }}</ion-label>
+      </ion-chip>
 
-    <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
-      Due date: {{ assessment.dueDate | date : 'd MMMM y' }}
-    </p>
+      <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
+        Due date: {{ assessment.dueDate | date : 'd MMMM y' }}
+      </p>
 
-    <ion-text class="ion-text-left">
-      <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description"
-        [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
-    </ion-text>
+      <ion-text class="ion-text-left">
+        <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description"
+          [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
+      </ion-text>
 
-    <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}"
-      *ngIf="doAssessment">
-      {{ utils.dueDateFormatter(assessment.dueDate) }}
-    </p>
+      <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}"
+        *ngIf="doAssessment">
+        {{ utils.dueDateFormatter(assessment.dueDate) }}
+      </p>
 
+      <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
+              alt="submitter indicator">
+          </ion-avatar>
 
-    <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
-            alt="submitter indicator">
-        </ion-avatar>
-
-        <ion-label>
-          <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
-          <p class="caption gray-2">Please wait until the user finishes editing</p>
-        </ion-label>
-      </ion-item>
-    </ion-list>
+          <ion-label>
+            <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
+            <p class="caption gray-2">Please wait until the user finishes editing</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
 
     <form [formGroup]="questionsForm" id="formgroup">
       <ng-container *ngFor="let group of assessment.groups">
-        <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
-        <ion-text color="dark" class="ion-text-left">
-          <app-description
+        <div [ngClass]="{'ion-padding-horizontal': isMobile}">
+          <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
+          <ion-text color="dark" class="ion-text-left">
+            <app-description
             *ngIf="group.description"
             [name]="randomCode(group.name)"
             class="g-description"
             [content]="group.description"></app-description>
-        </ion-text>
+          </ion-text>
+        </div>
 
         <ng-container *ngFor="let question of group.questions">
           <ion-list class="ion-no-padding">
