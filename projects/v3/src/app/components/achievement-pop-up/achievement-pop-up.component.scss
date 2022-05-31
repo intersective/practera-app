@@ -35,3 +35,9 @@
   background: var(--ion-color-light, #f4f5f8);
   color: var(--ion-color-light-contrast, #000);
 }
+
+@media (min-width: 576px) {
+  .details-container {
+    height: 15rem;
+  }
+}
