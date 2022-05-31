@@ -10,6 +10,8 @@ import { UtilsService } from '@v3/services/utils.service';
 })
 export class AchievementPopUpComponent {
   type = '';
+  hideName: boolean;
+
   achievement: Achievement;
   @ViewChild('achievementBadgePopup') achievementBadgePopup;
   @ViewChild('badgeImage') badgeImage;
@@ -56,5 +58,9 @@ export class AchievementPopUpComponent {
       return;
     }
     this.modalController.dismiss();
+  }
+
+  hideAchievementName($event) {
+    this.hideName = $event;
   }
 }
