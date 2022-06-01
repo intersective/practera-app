@@ -19,8 +19,6 @@ import { FastFeedbackService } from './fast-feedback.service';
  */
 const api = {
   post: {
-    submissions: 'api/assessment_submissions.json',
-    reviews: 'api/feedback_submissions.json',
     todoitem: 'api/v2/motivations/todo_item/edit.json'
   }
 };
