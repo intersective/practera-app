@@ -3,7 +3,7 @@ import { BehaviorSubject, from, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { RequestService } from 'request';
-import { map, mergeMap } from 'rxjs/operators';
+import { map, mergeMap, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 
 export interface Experience {
@@ -45,7 +45,7 @@ export class HomeService {
   experience$ = this._experience$.asObservable();
 
   private _experienceProgress$ = new BehaviorSubject<number>(null);
-  experienceProgress$ = this._experienceProgress$.asObservable();
+  experienceProgress$ = this._experienceProgress$.pipe(shareReplay(1));
 
   private _activityCount$ = new BehaviorSubject<number>(null);
   activityCount$ = this._activityCount$.asObservable();
@@ -85,7 +85,8 @@ export class HomeService {
           return milestones;
         }
       ))
-    )
+    ),
+    shareReplay(1)
   );
 
   constructor(
