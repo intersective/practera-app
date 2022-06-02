@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -47,10 +46,9 @@ export class ActivityService {
   private _currentTask$ = new BehaviorSubject<Task>(null);
   currentTask$ = this._currentTask$.pipe(shareReplay(1));
 
-  activity: Activity;
+  private activity: Activity;
 
   constructor(
-    private request: RequestService,
     private demo: DemoService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
