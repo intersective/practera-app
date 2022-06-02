@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -37,7 +37,7 @@ export interface Achievement {
 
 export class AchievementService {
   private _achievements$ = new BehaviorSubject<Achievement[]>([]);
-  achievements$ = this._achievements$.asObservable();
+  achievements$ = this._achievements$.pipe(shareReplay(1));
 
   constructor(
     private request: RequestService,

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -43,9 +43,9 @@ export interface Task {
 export class ActivityService {
 
   private _activity$ = new BehaviorSubject<Activity>(null);
-  activity$ = this._activity$.asObservable();
+  activity$ = this._activity$.pipe(shareReplay(1));
   private _currentTask$ = new BehaviorSubject<Task>(null);
-  currentTask$ = this._currentTask$.asObservable();
+  currentTask$ = this._currentTask$.pipe(shareReplay(1));
 
   activity: Activity;
 

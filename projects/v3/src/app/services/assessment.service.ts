@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -110,11 +110,11 @@ export interface AssessmentReview {
 export class AssessmentService {
 
   private _assessment$ = new BehaviorSubject<Assessment>(null);
-  assessment$ = this._assessment$.asObservable();
+  assessment$ = this._assessment$.pipe(shareReplay(1));
   private _submission$ = new BehaviorSubject<Submission>(null);
-  submission$ = this._submission$.asObservable();
+  submission$ = this._submission$.pipe(shareReplay(1));
   private _review$ = new BehaviorSubject<AssessmentReview>(null);
-  review$ = this._review$.asObservable();
+  review$ = this._review$.pipe(shareReplay(1));
 
   assessment: Assessment;
   questions = {};

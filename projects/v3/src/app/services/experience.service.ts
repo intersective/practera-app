@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin, from, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { catchError, map, mergeMap, tap } from 'rxjs/operators';
+import { catchError, map, mergeMap, shareReplay, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -98,7 +98,8 @@ export class ExperienceService {
         );
         return programs;
       }
-    )
+    ),
+    shareReplay(1)
   );
 
   constructor(
