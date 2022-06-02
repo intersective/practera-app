@@ -1,4 +1,9 @@
-ion-menu.menu-pane-visible {
-  max-width: 280px !important;
-  min-width: 280px !important;
+ion-menu {
+  &.show-menu {
+    --width: 280px;
+  }
+  &.menu-pane-visible {
+    max-width: 280px !important;
+    min-width: 280px !important;
+  }
 }
