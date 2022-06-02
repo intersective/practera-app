@@ -13,7 +13,7 @@
 <ion-content>
   <ion-grid class="ion-no-padding">
     <ion-row>
-      <ion-col size="12" size-md="5" size-lg>
+      <ion-col size="12" size-md="4" size-lg>
         <app-activity
           [activity]="activity"
           [currentTask]="currentTask"
@@ -22,7 +22,7 @@
         ></app-activity>
       </ion-col>
 
-      <ion-col size="12" size-md="7" class="border-left">
+      <ion-col size="12" size-md="8" class="border-left">
         <ng-container *ngIf="currentTask">
           <app-assessment
             *ngIf="currentTask.type === 'Assessment'"
