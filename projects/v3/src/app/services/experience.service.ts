@@ -29,6 +29,12 @@ export interface ProgramObj {
   timeline: Timeline;
   enrolment: Enrolment;
   experience: Experience;
+  institution: {
+    name: string;
+    logo_url: string;
+    config: string;
+    uuid: string;
+  };
   progress?: number;
   todoItems?: number;
 }
@@ -210,6 +216,7 @@ export class ExperienceService {
       hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
       truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
+      institutionLogo: programObj.institution ? programObj.institution.logo_url : null,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,

@@ -16,6 +16,7 @@ export interface User {
   programName?: string;
   programImage?: string;
   experienceId?: number;
+  institutionLogo?: string;
   timelineId?: number;
   projectId?: number;
   teamId?: number;
