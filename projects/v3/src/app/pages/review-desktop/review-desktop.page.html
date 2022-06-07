@@ -14,7 +14,7 @@
         <app-review-list
           [reviews]="reviews"
           [currentReview]="currentReview"
-          [goToFirstOnSwitch]="currentReview == undefined ? true : false"
+          [goToFirstOnSwitch]="currentReview === undefined ? true : false"
           (navigate)="goto($event)"
         ></app-review-list>
       </ion-col>
