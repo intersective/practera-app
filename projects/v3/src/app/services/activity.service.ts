@@ -60,9 +60,6 @@ export class ActivityService {
   ) {}
 
   public getActivity(id: number, goToNextTask = false, afterTask?: Task) {
-    if (!this.activity || this.activity.id !== id) {
-      this._activity$.next(null);
-    }
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
