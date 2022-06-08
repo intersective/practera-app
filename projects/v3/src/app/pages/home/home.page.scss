@@ -21,7 +21,7 @@ ion-segment {
   border-left: 1px solid var(--practera-grey-25);
 }
 
-ion-content {
+ion-content.scrollable-desktop {
 
   >ion-grid,
   ion-row,
