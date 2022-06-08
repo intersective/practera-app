@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
@@ -23,6 +24,7 @@ export class V3Page implements OnInit, OnDestroy {
     private reviewService: ReviewService,
     private route: ActivatedRoute,
     private notificationsService: NotificationsService,
+    private storageService: BrowserStorageService
   ) {
   }
   ngOnDestroy(): void {
@@ -111,5 +113,9 @@ export class V3Page implements OnInit, OnDestroy {
     await modal.present();
     this.wait = false;
     return;
+  }
+
+  get logo() {
+    return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
   }
 }

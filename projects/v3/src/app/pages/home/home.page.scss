@@ -21,21 +21,6 @@ ion-segment {
   border-left: 1px solid var(--practera-grey-25);
 }
 
-ion-content.scrollable-desktop {
-
-  >ion-grid,
-  ion-row,
-  ion-col {
-    overflow: hidden;
-    height: 100%;
-
-    ion-row {
-      height: 100%;
-
-      ion-col {
-        overflow-y: auto;
-        height: 100%;
-      }
-    }
-  }
+.exp-content {
+  padding: 0 18px;
 }

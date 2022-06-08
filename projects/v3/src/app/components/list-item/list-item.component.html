@@ -36,7 +36,7 @@
 
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
-  <div *ngIf="endingProgress" slot="end" style="width: 2em;">
+  <div *ngIf="endingProgress && !endingIcon" slot="end" style="width: 2em;">
     <app-circle-progress [data]='{ percent: endingProgress * 100 }'></app-circle-progress>
   </div>
 
