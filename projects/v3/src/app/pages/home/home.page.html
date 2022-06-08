@@ -11,21 +11,23 @@
   <ion-grid style="padding: inherit;">
     <ion-row>
 
-      <ion-col size="12" size-md="4">
+      <ion-col size="12" size-md="4" class="ion-no-padding">
         <ng-container *ngIf="(experience$ | async ) as experience">
           <img [src]="experience.leadImage" />
-          <ion-progress-bar *ngIf="experienceProgress" color="primary" [value]="experienceProgress"></ion-progress-bar>
-          <h1 class="headline-2">{{ experience.name }}</h1>
-          <ion-text class="subtitle-3" color="medium">
-            <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
-            <span style="margin: 0 10px">|</span>
-            <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress }}% Progress</ng-container>
-            <ng-template #loadingProgress>
-              <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
-            </ng-template>
-          </ion-text>
-          <p *ngIf="!isMobile" class="body-2" [innerHTML]="experience.description"></p>
-          <app-description *ngIf="isMobile" [content]="experience.description"></app-description>
+          <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100"></ion-progress-bar>
+          <div class="exp-content">
+            <h1 class="headline-2">{{ experience.name }}</h1>
+            <ion-text class="subtitle-3" color="medium">
+              <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
+              <span style="margin: 0 10px">|</span>
+              <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress }}% Progress</ng-container>
+              <ng-template #loadingProgress>
+                <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
+              </ng-template>
+            </ion-text>
+            <p *ngIf="!isMobile" class="body-2" [innerHTML]="experience.description"></p>
+            <app-description *ngIf="isMobile" [content]="experience.description"></app-description>
+          </div>
         </ng-container>
       </ion-col>
 

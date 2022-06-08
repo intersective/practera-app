@@ -412,6 +412,12 @@ export class DemoService {
           },
           lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
           support_email: 'help@practera.com'
+        },
+        institution: {
+          name: "QA Playground",
+          logo_url: "https://cdn.filestackcontent.com/xDS3gwLTL2Atcv6d84SO",
+          config: "{\"icon_url\":\"https:\\/\\/cdn.filestackcontent.com\\/phQKC5dvSeS1I7MudmHc\",\"primary_color\":\"#2986cc\",\"secondary_color\":\"#ffd966\",\"billing_plan\":\"pilot\",\"email_template\":\"email_2\",\"billing_contact\":{\"name\":\"Sharon Roy\",\"email\":\"sharon+QAtest1@practera.com\",\"address\":\"none given\"},\"banner_url\":\"https:\\/\\/cdn.filestackcontent.com\\/tuhgyojYQmKkW7SpIKu2\",\"lead_url\":\"https:\\/\\/cdn.filestackcontent.com\\/SqlvR3PzQ36KzR5kQHSU\",\"card_url\":\"https:\\/\\/cdn.filestackcontent.com\\/9BnTgbjkRTSRS49VzUTT\",\"support_name\":\"QA Playground Institution Email\"}",
+          uuid: "d2e9543d-961b-417b-9ca1-ca8f82719a56"
         }
       },
       {
@@ -450,6 +456,12 @@ export class DemoService {
           },
           lead_image: 'https://www.filepicker.io/api/file/ASbKEZs7R0yt4sGEfSMs',
           support_email: 'help@practera.com'
+        },
+        institution: {
+          name: "QA Playground",
+          logo_url: "https://cdn.filestackcontent.com/xDS3gwLTL2Atcv6d84SO",
+          config: "{\"icon_url\":\"https:\\/\\/cdn.filestackcontent.com\\/phQKC5dvSeS1I7MudmHc\",\"primary_color\":\"#2986cc\",\"secondary_color\":\"#ffd966\",\"billing_plan\":\"pilot\",\"email_template\":\"email_2\",\"billing_contact\":{\"name\":\"Sharon Roy\",\"email\":\"sharon+QAtest1@practera.com\",\"address\":\"none given\"},\"banner_url\":\"https:\\/\\/cdn.filestackcontent.com\\/tuhgyojYQmKkW7SpIKu2\",\"lead_url\":\"https:\\/\\/cdn.filestackcontent.com\\/SqlvR3PzQ36KzR5kQHSU\",\"card_url\":\"https:\\/\\/cdn.filestackcontent.com\\/9BnTgbjkRTSRS49VzUTT\",\"support_name\":\"QA Playground Institution Email\"}",
+          uuid: "d2e9543d-961b-417b-9ca1-ca8f82719a56"
         }
       },
       {
