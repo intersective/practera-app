@@ -19,6 +19,7 @@ export class ActivityDesktopPage implements OnInit {
   submission: Submission;
   review: AssessmentReview;
   topic: Topic;
+  loading: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,16 +54,24 @@ export class ActivityDesktopPage implements OnInit {
       return this.activityService.goToNextTask(this.activity.tasks, task);
     }
     // mark the topic as complete
+    this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
     // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activity.id, true, task);
+    return this.activityService.getActivity(this.activity.id, true, task, () => {
+      this.loading = false;
+    });
   }
 
   async saveAssessment(event, task: Task) {
+    this.loading = true;
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     if (!event.assessment.inProgress) {
       // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activity.id, true, task);
+      return this.activityService.getActivity(this.activity.id, true, task, () => {
+        this.loading = false;
+      });
+    } else {
+      this.loading = false;
     }
   }
 
