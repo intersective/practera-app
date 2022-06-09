@@ -59,6 +59,10 @@ export class ActivityService {
     private assessment: AssessmentService
   ) {}
 
+  public clearActivity(): void {
+    this._activity$.next(null);
+  }
+
   /**
    * make API call for activity information
    *
