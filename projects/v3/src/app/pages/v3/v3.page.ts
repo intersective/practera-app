@@ -5,6 +5,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
+import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 
@@ -18,13 +19,16 @@ export class V3Page implements OnInit, OnDestroy {
   reviews: Review[];
   subscriptions: Subscription[];
   appPages: any[];
+  showMessages: boolean = false;
+
   constructor(
     private modalController: ModalController,
     private animationService: AnimationsService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
     private notificationsService: NotificationsService,
-    private storageService: BrowserStorageService
+    private storageService: BrowserStorageService,
+    private chatService: ChatService
   ) {
   }
   ngOnDestroy(): void {
@@ -97,6 +101,19 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.notificationsService.getTodoItems().subscribe();
     this.notificationsService.getChatMessage().subscribe();
+
+    if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
+      this.showMessages = false;
+    } else {
+      // display chat tab if a user has chatroom available
+      this.subscriptions.push(this.chatService.getChatList().subscribe(chats => {
+        if (chats && chats.length > 0) {
+          this.showMessages = true;
+        } else {
+          this.showMessages = false;
+        }
+      }));
+    }
   }
 
   async presentModal(): Promise<void> {
