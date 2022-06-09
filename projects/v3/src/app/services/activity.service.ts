@@ -68,7 +68,7 @@ export class ActivityService {
    *
    * @return  {Subscription}                graphql watch
    */
-  public getActivity(id: number, goToNextTask = false, afterTask?: Task) {
+  public getActivity(id: number, goToNextTask = false, afterTask?: Task, callback?: Function) {
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
@@ -86,7 +86,12 @@ export class ActivityService {
       {
         id: +id
       }
-    ).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
+    ).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe(_res => {
+      if (callback instanceof Function) {
+        return callback(_res);
+      }
+      return;
+    });
   }
 
   /**
