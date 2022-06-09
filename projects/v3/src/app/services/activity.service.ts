@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, forkJoin, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -47,10 +46,9 @@ export class ActivityService {
   private _currentTask$ = new BehaviorSubject<Task>(null);
   currentTask$ = this._currentTask$.pipe(shareReplay(1));
 
-  activity: Activity;
+  private activity: Activity;
 
   constructor(
-    private request: RequestService,
     private demo: DemoService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
@@ -61,15 +59,21 @@ export class ActivityService {
     private assessment: AssessmentService
   ) {}
 
-  public getActivity(id: number, goToNextTask = false, afterTask?: Task) {
-    if (!this.activity || this.activity.id !== id) {
-      this._activity$.next(null);
-    }
+  /**
+   * make API call for activity information
+   *
+   * @param   {number}  id            activity id
+   * @param   {boolean}  goToNextTask  true to go to next task
+   * @param   {Task}    afterTask     currently targeted task
+   *
+   * @return  {Subscription}                graphql watch
+   */
+  public getActivity(id: number, goToNextTask = false, afterTask?: Task, callback?: Function) {
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
     }
-    return this.apolloService.graphQLWatch(
+    return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
           id name description tasks{
@@ -82,7 +86,12 @@ export class ActivityService {
       {
         id: +id
       }
-    ).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
+    ).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe(_res => {
+      if (callback instanceof Function) {
+        return callback(_res);
+      }
+      return;
+    });
   }
 
   /**
