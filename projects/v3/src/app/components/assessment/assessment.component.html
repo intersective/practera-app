@@ -68,11 +68,6 @@
           [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
       </ion-text>
 
-      <p class="due-date assessment subtitle-1 gray-2 ion-text-center" [ngClass]="{'over': assessment.isOverdue}"
-        *ngIf="doAssessment">
-        {{ utils.dueDateFormatter(assessment.dueDate) }}
-      </p>
-
       <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
         <ion-item lines="none">
           <ion-avatar slot="start">

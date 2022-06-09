@@ -15,7 +15,7 @@
       <ion-label>Reviews</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="messages">
+    <ion-tab-button tab="messages" *ngIf="showMessages">
       <ion-icon name="mail"></ion-icon>
       <ion-label>Messages</ion-label>
     </ion-tab-button>
