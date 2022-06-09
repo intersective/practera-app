@@ -10,12 +10,14 @@ import { TeamMemberSelectorComponent } from './team-member-selector/team-member-
 import { FileDisplayComponent } from './file/file-display/file-display.component';
 import { FilestackModule } from '@shared/filestack/filestack.module';
 import { SharedModule } from '../shared/shared.module';
+import { LinkyModule } from 'angular-linky';
 
 @NgModule({
   imports: [
     ReactiveFormsModule,
     FilestackModule,
-    SharedModule
+    SharedModule,
+    LinkyModule
   ],
   declarations: [
     QuestionsComponent,
