@@ -116,7 +116,7 @@ export class AssessmentService {
   private _review$ = new BehaviorSubject<AssessmentReview>(null);
   review$ = this._review$.pipe(shareReplay(1));
 
-  assessment: Assessment;
+  private assessment: Assessment;
   questions = {};
 
   constructor(

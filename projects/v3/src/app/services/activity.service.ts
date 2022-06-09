@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -59,12 +59,21 @@ export class ActivityService {
     private assessment: AssessmentService
   ) {}
 
+  /**
+   * make API call for activity information
+   *
+   * @param   {number}  id            activity id
+   * @param   {boolean}  goToNextTask  true to go to next task
+   * @param   {Task}    afterTask     currently targeted task
+   *
+   * @return  {Subscription}                graphql watch
+   */
   public getActivity(id: number, goToNextTask = false, afterTask?: Task) {
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
     }
-    return this.apolloService.graphQLWatch(
+    return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
           id name description tasks{
