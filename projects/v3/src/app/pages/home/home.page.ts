@@ -1,7 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
-import { Activity } from '@v3/app/services/activity.service';
+import { Activity, ActivityService } from '@v3/app/services/activity.service';
+import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -30,6 +31,8 @@ export class HomePage implements OnInit, OnDestroy {
     private router: Router,
     private service: HomeService,
     private achievementService: AchievementService,
+    private activityService: ActivityService,
+    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService
   ) { }
@@ -93,6 +96,10 @@ export class HomePage implements OnInit, OnDestroy {
     if (activity.isLocked) {
       return ;
     }
+
+    this.activityService.clearActivity();
+    this.assessmentService.clearAssessment();
+
     if (!this.utils.isMobile()) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
     }
