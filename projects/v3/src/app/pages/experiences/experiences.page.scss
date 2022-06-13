@@ -53,7 +53,8 @@
 
       .exp-card {
         width: 300px;
-        height: 240px;
+        min-height: 240px;
+        max-height: 260px;
         border: 1px solid #e7e7ee;
         box-sizing: border-box;
         border-radius: 8px;
@@ -68,8 +69,9 @@
         }
 
         ion-card-content {
-          height: 100px;
+          height: 110px;
           text-align: start;
+          padding-bottom: 0;
 
           .exp-title {
             margin-bottom: 8px !important;
@@ -90,6 +92,7 @@
             p {
               &:nth-child(1) {
                 margin-right: 10px !important;
+                margin-bottom: 20px !important;
               }
               &:nth-child(2) {
                 margin-left: 10px !important;
