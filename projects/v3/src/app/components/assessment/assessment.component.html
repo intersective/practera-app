@@ -101,7 +101,7 @@
             <ion-list-header class="question-title ion-no-padding headline-4"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
-              <div class="ion-padding">
+              <div class="ion-padding" [id]="question.id">
                 {{ question.name }}
                 <ion-text class="required-indicator ion-no-padding ion-no-margin" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
               </div>

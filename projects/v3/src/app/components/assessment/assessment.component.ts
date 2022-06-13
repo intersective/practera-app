@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams } from '@v3/services/assessment.service';
+import { Component, Input, Output, EventEmitter, OnChanges, Inject } from '@angular/core';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
+import { DOCUMENT, ViewportScroller } from '@angular/common';
 
 const SAVE_PROGRESS_TIMEOUT = 5000;
 
@@ -70,6 +71,8 @@ export class AssessmentComponent implements OnChanges {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
+    @Inject(DOCUMENT) private readonly document: Document,
+    private scroller: ViewportScroller,
   ) {}
 
   ngOnChanges() {
@@ -194,7 +197,7 @@ export class AssessmentComponent implements OnChanges {
    * @description to check if every compulsory question has been answered
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
-  private _compulsoryQuestionsAnswered(answers): object[] {
+  private _compulsoryQuestionsAnswered(answers): Question[] {
     const missing = [];
     const answered = {};
     this.utils.each(answers, answer => {
@@ -332,12 +335,24 @@ export class AssessmentComponent implements OnChanges {
       // display a pop up if required question not answered
       return this.notifications.alert({
         message: 'Required question answer missing!',
+        // Please fill out the required fields.
         buttons: [
           {
             text: 'OK',
-            role: 'cancel'
+            role: 'cancel',
+            /*
+              // doesn't work on iOS device, disable now to visit back later when it has cross-browser support
+              handler: () => {
+              return setTimeout(() => {
+                return this.document.getElementById(`${requiredQuestions[0].id}`).scrollIntoView({
+                  block: 'start',
+                  behavior: 'smooth',
+                  inline: 'nearest'
+                });
+              }, 500);
+            } */
           }
-        ]
+        ],
       });
     }
 
