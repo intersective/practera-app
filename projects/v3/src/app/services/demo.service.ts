@@ -1553,7 +1553,7 @@ export class DemoService {
         "end": "2022-04-27 18:30:00",
         "location": "efojfojf",
         "title": "New Event 02",
-        "description": "<p>wodwdwodjwd</p>",
+        "description": this.description,
         "capacity": 10,
         "type": "other",
         "all_day": true,

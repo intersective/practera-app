@@ -4,9 +4,9 @@
     <ion-title *ngIf="utils.isMobile()" class="ion-text-center" tabindex="0" aria-label="event">Event</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content color="light">
-  <div class="ion-text-center ion-margin">
-    <h1 class="headline-4" tabindex="0">{{ event.name }}</h1>
+<ion-content>
+  <div class="ion-margin">
+    <h1 class="ion-text-center headline-2" tabindex="0">{{ event.name }}</h1>
     <div class="div-activity-name subtitle-1 gray-2" tabindex="0" [attr.aria-label]="event.activityName">{{ event.activityName }}</div>
     <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
