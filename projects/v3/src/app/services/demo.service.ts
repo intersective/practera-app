@@ -33,7 +33,7 @@ export class DemoService {
             id: 1,
             name: 'Get Started',
             isLocked: false,
-            description: 'This contain some starting activities',
+            description: `<p style=\"overflow-wrap: break-word; padding: 0px; margin-right: 0px; margin-bottom: 24px; margin-left: 0px; color: rgb(17, 17, 17); font-family: sueca_hd_regular, georgia, times, serif; font-size: 18px;\">His co-founder Scott Farquhar lost slightly less last night – $U977.9 million – but he is still down $US12.2 billion this year.</p><p style=\"overflow-wrap: break-word; padding: 0px; margin-right: 0px; margin-bottom: 24px; margin-left: 0px; color: rgb(17, 17, 17); font-family: sueca_hd_regular, georgia, times, serif; font-size: 18px;\">Last night was also painful for Gina Rinehart. The iron ore billionaire lost $US1.2 billion on Monday. However, her net wealth has actually risen by $US3.4 billion this year to $US22.3 billion, so don’t feel too sorry for her.</p>`,
             activities: [
               {
                 id: 11,
