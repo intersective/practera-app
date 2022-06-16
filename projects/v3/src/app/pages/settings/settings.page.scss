@@ -5,21 +5,15 @@
 }
 
 .avatar {
-  width: 4em;
-  height: 4em;
-  margin: 5px;
+  width: 70px;
+  height: 70px;
+  margin: 10px 18px 10px 0;
 }
 .avatar-and-profile {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  ion-avatar {
-    margin-right: 0.5em;
-  }
-  ion-button {
-    margin-left: 0.5em;
-  }
 }
 
 ion-text {
@@ -29,4 +23,57 @@ ion-text {
 ion-label.bolder {
   opacity: 1 !important;
   font-weight: bolder !important;
+}
+
+.settings-header {
+  ion-toolbar {
+    height: 60px;
+    background: white;
+    --background: white;
+    --box-shadow: none;
+    box-shadow: none;
+    padding-left: 0;
+    ion-title {
+      text-align: left;
+      height: 60px;
+      padding-left: 20px;
+    }
+  }
+}
+
+.settings-content {
+  ion-list {
+    ion-item-divider {
+      &.divider-title {
+        height: 40px;
+      }
+    }
+    .profile-name,
+    .profile-email {
+      ion-label {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        ion-text {
+          background: transparent !important;
+          &.title {
+            margin-right: 7rem;
+          }
+        }
+      }
+      &.mobile {
+        ion-label {
+          ion-text {
+            &.title {
+              margin-right: 5rem;
+            }
+          }
+        }
+      }
+    }
+    .btn-logout {
+      margin: 10px 0 10px 0;
+    }
+  }
 }
