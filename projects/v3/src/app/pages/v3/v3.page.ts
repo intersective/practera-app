@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
@@ -26,11 +26,18 @@ export class V3Page implements OnInit, OnDestroy {
     private animationService: AnimationsService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
+    private router: Router,
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private chatService: ChatService
   ) {
+    this.router.events.subscribe(_test => {
+      if (_test instanceof NavigationEnd) {
+        console.log(_test);
+      }
+    });
   }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => subs.unsubscribe());
   }

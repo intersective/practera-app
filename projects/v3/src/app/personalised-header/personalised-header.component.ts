@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
+import { Subscription } from 'rxjs';
 import { NotificationsPage } from '../pages/notifications/notifications.page';
 import { BrowserStorageService, User } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
@@ -12,7 +13,8 @@ import { UtilsService } from '../services/utils.service';
   templateUrl: './personalised-header.component.html',
   styleUrls: ['./personalised-header.component.scss'],
 })
-export class PersonalisedHeaderComponent {
+export class PersonalisedHeaderComponent implements OnDestroy {
+  subscriptions: Subscription[] = [];
 
   constructor(
     private modalController: ModalController,
@@ -20,7 +22,12 @@ export class PersonalisedHeaderComponent {
     private readonly storageService: BrowserStorageService,
     private readonly utilService: UtilsService,
     private router: Router,
-  ) { }
+    private utils: UtilsService,
+  ) {
+    this.subscriptions.push(this.utils.getEvent('notification').subscribe(event => {
+      console.log('notification::', event);
+    }));
+  }
 
   get isMobile(): boolean {
     return this.utilService.isMobile();
@@ -28,6 +35,12 @@ export class PersonalisedHeaderComponent {
 
   get user(): User {
     return this.storageService.getUser();
+  }
+
+  ngOnDestroy(): void {
+    if (this.subscriptions.length > 0) {
+      this.subscriptions.forEach(subs => subs.unsubscribe());
+    }
   }
 
   async notifications(): Promise<void | boolean> {
