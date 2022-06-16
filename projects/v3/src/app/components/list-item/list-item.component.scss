@@ -1,6 +1,9 @@
 ion-item {
   cursor: pointer;
 }
+ion-item:hover {
+  --background: var(--practera-light-grey-25);
+}
 .active {
   --background: var(--practera-light-grey-25);
 }
