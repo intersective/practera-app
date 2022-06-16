@@ -1,23 +1,20 @@
-<ion-header>
+<ion-header class="settings-header">
   <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="dismiss()" *ngIf="mode === 'modal'">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-      </ion-button>
-
+    <!-- @TODO need to check with rodrigo/sanjaya do we need it. according to funcanality we no need it. can navigate from tabs-->
+    <!-- If needed enable it back -->
+    <!-- <ion-buttons slot="start">
       <ion-button (click)="goBack()" *ngIf="!mode">
         <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
       </ion-button>
-    </ion-buttons>
-
-    <ion-title>Settings</ion-title>
+    </ion-buttons> -->
+    <ion-title class="headline-4">Settings</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content fullscreen="true">
+<ion-content fullscreen="true" class="settings-content">
   <ion-list lines="full" class="ion-no-margin ion-no-padding">
-    <ion-item-divider lines="none">
-      <ion-label color="primary">Your Details</ion-label>
+    <ion-item-divider class="divider-title" lines="none">
+      <ion-label color="primary" class="headline-4">Your Details</ion-label>
     </ion-item-divider>
 
     <ng-container *ngIf="!isMobile; else mobileProfile">
@@ -53,14 +50,18 @@
     </ng-template>
 
 
-    <ion-item>
-      <ion-label style="font-weight: bolder;opacity: 1;">Name</ion-label>
-      <ion-label>{{profile.name}}</ion-label>
+    <ion-item class="profile-name" [ngClass]="{'mobile': isMobile}">
+      <ion-label>
+        <ion-text class="headline-4 title">Name</ion-text>
+        <ion-text class="body-2">{{profile.name}}</ion-text>
+      </ion-label>
     </ion-item>
 
-    <ion-item id="user-email">
-      <ion-label style="font-weight: bolder;opacity: 1;">Email</ion-label>
-      <ion-label>{{profile.email}}</ion-label>
+    <ion-item class="profile-email" [ngClass]="{'mobile': isMobile}" id="user-email">
+      <ion-label>
+        <ion-text class="headline-4 title">Email</ion-text>
+        <ion-text class="body-2">{{profile.email}}</ion-text>
+      </ion-label>
     </ion-item>
 
     <ion-popover trigger="user-email" side="bottom" alignment="end">
@@ -70,22 +71,22 @@
     </ion-popover>
 
     <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
-      <ion-note class="ion-padding">If you need to update your name or email please contact the experience administrator.</ion-note>
+      <ion-note class="ion-padding body-3">If you need to update your name or email please contact the experience administrator.</ion-note>
     </ion-item-divider>
 
     <app-contact-number-form [page]="'settings'"></app-contact-number-form>
 
-    <ion-item-divider>
-      <ion-label color="primary">Support</ion-label>
+    <ion-item-divider class="divider-title">
+      <ion-label color="primary" class="headline-4">Support</ion-label>
     </ion-item-divider>
 
-    <ion-item detail="true" button (click)="mailTo($event)" (keydown)="mailTo($event)">Contact support</ion-item>
+    <ion-item detail="true" button (click)="mailTo($event)" class="body-2 black" (keydown)="mailTo($event)">Contact support</ion-item>
 
-    <ion-item detail="true" button (click)="openLink($event)" (keydown)="openLink($event)">Terms and Conditions</ion-item>
+    <ion-item detail="true" button (click)="openLink($event)" class="body-2 black" (keydown)="openLink($event)">Terms and Conditions</ion-item>
 
     <div [class]="{'xc': !isMobile }">
       <ion-button
-      class="ion-padding-horizontal ion-text-center"
+      class="ion-padding-horizontal ion-text-center btn-logout"
       fill="outline"
       expand="block"
       (click)="logout($event)"
