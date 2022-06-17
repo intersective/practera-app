@@ -53,12 +53,7 @@ export class TopicService {
       this.clearTopic();
     }
     if (environment.demo) {
-      return setTimeout(
-        () => {
-          this._topic$.next(this.demo.topic(id));
-        },
-        1000 * (Math.random() + 1)
-      );
+      return this.demo.topic().subscribe(res => this._normaliseTopic(res.data));
     }
     return this.request.get(api.get.stories, {params: { model_id: id }})
       .pipe(map((response: any) => {

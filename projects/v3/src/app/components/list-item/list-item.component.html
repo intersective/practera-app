@@ -13,23 +13,27 @@
 
   <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
     <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
-      <ion-text class="item-title body-2" [color]="titleColor">{{ title }}</ion-text>
+      <div class="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
       &nbsp; <!-- this is to add some space between two elements -->
       <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
     </div>
-    <ion-text *ngIf="!isEventItem" class="item-title body-2" [color]="titleColor">{{ title }}</ion-text>
-    <ng-container *ngIf="subtitle1">
-      <br/><ion-text class="item-subtitle-1 subtitle-2" [color]="subtitle1Color">{{ subtitle1 }}</ion-text>
-    </ng-container>
-    <ng-container *ngIf="subtitle2">
-      <br/><ion-text class="item-subtitle-2 caption" [color]="subtitle2Color">{{ subtitle2 }}</ion-text>
-    </ng-container>
-    <ng-container *ngIf="label">
-      <br/>
-      <ion-chip [class]="'label ' + labelColor">
+
+    <div *ngIf="!isEventItem" [class]="'item-title body-2 ' + titleColor">{{ title }}</div>
+
+    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color">
+      {{ subtitle1 }}
+    </div>
+
+    <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color">
+      {{ subtitle2 }}
+    </div>
+
+    <div *ngIf="label">
+      <ion-chip [class]="'label ion-no-margin ' + labelColor">
         <ion-label class="body-3">{{ label }}</ion-label>
       </ion-chip>
-    </ng-container>
+    </div>
+
   </div>
 
   <ion-text *ngIf="endingText" class="item-ending-text caption" [color]="endingTextColor" slot="end">{{ endingText }}</ion-text>
