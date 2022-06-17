@@ -97,7 +97,7 @@ export class TopicComponent implements OnChanges {
    * @description open and preview file in a modal
    * @param {object} file filestack object
    */
-   async previewFile(file) {
+  async previewFile(file) {
     if (this.isLoadingPreview === false) {
       this.isLoadingPreview = true;
       try {
@@ -113,6 +113,17 @@ export class TopicComponent implements OnChanges {
         // this.newRelic.noticeError(`${JSON.stringify(err)}`);
         return toasted;
       }
+    }
+  }
+
+  actionBtnClick(file, index: number) {
+    switch (index) {
+      case 0:
+        this.utils.downloadFile(file.url);
+        break;
+      case 1:
+        this.previewFile(file);
+        break;
     }
   }
 

@@ -8,6 +8,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 export class BottomActionBarComponent {
 
   @Input() text: string;
+  @Input() color: string = 'primary';
   @Input() disabled: boolean;
   @Output() onClick = new EventEmitter();
 
