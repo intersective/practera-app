@@ -131,7 +131,7 @@
                 (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
               )" class="no-answers item-bottom-border" lines="none">
-                <ion-icon slot="start" color="warning" name="information-circle-outline"></ion-icon>
+                <ion-icon slot="start" color="orange" name="information-circle-outline" class="ion-margin-end"></ion-icon>
                 <ion-label size="small">No answer for this question.</ion-label>
               </ion-item>
 
