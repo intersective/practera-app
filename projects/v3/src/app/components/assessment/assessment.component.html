@@ -85,7 +85,7 @@
 
     <form [formGroup]="questionsForm" id="formgroup">
       <ng-container *ngFor="let group of assessment.groups">
-        <div [ngClass]="{'ion-padding-horizontal': isMobile}">
+        <div [ngClass]="{'ion-padding': isMobile}">
           <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
           <ion-text color="dark" class="ion-text-left">
             <app-description
@@ -98,18 +98,23 @@
 
         <ng-container *ngFor="let question of group.questions">
           <ion-list class="ion-no-padding">
-            <ion-list-header class="question-title ion-no-padding headline-4"
+
+            <ion-list-header
+              class="question-title headline-4"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
-              <div class="ion-padding">
+              <ion-label class="ion-margin-vertical">
                 {{ question.name }}
-                <ion-text class="required-indicator ion-no-padding ion-no-margin" color="danger" *ngIf="question.isRequired">&nbsp;*</ion-text>
-              </div>
+                <span class="required-mark" *ngIf="question.isRequired">&nbsp;*</span>
+              </ion-label>
 
-              <ion-icon *ngIf="question.info"
-                class="icon-info vertical-middle"
-                (click)="showQuestionInfo(question.info)" name="information-circle-outline"
-              ></ion-icon>
+              <ion-button
+                *ngIf="question.info"
+                fill="clear"
+                (click)="showQuestionInfo(question.info)"
+                class="btn-info ion-no-margin">
+                <ion-icon name="information-circle-outline"></ion-icon>
+              </ion-button>
             </ion-list-header>
 
             <ion-item lines="none" *ngIf="question.description" class="explanation">
@@ -125,9 +130,9 @@
               <ion-item *ngIf="!doAssessment && (
                 (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
-              )" class="no-answers item-bottom-border ion-padding-bottom" lines="none">
-                <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
-                <ion-label size="small">No answers were submitted.</ion-label>
+              )" class="no-answers item-bottom-border" lines="none">
+                <ion-icon slot="start" color="warning" name="information-circle-outline"></ion-icon>
+                <ion-label size="small">No answer for this question.</ion-label>
               </ion-item>
 
               <app-text *ngSwitchCase="'text'"
@@ -213,9 +218,12 @@
     </form>
   </div>
 
-  <div class="ion-text-center">
-    <ion-button [disabled]="btnDisabled" color="secondary" (click)="continueToNextTask()" shape="round">{{ btnText }}</ion-button>
-  </div>
+  <app-bottom-action-bar
+    [text]="btnText"
+    color="secondary"
+    [disabled]="btnDisabled"
+    (onClick)="continueToNextTask()"
+  ></app-bottom-action-bar>
 
   <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
     <p class="black subtitle-1">Currently you are not in a team, please reach out to your Administrator or Coordinator to

@@ -35,4 +35,7 @@ export class ListItemComponent {
   @Input() eventFullyBooked: boolean;
   @Input() eventDayCount: string;
 
+  // used if there are ending action buttons
+  @Input() endingActionBtnIcons: string[];
+  @Output() actionBtnClick = new EventEmitter<number>();
 }
