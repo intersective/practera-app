@@ -12,7 +12,7 @@ import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback
 import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, withLatestFrom } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 
@@ -84,6 +84,8 @@ export class NotificationsService {
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
+  private notifications: TodoItem[];
+
   constructor(
     private modalController: ModalController,
     private alertController: AlertController,
@@ -99,6 +101,11 @@ export class NotificationsService {
 
   dismiss() {
     return this.modalController.dismiss();
+  }
+
+  addNewNotification(newNotification): void {
+    this.notifications = this.notifications.concat(newNotification);
+    this._notification$.next(this.notifications);
   }
 
   /**
@@ -305,7 +312,8 @@ export class NotificationsService {
     }).pipe(map(response => {
       if (response.success && response.data) {
         const normalised = this._normaliseTodoItems(response.data);
-        this._notification$.next(normalised);
+        this.notifications = normalised;
+        this._notification$.next(this.notifications);
         return normalised;
       }
     }));
@@ -502,6 +510,8 @@ export class NotificationsService {
       this.request.apiResponseFormatError('Pusher notification event format error');
       return {};
     }
+
+    let result: TodoItem;
     switch (event.type) {
       // This is a feedback available event
       case 'assessment_review_published':
@@ -515,7 +525,7 @@ export class NotificationsService {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
         }
-        return {
+        result = {
           type: 'feedback_available',
           name: event.meta.AssessmentReview.assessment_name,
           description: event.meta.AssessmentReview.reviewer_name + ' has provided feedback',
@@ -528,6 +538,7 @@ export class NotificationsService {
             reviewer_name: event.meta.AssessmentReview.reviewer_name,
           }
         };
+        break;
 
       // This is a submission ready for review event
       case 'assessment_review_assigned':
@@ -540,7 +551,7 @@ export class NotificationsService {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
         }
-        return {
+        result = {
           type: 'review_submission',
           name: event.meta.AssessmentReview.assessment_name,
           description: 'Please review the assessment',
@@ -552,6 +563,7 @@ export class NotificationsService {
             assessment_submission_id: event.meta.AssessmentReview.assessment_submission_id,
           }
         };
+        break;
 
       case 'assessment_submission_reminder':
         if (!this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_name') ||
@@ -564,7 +576,7 @@ export class NotificationsService {
           this.request.apiResponseFormatError('TodoItem meta format error');
           return {};
         }
-        return {
+        result = {
           type: 'assessment_submission_reminder',
           name: event.meta.AssessmentSubmissionReminder.assessment_name,
           description: this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
@@ -577,7 +589,14 @@ export class NotificationsService {
             due_date: event.meta.AssessmentSubmissionReminder.due_date
           }
         };
+        break;
     }
+
+    if (!this.utils.isEmpty(result)) {
+      this.addNewNotification(result);
+    }
+
+    return result;
   }
 
   /**
