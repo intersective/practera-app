@@ -47,6 +47,10 @@ ion-item {
     --background: var(--practera-light-grey-50);
   }
 
+  .q-description {
+    margin: 10px 0;
+  }
+
   &.no-answers {
     --background: var(--practera-light-grey-50);
     color: var(--ion-text-color);
