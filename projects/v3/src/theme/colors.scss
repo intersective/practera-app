@@ -127,6 +127,24 @@ $colors: (
 	--ion-color-tint: var(--practera-dark-blue-100-tint);
 }
 
+.ion-color-yellow {
+	--ion-color-base: var(--practera-yellow-100);
+	--ion-color-base-rgb: var(--practera-yellow-100-rgb);
+	--ion-color-contrast: var(--practera-yellow-100-contrast);
+	--ion-color-contrast-rgb: var(--practera-yellow-100-contrast-rgb);
+	--ion-color-shade: var(--practera-yellow-100-shade);
+	--ion-color-tint: var(--practera-yellow-100-tint);
+}
+
+.ion-color-orange {
+	--ion-color-base: var(--practera-orange-100);
+	--ion-color-base-rgb: var(--practera-orange-100-rgb);
+	--ion-color-contrast: var(--practera-orange-100-contrast);
+	--ion-color-contrast-rgb: var(--practera-orange-100-contrast-rgb);
+	--ion-color-shade: var(--practera-orange-100-shade);
+	--ion-color-tint: var(--practera-orange-100-tint);
+}
+
 .ion-color-grey-100 {
 	color: var(--practera-grey-100);
 	--ion-color-base: var(--practera-grey-100);
