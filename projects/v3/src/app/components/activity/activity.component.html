@@ -1,12 +1,14 @@
 <ng-container *ngIf="activity">
-  <div class="ion-padding-horizontal">
-    <h1 *ngIf="activity.name" class="headline-2">{{ activity.name }}</h1>
+  <div class="ion-padding">
+    <h1 *ngIf="activity.name" class="headline-2 activity-name">{{ activity.name }}</h1>
     <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;"></ion-skeleton-text>
 
-    <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75">{{ activity.tasks.length }} Tasks</ion-text>
+    <div class="task-count">
+      <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75">{{ activity.tasks.length }} Tasks</ion-text>
+    </div>
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"></ion-skeleton-text>
 
-    <app-description *ngIf="activity.description" [content]="activity.description"></app-description>
+    <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
   </div>
 
   <ion-item class="headline-4 task-header" lines="none">Tasks</ion-item>

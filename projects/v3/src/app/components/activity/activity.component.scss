@@ -1,5 +1,11 @@
+.activity-name {
+  margin: 0 0 10px;
+}
 .task-header {
   --background: var(--ion-color-primary-tint);
+}
+.task-count {
+  margin-bottom: 11px;
 }
 
 .skeleton-header {

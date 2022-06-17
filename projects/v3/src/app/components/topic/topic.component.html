@@ -1,10 +1,6 @@
-<ng-container *ngIf="topic">
-  <h3 style="text-align: center;
-    font-size: 24px !important;
-    line-height: 29px !important;
-    font-weight: var(--font-weight-bold) !important;"
-  >{{topic.title}}</h3>
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+<div *ngIf="topic" class="ion-padding topic-wrapper">
+  <div class="headline-2 topic-title">{{topic.title}}</div>
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
     <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
     <video
       *ngIf="!iframeHtml"
@@ -17,13 +13,12 @@
     </video>
   </div>
 
-  <div style="padding: 1em;">
-    <app-description *ngIf="topic.content"
+  <app-description *ngIf="topic.content"
+    class="body-2"
     [name]="'topic'+topic.id"
     [content]="topic.content"
     [nonCollapsible]="true"
-    ></app-description>
-  </div>
+  ></app-description>
 
   <div style="padding: 1em;" *ngIf="topic.files && topic.files.length > 0" color="light">
     <label class="subtitle-2 gray-2">Supporting Downloads</label>
@@ -48,12 +43,12 @@
     </div>
   </div>
 
-  <div style="text-align:center;">
-    <ion-button [disabled]="continuing" (click)="continuing = true;continue.emit(topic)">
-      Mark as complete and continue
-    </ion-button>
-  </div>
-</ng-container>
+  <app-bottom-action-bar
+    text="Mark as complete and continue"
+    [disabled]="continuing"
+    (onClick)="continuing = true;continue.emit(topic)"
+  ></app-bottom-action-bar>
+</div>
 
 <div *ngIf="!topic" class="ion-padding">
   <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
