@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -26,16 +25,9 @@ export class V3Page implements OnInit, OnDestroy {
     private animationService: AnimationsService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
-    private router: Router,
-    private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private chatService: ChatService
   ) {
-    this.router.events.subscribe(_test => {
-      if (_test instanceof NavigationEnd) {
-        console.log(_test);
-      }
-    });
   }
 
   ngOnDestroy(): void {
@@ -102,12 +94,6 @@ export class V3Page implements OnInit, OnDestroy {
     this.subscriptions.push(this.route.params.subscribe(params => {
       this.reviewService.getReviews();
     }));
-
-    this.subscriptions.push(this.notificationsService.notification$.subscribe());
-    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
-
-    this.notificationsService.getTodoItems().subscribe();
-    this.notificationsService.getChatMessage().subscribe();
 
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;

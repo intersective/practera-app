@@ -42,8 +42,9 @@ export class NotificationsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.push(this.notificationsService.notification$.subscribe(items => {
-      this.todoItems = this.todoItems.concat(items);
+      this.todoItems = items;
     }));
+
     this.subscriptions.push(this.notificationsService.eventReminder$.subscribe(session => {
       if (!this.utils.isEmpty(session)) {
         this.eventReminders.push(session);
@@ -54,30 +55,6 @@ export class NotificationsPage implements OnInit, OnDestroy {
       if (!this.utils.isEmpty(chatMessage)) {
         this._addChatTodoItem(chatMessage);
       }
-    }));
-
-    this.subscriptions.push(this.utils.getEvent('notification').subscribe(event => {
-      const todoItem = this.notificationsService.getTodoItemFromEvent(event);
-      if (!this.utils.isEmpty(todoItem)) {
-        // add todo item to the list if it is not empty
-        this.todoItems.push(todoItem);
-      }
-    }));
-
-    this.subscriptions.push(this.utils.getEvent('chat:new-message').subscribe(() => {
-      this.notificationsService.getChatMessage().subscribe(chatMessage => {
-        if (!this.utils.isEmpty(chatMessage)) {
-          this._addChatTodoItem(chatMessage);
-        }
-      });
-    }));
-
-    this.subscriptions.push(this.utils.getEvent('event-reminder').subscribe(event => {
-      this.notificationsService.getReminderEvent(event).subscribe(session => {
-        if (!this.utils.isEmpty(session)) {
-          this.eventReminders.push(session);
-        }
-      });
     }));
   }
 
