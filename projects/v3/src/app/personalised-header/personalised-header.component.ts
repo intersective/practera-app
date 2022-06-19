@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
+import { Subscription } from 'rxjs';
 import { NotificationsPage } from '../pages/notifications/notifications.page';
 import { BrowserStorageService, User } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
@@ -13,6 +14,7 @@ import { UtilsService } from '../services/utils.service';
   styleUrls: ['./personalised-header.component.scss'],
 })
 export class PersonalisedHeaderComponent {
+  subscriptions: Subscription[] = [];
 
   constructor(
     private modalController: ModalController,
@@ -20,7 +22,8 @@ export class PersonalisedHeaderComponent {
     private readonly storageService: BrowserStorageService,
     private readonly utilService: UtilsService,
     private router: Router,
-  ) { }
+  ) {
+  }
 
   get isMobile(): boolean {
     return this.utilService.isMobile();

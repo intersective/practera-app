@@ -14,6 +14,7 @@ export class ReviewDesktopPage implements OnInit {
   reviews$ = this.reviewService.reviews$;
   submission$ = this.assessmentService.submission$;
   assessment$ = this.assessmentService.assessment$;
+  loading: boolean; // loading indicator (true = loading | false = done loaded)
 
   reviews: Review[];
   assessment: Assessment;
@@ -80,14 +81,22 @@ export class ReviewDesktopPage implements OnInit {
   }
 
   async saveAssessment(event) {
-    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    this.loading = true;
+    await this.assessmentService.saveAnswers(
+      event.assessment,
+      event.answers,
+      event.action,
+      this.assessment.pulseCheck
+    ).toPromise();
     if (!event.assessment.inProgress) {
       setTimeout(
         () => this.reviewService.getReviews(),
         500
       );
-      return ;
+      return;
     }
+
+    this.loading = false;
   }
 
 }
