@@ -1,10 +1,6 @@
-<ng-container *ngIf="topic">
-  <h3 style="text-align: center;
-    font-size: 24px !important;
-    line-height: 29px !important;
-    font-weight: var(--font-weight-bold) !important;"
-  >{{topic.title}}</h3>
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
+<div *ngIf="topic" class="ion-padding topic-wrapper">
+  <div class="headline-2 topic-title">{{topic.title}}</div>
+  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
     <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
     <video
       *ngIf="!iframeHtml"
@@ -17,43 +13,32 @@
     </video>
   </div>
 
-  <div style="padding: 1em;">
-    <app-description *ngIf="topic.content"
+  <app-description *ngIf="topic.content"
+    class="body-2"
     [name]="'topic'+topic.id"
     [content]="topic.content"
     [nonCollapsible]="true"
-    ></app-description>
-  </div>
+  ></app-description>
 
-  <div style="padding: 1em;" *ngIf="topic.files && topic.files.length > 0" color="light">
-    <label class="subtitle-2 gray-2">Supporting Downloads</label>
+  <ion-list *ngIf="topic.files && topic.files.length > 0" class="ion-margin-vertical">
+    <ion-item class="headline-4 downloads" lines="none">Supporting Downloads</ion-item>
 
-    <div *ngFor="let file of topic.files" class="supporting-files">
-      <ion-grid class="ion-no-padding">
-        <ion-row class="ion-justify-content-center ion-align-items-center">
-          <ion-col size="10" class="file-name-view">
-            <p class="vertical-middle black" style="display: flex;">
-              <ion-icon name="document" class="vertical-middle" color="primary"></ion-icon>&nbsp;{{file.name}}
-            </p>
-          </ion-col>
-          <ion-col class="ion-align-self-center" size="2" style="display: flex;justify-content: space-evenly;align-items: center;">
-            <ion-icon class="vertical-middle hover-pointer" *ngIf="file.url.length > 0" name="search"
-              (click)="previewFile(file)" color="primary"></ion-icon>
-            <a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
-              <ion-icon name="download-outline" class="float-right"></ion-icon>
-            </a>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </div>
-  </div>
+    <app-list-item *ngFor="let file of topic.files"
+      [title]="file.name"
+      leadingIcon="document"
+      lines="full"
+      [endingActionBtnIcons]="['download', 'search']"
+      (actionBtnClick)="actionBtnClick(file, $event)"
+    ></app-list-item>
 
-  <div style="text-align:center;">
-    <ion-button [disabled]="continuing" (click)="continuing = true;continue.emit(topic)">
-      Mark as complete and continue
-    </ion-button>
-  </div>
-</ng-container>
+  </ion-list>
+
+  <app-bottom-action-bar
+    text="Mark as complete and continue"
+    [disabled]="continuing"
+    (onClick)="continuing = true;continue.emit(topic)"
+  ></app-bottom-action-bar>
+</div>
 
 <div *ngIf="!topic" class="ion-padding">
   <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>

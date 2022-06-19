@@ -1,14 +1,17 @@
 .question-title {
-  background: var(--ion-color-primary);
-  color: var(--ion-color-primary-contrast);
+  --background: var(--ion-color-primary);
+  --color: var(--ion-color-primary-contrast);
+}
+.btn-info {
+  --color: var(--ion-color-primary-contrast);
+  margin: auto;
+}
+.required-mark {
+  color: var(--ion-color-danger);
 }
 
 .text-right {
   text-align: right;
-}
-.icon-info {
-  font-size: 20px;
-  cursor: pointer;
 }
 .icon-backward {
   font-size: 20px !important;
@@ -44,8 +47,12 @@ ion-item {
     --background: var(--practera-light-grey-50);
   }
 
+  .q-description {
+    margin: 10px 0;
+  }
+
   &.no-answers {
-    --background: #FDE0CE;
+    --background: var(--practera-light-grey-50);
     color: var(--ion-text-color);
 
     ion-label {

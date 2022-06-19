@@ -299,6 +299,17 @@ export class EventListComponent {
     return [events, eventGroup, compareDate];
   }
 
+  switchEvents(event) {
+    this.activated = event.detail.value;
+    switch (this.activated) {
+      case 'browse':
+        return this.showBrowse();
+      case 'booked':
+        return this.showBooked();
+      case 'attended':
+        return this.showAttended();
+    }
+  }
 
   showBrowse() {
     this.activated = 'browse';

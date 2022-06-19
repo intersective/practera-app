@@ -33,6 +33,7 @@ import { ReviewListComponent } from './review-list/review-list.component';
 import { BrandingLogoComponent } from './branding-logo/branding-logo.component';
 import { TodoCardComponent } from './todo-card/todo-card.component';
 import { SlidableComponent } from './slidable/slidable.component';
+import { BottomActionBarComponent } from './bottom-action-bar/bottom-action-bar.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -89,7 +90,8 @@ const largeCircleDefaultConfig = {
     TextComponent,
     TodoCardComponent,
     TopicComponent,
-    BrandingLogoComponent
+    BrandingLogoComponent,
+    BottomActionBarComponent
   ],
   exports: [
     AchievementPopUpComponent,
@@ -126,7 +128,8 @@ const largeCircleDefaultConfig = {
     TextComponent,
     TodoCardComponent,
     TopicComponent,
-    BrandingLogoComponent
+    BrandingLogoComponent,
+    BottomActionBarComponent
   ],
 })
 export class ComponentsModule {}
