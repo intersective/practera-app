@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -22,16 +21,9 @@ export class TabsPage implements OnInit, OnDestroy {
     private reviewService: ReviewService,
     private storageService: BrowserStorageService,
     private chatService: ChatService,
-    private router: Router,
     private utils: UtilsService,
     private notificationsService: NotificationsService,
-  ) {
-    this.subscriptions.push(this.router.events.subscribe(_test => {
-      if (_test instanceof NavigationEnd) {
-        console.log(_test);
-      }
-    }));
-  }
+  ) {}
 
   ngOnInit() {
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
