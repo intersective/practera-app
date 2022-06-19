@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
+import { UtilsService } from '@v3/app/services/utils.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-tabs',
@@ -13,18 +14,18 @@ import { Subscription } from 'rxjs';
 })
 export class TabsPage implements OnInit, OnDestroy {
   reviews: Review[];
-  subscriptions: Subscription[];
+  subscriptions: Subscription[] = [];
   showMessages: boolean = false;
   constructor(
     private platform: Platform,
-    private route: ActivatedRoute,
     private reviewService: ReviewService,
     private storageService: BrowserStorageService,
-    private chatService: ChatService
-  ) { }
+    private chatService: ChatService,
+    private utils: UtilsService,
+    private notificationsService: NotificationsService,
+  ) {}
 
   ngOnInit() {
-    this.subscriptions = [];
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -38,6 +39,24 @@ export class TabsPage implements OnInit, OnDestroy {
         }
       }));
     }
+
+    this.subscriptions.push(this.utils.getEvent('notification').subscribe(event => {
+      this.notificationsService.getTodoItemFromEvent(event);
+    }));
+
+    this.subscriptions.push(this.utils.getEvent('chat:new-message').subscribe(() => {
+      this.notificationsService.getChatMessage().subscribe();
+    }));
+
+    this.subscriptions.push(this.utils.getEvent('event-reminder').subscribe(event => {
+      this.notificationsService.getReminderEvent(event).subscribe();
+    }));
+
+    this.subscriptions.push(this.notificationsService.notification$.subscribe());
+    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
+
+    this.notificationsService.getTodoItems().subscribe();
+    this.notificationsService.getChatMessage().subscribe();
   }
 
   get isMobile() {

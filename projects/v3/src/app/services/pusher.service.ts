@@ -268,10 +268,9 @@ export class PusherService {
           .bind('event-reminder', data => {
             this.utils.broadcastEvent('event-reminder', data);
           })
-          .bind('pusher:subscription_succeeded', data => {
-          })
+          // .bind('pusher:subscription_succeeded', data => {})
           .bind('pusher:subscription_error', data => {
-            // error handling
+            console.error(`fail to subscribe ${channelName}::`, data);
           });
         break;
       case 'chat':
@@ -290,10 +289,10 @@ export class PusherService {
           .bind('client-typing-event', data => {
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
-          .bind('pusher:subscription_succeeded', data => {
-          })
+          // .bind('pusher:subscription_succeeded', data => {})
           .bind('pusher:subscription_error', data => {
             // error handling
+            console.error(`fail to subscribe ${channelName}::`, data);
           });
         if (!this.channels.chat) {
           this.channels.chat = [];
