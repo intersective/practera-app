@@ -12,7 +12,7 @@ import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback
 import { Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { map, shareReplay, withLatestFrom } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 
