@@ -17,7 +17,7 @@
           <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100"></ion-progress-bar>
           <div class="exp-content">
             <h1 class="headline-2">{{ experience.name }}</h1>
-            <ion-text class="subtitle-3" color="medium">
+            <ion-text class="subtitle-3" color="grey-75">
               <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
               <span style="margin: 0 10px">|</span>
               <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress }}% Progress</ng-container>
@@ -31,7 +31,7 @@
         </ng-container>
       </ion-col>
 
-      <ion-col size="12" size-md="8" class="border-left">
+      <ion-col size="12" size-md="8" class="activity-col">
         <ion-segment (ionChange)="switchContent($event)" [value]="display">
           <ion-segment-button value="activities" mode="ios">
             <ion-label>Activities</ion-label>
@@ -51,7 +51,9 @@
               {{ milestone.name }}
               <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
             </ion-item>
-            <ion-item *ngIf="milestone.description" class="body-3 milestone-des" color="light" lines="none" [innerHTML]="milestone.description"></ion-item>
+            <ion-item color="light" class="body-3" lines="none">
+              <app-description [content]="milestone.description"></app-description>
+            </ion-item>
             <app-list-item *ngFor="let activity of milestone.activities; let i = index"
               [title]="activity.name"
               [leadImage]="activity.leadImage"

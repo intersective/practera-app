@@ -1,11 +1,17 @@
 ion-item {
   cursor: pointer;
 }
+ion-item:hover {
+  --background: var(--practera-light-grey-25);
+}
 .active {
   --background: var(--practera-light-grey-25);
 }
 ion-avatar {
   --border-radius: 8px;
+}
+.item-title, .item-subtitle-1, .item-subtitle-2 {
+  margin: 0 0 4px;
 }
 .leading-icon {
   margin-right: 20px;

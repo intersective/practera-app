@@ -1,43 +1,16 @@
-.toggle-mark {
-  font-size: small;
+.topic-wrapper {
+  padding-top: 20px;
 }
-.file-name-view {
-  p {
-    margin: 0;
-    font-size: 14px;
-  }
+.topic-title {
+  margin-bottom: 19px;
 }
-.icon-backward {
-  font-size: 20px !important;
+.topic-video {
+  margin-bottom: 20px;
 }
-
-.margin-right {
-  margin-right: 10px;
+.downloads {
+  --color: var(--ion-color-primary);
+  --background: var(--ion-color-primary-tint);
 }
-.supporting-files {
-  font-size: 14px;
-  line-height: 20px;
-  ion-icon {
-    font-size: 20px;
-  }
-}
-.practera-card {
-  margin: 18px 0;
-}
-
-.plyr--video, .plyr__poster {
-  background: transparent !important;
-  background-color: transparent !important;
-}
-
-.hover-pointer {
-  cursor: pointer;
-}
-.footer-action {
-  height: 40px;
-  margin: 10px 20px;
-}
-
 .skeleton-header {
   width: 40%;
   height: 15px;

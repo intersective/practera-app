@@ -1,10 +1,10 @@
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
-  <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
+  <div class="ion-padding" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
     <p class="body-2 gray-3">{{ submission?.answer }}</p>
   </div>
 
-  <div class="ion-padding-horizontal" *ngIf="(review?.answer || review?.comment)">
+  <div class="ion-padding" *ngIf="(review?.answer || review?.comment)">
     <ion-chip class="label yellow">Expert's answer</ion-chip>
     <ng-container *ngIf="review?.answer">
       <p class="body-2 gray-3">{{ review.answer }}</p>

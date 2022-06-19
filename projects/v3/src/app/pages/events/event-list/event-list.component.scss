@@ -2,45 +2,13 @@
   --padding-start: 0;
   --inner-padding-end: 0;
 }
-.btn-filter {
-  ion-button {
-    margin: 0;
-    color: var(--ion-color-primary);
-    --background: white;
-    --box-shadow: none;
-    height: 32px;
-  }
-  .btn-activated{
-    color: white;
-    --background: var(--ion-color-primary);
-  }
-  .btn-left-half {
-    --border-radius: 24px 0 0 24px;
-  }
-  .btn-middle {
-    --border-radius: 0;
-    margin: 0 2px;
-  }
-  .btn-right-half {
-    --border-radius: 0 24px 24px 0;
-  }
-}
-.btn-filter {
-  ion-button {
-    width: 32%;
-  }
-  .btn-middle {
-    width: calc(36% - 4px);
-  }
-}
-.btn-focused {
-  --background-focused: var(--ion-color-primary-tint) !important;
-  --background-focused-opacity: 0.44;
-
+.event-group {
+  --color: var(--ion-color-primary);
+  --background: var(--ion-color-primary-tint);
 }
 
-.practera-card {
-  border-radius: 12px;
-  margin: 16px 0;
-  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+ion-segment {
+  --background: var(--ion-color-light);
+  padding: 10px;
+  z-index: 1;
 }

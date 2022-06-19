@@ -78,6 +78,7 @@ $colors: (
 /** setting branding colors as Ionic theme **/
 
 .ion-color-arctic {
+	color: var(--practera-arctic-100);
 	--ion-color-base: var(--practera-arctic-100);
 	--ion-color-base-rgb: var(--practera-arctic-100-rgb);
 	--ion-color-contrast: var(--practera-arctic-100-contrast);
@@ -87,6 +88,7 @@ $colors: (
 }
 
 .ion-color-lime {
+	color: var(--practera-lime-100);
 	--ion-color-base: var(--practera-lime-100);
 	--ion-color-base-rgb: var(--practera-lime-100-rgb);
 	--ion-color-contrast: var(--practera-lime-100-contrast);
@@ -96,6 +98,7 @@ $colors: (
 }
 
 .ion-color-violet {
+	color: var(--practera-violet-100);
 	--ion-color-base: var(--practera-violet-100);
 	--ion-color-base-rgb: var(--practera-violet-100-rgb);
 	--ion-color-contrast: var(--practera-violet-100-contrast);
@@ -105,6 +108,7 @@ $colors: (
 }
 
 .ion-color-ocean {
+	color: var(--practera-ocean-100);
 	--ion-color-base: var(--practera-ocean-100);
 	--ion-color-base-rgb: var(--practera-ocean-100-rgb);
 	--ion-color-contrast: var(--practera-ocean-100-contrast);
@@ -114,6 +118,7 @@ $colors: (
 }
 
 .ion-color-dark-blue {
+	color: var(--practera-dark-blue-100);
 	--ion-color-base: var(--practera-dark-blue-100);
 	--ion-color-base-rgb: var(--practera-dark-blue-100-rgb);
 	--ion-color-contrast: var(--practera-dark-blue-100-contrast);
@@ -122,7 +127,26 @@ $colors: (
 	--ion-color-tint: var(--practera-dark-blue-100-tint);
 }
 
+.ion-color-yellow {
+	--ion-color-base: var(--practera-yellow-100);
+	--ion-color-base-rgb: var(--practera-yellow-100-rgb);
+	--ion-color-contrast: var(--practera-yellow-100-contrast);
+	--ion-color-contrast-rgb: var(--practera-yellow-100-contrast-rgb);
+	--ion-color-shade: var(--practera-yellow-100-shade);
+	--ion-color-tint: var(--practera-yellow-100-tint);
+}
+
+.ion-color-orange {
+	--ion-color-base: var(--practera-orange-100);
+	--ion-color-base-rgb: var(--practera-orange-100-rgb);
+	--ion-color-contrast: var(--practera-orange-100-contrast);
+	--ion-color-contrast-rgb: var(--practera-orange-100-contrast-rgb);
+	--ion-color-shade: var(--practera-orange-100-shade);
+	--ion-color-tint: var(--practera-orange-100-tint);
+}
+
 .ion-color-grey-100 {
+	color: var(--practera-grey-100);
 	--ion-color-base: var(--practera-grey-100);
 	--ion-color-base-rgb: var(--practera-grey-100-rgb);
 	--ion-color-contrast: var(--practera-grey-100-contrast);
@@ -132,6 +156,7 @@ $colors: (
 }
 
 .ion-color-grey-75 {
+	color: var(--practera-grey-75);
 	--ion-color-base: var(--practera-grey-75);
 	--ion-color-base-rgb: var(--practera-grey-75-rgb);
 	--ion-color-contrast: var(--practera-grey-75-contrast);
@@ -141,6 +166,7 @@ $colors: (
 }
 
 .ion-color-grey-50 {
+	color: var(--practera-grey-50);
 	--ion-color-base: var(--practera-grey-50);
 	--ion-color-base-rgb: var(--practera-grey-50-rgb);
 	--ion-color-contrast: var(--practera-grey-50-contrast);
@@ -150,6 +176,7 @@ $colors: (
 }
 
 .ion-color-grey-25 {
+	color: var(--practera-grey-25);
 	--ion-color-base: var(--practera-grey-25);
 	--ion-color-base-rgb: var(--practera-grey-25-rgb);
 	--ion-color-contrast: var(--practera-grey-25-contrast);
@@ -159,6 +186,7 @@ $colors: (
 }
 
 .ion-color-light-grey-100 {
+	color: var(--practera-light-grey-100);
 	--ion-color-base: var(--practera-light-grey-100);
 	--ion-color-base-rgb: var(--practera-light-grey-100-rgb);
 	--ion-color-contrast: var(--practera-light-grey-100-contrast);
@@ -168,6 +196,7 @@ $colors: (
 }
 
 .ion-color-light-grey-75 {
+	color: var(--practera-light-grey-75);
 	--ion-color-base: var(--practera-light-grey-75);
 	--ion-color-base-rgb: var(--practera-light-grey-75-rgb);
 	--ion-color-contrast: var(--practera-light-grey-75-contrast);
@@ -177,6 +206,7 @@ $colors: (
 }
 
 .ion-color-light-grey-50 {
+	color: var(--practera-light-grey-50);
 	--ion-color-base: var(--practera-light-grey-50);
 	--ion-color-base-rgb: var(--practera-light-grey-50-rgb);
 	--ion-color-contrast: var(--practera-light-grey-50-contrast);
@@ -186,6 +216,7 @@ $colors: (
 }
 
 .ion-color-light-grey-25 {
+	color: var(--practera-light-grey-25);
 	--ion-color-base: var(--practera-light-grey-25);
 	--ion-color-base-rgb: var(--practera-light-grey-25-rgb);
 	--ion-color-contrast: var(--practera-light-grey-25-contrast);
