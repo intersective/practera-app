@@ -1,0 +1,9 @@
+.tab-item {
+  --color-selected: var(--ion-color-secondary) !important;
+  --color: var(--ion-color-primary);
+  margin: 0 10px 0 10px;
+  &.selected {
+    border-bottom: 3px solid;
+    border-bottom-color: var(--ion-color-secondary);
+  }
+}
