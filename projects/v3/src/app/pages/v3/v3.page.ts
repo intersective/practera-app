@@ -44,7 +44,7 @@ export class V3Page implements OnInit, OnDestroy {
       {
         title: 'Events',
         url: '/v3/events',
-        icon: 'calendar'
+        icon: 'today'
       },
       {
         title: 'Reviews',
@@ -69,7 +69,7 @@ export class V3Page implements OnInit, OnDestroy {
       {
         title: 'Events',
         url: '/v3/events',
-        icon: 'calendar'
+        icon: 'today'
       },
       {
         title: 'Messages',
