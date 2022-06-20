@@ -47,7 +47,7 @@
       <ion-item lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
         [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
-        <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled"></ion-radio>
+        <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled" mode="md"></ion-radio>
         <ion-label class="white-space-normal body-2 black">
           {{ teamMember.userName }}
           <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
