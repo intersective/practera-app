@@ -18,7 +18,7 @@
       <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
     </div>
 
-    <div *ngIf="!isEventItem" [class]="'item-title body-2 ' + titleColor">{{ title }}</div>
+    <div *ngIf="!isEventItem" [class]="'body-2 ' + titleColor">{{ title }}</div>
 
     <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color">
       {{ subtitle1 }}
