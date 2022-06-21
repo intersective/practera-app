@@ -1,6 +1,11 @@
 <ion-header class="ion-no-border header-border">
   <ion-toolbar>
-    <ion-title>Home</ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-no-padding">Home</ion-title>
     <ion-buttons slot="end">
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
@@ -25,13 +30,13 @@
                 <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
               </ng-template>
             </ion-text>
-            <p *ngIf="!isMobile" class="body-2" [innerHTML]="experience.description"></p>
-            <app-description *ngIf="isMobile" [content]="experience.description"></app-description>
+            <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
+            <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
           </div>
         </ng-container>
       </ion-col>
 
-      <ion-col size="12" size-md="8" class="activity-col">
+      <ion-col size="12" size-md="8" class="activity-col" [ngClass]="{'mobile': isMobile}">
         <ion-segment (ionChange)="switchContent($event)" [value]="display">
           <ion-segment-button value="activities" mode="ios">
             <ion-label>Activities</ion-label>
@@ -51,7 +56,7 @@
               {{ milestone.name }}
               <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
             </ion-item>
-            <ion-item color="light" class="body-3" lines="none" *ngIf="milestone.description">
+            <ion-item color="light" class="body-3" lines="none" *ngIf="milestone?.description">
               <app-description [content]="milestone.description"></app-description>
             </ion-item>
             <app-list-item *ngFor="let activity of milestone.activities; let i = index"

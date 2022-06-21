@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { IonTabs, Platform } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ChatService } from '@v3/app/services/chat.service';
@@ -16,6 +16,10 @@ export class TabsPage implements OnInit, OnDestroy {
   reviews: Review[];
   subscriptions: Subscription[] = [];
   showMessages: boolean = false;
+
+  @ViewChild('tabs', { static: false }) tabs: IonTabs;
+  selectedTab: string = '';
+
   constructor(
     private platform: Platform,
     private reviewService: ReviewService,
@@ -66,4 +70,9 @@ export class TabsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => subs.unsubscribe());
   }
+
+  setCurrentTab() {
+    this.selectedTab = this.tabs.getSelected();
+  }
+
 }
