@@ -54,6 +54,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.subscriptions.forEach(subs => subs.unsubscribe());
   }
 
+  goBack() {
+    this.router.navigate(['experiences']);
+  }
+
   switchContent(event) {
     this.display = event.detail.value;
   }
