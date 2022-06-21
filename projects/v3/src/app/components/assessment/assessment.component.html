@@ -88,11 +88,12 @@
         <div [ngClass]="{'ion-padding': isMobile}">
           <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
           <ion-text color="dark" class="ion-text-left">
-            <app-description
-            *ngIf="group.description"
-            [name]="randomCode(group.name)"
-            class="g-description"
-            [content]="group.description"></app-description>
+            <div
+              *ngIf="group.description"
+              class="g-description"
+              [id]="randomCode(group.name)"
+              [innerHtml]="group.description">
+            </div>
           </ion-text>
         </div>
 
@@ -118,12 +119,12 @@
             </ion-list-header>
 
             <ion-item lines="none" *ngIf="question.description" class="explanation">
-              <app-description
-                [name]="randomCode('reviewer-' + question.name)"
-                class="q-description paragraph ion-text-left gray-2"
+              <div
                 *ngIf="question.description"
-                [content]="question.description"
-              ></app-description>
+                class="q-description paragraph ion-text-left gray-2"
+                [id]="randomCode('reviewer-' + question.name)"
+                [innerHtml]="question.description">
+              </div>
             </ion-item>
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
