@@ -25,16 +25,13 @@
   animation-duration: 0.5s;
 }
 
-.full-height-without-animated {
-  max-height: 100%;
-  overflow: visible;
-}
-
 .full-height {
   max-height: 100%;
   overflow: visible;
-  animation-name: expand;
-  animation-duration: 0.5s;
+  &-animated {
+    animation-name: expand;
+    animation-duration: 0.5s;
+  }
 }
 
 .full-height-popup {
