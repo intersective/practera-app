@@ -50,10 +50,10 @@
 <ng-container *ngIf="assessment">
   <div [ngClass]="{'ion-padding': !isMobile}">
     <div [ngClass]="{'ion-padding-horizontal': isMobile}">
-      <h1 class="headline-2"
+      <div class="headline-2"
         [attr.aria-describedby]="randomCode(assessment.name)"
         role="title"
-        tabindex="0">{{ assessment.name }}</h1>
+        tabindex="0">{{ assessment.name }}</div>
 
       <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label">
         <ion-label>{{ label }}</ion-label>
