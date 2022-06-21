@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -23,6 +23,7 @@ export class ActivityDesktopPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private activityService: ActivityService,
     private topicService: TopicService,
     private assessmentService: AssessmentService,
@@ -107,5 +108,9 @@ export class ActivityDesktopPage implements OnInit {
       });
       throw new Error(err);
     }
+  }
+
+  goBack() {
+    this.router.navigate(['v3', 'home']);
   }
 }

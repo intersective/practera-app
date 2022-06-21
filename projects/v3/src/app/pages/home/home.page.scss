@@ -20,6 +20,16 @@ ion-segment {
 .activity-col {
   border-left: 1px solid var(--practera-grey-25);
   padding: 0 18px;
+
+  ion-segment {
+    border-radius: 0;
+  }
+
+  &.mobile {
+    border-left: none;
+    padding: 0;
+  }
+
 }
 
 .exp-content {
