@@ -1,13 +1,19 @@
 <div class="container">
   <div class="text-content">
-    <div id="{{name}}" #description [innerHtml]="content"
+    <ng-container *ngIf="nonCollapsible; else animated">
+      <div id="{{name}}" #description [innerHtml]="content"
+      class="full-height"></div>
+    </ng-container>
+    <ng-template #animated>
+      <div id="{{name}}" #description [innerHtml]="content"
       [ngClass]="{
         'limit-height': isTruncating && !isInPopup,
         'limit-height-popup': isTruncating && isInPopup,
-        'full-height': !isTruncating && !isInPopup,
+        'full-height-animated': !isTruncating && !isInPopup,
         'full-height-popup': !isTruncating && isInPopup
       }">
     </div>
+  </ng-template>
   </div>
 
   <ng-container *ngIf="isTruncating && heightExceeded">
