@@ -1,0 +1,63 @@
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+  <ion-list class="no-bg ion-no-padding">
+    <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
+      <ion-item class="item-bottom-border" lines="none">
+        <ion-label>
+          {{ teamMember.userName }}
+          <ion-chip *ngIf="submission?.answer?.includes(teamMember.key)" class="label orange">Learner's answer</ion-chip>
+          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow">Expert's answer</ion-chip>
+        </ion-label>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+  <ng-container *ngIf="review?.comment">
+    <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="doAssessment">
+  <ion-list class="no-bg ion-no-padding">
+    <ion-item
+      lines="none"
+      *ngFor="let teamMember of question.teamMembers;let i = index"
+      [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
+      <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
+      <ion-checkbox
+        color="success"
+        [checked]="submission.answer ? submission.answer.includes(teamMember.key) : false"
+        [value]="teamMember.key"
+        slot="start"
+        (ionChange)="onChange(teamMember.key)"
+        [disabled]="control.disabled">
+      </ion-checkbox>
+    </ion-item>
+  </ion-list>
+</ng-container>
+
+<ng-container *ngIf="doReview">
+  <ion-list class="no-bg ion-no-padding"
+    *ngIf="question.canAnswer">
+    <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
+      <ion-label class="ion-text-wrap subtitle-2 black">Your Answer is</ion-label>
+    </ion-list-header>
+    <ion-item lines="none"
+      *ngFor="let teamMember of question.teamMembers;let i = index"
+      [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
+      <ion-label class="white-space-normal body-2 black">
+        {{ teamMember.userName }}
+        <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
+          <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
+        </p>
+      </ion-label>
+      <ion-checkbox color="success"
+        [checked]="review.answer ? review.answer.includes(teamMember.key) : false"
+        [value]="teamMember.key"
+        slot="start"
+        (ionChange)="onChange(teamMember.key, 'answer')"
+        [disabled]="control.disabled"></ion-checkbox>
+    </ion-item>
+  </ion-list>
+  <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
+    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
+    [disabled]="control.disabled"></ion-textarea>
+</ng-container>
