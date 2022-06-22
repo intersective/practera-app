@@ -32,6 +32,24 @@ ion-segment {
 
 }
 
+ion-content.scrollable-desktop {
+  >ion-grid,
+  ion-row,
+  ion-col {
+    overflow: hidden;
+    height: 100%;
+
+    ion-row {
+      height: 100%;
+
+      ion-col {
+        overflow-y: auto;
+        height: 100%;
+      }
+    }
+  }
+}
+
 .exp-content {
   padding: 0 18px;
 }
