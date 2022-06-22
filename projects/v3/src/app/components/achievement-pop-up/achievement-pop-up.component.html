@@ -39,7 +39,9 @@
 <ion-footer class="light" mode="ios">
   <div class="ion-text-center" style="padding: 0 1em;">
     <div class="div-after-img button-container">
-      <ion-button (click)="confirmed($event)" shape="round" color="primary" expand="full" tabindex="0" id="confirm"
+      <ion-button mode="ios" (click)="confirmed($event)"
+        shape="round" color="primary"
+        expand="full" tabindex="0" id="confirm"
         role="button" (keydown)=confirmed($event) aria-label="confirm" #dismissButton>OK</ion-button>
     </div>
   </div>
