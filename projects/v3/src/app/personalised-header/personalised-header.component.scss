@@ -1,6 +1,7 @@
 ion-avatar {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
+  margin: 0px;
   cursor: pointer;
 }
 
@@ -8,10 +9,23 @@ ion-avatar {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 11px;
   .avatar-btn {
     height: 100%;
     &.no-hover-effect {
       --background-hover: none;
     }
+  }
+  .notify-btn {
+    height: 32px;
+    width: 32px;
+    margin: 0px 12px 0px 0px;
+    --padding-top: 1px;
+    --padding-end: 1px;
+    --padding-bottom: 1px;
+    --padding-start: 1px;
+  }
+  ion-icon {
+    font-size: 32px;
   }
 }
