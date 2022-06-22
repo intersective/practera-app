@@ -30,8 +30,10 @@
                 <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
               </ng-template>
             </ion-text>
-            <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
-            <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
+            <ng-template #experienceDescription *ngIf="false">
+              <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
+              <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
+            </ng-template>
           </div>
         </ng-container>
       </ion-col>
