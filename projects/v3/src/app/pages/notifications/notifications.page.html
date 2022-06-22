@@ -2,15 +2,15 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="dismiss()" *ngIf="mode === 'modal'">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+        <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
       </ion-button>
 
       <ion-button (click)="goBack()" *ngIf="!mode">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+        <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
 
-    <ion-title>Notifications</ion-title>
+    <ion-title class="headline-4 grey-75">Notifications</ion-title>
   </ion-toolbar>
 </ion-header>
 
