@@ -1,6 +1,6 @@
 <ng-container [ngSwitch]="type">
   <ng-container *ngSwitchCase="'profileImage'">
-    <ion-button size="large" fill="outline" expand="block" (click)="uploadFile()">
+    <ion-button mode="ios" size="large" fill="outline" expand="block" (click)="uploadFile()">
       Upload Profile Image
     </ion-button>
   </ng-container>
@@ -9,7 +9,7 @@
     <ng-container *ngIf="utils.isMobile()">
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <ion-text>Upload file(s)</ion-text>
-        <ion-button size="small"
+        <ion-button mode="ios" size="small"
           class="upload-button"
           shape="round"
           fill="outline"
@@ -28,7 +28,7 @@
       >
         <p class="gray-2 subtitle-1">
           <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or
-          <ion-button size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
+          <ion-button mode="ios" size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
         </p>
       </div>
       <div *ngIf="isDroped" class="upload-progress">
@@ -54,7 +54,7 @@
                     <p class="black subtitle-1">{{ uploadingFile.fileName }}</p>
                   </ion-col>
                   <ion-col size="1" class="cancel-btn-container">
-                    <ion-button size="small" fill="clear" class="cancel-btn" (click)="cancelFileUpload()">
+                    <ion-button mode="ios" size="small" fill="clear" class="cancel-btn" (click)="cancelFileUpload()">
                       <ion-icon slot="icon-only" name="close-outline"></ion-icon>
                     </ion-button>
                   </ion-col>

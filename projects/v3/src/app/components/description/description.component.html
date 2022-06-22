@@ -17,14 +17,14 @@
   </div>
 
   <ng-container *ngIf="isTruncating && heightExceeded">
-    <ion-button color="primary" fill="clear" (click)="openShut()">
+    <ion-button mode="ios" color="primary" fill="clear" (click)="openShut()">
       MORE
       <ion-icon slot="end" name="arrow-forward"></ion-icon>
     </ion-button>
   </ng-container>
 
   <ng-container *ngIf="!isTruncating && heightExceeded">
-    <ion-button color="primary" fill="clear" (click)="openShut()">
+    <ion-button mode="ios" color="primary" fill="clear" (click)="openShut()">
       <ion-icon slot="start" name="arrow-back"></ion-icon>
       LESS
     </ion-button>

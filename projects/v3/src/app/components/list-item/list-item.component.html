@@ -53,7 +53,7 @@
   </div>
 
   <ng-container *ngFor="let actionBtnIcon of endingActionBtnIcons; let i = index">
-    <ion-button fill="clear" (click)="actionBtnClick.emit(i)">
+    <ion-button mode="ios" fill="clear" (click)="actionBtnClick.emit(i)">
       <ion-icon [name]="actionBtnIcon"></ion-icon>
     </ion-button>
   </ng-container>

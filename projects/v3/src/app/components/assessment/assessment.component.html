@@ -109,7 +109,7 @@
                 <span class="required-mark" *ngIf="question.isRequired">&nbsp;*</span>
               </ion-label>
 
-              <ion-button
+              <ion-button mode="ios"
                 *ngIf="question.info"
                 fill="clear"
                 (click)="showQuestionInfo(question.info)"
