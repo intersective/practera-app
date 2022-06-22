@@ -11,6 +11,7 @@ import { FloatDirective } from '../directives/float/float.directive';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
+import { MultiTeamMemberSelectorComponent } from './multi-team-member-selector/multi-team-member-selector.component';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activity-complete-pop-up.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
@@ -80,6 +81,7 @@ const largeCircleDefaultConfig = {
     ImgComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
+    MultiTeamMemberSelectorComponent,
     MultipleComponent,
     OneofComponent,
     PopUpComponent,
@@ -118,6 +120,7 @@ const largeCircleDefaultConfig = {
     IonicModule,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
+    MultiTeamMemberSelectorComponent,
     MultipleComponent,
     OneofComponent,
     PopUpComponent,

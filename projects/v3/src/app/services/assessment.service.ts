@@ -270,6 +270,7 @@ export class AssessmentService {
             break;
 
           case 'team member selector':
+          case 'multi team member selector':
             question.teamMembers = [];
             eachQuestion.teamMembers.forEach(eachTeamMember => {
               question.teamMembers.push({
@@ -425,6 +426,16 @@ export class AssessmentService {
           answer = answer.map(value => {
             return +value;
           });
+          break;
+
+        case 'multi team member selector':
+          if (this.utils.isEmpty(answer)) {
+            answer = [];
+          }
+          if (!Array.isArray(answer)) {
+            // re-format json string to array
+            answer = JSON.parse(answer);
+          }
           break;
       }
     }
