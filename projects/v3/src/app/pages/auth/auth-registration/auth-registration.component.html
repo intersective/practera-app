@@ -28,7 +28,7 @@
               placeholder="Set up Practera password*">
               <p id="setup-password" class="for-accessibility">setup practera password</p>
             </ion-input>
-            <ion-button (click)="showPassword = !showPassword" fill="clear">
+            <ion-button mode="ios" (click)="showPassword = !showPassword" fill="clear">
               <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
             </ion-button>
           </ion-item>
@@ -56,7 +56,7 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
+        <ion-button mode="ios" id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
       </form>
     </ng-container>
 
@@ -100,7 +100,7 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button class="continue-btn" id="btn-register" shape="round" expand="full" (click)="register()"
+        <ion-button mode="ios" class="continue-btn" id="btn-register" shape="round" expand="full" (click)="register()"
           [disabled]="!isAgreed" color="primary">CONTINUE
         </ion-button>
       </div>
