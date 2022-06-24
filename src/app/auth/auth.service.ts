@@ -89,7 +89,8 @@ export class AuthService {
       headers
     }).pipe(tap(res => {
       if (res?.data?.appv3 === true) {
-        this.utils.redirectToUrl(`${environment.appv3URL}?do=secure&apikey=${res.data.apikey}`);
+        const deeplink = this.storage.get('deeplink-origin');
+        this.utils.redirectToUrl(deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL));
         return;
       }
     }), map(res => this._handleLoginResponse(res)));
@@ -194,9 +195,14 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
+    const deeplinkOrigin = this.storage.get('deeplink-origin');
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
+    if (deeplinkOrigin) {
+      this.storage.set('deeplink-origin', deeplinkOrigin);
+    }
+
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
     }

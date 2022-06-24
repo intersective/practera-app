@@ -41,6 +41,7 @@ export const environment = {
   intercom: false,
   newrelic: false,
   goMobile: false,
+  appV3URL: 'https://appv3.p2-sandbox.practera.com',
 };
 
 /*
