@@ -90,7 +90,13 @@ export class AuthService {
     }).pipe(tap(res => {
       if (res?.data?.appv3 === true) {
         const deeplink = this.storage.get('deeplink-origin');
-        this.utils.redirectToUrl(deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL));
+        let finalURL = '';
+        if (deeplink) {
+          finalURL = deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
+        } else {
+          finalURL = `${environment.appv3URL}?apikey=${res.data.apikey}`;
+        }
+        this.utils.redirectToUrl(finalURL);
         return;
       }
     }),     map(res => this._handleLoginResponse(res)));
