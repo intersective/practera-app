@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { RequestService, QueryEncoder } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -86,7 +87,13 @@ export class AuthService {
     }
     return this.request.post(api.login, body.toString(), {
       headers
-    }).pipe(map(res => this._handleLoginResponse(res)));
+    }).pipe(tap(res => {
+      console.log('afterlogin::', res);
+      if (res?.data?.appv3 === true) {
+        this.utils.redirectToUrl(environment.appv3URL);
+        return;
+      }
+    }), map(res => this._handleLoginResponse(res)));
   }
 
   /**
