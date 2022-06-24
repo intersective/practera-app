@@ -197,7 +197,8 @@ jobs:
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: false
-
+          CUSTOM_APPV3_URL: https://appv3.${{ env.PUBLICZONENAME }}
+          CUSTOM_SWITCH_APP3: true
 
 
 # ################################################
@@ -218,23 +219,22 @@ jobs:
           npm run generate-version
 
 
-# ###############################################################
-# #  PERFORM UNIT TEST
-# ##############################################################
-      - name: Performing Unit test
-        run: |
-          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+# # ###############################################################
+# # #  PERFORM UNIT TEST
+# # ##############################################################
+#       - name: Performing Unit test
+#         run: |
+#           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
 
-# ###############################################################
-# #  SONARCLOUD SCANNER
-# ##############################################################
-      - name: Performing Sonarcloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+# # ###############################################################
+# # #  SONARCLOUD SCANNER
+# # ##############################################################
+#       - name: Performing Sonarcloud Scanner
+#         uses: SonarSource/sonarcloud-github-action@master
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
 ##########################################################
