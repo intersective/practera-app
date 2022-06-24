@@ -37,4 +37,5 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  appv3URL: '<CUSTOM_APPV3_URL>',
 };

@@ -41,6 +41,7 @@ export const environment = {
   intercom: false,
   newrelic: true,
   goMobile: false,
+  appV3URL: 'http://localhost:4200'
 };
 
 /*

@@ -112,6 +112,7 @@ export class AppComponent implements OnInit {
     }
 
     if (searchParams.has('do')) {
+      this.authService.deeplink = window.location.href;
       switch (searchParams.get('do')) {
         case 'secure':
           if (searchParams.has('auth_token')) {
