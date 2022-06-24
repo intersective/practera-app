@@ -85,10 +85,12 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async saveAssessment(event) {
-    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).subscribe();
+    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     if (!event.assessment.inProgress) {
-      // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activityId, true, this.task);
+      this.notificationsService.assessmentSubmittedToast();
+      // get the latest activity tasks and refresh the assessment submission data
+      this.activityService.getActivity(this.activityId);
+      return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
     }
   }
 

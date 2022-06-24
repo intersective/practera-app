@@ -67,10 +67,12 @@ export class ActivityDesktopPage implements OnInit {
     this.loading = true;
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     if (!event.assessment.inProgress) {
+      this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activity.id, true, task, () => {
+      this.activityService.getActivity(this.activity.id, false, task, () => {
         this.loading = false;
       });
+      return this.assessmentService.getAssessment(event.assessment.id, 'assessment', this.activity.id, event.assessment.contextId, event.assessment.submissionId);
     } else {
       this.loading = false;
     }

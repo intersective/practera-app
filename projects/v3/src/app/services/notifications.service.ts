@@ -162,13 +162,20 @@ export class NotificationsService {
   async presentToast(message: string, options?: any) {
     let toastOptions: ToastOptions = {
       message: message,
-      duration: 2000,
+      duration: 3000,
       position: 'top',
       color: 'danger'
     };
     toastOptions = Object.assign(toastOptions, options);
     const toast = await this.toastController.create(toastOptions);
     return toast.present();
+  }
+
+  assessmentSubmittedToast() {
+    return this.presentToast('Assessment Submitted', {
+      color: 'success',
+      icon: 'checkmark-circle'
+    });
   }
 
   /**
