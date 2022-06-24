@@ -64,6 +64,7 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
+  deeplink: string;
 
   constructor(
     private request: RequestService,
@@ -73,9 +74,6 @@ export class AuthService {
     private pusherService: PusherService
   ) {}
 
-  private _clearCache(): any {
-    // do clear user cache here
-  }
 
   private _login(body: HttpParams, serviceHeader?: string) {
     const headers = {
@@ -89,10 +87,9 @@ export class AuthService {
       headers
     }).pipe(tap(res => {
       if (res?.data?.appv3 === true) {
-        const deeplink = this.storage.get('deeplink-origin');
         let finalURL = '';
-        if (deeplink) {
-          finalURL = deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
+        if (this.deeplink) {
+          finalURL = this.deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
         } else {
           finalURL = `${environment.appv3URL}?apikey=${res.data.apikey}`;
         }
@@ -201,13 +198,9 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
-    const deeplinkOrigin = this.storage.get('deeplink-origin');
     this.storage.clear();
     // still store config info even logout
     this.storage.setConfig(config);
-    if (deeplinkOrigin) {
-      this.storage.set('deeplink-origin', deeplinkOrigin);
-    }
 
     if (redirect) {
       return this.router.navigate(['login'], navigationParams);
