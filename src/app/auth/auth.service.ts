@@ -90,7 +90,7 @@ export class AuthService {
     }).pipe(tap(res => {
       console.log('afterlogin::', res);
       if (res?.data?.appv3 === true) {
-        this.utils.redirectToUrl(environment.appv3URL);
+        this.utils.redirectToUrl(`${environment.appv3URL}?do=secure&apikey=${res.data.apikey}`);
         return;
       }
     }), map(res => this._handleLoginResponse(res)));
