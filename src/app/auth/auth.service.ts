@@ -88,7 +88,6 @@ export class AuthService {
     return this.request.post(api.login, body.toString(), {
       headers
     }).pipe(tap(res => {
-      console.log('afterlogin::', res);
       if (res?.data?.appv3 === true) {
         this.utils.redirectToUrl(`${environment.appv3URL}?do=secure&apikey=${res.data.apikey}`);
         return;
