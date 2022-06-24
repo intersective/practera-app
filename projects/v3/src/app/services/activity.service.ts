@@ -75,7 +75,12 @@ export class ActivityService {
   public getActivity(id: number, goToNextTask = false, afterTask?: Task, callback?: Function) {
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
-      return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe();
+      return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe(_res => {
+        if (callback instanceof Function) {
+          return callback(_res);
+        }
+        return;
+      });
     }
     return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
