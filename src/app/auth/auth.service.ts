@@ -93,7 +93,7 @@ export class AuthService {
         this.utils.redirectToUrl(deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL));
         return;
       }
-    }), map(res => this._handleLoginResponse(res)));
+    }),     map(res => this._handleLoginResponse(res)));
   }
 
   /**
