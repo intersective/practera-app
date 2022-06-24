@@ -113,32 +113,32 @@ jobs:
           npm run lint --if-present
 
           
-###############################################################
-#  BUILD WEB PACKAGES
-##############################################################
-      - name: Build Web Packages
-        run: |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
-          npm run generate-version
-
-
 # ###############################################################
-# #  PERFORM UNIT TEST
+# #  BUILD WEB PACKAGES
 # ##############################################################
-      - name: Performing Unit test
-        run: |
-          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+#       - name: Build Web Packages
+#         run: |
+#           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+#           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+#           npm run generate-version
 
 
-# ###############################################################
-# #  SONARCLOUD SCANNER
-# ##############################################################
-      - name: Performing Sonarcloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# # ###############################################################
+# # #  PERFORM UNIT TEST
+# # ##############################################################
+#       - name: Performing Unit test
+#         run: |
+#           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
+
+# # ###############################################################
+# # #  SONARCLOUD SCANNER
+# # ##############################################################
+#       - name: Performing Sonarcloud Scanner
+#         uses: SonarSource/sonarcloud-github-action@master
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
    
 # ##########################################################
