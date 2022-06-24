@@ -113,14 +113,14 @@ jobs:
           npm run lint --if-present
 
           
-###############################################################
-#  BUILD WEB PACKAGES
-##############################################################
-      - name: Build Web Packages
-        run: |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
-          npm run generate-version
+# ###############################################################
+# #  BUILD WEB PACKAGES
+# ##############################################################
+#       - name: Build Web Packages
+#         run: |
+#           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+#           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+#           npm run generate-version
 
 
 # # ###############################################################
