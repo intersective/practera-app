@@ -197,7 +197,8 @@ jobs:
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: false
-
+          CUSTOM_APPV3_URL: https://appv3.${{ env.PUBLICZONENAME }}
+          CUSTOM_SWITCH_APP3: true
 
 
 # ################################################
