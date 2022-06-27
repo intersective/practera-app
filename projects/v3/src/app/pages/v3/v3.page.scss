@@ -31,9 +31,9 @@ ion-item-divider {
   &.selected {
     --padding-start: 17px;
     border-left: 3px solid;
-    border-left-color: var(--ion-color-secondary);
+    border-left-color: var(--ion-color-primary);
     ion-icon {
-      color: var(--ion-color-secondary);
+      color: var(--ion-color-primary);
     }
   }
 }
