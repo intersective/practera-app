@@ -44,7 +44,7 @@
             <ion-label>Activities</ion-label>
           </ion-segment-button>
           <ion-segment-button value="badges" mode="ios">
-            <ion-label>Badges</ion-label>
+            <ion-label>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
           </ion-segment-button>
         </ion-segment>
 
@@ -79,9 +79,14 @@
             <p class="body-1">You have no badges yet!</p>
             <ion-text class="subtitle-2" color="grey-75">Experience badge will show up here.</ion-text>
           </div>
+          <ion-item *ngIf="getIsPointsConfigured" lines="full" class="total-points">
+            <ion-label class="headline-4">
+              Total Points Earned: {{getEarnedPoints}}
+            </ion-label>
+          </ion-item>
           <app-list-item *ngFor="let achievement of achievements"
             [title]="achievement.name"
-            [subtitle1]="achievement.points + ' Pts'"
+            [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''"
             subtitle1Color="medium"
             [leadImage]="achievement.image"
             lines="full"
