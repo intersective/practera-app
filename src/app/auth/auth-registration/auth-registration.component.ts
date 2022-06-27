@@ -7,7 +7,6 @@ import {
   Validators,
   FormControl,
   FormGroup,
-  FormBuilder
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 
@@ -180,8 +179,11 @@ export class AuthRegistrationComponent implements OnInit {
           response => {
             nrRegisterTracer();
             const nrAutoLoginTracer = this.newRelic.createTracer('auto login');
-            this.authService
-              .login({
+
+            // clear up "memory deepLink" to avoid re-do registration
+            this.authService.deeplink = null;
+
+            this.authService.login({
                 email: this.user.email,
                 password: this.confirmPassword
               })
