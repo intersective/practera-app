@@ -7,7 +7,6 @@ import {
   Validators,
   FormControl,
   FormGroup,
-  FormBuilder
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 
