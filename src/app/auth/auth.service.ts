@@ -64,6 +64,7 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
+  // added to cache deeplink for appv3 switching (purpose: global var reference)
   deeplink: string;
 
   constructor(
