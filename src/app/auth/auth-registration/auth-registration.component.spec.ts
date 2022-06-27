@@ -93,5 +93,5 @@ describe('AuthRegistrationComponent', () => {
     flushMicrotasks();
 
     expect(authServiceSpy.deeplink).toBeNull();
-  }))
+  }));
 });
