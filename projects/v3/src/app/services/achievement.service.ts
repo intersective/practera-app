@@ -39,6 +39,9 @@ export class AchievementService {
   private _achievements$ = new BehaviorSubject<Achievement[]>([]);
   achievements$ = this._achievements$.pipe(shareReplay(1));
 
+  earnedPoints = 0;
+  isPointsConfigured = false;
+
   constructor(
     private request: RequestService,
     private utils: UtilsService,
@@ -87,11 +90,25 @@ export class AchievementService {
             isEarned: achievement.isEarned,
             earnedDate: achievement.earnedDate,
           });
+          if (achievement.points) {
+            this.isPointsConfigured = true;
+            if (achievement.isEarned) {
+              this.earnedPoints += +achievement.points;
+            }
+          }
         });
         this._achievements$.next(achievements);
         return achievements;
       })
       ).subscribe();
+  }
+
+  getEarnedPoints() {
+    return this.earnedPoints;
+  }
+
+  getIsPointsConfigured() {
+    return this.isPointsConfigured;
   }
 
   markAchievementAsSeen(achievementId) {

@@ -113,4 +113,13 @@ export class HomePage implements OnInit, OnDestroy {
   achievePopup(achievement: Achievement) {
     this.notification.achievementPopUp('', achievement);
   }
+
+  get getIsPointsConfigured() {
+    return this.achievementService.getIsPointsConfigured();
+  }
+
+  get getEarnedPoints() {
+    return this.achievementService.getEarnedPoints();
+  }
+
 }
