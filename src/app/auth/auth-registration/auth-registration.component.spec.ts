@@ -1,9 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, TestBed, flushMicrotasks } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { BrowserStorageService } from '@app/services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
 import { NewRelicService } from '@app/shared/new-relic/new-relic.service';
 import { NotificationService } from '@app/shared/notification/notification.service';
+import { SharedModule } from '@app/shared/shared.module';
 import { SwitcherService } from '@app/switcher/switcher.service';
 import { ModalController } from '@ionic/angular';
 import { TestUtils } from '@testing/utils';
@@ -15,11 +18,13 @@ import { AuthRegistrationComponent } from './auth-registration.component';
 describe('AuthRegistrationComponent', () => {
   let component: AuthRegistrationComponent;
   let fixture: ComponentFixture<AuthRegistrationComponent>;
-
+  let authServiceSpy: jasmine.SpyObj<AuthService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [ SharedModule, ReactiveFormsModule ],
       declarations: [ AuthRegistrationComponent ],
+      schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
         {
           provide: ActivatedRoute,
@@ -36,10 +41,11 @@ describe('AuthRegistrationComponent', () => {
         {
           provide: AuthService,
           useValue: {
-            verifyRegistration: of(true),
-            checkDomain: of(true),
+            saveRegistration: () => of(true),
+            verifyRegistration: () => of(true),
+            checkDomain: () => of(true),
             deeplink: 'some value',
-            login: of(true),
+            login: () => of(true),
           }
         },
         {
@@ -48,9 +54,7 @@ describe('AuthRegistrationComponent', () => {
         },
         {
           provide: NotificationService,
-          useValue: {
-            alert: of(true)
-          }
+          useValue: jasmine.createSpyObj('NotificationService', ['popUp', 'alert']),
         },
         {
           provide: ModalController,
@@ -61,12 +65,13 @@ describe('AuthRegistrationComponent', () => {
         {
           provide: SwitcherService,
           useValue: {
-            switchProgramAndNavigate: Promise.resolve(true)
+            switchProgramAndNavigate: () => Promise.resolve(true)
           }
         },
       ]
     })
     .compileComponents();
+    authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
   }));
 
   beforeEach(() => {
@@ -78,4 +83,15 @@ describe('AuthRegistrationComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should register', fakeAsync(() => {
+    component.unRegisteredDirectLink = true;
+    component.isAgreed = true;
+    component.password = 'dummy_password';
+    component.register();
+
+    flushMicrotasks();
+
+    expect(authServiceSpy.deeplink).toBeNull();
+  }))
 });
