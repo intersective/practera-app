@@ -45,8 +45,8 @@
       [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
       <ion-label class="white-space-normal body-2 black">
         {{ teamMember.userName }}
-        <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-          <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer">Learner's answer</ion-chip>
+        <p *ngIf="submission.answer.includes(teamMember.key)">
+          <ion-chip class="label orange">Learner's answer</ion-chip>
         </p>
       </ion-label>
       <ion-checkbox color="success"
