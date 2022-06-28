@@ -13,7 +13,7 @@ export class ListItemComponent {
   @Input() leadingIconPulsing: boolean;
   @Input() leadImage: string;
   @Input() title: string;
-  @Input() titleColor: string;
+  @Input() titleColor?: string;
   @Input() subtitle1: string;
   @Input() subtitle1Color: string;
   @Input() subtitle2: string;
