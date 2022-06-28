@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
-import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-oneof',
@@ -42,7 +42,9 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
-  constructor(private utils: UtilsService) {}
+  constructor(
+    private notificationsService: NotificationsService,
+  ) {}
 
   ngOnInit() {
     this._showSavedAnswers();
@@ -139,4 +141,7 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
     }
   }
 
+  showExplanation(message: string) {
+    this.notificationsService.popUp('shortMessage', { message });
+  }
 }
