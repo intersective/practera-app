@@ -90,7 +90,7 @@
           <ion-text color="dark" class="ion-text-left">
             <div
               *ngIf="group.description"
-              class="g-description"
+              class="g-descriptiond body-2"
               [id]="randomCode(group.name)"
               [innerHtml]="group.description">
             </div>
@@ -121,7 +121,7 @@
             <ion-item lines="none" *ngIf="question.description" class="explanation">
               <div
                 *ngIf="question.description"
-                class="q-description paragraph ion-text-left gray-2"
+                class="q-description paragraph body-2 ion-text-left gray-2"
                 [id]="randomCode('reviewer-' + question.name)"
                 [innerHtml]="question.description">
               </div>
