@@ -72,10 +72,6 @@ export class AuthService {
     private pusherService: PusherService
   ) {}
 
-  private _clearCache(): any {
-    // do clear user cache here
-  }
-
   private _login(body: HttpParams, serviceHeader?: string) {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
