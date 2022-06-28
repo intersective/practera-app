@@ -42,6 +42,7 @@ ion-item {
 
   ion-textarea {
     background: white;
+    font-size: 14px !important;
     &.textarea {
       border: 1px solid var(--practera-review-border-color);
       border-radius: 8px;
