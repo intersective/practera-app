@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
@@ -43,7 +44,8 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   errors: Array<any> = [];
 
   constructor(
-    private utils: UtilsService
+    private utils: UtilsService,
+    private notificationsService: NotificationsService,
   ) {}
 
   ngOnInit() {
@@ -151,4 +153,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
     }
   }
 
+  showExplanation(message: string) {
+    this.notificationsService.popUp('shortMessage', { message });
+  }
 }
