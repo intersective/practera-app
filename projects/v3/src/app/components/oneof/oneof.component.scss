@@ -31,7 +31,18 @@ ion-textarea {
     border-bottom: 1px solid var(--practera-15-percent-gray);
   }
 
-  .title {
-    color: var(--ion-color-primary);
+  &-label {
+    --min-height: 30px;
+
+    ion-icon {
+      margin: 0 5px 0 1em;
+      font-size: large;
+    }
+
+    ion-note {
+      font-size: 14px;
+      height: fit-content;
+      align-self: center;
+    }
   }
 }

@@ -12,10 +12,11 @@
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
-          <div class="item-bottom-border explanation ion-padding-horizontal">
-            <p class="subtitle-2 title">Explanation</p>
-            <p class="body-2 gray-3" [innerHtml]="choice.explanation"></p>
-          </div>
+          <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin"
+            (click)="showExplanation(choice.explanation)">
+            <ion-icon slot="start" name="information-circle"></ion-icon>
+            <ion-note size="small">Explanation</ion-note>
+          </ion-item>
         </ng-container>
       </ng-container>
     </ion-radio-group>
@@ -42,10 +43,11 @@
           </ion-item>
           <ng-container
           *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
-            <div class="item-bottom-border explanation ion-padding-horizontal" [ngClass]="{ 'explanation-container': i !== question.choices.length - 1}">
-              <p class="subtitle-2 title">Explanation</p>
-              <p class="body-2 gray-3" [innerHtml]="choice.explanation"></p>
-            </div>
+            <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin"
+              (click)="showExplanation(choice.explanation)">
+              <ion-icon slot="start" name="information-circle"></ion-icon>
+              <ion-note size="small">Explanation</ion-note>
+            </ion-item>
           </ng-container>
         </ng-container>
       </ion-radio-group>
