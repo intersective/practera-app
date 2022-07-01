@@ -29,10 +29,13 @@
             <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
         </ng-container>
         <ng-template #onlyfilename>
-          <a [href]="file.url" target="_blank" class="subtitle-1">
-            <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
-          </a>
-          <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" class="ion-padding-left ion-float-right"></ion-icon>
+          <app-list-item
+            [title]="file.filename"
+            leadingIcon="document"
+            lines="full"
+            [endingActionBtnIcons]="['download', 'search']"
+            (actionBtnClick)="actionBtnClick(file, $event)"
+          ></app-list-item>
         </ng-template>
       </div>
       <ng-template #virusDetected>
@@ -49,29 +52,11 @@
 </ng-container>
 
 <ng-template #fileDetails>
-  <ion-item class="ion-no-padding ion-no-margin">
-    <ion-grid class="ion-padding">
-      <ion-row class="ion-justify-content-between ion-align-items-center ion-nowrap">
-        <ion-col class="ion-text-center radius-backdrop">
-          <ion-icon name="download-outline" size="large"></ion-icon>
-        </ion-col>
-        <ion-col size="7" class="file-name-container">
-          <ng-container *ngIf="fileType === 'any'; else otherTypes">
-            <a [href]="file.url" target="_blank" class="subtitle-1">
-              {{ file.filename }}
-            </a>
-          </ng-container>
-          <ng-template #otherTypes>
-            <p class="black subtitle-1"> {{ file.filename }} </p>
-          </ng-template>
-        </ion-col>
-        <ion-col size="3" class="ion-text-end">
-          <ng-container *ngIf="fileType === 'any'">
-            <ion-icon name="search-outline" color="primary" (click)="previewFile(file)"></ion-icon>
-          </ng-container>
-          <ion-icon *ngIf="removeFile.observers.length > 0 && !disabled" name="trash-outline" color="primary" (click)="removeUploadedFile()"></ion-icon>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </ion-item>
+  <app-list-item
+    [title]="file.filename"
+    leadingIcon="document"
+    lines="full"
+    [endingActionBtnIcons]="endingActionBtnIcons"
+    (actionBtnClick)="actionBtnClick(file, $event)"
+  ></app-list-item>
 </ng-template>

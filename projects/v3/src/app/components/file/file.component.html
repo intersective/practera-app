@@ -1,4 +1,4 @@
-<div *ngIf="!doAssessment && !doReview && submissionStatus !== 'in progress' && reviewStatus !== 'in progress'">
+<div *ngIf="!doAssessment && submissionStatus !== 'in progress'">
   <ng-container *ngIf="submission?.answer">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
