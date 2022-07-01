@@ -70,6 +70,8 @@ export class AchievementService {
           this._achievements$.next([]);
           return [];
         }
+        this.earnedPoints = 0;
+        this.isPointsConfigured = false;
         const achievements: Array<Achievement> = [];
         data.forEach(achievement => {
           if (!this.utils.has(achievement, 'id') ||
