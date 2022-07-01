@@ -30,7 +30,7 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item lines="none"
             [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
-            <ion-label class="body-2 black">{{ choice.name }}</ion-label>
+            <ion-label class="ion-text-wrap body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
               [value]="choice.id"
               [disabled]="control.disabled"
@@ -61,7 +61,7 @@
         <ion-item *ngFor="let choice of question.choices; let i = index"
           lines="none"
           [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}">
-          <ion-label class="body-2 black">
+          <ion-label class="ion-text-wrap body-2 black">
             {{ choice.name }}
             <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
               <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
