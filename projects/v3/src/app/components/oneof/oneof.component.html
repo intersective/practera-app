@@ -2,14 +2,14 @@
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
       <ng-container *ngFor="let choice of question.choices; let i = index">
-        <ion-item [ngClass]="{'item-bottom-border': !choice?.explanation }" lines="none">
+        <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
             {{ choice.name }}<br/>
             <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
             <ion-chip class="label yellow" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
           </ion-label>
         </ion-item>
-        <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
+        <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
           <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
             <ion-icon slot="start" name="information-circle"></ion-icon>
             <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
@@ -30,7 +30,7 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item lines="none"
             [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
-            <ion-label class="body-2 black">{{ choice.name }}</ion-label>
+            <ion-label class="ion-text-wrap body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
               [value]="choice.id"
               [disabled]="control.disabled"
@@ -61,7 +61,7 @@
         <ion-item *ngFor="let choice of question.choices; let i = index"
           lines="none"
           [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}">
-          <ion-label class="body-2 black">
+          <ion-label class="ion-text-wrap body-2 black">
             {{ choice.name }}
             <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id">
               <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>

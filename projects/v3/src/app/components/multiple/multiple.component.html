@@ -2,7 +2,7 @@
   <ion-list class="ion-no-padding">
     <ng-container *ngFor="let choice of question.choices; let i = index">
       <ion-item lines="none"
-        [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}">
+        [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
           {{ choice.name }}<br/>
           <ion-chip
