@@ -16,7 +16,7 @@
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
-        <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin" (click)="showExplanation(choice.explanation)">
+        <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
           <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
         </ion-item>
