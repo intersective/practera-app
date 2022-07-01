@@ -4,20 +4,18 @@
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity)}">
         <ion-label class="ion-text-wrap body-2 gray-3">
-          {{ choice.name }}
-          <p *ngIf="submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)">
-            <ion-chip
-              class="label orange"
-              *ngIf="submission?.answer?.includes(choice.id)"
-            >Learner's answer</ion-chip>
-            <ion-chip
-              class="label yellow"
-              *ngIf="review?.answer?.includes(choice.id)"
-            >Expert's answer</ion-chip>
-          </p>
+          {{ choice.name }}<br/>
+          <ion-chip
+            class="label orange"
+            *ngIf="submission?.answer?.includes(choice.id)"
+          >Learner's answer</ion-chip>
+          <ion-chip
+            class="label yellow"
+            *ngIf="review?.answer?.includes(choice.id)"
+          >Expert's answer</ion-chip>
         </ion-label>
       </ion-item>
-      <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
+      <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin" (click)="showExplanation(choice.explanation)">
           <ion-icon slot="start" name="information-circle"></ion-icon>
           <ion-note size="small">Explanation</ion-note>
