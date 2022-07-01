@@ -120,7 +120,7 @@ export class ActivityComponent {
     return 'grey-75';
   }
 
-  assessmentNotSubmitted(task) {
+  assessmentNotSubmitted(task: Task) {
     return task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress');
   }
 
