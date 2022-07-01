@@ -12,10 +12,9 @@
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity">
-          <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin"
-            (click)="showExplanation(choice.explanation)">
+          <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
             <ion-icon slot="start" name="information-circle"></ion-icon>
-            <ion-note size="small">Explanation</ion-note>
+            <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
           </ion-item>
         </ng-container>
       </ng-container>
@@ -43,10 +42,9 @@
           </ion-item>
           <ng-container
           *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
-            <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin"
-              (click)="showExplanation(choice.explanation)">
+            <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
               <ion-icon slot="start" name="information-circle"></ion-icon>
-              <ion-note size="small">Explanation</ion-note>
+              <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
             </ion-item>
           </ng-container>
         </ng-container>
