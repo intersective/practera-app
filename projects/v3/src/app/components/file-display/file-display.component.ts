@@ -75,6 +75,9 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   async previewFile(file) {
+    if (!file.url) {
+      return;
+    }
     try {
       return await this.filestackService.previewFile(file);
     } catch (err) {
@@ -82,8 +85,33 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     }
   }
 
+  actionBtnClick(file, index: number) {
+    switch (index) {
+      case 0:
+        this.utils.downloadFile(file.url);
+        break;
+      case 1:
+        this.previewFile(file);
+        break;
+      case 2:
+        this.removeUploadedFile();
+        break;
+    }
+  }
+
   removeUploadedFile() {
     this.removeFile.emit(true);
+  }
+
+  get endingActionBtnIcons() {
+    let icons = [];
+    if (this.fileType === 'any') {
+      icons = ['download', 'search']
+    };
+    if (this.removeFile.observers.length > 0 && !this.disabled) {
+      icons.push('trash');
+    }
+    return icons;
   }
 
 }
