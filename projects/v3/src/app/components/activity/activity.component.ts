@@ -57,7 +57,7 @@ export class ActivityComponent {
     if (task.isOverdue) {
       return '';
     }
-    return `Due Date: ${ this.utils.utcToLocal(task.dueDate) }`;
+    return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
   label(task: Task) {

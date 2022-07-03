@@ -20,9 +20,7 @@
 
     <div *ngIf="!isEventItem" [class]="'body-2 ' + titleColor">{{ title }}</div>
 
-    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color">
-      {{ subtitle1 }}
-    </div>
+    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color" [innerHTML]="subtitle1"></div>
 
     <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color">
       {{ subtitle2 }}
