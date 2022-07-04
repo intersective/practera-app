@@ -32,7 +32,7 @@
           <app-list-item
             [title]="file.filename"
             leadingIcon="document"
-            lines="full"
+            [lines]="lines"
             [endingActionBtnIcons]="['download', 'search']"
             (actionBtnClick)="actionBtnClick(file, $event)"
           ></app-list-item>
@@ -55,7 +55,7 @@
   <app-list-item
     [title]="file.filename"
     leadingIcon="document"
-    lines="full"
+    [lines]="lines"
     [endingActionBtnIcons]="endingActionBtnIcons"
     (actionBtnClick)="actionBtnClick(file, $event)"
   ></app-list-item>
