@@ -51,22 +51,6 @@
   }
 }
 
-// styles use for due dates and pulsing animation
-.due-date {
-  margin-bottom: 0;
-  color: var(--ion-color-primary);
-  // use in assessment page to show due dates
-  &.assessment {
-    ion-icon {
-      vertical-align: bottom;
-    }
-  }
-  // use to show overdue dates
-  &.over {
-    color: var(--practera-ovderdue-color) !important;
-  }
-}
-
 .pulsing {
   -webkit-animation: pulse 2s infinite;
   animation: pulse 2s infinite;

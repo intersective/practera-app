@@ -59,8 +59,8 @@
         <ion-label>{{ label }}</ion-label>
       </ion-chip>
 
-      <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
-        Due date: {{ assessment.dueDate | date : 'd MMMM y' }}
+      <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
+        <strong>Due Date</strong>: {{ assessment.dueDate | date : 'd MMMM y' }}
       </p>
 
       <ion-text class="ion-text-left">
