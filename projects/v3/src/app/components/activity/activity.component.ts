@@ -22,6 +22,13 @@ export class ActivityComponent {
     private notificationsService: NotificationsService,
   ) { }
 
+  /**
+   * Task icon type
+   *
+   * @param   {Task}  task  task's type is the only required value
+   *
+   * @return  {string}      ionicon's name
+   */
   leadIcon(task: Task) {
     switch (task.type) {
       case 'Locked':
@@ -33,6 +40,7 @@ export class ActivityComponent {
     }
   }
 
+  // generate task state-based subtitle for activity list
   subtitle(task: Task) {
     if (this._noSubtitleLabel(task) || !this.assessmentNotSubmitted(task)) {
       return '';
@@ -49,7 +57,7 @@ export class ActivityComponent {
     if (task.isOverdue) {
       return '';
     }
-    return `Due Data: ${ this.utils.utcToLocal(task.dueDate) }`;
+    return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
   label(task: Task) {
@@ -112,7 +120,7 @@ export class ActivityComponent {
     return 'grey-75';
   }
 
-  assessmentNotSubmitted(task) {
+  assessmentNotSubmitted(task: Task) {
     return task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress');
   }
 

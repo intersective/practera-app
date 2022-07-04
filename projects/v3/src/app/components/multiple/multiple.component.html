@@ -4,7 +4,7 @@
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
-          {{ choice.name }}<br/>
+          <div class="answer-text" [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}">{{ choice.name }}</div>
           <ion-chip
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
