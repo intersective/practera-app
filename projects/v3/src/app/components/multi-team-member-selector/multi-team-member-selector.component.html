@@ -5,7 +5,7 @@
         <ion-label>
           {{ teamMember.userName }}
           <ion-chip *ngIf="submission?.answer?.includes(teamMember.key)" class="label orange">Learner's answer</ion-chip>
-          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow">Expert's answer</ion-chip>
+          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow black">Expert's answer</ion-chip>
         </ion-label>
       </ion-item>
     </ng-container>
