@@ -26,6 +26,9 @@ ion-textarea {
   font-size: 14px !important;
 }
 
+.answer-text {
+  margin-bottom: 10px;
+}
 .explanation {
   &.explanation-container {
     padding-bottom: 8px;
@@ -33,6 +36,7 @@ ion-textarea {
   }
 
   &-label {
+    --padding-bottom: 10px;
     --min-height: 30px;
 
     ion-icon {
