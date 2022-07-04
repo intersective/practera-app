@@ -6,7 +6,7 @@
           <ion-label class="ion-text-wrap body-2 gray-3">
             <div class="answer-text" [ngClass]="{'exdivlanation': submission?.answer === choice.id || review?.answer === choice.id}">{{ choice.name }}</div>
             <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
-            <ion-chip class="label yellow" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
+            <ion-chip class="label yellow black" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
