@@ -137,6 +137,8 @@ ion-chip.label {
   height: 22px;
   text-transform: capitalize;
   --color: white;
+  font-size: 12px;
+  font-weight: 700;
   &.danger {
     --background: var(--ion-color-danger) !important;
   }
