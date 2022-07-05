@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { DOCUMENT, ViewportScroller } from '@angular/common';
 
-const SAVE_PROGRESS_TIMEOUT = 5000;
+const SAVE_PROGRESS_TIMEOUT = 3000;
 
 @Component({
   selector: 'app-assessment',
@@ -127,6 +127,7 @@ export class AssessmentComponent implements OnChanges {
     if (this.submission && this.submission.isLocked) {
       this.doAssessment = false;
       this.submission.status = 'done';
+      this.btnDisabled = true;
       return;
     }
 
@@ -137,6 +138,7 @@ export class AssessmentComponent implements OnChanges {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+        this.btnDisabled = false;
       }
       return;
     }
@@ -171,6 +173,7 @@ export class AssessmentComponent implements OnChanges {
     }
     if (this.isPendingReview && this.review.status === 'in progress') {
       this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
+      this.btnDisabled = false;
     }
   }
 
@@ -267,6 +270,7 @@ export class AssessmentComponent implements OnChanges {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
+      this.btnDisabled = true;
     }
 
     const answers = [];
