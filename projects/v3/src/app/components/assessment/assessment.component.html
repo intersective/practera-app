@@ -98,7 +98,7 @@
         </div>
 
         <ng-container *ngFor="let question of group.questions">
-          <ion-list class="ion-no-padding">
+          <ion-list *ngIf="questionVisible(question)" class="ion-no-padding">
 
             <ion-list-header
               class="question-title headline-4"
