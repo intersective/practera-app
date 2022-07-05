@@ -270,8 +270,8 @@ export class AssessmentComponent implements OnChanges {
 
     if (saveInProgress) {
       this.savingMessage = 'Saving...';
-      this.btnDisabled = true;
     }
+    this.btnDisabled = true;
 
     const answers = [];
     let questionId = 0;
