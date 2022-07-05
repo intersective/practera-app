@@ -242,13 +242,6 @@ export class AssessmentComponent implements OnChanges {
     return this._submit(true, true);
   }
 
-  questionVisible(question) {
-    if (this.action === 'assessment' && question.reviewerOnly) {
-      return false;
-    }
-    return true;
-  }
-
   /**
    * handle submission and autosave
    * @param saveInProgress whether it is for save in progress or submit
