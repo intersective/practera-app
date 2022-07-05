@@ -1,16 +1,16 @@
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
   <div class="ion-padding" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
-    <p class="body-2 gray-3">{{ submission?.answer }}</p>
+    <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
   <div class="ion-padding" *ngIf="(review?.answer || review?.comment)">
     <ion-chip class="label yellow black">Expert's answer</ion-chip>
     <ng-container *ngIf="review?.answer">
-      <p class="body-2 gray-3">{{ review.answer }}</p>
+      <p class="body-2 gray-3 white-space-pre">{{ review.answer }}</p>
     </ng-container>
     <ng-container *ngIf="review?.comment">
-      <p class="body-2 gray-3">{{ review.comment }}</p>
+      <p class="body-2 gray-3 white-space-pre">{{ review.comment }}</p>
     </ng-container>
   </div>
 </ng-container>
@@ -41,7 +41,7 @@
 
   <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
-    <p class="body-2 gray-3">{{ submission?.answer }}</p>
+    <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
   <div class="ion-padding">
