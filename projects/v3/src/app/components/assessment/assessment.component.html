@@ -59,13 +59,13 @@
         <ion-label>{{ label }}</ion-label>
       </ion-chip>
 
-      <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
-        Due date: {{ assessment.dueDate | date : 'd MMMM y' }}
+      <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
+        <strong>Due Date</strong>: {{ assessment.dueDate | date : 'd MMMM y' }}
       </p>
 
       <ion-text class="ion-text-left">
         <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description"
-          [content]="assessment.description" id="asmt-des" class="body-1 black"></app-description>
+          [content]="assessment.description" id="asmt-des" class="body-2 black"></app-description>
       </ion-text>
 
       <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">

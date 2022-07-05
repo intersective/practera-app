@@ -17,6 +17,10 @@
   margin-right: 0 !important;
 }
 
+.white-space-pre {
+  white-space: pre !important;
+}
+
 /*******************
   Practera popup styles
 *******************/
@@ -48,22 +52,6 @@
 
   &.lock-assessment-popup{
     --height: 280px;
-  }
-}
-
-// styles use for due dates and pulsing animation
-.due-date {
-  margin-bottom: 0;
-  color: var(--ion-color-primary);
-  // use in assessment page to show due dates
-  &.assessment {
-    ion-icon {
-      vertical-align: bottom;
-    }
-  }
-  // use to show overdue dates
-  &.over {
-    color: var(--practera-ovderdue-color) !important;
   }
 }
 
@@ -133,10 +121,12 @@ ion-button {
 ion-chip.label {
   border-radius: 8px;
   padding: 2px 10px;
-  margin-left: 0;
+  margin: 4px 0 10px 0;
   height: 22px;
   text-transform: capitalize;
   --color: white;
+  font-size: 12px;
+  font-weight: 700;
   &.danger {
     --background: var(--ion-color-danger) !important;
   }

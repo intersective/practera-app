@@ -5,13 +5,13 @@
         <ion-label>
           {{ teamMember.userName }}
           <ion-chip *ngIf="submission?.answer?.includes(teamMember.key)" class="label orange">Learner's answer</ion-chip>
-          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow">Expert's answer</ion-chip>
+          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow black">Expert's answer</ion-chip>
         </ion-label>
       </ion-item>
     </ng-container>
   </ion-list>
   <ng-container *ngIf="review?.comment">
-    <p class="paragraph body-2 gray-3">{{ review.comment }}</p>
+    <p class="paragraph body-2 gray-3 white-space-pre">{{ review.comment }}</p>
   </ng-container>
 </ng-container>
 
