@@ -56,11 +56,8 @@ export class TabsPage implements OnInit, OnDestroy {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
 
-    this.subscriptions.push(this.notificationsService.notification$.subscribe());
-    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
-
-    this.notificationsService.getTodoItems().subscribe();
-    this.notificationsService.getChatMessage().subscribe();
+    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
+    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
   }
 
   get isMobile() {

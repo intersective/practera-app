@@ -17,13 +17,24 @@ ion-avatar {
     }
   }
   .notify-btn {
-    height: 32px;
-    width: 32px;
+    height: 34px;
+    width: 34px;
     margin: 0px 12px 0px 0px;
     --padding-top: 1px;
     --padding-end: 1px;
     --padding-bottom: 1px;
     --padding-start: 1px;
+
+    .hint {
+      background-color: red;
+      position: absolute;
+      right: -1.5px;
+      border-radius: 100%;
+      /* overflow: visible; */
+      font-size: 0.7em;
+      display: flex;
+      align-items: center;
+    }
   }
   ion-icon {
     font-size: 32px;
