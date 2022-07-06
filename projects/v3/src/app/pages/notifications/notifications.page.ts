@@ -93,10 +93,10 @@ export class NotificationsPage implements OnInit, OnDestroy {
         { event },
         { cssClass: 'event-detail-popup' }
       );
-    } else {
-      // go to the events page with the event selected
-      this.router.navigate(['v3', 'events', { event_id: event.id }]);
     }
+
+    // go to the events page with the event selected
+    return this.router.navigate(['v3', 'events', { event_id: event.id }]);
   }
 
   timeFormatter(startTime) {
@@ -104,23 +104,28 @@ export class NotificationsPage implements OnInit, OnDestroy {
   }
 
   async clickTodoItem(eventOrTodoItem) {
-    this.dismiss(); // dismiss modal
     switch (eventOrTodoItem.type) {
       case 'feedback_available':
-        return await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        break;
 
       case 'review_submission':
-        return await this.goToReview(eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id, eventOrTodoItem.meta.assessment_submission_id);
+        await this.goToReview(eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id, eventOrTodoItem.meta.assessment_submission_id);
+        break;
 
       case 'chat':
-        return this.goToChat(eventOrTodoItem);
+        await this.goToChat(eventOrTodoItem);
+        break;
 
       case 'assessment_submission_reminder':
-        return this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        break;
 
       default: // event doesnt has type
-        return this.showEventDetail(eventOrTodoItem);
+        await this.showEventDetail(eventOrTodoItem);
+        break;
     }
+    this.dismiss(); // dismiss modal
   }
 
   async goToAssessment(activityId, contextId, assessmentId): Promise<void> {
