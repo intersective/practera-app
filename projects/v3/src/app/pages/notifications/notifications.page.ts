@@ -104,6 +104,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
   }
 
   async clickTodoItem(eventOrTodoItem) {
+    this.dismiss(); // dismiss modal
     switch (eventOrTodoItem.type) {
       case 'feedback_available':
         return await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
