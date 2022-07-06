@@ -63,7 +63,7 @@
         cursor: pointer;
 
         img {
-          height: 140px;
+          height: 0.5625%; // ratio 16:9
           width: -webkit-fill-available;
           object-fit: cover;
         }
