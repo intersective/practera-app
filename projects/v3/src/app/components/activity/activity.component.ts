@@ -87,7 +87,7 @@ export class ActivityComponent {
     }
     switch (task.status) {
       case 'pending review':
-        return 'warning';
+        return 'warning black';
       case 'feedback available':
         return 'success';
     }
