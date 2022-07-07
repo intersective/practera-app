@@ -3,6 +3,7 @@
   <ion-skeleton-text animated ></ion-skeleton-text>
   <ion-skeleton-text animated ></ion-skeleton-text>
 </div>
+
 <ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
   <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission.reviewerName">
     <ion-item-group>
@@ -48,7 +49,7 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div [ngClass]="{'ion-padding': !isMobile}">
+  <div [ngClass]="{'ion-padding': !isMobile}" style="min-height: 100%;">
     <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
@@ -59,8 +60,8 @@
         <ion-label>{{ label }}</ion-label>
       </ion-chip>
 
-      <p class="due-date assessment subtitle-1 gray-2" *ngIf="assessment.dueDate">
-        Due date: {{ assessment.dueDate | date : 'd MMMM y' }}
+      <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
+        <strong>Due Date</strong>: {{ assessment.dueDate | date : 'd MMMM y' }}
       </p>
 
       <ion-text class="ion-text-left">
@@ -242,4 +243,3 @@
       proceed with next steps.</p>
   </div>
 </ng-container>
-

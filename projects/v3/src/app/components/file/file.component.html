@@ -5,7 +5,9 @@
         <p><ion-chip class="label orange">Learner's answer</ion-chip></p>
       </ion-label>
     </ion-item>
-    <app-file-display [file]="submission.answer" [fileType]="question.fileType || 'any'" [isFileComponent]="true">
+    <app-file-display [file]="submission.answer"
+      [fileType]="question.fileType || 'any'" [isFileComponent]="true"
+      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
     </app-file-display>
   </ng-container>
 
@@ -22,12 +24,12 @@
     ></app-file-display>
   </ng-container>
 
-  <ng-container *ngIf="review.comment">
+  <ng-container *ngIf="review?.comment">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label>Feedback</ion-label>
     </ion-item>
-    <ion-textarea class="ion-no-margin textarea" [value]="review.comment" [disabled]="true"></ion-textarea>
+    <ion-textarea class="ion-no-margin textarea white-space-pre" [value]="review.comment" [disabled]="true"></ion-textarea>
   </ng-container>
 </div>
 
@@ -56,13 +58,13 @@
 </ng-container>
 
 <ng-container *ngIf="doReview && question.canAnswer">
-  <ng-container *ngIf="false && question.canAnswer">
-    <!-- <app-file-stack *ngIf="!uploadedFile && !review.answer"
+  <ng-container *ngIf="question.canAnswer">
+    <app-file-stack *ngIf="!uploadedFile && !review.answer"
       [accept]="fileTypes"
       [fileType]="question.fileType || 'any'"
       (complete)="onFileUploadCompleted($event, 'answer')"
       [disabled]="control.disabled"
-    ></app-file-stack> -->
+    ></app-file-stack>
     <!-- <app-file-display
       [file]="uploadedFile ? uploadedFile : review.answer"
       [fileType]="question.fileType || 'any'"

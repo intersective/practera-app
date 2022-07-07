@@ -1,4 +1,4 @@
-<div *ngIf="topic" class="ion-padding">
+<div *ngIf="topic" class="ion-padding" style="min-height: 100%;">
   <div class="headline-2 topic-title">{{topic.title}}</div>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
     <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
@@ -32,13 +32,14 @@
     ></app-list-item>
 
   </ion-list>
-
-  <app-bottom-action-bar
-    text="Mark as complete and continue"
-    [disabled]="continuing"
-    (onClick)="continuing = true;continue.emit(topic)"
-  ></app-bottom-action-bar>
 </div>
+
+<app-bottom-action-bar
+  *ngIf="topic"
+  text="Mark as complete and continue"
+  [disabled]="continuing"
+  (onClick)="continuing = true;continue.emit(topic)"
+></app-bottom-action-bar>
 
 <div *ngIf="!topic" class="ion-padding">
   <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
