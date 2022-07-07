@@ -31,3 +31,9 @@ ion-textarea {
   padding-right: 5px;
   font-size: 14px !important;
 }
+
+ion-item {
+  &.item-checkbox-checked::part(native) {
+    --background: var(--practera-light-grey-50);
+  }
+}
