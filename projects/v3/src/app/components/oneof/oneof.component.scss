@@ -51,3 +51,9 @@ ion-textarea {
     }
   }
 }
+
+ion-item {
+  &.item-radio-checked::part(native) {
+    --background: var(--practera-light-grey-50);
+  }
+}
