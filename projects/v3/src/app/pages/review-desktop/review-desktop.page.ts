@@ -93,7 +93,6 @@ export class ReviewDesktopPage implements OnInit {
         () => this.reviewService.getReviews(),
         500
       );
-      return;
     }
 
     this.loading = false;
