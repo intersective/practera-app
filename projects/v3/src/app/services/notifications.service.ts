@@ -103,6 +103,10 @@ export class NotificationsService {
     return this.modalController.dismiss();
   }
 
+  get notificationsCount(): number {
+    return this.notifications?.length || 0;
+  }
+
   addNewNotification(newNotification): void {
     this.notifications = this.notifications.concat(newNotification);
     this._notification$.next(this.notifications);

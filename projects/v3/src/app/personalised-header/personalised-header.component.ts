@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
 import { Subscription } from 'rxjs';
 import { NotificationsPage } from '../pages/notifications/notifications.page';
+import { NotificationsService } from '../services/notifications.service';
 import { BrowserStorageService, User } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
 
@@ -22,7 +23,14 @@ export class PersonalisedHeaderComponent {
     private readonly storageService: BrowserStorageService,
     private readonly utilService: UtilsService,
     private router: Router,
+    private notificationsService: NotificationsService,
   ) {
+  }
+
+  // amount of unread notifications
+  get notiCount(): number {
+    const count = this.notificationsService.notificationsCount;
+    return count < 100 ? count : 99; // max show 99 only
   }
 
   get isMobile(): boolean {

@@ -20,6 +20,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   @ViewChild('videoEle') videoEle: ElementRef;
   @Output() removeFile?: EventEmitter<any> = new EventEmitter();
   @Input() disabled?: boolean;
+  @Input() lines?: string = 'full';
 
   constructor(
     private filestackService: FilestackService,

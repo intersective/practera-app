@@ -7,7 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ListItemComponent {
   @Input() loading: boolean;
-  @Input() lines = '';
+  @Input() lines? = '';
   @Input() leadingIcon: string;
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
