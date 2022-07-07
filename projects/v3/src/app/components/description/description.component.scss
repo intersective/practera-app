@@ -155,3 +155,24 @@ code, kbd, pre, samp {
 img {
   max-width: 100%;
 }
+
+.text-content {
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    display: block;
+    overflow-x: auto;
+  }
+
+  table td {
+    padding: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    vertical-align: top;
+  }
+
+  table td ul {
+    padding: 0 0 0 20px;
+  }
+}
