@@ -505,7 +505,7 @@ export class AssessmentComponent implements OnChanges {
     }
     switch (this.submission?.status) {
       case 'pending review':
-        return 'warning';
+        return 'warning black';
       case 'feedback available':
         return 'success';
     }

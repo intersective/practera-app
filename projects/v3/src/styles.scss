@@ -126,7 +126,7 @@ ion-chip.label {
   text-transform: capitalize;
   --color: white;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 700 !important;
   &.danger {
     --background: var(--ion-color-danger) !important;
   }
@@ -141,9 +141,14 @@ ion-chip.label {
   }
   &.yellow {
     --background: var(--practera-yellow-100) !important;
+    --color: black !important;
   }
   &.orange {
     --background: var(--practera-orange-100) !important;
+  }
+  ion-label {
+    font-size: 12px;
+    font-weight: 700 !important;
   }
 }
 
