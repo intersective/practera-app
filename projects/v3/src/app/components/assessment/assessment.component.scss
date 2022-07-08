@@ -155,3 +155,18 @@ ion-footer {
   }
 }
 
+.save-info {
+  padding: 14px 20px;
+  border-bottom: 1px solid;
+  border-bottom-color: var(--practera-grey-25);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  flex-direction: row;
+  p, ion-button {
+    margin: 0;
+  }
+
+}
