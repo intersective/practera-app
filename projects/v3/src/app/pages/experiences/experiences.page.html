@@ -1,49 +1,62 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(programs$ | async ) as programs">
 
-    <ion-grid class="ion-no-padding ion-no-margin">
-      <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
-        <ion-col class="ion-no-padding ion-no-margin">
-          <div class="institute-logo-container ion-text-center">
-            <img [src]="instituteLogo || '/assets/logo.svg'" [attr.alt]="'branding logo'">
-          </div>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-    <ion-grid class="ion-no-padding ion-no-margin">
-      <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
-        <ion-col class="ion-no-padding ion-no-margin">
-          <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none">Experiences</ion-item>
-        </ion-col>
-      </ion-row>
-      <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
-        <ion-col class="ion-no-padding ion-no-margin exp-col">
-          <ion-card class="exp-card-container">
-            <ion-card-header class="title-container ion-hide-sm-down">
-              <h1 class="headline-1 m-0 black ion-hide-sm-down">Your experiences</h1>
-              <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down">Access and check the progress of your experiences below
-              </p>
-            </ion-card-header>
-            <ion-card-content class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
-              <ng-container *ngFor="let program of programs">
-                <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.experience.name"
-                  (click)="switchProgram(program)">
-                  <img
-                    [src]="program.experience.lead_image ? program.experience.lead_image : '../../../assets/default-experience-image.svg'"
-                    alt="{{ program.experience.name }}">
-                  <ion-card-content>
-                    <p class="m-0 headline-3 exp-title black">{{ program.experience.name }}</p>
-                    <div class="exp-info subtitle-3 grey-50">
-                      <p class="m-0 subtitle-3 grey-50">{{program.progress}}% Progress</p>
-                    </div>
-                  </ion-card-content>
-                </ion-card>
-              </ng-container>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+    <header>
+      <ion-grid class="ion-no-padding ion-no-margin">
+        <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
+          <ion-col class="ion-no-padding ion-no-margin">
+            <div class="institute-logo-container ion-text-center">
+              <img [src]="instituteLogo || '/assets/logo.svg'" [attr.alt]="'branding logo'">
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </header>
+    <main>
+      <ion-grid class="ion-no-padding ion-no-margin">
+        <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
+          <ion-col class="ion-no-padding ion-no-margin">
+            <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none">Experiences</ion-item>
+          </ion-col>
+        </ion-row>
+        <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
+          <ion-col class="ion-no-padding ion-no-margin exp-col">
+            <ion-card class="exp-card-container">
+              <ion-card-header class="title-container ion-hide-sm-down">
+                <h1 class="headline-1 m-0 black ion-hide-sm-down">Your experiences</h1>
+                <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down">Access and check the progress of your experiences below
+                </p>
+              </ion-card-header>
+              <ion-card-content class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
+                <ion-grid>
+                  <ion-row>
 
+                  <ng-container *ngFor="let program of programs">
+                    <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
+                      <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.experience.name"
+                        (click)="switchProgram(program)">
+                        <div class="exp-image-container">
+                          <img
+                          [src]="program.experience.lead_image ? program.experience.lead_image : '../../../assets/default-experience-image.svg'"
+                          alt="{{ program.experience.name }}">
+                        </div>
+                        <ion-card-content>
+                          <p class="m-0 headline-3 exp-title black">{{ program.experience.name }}</p>
+                          <div class="exp-info subtitle-3 grey-50">
+                            <p class="m-0 subtitle-3 grey-50">{{program.progress}}% Progress</p>
+                          </div>
+                        </ion-card-content>
+                      </ion-card>
+                    </ion-col>
+                  </ng-container>
+
+                  </ion-row>
+                </ion-grid>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+  </main>
   </ng-container>
 </ion-content>
