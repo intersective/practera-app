@@ -147,6 +147,12 @@
 
 @media (min-width: 768px) {
   .exp-card-container {
+    width: 790px;
+  }
+}
+
+@media (min-width: 960px) {
+  .exp-card-container {
     width: 1016px;
   }
 }
