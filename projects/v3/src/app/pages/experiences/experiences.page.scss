@@ -23,7 +23,6 @@
     padding: 43px 18px;
     min-width: 576px;
     min-height: 675px;
-    max-width: 1016px;
     margin-bottom: 40px;
 
     .title-container {
@@ -52,7 +51,6 @@
       }
 
       .exp-card {
-        width: 300px;
         min-height: 240px;
         max-height: 0.5625%;
         border: 1px solid #e7e7ee;
@@ -62,10 +60,16 @@
         margin: 10px;
         cursor: pointer;
 
-        img {
-          height: 0.5625%; // ratio 16:9
-          width: -webkit-fill-available;
-          object-fit: cover;
+        .exp-image-container {
+          padding-bottom: 56.25%; // ratio 16:9
+          position: relative;
+
+          img {
+            position: absolute;
+            height: 100%;
+            width: -webkit-fill-available;
+            object-fit: cover;
+          }
         }
 
         ion-card-content {
@@ -127,7 +131,6 @@
         margin-top: 0;
 
         .exp-card {
-          width: -webkit-fill-available;
           margin: 0;
           margin-bottom: 20px;
         }
@@ -139,5 +142,11 @@
     --color: var(--ion-color-primary);
     --background: var(--ion-color-primary-tint);
     height: 40px;
+  }
+}
+
+@media (min-width: 768px) {
+  .exp-card-container {
+    max-width: 1016px;
   }
 }
