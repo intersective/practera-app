@@ -80,6 +80,7 @@ export class AssessmentComponent implements OnChanges {
       return;
     }
     this._initialise();
+    this._initSavingEvent();
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
@@ -93,6 +94,22 @@ export class AssessmentComponent implements OnChanges {
     this.savingMessage = '';
     this.isNotInATeam = false;
     this.isPendingReview = false;
+  }
+
+  /**
+   * this event will update saving message when saving in progress and done.
+   * this event is broadcasting from activity-desktop and assessment-mobile components.
+   */
+  private _initSavingEvent() {
+    this.utils.getEvent('assessmentSaving').subscribe(
+      (saving) => {
+        if (saving) {
+          this.savingMessage = 'Saving...';
+        } else {
+          this.savingMessage = 'Last saved ' + this._getCurrentTime();
+        }
+      }
+    );
   }
 
   // Populate the question form with FormControls.
@@ -268,9 +285,6 @@ export class AssessmentComponent implements OnChanges {
     // allow submitting/saving after a few seconds
     setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
 
-    if (saveInProgress) {
-      this.savingMessage = 'Saving...';
-    }
     this.btnDisabled = true;
 
     const answers = [];
@@ -365,8 +379,6 @@ export class AssessmentComponent implements OnChanges {
       answers,
       action: this.action
     });
-
-    this.savingMessage = 'Last saved ' + this._getCurrentTime();
   }
 
   // /**
