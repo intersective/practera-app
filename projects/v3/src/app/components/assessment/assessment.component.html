@@ -7,7 +7,7 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage }}</p>
-  <ion-button fill="clear" size="small" slot="end" [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
+  <ion-button fill="clear" slot="end" [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
     Save
   </ion-button>
 </div>
