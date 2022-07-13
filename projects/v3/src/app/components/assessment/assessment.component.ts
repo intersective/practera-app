@@ -33,6 +33,9 @@ export class AssessmentComponent implements OnChanges {
   @Input() review: AssessmentReview;
   @Input() isMobile?: boolean;
 
+  // the text of when the submission get saved last time
+  @Input() savingMessage: string;
+
   // save the assessment/review answers
   @Output() save = new EventEmitter();
   // mark the feedback as read
@@ -53,9 +56,6 @@ export class AssessmentComponent implements OnChanges {
 
   // whether the bottom button(and the save button) is disabled
   btnDisabled: boolean;
-
-  // the text of when the submission get saved last time
-  savingMessage: string;
 
   // virtual element id for accessibility "aria-describedby" purpose
   elIdentities = {};
@@ -80,7 +80,7 @@ export class AssessmentComponent implements OnChanges {
       return;
     }
     this._initialise();
-    this._initSavingEvent();
+    this._populateLastSaveText();
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
@@ -91,25 +91,29 @@ export class AssessmentComponent implements OnChanges {
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.btnDisabled = false;
-    this.savingMessage = '';
     this.isNotInATeam = false;
     this.isPendingReview = false;
   }
 
   /**
-   * this event will update saving message when saving in progress and done.
-   * this event is broadcasting from activity-desktop and assessment-mobile components.
+   * 'savingMessage' in passing from parent component.
+   * if it's empty
+   *  - that means we can set submit time or review time in this component.
+   * when progress save going parent component change last save to 'Saving...'.
+   * after save done parent component change last save to current time.
+   * @returns noting - retun use to stop method execute
    */
-  private _initSavingEvent() {
-    this.utils.getEvent('assessmentSaving').subscribe(
-      (saving) => {
-        if (saving) {
-          this.savingMessage = 'Saving...';
-        } else {
-          this.savingMessage = 'Last saved ' + this._getCurrentTime();
-        }
+  private _populateLastSaveText() {
+    if (!this.savingMessage || this.savingMessage === '') {
+      if (this.submission && this.submission.status === 'in progress') {
+        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+        return;
       }
-    );
+      if (this.isPendingReview && this.review.status === 'in progress') {
+        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
+        return;
+      }
+    }
   }
 
   // Populate the question form with FormControls.
@@ -154,7 +158,6 @@ export class AssessmentComponent implements OnChanges {
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       if (this.submission) {
-        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
         this.btnDisabled = false;
       }
       return;
@@ -189,7 +192,6 @@ export class AssessmentComponent implements OnChanges {
       });
     }
     if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
       this.btnDisabled = false;
     }
   }
@@ -379,6 +381,7 @@ export class AssessmentComponent implements OnChanges {
       answers,
       action: this.action
     });
+
   }
 
   // /**
@@ -431,14 +434,6 @@ export class AssessmentComponent implements OnChanges {
 
   showQuestionInfo(info) {
     this.notifications.popUp('shortMessage', { message: info });
-  }
-
-  private _getCurrentTime() {
-    return new Intl.DateTimeFormat('en-US', {
-      hour12: true,
-      hour: 'numeric',
-      minute: 'numeric'
-    }).format(new Date());
   }
 
   // the action that the button does
