@@ -101,17 +101,14 @@ export class AssessmentComponent implements OnChanges {
    *  - that means we can set submit time or review time in this component.
    * when progress save going parent component change last save to 'Saving...'.
    * after save done parent component change last save to current time.
-   * @returns noting - retun use to stop method execute
    */
   private _populateLastSaveText() {
     if (!this.savingMessage || this.savingMessage === '') {
       if (this.submission && this.submission.status === 'in progress') {
         this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-        return;
       }
       if (this.isPendingReview && this.review.status === 'in progress') {
         this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
-        return;
       }
     }
   }
