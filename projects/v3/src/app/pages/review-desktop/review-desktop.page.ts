@@ -15,6 +15,7 @@ export class ReviewDesktopPage implements OnInit {
   submission$ = this.assessmentService.submission$;
   assessment$ = this.assessmentService.assessment$;
   loading: boolean; // loading indicator (true = loading | false = done loaded)
+  savingText: string = '';
 
   reviews: Review[];
   assessment: Assessment;
@@ -82,6 +83,7 @@ export class ReviewDesktopPage implements OnInit {
 
   async saveAssessment(event) {
     this.loading = true;
+    this.savingText = 'Saving...';
     await this.assessmentService.saveAnswers(
       event.assessment,
       event.answers,
@@ -96,6 +98,7 @@ export class ReviewDesktopPage implements OnInit {
     }
 
     this.loading = false;
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
   }
 
 }

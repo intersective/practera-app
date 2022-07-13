@@ -22,6 +22,7 @@ export class AssessmentMobilePage implements OnInit {
   submissionId: number;
   action: string;
   fromPage: string;
+  savingText: string = '';
 
   currentTask: Task
 
@@ -87,16 +88,16 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async saveAssessment(event) {
-    this.utils.broadcastEvent('assessmentSaving', true);
+    this.savingText = 'Saving...';
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data
       this.activityService.getActivity(this.activityId);
-      this.utils.broadcastEvent('assessmentSaving', false);
+      this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
       return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
     } else {
-      this.utils.broadcastEvent('assessmentSaving', false);
+      this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     }
   }
 
