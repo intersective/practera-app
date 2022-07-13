@@ -104,13 +104,20 @@ export class NotificationsPage implements OnInit, OnDestroy {
   }
 
   async clickTodoItem(eventOrTodoItem) {
+    const {
+      activity_id,
+      context_id,
+      assessment_id,
+      assessment_submission_id,
+    } = eventOrTodoItem?.meta;
+
     switch (eventOrTodoItem.type) {
       case 'feedback_available':
-        await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        await this.goToAssessment(activity_id, context_id, assessment_id);
         break;
 
       case 'review_submission':
-        await this.goToReview(eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id, eventOrTodoItem.meta.assessment_submission_id);
+        await this.goToReview(context_id, assessment_id, assessment_submission_id);
         break;
 
       case 'chat':
@@ -118,7 +125,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
         break;
 
       case 'assessment_submission_reminder':
-        await this.goToAssessment(eventOrTodoItem.meta.activity_id, eventOrTodoItem.meta.context_id, eventOrTodoItem.meta.assessment_id);
+        await this.goToAssessment(activity_id, context_id, assessment_id);
         break;
 
       default: // event doesnt has type
@@ -141,17 +148,14 @@ export class NotificationsPage implements OnInit, OnDestroy {
       await this.router.navigate([
         'v3',
         'activity-desktop',
+        contextId,
         activityId,
-        {
-          task: 'assessment',
-          task_id: assessmentId,
-          context_id: contextId
-        }
+        assessmentId,
       ]);
     }
   }
 
-  async goToReview(contextId, assessmentId, submissionId): Promise<void> {
+  async goToReview(contextId, assessmentId, submissionId): Promise<any> {
     if (this.utils.isMobile()) {
       await this.router.navigate([
         'assessment-mobile',
@@ -168,7 +172,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
         submissionId
       ]);
     }
-    await this.dismiss();
+    return await this.dismiss();
   }
 
   goToChat(todoItem?: TodoItem) {

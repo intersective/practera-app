@@ -21,6 +21,12 @@ export class ActivityDesktopPage implements OnInit {
   topic: Topic;
   loading: boolean;
 
+  // grabs from URL parameter
+  urlParams = {
+    action: null,
+    contextId: null,
+  };
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -39,9 +45,32 @@ export class ActivityDesktopPage implements OnInit {
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.topicService.topic$.subscribe(res => this.topic = res);
-    this.route.params.subscribe(params => {
-      this.topicService.clearTopic();
-      this.activityService.getActivity(+params.id, true);
+
+    this.route.paramMap.subscribe(params => {
+      const contextId = +params.get('contextId');
+      const activityId = +params.get('id');
+      const assessmentId = +params.get('assessmentId');
+
+      const proceedToNextTask = assessmentId > 0 ? false : true;
+      this.urlParams = {
+        contextId: contextId,
+        action: this.route.snapshot.data.action,
+      };
+
+      this.activityService.getActivity(activityId, proceedToNextTask, undefined, () => {
+        // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
+        if (!proceedToNextTask && assessmentId > 0) {
+          const filtered: Task = this.utils.find(this.activity.tasks, {
+            id: assessmentId
+          });
+          this.goToTask({
+            id: assessmentId,
+            contextId: this.urlParams.contextId,
+            type: filtered.type,
+            name: filtered.name
+          });
+        }
+      });
     });
   }
 
