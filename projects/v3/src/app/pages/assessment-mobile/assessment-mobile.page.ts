@@ -90,13 +90,13 @@ export class AssessmentMobilePage implements OnInit {
   async saveAssessment(event) {
     this.savingText = 'Saving...';
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data
       this.activityService.getActivity(this.activityId);
       return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
     }
-    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
   }
 
   async readFeedback(event) {

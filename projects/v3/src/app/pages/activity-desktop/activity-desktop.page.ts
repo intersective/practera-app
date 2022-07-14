@@ -68,6 +68,7 @@ export class ActivityDesktopPage implements OnInit {
     this.loading = true;
     this.savingText = 'Saving...';
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and navigate to the next task
@@ -78,7 +79,6 @@ export class ActivityDesktopPage implements OnInit {
     } else {
       this.loading = false;
     }
-    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
   }
 
   async readFeedback(event, task: Task) {
