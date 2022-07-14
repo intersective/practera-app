@@ -94,11 +94,9 @@ export class AssessmentMobilePage implements OnInit {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data
       this.activityService.getActivity(this.activityId);
-      this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
       return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
-    } else {
-      this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     }
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
   }
 
   async readFeedback(event) {
