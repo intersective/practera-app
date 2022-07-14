@@ -4,6 +4,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
+import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
   selector: 'app-assessment-mobile',
@@ -21,6 +22,7 @@ export class AssessmentMobilePage implements OnInit {
   submissionId: number;
   action: string;
   fromPage: string;
+  savingText: string = '';
 
   currentTask: Task
 
@@ -33,6 +35,7 @@ export class AssessmentMobilePage implements OnInit {
     private activityService: ActivityService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
+    private utils: UtilsService,
   ) { }
 
   ngOnInit() {
@@ -85,7 +88,9 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async saveAssessment(event) {
+    this.savingText = 'Saving...';
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data

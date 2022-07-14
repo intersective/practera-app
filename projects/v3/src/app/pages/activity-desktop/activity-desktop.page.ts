@@ -20,6 +20,7 @@ export class ActivityDesktopPage implements OnInit {
   review: AssessmentReview;
   topic: Topic;
   loading: boolean;
+  savingText: string = '';
 
   // grabs from URL parameter
   urlParams = {
@@ -94,7 +95,9 @@ export class ActivityDesktopPage implements OnInit {
 
   async saveAssessment(event, task: Task) {
     this.loading = true;
+    this.savingText = 'Saving...';
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and navigate to the next task
