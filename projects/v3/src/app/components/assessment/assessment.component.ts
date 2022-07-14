@@ -103,13 +103,14 @@ export class AssessmentComponent implements OnChanges {
    * after save done parent component change last save to current time.
    */
   private _populateLastSaveText() {
-    if (!this.savingMessage || this.savingMessage === '') {
-      if (this.submission && this.submission.status === 'in progress') {
-        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-      }
-      if (this.isPendingReview && this.review.status === 'in progress') {
-        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
-      }
+    if (this.savingMessage) {
+      return;
+    }
+    if (this.submission && this.submission.status === 'in progress') {
+      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+    }
+    if (this.isPendingReview && this.review.status === 'in progress') {
+      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
     }
   }
 

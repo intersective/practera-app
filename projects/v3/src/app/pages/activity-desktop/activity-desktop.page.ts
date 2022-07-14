@@ -73,13 +73,12 @@ export class ActivityDesktopPage implements OnInit {
       // get the latest activity tasks and navigate to the next task
       this.activityService.getActivity(this.activity.id, false, task, () => {
         this.loading = false;
-        this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
       });
       return this.assessmentService.getAssessment(event.assessment.id, 'assessment', this.activity.id, event.assessment.contextId, event.assessment.submissionId);
     } else {
       this.loading = false;
-      this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
     }
+    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
   }
 
   async readFeedback(event, task: Task) {
