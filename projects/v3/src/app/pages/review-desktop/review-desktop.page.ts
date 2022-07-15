@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-review-desktop',
@@ -15,7 +16,7 @@ export class ReviewDesktopPage implements OnInit {
   submission$ = this.assessmentService.submission$;
   assessment$ = this.assessmentService.assessment$;
   loading: boolean; // loading indicator (true = loading | false = done loaded)
-  savingText: string = '';
+  savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   reviews: Review[];
   assessment: Assessment;
@@ -83,7 +84,7 @@ export class ReviewDesktopPage implements OnInit {
 
   async saveAssessment(event) {
     this.loading = true;
-    this.savingText = 'Saving...';
+    this.savingText$.next('Saving...');
     await this.assessmentService.saveAnswers(
       event.assessment,
       event.answers,
@@ -98,7 +99,7 @@ export class ReviewDesktopPage implements OnInit {
     }
 
     this.loading = false;
-    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
+    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
   }
 
 }

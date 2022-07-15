@@ -26,7 +26,7 @@
           [assessment]="assessment"
           [submission]="submission"
           [review]="review"
-          [savingMessage]="savingText"
+          [savingMessage$]="savingText$"
           action="review"
           (save)="saveAssessment($event)"
         ></app-assessment>

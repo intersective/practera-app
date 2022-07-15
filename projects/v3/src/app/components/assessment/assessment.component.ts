@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { DOCUMENT, ViewportScroller } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 3000;
 
@@ -34,7 +35,7 @@ export class AssessmentComponent implements OnChanges {
   @Input() isMobile?: boolean;
 
   // the text of when the submission get saved last time
-  @Input() savingMessage: string;
+  @Input() savingMessage$: BehaviorSubject<string>;
 
   // save the assessment/review answers
   @Output() save = new EventEmitter();
@@ -80,7 +81,6 @@ export class AssessmentComponent implements OnChanges {
       return;
     }
     this._initialise();
-    this._populateLastSaveText();
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
@@ -93,25 +93,6 @@ export class AssessmentComponent implements OnChanges {
     this.btnDisabled = false;
     this.isNotInATeam = false;
     this.isPendingReview = false;
-  }
-
-  /**
-   * 'savingMessage' in passing from parent component.
-   * if it's empty
-   *  - that means we can set submit time or review time in this component.
-   * when progress save going parent component change last save to 'Saving...'.
-   * after save done parent component change last save to current time.
-   */
-  private _populateLastSaveText() {
-    if (this.savingMessage) {
-      return;
-    }
-    if (this.submission && this.submission.status === 'in progress') {
-      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
-    }
-    if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
-    }
   }
 
   // Populate the question form with FormControls.
@@ -156,6 +137,7 @@ export class AssessmentComponent implements OnChanges {
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       if (this.submission) {
+        this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.submission.modified));
         this.btnDisabled = false;
       }
       return;
@@ -190,6 +172,7 @@ export class AssessmentComponent implements OnChanges {
       });
     }
     if (this.isPendingReview && this.review.status === 'in progress') {
+      this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
       this.btnDisabled = false;
     }
   }
