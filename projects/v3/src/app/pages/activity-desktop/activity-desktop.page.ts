@@ -6,6 +6,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-activity-desktop',
@@ -20,7 +21,7 @@ export class ActivityDesktopPage implements OnInit {
   review: AssessmentReview;
   topic: Topic;
   loading: boolean;
-  savingText: string = '';
+  savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   // grabs from URL parameter
   urlParams = {
@@ -95,9 +96,9 @@ export class ActivityDesktopPage implements OnInit {
 
   async saveAssessment(event, task: Task) {
     this.loading = true;
-    this.savingText = 'Saving...';
+    this.savingText$.next('Saving...');
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
-    this.savingText = 'Last saved ' + this.utils.getFormatedCurrentTime();
+    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and navigate to the next task
