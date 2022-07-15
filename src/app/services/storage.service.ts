@@ -69,15 +69,6 @@ export class BrowserStorageService {
     return null;
   }
 
-  /**
-   * @param   {string}  key
-   *          - appV3: indicates whether or not to redirect a
-   *                   user to AppV3 url (true to redirect)
-   *
-   * @param   {any}     value  [value description]
-   *
-   * @return  {[type]}         stored status
-   */
   set(key: string, value: any) {
     return this.storage.setItem(key, JSON.stringify(value));
   }
