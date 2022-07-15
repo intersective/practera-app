@@ -82,6 +82,14 @@ export class BrowserStorageService {
     return this.storage.setItem(key, JSON.stringify(value));
   }
 
+  setAppV3(value: boolean) {
+    this.set('appV3', value);
+  }
+
+  getAppV3() {
+    return this.get('appV3');
+  }
+
   append(key: string, value: any) {
     let actual = this.get(key);
     if (!actual) {
