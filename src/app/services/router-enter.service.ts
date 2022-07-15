@@ -1,6 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { BrowserStorageService } from './storage.service';
+import { UtilsService } from './utils.service';
+import { environment } from 'environments/environment';
 
 export class RouterEnter implements OnInit, OnDestroy {
   subscription: Subscription;
@@ -9,7 +12,9 @@ export class RouterEnter implements OnInit, OnDestroy {
   routeUrls: string[];
 
   constructor (
-    public router: Router
+    public router: Router,
+    private storage: BrowserStorageService,
+    private utils: UtilsService,
   ) {}
 
   /**
@@ -42,9 +47,13 @@ export class RouterEnter implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.subscription = this.router.events.subscribe(event => {
+      const appV3Activated = this.storage.get('appV3');
+      if (appV3Activated === true) {
+        return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.get('apikey')}`);
+      }
       // invoke the onEnter() function of the component if the routing match current page view and stacked components' routeUrl
       if (event instanceof NavigationEnd && this._itIsMyRoute(event.url)) {
-        // always unsubscribe previously subscribed Observables to prevent duplication subscription
+        // always unsubscribe previously subscribed Observables to prevent duplicating subscription
         if (this.subscriptions) {
           this.subscriptions.forEach(sub => sub.unsubscribe());
           this.subscriptions = [];

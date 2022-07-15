@@ -88,6 +88,7 @@ export class AuthService {
       headers
     }).pipe(tap(res => {
       if (res?.data?.appv3 === true) {
+        this.storage.set('appV3', true);
         let finalURL = '';
         if (this.deeplink) {
           finalURL = this.deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
