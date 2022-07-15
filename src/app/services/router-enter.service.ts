@@ -47,7 +47,7 @@ export class RouterEnter implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.subscription = this.router.events.subscribe(event => {
-      const appV3Activated = this.storage.get('appV3');
+      const appV3Activated = this.storage.getAppV3();
       if (appV3Activated === true) {
         return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.get('apikey')}`);
       }
