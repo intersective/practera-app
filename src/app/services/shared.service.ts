@@ -9,7 +9,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { map } from 'rxjs/operators';
-import { environment } from 'environments/environment';
+import { environment } from '@environments/environment';
 
 export interface Profile {
   contact_number: string;
@@ -48,7 +48,7 @@ export class SharedService {
   onPageLoad(): void {
     const appV3Activated = this.storage.getAppV3();
     if (appV3Activated === true) {
-      return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.get('apikey')}`);
+      return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.getUser().apikey}`);
     }
     this.getIpLocation();
     const {
