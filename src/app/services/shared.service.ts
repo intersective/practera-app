@@ -48,7 +48,7 @@ export class SharedService {
   onPageLoad(): void {
     const appV3Activated = this.storage.getAppV3();
     if (appV3Activated === true) {
-      return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.get('apikey')}`);
+      return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.getUser().apikey}`);
     }
     this.getIpLocation();
     const {
