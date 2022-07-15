@@ -9,7 +9,7 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { TopicService } from '../topic/topic.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { map } from 'rxjs/operators';
-import { environment } from 'environments/environment';
+import { environment } from '@environments/environment';
 
 export interface Profile {
   contact_number: string;
