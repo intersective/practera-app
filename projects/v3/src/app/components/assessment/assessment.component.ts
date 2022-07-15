@@ -121,7 +121,6 @@ export class AssessmentComponent implements OnChanges {
    * 3. do the review
    */
   private _handleSubmissionData() {
-    console.log('submission', this.submission);
     // If team assessment is locked, set the page to readonly mode.
     // set doAssessment, isPendingReview to false - when assessment is locked, user can't do both.
     // set submission status to done - we need to show readonly answers in question components.
