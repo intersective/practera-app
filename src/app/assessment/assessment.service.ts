@@ -225,9 +225,9 @@ export class AssessmentService {
             question.info = info;
             question.choices = choices;
             break;
-
+            // check question file type. if it's not set (it's null) set "any" as default filetype
           case 'file':
-            question.fileType = eachQuestion.fileType;
+            question.fileType = eachQuestion.fileType ? eachQuestion.fileType : 'any';
             break;
 
           case 'team member selector':

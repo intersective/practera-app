@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from '@shared/request/request.service';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@shared/pusher/pusher.service';
+import { environment } from '@environments/environment';
 
 /**
  * @name api
@@ -63,6 +64,8 @@ interface ExperienceConfig {
   providedIn: 'root'
 })
 export class AuthService {
+  // added to cache deeplink for appv3 switching (purpose: global var reference)
+  deeplink: string;
 
   constructor(
     private request: RequestService,
@@ -90,9 +93,19 @@ export class AuthService {
         console.log('catchError::', err);
         return of(err);
       }
-    }).pipe(
-      map(res => this._handleLoginResponse(res)),
-    );
+    }).pipe(tap(res => {
+      if (res?.data?.appv3 === true) {
+        this.storage.setAppV3(true);
+        let finalURL = '';
+        if (this.deeplink) {
+          finalURL = this.deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
+        } else {
+          finalURL = `${environment.appv3URL}?apikey=${res.data.apikey}`;
+        }
+        this.utils.redirectToUrl(finalURL);
+        return;
+      }
+    }),     map(res => this._handleLoginResponse(res)));
   }
 
   /**

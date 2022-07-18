@@ -10,6 +10,7 @@ import { TopicService } from '../topic/topic.service';
 import { ApolloService } from '@shared/apollo/apollo.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { map } from 'rxjs/operators';
+import { environment } from '@environments/environment';
 
 export interface Profile {
   contact_number: string;
@@ -47,6 +48,10 @@ export class SharedService {
 
   // call this function on every page refresh and after switch program
   onPageLoad(): void {
+    const appV3Activated = this.storage.getAppV3();
+    if (appV3Activated === true) {
+      return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.getUser().apikey}`);
+    }
     this.getIpLocation();
     const {
       timelineId,
