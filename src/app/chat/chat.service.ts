@@ -202,6 +202,9 @@ export class ChatService {
       let fileObject = null;
       if ((typeof message.file) === 'string') {
         fileObject = JSON.parse(message.file);
+        if (this.utils.isEmpty(fileObject)) {
+          fileObject = null;
+        }
       } else {
         fileObject = message.file;
       }

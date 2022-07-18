@@ -7,8 +7,10 @@ name: Github Action for Dependabot - Automerge
 ################################################
 #  GITHUB ACTION EVENT TRIGGER
 ################################################    
-on: pull_request_target
-
+# on: pull_request_target
+on: 
+  workflow_dispatch:
+  
 # Caution: This workflow enables write permission to Dependabot PR  
 permissions:
   pull-requests: write
@@ -92,14 +94,14 @@ jobs:
 # #  SLACK NOTIFICATION
 # ##########################################################  
       - name: Slack Notification
-        if: always() # Pick up events even if the job fails or is canceled.
+        if: ${{ success() }} # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
         with:
           status: ${{ job.status }}
-          author_name: DEPENDABOT PR SUBMIT for ${{env.ROOTSTACK}}
+          author_name: DEPENDABOT PR SUBMIT success for ${{env.ROOTSTACK}}
           mention: 'here'
           if_mention: failure,cancelled
           job_name: dependabot # Match the name above.
@@ -134,6 +136,42 @@ jobs:
           echo "STATUS=FAILURE" >> $GITHUB_ENV
 
 
+
+# ##########################################################
+# #  SLACK NOTIFICATION
+# ##########################################################  
+      - name: Slack Notification
+        if: ${{ failure() }} # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+        with:
+          status: ${{ job.status }}
+          author_name: DEPENDABOT PR SUBMIT failed for ${{env.ROOTSTACK}}
+          mention: 'here'
+          if_mention: failure,cancelled
+          job_name: dependabot # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
+          custom_payload: |
+            {
+            username: 'GitHub Action CI WorkFlow',
+            icon_emoji: ':github:',
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              text:
+             `${process.env.AS_REPO}\n
+              ${process.env.AS_COMMIT}\n
+              ${process.env.AS_EVENT_NAME}\n
+              @${process.env.AS_REF}\n
+              @${process.env.AS_WORKFLOW}\n
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
+            }]
+            }
+
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
 # ################################################ 
@@ -142,11 +180,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install --upgrade csvtotable
-          export REASON=$(git log -2 --format=%s | sed -n 2p)
           export REQUESTOR=${{ github.actor }}
 
           aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
           chmod +x deploy-reporting.sh && ./deploy-reporting.sh
-          echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
-          echo $REASON
-          echo $REQUESTOR
