@@ -25,7 +25,7 @@
           <ion-item *ngIf="!hide_password">
             <ion-input name="password" [(ngModel)]="password" inputmode="password" formControlName="password"
               autocomplete="on" required [type]="showPassword ? 'text' : 'password'"
-              placeholder="Set up Practera password*">
+              placeholder="Set up Practera password*" [attr.aria-labelledby]="setup-password">
               <p id="setup-password" class="for-accessibility">setup practera password</p>
             </ion-input>
             <ion-button (click)="showPassword = !showPassword" fill="clear">
@@ -40,7 +40,7 @@
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Confirm password*"
               autocomplete="on"
-              required>
+              required [attr.aria-labelledby]="confirm-password">
               <p id="confirm-password" class="for-accessibility">confirm password</p>
             </ion-input>
           </ion-item>
@@ -54,7 +54,7 @@
         </div>
 
         <ion-text *ngFor="let error of errors" color="danger">
-          <p class="text-error" aria-live="polite">{{error}}</p>
+          <p class="text-error" role="alert" aria-live="polite">{{error}}</p>
         </ion-text>
         <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
       </form>
