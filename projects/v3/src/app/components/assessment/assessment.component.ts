@@ -157,20 +157,6 @@ export class AssessmentComponent implements OnChanges {
   }
 
   private _handleReviewData() {
-    if (!this.review && this.action === 'review' && !this.isPendingReview) {
-      return this.notifications.alert({
-        message: 'There are no assessments to review.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              this.continue.emit();
-            }
-          }
-        ]
-      });
-    }
     if (this.isPendingReview && this.review.status === 'in progress') {
       this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
       this.btnDisabled = false;
