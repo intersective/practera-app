@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 import { Event } from '@angular/router';
+import { Question } from '@v3/app/services/assessment.service';
 
 @Component({
   selector: 'app-text',
@@ -15,8 +16,7 @@ import { Event } from '@angular/router';
   ]
 })
 export class TextComponent implements ControlValueAccessor, OnInit {
-
-  @Input() question;
+  @Input() question: Question;
   @Input() submission;
   @Input() review;
   // this is for review status
