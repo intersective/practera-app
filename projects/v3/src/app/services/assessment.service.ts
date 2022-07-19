@@ -64,7 +64,7 @@ export interface Question {
   teamMembers?: Array<TeamMember>;
   audience: string[];
   submitterOnly?: boolean;
-  reviewerOnly?: boolean;
+  reviewerOnly?: boolean; // question meant for reviewer only
 }
 
 export interface Choice {

@@ -34,7 +34,7 @@
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-item *ngIf="!submission?.answer" class="no-answers item-bottom-border" lines="none">
+  <ion-item *ngIf="!submission?.answer && !question.reviewerOnly" class="no-answers item-bottom-border" lines="none">
     <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
     <ion-label size="small">No answers were submitted.</ion-label>
   </ion-item>
