@@ -37,6 +37,7 @@ resources:
     HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
     HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
     LiveServerOnly: !Equals [ '${env:ENV}', 'live']
+    PublicS3OneTimeCreation: !Equals [ '${env:STACK_NAME}', 'p2-stage']
   
     
   Resources:
@@ -338,6 +339,53 @@ resources:
               AWS: 
                 - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
           
+
+    AppV2PublicS3Bucket:
+      Condition: PublicS3OneTimeCreation
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: file.practera.com
+        AccessControl: PublicRead
+        BucketEncryption: 
+          ServerSideEncryptionConfiguration: 
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+        LifecycleConfiguration:
+          Rules:
+          - AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
+            Status: Enabled
+          - NoncurrentVersionExpirationInDays: !If [HasNoncurrentVersionExpirationInDays, '${env:NONCURRENTVERSION_EXPIREINDAYS}', 1]
+            Status: !If [HasNoncurrentVersionExpirationInDays, Enabled, Disabled]
+        VersioningConfiguration: !If [HasVersioning, {Status: Enabled}, !If [HadVersioning, {Status: Suspended}, !Ref 'AWS::NoValue']]
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+
+
+    ## Specifying the policies to make sure all files inside the Bucket are avaialble to Public Access
+    AppV2PublicS3BucketPolicy:
+      Condition: PublicS3OneTimeCreation
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref AppV2PublicS3Bucket
+        PolicyDocument:
+          Statement:
+          - Sid: S3-Bucket Pulic access to Practera only
+            Action: 
+              - 's3:GetObject'
+              - 's3:Get*'
+            Effect: Allow
+            Resource: 
+            - !Sub 'arn:aws:s3:::file.practera.com'
+            - !Sub 'arn:aws:s3:::file.practera.com/*'
+            Principal: '*'
+            Condition:
+              StringLike:
+                'aws:Referer':
+                  - 'https://*.practera.com'
 
   Outputs:
     AppV2CloudFrontDistributionOutput:
