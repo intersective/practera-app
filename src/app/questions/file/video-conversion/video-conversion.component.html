@@ -1,0 +1,27 @@
+<ng-container *ngIf="result?.status === 'completed'; else conversionPending">
+  <div class="message-body video-attachment-container">
+    <ng-container *ngIf="!video.isSender">
+      <div>
+        <p class="seen-text subtitle-1 black">{{video.senderName}}</p>
+        <p class="seen-text caption gray-2" *ngIf="roles.length > 1">{{video.senderRole}}</p>
+      </div>
+    </ng-container>
+
+    <div class="label" (click)="showInFilestackPreview(result)">
+      <p>
+        <ion-label color="primary">
+          {{ video.fileObject.filename }}
+        </ion-label>
+      </p>
+      <div id="inner-box">
+        <p>
+          <ion-icon name="play-circle"></ion-icon>
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #conversionPending>
+  video loading...
+</ng-template>
