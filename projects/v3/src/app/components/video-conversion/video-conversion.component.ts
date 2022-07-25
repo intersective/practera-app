@@ -31,11 +31,11 @@ export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
       this.waitedTooLong = true;
     }, 10000);
 
-    this.stop$.subscribe(res => {
+    this.subscriptions.push(this.stop$.subscribe(res => {
       if (res === true) {
         clearTimeout(stillWaiting);
       }
-    });
+    }));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
