@@ -50,29 +50,35 @@
         </ng-container>
 
         <ng-template #attachment>
-          <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('video')">
-            <div class="message-body video-attachment-container">
-              <ng-container *ngIf="!message.isSender">
-                <div>
-                  <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
-                  <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+          <div class="message-body video-attachment-container">
+            <ng-container *ngIf="!message.isSender">
+              <div>
+                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+              </div>
+            </ng-container>
+
+            <ng-container [ngSwitch]="message?.fileObject?.mimetype">
+              <ng-container *ngSwitchCase="'video/mp4'">
+                <div class="label" (click)="preview(message.fileObject)">
+                  <p>
+                    <ion-label color="primary">
+                      {{ message.fileObject.filename }}
+                    </ion-label>
+                  </p>
+                  <div id="inner-box">
+                    <p>
+                      <ion-icon name="play-circle"></ion-icon>
+                    </p>
+                  </div>
                 </div>
               </ng-container>
 
-              <div class="label" (click)="preview(message.fileObject)">
-                <p>
-                  <ion-label color="primary">
-                    {{ message.fileObject.filename }}
-                  </ion-label>
-                </p>
-                <div id="inner-box">
-                  <p>
-                    <ion-icon name="play-circle"></ion-icon>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </ng-container>
+              <ng-container *ngSwitchDefault>
+                <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
+              </ng-container>
+            </ng-container>
+          </div>
 
           <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('image')">
             <div class="message-body image" (click)="preview(message.fileObject)">

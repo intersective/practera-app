@@ -8,6 +8,7 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-room',
@@ -48,6 +49,7 @@ export class ChatRoomComponent implements OnInit {
   whoIsTyping: string;
   // this use to show/hide bottom section of text field which have attachment buttons and send button, when user start typing text messages
   showBottomAttachmentButtons = false;
+  videoHandles = [];
 
   constructor(
     private chatService: ChatService,
@@ -675,6 +677,13 @@ export class ChatRoomComponent implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+  videoConversion(file) {
+    this.filestackService.videoConversion(file.handle).subscribe(res => {
+      this.videoHandles[file.handle] = res;
+    });
+    return true;
   }
 
   // @Deprecated in case we need it later
