@@ -9,6 +9,7 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'video'">
+      <pre>{{file | json}}</pre>
       <video controls preload #videoEle>
         <ng-container *ngIf="file.transcoded">
           <source [src]="file.transcoded + '.mp4#t=0.5'" type="video/mp4">
@@ -19,7 +20,7 @@
         {{ file.url }}
       </video>
       <ng-container *ngIf="isFileComponent">
-          <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
+        <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
       </ng-container>
     </ng-container>
 
