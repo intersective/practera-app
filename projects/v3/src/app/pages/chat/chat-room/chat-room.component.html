@@ -50,16 +50,16 @@
         </ng-container>
 
         <ng-template #attachment>
-          <ng-container [ngSwitch]="message?.fileObject?.mimetype">
-            <ng-container *ngSwitchCase="'video/mp4'">
-              <div class="message-body video-attachment-container">
-                <ng-container *ngIf="!message.isSender">
-                  <div>
-                    <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
-                    <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
-                  </div>
-                </ng-container>
+          <div class="message-body video-attachment-container">
+            <ng-container *ngIf="!message.isSender">
+              <div>
+                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+              </div>
+            </ng-container>
 
+            <ng-container [ngSwitch]="message?.fileObject?.mimetype">
+              <ng-container *ngSwitchCase="'video/mp4'">
                 <div class="label" (click)="preview(message.fileObject)">
                   <p>
                     <ion-label color="primary">
@@ -72,15 +72,13 @@
                     </p>
                   </div>
                 </div>
-              </div>
+              </ng-container>
+
+              <ng-container *ngSwitchDefault>
+                <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
+              </ng-container>
             </ng-container>
-            <ng-container *ngSwitchDefault>
-              <app-video-conversion [video]="message"
-              [roles]="chatChannel.roles"
-              (preview)="preview($event)"
-              ></app-video-conversion>
-            </ng-container>
-          </ng-container>
+          </div>
 
           <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('image')">
             <div class="message-body image" (click)="preview(message.fileObject)">
