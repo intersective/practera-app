@@ -35,7 +35,7 @@ import { BrandingLogoComponent } from './branding-logo/branding-logo.component';
 import { TodoCardComponent } from './todo-card/todo-card.component';
 import { SlidableComponent } from './slidable/slidable.component';
 import { BottomActionBarComponent } from './bottom-action-bar/bottom-action-bar.component';
-import { VideoConversionComponent } from '@app/questions/file/video-conversion/video-conversion.component';
+import { VideoConversionComponent } from './video-conversion/video-conversion.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',

@@ -9,7 +9,6 @@
     </ng-container>
 
     <ng-container *ngSwitchCase="'video'">
-      <pre>{{file | json}}</pre>
       <video controls preload #videoEle>
         <ng-container *ngIf="file.transcoded">
           <source [src]="file.transcoded + '.mp4#t=0.5'" type="video/mp4">
