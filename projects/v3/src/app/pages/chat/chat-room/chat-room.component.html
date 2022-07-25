@@ -50,7 +50,8 @@
         </ng-container>
 
         <ng-template #attachment>
-          <div class="message-body video-attachment-container">
+          <div class="message-body video-attachment-container"
+            *ngIf="message?.fileObject?.mimetype?.includes('video')">
             <ng-container *ngIf="!message.isSender">
               <div>
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
@@ -58,29 +59,27 @@
               </div>
             </ng-container>
 
-            <ng-container [ngSwitch]="message?.fileObject?.mimetype">
-              <ng-container *ngSwitchCase="'video/mp4'">
-                <div class="label" (click)="preview(message.fileObject)">
+            <ng-container *ngIf="message?.fileObject?.mimetype === 'video/mp4'; else nonMp4Format">
+              <div class="label" (click)="preview(message.fileObject)">
+                <p>
+                  <ion-label color="primary">
+                    {{ message.fileObject.filename }}
+                  </ion-label>
+                </p>
+                <div id="inner-box">
                   <p>
-                    <ion-label color="primary">
-                      {{ message.fileObject.filename }}
-                    </ion-label>
+                    <ion-icon name="play-circle"></ion-icon>
                   </p>
-                  <div id="inner-box">
-                    <p>
-                      <ion-icon name="play-circle"></ion-icon>
-                    </p>
-                  </div>
                 </div>
-              </ng-container>
-
-              <ng-container *ngSwitchDefault>
-                <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
-              </ng-container>
+              </div>
             </ng-container>
+
+            <ng-template #nonMp4Format>
+              <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
+            </ng-template>
           </div>
 
-          <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('image')">
+          <ng-container *ngIf="message?.fileObject?.mimetype?.includes('image')">
             <div class="message-body image" (click)="preview(message.fileObject)">
               <ng-container *ngIf="!message.isSender">
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>

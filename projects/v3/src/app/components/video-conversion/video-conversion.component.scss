@@ -29,6 +29,8 @@ $message-body-size: 60%;
         font-weight: 500;
       }
     }
+    text-overflow: ellipsis;
+    max-width: 8em;
   }
 
   p,
