@@ -8,7 +8,6 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
-import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat-room',
@@ -341,17 +340,20 @@ export class ChatRoomComponent implements OnInit {
 
   /**
    * check same user have messages inline
-   * @param {int} message
+   * @param {int} incomingMessage
    */
-  isLastMessage(message) {
+  isLastMessage(incomingMessage) {
     // const index = this.messageList.indexOf(message);
     const index = this.messageList.findIndex(function (msg, i) {
-      return msg.uuid === message.uuid;
+      return msg.uuid === incomingMessage.uuid;
     });
+
+    // no need avatar if uuid not match
     if (index === -1) {
       this.messageList[index].noAvatar = true;
       return false;
     }
+
     const currentMessage = this.messageList[index];
     const nextMessage = this.messageList[index + 1];
     if (currentMessage.isSender) {
