@@ -155,15 +155,22 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.control.setValue(this.innerValue);
   }
 
-  removeSubmitFile(data) {
+  removeSubmitFile(file?: {
+    handle: string;
+  }): void {
     this.uploadedFile = null;
     this.submission.answer = null;
     this.onChange('', null);
+
+    // don't need to wait for deletion, just move on to
+    // avoid negative effect on UX
+    this.filestackService.deleteFile(file.handle).subscribe(console.log);
   }
-  // check question audience have more that one audience and is it includes reviewer as audience.
+
+  // check question audience flag have more that one audience value, and if it has include reviewer as one of the audiences.
   // then will identify it as a student and mentor answering in the same question and
   // border need to add only for mentor section not for full question
-  audienceContainReviewer() {
+  audienceContainReviewer(): boolean {
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
