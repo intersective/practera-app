@@ -37,12 +37,15 @@ export class ChatViewComponent implements OnInit {
     this.loadInfo = false;
   }
 
-  goto(event) {
+  // navigate to a chat-room (on desktop only)
+  desktopGoto(event, action?: {click: boolean}) {
     this.loadInfo = false;
     this.chatChannel = event;
-    setTimeout(() => {
-      this.chatRoom.ngOnInit();
-    });
+    if (action?.click) {
+      setTimeout(() => {
+        this.chatRoom.ngOnInit();
+      });
+    }
   }
 
   /**
@@ -55,7 +58,7 @@ export class ChatViewComponent implements OnInit {
       return;
     }
     // navigate to the first chat
-    this.goto(chats[0]);
+    this.desktopGoto(chats[0]);
   }
 
   loadchannelInfo(event) {

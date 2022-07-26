@@ -181,12 +181,12 @@ export class ApolloService {
    */
   chatGraphQLQuery(query: string, variables?: any, options?: any) {
     options = { ...{ noCache: false }, ...options };
-    const watch = this.apollo.use('chat').watchQuery({
+    const watch = this.apollo.use('chat').query({
       query: gql(query),
       variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+      // fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
     });
-    return watch.valueChanges.pipe(
+    return watch.pipe(
       concatMap(response => {
         return of(response);
       }),
