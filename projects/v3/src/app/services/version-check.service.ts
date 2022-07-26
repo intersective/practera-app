@@ -27,7 +27,7 @@ export class VersionCheckService {
             this.router.navigate(['logout', { t: new Date().getTime() }]);
           }
         },
-        (err) => console.log
+        (err) => console.info
       );
     });
   }

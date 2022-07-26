@@ -30,9 +30,7 @@ export class DevtoolPage implements OnInit {
   }
 
   refresh() {
-    this.experienceService.getNewJwt().subscribe(res => {
-      console.log('Refresh::', res);
-    });
+    this.experienceService.getNewJwt().subscribe();
   }
 
   login() {
