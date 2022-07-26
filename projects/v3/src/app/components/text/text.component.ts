@@ -74,7 +74,6 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(type = null) {
-    console.log(this.control);
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set

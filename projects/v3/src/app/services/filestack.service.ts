@@ -273,5 +273,11 @@ export class FilestackService {
   videoConversion(handle) {
     return this.httpClient.get(`https://cdn.filestackcontent.com/video_convert/${handle}`);
   }
+
+  // securely delete a file from filestack
+  deleteFile(handle) {
+    const { policy, signature, key } = environment.filestack;
+    return this.httpClient.delete(`https://www.filestackapi.com/api/file/${handle}?key=${key}&policy=${policy}&signature=${signature}`);
+  }
 }
 
