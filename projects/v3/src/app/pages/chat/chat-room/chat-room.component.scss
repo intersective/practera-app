@@ -98,6 +98,7 @@ $message-body-size: 60%;
           line-height: 0;
           padding: 0;
           display: flex;
+          justify-content: center;
           flex-direction: column;
           flex-wrap: wrap;
           align-items: stretch;
@@ -106,6 +107,11 @@ $message-body-size: 60%;
           border: 1px #bbbbbb solid;
           padding-left: 10px;
           padding-right: 10px;
+
+          app-video-conversion {
+            display: flex;
+            align-items: center;
+          }
 
           #inner-box {
             border-radius: inherit;

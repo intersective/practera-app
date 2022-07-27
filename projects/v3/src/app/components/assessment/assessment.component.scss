@@ -156,10 +156,10 @@ ion-footer {
 }
 
 .save-info {
-  padding: 14px 20px;
+  padding: 6px 20px;
   border-bottom: 1px solid;
   border-bottom-color: var(--practera-grey-25);
-
+  max-height: 48px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -167,6 +167,9 @@ ion-footer {
   flex-direction: row;
   p, ion-button {
     margin: 0;
+  }
+  ion-button {
+    max-height: 36px;
   }
 
 }

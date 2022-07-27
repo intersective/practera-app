@@ -6,6 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { DOCUMENT, ViewportScroller } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 3000;
 
@@ -33,6 +34,9 @@ export class AssessmentComponent implements OnChanges {
   @Input() review: AssessmentReview;
   @Input() isMobile?: boolean;
 
+  // the text of when the submission get saved last time
+  @Input() savingMessage$: BehaviorSubject<string>;
+
   // save the assessment/review answers
   @Output() save = new EventEmitter();
   // mark the feedback as read
@@ -53,9 +57,6 @@ export class AssessmentComponent implements OnChanges {
 
   // whether the bottom button(and the save button) is disabled
   btnDisabled: boolean;
-
-  // the text of when the submission get saved last time
-  savingMessage: string;
 
   // virtual element id for accessibility "aria-describedby" purpose
   elIdentities = {};
@@ -90,7 +91,6 @@ export class AssessmentComponent implements OnChanges {
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
     this.btnDisabled = false;
-    this.savingMessage = '';
     this.isNotInATeam = false;
     this.isPendingReview = false;
   }
@@ -137,7 +137,7 @@ export class AssessmentComponent implements OnChanges {
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       if (this.submission) {
-        this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.submission.modified);
+        this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.submission.modified));
         this.btnDisabled = false;
       }
       return;
@@ -157,22 +157,8 @@ export class AssessmentComponent implements OnChanges {
   }
 
   private _handleReviewData() {
-    if (!this.review && this.action === 'review' && !this.isPendingReview) {
-      return this.notifications.alert({
-        message: 'There are no assessments to review.',
-        buttons: [
-          {
-            text: 'OK',
-            role: 'cancel',
-            handler: () => {
-              this.continue.emit();
-            }
-          }
-        ]
-      });
-    }
     if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage = 'Last saved ' + this.utils.timeFormatter(this.review.modified);
+      this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
       this.btnDisabled = false;
     }
   }
@@ -268,9 +254,6 @@ export class AssessmentComponent implements OnChanges {
     // allow submitting/saving after a few seconds
     setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
 
-    if (saveInProgress) {
-      this.savingMessage = 'Saving...';
-    }
     this.btnDisabled = true;
 
     const answers = [];
@@ -366,7 +349,6 @@ export class AssessmentComponent implements OnChanges {
       action: this.action
     });
 
-    this.savingMessage = 'Last saved ' + this._getCurrentTime();
   }
 
   // /**
@@ -419,14 +401,6 @@ export class AssessmentComponent implements OnChanges {
 
   showQuestionInfo(info) {
     this.notifications.popUp('shortMessage', { message: info });
-  }
-
-  private _getCurrentTime() {
-    return new Intl.DateTimeFormat('en-US', {
-      hour12: true,
-      hour: 'numeric',
-      minute: 'numeric'
-    }).format(new Date());
   }
 
   // the action that the button does

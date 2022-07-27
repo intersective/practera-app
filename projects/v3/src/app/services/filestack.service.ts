@@ -179,6 +179,7 @@ export class FilestackService {
 
   private onFileSelectedRename(file: filestack.PickerFileMetadata): Promise<any> {
     // replace space with underscore '_' in file name
+    // replace space with underscore '_' in file name
     const filename = file.filename.replace(/ /g, '_');
     return Promise.resolve({ ...file, filename });
   }
@@ -268,4 +269,15 @@ export class FilestackService {
 
     return [];
   }
+
+  videoConversion(handle) {
+    return this.httpClient.get(`https://cdn.filestackcontent.com/video_convert/${handle}`);
+  }
+
+  // securely delete a file from filestack
+  deleteFile(handle) {
+    const { policy, signature, key } = environment.filestack;
+    return this.httpClient.delete(`https://www.filestackapi.com/api/file/${handle}?key=${key}&policy=${policy}&signature=${signature}`);
+  }
 }
+

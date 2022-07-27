@@ -1,10 +1,10 @@
-<ng-container *ngIf="!doAssessment && !doReview && submissionStatus !== 'in progress' && reviewStatus !== 'in progress'">
+<ng-container *ngIf="!doAssessment && !doReview && submissionStatus !== 'in progress' && (submissionStatus === 'feedback available' && (reviewStatus === 'in progress' || reviewStatus === 'done'))">
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
-      <ng-container *ngFor="let choice of question.choices; let i = index">
-        <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
+      <ng-container *ngFor="let choice of question.choices">
+        <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
-            <div class="answer-text" [ngClass]="{'exdivlanation': submission?.answer === choice.id || review?.answer === choice.id}">{{ choice.name }}</div>
+            <div class="answer-text" [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}">{{ choice.name }}</div>
             <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
             <ion-chip class="label yellow black" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
           </ion-label>

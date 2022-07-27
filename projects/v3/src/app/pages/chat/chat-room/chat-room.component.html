@@ -50,15 +50,16 @@
         </ng-container>
 
         <ng-template #attachment>
-          <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('video')">
-            <div class="message-body video-attachment-container">
-              <ng-container *ngIf="!message.isSender">
-                <div>
-                  <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
-                  <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
-                </div>
-              </ng-container>
+          <div class="message-body video-attachment-container"
+            *ngIf="message?.fileObject?.mimetype?.includes('video')">
+            <ng-container *ngIf="!message.isSender">
+              <div>
+                <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+                <p class="seen-text caption gray-2" *ngIf="chatChannel.roles.length > 1">{{message.senderRole}}</p>
+              </div>
+            </ng-container>
 
+            <ng-container *ngIf="message?.fileObject?.mimetype === 'video/mp4'; else nonMp4Format">
               <div class="label" (click)="preview(message.fileObject)">
                 <p>
                   <ion-label color="primary">
@@ -71,10 +72,14 @@
                   </p>
                 </div>
               </div>
-            </div>
-          </ng-container>
+            </ng-container>
 
-          <ng-container *ngIf="message.fileObject && message.fileObject.mimetype && message.fileObject.mimetype.includes('image')">
+            <ng-template #nonMp4Format>
+              <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
+            </ng-template>
+          </div>
+
+          <ng-container *ngIf="message?.fileObject?.mimetype?.includes('image')">
             <div class="message-body image" (click)="preview(message.fileObject)">
               <ng-container *ngIf="!message.isSender">
                 <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
