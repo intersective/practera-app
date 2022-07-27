@@ -1,0 +1,27 @@
+<div class="label video-conversion"
+  (click)="showInFilestackPreview(result)"
+  *ngIf="result?.status === 'completed'; else conversionPending">
+  <p>
+    <ion-label color="primary" [title]="video?.fileObject?.filename">
+      {{ video?.fileObject?.filename }}
+    </ion-label>
+  </p>
+  <div id="inner-box">
+    <p>
+      <ion-icon name="play-circle"></ion-icon>
+    </p>
+  </div>
+</div>
+
+<ng-template #conversionPending>
+  <ng-container *ngIf="waitedTooLong === false; else longWait">
+    <ion-spinner name="bubbles"></ion-spinner>please wait
+  </ng-container>
+</ng-template>
+
+<ng-template #longWait>
+  <div>
+    <p>Waited too long?</p>
+    <p>Download <a target="_blank" href="{{video?.fileObject?.url}}">here</a></p>
+  </div>
+</ng-template>

@@ -6,8 +6,8 @@
 
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
-  <p class="body-2 grey-75">{{ savingMessage }}</p>
-  <ion-button fill="clear" size="small" slot="end" [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
+  <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
+  <ion-button fill="clear" slot="end" [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
     Save
   </ion-button>
 </div>
@@ -241,6 +241,7 @@
   </div>
 
   <app-bottom-action-bar
+    *ngIf="action != 'review' && isPendingReview === false"
     [text]="btnText"
     [disabled]="btnDisabled"
     (onClick)="continueToNextTask()"

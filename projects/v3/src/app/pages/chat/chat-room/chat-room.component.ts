@@ -48,6 +48,7 @@ export class ChatRoomComponent implements OnInit {
   whoIsTyping: string;
   // this use to show/hide bottom section of text field which have attachment buttons and send button, when user start typing text messages
   showBottomAttachmentButtons = false;
+  videoHandles = [];
 
   constructor(
     private chatService: ChatService,
@@ -339,17 +340,20 @@ export class ChatRoomComponent implements OnInit {
 
   /**
    * check same user have messages inline
-   * @param {int} message
+   * @param {int} incomingMessage
    */
-  isLastMessage(message) {
+  isLastMessage(incomingMessage) {
     // const index = this.messageList.indexOf(message);
     const index = this.messageList.findIndex(function (msg, i) {
-      return msg.uuid === message.uuid;
+      return msg.uuid === incomingMessage.uuid;
     });
+
+    // no need avatar if uuid not match
     if (index === -1) {
       this.messageList[index].noAvatar = true;
       return false;
     }
+
     const currentMessage = this.messageList[index];
     const nextMessage = this.messageList[index + 1];
     if (currentMessage.isSender) {
@@ -675,6 +679,13 @@ export class ChatRoomComponent implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+  videoConversion(file) {
+    this.filestackService.videoConversion(file.handle).subscribe(res => {
+      this.videoHandles[file.handle] = res;
+    });
+    return true;
   }
 
   // @Deprecated in case we need it later

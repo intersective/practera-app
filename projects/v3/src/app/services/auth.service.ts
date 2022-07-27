@@ -104,7 +104,6 @@ export class AuthService {
         headers
       },
       customErrorHandler: (err: any) => {
-        console.log('catchError::', err);
         return of(err);
       }
     }).pipe(

@@ -86,22 +86,29 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     }
   }
 
-  actionBtnClick(file, index: number) {
+  actionBtnClick(file: {
+    handle: string;
+    url: string;
+  }, index: number): void {
+    if (this.fileType !== 'any') {
+      return this.removeUploadedFile(file);
+    }
+
     switch (index) {
       case 0:
         this.utils.downloadFile(file.url);
-        break;
+        return;
       case 1:
         this.previewFile(file);
-        break;
+        return;
       case 2:
-        this.removeUploadedFile();
-        break;
+        this.removeUploadedFile(file);
+        return;
     }
   }
 
-  removeUploadedFile() {
-    this.removeFile.emit(true);
+  removeUploadedFile(file?): void {
+    return this.removeFile.emit(file);
   }
 
   get endingActionBtnIcons() {

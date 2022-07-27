@@ -526,4 +526,16 @@ export class UtilsService {
     // Remove element from DOM
     document.body.removeChild(anchor);
   }
+
+  /**
+   *
+   * @returns time that formated to 12 hours
+   */
+  getFormatedCurrentTime() {
+    return new Intl.DateTimeFormat('en-US', {
+      hour12: true,
+      hour: 'numeric',
+      minute: 'numeric'
+    }).format(new Date());
+  }
 }
