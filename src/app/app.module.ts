@@ -17,7 +17,6 @@ import { GoMobileModule } from './go-mobile/go-mobile.module';
 import { AppComponent } from './app.component';
 import { UtilsService } from './services/utils.service';
 import { VersionCheckService } from './services/version-check.service';
-import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { environment } from '@environments/environment';
 import { IntercomModule } from 'ng-intercom';
 import { PusherModule } from '@shared/pusher/pusher.module';
@@ -26,12 +25,12 @@ import { UnlockingComponent } from '@components/unlocking/unlocking.component';
 import { DeviceInfoComponent } from './device-info/device-info.component';
 import { ApolloModule } from './shared/apollo/apollo.module';
 import { EmbedVideoModule } from './shared/ngx-embed-video/ngx-embed-video.module';
+import { PageNotFoundModule } from './page-not-found/page-not-found.module';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    PageNotFoundComponent,
     UnlockingComponent,
     DeviceInfoComponent,
   ],
@@ -54,6 +53,7 @@ import { EmbedVideoModule } from './shared/ngx-embed-video/ngx-embed-video.modul
     GoMobileModule,
     ReviewRatingModule,
     EventDetailModule,
+    PageNotFoundModule,
     PusherModule.forRoot({
       apiurl: environment.APIEndpoint,
       pusherKey: environment.pusherKey,
