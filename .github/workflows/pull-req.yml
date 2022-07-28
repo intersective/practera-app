@@ -38,9 +38,9 @@ jobs:
       SAMPLE_DEBUG_LOG_RATE: 0.01 # CAUTION with this value increase cost as well.
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: SUBMITTED
-      REQUESTOR: ${{ github.event.inputs.REQUESTOR }} 
-      REASON: ${{ github.event.inputs.REASON }} 
-      ENDPOINT: app-v2
+      REQUESTOR: ${{ github.event.inputs.REQUESTOR }} #TODO Submitter NAME here
+      REASON: ${{ github.event.inputs.REASON }} #TODO commit message here
+      ENDPOINT: NA
       BRANCH_TAG_NAME: trunk
 
 
@@ -104,13 +104,6 @@ jobs:
           aws-region: ap-southeast-2
 
 
-# ################################################
-# #  CREATING ANGULAR ENV FILE CREATION
-# ################################################
-      - name: Preparing angular env file
-        run:  |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-
 
 # ################################################
 # #  PERFORM LINT TEST
@@ -119,30 +112,33 @@ jobs:
         run:  |
           npm run lint --if-present
 
-
+          
 # ###############################################################
-# #  PERFORM BUILD TEST
+# #  BUILD WEB PACKAGES
 # ##############################################################
-      - name: Perform building Web packages
-        run: |
-          node_modules/.bin/ng build
-
-# ###############################################################
-# #  PERFORM UNIT TEST
-# ##############################################################
-      - name: Performing Unit test
-        run: |
-          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+#       - name: Build Web Packages
+#         run: |
+#           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+#           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+#           npm run generate-version
 
 
-# ###############################################################
-# #  SONARCLOUD SCANNER
-# ##############################################################
-      - name: Performing Sonarcloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# # ###############################################################
+# # #  PERFORM UNIT TEST
+# # ##############################################################
+#       - name: Performing Unit test
+#         run: |
+#           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
+
+# # ###############################################################
+# # #  SONARCLOUD SCANNER
+# # ##############################################################
+#       - name: Performing Sonarcloud Scanner
+#         uses: SonarSource/sonarcloud-github-action@master
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
    
 # ##########################################################
@@ -188,8 +184,6 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo "STATUS=FAILURE" >> $GITHUB_ENV
-          echo "REASON="$(git log -2 --format=%s | sed -n 2p) >> $GITHUB_ENV
-          echo "REQUESTOR"=${{ github.actor }} >> $GITHUB_ENV
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
@@ -204,6 +198,5 @@ jobs:
 
           aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
           chmod +x deploy-reporting.sh && ./deploy-reporting.sh
-          echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
           echo $REASON
           echo $REQUESTOR
