@@ -39,7 +39,7 @@
                         <div class="exp-image-container">
                           <img
                           [src]="program.experience.lead_image ? program.experience.lead_image : '../../../assets/default-experience-image.svg'"
-                          alt="{{ program.experience.name }}">
+                          [attr.alt]="program.experience.name + ' experience selection'">
                         </div>
                         <ion-card-content>
                           <p class="m-0 headline-3 exp-title black">{{ program.experience.name }}</p>
