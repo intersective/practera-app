@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { UtilsService } from '@services/utils.service';
 import { SharedService } from '@services/shared.service';
-import { Observable } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { VersionCheckService } from '@services/version-check.service';
@@ -112,6 +111,7 @@ export class AppComponent implements OnInit {
     }
 
     if (searchParams.has('do')) {
+      this.authService.deeplink = window.location.href;
       switch (searchParams.get('do')) {
         case 'secure':
           if (searchParams.has('auth_token')) {

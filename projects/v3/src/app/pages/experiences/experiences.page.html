@@ -33,8 +33,9 @@
 
                   <ng-container *ngFor="let program of programs">
                     <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
-                      <ion-card class="exp-card ion-no-margin" [attr.aria-label]="program.experience.name"
-                        (click)="switchProgram(program)">
+                      <ion-card class="exp-card ion-no-margin"
+                        [attr.aria-label]="program.experience.name"
+                        (click)="switchProgram(program)" (keydown)="switchProgram(program, $event)" tabindex="0">
                         <div class="exp-image-container">
                           <img
                           [src]="program.experience.lead_image ? program.experience.lead_image : '../../../assets/default-experience-image.svg'"

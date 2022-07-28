@@ -5,13 +5,12 @@ enableLocalInstallationFallback: true
 
 
 provider:
-  logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
+  logRetentionInDays: 365 # Set the default RetentionInDays for a CloudWatch LogGroup
   name: aws
   runtime: nodejs14.x
   region: ${env:REGION}
   stage: ${env:ENV}
   deploymentBucket:
-    maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
     blockPublicAccess: true 
     serverSideEncryption: AES256 
     tags: 

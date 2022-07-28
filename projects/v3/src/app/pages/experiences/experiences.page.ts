@@ -45,7 +45,13 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     return this.storage.getConfig().instituteLogo;
   }
 
-  async switchProgram(program: ProgramObj) {
+  async switchProgram(program: ProgramObj, keyEvent?: KeyboardEvent) {
+    if (keyEvent && (keyEvent.code === 'Enter' || keyEvent.code === 'Space')) {
+      keyEvent.preventDefault();
+    } else {
+      return;
+    }
+
     const loading = await this.loadingController.create({
       message: 'loading...'
     });
