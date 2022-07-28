@@ -171,13 +171,14 @@ export class AuthService {
       programs: data.Timelines.map(
         timeline => {
           // make sure 'Program.config.theme_color' exist
-          if (!this.utils.has(timeline, 'Program.config.theme_color')) {
-            if (!this.utils.has(timeline.Program, 'config')) {
+          if (!timeline.Program.config?.theme_color) {
+            const PRIMARY_COLOR = 'var(--ion-color-primary)';
+            if (!timeline.Program.config) {
               timeline.Program.config = {
-                theme_color: 'var(--ion-color-primary)'
+                theme_color: PRIMARY_COLOR
               };
             } else {
-              timeline.Program.config.theme_color = 'var(--ion-color-primary)';
+              timeline.Program.config.theme_color = PRIMARY_COLOR;
             }
           }
           return {
