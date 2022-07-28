@@ -48,7 +48,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   async switchProgram(program: ProgramObj, keyEvent?: KeyboardEvent) {
     if (keyEvent && (keyEvent.code === 'Enter' || keyEvent.code === 'Space')) {
       keyEvent.preventDefault();
-    } else {
+    } else if (keyEvent) {
       return;
     }
 
