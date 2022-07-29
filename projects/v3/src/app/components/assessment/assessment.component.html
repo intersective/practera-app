@@ -108,7 +108,6 @@
 
         <ng-container *ngFor="let question of group.questions">
           <ion-list class="ion-no-padding">
-
             <ion-list-header
               class="question-title headline-4"
               [attr.aria-label]="question.name"
@@ -241,7 +240,7 @@
   </div>
 
   <app-bottom-action-bar
-    *ngIf="action != 'review' && isPendingReview === false"
+    *ngIf="!(action == 'review' && submission.status === 'feedback available' && review.status === 'done')"
     [text]="btnText"
     [disabled]="btnDisabled"
     (onClick)="continueToNextTask()"
