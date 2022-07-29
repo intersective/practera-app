@@ -1,4 +1,4 @@
-<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress')">
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <div class="ion-padding" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
     <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>

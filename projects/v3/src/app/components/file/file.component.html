@@ -1,4 +1,4 @@
-<div *ngIf="!doAssessment && submissionStatus !== 'in progress'">
+<div *ngIf="!doAssessment && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <ng-container *ngIf="submission?.answer">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
@@ -11,7 +11,7 @@
     </app-file-display>
   </ng-container>
 
-  <ng-container *ngIf="review?.answer">
+  <ng-container *ngIf="review?.answer && reviewStatus === 'done'">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label yellow black">Expert's answer</ion-chip></p>
@@ -54,7 +54,6 @@
       [disabled]="control.disabled"
     ></app-file-display>
   </div>
-
 </ng-container>
 
 <ng-container *ngIf="doReview && question.canAnswer">
@@ -65,13 +64,15 @@
       (complete)="onFileUploadCompleted($event, 'answer')"
       [disabled]="control.disabled"
     ></app-file-stack>
-    <!-- <app-file-display
+
+    <app-file-display
+      *ngIf="uploadedFile || review.answer"
       [file]="uploadedFile ? uploadedFile : review.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
       (removeFile)="removeSubmitFile($event)"
       [disabled]="control.disabled"
-    ></app-file-display> -->
+    ></app-file-display>
   </ng-container>
 
   <div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question.canComment && submission.answer">

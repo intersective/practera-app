@@ -1,4 +1,4 @@
-<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === '')) && (submission?.answer || review?.answer)">
   <ion-list class="no-bg ion-no-padding">
     <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
       <ion-item class="item-bottom-border" lines="none">
