@@ -1,4 +1,4 @@
-<ng-container *ngIf="!doReview && (submissionStatus !== 'in progress' || reviewStatus !== 'in progress') && (submission?.answer || review?.answer)">
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === '')) && (submission?.answer || review?.answer)">
   <ion-list class="no-bg ion-no-padding">
     <ion-radio-group [value]="submission?.answer">
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">

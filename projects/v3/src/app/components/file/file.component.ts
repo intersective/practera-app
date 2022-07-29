@@ -73,7 +73,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
-  onFileUploadCompleted(file, type = null) {
+  onFileUploadCompleted(file, type:string = null) {
     if (file.success) {
       // reset errors
       this.errors = [];
@@ -95,7 +95,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type) {
+  onChange(value, type: string) {
     // set changed value (answer or comment)
     if (type) {
       if (!this.innerValue) {
@@ -159,8 +159,17 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     handle: string;
   }): void {
     this.uploadedFile = null;
-    this.submission.answer = null;
-    this.onChange('', null);
+
+    if (this.doAssessment === true) {
+      this.submission.answer = null;
+      this.onChange('', null);
+    }
+
+    if (this.doReview === true) {
+      this.review.answer = null;
+      this.onChange('', 'answer');
+    }
+
 
     // don't need to wait for deletion, just move on to
     // avoid negative effect on UX
