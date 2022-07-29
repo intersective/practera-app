@@ -1,4 +1,4 @@
-<ng-container *ngIf="!doAssessment && !doReview && submissionStatus !== 'in progress' && (submissionStatus === 'feedback available' && (reviewStatus === 'in progress' || reviewStatus === 'done'))">
+<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
       <ng-container *ngFor="let choice of question.choices">
