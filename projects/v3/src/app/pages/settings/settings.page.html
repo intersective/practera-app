@@ -20,7 +20,7 @@
     <ng-container *ngIf="!isMobile; else mobileProfile">
       <div class="avatar-and-profile">
         <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+          <img *ngIf="!imageUpdating" [src]="profile.image" alt="user profile">
           <p *ngIf="imageUpdating" class="loading-icon">
             <ion-spinner name="bubbles"></ion-spinner>
           </p>
@@ -36,7 +36,7 @@
     <ng-template #mobileProfile>
       <ion-item>
         <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
+          <img *ngIf="!imageUpdating" [src]="profile.image" alt="user profile">
           <p *ngIf="imageUpdating" class="loading-icon">
             <ion-spinner name="bubbles"></ion-spinner>
           </p>
