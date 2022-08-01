@@ -7,21 +7,10 @@ name: Deploy to p1-au live environment
 ################################################
 #  GITHUB ACTION EVENT TRIGGER
 ################################################
-on: 
+on:
   workflow_dispatch:
-    inputs:
-      BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'     
-        required: true
-        default: ''
-      REQUESTOR:
-        description: 'Requestor Name'     
-        required: true
-        default: ''
-      REASON:
-        description: 'Reason for deployment'     
-        required: true
-        default: ''
+  push:
+    branches: [ 'p1-au-hot-fix' ]
     
 
 
