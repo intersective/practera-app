@@ -27,7 +27,13 @@ export class AuthLoginComponent {
     private experienceService: ExperienceService,
   ) {}
 
-  login() {
+  login(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {
       this.notificationsService.alert({
         message: 'Your email or password is empty, please fill them in.',

@@ -40,9 +40,12 @@
           [disabled]="!loginForm.valid || isLoggingIn"
           type="submit"
           expand="full"
+          tabindex="0"
+          [attr.aria-describedby]="'login-desc'"
+          (keydown)="login($event)"
           >
-          <ng-container *ngIf="!isLoggingIn">LOGIN</ng-container>
-          <ng-container *ngIf="isLoggingIn">LOGGING IN...</ng-container>
+          <ng-container *ngIf="!isLoggingIn" id="login-desc">LOGIN</ng-container>
+          <ng-container *ngIf="isLoggingIn" id="login-desc">LOGGING IN...</ng-container>
         </ion-button>
       </form>
     </div>
