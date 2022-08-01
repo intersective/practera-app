@@ -27,14 +27,14 @@
     "pubdocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build"
   },
   "dependencies": {
-    "@angular/animations": "^9.0.5",
-    "@angular/common": "^9.0.5",
-    "@angular/core": "^9.0.5",
-    "@angular/forms": "^9.0.5",
+    "@angular/animations": "~9.1",
+    "@angular/common": "~9.1",
+    "@angular/core": "~9.1",
+    "@angular/forms": "~9.1",
     "@angular/http": "^7.2.16",
-    "@angular/platform-browser": "^9.0.5",
-    "@angular/platform-browser-dynamic": "^9.0.5",
-    "@angular/router": "^9.0.5",
+    "@angular/platform-browser": "~9.1",
+    "@angular/platform-browser-dynamic": "~9.1",
+    "@angular/router": "~9.1",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
@@ -70,12 +70,12 @@
   "devDependencies": {
     "@angular-devkit/architect": "^0.1000.4",
     "@angular-devkit/build-angular": "^0.901.9",
-    "@angular-devkit/core": "~9.0.5",
-    "@angular-devkit/schematics": "~9.0.5",
-    "@angular/cli": "~9.0.5",
-    "@angular/compiler": "~9.0.5",
-    "@angular/compiler-cli": "^9.0.5",
-    "@angular/language-service": "~9.0.5",
+    "@angular-devkit/core": "~9.1",
+    "@angular-devkit/schematics": "~9.1",
+    "@angular/cli": "~9.1",
+    "@angular/compiler": "~9.1",
+    "@angular/compiler-cli": "~9.1",
+    "@angular/language-service": "~9.1",
     "@compodoc/compodoc": "^1.1.11",
     "@ionic/angular-toolkit": "~1.2.2",
     "@types/jasmine": "~2.8.8",
@@ -107,6 +107,6 @@
     "serverless-certificate-creator": "^1.4.0",
     "ts-node": "~8.0.0",
     "tslint": "~5.12.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.8.3"
   }
 }

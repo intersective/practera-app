@@ -7,13 +7,10 @@ name: Deploy to p2-usa live environment
 ################################################
 #  GITHUB ACTION EVENT TRIGGER
 ################################################
-on: 
+on:
   workflow_dispatch:
-    inputs:
-      BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'     
-        required: true
-        default: ''
+  push:
+    branches: [ 'p2-uk-us-hotfix' ]
     
 
 ################################################
