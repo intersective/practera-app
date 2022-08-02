@@ -284,14 +284,6 @@ jobs:
           APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
           aws s3 sync www/ s3://$APP_V2_S3 --delete
 
-##########################################################
-#  AWS S3 SYNC OPERATIONS FOR PUBLIC ACCESS
-##########################################################
-      - name: AWS S3 Sync Operations for Public Access 
-        run: |
-          aws s3 cp public-files/ s3://file.practera.com/ --recursive
-
-
 
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
