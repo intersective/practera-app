@@ -4,6 +4,7 @@
   aria-modal="true"
   aria-hidden="false"
   #achievementBadgePopup>
+  <h2 class="for-accessibility">{{achievement.name}}</h2>
   <div class="image-content">
     <div class="image ion-text-center">
       <img alt="{{achievement.name}}"
@@ -42,7 +43,7 @@
       <ion-button mode="ios" (click)="confirmed($event)"
         shape="round" color="primary"
         expand="full" tabindex="0" id="confirm"
-        role="button" (keydown)=confirmed($event) aria-label="confirm" #dismissButton>OK</ion-button>
+        [attr.aria-role]="'button'" (keydown)=confirmed($event) [attr.aria-label]="'confirm'" #dismissButton>OK</ion-button>
     </div>
   </div>
 </ion-footer>

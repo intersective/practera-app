@@ -14,7 +14,7 @@
       [lines]="'none'"
       [isCustomizedCard]="true"
       [isChatCard]="true">
-      <ion-avatar slot="start" text-center class="access-avatar"><img [src]="chat.avatar" alt="chat avatar img" alt="chat avatar"></ion-avatar>
+      <ion-avatar slot="start" text-center class="access-avatar"><img [src]="chat.avatar" alt="chat avatar"></ion-avatar>
       <ion-label class="chat-item-label">
         <div class="chat-name-container caption">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}">{{ chat.name }}</p>

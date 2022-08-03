@@ -18,7 +18,7 @@
 
       <ion-col size="12" size-md="4" class="ion-no-padding">
         <ng-container *ngIf="(experience$ | async ) as experience">
-          <img [src]="experience.leadImage" />
+          <img [src]="experience.leadImage" [alt]="experience.name" />
           <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100"></ion-progress-bar>
           <div class="exp-content">
             <h1 class="headline-2">{{ experience.name }}</h1>
