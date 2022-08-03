@@ -16,10 +16,12 @@
         </ion-col>
         <ion-col class="ion-align-self-end">
           <ion-select class="subtitle-1 ion-no-padding ion-no-margin"
+            [attr.aria-label]="'country code'"
             [(ngModel)]="countryModel"
             interface="popover"
             (ionChange)="updateCountry()">
             <ion-select-option [value]="countryCode.code"
+              aria-label="country code"
               *ngFor="let countryCode of contactNumberFormat.countryCodes">
               {{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
           </ion-select>
@@ -49,11 +51,11 @@
       [ngClass]="{'mobile-btn': isMobile}"
       [disabled]="updating"
       (click)="updateContactNumber()"
-      aria-label="update contact number"
+      [attr.aria-descripedby]="'updateMobileNumber'"
       role="button"
     >
-      <ng-container *ngIf="!updating">Update mobile number</ng-container>
-      <ng-container *ngIf="updating">Updating..</ng-container>
+      <ng-container id="updateMobileNumber" *ngIf="!updating">Update mobile number</ng-container>
+      <ng-container id="updateMobileNumber" *ngIf="updating">Updating..</ng-container>
     </ion-button>
   </div>
 
@@ -79,6 +81,7 @@
         </ion-col>
         <ion-col size="5">
           <ion-select placeholder="Select Country"
+            aria-label="select country code"
             name="countryModel"
             [(ngModel)]="countryModel"
             (ionChange)="updateCountry()">
