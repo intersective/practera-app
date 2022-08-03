@@ -3,14 +3,15 @@
 }" appFloat>
 
   <div class="btn-filter">
+    <h3 class="for-accessibility">Event categories</h3>
     <ion-segment (ionChange)="switchEvents($event)" [value]="activated">
-      <ion-segment-button value="browse" mode="ios">
+      <ion-segment-button value="browse" mode="ios" aria-label="browse new event">
         <ion-label>Browse</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="booked" mode="ios">
+      <ion-segment-button value="booked" mode="ios" aria-label="booked event">
         <ion-label>Booked</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="attended" mode="ios">
+      <ion-segment-button value="attended" mode="ios" aria-label="attended event">
         <ion-label>Attended</ion-label>
       </ion-segment-button>
     </ion-segment>
@@ -72,15 +73,15 @@
     <ion-card class="practera-card list-empty-message">
       <ng-container [ngSwitch]="activated">
         <ng-container *ngSwitchCase="'browse'">
-          <p class="subtitle-1 gray-3">There's no new events.</p>
+          <p aria-live="polite" class="subtitle-1 gray-3">There's no new event.</p>
           <span class="gray-1 body-2">Go to the booked tab to see the events you've booked.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'booked'">
-          <p class="subtitle-1 gray-3">You have no booked events.</p>
+          <p aria-live="polite" class="subtitle-1 gray-3">You have no booked events.</p>
           <span class="gray-1 body-2">Go to the browse tab and book an event to see it here.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'attended'">
-          <p class="subtitle-1 gray-3">You have not attended any events.</p>
+          <p aria-live="polite" class="subtitle-1 gray-3">You have not attended any events.</p>
           <span class="gray-1 body-2">You can see all your past events in this tab.</span>
         </ng-container>
       </ng-container>

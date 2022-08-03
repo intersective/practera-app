@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 })
 export class BrandingLogoComponent {
   @Input() logo: string;
+  @Input() name?: string;
 
   constructor(public storage: BrowserStorageService) {}
 }

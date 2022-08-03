@@ -13,92 +13,100 @@
 </ion-header>
 
 <ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
-  <ion-grid style="padding: inherit;">
-    <ion-row>
+  <h1 class="for-accessibility">Home</h1>
+  <main>
+    <ion-grid style="padding: inherit;">
+      <ion-row>
 
-      <ion-col size="12" size-md="4" class="ion-no-padding">
-        <ng-container *ngIf="(experience$ | async ) as experience">
-          <img [src]="experience.leadImage" [alt]="experience.name" />
-          <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100"></ion-progress-bar>
-          <div class="exp-content">
-            <h1 class="headline-2">{{ experience.name }}</h1>
-            <ion-text class="subtitle-3" color="grey-75">
-              <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
-              <span style="margin: 0 10px">|</span>
-              <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress }}% Progress</ng-container>
-              <ng-template #loadingProgress>
-                <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
+        <ion-col size="12" size-md="4" class="ion-no-padding">
+          <h2 class="for-accessibility">Experience Details</h2>
+          <ng-container *ngIf="(experience$ | async ) as experience">
+            <img [src]="experience.leadImage" [alt]="experience.name" />
+            <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100"></ion-progress-bar>
+            <div class="exp-content">
+              <h1 class="headline-2">{{ experience.name }}</h1>
+              <ion-text class="subtitle-3" color="grey-75">
+                <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
+                <span style="margin: 0 10px">|</span>
+                <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress }}% Progress</ng-container>
+                <ng-template #loadingProgress>
+                  <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
+                </ng-template>
+              </ion-text>
+              <ng-template #experienceDescription *ngIf="false">
+                <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
+                <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
               </ng-template>
-            </ion-text>
-            <ng-template #experienceDescription *ngIf="false">
-              <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
-              <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
-            </ng-template>
-          </div>
-        </ng-container>
-      </ion-col>
-
-      <ion-col size="12" size-md="8" class="activity-col" [ngClass]="{'mobile': isMobile}">
-        <ion-segment (ionChange)="switchContent($event)" [value]="display">
-          <ion-segment-button value="activities" mode="ios">
-            <ion-label>Activities</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="badges" mode="ios">
-            <ion-label>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-
-        <ng-container *ngIf="display === 'activities'">
-          <ng-container *ngIf="!milestones">
-            <ion-item><ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text></ion-item>
-            <ion-item><ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text></ion-item>
+            </div>
           </ng-container>
-          <ng-container *ngFor="let milestone of milestones">
-            <ion-item class="headline-4 milestone-name" lines="none">
-              {{ milestone.name }}
-              <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
+        </ion-col>
+
+        <ion-col size="12" size-md="8" class="activity-col" [ngClass]="{'mobile': isMobile}">
+          <h2 class="for-accessibilityy">Activities</h2>
+          <ion-segment (ionChange)="switchContent($event)" [value]="display">
+            <ion-segment-button value="activities" mode="ios">
+              <ion-label>Activities</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="badges" mode="ios">
+              <ion-label>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+          <ng-container *ngIf="display === 'activities'">
+            <h3 class="for-accessibility">Activity list</h3>
+            <ng-container *ngIf="!milestones">
+              <ion-item><ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text></ion-item>
+              <ion-item><ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text></ion-item>
+            </ng-container>
+            <ng-container *ngFor="let milestone of milestones">
+              <ion-item class="headline-4 milestone-name" lines="none">
+                {{ milestone.name }}
+                <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
+              </ion-item>
+              <ion-item color="light" class="body-3" lines="none" *ngIf="milestone?.description">
+                <app-description [content]="milestone.description"></app-description>
+              </ion-item>
+              <app-list-item *ngFor="let activity of milestone.activities; let i = index"
+                [title]="activity.name"
+                [leadImage]="activity.leadImage"
+                [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
+                (click)="gotoActivity(activity)"
+                [endingIcon]="endingIcon(activity)"
+                [endingIconColor]="endingIconColor(activity)"
+                [endingProgress]="endingProgress(activity.progress)"
+              ></app-list-item>
+            </ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="display === 'badges'">
+            <h3 class="for-accessibility">Badges awarded</h3>
+            <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
+              <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
+              <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
+              <p id="nobadges" class="body-1">You have no badges yet!</p>
+              <ion-text class="subtitle-2" color="grey-75">Experience badge will show up here.</ion-text>
+            </div>
+            <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
+              <ion-label class="headline-4">
+                Total Points Earned: {{getEarnedPoints}}
+              </ion-label>
             </ion-item>
-            <ion-item color="light" class="body-3" lines="none" *ngIf="milestone?.description">
-              <app-description [content]="milestone.description"></app-description>
-            </ion-item>
-            <app-list-item *ngFor="let activity of milestone.activities; let i = index"
-              [title]="activity.name"
-              [leadImage]="activity.leadImage"
-              [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-              (click)="gotoActivity(activity)"
-              [endingIcon]="endingIcon(activity)"
-              [endingIconColor]="endingIconColor(activity)"
-              [endingProgress]="endingProgress(activity.progress)"
+            <app-list-item *ngFor="let achievement of achievements"
+              [title]="achievement.name"
+              [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''"
+              subtitle1Color="medium"
+              [leadImage]="achievement.image"
+              lines="full"
+              (click)="achievePopup(achievement)"
+              [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
+              [endingIconColor]="achievement.isEarned ? 'success' : 'medium'"
             ></app-list-item>
           </ng-container>
-        </ng-container>
 
-        <ng-container *ngIf="display === 'badges'">
-          <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
-            <ion-icon class="large-icon" color="primary" name="ribbon-outline"></ion-icon>
-            <p class="body-1">You have no badges yet!</p>
-            <ion-text class="subtitle-2" color="grey-75">Experience badge will show up here.</ion-text>
-          </div>
-          <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
-            <ion-label class="headline-4">
-              Total Points Earned: {{getEarnedPoints}}
-            </ion-label>
-          </ion-item>
-          <app-list-item *ngFor="let achievement of achievements"
-            [title]="achievement.name"
-            [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''"
-            subtitle1Color="medium"
-            [leadImage]="achievement.image"
-            lines="full"
-            (click)="achievePopup(achievement)"
-            [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
-            [endingIconColor]="achievement.isEarned ? 'success' : 'medium'"
-          ></app-list-item>
-        </ng-container>
+        </ion-col>
 
-      </ion-col>
+      </ion-row>
+    </ion-grid>
 
-    </ion-row>
-  </ion-grid>
-
+  </main>
 </ion-content>
