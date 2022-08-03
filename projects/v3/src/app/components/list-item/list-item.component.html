@@ -8,7 +8,7 @@
   ></ion-icon>
 
   <ion-avatar *ngIf="leadImage" slot="start">
-    <img [src]="leadImage">
+    <img [src]="leadImage" [alt]="title">
   </ion-avatar>
 
   <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">

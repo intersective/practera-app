@@ -681,13 +681,6 @@ export class ChatRoomComponent implements OnInit {
     return await modal.present();
   }
 
-  videoConversion(file) {
-    this.filestackService.videoConversion(file.handle).subscribe(res => {
-      this.videoHandles[file.handle] = res;
-    });
-    return true;
-  }
-
   // @Deprecated in case we need it later
   createThumb(video, w, h) {
     const c = document.createElement('canvas'),    // create a canvas

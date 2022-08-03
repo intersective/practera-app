@@ -2,7 +2,7 @@
   <ng-container [ngSwitch]="fileType">
 
     <ng-container *ngSwitchCase="'image'">
-      <app-img [imgSrc]="file.url" alt="filestack image"></app-img>
+      <app-img [imgSrc]="file.url" alt="generic image uploaded by user"></app-img>
       <ng-container *ngIf="isFileComponent">
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
       </ng-container>

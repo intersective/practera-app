@@ -33,7 +33,7 @@ const swapWidthAndHeight = img => {
   styleUrls: ['./img.component.scss']
 })
 export class ImgComponent {
-  @Input() alt: any;
+  @Input() alt: string;
   @Input() imgSrc: any;
 
   constructor() {

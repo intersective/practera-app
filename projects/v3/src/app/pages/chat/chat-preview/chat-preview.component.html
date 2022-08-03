@@ -21,7 +21,7 @@
 <ion-content text-center>
   <div class="wrapper">
     <ng-container *ngIf="file && file.mimetype.includes('image')">
-      <img [src]="file.url" alt="uploaded attachment url">
+      <img [src]="file.url" alt="uploaded attachment">
     </ng-container>
 
     <ng-container *ngIf="file && file.mimetype.includes('video')">
