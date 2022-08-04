@@ -1,4 +1,5 @@
 <ion-header class="ion-no-border header-border">
+  <h1 class="for-accessibility">Home</h1>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()">
@@ -13,8 +14,8 @@
 </ion-header>
 
 <ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
-  <h1 class="for-accessibility">Home</h1>
   <main>
+    <h1 class="for-accessibility">Home content</h1>
     <ion-grid style="padding: inherit;">
       <ion-row>
 
