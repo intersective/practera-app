@@ -1,4 +1,5 @@
 <ion-header class="ion-no-border">
+  <h1 class="for-accessibility">Notifications</h1>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="dismiss()" *ngIf="mode === 'modal'">
@@ -15,27 +16,30 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <ng-container *ngIf="isMobile; else notificationsDesktop">
-    <ng-container *ngIf="loadingTodoItems; else doneLoading">
-      <div class="margin-left-right ion-padding-bottom">
-        <app-todo-card [loading]="true" [todoItem]="{}"></app-todo-card>
-      </div>
+  <main>
+    <h1 class="for-accessibility">Notifications list</h1>
+    <ng-container *ngIf="isMobile; else notificationsDesktop">
+      <ng-container *ngIf="loadingTodoItems; else doneLoading">
+        <div class="margin-left-right ion-padding-bottom">
+          <app-todo-card [loading]="true" [todoItem]="{}"></app-todo-card>
+        </div>
+      </ng-container>
+
+      <ng-template #doneLoading>
+        <div @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
+          <ng-container *ngIf="notices.length > 0; else noNotices">
+            <app-todo-card *ngFor="let notice of notices" [todoItem]="notice" [ngStyle]="{width: '100%'}" (click)="clickTodoItem(notice)"></app-todo-card>
+          </ng-container>
+
+          <ng-template #noNotices>
+            <div class="margin-left-right ion-padding-bottom">
+              <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
+            </div>
+          </ng-template>
+        </div>
+      </ng-template>
     </ng-container>
-
-    <ng-template #doneLoading>
-      <div @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
-        <ng-container *ngIf="notices.length > 0; else noNotices">
-          <app-todo-card *ngFor="let notice of notices" [todoItem]="notice" [ngStyle]="{width: '100%'}" (click)="clickTodoItem(notice)"></app-todo-card>
-        </ng-container>
-
-        <ng-template #noNotices>
-          <div class="margin-left-right ion-padding-bottom">
-            <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
-          </div>
-        </ng-template>
-      </div>
-    </ng-template>
-  </ng-container>
+  </main>
 </ion-content>
 
 <ng-template #notificationsDesktop>
