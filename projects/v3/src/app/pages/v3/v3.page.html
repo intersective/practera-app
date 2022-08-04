@@ -1,34 +1,36 @@
 <ion-split-pane contentId="main-content">
-
   <ion-menu contentId="main-content">
     <ion-content>
-      <div class="institute-logo-container">
-        <img [src]="logo" [attr.alt]="'branding logo'">
-      </div>
-      <ion-list lines="none">
-        <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
-          <ion-item class="menu-item" *ngIf="p.title !== 'Messages' || (p.title === 'Messages' && showMessages)" [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">
-            <ion-icon slot="start" [name]="p.icon"></ion-icon>
-            <ion-label class="body-2 black">
-              {{p.title}}
-            </ion-label>
+      <main>
+        <h1 class="for-accessibility">Navigation</h1>
+        <div class="institute-logo-container">
+          <img [src]="logo" [attr.alt]="'branding logo'">
+        </div>
+        <ion-list lines="none">
+          <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
+            <ion-item class="menu-item" *ngIf="p.title !== 'Messages' || (p.title === 'Messages' && showMessages)" [routerLink]="p.url" routerLinkActive="selected" routerDirection="root" detail="false">
+              <ion-icon slot="start" [name]="p.icon"></ion-icon>
+              <ion-label class="body-2 black">
+                {{p.title}}
+              </ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+          <ion-item class="menu-item" (click)="presentModal()" button detail="false">
+            <ion-icon slot="start" name="settings"></ion-icon>
+            <ion-label class="body-2 black">Settings</ion-label>
+            <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
           </ion-item>
-        </ion-menu-toggle>
 
-        <ion-item class="menu-item" (click)="presentModal()" button detail="false">
-          <ion-icon slot="start" name="settings"></ion-icon>
-          <ion-label class="body-2 black">Settings</ion-label>
-          <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
-        </ion-item>
+          <ion-item-divider mode="md"></ion-item-divider>
 
-        <ion-item-divider mode="md"></ion-item-divider>
+          <ion-item class="menu-item" routerLink="/experiences" routerDirection="root" detail="false">
+            <ion-icon slot="start" name="grid"></ion-icon>
+            <ion-label class="body-2 black">My Experiences</ion-label>
+          </ion-item>
 
-        <ion-item class="menu-item" routerLink="/experiences" routerDirection="root" detail="false">
-          <ion-icon slot="start" name="grid"></ion-icon>
-          <ion-label class="body-2 black">My Experiences</ion-label>
-        </ion-item>
-
-      </ion-list>
+        </ion-list>
+      </main>
     </ion-content>
   </ion-menu>
 
