@@ -21,7 +21,6 @@
             interface="popover"
             (ionChange)="updateCountry()">
             <ion-select-option [value]="countryCode.code"
-              aria-label="country code"
               *ngFor="let countryCode of contactNumberFormat.countryCodes">
               {{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
           </ion-select>
