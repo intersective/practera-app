@@ -1,6 +1,7 @@
 <ng-container *ngIf="file">
-  <ng-container [ngSwitch]="fileType">
+  <h3 class="for-accessibility">Quick file display of uploaded file</h3>
 
+  <ng-container [ngSwitch]="fileType">
     <ng-container *ngSwitchCase="'image'">
       <app-img [imgSrc]="file.url" alt="generic image uploaded by user"></app-img>
       <ng-container *ngIf="isFileComponent">
@@ -47,7 +48,6 @@
         </ion-item>
       </ng-template>
     </ng-container>
-
   </ng-container>
 </ng-container>
 
