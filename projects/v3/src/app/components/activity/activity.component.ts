@@ -124,7 +124,13 @@ export class ActivityComponent {
     return task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress');
   }
 
-  goto(task: Task) {
+  goto(task: Task, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     return this._validateTeamAssessment(task, () => {
       if (task.type === 'Locked') {
         return this.notificationService.alert({
