@@ -1,3 +1,4 @@
+<h3 class="for-accessibility" [id]="'multi-team-member-selector-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === '')) && (submission?.answer || review?.answer)">
   <ion-list class="no-bg ion-no-padding">
     <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
@@ -23,6 +24,7 @@
       [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
       <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
       <ion-checkbox
+        [attr.aria-label]="teamMember.userName"
         color="success"
         [checked]="submission.answer ? submission.answer.includes(teamMember.key) : false"
         [value]="teamMember.key"
@@ -50,6 +52,7 @@
         </p>
       </ion-label>
       <ion-checkbox color="success"
+        [attr.aria-label]="teamMember.userName"
         [checked]="review.answer ? review.answer.includes(teamMember.key) : false"
         [value]="teamMember.key"
         slot="start"
@@ -57,7 +60,10 @@
         [disabled]="control.disabled"></ion-checkbox>
     </ion-item>
   </ion-list>
-  <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
+  <ion-textarea *ngIf="question.canComment"
+    [attr.aria-label]="'expert\'s review feedback'"
+    class="textarea" #commentEle rows="4" [(ngModel)]="comment"
     (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
-    [disabled]="control.disabled"></ion-textarea>
+    [disabled]="control.disabled"
+  ></ion-textarea>
 </ng-container>

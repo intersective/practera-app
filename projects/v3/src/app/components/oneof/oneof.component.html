@@ -1,3 +1,4 @@
+<h3 class="for-accessibility" [id]="'oneof-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
@@ -26,7 +27,9 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-no-padding">
     <ion-list class="ion-no-padding">
-      <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
+      <ion-radio-group [value]="submission.answer" #answerEle
+        (ionChange)="onChange(answerEle.value)"
+        [attr.aria-labelledby]="'oneof-question-' + question.id">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item lines="none"
             [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
@@ -54,7 +57,7 @@
 <ng-container *ngIf="doReview">
   <div class="ion-no-padding">
     <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
-      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+      <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')" [attr.aria-labelledby]="'oneof-question-' + question.id">
         <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
           <ion-label class="subtitle-2 black">Your Answer is</ion-label>
         </ion-list-header>
@@ -77,6 +80,7 @@
       </ion-radio-group>
     </ion-list>
     <ion-textarea
+      [attr.aria-label]="'expert\'s review feedback'"
       *ngIf="question.canComment && submission.answer"
       class="textarea"
       #commentEle

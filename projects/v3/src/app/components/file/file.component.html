@@ -29,7 +29,10 @@
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label>Feedback</ion-label>
     </ion-item>
-    <ion-textarea class="ion-no-margin textarea white-space-pre" [value]="review.comment" [disabled]="true"></ion-textarea>
+    <ion-textarea class="ion-no-margin textarea white-space-pre"
+      [value]="review.comment"
+      [disabled]="true"
+    ></ion-textarea>
   </ng-container>
 </div>
 
@@ -43,7 +46,7 @@
     ></app-file-stack>
 
     <ion-text *ngFor="let error of errors" color="danger">
-      <p>{{error}}</p>
+      <p aria-live="polite">{{error}}</p>
     </ion-text>
 
     <app-file-display
@@ -80,8 +83,8 @@
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label>Feedback</ion-label>
     </ion-item>
-    <ion-textarea
-      class="ion-no-margin textarea"
+    <ion-textarea class="ion-no-margin textarea"
+      [attr.aria-label]="'expert\'s review feedback'"
       #commentEle
       [(ngModel)]="comment"
       (ngModelChange)="onChange(comment, 'comment')"
