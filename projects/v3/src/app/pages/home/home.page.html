@@ -72,9 +72,11 @@
                 [leadImage]="activity.leadImage"
                 [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
                 (click)="gotoActivity(activity)"
+                (keydown)="gotoActivity(activity, $event)"
                 [endingIcon]="endingIcon(activity)"
                 [endingIconColor]="endingIconColor(activity)"
                 [endingProgress]="endingProgress(activity.progress)"
+                tabindex="0"
               ></app-list-item>
             </ng-container>
           </ng-container>
@@ -99,8 +101,10 @@
               [leadImage]="achievement.image"
               lines="full"
               (click)="achievePopup(achievement)"
+              (keydown)="achievePopup(achievement, $event)"
               [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
               [endingIconColor]="achievement.isEarned ? 'success' : 'medium'"
+              tabindex="0"
             ></app-list-item>
           </ng-container>
 

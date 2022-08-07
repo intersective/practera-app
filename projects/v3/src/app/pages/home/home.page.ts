@@ -96,7 +96,13 @@ export class HomePage implements OnInit, OnDestroy {
     return progress;
   }
 
-  gotoActivity(activity) {
+  gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     if (activity.isLocked) {
       return ;
     }
@@ -110,7 +116,12 @@ export class HomePage implements OnInit, OnDestroy {
     return this.router.navigate(['v3', 'activity-mobile', activity.id]);
   }
 
-  achievePopup(achievement: Achievement) {
+  achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
     this.notification.achievementPopUp('', achievement);
   }
 
