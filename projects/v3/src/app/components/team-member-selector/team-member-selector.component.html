@@ -1,3 +1,4 @@
+<h3 class="for-accessibility" [id]="'team-member-selector-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === '')) && (submission?.answer || review?.answer)">
   <ion-list class="no-bg ion-no-padding">
     <ion-radio-group [value]="submission?.answer">
@@ -22,6 +23,7 @@
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg">
     <ion-radio-group
+      [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
       [value]="submission.answer"
       #answerEle
       (ionChange)="onChange(answerEle.value)">
@@ -43,7 +45,10 @@
 <ng-container *ngIf="doReview">
   <ion-list class="no-bg ion-no-padding"
     *ngIf="question.canAnswer" lines="none">
-    <ion-radio-group #answerEle [value]="review.answer" (ionChange)="onChange(answerEle.value, 'answer')">
+    <ion-radio-group #answerEle
+      [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
+      [value]="review.answer"
+      (ionChange)="onChange(answerEle.value, 'answer')">
       <ion-item lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
         [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
@@ -57,7 +62,13 @@
       </ion-item>
     </ion-radio-group>
   </ion-list>
-  <ion-textarea *ngIf="question.canComment" class="textarea" #commentEle rows="4" [(ngModel)]="comment"
+  <ion-textarea *ngIf="question.canComment"
+    [attr.aria-label]="'expert\'s review feedback'"
+    #commentEle
+    class="textarea"
+    rows="4"
+    [(ngModel)]="comment"
     (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
-    [disabled]="control.disabled"></ion-textarea>
+    [disabled]="control.disabled"
+  ></ion-textarea>
 </ng-container>

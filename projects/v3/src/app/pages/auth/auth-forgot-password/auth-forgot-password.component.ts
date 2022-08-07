@@ -19,7 +19,13 @@ export class AuthForgotPasswordComponent {
     private utils: UtilsService
   ) {}
 
-  async send() {
+  async send(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     // basic validation
     if (this.email.length < 0 || !this.email) {
       return this.notificationsService.presentToast('Please enter email');

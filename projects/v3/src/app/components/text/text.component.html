@@ -1,3 +1,4 @@
+<h3 class="for-accessibility" [id]="'text-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <div class="ion-padding" *ngIf="submission?.answer">
     <ion-chip class="label orange">Learner's answer</ion-chip>
@@ -18,6 +19,7 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding textarea-border">
     <ion-textarea
+      [attr.aria-labelledby]="'text-question-' + question.id"
       [(ngModel)]="answer"
       #answerEle
       rows="4"
@@ -40,12 +42,14 @@
   </ion-item>
 
   <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
-    <ion-chip class="label orange">Learner's answer</ion-chip>
-    <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
+    <h3 class="for-accessibility" aria-labelledby="learner-indicator" aria-describedby="learner-answer"></h3>
+    <ion-chip id="learner-indicator" class="label orange">Learner's answer</ion-chip>
+    <p id="learner-answer" class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
   <div class="ion-padding">
     <ion-textarea
+      [attr.aria-label]="'expert\'s answer'"
       *ngIf="question.canAnswer"
       class="textarea"
       rows="4"
@@ -57,6 +61,7 @@
       [disabled]="control.disabled"></ion-textarea>
 
     <ion-textarea
+      [attr.aria-label]="'expert\'s review feedback'"
       *ngIf="question.canComment && submission?.answer"
       class="textarea"
       [(ngModel)]="comment"
