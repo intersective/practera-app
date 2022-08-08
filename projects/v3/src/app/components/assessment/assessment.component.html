@@ -61,8 +61,7 @@
     <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
-        role="title"
-        tabindex="0">{{ assessment.name }}</div>
+        role="heading" aria-level="2">{{ assessment.name }}</div>
 
       <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label">
         <ion-label>{{ label }}</ion-label>
