@@ -23,7 +23,7 @@
           <h2 class="for-accessibility">Experience Details</h2>
           <ng-container *ngIf="(experience$ | async ) as experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
-            <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100"></ion-progress-bar>
+            <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100" aria-hidden="true"></ion-progress-bar>
             <div class="exp-content">
               <h1 class="headline-2">{{ experience.name }}</h1>
               <ion-text class="subtitle-3" color="grey-75">
