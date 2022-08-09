@@ -79,7 +79,11 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   goToTask(task: Task) {
-    this.document.getElementById('task-content').focus();
+    const taskContentElement = this.document.getElementById('task-content');
+    if (taskContentElement) {
+      taskContentElement.focus();
+    }
+
     return this.activityService.goToTask(task);
   }
 
