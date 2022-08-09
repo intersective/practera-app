@@ -1,4 +1,4 @@
-<ng-container *ngIf="activity">
+<ng-container *ngIf="activity; else noActivity">
   <div class="ion-padding">
     <h1 *ngIf="activity.name" class="headline-2 activity-name">{{ activity.name }}</h1>
     <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;"></ion-skeleton-text>
@@ -12,29 +12,31 @@
   </div>
 
   <ion-item class="headline-4 task-header" lines="none">{{ 'Task' + (activity.tasks.length > 1 ? 's' : '') }}</ion-item>
-  <ng-container *ngIf="activity.tasks">
-    <app-list-item *ngFor="let task of activity.tasks; let i = index"
-      lines="full"
-      subtitle1Color="grey-50"
-      (click)="goto(task)"
-      (keydown)="goto(task, $event)"
-      [title]="task.name"
-      [subtitle1]="subtitle(task)"
-      [label]="label(task)"
-      [labelColor]="labelColor(task)"
-      [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
-      [leadingIcon]="leadIcon(task)"
-      [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
-      [endingIcon]="endingIcon(task)"
-      [endingIconColor]="endingIconColor(task)"
-      tabindex="0"
-    ></app-list-item>
-  </ng-container>
+
+  <app-list-item class="focusable"
+    tabindex="0"
+    *ngFor="let task of (activity?.tasks || []); let i = index"
+    lines="full"
+    subtitle1Color="grey-50"
+    (click)="goto(task)"
+    (keydown)="goto(task, $event)"
+    [title]="task.name"
+    [subtitle1]="subtitle(task)"
+    [label]="label(task)"
+    [labelColor]="labelColor(task)"
+    [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
+    [leadingIcon]="leadIcon(task)"
+    [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
+    [endingIcon]="endingIcon(task)"
+    [endingIconColor]="endingIconColor(task)"
+  ></app-list-item>
 </ng-container>
 
-<div *ngIf="!activity" class="ion-padding">
-  <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
-</div>
+<ng-template #noActivity>
+  <div *ngIf="!activity" class="ion-padding">
+    <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+  </div>
+</ng-template>
