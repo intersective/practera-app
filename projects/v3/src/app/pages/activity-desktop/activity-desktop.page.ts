@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -38,6 +39,7 @@ export class ActivityDesktopPage implements OnInit {
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private utils: UtilsService,
+    @Inject(DOCUMENT) private readonly document: Document
   ) { }
 
   ngOnInit() {
@@ -77,6 +79,7 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   goToTask(task: Task) {
+    this.document.getElementById('task-content').focus();
     return this.activityService.goToTask(task);
   }
 
