@@ -31,8 +31,7 @@
 
       <ion-col size="12" size-md="8" class="border-left">
         <ng-container *ngIf="currentTask">
-          <app-assessment
-            *ngIf="currentTask.type === 'Assessment'"
+          <app-assessment *ngIf="currentTask.type === 'Assessment'"
             [assessment]="assessment"
             [submission]="submission"
             [review]="review"
@@ -42,12 +41,15 @@
             (save)="saveAssessment($event, currentTask)"
             (readFeedback)="readFeedback($event, currentTask)"
             (continue)="nextTask(currentTask)"
+            tabindex="0"
+            id="task-content"
           ></app-assessment>
 
-          <app-topic
-            *ngIf="currentTask.type === 'Topic'"
+          <app-topic *ngIf="currentTask.type === 'Topic'"
             [topic]="topic"
             (continue)="topicComplete(currentTask)"
+            tabindex="0"
+            id="task-content"
           ></app-topic>
         </ng-container>
       </ion-col>
