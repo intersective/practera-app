@@ -1,11 +1,27 @@
-<ion-content class="ion-text-center" [ngClass]="{'desktop-view': !utils.isMobile()}">
+<ion-content class="ion-text-center" [ngClass]="{'desktop-view': !utils.isMobile()}"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="false"
+  #activityComplete>
   <p class="ion-margin">
     You have remaining tasks in the current activity. Would you like to review them before progressing?
   </p>
 
   <div class="fixed-bottom">
-    <ion-button mode="ios" (click)="confirmed(false)" fill="clear" color="primary" expand="full">REVIEW TASKS</ion-button>
+    <ion-button mode="ios"
+      (keydown.space)="confirmed(false)"
+      (keydown.enter)="confirmed(false)"
+      (click)="confirmed(false)"
+      fill="clear" color="primary" expand="full"
+      #reviewTasks tabindex="0"
+    >REVIEW TASKS</ion-button>
     <hr>
-    <ion-button mode="ios" (click)="confirmed(true)" fill="clear" color="primary" expand="full">CONTINUE</ion-button>
+    <ion-button mode="ios"
+      (keydown.space)="confirmed(true)"
+      (keydown.enter)="confirmed(true)"
+      (click)="confirmed(true)"
+      fill="clear" color="primary" expand="full"
+      #continueNextActivity tabindex="0"
+    >CONTINUE</ion-button>
   </div>
 </ion-content>

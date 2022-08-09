@@ -13,3 +13,8 @@
   height: 15px;
   margin: 0 30% 18px;
 }
+
+.focusable:focus {
+  border: 1px solid var(--ion-color-primary);
+  display: flex;
+}
