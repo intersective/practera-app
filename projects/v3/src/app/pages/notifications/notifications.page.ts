@@ -80,13 +80,25 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return this.utils.isMobile();
   }
 
-  async dismiss(): Promise<boolean> {
+  async dismiss(keyboardEvent?: KeyboardEvent): Promise<boolean> {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     return this.modalController.dismiss({
       'dismissed': true
     });
   }
 
-  showEventDetail(event) {
+  showEventDetail(event, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     if (this.utils.isMobile()) {
       return this.notificationsService.modal(
         {},
@@ -103,7 +115,13 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return this.utils.timeFormatter(startTime);
   }
 
-  async clickTodoItem(eventOrTodoItem) {
+  async clickTodoItem(eventOrTodoItem, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     const {
       activity_id,
       context_id,
@@ -179,7 +197,13 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return this.router.navigate(['v3', 'messages']);
   }
 
-  goBack(): Promise<boolean | void> {
+  goBack(keyboardEvent?: KeyboardEvent): Promise<boolean | void> {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     if (!this.isMobile) {
       return this.dismiss();
     }

@@ -2,11 +2,11 @@
   <h1 class="for-accessibility">Notifications</h1>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="dismiss()" *ngIf="mode === 'modal'">
+      <ion-button (keydown)="dismiss($event)" (click)="dismiss()" *ngIf="mode === 'modal'">
         <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
       </ion-button>
 
-      <ion-button (click)="goBack()" *ngIf="!mode">
+      <ion-button (keydown)="goBack($event)" (click)="goBack()" *ngIf="!mode">
         <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -28,7 +28,11 @@
       <ng-template #doneLoading>
         <div @newLoaded *ngIf="(eventReminders || []).concat(todoItems) as notices">
           <ng-container *ngIf="notices.length > 0; else noNotices">
-            <app-todo-card *ngFor="let notice of notices" [todoItem]="notice" [ngStyle]="{width: '100%'}" (click)="clickTodoItem(notice)"></app-todo-card>
+            <app-todo-card *ngFor="let notice of notices"
+              [todoItem]="notice" [ngStyle]="{width: '100%'}"
+              (keydown)="clickTodoItem(notice, $event)"
+              (click)="clickTodoItem(notice)"
+            ></app-todo-card>
           </ng-container>
 
           <ng-template #noNotices>
@@ -57,12 +61,17 @@
       description: '',
       type: 'event',
       time: timeFormatter(event.startTime)
-    }" (click)="showEventDetail(event)"></app-todo-card>
+    }"
+    (keydown)="showEventDetail(event, $event)"
+    (click)="showEventDetail(event)"></app-todo-card>
   </div>
 
   <ng-container *ngIf="todoItems.length; else noItemsTpl">
     <div *ngFor="let todoItem of todoItems" @newLoaded>
-      <app-todo-card [todoItem]="todoItem" (click)="clickTodoItem(todoItem)"></app-todo-card>
+      <app-todo-card [todoItem]="todoItem"
+        (keydown)="clickTodoItem(todoItem, $event)"
+        (click)="clickTodoItem(todoItem)"
+      ></app-todo-card>
     </div>
   </ng-container>
 
