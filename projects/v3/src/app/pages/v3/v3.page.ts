@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -25,6 +25,7 @@ export class V3Page implements OnInit, OnDestroy {
     private animationService: AnimationsService,
     private reviewService: ReviewService,
     private route: ActivatedRoute,
+    private router: Router,
     private storageService: BrowserStorageService,
     private chatService: ChatService
   ) {
@@ -109,7 +110,13 @@ export class V3Page implements OnInit, OnDestroy {
     }
   }
 
-  async presentModal(): Promise<void> {
+  async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     this.wait = true;
     const modal = await this.modalController.create({
       component: SettingsPage,
@@ -123,6 +130,15 @@ export class V3Page implements OnInit, OnDestroy {
     await modal.present();
     this.wait = false;
     return;
+  }
+
+  keyboardNavigate(routerLink: string, keyboardEvent: KeyboardEvent): void | Promise<boolean> {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+      return this.router.navigateByUrl(routerLink);
+    } else if (keyboardEvent) {
+      return;
+    }
   }
 
   get logo() {
