@@ -6,4 +6,9 @@
   justify-content: center;
   border-top: 1px solid var(--practera-grey-25);
   background: white;
+
+  ion-button.ion-focused {
+    border: 1px solid black;
+    border-radius: 8px;
+  }
 }
