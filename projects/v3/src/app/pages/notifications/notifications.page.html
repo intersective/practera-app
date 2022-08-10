@@ -68,7 +68,8 @@
 
   <ng-container *ngIf="todoItems.length; else noItemsTpl">
     <div *ngFor="let todoItem of todoItems" @newLoaded>
-      <app-todo-card [todoItem]="todoItem"
+      <app-todo-card
+        [todoItem]="todoItem"
         (keydown)="clickTodoItem(todoItem, $event)"
         (click)="clickTodoItem(todoItem)"
       ></app-todo-card>
