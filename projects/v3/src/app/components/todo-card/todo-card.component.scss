@@ -8,5 +8,10 @@
   text-overflow: ellipsis;
   background: #fff;
   min-height: 58px;
+
+}
+.focusable:focus {
+  display: block;
+  border: 1px solid;
 }
 
