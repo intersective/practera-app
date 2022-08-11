@@ -1,7 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
-import { Event, EventGroup } from '@v3/services/event.service';
+import { Event } from '@v3/services/event.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-events',
@@ -27,14 +28,14 @@ export class EventsPage implements OnInit {
   // event list component
   @ViewChild('eventList') eventList;
   // event detail component
-  @ViewChild('eventDetail') eventDetail;
+  @ViewChild('eventDetail') eventDetail: ElementRef;
   // assessment component
   @ViewChild('assessment') assessment;
 
   constructor(
-    public router: Router,
+    @Inject(DOCUMENT) private readonly document: Document,
     private route: ActivatedRoute,
-    public utils: UtilsService
+    public utils: UtilsService,
   ) { }
 
   ngOnInit() {
@@ -58,6 +59,11 @@ export class EventsPage implements OnInit {
     // not displaying the check-in assessment
     this.assessmentId = null;
     this.contextId = null;
+
+    const eventDetailElement = this.document.getElementById('eventDetail');
+    if (eventDetailElement) {
+      eventDetailElement.focus();
+    }
   }
 
   checkin(params: { assessmentId: number; contextId: number }) {

@@ -4,12 +4,14 @@
     <ion-title *ngIf="utils.isMobile()" class="ion-text-center" tabindex="0" aria-label="event">Event</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
   <div class="ion-margin">
     <h1 class="ion-text-center headline-2" tabindex="0">{{ event.name }}</h1>
     <div class="div-activity-name subtitle-1 gray-2" tabindex="0" [attr.aria-label]="event.activityName">{{ event.activityName }}</div>
     <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
+
   <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
 
   <ion-list lines="full">
@@ -42,18 +44,15 @@
   </ion-list>
 
   <div class="ion-margin-top ion-text-center" *ngIf="buttonText()">
-    <ion-button
-      class="btn-cta"
+    <ion-button class="btn-cta"
       (click)="confirmed($event)"
       [disabled]="(event.isPast && !event.isBooked) || (event.remainingCapacity === 0 && !event.isBooked) || ctaIsActing"
-      shape="round"
       [color]="(event.isPast && !event.isBooked) || (event.remainingCapacity === 0 && !event.isBooked) ? 'medium' : 'primary'"
+      shape="round"
       tabindex="0"
       role="button"
       (keydown)="confirmed($event)">
       {{ buttonText() }}
-
     </ion-button>
   </div>
-
 </ion-content>
