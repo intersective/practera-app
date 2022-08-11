@@ -41,7 +41,7 @@
     <ion-list class="ion-no-padding">
       <ion-item class="headline-4 event-group" lines="none">{{ eventObj.date }}</ion-item>
       <!-- @TODO add isVideoConference by checking event zoom object -->
-      <app-list-item
+      <app-list-item class="focusable"
         *ngFor="let event of eventObj.events; let i = index"
         leadingIcon="calendar-outline"
         [isEventItem]="true"
@@ -56,7 +56,9 @@
         [active]="event.isMultiDay ? (event.multiDayInfo.id === multiDayId) : (eventId === event.id)"
         lines="full"
         (click)="goto(event)"
-        (keyup.enter)="goto(event)"
+        (keydown.enter)="goto(event)"
+        (keydown.space)="goto(event)"
+        tabindex="0"
         [eventDayCount]="event.isMultiDay ? event.multiDayInfo.dayCount : null"
       ></app-list-item>
     </ion-list>
