@@ -25,11 +25,13 @@
         <ion-col size="12" size-md="7" class="border-left">
           <h2 class="for-accessibility">Event details</h2>
           <app-event-detail
-          #eventDetail
-          *ngIf="!assessmentId && currentEvent"
-          [event]="currentEvent"
-          (checkin)="checkin($event)"
-        ></app-event-detail>
+            tabindex="0"
+            id="eventDetail"
+            #eventDetail
+            *ngIf="!assessmentId && currentEvent"
+            [event]="currentEvent"
+            (checkin)="checkin($event)"
+          ></app-event-detail>
         </ion-col>
       </ion-row>
     </ion-grid>
