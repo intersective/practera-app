@@ -8,9 +8,10 @@
     slot="start"
     class="leading-icon"
     [ngClass]="{'pulsing': leadingIconPulsing}"
+    aria-hidden="true"
   ></ion-icon>
 
-  <ion-avatar *ngIf="leadImage" slot="start">
+  <ion-avatar *ngIf="leadImage" slot="start" aria-hidden="true">
     <img [src]="leadImage" [alt]="title">
   </ion-avatar>
 
@@ -42,7 +43,8 @@
   <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
 
   <div *ngIf="endingProgress && !endingIcon" slot="end" style="width: 2em;">
-    <app-circle-progress [data]='{ percent: endingProgress * 100 }'></app-circle-progress>
+    <p class="for-accessibility">progress {{ endingProgress * 100 }} out of 100%</p>
+    <app-circle-progress [data]='{ percent: endingProgress * 100 }' aria-hidden="true"></app-circle-progress>
   </div>
 
   <div *ngIf="isEventItem">
@@ -54,8 +56,8 @@
   </div>
 
   <ng-container *ngFor="let actionBtnIcon of endingActionBtnIcons; let i = index">
-    <ion-button mode="ios" fill="clear" (click)="actionBtnClick.emit(i)">
-      <ion-icon [name]="actionBtnIcon"></ion-icon>
+    <ion-button mode="ios" fill="clear" (click)="actionBtnClick.emit(i)" [attr.aria-label]="actionBtnIcon">
+      <ion-icon [name]="actionBtnIcon" aria-hidden="true"></ion-icon>
     </ion-button>
   </ng-container>
 

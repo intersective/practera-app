@@ -141,7 +141,11 @@ export class V3Page implements OnInit, OnDestroy {
     }
   }
 
-  get logo() {
+  get institutionLogo() {
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
+  }
+
+  get institutionName() {
+    return this.storageService.getUser().institutionName || 'Practera';
   }
 }
