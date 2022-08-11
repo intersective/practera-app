@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content>
-  <main>
+  <ng-container *ngIf="!utils.isMobile(); else mobileview">
     <ion-grid *ngIf="!utils.isMobile()" class="ion-no-padding">
       <ion-row>
         <ion-col size="12" size-md="5">
@@ -33,9 +33,9 @@
         </ion-col>
       </ion-row>
     </ion-grid>
-
-    <ion-content *ngIf="utils.isMobile()">
-      <app-event-list #eventList [activityId]="activityId"></app-event-list>
-    </ion-content>
-  </main>
+  </ng-container>
 </ion-content>
+
+<ng-template #mobileview>
+  <app-event-list #eventList [activityId]="activityId"></app-event-list>
+</ng-template>
