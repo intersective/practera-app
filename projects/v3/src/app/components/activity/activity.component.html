@@ -1,12 +1,16 @@
 <ng-container *ngIf="activity; else noActivity">
-  <div class="ion-padding">
-    <h1 *ngIf="activity.name" class="headline-2 activity-name">{{ activity.name }}</h1>
-    <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;"></ion-skeleton-text>
+  <div class="ion-padding" aria-live="polite" aria-labelledby="activity-name">
+    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-name">
+      {{ activity.name }}
+    </h1>
+    <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
 
     <div class="task-count">
-      <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75">{{ activity.tasks.length }} {{ 'Task' + (activity.tasks.length > 1 ? 's' : '') }}</ion-text>
+      <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75">
+        {{ activity.tasks.length }} {{ 'Task' + (activity.tasks.length > 1 ? 's' : '') }}
+      </ion-text>
     </div>
-    <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"></ion-skeleton-text>
+    <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"  aria-hidden="true"></ion-skeleton-text>
 
     <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
   </div>
@@ -14,6 +18,7 @@
   <ion-item class="headline-4 task-header" lines="none">{{ 'Task' + (activity.tasks.length > 1 ? 's' : '') }}</ion-item>
 
   <app-list-item class="focusable"
+    role="button"
     tabindex="0"
     *ngFor="let task of (activity?.tasks || []); let i = index"
     lines="full"
@@ -33,7 +38,8 @@
 </ng-container>
 
 <ng-template #noActivity>
-  <div *ngIf="!activity" class="ion-padding">
+  <div *ngIf="!activity" class="ion-padding"
+    aria-live="polite" aria-label="loading">
     <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
     <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
     <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>

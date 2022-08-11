@@ -1,7 +1,8 @@
 <ion-item *ngIf="!loading"
   [ngClass]="{'active': active}"
   [lines]="lines"
-  tabindex="0">
+  tabindex="0"
+  role="text">
 
   <ion-icon *ngIf="leadingIcon"
     [name]="leadingIcon"
@@ -15,55 +16,67 @@
     <img [src]="leadImage" [alt]="title">
   </ion-avatar>
 
-  <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
+  <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}" role="text">
     <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
       <div class="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
       &nbsp; <!-- this is to add some space between two elements -->
       <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
     </div>
 
-    <div *ngIf="!isEventItem" [class]="'body-2 ' + titleColor">{{ title }}</div>
+    <div *ngIf="!isEventItem" [class]="'body-2 ' + titleColor" [attr.aria-label]="title">{{ title }}</div>
 
-    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color" [innerHTML]="subtitle1"></div>
+    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color" [innerHTML]="subtitle1" [attr.aria-label]="subtitle1"></div>
 
-    <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color">
+    <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color" [attr.aria-label]="subtitle2">
       {{ subtitle2 }}
     </div>
 
-    <div *ngIf="label">
+    <div *ngIf="label" [attr.aria-label]="label">
       <ion-chip [class]="'label ion-no-margin ' + labelColor">
         <ion-label class="body-3">{{ label }}</ion-label>
       </ion-chip>
     </div>
-
   </div>
 
-  <ion-text *ngIf="endingText" class="item-ending-text caption" [color]="endingTextColor" slot="end">{{ endingText }}</ion-text>
+  <ion-text *ngIf="endingText"
+    class="item-ending-text caption"
+    [color]="endingTextColor"
+    slot="end"
+    [attr.aria-label]="endingText"
+  >{{ endingText }}</ion-text>
 
-  <ion-icon *ngIf="endingIcon" [name]="endingIcon" slot="end" [color]="endingIconColor || 'primary'"></ion-icon>
+  <ion-icon *ngIf="endingIcon"
+    [name]="endingIcon"
+    slot="end"
+    [color]="endingIconColor || 'primary'"
+    [attr.aria-hidden]="!statusDescriptions(endingIcon)"
+    [attr.aria-label]="statusDescriptions(endingIcon)"
+  ></ion-icon>
 
-  <div *ngIf="endingProgress && !endingIcon" slot="end" style="width: 2em;">
-    <p class="for-accessibility">progress {{ endingProgress * 100 }} out of 100%</p>
+  <div *ngIf="endingProgress && !endingIcon"
+    slot="end" style="width: 2em;"
+    [attr.aria-label]="'progress ' + (endingProgress * 100) + '%'">
     <app-circle-progress [data]='{ percent: endingProgress * 100 }' aria-hidden="true"></app-circle-progress>
   </div>
 
-  <div *ngIf="isEventItem">
-    <div *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
+  <div *ngIf="isEventItem" aria-labelledby="event-status">
+    <div id="event-status" *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
     <!-- Show fully booked label if event is not expired -->
-    <div *ngIf="eventFullyBooked && !eventExpired" class="expired-batch gray-2">Fully Booked</div>
+    <div id="event-status" *ngIf="eventFullyBooked && !eventExpired" class="expired-batch gray-2">Fully Booked</div>
     <!-- Show video conference label if event is not expired and not fully booked -->
-    <div *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
+    <div id="event-status" *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
   </div>
 
   <ng-container *ngFor="let actionBtnIcon of endingActionBtnIcons; let i = index">
-    <ion-button mode="ios" fill="clear" (click)="actionBtnClick.emit(i)" [attr.aria-label]="actionBtnIcon">
+    <ion-button mode="ios" fill="clear"
+      (click)="actionBtnClick.emit(i)"
+      [attr.aria-label]="actionBtnIcon">
       <ion-icon [name]="actionBtnIcon" aria-hidden="true"></ion-icon>
     </ion-button>
   </ng-container>
-
 </ion-item>
 
-<ion-item *ngIf="loading" [lines]="lines">
+<ion-item *ngIf="loading" [lines]="lines" aria-hidden="true">
   <ion-avatar class="skeleton-icon leading-icon">
     <ion-skeleton-text animated></ion-skeleton-text>
   </ion-avatar>

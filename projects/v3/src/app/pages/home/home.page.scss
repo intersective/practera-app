@@ -62,3 +62,8 @@ ion-content.scrollable-desktop {
     margin: 17px 0px;
   }
 }
+
+.focusable:focus {
+  border: 1px solid var(--ion-color-primary);
+  display: block;
+}

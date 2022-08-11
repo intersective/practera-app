@@ -1,5 +1,5 @@
 <div *ngIf="topic" class="ion-padding" style="min-height: 100%;">
-  <div class="headline-2 topic-title">{{topic.title}}</div>
+  <div class="headline-2 topic-title" aria-live="polite" role="text">{{topic.title}}</div>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
     <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
     <video
