@@ -72,17 +72,29 @@
     </ion-item>
   </ng-container>
   <ng-container *ngFor="let milestone of milestones">
-    <ion-item class="headline-4 milestone-name" lines="none">
+    <ion-item class="headline-4 milestone-name" lines="none"
+      aria-describedby="milestone-description">
       {{ milestone.name }}
-      <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
+      <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
     </ion-item>
-    <ion-item color="light" class="body-3" lines="none" *ngIf="milestone?.description">
+    <ion-item id="milestone-description"
+      *ngIf="milestone?.description"
+      class="body-3"
+      lines="none"
+      color="light">
       <app-description [content]="milestone.description"></app-description>
     </ion-item>
-    <app-list-item *ngFor="let activity of milestone.activities; let i = index" [title]="activity.name"
+    <app-list-item *ngFor="let activity of milestone.activities; let i = index"
+      [title]="activity.name"
       [leadImage]="activity.leadImage" [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-      (click)="gotoActivity(activity)" (keydown)="gotoActivity(activity, $event)" [endingIcon]="endingIcon(activity)"
-      [endingIconColor]="endingIconColor(activity)" [endingProgress]="endingProgress(activity.progress)" tabindex="0">
+      (click)="gotoActivity(activity)"
+      (keydown)="gotoActivity(activity, $event)"
+      [endingIcon]="endingIcon(activity)"
+      [endingIconColor]="endingIconColor(activity)"
+      [endingProgress]="endingProgress(activity.progress)"
+      class="focusable"
+      tabindex="0"
+      role="button">
     </app-list-item>
   </ng-container>
 </ng-template>
@@ -100,9 +112,11 @@
       Total Points Earned: {{getEarnedPoints}}
     </ion-label>
   </ion-item>
-  <app-list-item *ngFor="let achievement of achievements" [title]="achievement.name"
+  <app-list-item *ngFor="let achievement of achievements"
+    [title]="achievement.name"
     [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''" subtitle1Color="medium"
     [leadImage]="achievement.image" lines="full" (click)="achievePopup(achievement)"
-    (keydown)="achievePopup(achievement, $event)" [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
+    (keydown)="achievePopup(achievement, $event)"
+    [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
     [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"></app-list-item>
 </ng-template>
