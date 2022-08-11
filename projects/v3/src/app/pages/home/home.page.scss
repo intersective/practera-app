@@ -36,7 +36,7 @@ ion-segment {
 }
 
 ion-content.scrollable-desktop {
-  >ion-grid,
+  > main, ion-grid,
   ion-row,
   ion-col {
     overflow: hidden;
@@ -61,4 +61,9 @@ ion-content.scrollable-desktop {
   ion-label {
     margin: 17px 0px;
   }
+}
+
+.focusable:focus {
+  border: 1px solid var(--ion-color-primary);
+  display: block;
 }

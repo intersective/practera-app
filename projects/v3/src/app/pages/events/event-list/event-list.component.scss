@@ -11,4 +11,13 @@ ion-segment {
   --background: var(--ion-color-light);
   padding: 10px;
   z-index: 1;
+
+  ion-segment-button.ion-focused {
+    border: 1px solid var(--ion-color-primary);
+  }
+}
+
+.focusable:focus {
+  display: block;
+  border: 1px solid var(--ion-color-primary);
 }

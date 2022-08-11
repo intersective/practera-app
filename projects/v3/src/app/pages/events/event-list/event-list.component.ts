@@ -230,7 +230,15 @@ export class EventListComponent {
   }
 
   // tell parent component that user is going to an event
-  goto(event) {
+  goto(event, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent &&
+      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+    ) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     // pop up event detail for mobile
     if (this.utils.isMobile()) {
       return this.notificationsService.modal(EventDetailComponent, { event }, {

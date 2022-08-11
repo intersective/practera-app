@@ -11,22 +11,28 @@
   <ion-item [class]="{'higher': isMobile}">
     <ion-grid class="ion-no-padding">
       <ion-row class="ion-justify-content-end">
-        <ion-col class="ion-align-self-start" size-sm="6" size-xs="12">
+        <ion-col class="ion-align-self-start"
+          size-sm="6" size-xs="12"
+          aria-hidden="true">
           <ion-label class="headline-4">Mobile Number</ion-label>
         </ion-col>
         <ion-col class="ion-align-self-end">
+          <h3 id="country-code" class="for-accessibility">Country code</h3>
           <ion-select class="subtitle-1 ion-no-padding ion-no-margin"
-            [attr.aria-label]="'country code'"
+            aria-labelledby="country-code"
             [(ngModel)]="countryModel"
             interface="popover"
             (ionChange)="updateCountry()">
             <ion-select-option [value]="countryCode.code"
+              aria-labelledby="country-code"
               *ngFor="let countryCode of contactNumberFormat.countryCodes">
-              {{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}</ion-select-option>
+              {{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}
+            </ion-select-option>
           </ion-select>
         </ion-col>
         <ion-col class="ion-align-self-end ion-no-padding ion-no-margin ion-nowrap">
           <input type="text"
+            aria-label="mobile number without country code"
             [attr.maxlength]="activeCountryModelInfo.length"
             pattern="{{activeCountryModelInfo.pattern}}"
             placeholder="{{activeCountryModelInfo.placeholder}}"
