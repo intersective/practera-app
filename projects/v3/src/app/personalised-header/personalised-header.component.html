@@ -4,14 +4,18 @@
     <ion-badge class="hint" color="danger" *ngIf="notiCount > 0">{{notiCount}}</ion-badge>
   </ion-button>
   <ion-button class="avatar-btn"
+    aria-label="go to settings"
     (click)="settings()"
     [ngClass]="{'no-hover-effect': user?.image}"
   >
-    <ion-avatar class="ion-margin-horizontal" *ngIf="user?.image">
+    <ion-avatar class="ion-margin-horizontal"
+      *ngIf="user?.image"
+      aria-hidden="true">
       <img [src]="user?.image" alt="user profile">
     </ion-avatar>
 
     <ion-icon
+      aria-hidden="true"
       *ngIf="!user?.image"
       slot="icon-only"
       name="person-circle"

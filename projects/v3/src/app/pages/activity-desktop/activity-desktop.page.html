@@ -3,8 +3,8 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
       <ion-buttons slot="start">
-        <ion-button (click)="goBack()">
-          <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
+        <ion-button (click)="goBack()" aria-label="back">
+          <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-buttons>
     </ion-buttons>
@@ -14,7 +14,6 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-progress-bar type="indeterminate" *ngIf="loading === true"></ion-progress-bar>
-
 </ion-header>
 
 <ion-content>

@@ -217,6 +217,7 @@ export class ExperienceService {
       truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
       institutionLogo: programObj.institution ? programObj.institution.logo_url : null,
+      institutionName: programObj.institution ? programObj.institution.name : null,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,

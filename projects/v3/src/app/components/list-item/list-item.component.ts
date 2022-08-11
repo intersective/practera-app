@@ -38,4 +38,17 @@ export class ListItemComponent {
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];
   @Output() actionBtnClick = new EventEmitter<number>();
+
+  statusDescriptions(iconName): string {
+    switch (iconName) {
+      case 'lock-closed':
+        return 'locked';
+      case 'chevron-forward':
+        return null;
+      case 'checkmark-circle':
+        return 'completed';
+      default:
+        return null;
+    }
+  }
 }
