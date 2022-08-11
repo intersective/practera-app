@@ -2,8 +2,8 @@
   <h1 class="for-accessibility">Home</h1>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
+      <ion-button (click)="goBack()" aria-label="back to experience list">
+        <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title class="ion-no-padding headline-4 grey-75">Home</ion-title>
@@ -92,8 +92,8 @@
   <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
     <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
     <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
-    <p id="nobadges" class="body-1">You have no badges yet!</p>
-    <ion-text class="subtitle-2" color="grey-75">Experience badge will show up here.</ion-text>
+    <p id="nobadges" class="body-1" aria-live="polite">You have no badges yet!</p>
+    <ion-text class="subtitle-2" color="grey-75" aria-live="polite">Experience badge will show up here.</ion-text>
   </div>
   <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
     <ion-label class="headline-4">

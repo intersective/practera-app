@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, IonicSafeString } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { EventService, Event } from '@v3/services/event.service';
@@ -41,7 +41,7 @@ export class EventDetailComponent implements OnInit {
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
           this.notificationService.alert({
-            message: 'Booking this event will cancel your booking for other events within the same activity, do you still wanna book?',
+            message: new IonicSafeString('<p aria-live="assertive">Booking this event will cancel your booking for other events within the same activity, do you still wanna book?'),
             buttons: [
               {
                 text: 'OK',
@@ -67,7 +67,7 @@ export class EventDetailComponent implements OnInit {
         this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.notificationService.alert({
-              message: 'Booking cancelled Successfully!',
+              message: new IonicSafeString('<p aria-live="assertive">Booking cancelled Successfully!</p>'),
               buttons: [
                 {
                   text: 'OK',
@@ -108,15 +108,15 @@ export class EventDetailComponent implements OnInit {
 
   private _bookEvent() {
     this.eventService.bookEvent(this.event).subscribe(
-      response => {
+      _response => {
         this.notificationService.alert({
-          message: 'Booked Successfully!',
+          message: new IonicSafeString('<p aria-live="assertive">Booked Successfully!</p>'),
           buttons: [
             {
               text: 'OK',
-              role: 'cancel'
+              role: 'cancel',
             }
-          ]
+          ],
         });
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
@@ -130,7 +130,7 @@ export class EventDetailComponent implements OnInit {
       },
       error => {
         this.notificationService.alert({
-          message: 'Booking failed, please try again later!',
+          message: new IonicSafeString('<p aria-live="assertive">Booking failed, please try again later!'),
           buttons: [
             {
               text: 'OK',
@@ -231,4 +231,7 @@ export class EventDetailComponent implements OnInit {
     return this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
   }
 
+  bookButtonDisabled(event): boolean {
+    return (event.isPast && !event.isBooked) || (event.remainingCapacity === 0 && !event.isBooked) || this.ctaIsActing;
+  }
 }
