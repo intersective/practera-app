@@ -36,7 +36,7 @@ ion-segment {
 }
 
 ion-content.scrollable-desktop {
-  >ion-grid,
+  > main, ion-grid,
   ion-row,
   ion-col {
     overflow: hidden;
