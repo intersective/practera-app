@@ -9,31 +9,33 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid *ngIf="!utils.isMobile()" class="ion-no-padding">
-    <ion-row>
-      <ion-col size="12" size-md="5">
-        <h2 class="for-accessibility">Events list by category</h2>
-        <app-event-list
-          #eventList
-          [activityId]="activityId"
-          [eventId]="eventId"
-          [multiDayId]="multiDayId"
-          (navigate)="goto($event)"
-        ></app-event-list>
-      </ion-col>
-      <ion-col size="12" size-md="7" class="border-left">
-        <h2 class="for-accessibility">Event details</h2>
-        <app-event-detail
-        #eventDetail
-        *ngIf="!assessmentId && currentEvent"
-        [event]="currentEvent"
-        (checkin)="checkin($event)"
-      ></app-event-detail>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <ion-content *ngIf="utils.isMobile()">
-    <app-event-list #eventList [activityId]="activityId"></app-event-list>
-  </ion-content>
+  <ng-container *ngIf="!utils.isMobile(); else mobileview">
+    <ion-grid *ngIf="!utils.isMobile()" class="ion-no-padding">
+      <ion-row>
+        <ion-col size="12" size-md="5">
+          <h2 class="for-accessibility">Events list by category</h2>
+          <app-event-list
+            #eventList
+            [activityId]="activityId"
+            [eventId]="eventId"
+            [multiDayId]="multiDayId"
+            (navigate)="goto($event)"
+          ></app-event-list>
+        </ion-col>
+        <ion-col size="12" size-md="7" class="border-left">
+          <h2 class="for-accessibility">Event details</h2>
+          <app-event-detail
+          #eventDetail
+          *ngIf="!assessmentId && currentEvent"
+          [event]="currentEvent"
+          (checkin)="checkin($event)"
+        ></app-event-detail>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ng-container>
 </ion-content>
+
+<ng-template #mobileview>
+  <app-event-list #eventList [activityId]="activityId"></app-event-list>
+</ng-template>
