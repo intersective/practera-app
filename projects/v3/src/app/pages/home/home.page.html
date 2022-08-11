@@ -14,11 +14,10 @@
 </ion-header>
 
 <ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
-  <main>
-    <h1 class="for-accessibility">Home content</h1>
+  <main aria-labelledby="homecontent">
+    <h1 id="homecontent" class="for-accessibility">Home content</h1>
     <ion-grid style="padding: inherit;">
       <ion-row>
-
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility">Experience Details</h2>
           <ng-container *ngIf="(experience$ | async ) as experience">
@@ -53,61 +52,7 @@
             </ion-segment-button>
           </ion-segment>
 
-          <ng-container *ngIf="display === 'activities'">
-            <h3 class="for-accessibility">Activity list</h3>
-            <ng-container *ngIf="!milestones">
-              <ion-item><ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text></ion-item>
-              <ion-item><ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text></ion-item>
-            </ng-container>
-            <ng-container *ngFor="let milestone of milestones">
-              <ion-item class="headline-4 milestone-name" lines="none">
-                {{ milestone.name }}
-                <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
-              </ion-item>
-              <ion-item color="light" class="body-3" lines="none" *ngIf="milestone?.description">
-                <app-description [content]="milestone.description"></app-description>
-              </ion-item>
-              <app-list-item *ngFor="let activity of milestone.activities; let i = index"
-                [title]="activity.name"
-                [leadImage]="activity.leadImage"
-                [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-                (click)="gotoActivity(activity)"
-                (keydown)="gotoActivity(activity, $event)"
-                [endingIcon]="endingIcon(activity)"
-                [endingIconColor]="endingIconColor(activity)"
-                [endingProgress]="endingProgress(activity.progress)"
-                tabindex="0"
-              ></app-list-item>
-            </ng-container>
-          </ng-container>
-
-          <ng-container *ngIf="display === 'badges'">
-            <h3 class="for-accessibility">Badges awarded</h3>
-            <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
-              <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
-              <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
-              <p id="nobadges" class="body-1">You have no badges yet!</p>
-              <ion-text class="subtitle-2" color="grey-75">Experience badge will show up here.</ion-text>
-            </div>
-            <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
-              <ion-label class="headline-4">
-                Total Points Earned: {{getEarnedPoints}}
-              </ion-label>
-            </ion-item>
-            <app-list-item *ngFor="let achievement of achievements"
-              [title]="achievement.name"
-              [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''"
-              subtitle1Color="medium"
-              [leadImage]="achievement.image"
-              lines="full"
-              (click)="achievePopup(achievement)"
-              (keydown)="achievePopup(achievement, $event)"
-              [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
-              [endingIconColor]="achievement.isEarned ? 'success' : 'medium'"
-              tabindex="0"
-            ></app-list-item>
-          </ng-container>
-
+          <ng-container *ngIf="display === 'activities'; then activityList; else badgePoints"></ng-container>
         </ion-col>
 
       </ion-row>
@@ -115,3 +60,49 @@
 
   </main>
 </ion-content>
+
+<ng-template #activityList>
+  <h3 class="for-accessibility">Activity list</h3>
+  <ng-container *ngIf="!milestones">
+    <ion-item>
+      <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+    </ion-item>
+    <ion-item>
+      <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+    </ion-item>
+  </ng-container>
+  <ng-container *ngFor="let milestone of milestones">
+    <ion-item class="headline-4 milestone-name" lines="none">
+      {{ milestone.name }}
+      <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end"></ion-icon>
+    </ion-item>
+    <ion-item color="light" class="body-3" lines="none" *ngIf="milestone?.description">
+      <app-description [content]="milestone.description"></app-description>
+    </ion-item>
+    <app-list-item *ngFor="let activity of milestone.activities; let i = index" [title]="activity.name"
+      [leadImage]="activity.leadImage" [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
+      (click)="gotoActivity(activity)" (keydown)="gotoActivity(activity, $event)" [endingIcon]="endingIcon(activity)"
+      [endingIconColor]="endingIconColor(activity)" [endingProgress]="endingProgress(activity.progress)" tabindex="0">
+    </app-list-item>
+  </ng-container>
+</ng-template>
+
+<ng-template #badgePoints>
+  <h3 class="for-accessibility">Badges awarded</h3>
+  <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
+    <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
+    <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
+    <p id="nobadges" class="body-1">You have no badges yet!</p>
+    <ion-text class="subtitle-2" color="grey-75">Experience badge will show up here.</ion-text>
+  </div>
+  <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
+    <ion-label class="headline-4">
+      Total Points Earned: {{getEarnedPoints}}
+    </ion-label>
+  </ion-item>
+  <app-list-item *ngFor="let achievement of achievements" [title]="achievement.name"
+    [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''" subtitle1Color="medium"
+    [leadImage]="achievement.image" lines="full" (click)="achievePopup(achievement)"
+    (keydown)="achievePopup(achievement, $event)" [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
+    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"></app-list-item>
+</ng-template>
