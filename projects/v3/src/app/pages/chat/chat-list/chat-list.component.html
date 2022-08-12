@@ -8,31 +8,40 @@
     <app-clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"
-      (keyup.enter)="goToChatRoom(chat)"
+      (keyup)="goToChatRoom(chat, $event)"
       [active]="currentChat && currentChat.uuid === chat.uuid"
       [ngClass]="{'unread': chat.unreadMessageCount > 0}"
       [lines]="'none'"
       [isCustomizedCard]="true"
-      [isChatCard]="true">
-      <ion-avatar slot="start" text-center class="access-avatar"><img [src]="chat.avatar" alt="chat avatar"></ion-avatar>
-      <ion-label class="chat-item-label">
-        <div class="chat-name-container caption">
+      [isChatCard]="true"
+      class="focusable"
+      role="button"
+      tabindex="0">
+      <ion-avatar slot="start" text-center
+        class="access-avatar"
+        aria-hidden="true">
+        <img [src]="chat.avatar" alt="chat room avatar">
+      </ion-avatar>
+      <ion-label class="chat-item-label" role="text">
+        <div class="chat-name-container caption" [attr.aria-label]="'chatroom: ' + chat.name">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}">{{ chat.name }}</p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
             <span>mentor</span>
           </ng-container>
         </div>
         <ng-container *ngIf="chat.lastMessage; else messgeElseBlock">
-          <p class="body-2">{{ chat.lastMessage }}</p>
+          <p class="body-2" [attr.aria-label]="'last message: ' + chat.lastMessage">{{ chat.lastMessage }}</p>
         </ng-container>
-        <ng-template #messgeElseBlock><p class="body-2 gray-2">No messages.</p></ng-template>
+        <ng-template #messgeElseBlock>
+          <p class="body-2 gray-2">No messages.</p>
+        </ng-template>
       </ion-label>
       <div slot="end" class="time-container">
         <div class="caption gray-2">
           <span>{{ getChatDate(chat.lastMessageCreated) }}</span>
         </div>
         <ng-container *ngIf="chat.unreadMessageCount > 0">
-          <ion-badge class="caption">{{ chat.unreadMessageCount }}</ion-badge>
+          <ion-badge class="caption" [attr.aria-label]="chat.unreadMessageCount + ' unread messages'">{{ chat.unreadMessageCount }}</ion-badge>
         </ng-container>
       </div>
     </app-clickable-item>

@@ -299,3 +299,8 @@ $message-body-size: 60%;
 ion-toolbar {
   --min-height: 60px;
 }
+
+ion-button.ion-focused {
+  border: 1px solid black;
+  border-radius: 8px;
+}
