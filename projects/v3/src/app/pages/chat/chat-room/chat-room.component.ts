@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -8,6 +8,7 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-chat-room',
@@ -61,6 +62,7 @@ export class ChatRoomComponent implements OnInit {
     private ngZone: NgZone,
     public element: ElementRef,
     private route: ActivatedRoute,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => {
       if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
@@ -692,6 +694,11 @@ export class ChatRoomComponent implements OnInit {
   }
 
   async openChatInfo() {
+    const info = this.document.getElementById('chatroom');
+    if (info) {
+      info.focus();
+    }
+
     if (!this.utils.isMobile()) {
       this.loadInfo.emit(true);
     } else {

@@ -4,18 +4,28 @@
     <ion-title class="ion-text-center"
       [ngClass]="{ 'subtitle-2': !utils.isMobile() }"
       tabindex="0"
-      [attr.aria-label]="chatChannel.name + ' ' + memberList.length + ' members'">
+      aria-live="polite"
+      [attr.aria-label]="memberList.length + ' members'">
       {{ chatChannel.name }}
-      <div class="ion-text-center sub-title caption gray-1 saving-msg">{{ memberList.length }} members</div>
+      <div class="ion-text-center sub-title caption gray-1 saving-msg">
+        {{ memberList.length }} members
+      </div>
     </ion-title>
-    <ion-button slot="end" fill="clear" size="small" (click)="openChatInfo()">
-      <ion-icon color="primary" slot="icon-only" name="information-circle"></ion-icon>
+    <ion-button slot="end" fill="clear" size="small"
+      (click)="openChatInfo()"
+      aria-label="chatroom info">
+      <ion-icon color="primary"
+        slot="icon-only"
+        name="information-circle"
+        aria-hidden="true"
+      ></ion-icon>
     </ion-button>
   </ion-toolbar>
 </ion-header>
+
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
 
-  <div *ngIf="loadingChatMessages" class="ion-text-center">
+  <div *ngIf="loadingChatMessages" class="ion-text-center" aria-label="loading message">
     <ion-spinner></ion-spinner>
   </div>
 
@@ -34,7 +44,6 @@
       </ng-container>
 
       <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
-
         <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
           <p>{{ getMessageDate(message.created) }}</p>
         </div>
