@@ -6,7 +6,8 @@
         <img [src]="institutionLogo" [attr.alt]="institutionName">
       </div>
       <ion-list lines="none">
-        <ion-menu-toggle autoHide="false" *ngFor="let p of appPages; let i = index">
+        <ion-menu-toggle autoHide="false"
+          *ngFor="let p of appPages; let i = index">
           <ion-item class="menu-item"
             *ngIf="p.title !== 'Messages' || (p.title === 'Messages' && showMessages)"
             (keydown)="keyboardNavigate(p.url, $event)"

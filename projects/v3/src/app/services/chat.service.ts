@@ -106,11 +106,7 @@ export class ChatService {
           pusherChannel
           canEdit
         }
-      }`,
-      {},
-      {
-        noCache: true
-      }
+      }`
     ).pipe(map(response => {
       if (response.data) {
         return this._normaliseChatListResponse(response.data);
@@ -186,9 +182,6 @@ export class ChatService {
         uuid: data.channelUuid,
         cursor: data.cursor,
         size: data.size
-      },
-      {
-        noCache: true
       }
     ).pipe(map(response => {
       if (response.data) {
@@ -264,9 +257,6 @@ export class ChatService {
       }`,
       {
         uuid: channelId
-      },
-      {
-        noCache: true
       }
     ).pipe(map(response => {
       if (response.data) {
@@ -301,11 +291,7 @@ export class ChatService {
         channels {
           pusherChannel
         }
-      }`,
-      {},
-      {
-        noCache: true
-      }
+      }`
     ).pipe(map(response => {
       if (response.data) {
         return this._normalisePusherChannelsResponse(response.data);

@@ -179,12 +179,11 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  chatGraphQLQuery(query: string, variables?: any, options?: any) {
-    options = { ...{ noCache: false }, ...options };
+  chatGraphQLQuery(query: string, variables: any = {}) {
     const watch = this.apollo.use('chat').query({
       query: gql(query),
-      variables: variables || {},
-      // fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+      variables,
+      fetchPolicy: 'no-cache' // always retrieve a fresh one
     });
     return watch.pipe(
       concatMap(response => {
