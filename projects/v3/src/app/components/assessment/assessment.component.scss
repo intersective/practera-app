@@ -170,6 +170,11 @@ ion-footer {
   }
   ion-button {
     max-height: 36px;
+
+    &:focus {
+      border: 1px solid var(--ion-color-primary);
+      display: block;
+    }
   }
 
 }

@@ -10,6 +10,7 @@
 <ion-list *ngIf="reviews">
   <ng-container *ngFor="let review of reviews">
     <app-list-item
+      class="focusable"
       *ngIf="review.isDone === showDone"
       [title]="review.name"
       [subtitle1]="review.submitterName"
@@ -20,8 +21,11 @@
       [active]="currentReview && currentReview.submissionId === review.submissionId"
       lines="full"
       (click)="goto(review)"
+      (keydown)="goto(review, $event)"
       [endingText]="review.date"
       endingTextColor="grey-75"
+      tabindex="0"
+      role="button"
     ></app-list-item>
   </ng-container>
 </ion-list>

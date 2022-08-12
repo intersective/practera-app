@@ -27,7 +27,13 @@ export class ReviewListComponent implements OnInit {
   }
 
   // go to the review
-  goto(review: Review) {
+  goto(review: Review, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     this.navigate.emit(review);
   }
 

@@ -7,7 +7,8 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
-  <ion-button fill="clear" slot="end" [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
+  <ion-button fill="clear" slot="end"
+    [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
     Save
   </ion-button>
 </div>
@@ -72,8 +73,11 @@
       </p>
 
       <ion-text class="ion-text-left">
-        <app-description [name]="randomCode(assessment.name)" *ngIf="assessment.description"
-          [content]="assessment.description" id="asmt-des" class="body-2 black"></app-description>
+        <app-description *ngIf="assessment.description"
+          [name]="randomCode(assessment.name)"
+          [content]="assessment.description" id="asmt-des" class="body-2 black"
+          role="text"
+        ></app-description>
       </ion-text>
 
       <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
