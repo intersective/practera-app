@@ -46,6 +46,11 @@ export class ChatViewComponent implements OnInit {
     if (action?.click) {
       setTimeout(() => {
         this.chatRoom.ngOnInit();
+
+        const chatroomEl = this.document.getElementById('chatroom');
+        if (chatroomEl) {
+          chatroomEl.focus();
+        }
       });
     }
   }

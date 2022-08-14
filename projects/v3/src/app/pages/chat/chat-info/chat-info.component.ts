@@ -60,9 +60,12 @@ export class ChatInfoComponent implements OnInit {
   }
 
   close(event) {
-    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+    if (event && (event?.code === 'Space' || event?.code === 'Enter')) {
+      event.preventDefault();
+    } else if (event) {
       return;
     }
+
     if (!this.utils.isMobile()) {
       this.navigate.emit(this.selectedChat);
     } else {
