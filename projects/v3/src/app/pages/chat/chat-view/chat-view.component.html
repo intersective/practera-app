@@ -18,7 +18,10 @@
           (chatListReady)="selectFirstChat($event)">
         </app-chat-list>
       </ion-col>
-      <ion-col size="12" size-md="7" class="border-left" [class]="{'info-page': loadInfo}" id="chatroom">
+      <ion-col size="12" size-md="7"
+        class="border-left"
+        [class]="{'info-page': loadInfo}"
+        id="chatroom" tabindex="0">
         <app-chat-room #chatRoom
           *ngIf="chatChannel && !loadInfo"
           [chatChannel]="chatChannel"
@@ -26,7 +29,7 @@
         ></app-chat-room>
         <app-chat-info *ngIf="loadInfo"
           [selectedChat]="chatChannel"
-          (navigate)="desktopGoto($event)"
+          (navigate)="desktopGoto($event, { click: true })"
         ></app-chat-info>
       </ion-col>
     </ion-row>
