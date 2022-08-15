@@ -59,7 +59,7 @@ export class ChatInfoComponent implements OnInit {
     );
   }
 
-  close(event) {
+  close(event?: KeyboardEvent) {
     if (event && (event?.code === 'Space' || event?.code === 'Enter')) {
       event.preventDefault();
     } else if (event) {
