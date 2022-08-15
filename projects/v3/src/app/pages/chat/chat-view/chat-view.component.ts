@@ -1,7 +1,8 @@
-import { Component, ViewChild, OnInit } from '@angular/core';
+import { Component, ViewChild, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { ChatChannel } from '@v3/services/chat.service';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-chat-view',
@@ -19,7 +20,8 @@ export class ChatViewComponent implements OnInit {
   constructor(
     public router: Router,
     private route: ActivatedRoute,
-    public utils: UtilsService
+    public utils: UtilsService,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
   }
 
@@ -44,6 +46,11 @@ export class ChatViewComponent implements OnInit {
     if (action?.click) {
       setTimeout(() => {
         this.chatRoom.ngOnInit();
+
+        const chatroomEl = this.document.getElementById('chatroom');
+        if (chatroomEl) {
+          chatroomEl.focus();
+        }
       });
     }
   }

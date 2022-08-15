@@ -1,9 +1,18 @@
 <ion-header mode="ios">
   <ion-toolbar class="ion-toolbar-absolute">
-      <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="close($event)" color="primary" slot="start" margin-start></ion-icon>
-    <ion-title class="heading-6 black" tabindex="0" aria-label="channel details">Channel details</ion-title>
-    <ion-button mode="ios" *ngIf="!utils.isMobile()" slot="end" fill="clear" size="small" (click)="close($event)" tabindex="0" (keydown)="close($event)">
-      <ion-icon color="primary" slot="icon-only" name="close-circle"></ion-icon>
+    <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="close($event)" color="primary" slot="start" margin-start></ion-icon>
+    <ion-title class="heading-6 black" aria-label="channel details">
+      Channel details
+    </ion-title>
+    <ion-button mode="ios" *ngIf="!utils.isMobile()"
+      slot="end" fill="clear"
+      size="small" (click)="close($event)"
+      tabindex="0" (keydown)="close($event)"
+      aria-label="close info view">
+      <ion-icon color="primary" slot="icon-only"
+        name="close-circle"
+        aria-hidden="true"
+      ></ion-icon>
     </ion-button>
   </ion-toolbar>
 </ion-header>

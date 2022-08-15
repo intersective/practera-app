@@ -95,7 +95,13 @@ export class ChatListComponent {
     });
   }
 
-  goToChatRoom(chat: ChatChannel) {
+  goToChatRoom(chat: ChatChannel, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     this._navigate(
       [
         'v3',

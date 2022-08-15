@@ -3,24 +3,35 @@
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title class="ion-text-center"
       [ngClass]="{ 'subtitle-2': !utils.isMobile() }"
-      tabindex="0"
-      [attr.aria-label]="chatChannel.name + ' ' + memberList.length + ' members'">
+      aria-live="polite"
+      [attr.aria-label]="memberList.length + ' members'">
       {{ chatChannel.name }}
-      <div class="ion-text-center sub-title caption gray-1 saving-msg">{{ memberList.length }} members</div>
+      <div class="ion-text-center sub-title caption gray-1 saving-msg">
+        {{ memberList.length }} members
+      </div>
     </ion-title>
-    <ion-button slot="end" fill="clear" size="small" (click)="openChatInfo()">
-      <ion-icon color="primary" slot="icon-only" name="information-circle"></ion-icon>
+    <ion-button slot="end" fill="clear" size="small"
+      (click)="openChatInfo()"
+      aria-label="chatroom info">
+      <ion-icon color="primary"
+        slot="icon-only"
+        name="information-circle"
+        aria-hidden="true"
+      ></ion-icon>
     </ion-button>
   </ion-toolbar>
 </ion-header>
+
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
 
-  <div *ngIf="loadingChatMessages" class="ion-text-center">
+  <div *ngIf="loadingChatMessages" class="ion-text-center" aria-label="loading message">
     <ion-spinner></ion-spinner>
   </div>
 
-  <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status">
-    <img class="image" [ngClass]="{'desktop': !utils.isMobile()}" src="/assets/icon-epmty-chat.svg" alt="empty chat">
+  <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status" aria-live="polite">
+    <img class="image" [ngClass]="{'desktop': !utils.isMobile()}"
+      src="/assets/icon-epmty-chat.svg" alt="empty chat"
+      aria-hidden="true">
     <p class="head-text headline-5 gray-3">Type your first message!</p>
     <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
   </div>
@@ -34,7 +45,6 @@
       </ng-container>
 
       <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
-
         <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
           <p>{{ getMessageDate(message.created) }}</p>
         </div>
@@ -156,8 +166,12 @@
     <ion-row nowrap class="ion-no-padding ion-align-items-end" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">
       <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 8 }"></ng-container>
       <ion-col class="ion-no-padding ion-text-center">
-        <ion-button (click)="sendMessage()" type="submit" fill="clear" class="ion-no-padding">
-          <ion-icon name="send-outline" slot="icon-only"></ion-icon>
+        <ion-button (click)="sendMessage()"
+          aria-label="send message"
+          type="submit"
+          fill="clear"
+          class="ion-no-padding sendbutton">
+          <ion-icon name="send-outline" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
@@ -166,18 +180,21 @@
 
 <ng-template #attachmentButtons let-offset="offset">
   <ion-col [offset]="offset" class="ion-no-padding ion-text-center">
-    <ion-button (click)="attach('video')" fill="clear" class="ion-no-padding">
-      <ion-icon name="film-outline" slot="icon-only"></ion-icon>
+    <ion-button (click)="attach('video')" fill="clear"
+      class="attachment ion-no-padding" aria-label="attach video">
+      <ion-icon name="film-outline" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
   </ion-col>
   <ion-col class="ion-no-padding ion-text-center">
-    <ion-button (click)="attach('image')" fill="clear" class="ion-no-padding">
-      <ion-icon name="images-outline" slot="icon-only"></ion-icon>
+    <ion-button (click)="attach('image')" fill="clear"
+      class="attachment ion-no-padding" aria-label="attach image">
+      <ion-icon name="images-outline" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
   </ion-col>
   <ion-col class="ion-no-padding ion-text-center">
-    <ion-button (click)="attach('any')" fill="clear" class="ion-no-padding">
-      <ion-icon name="attach-outline" slot="icon-only"></ion-icon>
+    <ion-button (click)="attach('any')" fill="clear"
+      class="attachment ion-no-padding" aria-label="attach document">
+      <ion-icon name="attach-outline" slot="icon-only" aria-hidden="true"></ion-icon>
     </ion-button>
   </ion-col>
 </ng-template>

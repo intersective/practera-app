@@ -196,11 +196,7 @@ export class PusherService {
         channels {
           pusherChannel
         }
-      }`,
-      {},
-      {
-        noCache: true
-      }
+      }`
     ).pipe(tap(response => {
       if (response.data && response.data.channels) {
         const result = JSON.parse(JSON.stringify(response.data.channels));
