@@ -459,11 +459,7 @@ export class NotificationsService {
         channels{
           name unreadMessageCount lastMessage lastMessageCreated
         }
-      }`,
-      {},
-      {
-        noCache: true
-      }
+      }`
     ).pipe(map(response => {
       if (response.data) {
         const normalized = this._normaliseChatMessage(response.data);
