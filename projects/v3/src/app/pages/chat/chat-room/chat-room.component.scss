@@ -277,9 +277,6 @@ $message-body-size: 60%;
         min-height: 48px;
         ion-button {
           padding-top: 6px;
-          &.attachment,&.sendbutton {
-            padding: 6px;
-          }
           min-height: 24px;
           max-height: 100px;
           height: auto;
