@@ -72,7 +72,6 @@ clickable-item {
       border-radius: 8px !important;
       width: fit-content;
     }
-
   }
 }
 .desktop-view {
@@ -96,4 +95,26 @@ clickable-item {
 .focusable:focus {
   border: 1px solid var(--ion-color-primary);
   display: block;
+}
+
+.indicator-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: center;
+  ion-button {
+    cursor: default !important;
+    font-size: 11px;
+    margin: 0;
+    margin-right: 9px;
+    --padding-start: 0;
+    --padding-end: 0;
+    &.info {
+      font-size: 14px;
+    }
+    &::part(native) {
+      cursor: default !important;
+    }
+  }
 }
