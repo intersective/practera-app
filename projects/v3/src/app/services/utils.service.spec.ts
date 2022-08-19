@@ -3,8 +3,7 @@ import { UtilsService, ThemeColor } from './utils.service';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { TestUtils } from '@testing/utils';
-import { ApolloService } from '@v3/apollo/apollo.service';
+import { ApolloService } from './apollo.service';
 
 describe('UtilsService', () => {
   moment.updateLocale('en', {

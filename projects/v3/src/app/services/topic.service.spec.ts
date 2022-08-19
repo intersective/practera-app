@@ -50,7 +50,8 @@ describe('TopicService', () => {
           }]
         }]
       }));
-      service.getTopic(1).subscribe(res => {
+      service.getTopic(1);
+      service.topic$.subscribe(res => {
         expect(res).toEqual({
           id: 1,
           title: 'story',
@@ -80,13 +81,14 @@ describe('TopicService', () => {
           }]
         }]
       }));
-      service.getTopic(1).subscribe(res => {
+      service.getTopic(1);
+      service.topic$.subscribe(res => {
         expect(res.videolink).toEqual('video');
       });
     });
     describe('should throw error', () => {
       afterEach(() => {
-        service.getTopic(1).subscribe();
+        service.getTopic(1)
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
       });
       it('Story format error', () => {
@@ -110,7 +112,7 @@ describe('TopicService', () => {
         success: false,
         data: [{}]
       }));
-      service.getTopic(1).subscribe();
+      service.getTopic(1);
     });
   });
 
