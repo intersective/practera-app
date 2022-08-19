@@ -67,7 +67,9 @@
               <ng-container *ngIf="message?.fileObject?.mimetype === 'video/mp4'; else nonMp4Format">
                 <div id="message-content" class="label"
                   (click)="preview(message.fileObject)"
-                  (keydown)="preview(message.fileObject, $event)" tabindex="0">
+                  (keydown)="preview(message.fileObject, $event)"
+                  tabindex="0"
+                  role="button">
                   <p>
                     <ion-label color="primary">
                       {{ message.fileObject.filename }}
@@ -91,6 +93,7 @@
                 (click)="preview(message.fileObject)"
                 (keydown)="preview(message.fileObject, $event)"
                 tabindex="0"
+                role="button"
               ></div>
             </ng-container>
 
