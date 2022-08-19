@@ -15,11 +15,23 @@ export class ChatPreviewComponent {
     public sanitizer: DomSanitizer
   ) {}
 
-  download() {
+  download(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     return window.open(this.file.url, '_system');
   }
 
-  close() {
+  close(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     this.modalController.dismiss();
   }
 }

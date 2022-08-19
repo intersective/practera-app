@@ -49,7 +49,9 @@
           <p>{{ getMessageDate(message.created) }}</p>
         </div>
 
-        <div class="message-body" [ngClass]="getClassForMessageBody(message)">
+        <div class="message-body"
+          [ngClass]="getClassForMessageBody(message)"
+          aria-describedby="message-content">
 
           <ng-container *ngIf="!message.isSender">
             <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
@@ -57,13 +59,15 @@
           </ng-container>
 
           <ng-container *ngIf="message.message || !message.fileObject;">
-            <p class="message-text subtitle-1" [innerHTML]="message.message"></p>
+            <p id="message-content" class="message-text subtitle-1" [innerHTML]="message.message" tabindex="0"></p>
           </ng-container>
 
           <ng-container *ngIf="message.fileObject">
             <ng-container *ngIf="message?.fileObject?.mimetype?.includes('video')">
               <ng-container *ngIf="message?.fileObject?.mimetype === 'video/mp4'; else nonMp4Format">
-                <div class="label" (click)="preview(message.fileObject)">
+                <div id="message-content" class="label"
+                  (click)="preview(message.fileObject)"
+                  (keydown)="preview(message.fileObject, $event)" tabindex="0">
                   <p>
                     <ion-label color="primary">
                       {{ message.fileObject.filename }}
@@ -83,7 +87,11 @@
             </ng-container>
 
             <ng-container *ngIf="message?.fileObject?.mimetype?.includes('image')">
-              <div [innerHTML]="message.preview" (click)="preview(message.fileObject)"></div>
+              <div [innerHTML]="message.preview"
+                (click)="preview(message.fileObject)"
+                (keydown)="preview(message.fileObject, $event)"
+                tabindex="0"
+              ></div>
             </ng-container>
 
             <ng-container *ngIf="(message.fileObject && !message.fileObject.mimetype) || (message.fileObject && (
