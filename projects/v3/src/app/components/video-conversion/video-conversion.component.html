@@ -1,6 +1,9 @@
 <div class="label video-conversion"
   (click)="showInFilestackPreview(result)"
-  *ngIf="result?.status === 'completed'; else conversionPending">
+  (keydown)="showInFilestackPreview(result, $event)"
+  *ngIf="result?.status === 'completed'; else conversionPending"
+  tabindex="0"
+  role="button">
   <p>
     <ion-label color="primary" [title]="video?.fileObject?.filename">
       {{ video?.fileObject?.filename }}
