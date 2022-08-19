@@ -64,7 +64,13 @@ export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
     }));
   }
 
-  showInFilestackPreview(file: FilestackConversionResponse) {
+  showInFilestackPreview(file: FilestackConversionResponse, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     const downloadURL = file.data.url;
     const streamURL = this.video.fileObject.url;
     return this.filestackService.previewModal(downloadURL, {
