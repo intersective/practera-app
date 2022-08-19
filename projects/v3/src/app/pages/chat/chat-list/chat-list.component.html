@@ -40,9 +40,16 @@
         <div class="caption gray-2">
           <span>{{ getChatDate(chat.lastMessageCreated) }}</span>
         </div>
-        <ng-container *ngIf="chat.unreadMessageCount > 0">
-          <ion-badge class="caption" [attr.aria-label]="chat.unreadMessageCount + ' unread messages'">{{ chat.unreadMessageCount }}</ion-badge>
-        </ng-container>
+        <div class="indicator-container">
+          <ng-container *ngIf="chat.isAnnouncement">
+            <ion-button aria-label="announcement channel Indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it.">
+              <ion-icon color="grey-50" name="information-circle" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ng-container>
+          <ng-container *ngIf="chat.unreadMessageCount > 0">
+            <ion-badge class="caption" [attr.aria-label]="chat.unreadMessageCount + ' unread messages'">{{ chat.unreadMessageCount }}</ion-badge>
+          </ng-container>
+        </div>
       </div>
     </app-clickable-item>
   </ion-list>
