@@ -398,6 +398,19 @@ export class ChatRoomComponent implements OnInit {
     return 'received-messages';
   }
 
+  getClassForMessageBody(message) {
+    if (!message.fileObject || !message.fileObject.mimetype ||
+      (!message.fileObject.mimetype.includes('image') && !message.fileObject.mimetype.includes('video'))) {
+      return '';
+    }
+    if (message.fileObject.mimetype && message.fileObject.mimetype.includes('video')) {
+      return 'video-attachment-container';
+    }
+    if (message.fileObject.mimetype && message.fileObject.mimetype.includes('image')) {
+      return 'image';
+    }
+  }
+
   /**
    * check date and time diffrance between current message(message object of index) old message.
    * @param {int} message
@@ -669,7 +682,13 @@ export class ChatRoomComponent implements OnInit {
     return result;
   }
 
-  async preview(file) {
+  async preview(file, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     // if file didn't have mimetype use filestack Url to priview the file.
     if (!file.mimetype) {
       return this.filestackService.previewFile(file);

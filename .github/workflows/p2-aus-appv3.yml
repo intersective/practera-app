@@ -9,8 +9,13 @@ name: Deploy to p2-aus-appv3 environment
 ################################################
 on:
   workflow_dispatch:
-  push:
-    branches: [ 'feature/av2-999/App-enhancement-V3' ]
+  # push:
+  #   branches: [ 'feature/av2-999/App-enhancement-V3' ]
+    inputs:
+      BRANCH_TAG_NAME:
+        description: 'New tag version based on create-release-tag workflow'
+        required: true
+        default: ''
 
 
 

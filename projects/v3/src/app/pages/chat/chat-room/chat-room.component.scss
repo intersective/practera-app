@@ -63,6 +63,10 @@ $message-body-size: 60%;
           line-height: 0;
           cursor: pointer;
 
+          .message-text {
+            margin-bottom: 10px;
+          }
+
           img {
             border-radius: 25px;
           }
@@ -73,6 +77,10 @@ $message-body-size: 60%;
           background: white;
           --background: white;
           cursor: pointer;
+
+          .message-text {
+            margin-bottom: 10px;
+          }
         }
 
         p {
@@ -107,6 +115,10 @@ $message-body-size: 60%;
           border: 1px #bbbbbb solid;
           padding-left: 10px;
           padding-right: 10px;
+
+          .message-text {
+            margin-bottom: 10px;
+          }
 
           app-video-conversion {
             display: flex;
@@ -246,6 +258,10 @@ $message-body-size: 60%;
 }
 .ion-content-absolute-with-footer {
   height: calc(100% - 155px);
+
+  &.announcement {
+    height: calc(100% - 60px);
+  }
 }
 
 .footer {

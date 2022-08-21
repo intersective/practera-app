@@ -3,25 +3,33 @@
     <ion-icon *ngIf="file.url"
       name="download"
       (click)="download()"
+      (keydown)="download($event)"
       color="primary"
       size="large"
       slot="end"
       margin-start
+      role="button"
+      tabindex="0"
+      aria-label="download"
     ></ion-icon>
 
     <ion-icon name="close-circle-outline"
       (click)="close()"
+      (keydown)="close($event)"
       color="primary"
       size="large"
       slot="end"
       margin-start
+      role="button"
+      tabindex="0"
+      aria-label="close preview"
     ></ion-icon>
   </ion-toolbar>
 </ion-header>
 <ion-content text-center>
   <div class="wrapper">
     <ng-container *ngIf="file && file.mimetype.includes('image')">
-      <img [src]="file.url" alt="uploaded attachment">
+      <img [src]="file.url" alt="uploaded attachment preview">
     </ng-container>
 
     <ng-container *ngIf="file && file.mimetype.includes('video')">
