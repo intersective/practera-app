@@ -1231,6 +1231,21 @@ export class DemoService {
             "cursor": "{\"t\":\"2022-04-11T03:20:34.000Z\",\"u\":[\"6895443a-9356-49e1-ac06-177cea5436b4\"]}",
             "chatLogs": [
               {
+                "uuid": "41fe20fc-4856-4c93-97fa-ec165571eee9",
+                "isSender": false,
+                "message": "cohort chat test message, text with image",
+                "file": "{\"filename\":\"983794168.jpg\",\"handle\":\"mhmmAWsSbyDddEKnTGqq\",\"mimetype\":\"image/jpeg\",\"originalPath\":\"983794168.jpg\",\"size\":98468,\"source\":\"local_file_system\",\"url\":\"https://cdn.filestackcontent.com/mhmmAWsSbyDddEKnTGqq\",\"uploadId\":\"GjlJa3G9Ed5Lj46e\",\"originalFile\":{\"name\":\"983794168.jpg\",\"type\":\"image/jpeg\",\"size\":98468},\"status\":\"Stored\",\"key\":\"cutie/image/uploads/cc1176fc1ce0ca2e32145eef4aea69f0/o9d9AcSmRZiQQ1WJmySF_983794168.jpg\",\"container\":\"files.p2-stage.practera.com\",\"workflows\":{\"3c38ef53-a9d0-4aa4-9234-617d9f03c0de\":{\"jobid\":\"046a6e7d-340a-4d63-b025-b5796018d40e\"}}}",
+                "created": "2022-04-11 03:37:15",
+                "sender": {
+                  "uuid": "4685083d-4da9-4b78-941e-7930510b34c0",
+                  "name": "sasanga+L002",
+                  "role": "participant",
+                  "avatar": "https://www.gravatar.com/avatar/9c28dee4c06b0ee859d7093d3dd12168?d=https://admin.p2-stage.practera.com/img/user-512.png&s=50",
+                  "__typename": "ChannelMember"
+                },
+                "__typename": "ChatLog"
+              },
+              {
                 "uuid": "41fe20fc-48e3-4c93-97fa-ec165571eee9",
                 "isSender": true,
                 "message": "cohort chat test message 07",
