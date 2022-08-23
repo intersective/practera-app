@@ -66,7 +66,6 @@ export class AssessmentComponent implements OnChanges {
 
   questionsForm: FormGroup;
 
-
   constructor(
     readonly utils: UtilsService,
     private notifications: NotificationsService,
@@ -445,11 +444,18 @@ export class AssessmentComponent implements OnChanges {
     return this.storage.singlePageAccess;
   }
 
-  randomCode(type) {
-    if (!this.elIdentities[type]) {
-      this.elIdentities[type] = this.utils.randomNumber();
+  /**
+   * generate random float for id attribute for a specific assessment
+   *
+   * @param   {string}  asmtName  assessment name
+   *
+   * @return  {string}        random number in string form
+   */
+  randomCode(asmtName: string): string {
+    if (!this.elIdentities[asmtName]) {
+      this.elIdentities[asmtName] = this.utils.randomNumber();
     }
-    return this.elIdentities[type];
+    return this.elIdentities[asmtName];
   }
 
   get label() {
