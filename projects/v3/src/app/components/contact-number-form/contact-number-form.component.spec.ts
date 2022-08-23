@@ -14,9 +14,9 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
-import { MockRouter, BrowserStorageServiceMock } from '@testing/mocked.service';
+import { MockRouter, BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { of } from 'rxjs';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;

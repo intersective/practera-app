@@ -8,11 +8,11 @@ import { FilestackService } from './filestack.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { environment } from '@environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';
 import * as filestack from 'filestack-js';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('FilestackService', () => {
   let service: FilestackService;

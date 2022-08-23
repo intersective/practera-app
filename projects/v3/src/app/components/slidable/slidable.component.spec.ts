@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, Directive, SimpleChange } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SlidableComponent } from './slidable.component';
 import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('SlidableComponent', () => {
   let component: SlidableComponent;

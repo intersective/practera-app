@@ -37,6 +37,9 @@
       "@testing/*": [
         "src/testing/*"
       ],
+      "@testingv3/*": [
+        "projects/v3/src/testing/*"
+      ],
       "@v3/app/*": [
         "projects/v3/src/app/*"
       ],

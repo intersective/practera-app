@@ -10,8 +10,8 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { SwitcherService } from '../../switcher/switcher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 import { SharedService } from '@services/shared.service';
 
 

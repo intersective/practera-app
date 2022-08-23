@@ -5,7 +5,7 @@ import { TestBed, async, ComponentFixture, fakeAsync, flushMicrotasks } from '@a
 import { FilestackComponent } from './filestack.component';
 import { FilestackService } from './filestack.service';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('FilestackComponent', () => {
   let component: FilestackComponent;

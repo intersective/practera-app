@@ -5,15 +5,15 @@ import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TopicComponent } from './topic.component';
 import { TopicService } from './topic.service';
 import { FilestackService } from '@shared/filestack/filestack.service';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { SharedService } from '@services/shared.service';
 import { of, throwError } from 'rxjs';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 import { ActivityService } from '@app/activity/activity.service';
 import { EmbedVideoService } from '@shared/ngx-embed-video/ngx-embed-video.service';
 

@@ -4,9 +4,9 @@ import { ActivityCompletePopUpComponent } from './activity-complete-pop-up.compo
 import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('ActivityCompletePopUpComponent', () => {
   let component: ActivityCompletePopUpComponent;

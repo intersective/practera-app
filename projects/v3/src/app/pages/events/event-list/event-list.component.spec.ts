@@ -6,9 +6,9 @@ import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ComponentsModule } from '@v3/components/components.module';
 import { UtilsService } from '@v3/services/utils.service';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
-import { TestUtils } from '@testing/utils';
-import { MockRouter } from '@testing/mocked.service';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { TestUtils } from '@testingv3/utils';
+import { MockRouter } from '@testingv3/mocked.service';
 
 class Page {
   get eventItems() {

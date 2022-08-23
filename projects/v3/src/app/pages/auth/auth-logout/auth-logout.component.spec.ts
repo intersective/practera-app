@@ -3,11 +3,11 @@ import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testi
 import { AuthService } from '../auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testing/mocked.service';
+import { MockNewRelicService } from '@testingv3/mocked.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { doesNotReject } from 'assert';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 
 describe('AuthLogoutComponent', () => {
   let component: AuthLogoutComponent;

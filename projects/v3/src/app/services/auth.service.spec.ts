@@ -2,7 +2,7 @@ import { AuthService } from './auth.service';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';

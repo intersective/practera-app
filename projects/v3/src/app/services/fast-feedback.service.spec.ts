@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { FastFeedbackService } from './fast-feedback.service';
 import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
@@ -48,7 +48,7 @@ describe('FastFeedbackService', () => {
 
   it('should get fastfeedback from API', () => {
     requestSpy.get.and.returnValue(of({}));
-    service.getFastFeedback().subscribe();
+    service["_getFastFeedback"]().subscribe();
     expect(requestSpy.get.calls.count()).toBe(1);
   });
 

@@ -7,7 +7,7 @@ import { Observable, of } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('ChatService', () => {
   let service: ChatService;

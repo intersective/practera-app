@@ -3,7 +3,7 @@ import { TopicService } from './topic.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('TopicService', () => {
   let service: TopicService;
