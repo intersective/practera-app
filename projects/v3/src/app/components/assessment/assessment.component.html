@@ -76,7 +76,7 @@
         <app-description *ngIf="assessment.description"
           [name]="randomCode(assessment.name)"
           [content]="assessment.description" id="asmt-des" class="body-2 black"
-          role="text"
+          [attr.aria-describedby]="randomCode(assessment.name)"
         ></app-description>
       </ion-text>
 
