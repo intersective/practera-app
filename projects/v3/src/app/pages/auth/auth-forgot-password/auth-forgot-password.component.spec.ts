@@ -10,8 +10,8 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { MockNewRelicService } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AuthForgotPasswordComponent', () => {
   let component: AuthForgotPasswordComponent;

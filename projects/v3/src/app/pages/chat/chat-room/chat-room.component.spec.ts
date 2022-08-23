@@ -8,11 +8,11 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { FilestackService } from '@v3/services/filestack.service';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
-import { TestUtils } from '@testing/utils';
-import { mockMembers } from '@testing/fixtures';
+import { TestUtils } from '@testingv3/utils';
+import { mockMembers } from '@testingv3/fixtures';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }

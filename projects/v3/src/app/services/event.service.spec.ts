@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 import { BrowserStorageService } from '@services/storage.service';
 import * as moment from 'moment';
 
@@ -311,11 +311,6 @@ describe('EventService', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getActivities().subscribe(res => expect(res).toEqual(expected));
     });
-  });
-
-  it('when testing eventDetailPopUp(), it should pop up the modal', () => {
-    service.eventDetailPopUp(null);
-    expect(notificationSpy.modal.calls.count()).toBe(1);
   });
 
   describe('when testing timeDisplayed()', () => {

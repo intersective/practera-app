@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AchievementService', () => {
   let service: AchievementService;

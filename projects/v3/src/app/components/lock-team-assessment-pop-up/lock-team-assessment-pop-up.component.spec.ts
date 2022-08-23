@@ -3,7 +3,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up.component';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('LockTeamAssessmentPopUpComponent', () => {
   let component: LockTeamAssessmentPopUpComponent;

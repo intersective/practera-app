@@ -5,13 +5,13 @@ import { PusherService, PusherConfig } from '@shared/pusher/pusher.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@services/utils.service';
 import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { Channel } from 'pusher-js';
 import * as Pusher from 'pusher-js';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 class PusherLib extends Pusher {
   connection;

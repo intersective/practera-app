@@ -11,8 +11,8 @@ import { FastFeedbackComponent } from './fast-feedback.component';
 import { QuestionComponent } from './question/question.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { MockNewRelicService } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 
 class Page {
   get questions() {

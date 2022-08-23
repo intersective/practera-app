@@ -7,12 +7,12 @@ import { of } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { FastFeedbackServiceMock } from '@testing/mocked.service';
+import { FastFeedbackServiceMock } from '@testingv3/mocked.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
-import { TestUtils } from '@testing/utils';
-import { mockChats } from '@testing/fixtures';
+import { TestUtils } from '@testingv3/utils';
+import { mockChats } from '@testingv3/fixtures';
 
 const mockPusherChannels = {
   data: {

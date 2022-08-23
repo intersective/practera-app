@@ -7,7 +7,7 @@ import { EventService } from '@v3/services/event.service';
 import { ComponentsModule } from '@v3/components/components.module';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@v3/services/storage.service';

@@ -11,9 +11,9 @@ import { NotificationService } from '@shared/notification/notification.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MockNewRelicService } from '@testing/mocked.service';
+import { MockNewRelicService } from '@testingv3/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AuthLoginComponent', () => {
   let component: AuthLoginComponent;

@@ -7,8 +7,8 @@ import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
 import { BrowserStorageService } from '@services/storage.service';
 
 import { Router } from '@angular/router';
-import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { TestUtils } from '@testingv3/utils';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { RequestService } from 'request';
 
 describe('RequestInterceptor', () => {

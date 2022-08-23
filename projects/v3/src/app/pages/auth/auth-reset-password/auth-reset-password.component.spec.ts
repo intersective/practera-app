@@ -6,13 +6,13 @@ import { AuthService } from '../auth.service';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { Router, ActivatedRoute, UrlSerializer } from '@angular/router';
-import { ActivatedRouteStub } from '@testing/activated-route-stub';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;

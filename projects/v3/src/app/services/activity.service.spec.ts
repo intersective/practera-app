@@ -6,8 +6,8 @@ import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Router } from '@angular/router';
-import { MockRouter } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { MockRouter } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('ActivityService', () => {
   let service: ActivityService;
