@@ -36,14 +36,28 @@ describe('TextComponent', () => {
   });
 
   describe('when testing onInit()', () => {
+    const dummyQuestion = {
+      id: 1,
+      name: '',
+      type: '',
+      description: '',
+      isRequired: true,
+      canComment: false,
+      canAnswer: true,
+      choices: [
+        {
+          id: 1,
+          name: 'choice1',
+        },
+        {
+          id: 2,
+          name: 'choice2'
+        },
+      ],
+      audience: []
+    };
     it('should get correct data for in progress submission', () => {
-      component.question = {
-        choices: [
-          { id: 1, name: 'choice1' },
-          { id: 2, name: 'choice2' }
-        ],
-        audience: []
-      };
+      component.question = dummyQuestion;
       component.submissionStatus = 'in progress';
       component.doAssessment = true;
       component.submission = { answer: 'abc' };
@@ -57,13 +71,7 @@ describe('TextComponent', () => {
     });
 
     it('should get correct data for in progress review', () => {
-      component.question = {
-        choices: [
-          { id: 1, name: 'choice1' },
-          { id: 2, name: 'choice2' }
-        ],
-        audience: []
-      };
+      component.question = dummyQuestion;
       component.submissionStatus = 'pending review';
       component.doAssessment = false;
       component.submission = { answer: 'abc' };
@@ -83,8 +91,8 @@ describe('TextComponent', () => {
 
   describe('when testing onChange()', () => {
     beforeEach(() => {
-      component.answer = 'answer';
-      component.comment = 'comment';
+      component.answer.setValue('answer');
+      component.comment.setValue('comment');
     });
     it('should get correct data when writing submission answer', () => {
       component.onChange();

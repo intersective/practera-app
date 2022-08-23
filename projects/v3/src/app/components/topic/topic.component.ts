@@ -23,7 +23,6 @@ export class TopicComponent implements OnChanges {
   iframeHtml = '' as SafeHtml;
   btnToggleTopicIsDone = false;
   isLoadingPreview = false;
-  askForMarkAsDone: boolean;
 
   constructor(
     private embedService: EmbedVideoService,
@@ -127,4 +126,9 @@ export class TopicComponent implements OnChanges {
     }
   }
 
+  async actionBarContinue(topic): Promise<void> {
+    this.continuing = true;
+    this.continue.emit(topic);
+    return;
+  }
 }
