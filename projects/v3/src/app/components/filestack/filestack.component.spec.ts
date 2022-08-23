@@ -1,10 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
-import { TestBed, async, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { TestBed, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FilestackComponent } from './filestack.component';
-import { FilestackService } from './filestack.service';
-import { UtilsService } from '@app/services/utils.service';
+import { FilestackService } from '@v3/services/filestack.service';
+import { UtilsService } from '@v3/app/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('FilestackComponent', () => {
@@ -12,7 +11,7 @@ describe('FilestackComponent', () => {
   let fixture: ComponentFixture<FilestackComponent>;
   let filestackSpy: FilestackService;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [IonicModule],
       declarations: [FilestackComponent],
@@ -31,7 +30,7 @@ describe('FilestackComponent', () => {
     fixture = TestBed.createComponent(FilestackComponent);
     component = fixture.debugElement.componentInstance;
     filestackSpy = TestBed.inject(FilestackService);
-  }));
+  });
 
   it('should create the filestack component', () => {
     expect(component).toBeTruthy();
