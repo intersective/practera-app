@@ -1,17 +1,18 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, inject, TestBed, tick, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Observable, of, pipe, Subject } from 'rxjs';
-import { PusherService, PusherConfig } from '@shared/pusher/pusher.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { PusherService } from '@v3/services/pusher.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
-import { UtilsService } from '@services/utils.service';
-import { RequestService } from '@shared/request/request.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { RequestService } from 'request';
 import { environment } from '@environments/environment';
 import { Channel } from 'pusher-js';
 import * as Pusher from 'pusher-js';
 import { TestUtils } from '@testingv3/utils';
+import { ApolloService } from './apollo.service';
 
 class PusherLib extends Pusher {
   connection;
@@ -46,13 +47,13 @@ const initialisingPusher = {
   allChannels: () => [],
 };
 
-describe('PusherConfig', () => {
+/* describe('PusherConfig', () => {
   const config = new PusherConfig();
 
   it('should have pusherKey & apiurl', () => {
     expect(config.pusherKey).toEqual('');
   });
-});
+}); */
 
 describe('PusherService', async () => {
   const PUSHER_APIURL = 'APIURL';
@@ -77,6 +78,7 @@ describe('PusherService', async () => {
   let utilSpy: UtilsService;
   let storageSpy: BrowserStorageService;
   let mockBackend: HttpTestingController;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   // let pusherLibSpy: any;
 
   beforeEach(() => {
@@ -114,18 +116,24 @@ describe('PusherService', async () => {
             }
           })
         },
-        {
+        /* {
           provide: PusherConfig,
           useValue: {
             pusherKey: PUSHERKEY
           }
+        }, */
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', {
+            graphQLFetch: of(),
+            chatGraphQLQuery: of({ data: [] }),
+          }),
         },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', {
             get: of({ data: [] }),
             apiResponseFormatError: 'ERROR',
-            chatGraphQLQuery: of({ data: [] }),
           }),
         }
       ],
@@ -175,10 +183,10 @@ describe('PusherService', async () => {
     });
 
     it('should call getChatChannels() and make API request to chat GraphQL Server', () => {
-      requestSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
+      apolloSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
       spyOn(service, 'isSubscribed').and.returnValue(true);
       service.getChatChannels().subscribe();
-      expect(requestSpy.chatGraphQLQuery.calls.count()).toBe(1);
+      expect(apolloSpy.chatGraphQLQuery.calls.count()).toBe(1);
     });
   });
 
@@ -279,7 +287,7 @@ describe('PusherService', async () => {
       }));
       service['pusher'] = undefined;
       requestSpy.get.and.returnValue(of(notificationRes));
-      requestSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
+      apolloSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
     });
 
     it('should initialise pusher', fakeAsync(() => {
