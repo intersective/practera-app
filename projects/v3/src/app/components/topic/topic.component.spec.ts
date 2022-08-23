@@ -3,18 +3,18 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TopicComponent } from './topic.component';
-import { TopicService } from './topic.service';
-import { FilestackService } from '@shared/filestack/filestack.service';
+import { TopicService } from '@v3/services/topic.service';
+import { FilestackService } from '@v3/services/filestack.service';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
-import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { SharedService } from '@services/shared.service';
+import { SharedService } from '@v3/services/shared.service';
 import { of, throwError } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
-import { ActivityService } from '@app/activity/activity.service';
+import { ActivityService } from '@v3/services/activity.service';
 import { EmbedVideoService } from '@shared/ngx-embed-video/ngx-embed-video.service';
 
 describe('TopicComponent', () => {
@@ -45,7 +45,7 @@ describe('TopicComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
   const routeStub = new ActivatedRouteStub({ activityId: 1, id: 2 });
-  const notificationSpy = jasmine.createSpyObj('NotificationService', {
+  const notificationSpy = jasmine.createSpyObj('NotificationsService', {
     'alert': data => Promise.resolve(data),
     'presentToast': data => Promise.resolve(data),
   });
@@ -82,7 +82,7 @@ describe('TopicComponent', () => {
           useValue: routeStub
         },
         {
-          provide: NotificationService,
+          provide: NotificationsService,
           useValue: notificationSpy
         },
         {
@@ -119,105 +119,29 @@ describe('TopicComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('when testing onEnter()', () => {
-    it('should throw error to newRelic', fakeAsync(() => {
-      topicSpy.getTopic = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopic'));
-      topicSpy.getTopicProgress = jasmine.createSpy().and.returnValue(throwError('SAMPLE_ERROR::getTopicProgress'));
-      fixture.detectChanges();
-      component.onEnter();
-      flush();
-      tick(15000);
-      fixture.whenStable().then(() => {
-        expect(newRelicSpy.noticeError).toHaveBeenCalled();
-        expect(component.askForMarkAsDone).toBeTrue();
-      });
-    }));
-
-    it('should get correct data #1', fakeAsync(() => {
-      const topic = {
-        id: 1,
-        title: 'title',
-        content: 'content',
-        files: [],
-      };
-      topicSpy.getTopic.and.returnValue(of(topic));
-      topicSpy.getTopicProgress.and.returnValue(of(1));
-      topicSpy.updateTopicProgress.and.returnValue(of(null));
-      fixture.detectChanges();
-      component.onEnter();
-      tick(20000);
-      flush();
-
-      expect(component.loadingTopic).toBe(false);
-      expect(component.topic).toEqual(topic);
-      expect(component.topicProgress).toBe(1);
-      expect(component.btnToggleTopicIsDone).toBe(true);
-      expect(component.askForMarkAsDone).toBeTrue();
-    }));
-
-    it('should get correct data #2', fakeAsync(() => {
-      const topic = {
-        id: 1,
-        title: 'title',
-        content: 'content',
-        files: [],
-        videolink: 'abc',
-      };
-      topicSpy.getTopic.and.returnValue(of(topic));
-      topicSpy.getTopicProgress.and.returnValue(of(null));
-      fixture.detectChanges();
-      component.onEnter();
-      tick(20000);
-
-      flush();
-      expect(component.loadingTopic).toBe(false);
-      expect(component.topic).toEqual(topic);
-      expect(component.topicProgress).toBe(null);
-      expect(component.btnToggleTopicIsDone).toBe(false);
-      expect(component.askForMarkAsDone).toBeTrue();
-    }));
-
-    it('should get correct data #3', fakeAsync(() => {
-      const topic = {
-        id: 1,
-        title: 'title',
-        content: 'content',
-        files: [],
-        videolink: 'abc',
-      };
-      topicSpy.getTopic.and.returnValue(of(topic));
-      topicSpy.getTopicProgress.and.returnValue(of(0));
-      fixture.detectChanges();
-      component.onEnter();
-      tick(20000);
-
-      flushMicrotasks();
-      expect(component.loadingTopic).toBe(false);
-      expect(component.topic).toEqual(topic);
-      expect(component.topicProgress).toBe(0);
-      expect(component.btnToggleTopicIsDone).toBe(false);
-      expect(component.askForMarkAsDone).toBeTrue();
-    }));
-  });
-
   it('should stop playing videos when leave the page', () => {
     sharedSpy.stopPlayingVideos.and.returnValue('');
     component.ionViewWillLeave();
     expect(sharedSpy.stopPlayingVideos.calls.count()).toBe(1);
   });
 
-  it('should mark topic as done', () => {
-    const SAMPLE_ID = 12345;
-    component.id = SAMPLE_ID;
-    component.changeStatus.emit = jasmine.createSpy();
-    topicSpy.updateTopicProgress = jasmine.createSpy('updateTopicProgress').and.returnValue(of(''));
-    component.markAsDone().subscribe();
+  describe('actionBarContinue()', () => {
+    const dummyTOPIC = {};
+    beforeAll(() => {
+      component.continue = jasmine.createSpyObj('continue', ['emit']);
+      component.actionBarContinue(dummyTOPIC);
+    });
 
-    expect(topicSpy.updateTopicProgress).toHaveBeenCalledWith(SAMPLE_ID, 'completed');
-    expect(component.btnToggleTopicIsDone).toBe(true);
-    expect(component.changeStatus.emit).toHaveBeenCalled();
+    it('should set "continuing" as true', () => {
+      expect(component.continuing).toBeTruthy();
+    });
+
+    it('should emit continue event', () => {
+      expect(component.continue.emit).toHaveBeenCalled();
+    });
   });
-  describe('when testing continue()', () => {
+
+  /* describe('when testing continue()', () => {
     it('should go to the next task #1', () => {
       component.continue();
       expect(component.redirecting).toBe(false);
@@ -229,7 +153,8 @@ describe('TopicComponent', () => {
       expect(component.redirecting).toBe(true);
       expect(component.loadingTopic).toBe(true);
     });
-  });
+  }); */
+
   describe('when testing previewFile()', () => {
     it('should load the file', fakeAsync(() => {
       const SAMPLE_RESULT = 'SAMPLE';
@@ -262,75 +187,6 @@ describe('TopicComponent', () => {
       expect(result).toEqual(SAMPLE_RESULT);
       expect(notificationSpy.alert).toHaveBeenCalledWith({ header: 'Error Previewing file', message: '{}' });
       expect(newRelicSpy.noticeError).toHaveBeenCalled();
-    }));
-  });
-
-  describe('when testing back()', () => {
-    const SAMPLE_NOTIFICATION = true;
-
-    beforeEach(() => {
-      notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_NOTIFICATION));
-    });
-
-    it('should navigate to activity page #1', fakeAsync(() => {
-      routerSpy.navigate.and.returnValue(Promise.resolve(SAMPLE_NOTIFICATION));
-      utilsSpy.isMobile.and.returnValue(false);
-      component.btnToggleTopicIsDone = true;
-      component.activityId = 1;
-      let result;
-      fixture.detectChanges();
-
-      component.back().then((res) => {
-        result = res;
-      });
-      flushMicrotasks();
-      expect(result).toEqual(SAMPLE_NOTIFICATION);
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
-    }));
-
-    it('should navigate to activity page #2', fakeAsync(() => {
-      let handlers;
-      notificationSpy.alert = jasmine.createSpy().and.callFake(data => {
-        handlers = data;
-        return Promise.resolve(SAMPLE_NOTIFICATION);
-      });
-      notificationSpy.presentToast = jasmine.createSpy().and.callFake(data => {
-        return Promise.resolve(true);
-      });
-      topicSpy.updateTopicProgress = jasmine.createSpy('updateTopicProgress').and.returnValue(of(''));
-      component['_markAsStartStop'] = jasmine.createSpy('_markAsStartStop');
-
-      component.btnToggleTopicIsDone = false;
-      component.askForMarkAsDone = true;
-      component.activityId = 1;
-      fixture.detectChanges();
-
-      let result;
-      /* component.back().then(res => {
-        result = res;
-      }); */
-
-      flush();
-
-      fixture.whenStable().then(() => {
-        expect(component['_markAsStartStop']).toHaveBeenCalled();
-        expect(result).toEqual(SAMPLE_NOTIFICATION);
-
-        const first = handlers;
-        first.buttons[0].handler();
-        flushMicrotasks();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
-
-        first.buttons[1].handler();
-        flushMicrotasks();
-        expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'activity', 1]);
-        expect(notificationSpy.presentToast).toHaveBeenCalled();
-
-        topicSpy.updateTopicProgress.and.returnValue(throwError('SAMPLE_ERROR::back()'));
-        first.buttons[1].handler();
-        flushMicrotasks();
-        expect(newRelicSpy.noticeError).toHaveBeenCalledWith('"SAMPLE_ERROR::back()"');
-      });
     }));
   });
 });
