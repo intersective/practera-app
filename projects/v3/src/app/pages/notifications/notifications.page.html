@@ -16,8 +16,8 @@
 </ion-header>
 
 <ion-content fullscreen="true">
-  <main>
-    <h1 class="for-accessibility">Notifications list</h1>
+  <main aria-labelledby="notifications">
+    <h1 id="notifications" class="for-accessibility">Notifications list</h1>
     <ng-container *ngIf="isMobile; else notificationsDesktop">
       <ng-container *ngIf="loadingTodoItems; else doneLoading">
         <div class="margin-left-right ion-padding-bottom">
