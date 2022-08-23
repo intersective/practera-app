@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed, tick } from '@angular/core/testing';
 import { NewRelicService } from '@app/shared/new-relic/new-relic.service';
-import { NotificationService } from '@app/shared/notification/notification.service';
-import { RequestService } from '@app/shared/request/request.service';
-import { TopicService } from '@app/topic/topic.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { RequestService } from 'request';
+import { TopicService } from '@v3/services/topic.service';
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { Observable, of, throwError } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
-import { PusherService } from '@shared/pusher/pusher.service';
+import { PusherService } from './pusher.service';
 
 describe('SharedService', () => {
   let service: SharedService;
@@ -33,8 +33,8 @@ describe('SharedService', () => {
           useClass: BrowserStorageServiceMock,
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp']),
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['achievementPopUp']),
         },
         {
           provide: HttpClient,

@@ -1,7 +1,7 @@
 import { ReviewRatingService } from './review-rating.service';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService } from 'request';
 
 describe('ReviewRatingService', () => {
   let service: ReviewRatingService;
