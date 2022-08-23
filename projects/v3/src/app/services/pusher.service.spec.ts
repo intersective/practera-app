@@ -1,10 +1,9 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, inject, TestBed, tick, fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { Observable, of, pipe, Subject } from 'rxjs';
+import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { PusherService } from '@v3/services/pusher.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
+import { Router } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { RequestService } from 'request';
@@ -13,6 +12,7 @@ import { Channel } from 'pusher-js';
 import * as Pusher from 'pusher-js';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from './apollo.service';
+import { ApolloQueryResult } from '@apollo/client';
 
 class PusherLib extends Pusher {
   connection;
@@ -158,7 +158,7 @@ describe('PusherService', async () => {
     ]
   };
 
-  const pusherChatChannelRes = {
+  const pusherChatChannelRes: ApolloQueryResult<any> = {
     data: {
       channels: [
         {
@@ -168,7 +168,9 @@ describe('PusherService', async () => {
           pusherChannel: 'k76i865-jyj-5f44eb4f'
         }
       ]
-    }
+    },
+    loading: false,
+    networkStatus: 7
   };
 
   describe('getChannels()', async () => {
