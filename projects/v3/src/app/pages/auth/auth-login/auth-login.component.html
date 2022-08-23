@@ -4,7 +4,7 @@
       <app-branding-logo></app-branding-logo>
     </div>
   </header>
-  <main>
+  <main aria-label="login">
     <div class="div-after-logo">
       <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
         <ion-list class="ion-margin">
