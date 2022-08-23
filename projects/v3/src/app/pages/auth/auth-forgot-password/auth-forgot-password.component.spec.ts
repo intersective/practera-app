@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthForgotPasswordComponent } from './auth-forgot-password.component';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@services/utils.service';

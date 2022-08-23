@@ -137,7 +137,7 @@ describe('ChatViewComponent', () => {
         lastMessageCreated: null,
         canEdit: false
       };
-      component.goto(chatChannel);
+      component.desktopGoto(chatChannel);
       expect(component.loadInfo).toBe(false);
       expect(component.chatChannel).toEqual(chatChannel);
       tick();

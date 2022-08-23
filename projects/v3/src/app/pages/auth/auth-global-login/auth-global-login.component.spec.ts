@@ -1,12 +1,12 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthGlobalLoginComponent } from './auth-global-login.component';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { NotificationService } from '@shared/notification/notification.service';
-import { SwitcherService } from '../../switcher/switcher.service';
+import { ExperienceService } from '@v3/services/experience.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 describe('AuthGlobalLoginComponent', () => {
@@ -16,7 +16,7 @@ describe('AuthGlobalLoginComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let switcherSpy: jasmine.SpyObj<SwitcherService>;
+  let switcherSpy: jasmine.SpyObj<ExperienceService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -30,8 +30,8 @@ describe('AuthGlobalLoginComponent', () => {
           useValue: jasmine.createSpyObj('AuthService', ['globalLogin'])
         },
         {
-          provide: SwitcherService,
-          useValue: jasmine.createSpyObj('SwitcherService', ['getMyInfo', 'switchProgram'])
+          provide: ExperienceService,
+          useValue: jasmine.createSpyObj('ExperienceService', ['getMyInfo', 'switchProgram'])
         },
         {
           provide: Router,
@@ -65,7 +65,7 @@ describe('AuthGlobalLoginComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
-    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    switcherSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
   });
 
   beforeEach(() => {

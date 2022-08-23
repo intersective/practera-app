@@ -2,29 +2,28 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { APP_BASE_HREF, Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthResetPasswordComponent } from './auth-reset-password.component';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe, throwError } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
 import { Router, ActivatedRoute, UrlSerializer } from '@angular/router';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
-import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;
   let fixture: ComponentFixture<AuthResetPasswordComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [AuthResetPasswordComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -44,8 +43,8 @@ describe('AuthResetPasswordComponent', () => {
           useClass: BrowserStorageServiceMock
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast', 'popUp'])
         },
         {
           provide: Router,
@@ -70,7 +69,7 @@ describe('AuthResetPasswordComponent', () => {
     fixture = TestBed.createComponent(AuthResetPasswordComponent);
     component = fixture.componentInstance;
     authServiceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     authServiceSpy.resetPassword.and.returnValue(of({}));
