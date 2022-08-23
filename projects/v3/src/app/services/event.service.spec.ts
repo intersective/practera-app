@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { EventService } from './event.service';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
+import { RequestService } from 'request';
+import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { TestUtils } from '@testingv3/utils';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import * as moment from 'moment';
 
 describe('EventService', () => {
@@ -18,7 +18,7 @@ describe('EventService', () => {
   });
   let service: EventService;
   let requestSpy: jasmine.SpyObj<RequestService>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
   const testUtils = new TestUtils();
   const thisMoment = moment();
@@ -36,8 +36,8 @@ describe('EventService', () => {
           useValue: jasmine.createSpyObj('RequestService', ['get', 'delete', 'post', 'apiResponseFormatError'])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['modal'])
         },
         {
           provide: BrowserStorageService,
@@ -52,7 +52,7 @@ describe('EventService', () => {
     service = TestBed.inject(EventService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utils = TestBed.inject(UtilsService);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
   });
 
   it('should be created', () => {

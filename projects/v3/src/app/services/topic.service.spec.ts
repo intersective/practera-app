@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { TopicService } from './topic.service';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
+import { RequestService } from 'request';
+import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('TopicService', () => {
