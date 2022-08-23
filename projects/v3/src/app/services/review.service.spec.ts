@@ -57,7 +57,8 @@ describe('ReviewService', () => {
           Assessment: {}
         }]
       }));
-      service.getReviews().subscribe();
+      service.getReviews();
+      // .subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -82,7 +83,8 @@ describe('ReviewService', () => {
           }
         }]
       }));
-      service.getReviews().subscribe(res => {
+      service.getReviews();
+      service.reviews$.subscribe(res => {
         expect(res).toEqual([{
           assessmentId: 1,
           submissionId: 2,
