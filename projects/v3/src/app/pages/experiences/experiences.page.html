@@ -1,7 +1,7 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(programs$ | async ) as programs">
     <header>
-      <h1 class="for-accessibility">Experiences</h1>
+      <h1 id="experiences" class="for-accessibility">Experiences</h1>
       <ion-grid class="ion-no-padding ion-no-margin">
         <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin">
@@ -12,7 +12,7 @@
         </ion-row>
       </ion-grid>
     </header>
-    <main>
+    <main aria-labelledby="experiences">
       <ion-grid class="ion-no-padding ion-no-margin">
         <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin">
