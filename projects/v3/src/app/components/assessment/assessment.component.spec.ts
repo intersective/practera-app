@@ -274,135 +274,6 @@ describe('AssessmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should get correct parameters from routing', () => {
-    fixture.detectChanges();
-    expect(component.contextId).toEqual(3);
-    expect(component.submission.id).toEqual(4);
-    expect(component.action).toEqual('assessment');
-  });
-
-  describe('when testing getAssessment()', () => {
-    let tmpAssessment, tmpSubmission, tmpReview, customTests;
-    beforeEach(() => {
-      tmpAssessment = mockAssessment;
-      tmpSubmission = null;
-      tmpReview = null;
-      customTests = () => { };
-    });
-    afterEach(() => {
-      apolloSpy.graphQLWatch.and.returnValue(of({
-        assessment: tmpAssessment,
-        submission: tmpSubmission,
-        review: tmpReview
-      }));
-      fixture.detectChanges();
-      customTests();
-    });
-    it('should get correct assessment and display correct info in html', () => {
-      customTests = () => {
-        expect(component.assessment).toEqual(mockAssessment);
-        // expect(component.loadingAssessment).toEqual(false);
-        expect(page.savingMessage).toBeFalsy();
-        expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
-        expect(page.assessmentDescription).toBeTruthy();
-        expect(page.overDueMsg).toBeFalsy();
-        expect(page.dueMsg.innerHTML.trim()).toEqual(utils.dueDateFormatter(mockAssessment.dueDate));
-        mockAssessment.groups.forEach((group, groupIndex) => {
-          expect(page.groupNames[groupIndex].innerHTML).toEqual(group.name);
-          expect(page.groupDescriptions[groupIndex]).toBeTruthy();
-          group.questions.forEach((question, questionIndex) => {
-            expect(page.questionNames[questionIndex].innerHTML).toContain(question.name);
-            expect(page.questionDescriptions[questionIndex]).toBeTruthy();
-          });
-        });
-        expect(notificationSpy.alert.calls.count()).toBe(0);
-      };
-    });
-
-    it('should pop up alert if it is team assessment and user is not in team', () => {
-      tmpAssessment = JSON.parse(JSON.stringify(mockAssessment));
-      tmpAssessment.isForTeam = true;
-      const tmpUser = JSON.parse(JSON.stringify(mockUser));
-      tmpUser.teamId = null;
-      storageSpy.getUser.and.returnValue(tmpUser);
-      customTests = () => {
-        expect(notificationSpy.alert.calls.count()).toBe(1);
-      };
-    });
-
-    it('should get correct in progress submission', () => {
-      tmpSubmission = mockSubmission;
-      customTests = () => {
-        expect(component.submission).toEqual(mockSubmission);
-        expect(component.doAssessment).toBe(true);
-        expect(component.isPendingReview).toBe(false);
-        expect(component.savingMessage$.next).toHaveBeenCalledWith('Last saved ' + utils.timeFormatter(mockSubmission.modified));
-        expect(component.btnDisabled).toBe(false);
-      };
-    });
-
-    it('should get correct in progress locked submission', () => {
-      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-      tmpSubmission.isLocked = true;
-      customTests = () => {
-        expect(component.doAssessment).toBe(false);
-        expect(component.isPendingReview).toBe(false);
-        expect(component.btnDisabled).toBe(true);
-        expect(component.submission.status).toEqual('done');
-      };
-    });
-
-    it('should get correct done submission', () => {
-      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-      tmpSubmission.status = 'done';
-      customTests = () => {
-        expect(component.submission).toEqual(tmpSubmission);
-        expect(component.doAssessment).toBe(false);
-        expect(component.isPendingReview).toBe(false);
-        expect(component.btnDisabled).toBe(false);
-      };
-    });
-
-    it('should get correct in progress review', () => {
-      tmpAssessment.type = 'moderated';
-      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-      tmpSubmission.status = 'pending review';
-      tmpReview = mockReview;
-      routeStub.snapshot.data.action = 'review';
-      customTests = () => {
-        expect(component.review).toEqual(mockReview);
-        expect(component.doAssessment).toBe(false);
-        expect(component.isPendingReview).toBe(true);
-        expect(component.btnDisabled).toBe(false);
-      };
-    });
-
-    it('should get correct published review', () => {
-      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-      tmpSubmission.status = 'published';
-      tmpReview = JSON.parse(JSON.stringify(mockReview));
-      tmpReview.status = '';
-      customTests = () => {
-        expect(component.review).toEqual(tmpReview);
-        expect(component.doAssessment).toBe(false, 'not do assessment');
-        expect(component.isPendingReview).toBe(false, 'not do review');
-        expect(component.btnDisabled).toBe(false);
-        expect(component.feedbackReviewed).toBe(false);
-      };
-    });
-
-    it('should get correct review published status', () => {
-      tmpSubmission = JSON.parse(JSON.stringify(mockSubmission));
-      tmpSubmission.status = 'published';
-      tmpSubmission.completed = true;
-      tmpReview = JSON.parse(JSON.stringify(mockReview));
-      tmpReview.status = 'done';
-      customTests = () => {
-        expect(component.feedbackReviewed).toBe(true);
-      };
-    });
-  });
-
   xit('should pop up mark feedback as read confirmation when going back', () => {
     component.action = 'assessment';
     component.submission.status = 'published';
@@ -464,16 +335,16 @@ describe('AssessmentComponent', () => {
       component.assessment.isForTeam = true;
       component.questionsForm = new FormGroup({
         'q-123': new FormControl('abc'),
-        'q-124': new FormControl(null),
-        'q-125': new FormControl(null)
+        'q-124': new FormControl(),
+        'q-125': new FormControl()
       });
     });
 
     afterEach(() => {
       expect(component.btnDisabled).toBe(btnDisabled);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
-      expect(assessment.id).toBe(1);
-      expect(assessment.contextId).toBe(2);
+      expect(component.assessment.id).toBe(1);
+      expect(component.contextId).toBe(2);
       expect(answers).toEqual([
         {
           questionId: 123,
@@ -491,39 +362,43 @@ describe('AssessmentComponent', () => {
     });
 
     it('saving in progress', () => {
+      const spy = spyOn(component.save, 'emit');
       component._submit(true);
-      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentSpy.saveAnswers.calls.first().args[1];
+      btnDisabled = true;
+
+      const args = spy.calls.first().args;
+      assessment = args[0].assessment;
+      answers = args[0].answers;
+
       // expect(component.submitting).toBeFalsy();
-      expect(component.savingMessage$.next).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
       expect(assessment.inProgress).toBe(true);
       expect(assessment.unlock).toBeFalsy();
     });
 
-    it('saving in progress, and unlock the submission for team assessment', () => {
-      component._submit(true, true);
-      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(assessment.unlock).toBe(true);
-    });
-
     it('submitting', () => {
+      const spy = spyOn(component.save, 'emit');
+      // component.save = jasmine.createSpyObj('save', ['emit']);
       btnDisabled = true;
-      component._submit(false);
-      assessment = assessmentSpy.saveAnswers.calls.first().args[0];
-      answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      // expect(component.submitting).toEqual(false);
-      expect(component.savingMessage$.next).toHaveBeenCalled();
+      component.isPendingReview = false;
+      component.doAssessment = true;
+      component._submit(true); // save in progress
+
+      const args = spy.calls.first().args;
+      assessment = args[0].assessment;
+      answers = args[0].answers;
+      expect(component.save.emit).toHaveBeenCalled();
     });
   });
 
   it('should pop up alert if required answer missing when submitting', () => {
+    component.assessment = mockAssessment;
     component.doAssessment = true;
     fixture.detectChanges();
     component.questionsForm = new FormGroup({
-      'q-123': new FormControl(null),
-      'q-124': new FormControl(null),
-      'q-125': new FormControl(null)
+      'q-123': new FormControl(),
+      'q-124': new FormControl(),
+      'q-125': new FormControl()
     });
     component._submit(false);
     // expect(component.submitting).toBe(false);
@@ -554,8 +429,13 @@ describe('AssessmentComponent', () => {
     });
 
     it('should be called with correct assessment answer/action/activity status', () => {
+      component.save = jasmine.createSpyObj('save', ['emit']);
+      component.questionsForm = new FormGroup({});
+      utils.each = jasmine.createSpy('each');
       component._submit(false);
-      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
+      expect(utils.each).toHaveBeenCalled();
+      expect(component.save.emit).toHaveBeenCalled();
+      /* expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
       expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
         {
           id: activityId,
@@ -564,10 +444,11 @@ describe('AssessmentComponent', () => {
         emptyAnswers,
         action,
         false // no need pulse check for this test
-      );
+      ); */
     });
 
     it(`should check fastfeedback availability as pulseCheck is 'true'`, () => {
+      component.questionsForm = new FormGroup({});
       component._submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
       fixture.detectChanges();
@@ -575,6 +456,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should skip fastfeedback if pulsecheck = false', () => {
+      component.questionsForm = new FormGroup({});
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');
       component._submit(false);
