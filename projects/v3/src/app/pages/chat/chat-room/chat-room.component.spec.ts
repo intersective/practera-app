@@ -5,7 +5,7 @@ import { ChatRoomComponent } from './chat-room.component';
 import { ChannelMembers, ChatService } from '@v3/services/chat.service';
 import { of } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { FilestackService } from '@v3/services/filestack.service';
 import { MockRouter } from '@testingv3/mocked.service';

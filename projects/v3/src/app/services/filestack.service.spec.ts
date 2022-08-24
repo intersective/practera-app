@@ -6,8 +6,8 @@ import {
 } from '@angular/common/http/testing';
 import { FilestackService } from './filestack.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { environment } from '@environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';

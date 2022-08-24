@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { ReviewService } from './review.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('ReviewService', () => {

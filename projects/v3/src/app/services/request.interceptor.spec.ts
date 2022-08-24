@@ -4,7 +4,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { RequestModule } from 'request';
 import { RequestInterceptor } from './request.interceptor';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 import { Router } from '@angular/router';
 import { TestUtils } from '@testingv3/utils';

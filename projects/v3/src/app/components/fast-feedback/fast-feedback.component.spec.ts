@@ -2,14 +2,14 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ModalController } from '@ionic/angular';
 import { FastFeedbackComponent } from './fast-feedback.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TestUtils } from '@testingv3/utils';
-import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
+import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 
 class Page {
   get questions() {

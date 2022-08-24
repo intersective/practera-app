@@ -9,9 +9,9 @@ import {
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ContactNumberFormComponent } from './contact-number-form.component';
 import { CommonModule } from '@angular/common';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testingv3/mocked.service';

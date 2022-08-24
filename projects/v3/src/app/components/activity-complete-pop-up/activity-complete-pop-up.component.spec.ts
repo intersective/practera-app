@@ -1,11 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up.component';
-import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('ActivityCompletePopUpComponent', () => {

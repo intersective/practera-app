@@ -1,6 +1,6 @@
 import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgZone } from '@angular/core';

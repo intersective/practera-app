@@ -5,9 +5,9 @@ import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testingv3/utils';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@shared/pusher/pusher.service';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 describe('AuthService', () => {
   let service: AuthService;
