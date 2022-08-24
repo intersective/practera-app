@@ -6,7 +6,7 @@ import { QuestionsModule } from '@app/questions/questions.module';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
-import { AssessmentService } from '@v3/services/assessment.service';
+import { Assessment, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ActivityService } from '@v3/services/activity.service';
@@ -15,8 +15,9 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
 import { of } from 'rxjs';
-import { MockRouter, MockNewRelicService } from '@testingv3/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
+import { ApolloService } from '@v3/app/services/apollo.service';
 
 class Page {
   get savingMessage() {
@@ -100,6 +101,7 @@ describe('AssessmentComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let shared: SharedService;
   let utils: UtilsService;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
 
   const mockQuestions = [
     {
@@ -134,7 +136,8 @@ describe('AssessmentComponent', () => {
     }
   ];
 
-  const mockAssessment = {
+  const mockAssessment: Assessment = {
+    id: 1,
     name: 'test',
     description: 'test',
     type: 'quiz',
@@ -207,10 +210,6 @@ describe('AssessmentComponent', () => {
           useValue: jasmine.createSpyObj('SharedService', ['stopPlayingVideos'])
         },
         {
-          provide: NewRelicService,
-          useClass: MockNewRelicService,
-        },
-        {
           provide: AssessmentService,
           useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
         },
@@ -229,6 +228,10 @@ describe('AssessmentComponent', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer', 'get'])
+        },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLWatch']),
         },
         {
           provide: Router,
@@ -251,20 +254,20 @@ describe('AssessmentComponent', () => {
     routeStub = TestBed.inject(ActivatedRoute);
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     shared = TestBed.inject(SharedService);
     utils = TestBed.inject(UtilsService);
 
     // initialise service calls
-    assessmentSpy.getAssessment.and.returnValue(of({
+    /* assessmentSpy.getAssessment.and.returnValue(of({
       assessment: mockAssessment,
       submission: null,
       review: null
-    }));
+    })); */
     assessmentSpy.saveAnswers.and.returnValue(of(true));
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({ success: true }));
-    activitySpy.gotoNextTask.and.returnValue(new Promise(() => { }));
+    // activitySpy.goToNextTask.and.returnValue(Promise.resolve());
     storageSpy.getUser.and.returnValue(mockUser);
-    component.routeUrl = '/test';
   });
 
   it('should be created', () => {
@@ -273,10 +276,8 @@ describe('AssessmentComponent', () => {
 
   it('should get correct parameters from routing', () => {
     fixture.detectChanges();
-    expect(component.id).toEqual(1);
-    expect(component.activityId).toEqual(2);
     expect(component.contextId).toEqual(3);
-    expect(component.submissionId).toEqual(4);
+    expect(component.submission.id).toEqual(4);
     expect(component.action).toEqual('assessment');
   });
 
@@ -289,7 +290,7 @@ describe('AssessmentComponent', () => {
       customTests = () => { };
     });
     afterEach(() => {
-      assessmentSpy.getAssessment.and.returnValue(of({
+      apolloSpy.graphQLWatch.and.returnValue(of({
         assessment: tmpAssessment,
         submission: tmpSubmission,
         review: tmpReview
@@ -300,7 +301,7 @@ describe('AssessmentComponent', () => {
     it('should get correct assessment and display correct info in html', () => {
       customTests = () => {
         expect(component.assessment).toEqual(mockAssessment);
-        expect(component.loadingAssessment).toEqual(false);
+        // expect(component.loadingAssessment).toEqual(false);
         expect(page.savingMessage).toBeFalsy();
         expect(page.assessmentName.innerHTML).toEqual(mockAssessment.name);
         expect(page.assessmentDescription).toBeTruthy();
@@ -334,9 +335,9 @@ describe('AssessmentComponent', () => {
       customTests = () => {
         expect(component.submission).toEqual(mockSubmission);
         expect(component.doAssessment).toBe(true);
-        expect(component.doReview).toBe(false);
-        expect(component.savingMessage).toEqual('Last saved ' + utils.timeFormatter(mockSubmission.modified));
-        expect(component.savingButtonDisabled).toBe(false);
+        expect(component.isPendingReview).toBe(false);
+        expect(component.savingMessage$.next).toHaveBeenCalledWith('Last saved ' + utils.timeFormatter(mockSubmission.modified));
+        expect(component.btnDisabled).toBe(false);
       };
     });
 
@@ -345,8 +346,8 @@ describe('AssessmentComponent', () => {
       tmpSubmission.isLocked = true;
       customTests = () => {
         expect(component.doAssessment).toBe(false);
-        expect(component.doReview).toBe(false);
-        expect(component.savingButtonDisabled).toBe(true);
+        expect(component.isPendingReview).toBe(false);
+        expect(component.btnDisabled).toBe(true);
         expect(component.submission.status).toEqual('done');
       };
     });
@@ -357,8 +358,8 @@ describe('AssessmentComponent', () => {
       customTests = () => {
         expect(component.submission).toEqual(tmpSubmission);
         expect(component.doAssessment).toBe(false);
-        expect(component.doReview).toBe(false);
-        expect(component.savingButtonDisabled).toBe(false);
+        expect(component.isPendingReview).toBe(false);
+        expect(component.btnDisabled).toBe(false);
       };
     });
 
@@ -371,8 +372,8 @@ describe('AssessmentComponent', () => {
       customTests = () => {
         expect(component.review).toEqual(mockReview);
         expect(component.doAssessment).toBe(false);
-        expect(component.doReview).toBe(true);
-        expect(component.savingButtonDisabled).toBe(false);
+        expect(component.isPendingReview).toBe(true);
+        expect(component.btnDisabled).toBe(false);
       };
     });
 
@@ -384,8 +385,8 @@ describe('AssessmentComponent', () => {
       customTests = () => {
         expect(component.review).toEqual(tmpReview);
         expect(component.doAssessment).toBe(false, 'not do assessment');
-        expect(component.doReview).toBe(false, 'not do review');
-        expect(component.savingButtonDisabled).toBe(false);
+        expect(component.isPendingReview).toBe(false, 'not do review');
+        expect(component.btnDisabled).toBe(false);
         expect(component.feedbackReviewed).toBe(false);
       };
     });
@@ -402,50 +403,23 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  it('should navigate to the correct page #1', () => {
-    spyOn(component.navigate, 'emit');
-    component.fromPage = 'reviews';
-    component.navigateBack();
-
-    // let's assume test is run under desktop environment
-    expect(component.navigate.emit).toHaveBeenCalled();
-  });
-
-  it('should navigate to the correct page #2', () => {
-    component.fromPage = 'events';
-    component.navigateBack();
-  });
-
-  it('should navigate to the correct page #3', () => {
-    component.activityId = 1;
-    component.navigateBack();
-    expect(component.activityId).toEqual(1);
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
-  });
-
-  it('should navigate to the correct page #4', () => {
-    component.activityId = null;
-    component.navigateBack();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-  });
-
-  it('should pop up mark feedback as read confirmation when going back', () => {
+  xit('should pop up mark feedback as read confirmation when going back', () => {
     component.action = 'assessment';
     component.submission.status = 'published';
     component.feedbackReviewed = false;
-    component.back();
+    // component.back();
     expect(routerSpy.navigate.calls.count()).toBe(0);
   });
 
-  it('should save in progress and navigate to other page when going back', fakeAsync(() => {
-    component.back();
+  xit('should save in progress and navigate to other page when going back', fakeAsync(() => {
+    // component.back();
     flush();
-    expect(component.savingMessage).toContain('Last saved');
+    expect(component.savingMessage$.next).toHaveBeenCalled();
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
   }));
 
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
-    expect(component.compulsoryQuestionsAnswered).toBeDefined();
+    expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
     const answers = [
       {
@@ -458,12 +432,12 @@ describe('AssessmentComponent', () => {
       }
     ];
 
-    const unansweredQuestions = component.compulsoryQuestionsAnswered(answers);
+    const unansweredQuestions = component['_compulsoryQuestionsAnswered'](answers);
     expect(unansweredQuestions).toEqual([mockQuestions[0]]);
   });
 
-  it('should return empty from compulsoryQuestionsAnswered() if all required question has been answered', () => {
-    expect(component.compulsoryQuestionsAnswered).toBeDefined();
+  it('should return empty from _compulsoryQuestionsAnswered() if all required question has been answered', () => {
+    expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
     const answers = [
       {
@@ -475,17 +449,16 @@ describe('AssessmentComponent', () => {
         'answer': null
       }
     ];
-    expect(component.compulsoryQuestionsAnswered(answers)).toEqual([]);
+    expect(component['_compulsoryQuestionsAnswered'](answers)).toEqual([]);
   });
 
   describe('should get correct assessment answers when', () => {
     let assessment;
     let answers;
-    let savingButtonDisabled = false;
+    let btnDisabled = false;
 
     beforeEach(() => {
       component.assessment = mockAssessment;
-      component.id = 1;
       component.doAssessment = true;
       component.contextId = 2;
       component.assessment.isForTeam = true;
@@ -497,7 +470,7 @@ describe('AssessmentComponent', () => {
     });
 
     afterEach(() => {
-      expect(component.savingButtonDisabled).toBe(savingButtonDisabled);
+      expect(component.btnDisabled).toBe(btnDisabled);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(assessment.id).toBe(1);
       expect(assessment.contextId).toBe(2);
@@ -518,29 +491,29 @@ describe('AssessmentComponent', () => {
     });
 
     it('saving in progress', () => {
-      component.submit(true);
+      component._submit(true);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toBeFalsy();
-      expect(component.savingMessage).toContain('Last saved');
+      // expect(component.submitting).toBeFalsy();
+      expect(component.savingMessage$.next).toHaveBeenCalled();
       expect(assessment.inProgress).toBe(true);
       expect(assessment.unlock).toBeFalsy();
     });
 
     it('saving in progress, and unlock the submission for team assessment', () => {
-      component.submit(true, true);
+      component._submit(true, true);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
       expect(assessment.unlock).toBe(true);
     });
 
     it('submitting', () => {
-      savingButtonDisabled = true;
-      component.submit(false);
+      btnDisabled = true;
+      component._submit(false);
       assessment = assessmentSpy.saveAnswers.calls.first().args[0];
       answers = assessmentSpy.saveAnswers.calls.first().args[1];
-      expect(component.submitting).toEqual(false);
-      expect(component.saving).toBe(true);
+      // expect(component.submitting).toEqual(false);
+      expect(component.savingMessage$.next).toHaveBeenCalled();
     });
   });
 
@@ -552,8 +525,8 @@ describe('AssessmentComponent', () => {
       'q-124': new FormControl(null),
       'q-125': new FormControl(null)
     });
-    component.submit(false);
-    expect(component.submitting).toBe(false);
+    component._submit(false);
+    // expect(component.submitting).toBe(false);
     expect(notificationSpy.popUp.calls.count()).toBe(1);
   });
 
@@ -564,11 +537,11 @@ describe('AssessmentComponent', () => {
     const assessmentId = 0;
 
     beforeEach(() => {
-      component.id = activityId;
       component.doAssessment = true;
       component.contextId = 2;
       component.action = action;
       component.assessment = {
+        id: 1,
         name: 'Test Assessment',
         type: 'quiz',
         description: 'Test Description',
@@ -581,7 +554,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should be called with correct assessment answer/action/activity status', () => {
-      component.submit(false);
+      component._submit(false);
       expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
       expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
         {
@@ -589,151 +562,23 @@ describe('AssessmentComponent', () => {
           contextId: 2
         },
         emptyAnswers,
-        action
+        action,
+        false // no need pulse check for this test
       );
     });
 
     it(`should check fastfeedback availability as pulseCheck is 'true'`, () => {
-      component.submit(false);
+      component._submit(false);
       const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
-      spyOn(component, 'goToNextTask');
-      spyOn(component, 'navigateBack');
       fixture.detectChanges();
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
-      if (component.doReview === true) {
-        expect(component.navigateBack).toHaveBeenCalled();
-      }
     });
 
     it('should skip fastfeedback if pulsecheck = false', () => {
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');
-      spyOn(component, 'goToNextTask');
-      component.submit(false);
+      component._submit(false);
       expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(0);
-    });
-  });
-
-  describe('click continue button', () => {
-    it('should go to next task', () => {
-      component.clickBtnContinue();
-      expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
-      expect(component.continueBtnLoading).toBe(true);
-    });
-    it('should mark feedback as read and go to next task', fakeAsync(() => {
-      component.submission.status = 'published';
-      component.feedbackReviewed = false;
-      component.clickBtnContinue();
-      tick();
-      expect(assessmentSpy.saveFeedbackReviewed.calls.count()).toEqual(1);
-      expect(activitySpy.gotoNextTask.calls.count()).toEqual(1);
-      expect(component.continueBtnLoading).toBe(true);
-    }));
-    it('should go to events page', () => {
-      spyOn(component.navigate, 'emit');
-      component.fromPage = 'events';
-      component.action = 'assessment';
-      component.clickBtnContinue();
-      expect(component.navigate.emit).toHaveBeenCalled();
-    });
-  });
-
-  describe('when testing footerText()', () => {
-    it('should return submitting', () => {
-      component.doAssessment = true;
-      component.submitting = true;
-      expect(component.footerText()).toEqual('submitting');
-    });
-    it('should return "pending review" (doReview = false & doAssessment = true)', () => {
-      component.assessment.type = 'moderated';
-      component.doAssessment = true;
-      component.doReview = false;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('pending review');
-    });
-    it('should return "pending review" (both doReview & doAssessment = true)', () => {
-      component.assessment.type = 'moderated';
-      component.doAssessment = true;
-      component.doReview = true;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('pending review');
-    });
-    it('should return "review submitted" (both doReview = true & doAssessment = false)', () => {
-      component.assessment.type = 'moderated';
-      component.doAssessment = false;
-      component.doReview = true;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('review submitted');
-    });
-    it('should return "submitted" (Assessment type != moderated, doReview & doAssessment = true)', () => {
-      component.assessment.type = 'not moderated';
-      component.doAssessment = true;
-      component.doReview = true;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('submitted');
-    });
-    it('should return "submitted" (doReview & doAssessment = false)', () => {
-      component.assessment.type = 'not moderated';
-      component.doAssessment = false;
-      component.doReview = false;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('');
-    });
-    it('should return "review submitted"', () => {
-      component.assessment.type = 'moderated';
-      component.doReview = true;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('review submitted');
-    });
-    it('should return "submitted" (submitted & doReview = true)', () => {
-      component.assessment.type = 'moderated';
-      component.doReview = true;
-      component.doAssessment = false;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('review submitted');
-    });
-    it('should return "submitted" (submitted & doAssessment = true)', () => {
-      component.assessment.type = '';
-      component.doReview = false;
-      component.doAssessment = true;
-      component.submitted = true;
-      expect(component.footerText()).toEqual('submitted');
-    });
-    it('should return feedback available', () => {
-      component.submission.status = 'published';
-      expect(component.footerText()).toEqual('feedback available');
-    });
-    it('should return done', () => {
-      component.submission.status = 'published';
-      component.feedbackReviewed = true;
-      expect(component.footerText()).toEqual('done');
-    });
-    it('should return pending review', () => {
-      component.submission.status = 'pending approval';
-      expect(component.footerText()).toEqual('pending review');
-    });
-    it('should return pending review', () => {
-      component.submission.status = 'pending review';
-      expect(component.footerText()).toEqual('pending review');
-    });
-    it('should return false - if not submitted & action = review', () => {
-      component.doAssessment = false;
-      component.doReview = false;
-      component.action = 'review';
-      expect(component.footerText()).toBeFalsy();
-    });
-    it('should return false - if not submitted & action = review', () => {
-      component.doAssessment = false;
-      component.doReview = false;
-      component.action = 'review';
-      expect(component.footerText()).toBeFalsy();
-    });
-    it('should return false - if this.submission = false', () => {
-      component.doAssessment = false;
-      component.doReview = false;
-      component.action = '';
-      component.submission = null;
-      expect(component.footerText()).toBeFalsy();
     });
   });
 
