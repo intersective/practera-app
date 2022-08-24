@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import * as _ from 'lodash';
 import { of, Subject } from 'rxjs';
 

@@ -4,8 +4,8 @@ import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 describe('FastFeedbackService', () => {
   let service: FastFeedbackService;

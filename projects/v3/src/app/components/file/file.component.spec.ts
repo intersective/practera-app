@@ -1,9 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FileComponent } from './file.component';
-import { FilestackService } from '@shared/filestack/filestack.service';
-import { Observable, of, pipe } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
+import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 
 describe('FileComponent', () => {
@@ -13,7 +11,7 @@ describe('FileComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [FileComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [

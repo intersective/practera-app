@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Injectable({
   providedIn: 'root',
