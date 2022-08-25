@@ -57,11 +57,6 @@ describe('AchievementPopUpComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should dismiss modal', () => {
-    component.confirmed(new KeyboardEvent('keydown', { key: 'Enter' }));
-    expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
-  });
-
   describe('ionViewDidEnter()', () => {
     beforeEach(() => {
       component.achievement = {
@@ -117,17 +112,13 @@ describe('AchievementPopUpComponent', () => {
   });
 
   describe('confirm()', () => {
-    it('should dismiss', () => {
+    it('should dismiss with Enter/Space', () => {
       component.achievement = {
         id: 1,
         name: 'achieve',
         description: ''
       };
-      component.confirmed(null);
-      expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
-    });
 
-    it('should dismiss with Enter/Space', () => {
       let keyboardEvent = new KeyboardEvent('keydown', {
         key: 'Enter'
       });
@@ -145,7 +136,7 @@ describe('AchievementPopUpComponent', () => {
         key: 'Tab',
         code: 'Tab',
       }));
-      expect(modalCtrlSpy.dismiss).not.toHaveBeenCalled();
+      expect(modalCtrlSpy.dismiss).not.toHaveBeenCalledWith(3);
     });
   });
 });
