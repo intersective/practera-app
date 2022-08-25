@@ -63,7 +63,6 @@ describe('TodoCardComponent', () => {
     component.todoItem = {};
     fixture.detectChanges();
     expect(page.todoItem).toBeFalsy();
-    console.log(page.todoCard);
     expect(page.todoCard.textContent).toContain('You have no new notifications');
   });
 
@@ -72,7 +71,7 @@ describe('TodoCardComponent', () => {
     component.loading = false;
     component.todoItem = todoItem;
     fixture.detectChanges();
-    expect(page.todoCard.textContent).not.toContain('You have no new notifications');
+    expect(page.todoCard).toBeFalsy();
   });
 
 });

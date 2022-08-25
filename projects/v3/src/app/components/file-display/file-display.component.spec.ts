@@ -56,13 +56,13 @@ describe('FileDisplayComponent', () => {
 
   it('should fail, if preview file api is faulty', fakeAsync(() => {
     const error = 'error';
-    filestackSpy.previewFile.and.returnValue(Promise.reject(error));
+    filestackSpy.metadata.and.rejectWith(error);
+    // filestackSpy.previewFile.and.rejectWith(error);
     let result;
     const test = component.previewFile('file').catch(res => {
       result = res;
     });
-    flushMicrotasks();
-    expect(component.previewFile('file').then().catch).toThrowError();
+    expect(component.previewFile('file')).toThrowError();
   }));
 
   describe('UI logic', () => {

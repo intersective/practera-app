@@ -140,7 +140,9 @@ describe('TopicComponent', () => {
     it('should emit continue event', () => {
       spyOn(component.continue, 'emit');
       fixture.detectChanges();
-      expect(component.continue.emit).toHaveBeenCalled();
+      fixture.whenStable().then(() => {
+        expect(component.continue.emit).toHaveBeenCalled();
+      });
     });
   });
 
