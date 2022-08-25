@@ -274,21 +274,6 @@ describe('AssessmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should pop up mark feedback as read confirmation when going back', () => {
-    component.action = 'assessment';
-    component.submission.status = 'published';
-    component.feedbackReviewed = false;
-    // component.back();
-    expect(routerSpy.navigate.calls.count()).toBe(0);
-  });
-
-  xit('should save in progress and navigate to other page when going back', fakeAsync(() => {
-    // component.back();
-    flush();
-    expect(component.savingMessage$.next).toHaveBeenCalled();
-    expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
-  }));
-
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
