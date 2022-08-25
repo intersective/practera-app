@@ -1,9 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
-import { FilestackService } from '@shared/filestack/filestack.service';
-import { Observable, of, pipe } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
+import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
@@ -21,7 +19,7 @@ describe('FileDisplayComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, ReactiveFormsModule],
+      imports: [ ReactiveFormsModule],
       declarations: [FileDisplayComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -74,7 +72,7 @@ describe('FileDisplayComponent', () => {
         url
       };
     });
-    it('should display proper element based on filetype', () => {
+    it('should display image element based on filetype', () => {
       component.fileType = 'image';
       fixture.detectChanges();
 
@@ -86,7 +84,7 @@ describe('FileDisplayComponent', () => {
       expect(anyEle).toBeFalsy();
     });
 
-    it('should display proper element based on filetype', () => {
+    it('should display video element based on filetype', () => {
       component.fileType = 'video';
       fixture.detectChanges();
 
@@ -98,7 +96,7 @@ describe('FileDisplayComponent', () => {
       expect(anyEle).toBeFalsy();
     });
 
-    it('should display proper element based on filetype', () => {
+    it('should display "any" element based on filetype', () => {
       component.fileType = 'any';
       fixture.detectChanges();
 

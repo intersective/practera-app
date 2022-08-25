@@ -48,7 +48,7 @@ describe('FilestackComponent', () => {
     });
 
     it('should allow upload profile picture', () => {
-      spyOn(utilsSpy, 'isMobile').and.returnValue(false);
+      utilsSpy.isMobile.and.returnValue(false);
       component.type = 'profileImage';
       fixture.detectChanges();
 

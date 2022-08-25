@@ -8,7 +8,7 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
+// import { NewRelicService } from '@v3/services/new-relic.service';
 import { SharedService } from '@v3/services/shared.service';
 import { of, throwError } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
@@ -27,7 +27,7 @@ describe('TopicComponent', () => {
   });
   const filestackSpy = jasmine.createSpyObj('FilestackService', ['previewFile']);
   const embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
-  const newRelicSpy = jasmine.createSpyObj('NewRelicService', {
+  /* const newRelicSpy = jasmine.createSpyObj('NewRelicService', {
     'noticeError': data => {
       console.log(data);
     },
@@ -37,7 +37,7 @@ describe('TopicComponent', () => {
     'setPageViewName': data => {
       console.log(data);
     }
-  });
+  }); */
   const sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
   const activitySpy = jasmine.createSpyObj('ActivityService', {
     'gotoNextTask': new Promise(() => { })
@@ -93,10 +93,10 @@ describe('TopicComponent', () => {
           provide: BrowserStorageService,
           useValue: storageSpy
         },
-        {
+        /* {
           provide: NewRelicService,
           useValue: newRelicSpy
-        },
+        }, */
         {
           provide: ActivityService,
           useValue: activitySpy,
@@ -133,10 +133,13 @@ describe('TopicComponent', () => {
     });
 
     it('should set "continuing" as true', () => {
+      fixture.detectChanges();
       expect(component.continuing).toBeTruthy();
     });
 
     it('should emit continue event', () => {
+      spyOn(component.continue, 'emit');
+      fixture.detectChanges();
       expect(component.continue.emit).toHaveBeenCalled();
     });
   });
@@ -186,7 +189,7 @@ describe('TopicComponent', () => {
 
       expect(result).toEqual(SAMPLE_RESULT);
       expect(notificationSpy.alert).toHaveBeenCalledWith({ header: 'Error Previewing file', message: '{}' });
-      expect(newRelicSpy.noticeError).toHaveBeenCalled();
+      // expect(newRelicSpy.noticeError).toHaveBeenCalled();
     }));
   });
 });

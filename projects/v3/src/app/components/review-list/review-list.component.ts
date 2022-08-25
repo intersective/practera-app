@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { Review } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-review-list',
@@ -16,11 +15,7 @@ export class ReviewListComponent implements OnInit {
   @Output() navigate = new EventEmitter();
   public showDone = false;
 
-  constructor(
-    public router: Router,
-    public utils: UtilsService,
-    public storage: BrowserStorageService,
-  ) { }
+  constructor() { }
 
   ngOnInit() {
     this.showDone = false;
