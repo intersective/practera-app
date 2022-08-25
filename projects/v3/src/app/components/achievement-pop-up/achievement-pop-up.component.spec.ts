@@ -64,7 +64,7 @@ describe('AchievementPopUpComponent', () => {
       description: ''
     };
     fixture.detectChanges();
-    component.confirmed('Enter');
+    component.confirmed(new KeyboardEvent('keydown', { key: 'Enter' }));
     expect(modalCtrlSpy.dismiss.calls.count()).toBe(1);
   });
 
@@ -132,10 +132,26 @@ describe('AchievementPopUpComponent', () => {
       component.confirmed(null);
       expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
     });
-    it('should dismiss with keyboardEvent', () => {
-      const keyboardEvent = new KeyboardEvent('keydown');
+
+    it('should dismiss with Enter/Space', () => {
+      let keyboardEvent = new KeyboardEvent('keydown', {
+        key: 'Enter'
+      });
       component.confirmed(keyboardEvent);
-      expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
+
+      keyboardEvent = new KeyboardEvent('keydown', {
+        key: ' '
+      });
+      component.confirmed(keyboardEvent);
+      expect(modalCtrlSpy.dismiss).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not dismiss with keyboardEvent', () => {
+      const keyboardEvent = new KeyboardEvent('keydown', {
+        key: '???'
+      });
+      component.confirmed(keyboardEvent);
+      expect(modalCtrlSpy.dismiss).not.toHaveBeenCalled();
     });
   });
 });

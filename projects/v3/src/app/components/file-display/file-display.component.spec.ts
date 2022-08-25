@@ -50,7 +50,7 @@ describe('FileDisplayComponent', () => {
   });
 
   it('should preview file', () => {
-    component.previewFile('file');
+    component.previewFile({url: 'DUMMY_URL'});
     expect(filestackSpy.previewFile.calls.count()).toBe(1);
   });
 

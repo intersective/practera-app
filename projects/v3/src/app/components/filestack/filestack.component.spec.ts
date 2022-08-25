@@ -52,9 +52,9 @@ describe('FilestackComponent', () => {
       component.type = 'profileImage';
       fixture.detectChanges();
 
-      const button: HTMLElement = fixture.nativeElement.querySelector('p');
+      const button: HTMLElement = fixture.nativeElement.querySelector('ion-button');
 
-      expect(button.classList).toContain('upload-icon');
+      expect(button.classList).toContain('upload');
     });
 
     it('should open filestack fileupload window', fakeAsync(() => {
