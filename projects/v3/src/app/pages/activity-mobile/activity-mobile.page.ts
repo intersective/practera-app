@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { ActivityService, Task, Activity } from '@v3/services/activity.service';
+import { AssessmentService, Submission } from '@v3/services/assessment.service';
 
 @Component({
   selector: 'app-activity-mobile',
