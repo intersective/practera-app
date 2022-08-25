@@ -10,6 +10,7 @@ describe('FilestackComponent', () => {
   let component: FilestackComponent;
   let fixture: ComponentFixture<FilestackComponent>;
   let filestackSpy: FilestackService;
+  let utilsSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -30,6 +31,7 @@ describe('FilestackComponent', () => {
     fixture = TestBed.createComponent(FilestackComponent);
     component = fixture.debugElement.componentInstance;
     filestackSpy = TestBed.inject(FilestackService);
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
   it('should create the filestack component', () => {
@@ -46,6 +48,7 @@ describe('FilestackComponent', () => {
     });
 
     it('should allow upload profile picture', () => {
+      spyOn(utilsSpy, 'isMobile').and.returnValue(false);
       component.type = 'profileImage';
       fixture.detectChanges();
 
