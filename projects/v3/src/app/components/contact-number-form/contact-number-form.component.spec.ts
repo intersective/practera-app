@@ -10,9 +10,8 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ContactNumberFormComponent } from './contact-number-form.component';
 import { CommonModule } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { SettingService } from '@app/settings/setting.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { of } from 'rxjs';
@@ -22,8 +21,7 @@ describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
   let fixture: ComponentFixture<ContactNumberFormComponent>;
   let storageSpy: BrowserStorageService;
-  let notificationSpy: NotificationService;
-  let settingSpy: SettingService;
+  let notificationSpy: NotificationsService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -40,14 +38,8 @@ describe('ContactNumberFormComponent', () => {
           useClass: TestUtils,
         },
         {
-          provide: SettingService,
-          useValue: jasmine.createSpyObj('SettingService', {
-            updateProfile: of(true)
-          }),
-        },
-        {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast', 'popUp'])
         },
         {
           provide: Router,
@@ -62,8 +54,7 @@ describe('ContactNumberFormComponent', () => {
     fixture = TestBed.createComponent(ContactNumberFormComponent);
     component = fixture.componentInstance;
     storageSpy = TestBed.inject(BrowserStorageService);
-    notificationSpy = TestBed.inject(NotificationService);
-    settingSpy = TestBed.inject(SettingService);
+    notificationSpy = TestBed.inject(NotificationsService);
     fixture.detectChanges();
   });
 
@@ -159,7 +150,7 @@ describe('ContactNumberFormComponent', () => {
   describe('updateContactNumber()', () => {
     it('should prevent wrong formated contactNumber', () => {
       component.countryModel = 'AUS';
-      component.contactNumber = '1234567';
+      component.profile.contactNumber = '1234567';
       component.activeCountryModelInfo.countryCode = '10';
 
       component.updateContactNumber();
@@ -168,9 +159,6 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (US)', () => {
       let submitBtn, cancelBtn;
-      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
-        success: true
-      }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
         [cancelBtn, submitBtn] = res.buttons;
 
@@ -187,9 +175,6 @@ describe('ContactNumberFormComponent', () => {
 
     it('should update contact number (AUS)', () => {
       let submitBtn, cancelBtn;
-      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
-        success: true
-      }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
         [cancelBtn, submitBtn] = res.buttons;
 
@@ -206,9 +191,6 @@ describe('ContactNumberFormComponent', () => {
 
     it('should fail update contact number gracefully (notify user)', () => {
       let submitBtn, cancelBtn;
-      settingSpy.updateProfile = jasmine.createSpy('settingSpy.updateProfile').and.returnValue(of({
-        success: false
-      }));
       notificationSpy.alert = jasmine.createSpy('alert').and.callFake(res => {
         [cancelBtn, submitBtn] = res.buttons;
 
@@ -218,7 +200,7 @@ describe('ContactNumberFormComponent', () => {
       });
 
       component.countryModel = 'AUS';
-      component.contactNumber = '1234567890';
+      component.profile.contactNumber = '1234567890';
       component.activeCountryModelInfo.countryCode = '10';
 
       component.updateContactNumber();

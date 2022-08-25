@@ -42,11 +42,11 @@ export class ReviewListComponent implements OnInit {
   }
 
   // return the message if there is no review to display
-  get noReviews() {
+  get noReviews(): string {
     if (this.reviews === null) {
       return '';
     }
-    const review = this.reviews.find(review => {
+    const review = (this.reviews || []).find(review => {
       return review.isDone === this.showDone;
     });
     if (review) {
