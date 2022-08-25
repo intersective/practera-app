@@ -55,7 +55,6 @@ export class AchievementPopUpComponent {
 
   confirmed(event) {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
-      console.log('asdasd', event);
       return;
     }
     this.modalController.dismiss();

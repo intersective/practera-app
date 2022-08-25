@@ -31,7 +31,8 @@ describe('FileDisplayComponent', () => {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', [
             'previewFile',
-            'getWorkflowStatus'
+            'getWorkflowStatus',
+            'metadata'
           ])
         },
       ],
@@ -55,14 +56,13 @@ describe('FileDisplayComponent', () => {
   });
 
   it('should fail, if preview file api is faulty', fakeAsync(() => {
-    const error = 'error';
-    filestackSpy.metadata.and.rejectWith(error);
-    // filestackSpy.previewFile.and.rejectWith(error);
-    let result;
-    const test = component.previewFile('file').catch(res => {
-      result = res;
+    const error = 'PREVIEW FILE SAMPLE ERROR';
+    // filestackSpy.metadata.and.rejectWith(error);
+    filestackSpy.previewFile.and.rejectWith(error);
+    component.previewFile('file').then(res => {
+      console.log('asfterPreview', res);
     });
-    expect(component.previewFile('file')).toThrowError();
+    flushMicrotasks();
   }));
 
   describe('UI logic', () => {

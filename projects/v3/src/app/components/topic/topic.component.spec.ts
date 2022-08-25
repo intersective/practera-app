@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush, waitForAsync } from '@angular/core/testing';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { TopicComponent } from './topic.component';
 import { TopicService } from '@v3/services/topic.service';
@@ -51,7 +51,7 @@ describe('TopicComponent', () => {
   });
   const storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [TopicComponent],
@@ -113,7 +113,7 @@ describe('TopicComponent', () => {
       projectId: 2
     });
     storageSpy.get.and.returnValue({});
-  });
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -127,18 +127,19 @@ describe('TopicComponent', () => {
 
   describe('actionBarContinue()', () => {
     const dummyTOPIC = {};
-    beforeAll(() => {
-      component.continue = jasmine.createSpyObj('continue', ['emit']);
+    beforeEach(() => {
+      jasmine.createSpyObj('component.continue', ['emit']);
       component.actionBarContinue(dummyTOPIC);
     });
 
     it('should set "continuing" as true', () => {
       fixture.detectChanges();
-      expect(component.continuing).toBeTruthy();
+      fixture.whenStable().then(() => {
+        expect(component.continuing).toBeTruthy();
+      });
     });
 
     it('should emit continue event', () => {
-      spyOn(component.continue, 'emit');
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.continue.emit).toHaveBeenCalled();
