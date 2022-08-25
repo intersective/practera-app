@@ -56,6 +56,7 @@ describe('TodoCardComponent', () => {
     component.todoItem = {};
     fixture.detectChanges();
     expect(page.todoItem).toBeFalsy();
+    console.log(page.todoCard);
     expect(page.todoCard.textContent).toContain('You have no new notifications');
   });
 

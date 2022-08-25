@@ -29,6 +29,8 @@ describe('TextComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TextComponent);
     component = fixture.componentInstance;
+    component.answer = new FormControl('');
+    component.comment = new FormControl('');
   });
 
   it('should create', () => {

@@ -9,7 +9,7 @@
     tabindex="0"
   ></app-list-item>
 
-  <app-list-item *ngIf="loading" loading="true" lines="none"></app-list-item>
+  <app-list-item *ngIf="loading" [loading]="true" lines="none"></app-list-item>
 
   <clickable-item *ngIf="!todoItem.type && !loading" lines="none" isCustomizedCard="true" isTodoCard="true">
     <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
