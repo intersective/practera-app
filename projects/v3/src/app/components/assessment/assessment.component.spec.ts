@@ -391,18 +391,16 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  it('should pop up alert if required answer missing when submitting', () => {
+  it('should alert when compulsory question not answered', () => {
     component.assessment = mockAssessment;
     component.doAssessment = true;
-    fixture.detectChanges();
     component.questionsForm = new FormGroup({
       'q-123': new FormControl(),
       'q-124': new FormControl(),
       'q-125': new FormControl()
     });
     component._submit(false);
-    // expect(component.submitting).toBe(false);
-    expect(notificationSpy.popUp.calls.count()).toBe(1);
+    expect(notificationSpy.alert.calls.count()).toBe(1);
   });
 
   describe('submitting assessment submit(false)', () => {
