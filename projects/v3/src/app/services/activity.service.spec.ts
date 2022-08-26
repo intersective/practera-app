@@ -15,6 +15,7 @@ import { TopicService } from './topic.service';
 describe('ActivityService', () => {
   let service: ActivityService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
@@ -33,8 +34,6 @@ describe('ActivityService', () => {
           useValue: jasmine.createSpyObj('RequestService', [
             'get',
             'post',
-            'graphQLWatch',
-            'graphQLFetch',
           ])
         },
         {
@@ -51,7 +50,11 @@ describe('ActivityService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['stop']),
+          useValue: jasmine.createSpyObj('ApolloService', {
+            'stop': of(),
+            'graphQLWatch': of(),
+            'graphQLFetch': of (),
+          }),
         },
         {
           provide: TopicService,
@@ -65,6 +68,7 @@ describe('ActivityService', () => {
     });
     service = TestBed.inject(ActivityService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
@@ -187,7 +191,7 @@ describe('ActivityService', () => {
         }
       ]
     };
-    requestSpy.graphQLWatch.and.returnValue(of(requestResponse));
+    apolloSpy.graphQLWatch.and.returnValue(of(requestResponse));
     service.getActivity(1);
     service.activity$.subscribe(res => expect(res).toEqual(expected));
   });

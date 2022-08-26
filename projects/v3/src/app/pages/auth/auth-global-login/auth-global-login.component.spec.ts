@@ -15,7 +15,7 @@ describe('AuthGlobalLoginComponent', () => {
   let serviceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let switcherSpy: jasmine.SpyObj<ExperienceService>;
 
   beforeEach(async(() => {
@@ -40,8 +40,8 @@ describe('AuthGlobalLoginComponent', () => {
           }
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ActivatedRoute,
@@ -64,7 +64,7 @@ describe('AuthGlobalLoginComponent', () => {
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     switcherSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
   });
 

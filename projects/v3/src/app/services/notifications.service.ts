@@ -185,12 +185,12 @@ export class NotificationsService {
   /**
    * pop up achievement notification and detail
    * sample call for notification popup
-   * NotificationService.achievementPopUp('notification', {
+   * NotificationsService.achievementPopUp('notification', {
    *   image: 'url' (optinal - have default one)
    *   name: "Sample Headding"
    * });
    * sample call for info popup
-   * NotificationService.achievementPopUp('', {
+   * NotificationsService.achievementPopUp('', {
    *    image: 'url' (optinal - have default one)
    *    name: "Sample Headding",
    *    points: "100",
@@ -224,7 +224,7 @@ export class NotificationsService {
    * pop up to show user click on locked team assessment.
    * @param data
    * sample data object
-   * NotificationService.lockTeamAssessmentPopUp({
+   * NotificationsService.lockTeamAssessmentPopUp({
    *    image: 'url' (optinal - have default one),
    *    name: "Alice"
    * });
@@ -249,7 +249,7 @@ export class NotificationsService {
    * pop up activity complete notification and detail
    *
    * sample call for activity complete popup
-   * NotificationService.activityCompletePopUp(3);
+   * NotificationsService.activityCompletePopUp(3);
    */
   async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
     let cssClass = 'practera-popup activity-complete-popup';

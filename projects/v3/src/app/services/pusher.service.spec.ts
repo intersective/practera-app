@@ -126,7 +126,9 @@ describe('PusherService', async () => {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
             graphQLFetch: of(),
-            chatGraphQLQuery: of({ data: [] }),
+            chatGraphQLQuery: of({
+              pipe: of({ data: [] })
+            })
           }),
         },
         {
@@ -144,6 +146,7 @@ describe('PusherService', async () => {
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utilSpy = TestBed.inject(UtilsService);
     storageSpy = TestBed.inject(BrowserStorageService);
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
   });
 
   it('should create', () => {

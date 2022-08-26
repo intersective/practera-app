@@ -21,7 +21,7 @@ export class EventDetailComponent implements OnInit {
     private router: Router,
     public modalController: ModalController,
     public eventService: EventService,
-    private notificationService: NotificationsService,
+    private NotificationsService: NotificationsService,
     public utils: UtilsService,
     private storage: BrowserStorageService,
   ) {}
@@ -40,7 +40,7 @@ export class EventDetailComponent implements OnInit {
       case 'Book':
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
-          this.notificationService.alert({
+          this.NotificationsService.alert({
             message: new IonicSafeString('<p aria-live="assertive">Booking this event will cancel your booking for other events within the same activity, do you still wanna book?'),
             buttons: [
               {
@@ -66,7 +66,7 @@ export class EventDetailComponent implements OnInit {
       case 'Cancel Booking':
         this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
-            this.notificationService.alert({
+            this.NotificationsService.alert({
               message: new IonicSafeString('<p aria-live="assertive">Booking cancelled Successfully!</p>'),
               buttons: [
                 {
@@ -109,7 +109,7 @@ export class EventDetailComponent implements OnInit {
   private _bookEvent() {
     this.eventService.bookEvent(this.event).subscribe(
       _response => {
-        this.notificationService.alert({
+        this.NotificationsService.alert({
           message: new IonicSafeString('<p aria-live="assertive">Booked Successfully!</p>'),
           buttons: [
             {
@@ -129,7 +129,7 @@ export class EventDetailComponent implements OnInit {
         this.ctaIsActing = false;
       },
       error => {
-        this.notificationService.alert({
+        this.NotificationsService.alert({
           message: new IonicSafeString('<p aria-live="assertive">Booking failed, please try again later!'),
           buttons: [
             {
