@@ -5,7 +5,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
-import { NotificationService } from '@shared/notification/notification.service';
+import { NotificationService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 

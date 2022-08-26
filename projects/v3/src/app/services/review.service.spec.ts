@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ReviewService } from './review.service';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
@@ -20,7 +20,9 @@ describe('ReviewService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'get', 'apiResponseFormatError'
+          ]),
         },
       ]
     });

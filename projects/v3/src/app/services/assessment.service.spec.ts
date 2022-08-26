@@ -4,7 +4,7 @@ import { RequestService } from 'request';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
+import { AssessmentService } from './assessment.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from './apollo.service';
 
@@ -25,7 +25,9 @@ describe('AssessmentService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate'])
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'graphQLWatch', 'graphQLMutate'
+          ])
         },
         {
           provide: NotificationsService,
@@ -33,7 +35,9 @@ describe('AssessmentService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLWatch', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'get', 'post', 'apiResponseFormatError'
+          ]),
         },
         {
           provide: BrowserStorageService,

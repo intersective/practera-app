@@ -1,16 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { FastFeedbackService } from './fast-feedback.service';
 import { of, throwError } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService } from 'request';
 import { TestUtils } from '@testingv3/utils';
-import { NotificationService } from '@shared/notification/notification.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 describe('FastFeedbackService', () => {
   let service: FastFeedbackService;
   let requestSpy: jasmine.SpyObj<RequestService>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   const testUtils = new TestUtils();
 
@@ -27,8 +27,8 @@ describe('FastFeedbackService', () => {
           useValue: jasmine.createSpyObj('RequestService', ['get', 'post'])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['modal'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['modal'])
         },
         {
           provide: BrowserStorageService,
@@ -38,7 +38,7 @@ describe('FastFeedbackService', () => {
     });
     service = TestBed.inject(FastFeedbackService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
