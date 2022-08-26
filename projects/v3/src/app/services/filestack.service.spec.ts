@@ -276,8 +276,10 @@ describe('FilestackService', () => {
         result = res;
       });
 
+      flushMicrotasks();
       const req = mockBackend.expectOne({ method: 'GET' });
       req.flush(result);
+
 
       expect(req.request.url).toEqual(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${workflowId}`);
 

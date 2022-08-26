@@ -123,7 +123,7 @@ export class AssessmentService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private notificationService: NotificationsService,
+    private NotificationsService: NotificationsService,
     private fastFeedbackService: FastFeedbackService,
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
@@ -499,7 +499,7 @@ export class AssessmentService {
         await modal.onDidDismiss();
       }
     } catch (err) {
-      const toasted = await this.notificationService.alert({
+      const toasted = await this.NotificationsService.alert({
         header: 'Error retrieving pulse check data',
         message: err.msg || JSON.stringify(err)
       });
@@ -534,7 +534,7 @@ export class AssessmentService {
    * @return  {Promise<void>}             deferred ionic modal
    */
   popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.notificationService.modal(ReviewRatingComponent, {
+    return this.NotificationsService.modal(ReviewRatingComponent, {
       reviewId,
       redirect
     });

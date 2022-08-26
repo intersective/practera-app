@@ -19,7 +19,7 @@ describe('AuthLoginComponent', () => {
   let component: AuthLoginComponent;
   let fixture: ComponentFixture<AuthLoginComponent>;
   let serviceSpy: jasmine.SpyObj<AuthService>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let experienceServiceSpy: jasmine.SpyObj<ExperienceService>;
   let newRelicSpy: jasmine.SpyObj<NewRelicService>;
@@ -39,8 +39,8 @@ describe('AuthLoginComponent', () => {
           useValue: jasmine.createSpyObj('AuthService', ['login'])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: Router,
@@ -66,7 +66,7 @@ describe('AuthLoginComponent', () => {
     fixture = TestBed.createComponent(AuthLoginComponent);
     component = fixture.componentInstance;
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     experienceServiceSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
     newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;

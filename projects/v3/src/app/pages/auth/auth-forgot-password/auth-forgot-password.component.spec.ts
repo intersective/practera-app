@@ -18,7 +18,7 @@ describe('AuthForgotPasswordComponent', () => {
   let fixture: ComponentFixture<AuthForgotPasswordComponent>;
   let serviceSpy: jasmine.SpyObj<AuthService>;
   let utils: UtilsService;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
@@ -40,8 +40,8 @@ describe('AuthForgotPasswordComponent', () => {
           useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast', 'popUp'])
         },
         {
           provide: NewRelicService,
@@ -57,7 +57,7 @@ describe('AuthForgotPasswordComponent', () => {
     component = fixture.componentInstance;
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     utils = TestBed.inject(UtilsService);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     storageSpy.getConfig.and.returnValue({ logo: null });
   });

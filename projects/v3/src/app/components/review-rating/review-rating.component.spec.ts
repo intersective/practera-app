@@ -30,7 +30,7 @@ describe('ReviewRatingComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
         },
         {
           provide: ReviewRatingService,

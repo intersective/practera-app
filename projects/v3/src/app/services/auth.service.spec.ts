@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { TestBed } from '@angular/core/testing';
+import { flushMicrotasks, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { TestUtils } from '@testingv3/utils';
@@ -281,12 +281,14 @@ describe('AuthService', () => {
     it('should update profile image #1', () => {
       requestSpy.post.and.returnValue(of({ success: true, data: 'asdf' }));
       service.updateProfileImage({}).subscribe();
+      flushMicrotasks();
       expect(requestSpy.post.calls.count()).toBe(1);
     });
 
     it('should update profile image #2', () => {
       requestSpy.post.and.returnValue(of({ success: false, data: 'asdf' }));
       service.updateProfileImage({}).subscribe();
+      flushMicrotasks();
       expect(requestSpy.post.calls.count()).toBe(1);
     });
   });

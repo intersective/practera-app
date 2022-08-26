@@ -22,7 +22,7 @@ describe('AuthDirectLoginComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let switcherSpy: jasmine.SpyObj<ExperienceService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
@@ -66,8 +66,8 @@ describe('AuthDirectLoginComponent', () => {
           }
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ActivatedRoute,
@@ -91,7 +91,7 @@ describe('AuthDirectLoginComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     switcherSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;

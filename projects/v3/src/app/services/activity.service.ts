@@ -40,7 +40,6 @@ export interface Task {
 })
 
 export class ActivityService {
-
   private _activity$ = new BehaviorSubject<Activity>(null);
   activity$ = this._activity$.pipe(shareReplay(1));
   private _currentTask$ = new BehaviorSubject<Task>(null);
