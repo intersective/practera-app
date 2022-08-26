@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationService } from '@v3/services/notifications.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
