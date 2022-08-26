@@ -7,7 +7,7 @@ import { ExperienceService } from '@v3/services/experience.service';
 import { Router } from '@angular/router';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { SharedModule } from '@shared/shared.module';
-import { NotificationService } from '@shared/notification/notification.service';
+import { NotificationService } from '@v3/services/notifications.service';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';

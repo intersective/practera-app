@@ -50,7 +50,7 @@ export class FilestackService {
     private storage: BrowserStorageService,
     private httpClient: HttpClient,
     private notificationsService: NotificationsService,
-    private utils: UtilsService
+    private utils: UtilsService,
   ) {
     const { policy, signature } = environment.filestack;
     this.filestack = filestack.init(this.getFilestackConfig(), {

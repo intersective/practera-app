@@ -3,17 +3,20 @@ import { ActivityService } from './activity.service';
 import { of, throwError } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
+import { ApolloService } from './apollo.service';
+import { AssessmentService } from './assessment.service';
+import { TopicService } from './topic.service';
 
 describe('ActivityService', () => {
   let service: ActivityService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let utils: UtilsService;
 
@@ -35,8 +38,8 @@ describe('ActivityService', () => {
           ])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['activityCompletePopUp'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['activityCompletePopUp'])
         },
         {
           provide: BrowserStorageService,
@@ -46,12 +49,24 @@ describe('ActivityService', () => {
           provide: Router,
           useClass: MockRouter,
         },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['stop']),
+        },
+        {
+          provide: TopicService,
+          useValue: jasmine.createSpyObj('TopicService', ['']),
+        },
+        {
+          provide: AssessmentService,
+          useValue: jasmine.createSpyObj('AssessmentService', ['']),
+        },
       ]
     });
     service = TestBed.inject(ActivityService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
