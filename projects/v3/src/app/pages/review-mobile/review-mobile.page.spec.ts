@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UtilsService } from '@app/services/utils.service';
 import { IonicModule } from '@ionic/angular';
 import { ReviewService } from '@v3/app/services/review.service';
 

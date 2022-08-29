@@ -1,4 +1,5 @@
-import { ProgramObj } from '@app/switcher/switcher.service';
+import { ProgramObj } from "@v3/app/services/experience.service";
+
 const programObj: ProgramObj[] = [1, 2].map(num => {
   return {
     program: {
@@ -21,6 +22,12 @@ const programObj: ProgramObj[] = [1, 2].map(num => {
     experience: {
       id: num,
       config: {}
+    },
+    institution: {
+      name: '',
+      logo_url: '',
+      config: '',
+      uuid: '',
     }
   };
 });
@@ -45,7 +52,15 @@ programObj.push(...[3].map(num => {
     },
     experience: {
       id: num,
-      config: null
+      config: null,
+      name: '',
+      lead_image: '',
+    },
+    institution: {
+      name: '',
+      logo_url: '',
+      config: '',
+      uuid: '',
     }
   };
 }));
@@ -68,7 +83,18 @@ programObj.push(...[4].map(num => {
     enrolment: {
       contact_number: `0${123456789 + num}`
     },
-    experience: null
+    experience: {
+      id: num,
+      config: null,
+      name: '',
+      lead_image: '',
+    },
+    institution: {
+      name: '',
+      logo_url: '',
+      config: '',
+      uuid: '',
+    },
   };
 }));
 

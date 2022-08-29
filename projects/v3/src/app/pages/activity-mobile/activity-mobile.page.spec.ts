@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActivityService } from '@app/activity/activity.service';
-import { AssessmentService } from '@app/assessment/assessment.service';
+import { ActivityService } from '@v3/services/activity.service';
+import { AssessmentService } from '@v3/services/assessment.service';
 import { IonicModule } from '@ionic/angular';
 
 import { ActivityMobilePage } from './activity-mobile.page';

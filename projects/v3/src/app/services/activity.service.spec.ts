@@ -1,7 +1,7 @@
 import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { ActivityService } from './activity.service';
 import { of, throwError } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
+import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';

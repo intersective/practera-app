@@ -1,4 +1,4 @@
-import { ChannelMembers, ChatChannel } from '@app/chat/chat.service';
+import { ChannelMembers, ChatChannel } from '@v3/services/chat.service';
 
 const mockMembers: ChannelMembers[] = [
   {

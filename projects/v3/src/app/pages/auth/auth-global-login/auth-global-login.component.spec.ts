@@ -4,10 +4,8 @@ import { AuthGlobalLoginComponent } from './auth-global-login.component';
 import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 
 describe('AuthGlobalLoginComponent', () => {
   let component: AuthGlobalLoginComponent;
@@ -20,11 +18,10 @@ describe('AuthGlobalLoginComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [],
       declarations: [AuthGlobalLoginComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        NewRelicService,
         {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['globalLogin'])

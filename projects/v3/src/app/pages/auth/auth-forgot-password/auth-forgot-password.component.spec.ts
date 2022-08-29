@@ -4,13 +4,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AuthForgotPasswordComponent } from './auth-forgot-password.component';
 import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe, throwError } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('AuthForgotPasswordComponent', () => {
@@ -23,7 +20,7 @@ describe('AuthForgotPasswordComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [AuthForgotPasswordComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -43,10 +40,6 @@ describe('AuthForgotPasswordComponent', () => {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast', 'popUp'])
         },
-        {
-          provide: NewRelicService,
-          useClass: MockNewRelicService
-        }
       ],
     })
       .compileComponents();
