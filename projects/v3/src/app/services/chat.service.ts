@@ -45,6 +45,7 @@ export interface Message {
   preview?: string;
   noAvatar?: boolean;
   channelUuid?: string;
+  sentAt: string;
 }
 
 export interface MessageListResult {
@@ -168,6 +169,7 @@ export class ChatService {
               message
               file
               created
+              sentAt
               sender {
                 uuid
                 name
@@ -225,7 +227,8 @@ export class ChatService {
         senderUuid: message.sender.uuid,
         senderName: message.sender.name,
         senderRole: message.sender.role,
-        senderAvatar: message.sender.avatar
+        senderAvatar: message.sender.avatar,
+        sentAt: message.sentAt
       });
     });
     return {
@@ -347,6 +350,7 @@ export class ChatService {
             message
             file
             created
+            sentAt
             sender {
               uuid
               name
@@ -399,7 +403,8 @@ export class ChatService {
       senderUuid: result.sender.uuid,
       senderName: result.sender.name,
       senderRole: result.sender.role,
-      senderAvatar: result.sender.avatar
+      senderAvatar: result.sender.avatar,
+      sentAt: result.sentAt
     };
   }
 

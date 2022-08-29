@@ -46,7 +46,7 @@
 
       <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
         <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
-          <p>{{ getMessageDate(message.created) }}</p>
+          <p>{{ getMessageDate(message.sentAt) }}</p>
         </div>
 
         <div class="message-body"
