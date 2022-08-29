@@ -26,6 +26,7 @@ export interface SendMessageParam {
   senderName: string;
   senderRole: string;
   senderAvatar: string;
+  sentAt: string;
 }
 
 class PusherChannel {
