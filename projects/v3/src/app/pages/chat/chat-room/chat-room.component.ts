@@ -135,7 +135,8 @@ export class ChatRoomComponent implements OnInit {
       message: data.message,
       created: data.created,
       file: data.file,
-      channelUuid: data.channelUuid
+      channelUuid: data.channelUuid,
+      sentAt: data.sentAt
     };
   }
 
@@ -233,7 +234,8 @@ export class ChatRoomComponent implements OnInit {
           senderUuid: response.senderUuid,
           senderName: response.senderName,
           senderRole: response.senderRole,
-          senderAvatar: response.senderAvatar
+          senderAvatar: response.senderAvatar,
+          sentAt: response.sentAt
         });
         this.messageList.push(
           {
@@ -245,7 +247,8 @@ export class ChatRoomComponent implements OnInit {
             senderUuid: response.senderUuid,
             senderName: response.senderName,
             senderRole: response.senderRole,
-            senderAvatar: response.senderAvatar
+            senderAvatar: response.senderAvatar,
+            sentAt: response.sentAt
           }
         );
         this.utils.broadcastEvent('chat:info-update', true);
@@ -366,8 +369,8 @@ export class ChatRoomComponent implements OnInit {
       this.messageList[index].noAvatar = false;
       return true;
     }
-    const currentMessageTime = new Date(this.messageList[index].created);
-    const nextMessageTime = new Date(this.messageList[index + 1].created);
+    const currentMessageTime = new Date(this.messageList[index].sentAt);
+    const nextMessageTime = new Date(this.messageList[index + 1].sentAt);
     if (currentMessage.senderName !== nextMessage.senderName) {
       this.messageList[index].noAvatar = false;
       return true;
@@ -426,8 +429,8 @@ export class ChatRoomComponent implements OnInit {
     if (!this.messageList[index - 1]) {
       return true;
     }
-    const currentMessageTime = new Date(this.messageList[index].created);
-    const oldMessageTime = new Date(this.messageList[index - 1].created);
+    const currentMessageTime = new Date(this.messageList[index].sentAt);
+    const oldMessageTime = new Date(this.messageList[index - 1].sentAt);
     if ((currentMessageTime.getDate() - oldMessageTime.getDate()) === 0) {
       return this._checkmessageOldThan5Min(
         currentMessageTime,
@@ -544,7 +547,8 @@ export class ChatRoomComponent implements OnInit {
           senderUuid: response.senderUuid,
           senderName: response.senderName,
           senderRole: response.senderRole,
-          senderAvatar: response.senderAvatar
+          senderAvatar: response.senderAvatar,
+          sentAt: response.sentAt
         });
         this.messageList.push(
           {
@@ -558,7 +562,8 @@ export class ChatRoomComponent implements OnInit {
             senderUuid: response.senderUuid,
             senderName: response.senderName,
             senderRole: response.senderRole,
-            senderAvatar: response.senderAvatar
+            senderAvatar: response.senderAvatar,
+            sentAt: response.sentAt
           }
         );
         this.utils.broadcastEvent('chat:info-update', true);
