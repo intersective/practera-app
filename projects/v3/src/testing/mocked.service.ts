@@ -1,7 +1,6 @@
 import { of, Observable } from 'rxjs';
 import { SpyObject } from './utils';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NgZone } from '@angular/core';
 import { ProgramFixture } from '@testingv3/fixtures/programs';
@@ -37,23 +36,6 @@ export class MockRouter extends SpyObject {
       TEST_EVENT.urlAfterRedirects,
     ));
     this.url = 'abc';
-  }
-}
-
-export class MockNewRelicService extends SpyObject {
-  noticeError;
-  actionText;
-  createTracer;
-  setPageViewName;
-  addPageAction;
-
-  constructor() {
-    super(NewRelicService);
-    this.createTracer = this.spy('createTracer').and.returnValue(() => true);
-    this.noticeError = this.spy('noticeError').and.returnValue(true);
-    this.actionText = this.spy('actionText').and.returnValue(true);
-    this.setPageViewName = this.spy('setPageViewName').and.returnValue(true);
-    this.addPageAction = this.spy('addPageAction').and.returnValue(true);
   }
 }
 

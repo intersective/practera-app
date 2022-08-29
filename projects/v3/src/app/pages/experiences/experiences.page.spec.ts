@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BrowserStorageService } from '@app/services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';

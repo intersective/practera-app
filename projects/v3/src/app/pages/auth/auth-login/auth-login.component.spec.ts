@@ -6,12 +6,9 @@ import { AuthService } from '@v3/services/auth.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { Router } from '@angular/router';
 import { Observable, of, pipe, throwError } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MockNewRelicService } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
@@ -22,11 +19,10 @@ describe('AuthLoginComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let experienceServiceSpy: jasmine.SpyObj<ExperienceService>;
-  let newRelicSpy: jasmine.SpyObj<NewRelicService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
       declarations: [ AuthLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -51,10 +47,6 @@ describe('AuthLoginComponent', () => {
           }
         },
         {
-          provide: NewRelicService,
-          useClass: MockNewRelicService
-        },
-        {
           provide: ExperienceService,
           useValue: jasmine.createSpyObj('ExperienceService', ['switchProgramAndNavigate'])
         }
@@ -69,7 +61,6 @@ describe('AuthLoginComponent', () => {
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     experienceServiceSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
-    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
   });
 
   it('should create', () => {

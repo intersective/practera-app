@@ -5,7 +5,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import * as Plyr from 'plyr';
-import { EmbedVideoService } from '@shared/ngx-embed-video/ngx-embed-video.service';
+import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
