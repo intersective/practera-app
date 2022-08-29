@@ -178,7 +178,7 @@ describe('AssessmentComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, QuestionsModule, HttpClientTestingModule],
+      imports: [ReactiveFormsModule, HttpClientTestingModule],
       declarations: [AssessmentComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [

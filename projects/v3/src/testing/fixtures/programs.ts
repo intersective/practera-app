@@ -21,7 +21,9 @@ const programObj: ProgramObj[] = [1, 2].map(num => {
     },
     experience: {
       id: num,
-      config: {}
+      config: {},
+      name: '',
+      lead_image: '',
     },
     institution: {
       name: '',

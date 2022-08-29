@@ -3,7 +3,6 @@ import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testi
 import { AuthService } from '@v3/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 // import { NewRelicService } from '@v3/services/new-relic.service';
-import { MockNewRelicService } from '@testingv3/mocked.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { doesNotReject } from 'assert';

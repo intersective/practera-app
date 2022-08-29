@@ -8,10 +8,12 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { ApolloService } from './apollo.service';
 
 describe('AuthService', () => {
   let service: AuthService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
@@ -24,7 +26,11 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put', 'graphQLFetch', 'graphQLWatch'])
+          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put'])
+        },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch'])
         },
         {
           provide: Router,
@@ -49,6 +55,7 @@ describe('AuthService', () => {
     });
     service = TestBed.inject(AuthService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
@@ -249,7 +256,7 @@ describe('AuthService', () => {
   describe('getUUID()', function () {
     it('should get user uuid in string', () => {
       const UUID = 'SAMPLE-UUID';
-      requestSpy.graphQLWatch.and.returnValue(of({
+      apolloSpy.graphQLWatch.and.returnValue(of({
         data: {
           user: {
             uuid: UUID
@@ -262,7 +269,7 @@ describe('AuthService', () => {
     });
 
     it('should return null when data object is undefined', () => {
-      requestSpy.graphQLWatch.and.returnValue(of({
+      apolloSpy.graphQLWatch.and.returnValue(of({
         data: undefined
       }));
       service.getUUID().subscribe(result => {
