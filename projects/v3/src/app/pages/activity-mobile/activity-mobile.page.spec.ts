@@ -5,6 +5,7 @@ import { AssessmentService } from '@v3/services/assessment.service';
 import { IonicModule } from '@ionic/angular';
 
 import { ActivityMobilePage } from './activity-mobile.page';
+import { of } from 'rxjs';
 
 describe('ActivityMobilePage', () => {
   let component: ActivityMobilePage;
@@ -25,9 +26,11 @@ describe('ActivityMobilePage', () => {
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', [
-            'activity$','getActivity','goToTask'
-          ]),
+          useValue: jasmine.createSpyObj('ActivityService', {
+            'activity$': of(),
+            'getActivity': of(),
+            'goToTask': of(),
+          }),
         },
         {
           provide: AssessmentService,
