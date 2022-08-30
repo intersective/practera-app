@@ -48,6 +48,10 @@ describe('AssessmentService', () => {
             }
           })
         },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate', 'graphQLWatch'])
+        },
       ]
     });
     service = TestBed.inject(AssessmentService);

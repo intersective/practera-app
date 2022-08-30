@@ -50,10 +50,8 @@ describe('ReviewService', () => {
         data: {}
       }));
       service.getReviews();
-
-      service.reviews$.subscribe(_res => {
-        expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-      });
+      service.reviews$.subscribe();
+      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
     it('should return error if response data format error #2.', () => {
@@ -64,7 +62,7 @@ describe('ReviewService', () => {
         }]
       }));
       service.getReviews();
-      // .subscribe();
+      service.reviews$.subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -91,8 +89,7 @@ describe('ReviewService', () => {
       }));
       service.getReviews();
       service.reviews$.subscribe(res => {
-        console.log('reviews$::', res);
-        /* expect(res).toEqual([{
+        expect(res).toEqual([{
           assessmentId: 1,
           submissionId: 2,
           isDone: true,
@@ -100,8 +97,12 @@ describe('ReviewService', () => {
           submitterName: 'submitter',
           date: utils.timeFormatter('2019-01-01 19:00:00'),
           teamName: 'team',
-          contextId: 3
-        }]); */
+          contextId: 3,
+          status: '',
+          icon: '',
+          submitter: '',
+          team: '',
+        }]);
       });
     });
   });

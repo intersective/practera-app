@@ -88,7 +88,7 @@ describe('TopicService', () => {
     });
     describe('should throw error', () => {
       afterEach(() => {
-        service.getTopic(1)
+        service.getTopic(1);
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
       });
       it('Story format error', () => {
@@ -106,13 +106,6 @@ describe('TopicService', () => {
           }]
         }));
       });
-    });
-    it('', () => {
-      requestSpy.get.and.returnValue(of({
-        success: false,
-        data: [{}]
-      }));
-      service.getTopic(1);
     });
   });
 

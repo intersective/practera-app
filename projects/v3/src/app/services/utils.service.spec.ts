@@ -2,7 +2,8 @@ import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { ApolloService } from './apollo.service';
+import { TestUtils } from '@testing/utils';
+import { ApolloService } from '@v3/services/apollo.service';
 
 describe('UtilsService', () => {
   moment.updateLocale('en', {
