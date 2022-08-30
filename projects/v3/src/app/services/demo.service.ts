@@ -945,6 +945,7 @@ export class DemoService {
 
   get myInfo() {
     return {
+      uuid: 'uuid-1',
       name: 'test user',
       email: 'test@abcd.com',
       image: 'https://swapnil2597.github.io/assets/img/profile.png',

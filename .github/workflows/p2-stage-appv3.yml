@@ -10,7 +10,7 @@ name: Deploy to p2-stage-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'feature/av2-999/App-enhancement-V3' ]
+    branches: [ 'trunk-v3' ]
 
 
 ################################################
