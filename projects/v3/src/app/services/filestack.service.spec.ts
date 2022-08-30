@@ -5,18 +5,18 @@ import {
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 import { FilestackService } from './filestack.service';
-import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@services/utils.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { environment } from '@environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';
 import * as filestack from 'filestack-js';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('FilestackService', () => {
   let service: FilestackService;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let utils: UtilsService;
   let mockBackend: HttpTestingController;
@@ -28,6 +28,7 @@ describe('FilestackService', () => {
       imports: [HttpClientTestingModule, IonicModule],
       providers: [
         FilestackService,
+
         {
           provide: ModalController,
           useValue: jasmine.createSpyObj('ModalController', {
@@ -48,14 +49,16 @@ describe('FilestackService', () => {
           useClass: BrowserStorageServiceMock
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['modal', 'alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'modal', 'alert'
+          ])
         },
       ]
     });
     service = TestBed.inject(FilestackService);
     utils = TestBed.inject(UtilsService);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     mockBackend = TestBed.inject(HttpTestingController);
     modalctrlSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
@@ -273,8 +276,10 @@ describe('FilestackService', () => {
         result = res;
       });
 
+      flushMicrotasks();
       const req = mockBackend.expectOne({ method: 'GET' });
       req.flush(result);
+
 
       expect(req.request.url).toEqual(`https://cdn.filestackcontent.com/${environment.filestack.key}/security=p:${policy},s:${signature}/workflow_status=job_id:${workflowId}`);
 

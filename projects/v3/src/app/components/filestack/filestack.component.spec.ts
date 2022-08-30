@@ -1,18 +1,18 @@
 import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
-import { TestBed, async, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { TestBed, ComponentFixture, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FilestackComponent } from './filestack.component';
-import { FilestackService } from './filestack.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { FilestackService } from '@v3/services/filestack.service';
+import { UtilsService } from '@v3/app/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('FilestackComponent', () => {
   let component: FilestackComponent;
   let fixture: ComponentFixture<FilestackComponent>;
   let filestackSpy: FilestackService;
+  let utilsSpy: jasmine.SpyObj<UtilsService>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [IonicModule],
       declarations: [FilestackComponent],
@@ -31,7 +31,8 @@ describe('FilestackComponent', () => {
     fixture = TestBed.createComponent(FilestackComponent);
     component = fixture.debugElement.componentInstance;
     filestackSpy = TestBed.inject(FilestackService);
-  }));
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+  });
 
   it('should create the filestack component', () => {
     expect(component).toBeTruthy();
@@ -47,12 +48,13 @@ describe('FilestackComponent', () => {
     });
 
     it('should allow upload profile picture', () => {
+      utilsSpy.isMobile.and.returnValue(false);
       component.type = 'profileImage';
       fixture.detectChanges();
 
-      const button: HTMLElement = fixture.nativeElement.querySelector('p');
+      const button: HTMLElement = fixture.nativeElement.querySelector('ion-button');
 
-      expect(button.classList).toContain('upload-icon');
+      expect(button.classList).toContain('upload');
     });
 
     it('should open filestack fileupload window', fakeAsync(() => {

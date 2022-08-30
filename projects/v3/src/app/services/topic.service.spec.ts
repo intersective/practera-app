@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { TopicService } from './topic.service';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { RequestService } from 'request';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('TopicService', () => {
   let service: TopicService;
@@ -50,7 +50,8 @@ describe('TopicService', () => {
           }]
         }]
       }));
-      service.getTopic(1).subscribe(res => {
+      service.getTopic(1);
+      service.topic$.subscribe(res => {
         expect(res).toEqual({
           id: 1,
           title: 'story',
@@ -80,13 +81,14 @@ describe('TopicService', () => {
           }]
         }]
       }));
-      service.getTopic(1).subscribe(res => {
+      service.getTopic(1);
+      service.topic$.subscribe(res => {
         expect(res.videolink).toEqual('video');
       });
     });
     describe('should throw error', () => {
       afterEach(() => {
-        service.getTopic(1).subscribe();
+        service.getTopic(1);
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
       });
       it('Story format error', () => {
@@ -104,13 +106,6 @@ describe('TopicService', () => {
           }]
         }));
       });
-    });
-    it('', () => {
-      requestSpy.get.and.returnValue(of({
-        success: false,
-        data: [{}]
-      }));
-      service.getTopic(1).subscribe();
     });
   });
 

@@ -4,11 +4,11 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { RequestModule } from 'request';
 import { RequestInterceptor } from './request.interceptor';
 import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 import { Router } from '@angular/router';
-import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
+import { TestUtils } from '@testingv3/utils';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { RequestService } from 'request';
 
 describe('RequestInterceptor', () => {

@@ -3,12 +3,12 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from '@v3/services/review-rating.service';
 import { ModalController } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 
 describe('ReviewRatingComponent', () => {
@@ -30,7 +30,7 @@ describe('ReviewRatingComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
         },
         {
           provide: ReviewRatingService,

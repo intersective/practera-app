@@ -2,28 +2,25 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthForgotPasswordComponent } from './auth-forgot-password.component';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe, throwError } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
-import { UtilsService } from '@services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
-import { BrowserStorageService } from '@services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AuthForgotPasswordComponent', () => {
   let component: AuthForgotPasswordComponent;
   let fixture: ComponentFixture<AuthForgotPasswordComponent>;
   let serviceSpy: jasmine.SpyObj<AuthService>;
   let utils: UtilsService;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [AuthForgotPasswordComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -40,13 +37,9 @@ describe('AuthForgotPasswordComponent', () => {
           useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getConfig', 'getUser'])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert', 'presentToast', 'popUp'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast', 'popUp'])
         },
-        {
-          provide: NewRelicService,
-          useClass: MockNewRelicService
-        }
       ],
     })
       .compileComponents();
@@ -57,7 +50,7 @@ describe('AuthForgotPasswordComponent', () => {
     component = fixture.componentInstance;
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     utils = TestBed.inject(UtilsService);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     storageSpy.getConfig.and.returnValue({ logo: null });
   });

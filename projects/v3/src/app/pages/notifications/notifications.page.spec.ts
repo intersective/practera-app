@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { UtilsService } from '@app/services/utils.service';
+import { IonicModule, ModalController } from '@ionic/angular';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 import { NotificationsPage } from './notifications.page';
 
@@ -10,7 +13,25 @@ describe('NotificationsPage', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NotificationsPage ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot()],
+      providers: [
+        {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', []),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', []),
+        },
+        {
+          provide: Router,
+          useValue: jasmine.createSpyObj('Router', []),
+        },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', []),
+        },
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(NotificationsPage);

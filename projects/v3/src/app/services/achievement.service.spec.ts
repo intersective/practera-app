@@ -1,10 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { AchievementService } from './achievement.service';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { RequestService } from 'request';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/app/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AchievementService', () => {
   let service: AchievementService;
@@ -103,7 +103,8 @@ describe('AchievementService', () => {
       });
       afterEach(() => {
         requestSpy.get.and.returnValue(of(tmpRes));
-        service.getAchievements().subscribe();
+        service.getAchievements();
+        service.achievements$.subscribe();
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
         expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual(errMsg);
       });
@@ -119,8 +120,9 @@ describe('AchievementService', () => {
 
     it('should get the correct data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
-      service.getAchievements().subscribe(res => expect(res).toEqual(expected));
-      expect(service.totalPoints).toBe(600);
+      service.getAchievements();
+      service.achievements$.subscribe(res => expect(res).toEqual(expected));
+      // expect(service.totalPoints).toBe(600);
       expect(service.earnedPoints).toBe(400);
       expect(service.isPointsConfigured).toBe(true);
     });
@@ -129,11 +131,6 @@ describe('AchievementService', () => {
   it('should get the correct earned points', () => {
     service.earnedPoints = 123;
     expect(service.getEarnedPoints()).toBe(123);
-  });
-
-  it('should get the correct total points', () => {
-    service.totalPoints = 123;
-    expect(service.getTotalPoints()).toBe(123);
   });
 
   it(`should get the correct 'is point configured'`, () => {

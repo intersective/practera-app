@@ -45,7 +45,7 @@ export interface Message {
   preview?: string;
   noAvatar?: boolean;
   channelUuid?: string;
-  sentAt: string;
+  sentAt?: string;
 }
 
 export interface MessageListResult {

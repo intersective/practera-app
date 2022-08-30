@@ -13,6 +13,7 @@
     </ion-button>
   </ion-toolbar>
 </ion-header>
+
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
 
   <div *ngIf="loadingChatMessages" class="ion-text-center">
@@ -25,7 +26,9 @@
     <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
   </div>
 
-  <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !utils.isMobile()}">
+  <ion-list lines="none"
+    color="light" class="chat-list"
+    [ngClass]="{'desktop-view': !utils.isMobile()}">
     <ion-item *ngFor="let message of messageList" color="light">
       <ng-container *ngIf="isLastMessage(message)">
         <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">

@@ -1,7 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ActivityService } from '@v3/services/activity.service';
+import { AssessmentService } from '@v3/services/assessment.service';
 import { IonicModule } from '@ionic/angular';
 
 import { ActivityMobilePage } from './activity-mobile.page';
+import { of } from 'rxjs';
 
 describe('ActivityMobilePage', () => {
   let component: ActivityMobilePage;
@@ -10,7 +14,29 @@ describe('ActivityMobilePage', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ActivityMobilePage ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot()],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: jasmine.createSpyObj('ActivatedRoute', ['params']),
+        },
+        {
+          provide: Router,
+          useValue: jasmine.createSpyObj('Router', ['navigate']),
+        },
+        {
+          provide: ActivityService,
+          useValue: jasmine.createSpyObj('ActivityService', {
+            'activity$': of(),
+            'getActivity': of(),
+            'goToTask': of(),
+          }),
+        },
+        {
+          provide: AssessmentService,
+          useValue: jasmine.createSpyObj('AssessmentService', ['submission$']),
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActivityMobilePage);

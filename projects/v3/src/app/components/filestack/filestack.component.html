@@ -1,6 +1,9 @@
 <ng-container [ngSwitch]="type">
   <ng-container *ngSwitchCase="'profileImage'">
-    <ion-button mode="ios" size="large" fill="outline" expand="block" (click)="uploadFile()">
+    <ion-button class="upload"
+      mode="ios" size="large"
+      fill="outline" expand="block"
+      (click)="uploadFile()">
       Upload Profile Image
     </ion-button>
   </ng-container>

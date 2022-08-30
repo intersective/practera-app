@@ -1,7 +1,5 @@
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
-import { PreviewComponent } from './preview.component';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { FilestackPreviewComponent } from './filestack-preview.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
@@ -10,17 +8,17 @@ import {
   HttpClientTestingModule
 } from '@angular/common/http/testing';
 
-describe('PreviewComponent', () => {
+describe('FilestackPreviewComponent', () => {
   const TEST_URL = 'https://www.practera.com';
-  let component: PreviewComponent;
-  let fixture: ComponentFixture<PreviewComponent>;
+  let component: FilestackPreviewComponent;
+  let fixture: ComponentFixture<FilestackPreviewComponent>;
   let modalSpy: ModalController;
   let domSanitizerSpy: DomSanitizer;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ IonicModule, CommonModule, HttpClientTestingModule ],
-      declarations: [ PreviewComponent ],
+      declarations: [ FilestackPreviewComponent ],
       providers: [
         ModalController,
         {
@@ -34,7 +32,7 @@ describe('PreviewComponent', () => {
       ],
     });
 
-    fixture = TestBed.createComponent(PreviewComponent);
+    fixture = TestBed.createComponent(FilestackPreviewComponent);
     component = fixture.componentInstance;
     modalSpy = TestBed.inject(ModalController);
     domSanitizerSpy = TestBed.inject(DomSanitizer);

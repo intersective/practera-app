@@ -1,16 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { TestBed, tick } from '@angular/core/testing';
-import { NewRelicService } from '@app/shared/new-relic/new-relic.service';
-import { NotificationService } from '@app/shared/notification/notification.service';
-import { RequestService } from '@app/shared/request/request.service';
-import { TopicService } from '@app/topic/topic.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { RequestService } from 'request';
+import { TopicService } from '@v3/services/topic.service';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 import { Observable, of, throwError } from 'rxjs';
 import { SharedService } from './shared.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
-import { PusherService } from '@shared/pusher/pusher.service';
+import { PusherService } from './pusher.service';
+import { ApolloService } from './apollo.service';
 
 describe('SharedService', () => {
   let service: SharedService;
@@ -19,6 +19,7 @@ describe('SharedService', () => {
   let storageSpy: BrowserStorageService;
   let utilsSpy: UtilsService;
   let pusherServiceSpy: PusherService;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -33,18 +34,14 @@ describe('SharedService', () => {
           useClass: BrowserStorageServiceMock,
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['achievementPopUp']),
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['achievementPopUp']),
         },
         {
           provide: HttpClient,
           useValue: jasmine.createSpyObj('HttpClient', {
             get: of(true),
           }),
-        },
-        {
-          provide: NewRelicService,
-          useValue: jasmine.createSpyObj('NewRelicService', ['noticeError']),
         },
         {
           provide: TopicService,
@@ -61,12 +58,14 @@ describe('SharedService', () => {
           useValue: jasmine.createSpyObj('PusherService', ['initialise']),
         },
         {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch']),
+        },
+        {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', [
             'post',
-            'graphQLWatch',
             'apiResponseFormatError',
-            'graphQLFetch',
           ])
         },
       ]
@@ -74,6 +73,7 @@ describe('SharedService', () => {
     service = TestBed.inject(SharedService);
     httpSpy = TestBed.inject(HttpClient);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     storageSpy = TestBed.inject(BrowserStorageService);
     utilsSpy = TestBed.inject(UtilsService);
     pusherServiceSpy = TestBed.inject(PusherService);
@@ -87,7 +87,7 @@ describe('SharedService', () => {
 
   describe('getTeamInfo()', () => {
     it('should make GraphQL API request to retrieve team info', () => {
-      requestSpy.graphQLFetch.and.returnValue(of({
+      apolloSpy.graphQLFetch.and.returnValue(of({
         data: {
           user: {
             teams: [
@@ -109,11 +109,11 @@ describe('SharedService', () => {
       }));
 
       service.getTeamInfo().subscribe();
-      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
     });
 
     it('should set teamId as null when no teams retrieved from API', () => {
-      requestSpy.graphQLFetch.and.returnValue(of({
+      apolloSpy.graphQLFetch.and.returnValue(of({
         data: {
           user: {
             teams: []
@@ -123,20 +123,20 @@ describe('SharedService', () => {
       utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
 
       service.getTeamInfo().subscribe();
-      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         teamId: null
       });
     });
 
     it('should set teamId as null when wrong response format retrieved from API', () => {
-      requestSpy.graphQLFetch.and.returnValue(of({
+      apolloSpy.graphQLFetch.and.returnValue(of({
         data: {}
       }));
       utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
 
       service.getTeamInfo().subscribe();
-      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
       expect(storageSpy.setUser).not.toHaveBeenCalled();
     });
 
@@ -144,11 +144,11 @@ describe('SharedService', () => {
       const SAMPLE_RESULT = {
         nodata: {}
       };
-      requestSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESULT));
+      apolloSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESULT));
 
       let result;
       service.getTeamInfo().subscribe(res => result = res);
-      expect(requestSpy.graphQLFetch).toHaveBeenCalled();
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
       expect(storageSpy.setUser).not.toHaveBeenCalled();
       expect(result).toEqual(SAMPLE_RESULT);
     });

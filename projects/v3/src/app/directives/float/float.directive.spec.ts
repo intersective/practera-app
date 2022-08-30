@@ -2,9 +2,9 @@ import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 import { TestBed, ComponentFixture, async } from '@angular/core/testing';
 import { ElementRef, Component, DebugElement, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { FloatDirective } from './float.directive';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
 
 // @NOTE: keep this for future elements debugging (unit testing purpose only)
 function cardListingHelper(debugElement) {

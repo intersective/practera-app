@@ -1,10 +1,9 @@
 import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { TestUtils } from '@testing/utils';
-import { ApolloService } from '@v3/apollo/apollo.service';
+import { ApolloService } from '@v3/services/apollo.service';
 
 describe('UtilsService', () => {
   moment.updateLocale('en', {
@@ -28,11 +27,12 @@ describe('UtilsService', () => {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
             'getClient': {
-              clearStore: jasmine.createSpy('clearStore')
-            }
-          })
-        }
-      ]
+              clearStore: jasmine.createSpy('clearStore'),
+              stop: jasmine.createSpy('stop'),
+            },
+          }),
+        },
+      ],
     });
 
     service = TestBed.inject(UtilsService);

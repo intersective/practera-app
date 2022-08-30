@@ -1,9 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AchievementPopUpComponent } from './achievement-pop-up.component';
-import { Observable, of, pipe } from 'rxjs';
 import { ModalController, IonicModule } from '@ionic/angular';
-import { UtilsService } from '@services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 class AchievementModalPage {
   fixture: ComponentFixture<AchievementPopUpComponent>;
@@ -56,17 +55,6 @@ describe('AchievementPopUpComponent', () => {
 
   it('should create', () => {
     expect(component).toBeDefined();
-  });
-
-  it('should dismiss modal', () => {
-    component.achievement = {
-      id: 1,
-      name: 'achieve',
-      description: ''
-    };
-    fixture.detectChanges();
-    component.confirmed('Enter');
-    expect(modalCtrlSpy.dismiss.calls.count()).toBe(1);
   });
 
   describe('ionViewDidEnter()', () => {
@@ -124,19 +112,31 @@ describe('AchievementPopUpComponent', () => {
   });
 
   describe('confirm()', () => {
-    it('should dismiss', () => {
+    it('should dismiss with Enter/Space', () => {
       component.achievement = {
         id: 1,
         name: 'achieve',
         description: ''
       };
-      component.confirmed(null);
-      expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
-    });
-    it('should dismiss with keyboardEvent', () => {
-      const keyboardEvent = new KeyboardEvent('keydown');
+
+      let keyboardEvent = new KeyboardEvent('keydown', {
+        key: 'Enter'
+      });
       component.confirmed(keyboardEvent);
-      expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
+
+      keyboardEvent = new KeyboardEvent('keydown', {
+        key: ' '
+      });
+      component.confirmed(keyboardEvent);
+      expect(modalCtrlSpy.dismiss).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not dismiss with keyboardEvent', () => {
+      component.confirmed(new KeyboardEvent('keydown', {
+        key: 'Tab',
+        code: 'Tab',
+      }));
+      expect(modalCtrlSpy.dismiss).not.toHaveBeenCalledWith(3);
     });
   });
 });
