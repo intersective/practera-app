@@ -40,7 +40,6 @@ export interface Task {
 })
 
 export class ActivityService {
-
   private _activity$ = new BehaviorSubject<Activity>(null);
   activity$ = this._activity$.pipe(shareReplay(1));
   private _currentTask$ = new BehaviorSubject<Task>(null);
@@ -95,7 +94,9 @@ export class ActivityService {
       {
         id: +id
       }
-    ).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe(_res => {
+    ).pipe(
+      map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
+    ).subscribe(_res => {
       if (callback instanceof Function) {
         return callback(_res);
       }
@@ -233,7 +234,7 @@ export class ActivityService {
     return this.router.navigate(['v3', 'home']);
   }
 
-  goToTask(task: Task, getData = true) {
+  goToTask(task: Task, getData = true): void | Subscription | Promise<boolean> {
     this._currentTask$.next(task);
     if (!getData) {
       return ;

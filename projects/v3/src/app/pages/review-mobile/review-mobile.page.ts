@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Review, ReviewService } from '@v3/app/services/review.service';
-import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-review-mobile',
@@ -11,7 +10,6 @@ import { UtilsService } from '@v3/services/utils.service';
 export class ReviewMobilePage implements OnInit {
   reviews: Review[];
   constructor(
-    readonly utils: UtilsService,
     private route: ActivatedRoute,
     private router: Router,
     private reviewService: ReviewService,

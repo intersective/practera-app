@@ -1,16 +1,17 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ChatInfoComponent } from './chat-info.component';
 import { UtilsService } from '@v3/services/utils.service';
-import { MockRouter } from '@testing/mocked.service';
+import { MockRouter } from '@testingv3/mocked.service';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ChatService } from '@v3/services/chat.service';
 import { of } from 'rxjs';
-import { TestUtils } from '@testing/utils';
-import { mockMembers } from '@testing/fixtures';
+import { TestUtils } from '@testingv3/utils';
+import { mockMembers } from '@testingv3/fixtures';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 
 describe('ChatInfoComponent', () => {
   let component: ChatInfoComponent;
@@ -29,6 +30,10 @@ describe('ChatInfoComponent', () => {
       declarations: [ChatInfoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        {
+          provide: ActivatedRoute,
+          useClass: ActivatedRouteStub
+        },
         {
           provide: UtilsService,
           useClass: TestUtils,

@@ -6,7 +6,7 @@ import { TodoCardComponent } from './todo-card.component';
 class Page {
   // getter properties wait to query the DOM until called.
   get todoCard() {
-    return this.query<HTMLElement>('.todo-card');
+    return this.query<HTMLElement>('ion-text');
   }
   get todoItem() {
     return this.query<HTMLElement>('app-list-item');
@@ -51,6 +51,13 @@ describe('TodoCardComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  const DUMMY_TODOITEM = {
+    type: 'feedback_available',
+    name: 'todo name',
+    description: 'todo description',
+    time: '2019-02-02'
+  };
+
   it('should display no todo item text when there\'s no todo item', () => {
     component.loading = false;
     component.todoItem = {};
@@ -60,16 +67,11 @@ describe('TodoCardComponent', () => {
   });
 
   it('should display correct todo item', () => {
-    const todoItem = {
-      type: 'feedback_available',
-      name: 'todo name',
-      description: 'todo description',
-      time: '2019-02-02'
-    };
+    const todoItem = DUMMY_TODOITEM;
     component.loading = false;
     component.todoItem = todoItem;
     fixture.detectChanges();
-    expect(page.todoCard.textContent).not.toContain('You have no new notifications');
+    expect(page.todoCard).toBeFalsy();
   });
 
 });

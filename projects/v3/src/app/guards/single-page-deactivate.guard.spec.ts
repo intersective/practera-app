@@ -1,5 +1,5 @@
 import { TestBed, async, inject } from '@angular/core/testing';
-import { BrowserStorageService } from '@services/storage.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { SinglePageDeactivateGuard } from './single-page-deactivate.guard';
 
 describe('SinglePageDeactivateGuard', () => {

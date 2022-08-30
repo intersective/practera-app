@@ -1,18 +1,15 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
-import { Observable, of, pipe } from 'rxjs';
+import { ComponentFixture, TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
-import { FastFeedbackSubmitterService } from './fast-feedback-submitter.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { NotificationService } from '@shared/notification/notification.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { ModalController } from '@ionic/angular';
 import { FastFeedbackComponent } from './fast-feedback.component';
-import { QuestionComponent } from './question/question.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { MockNewRelicService } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { TestUtils } from '@testingv3/utils';
+import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 
 class Page {
   get questions() {
@@ -35,27 +32,27 @@ describe('FastFeedbackComponent', () => {
   let component: FastFeedbackComponent;
   let fixture: ComponentFixture<FastFeedbackComponent>;
   let page: Page;
-  let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackSubmitterService>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let modalSpy: jasmine.SpyObj<ModalController>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, ReactiveFormsModule],
-      declarations: [FastFeedbackComponent, QuestionComponent],
+      declarations: [FastFeedbackComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
-          provide: FastFeedbackSubmitterService,
-          useValue: jasmine.createSpyObj('FastFeedbackSubmitterService', ['submit'])
+          provide: FastFeedbackService,
+          useValue: jasmine.createSpyObj('FastFeedbackService', ['submit'])
         },
         {
           provide: UtilsService,
           useClass: TestUtils,
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ModalController,
@@ -67,21 +64,17 @@ describe('FastFeedbackComponent', () => {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['set'])
         },
-        {
-          provide: NewRelicService,
-          useClass: MockNewRelicService
-        }
       ],
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(FastFeedbackComponent);
     component = fixture.componentInstance;
     page = new Page(fixture);
-    fastfeedbackSpy = TestBed.inject(FastFeedbackSubmitterService) as jasmine.SpyObj<FastFeedbackSubmitterService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
   });
 
@@ -97,7 +90,6 @@ describe('FastFeedbackComponent', () => {
     });
     component.ngOnInit();
     expect(Object.keys(component.fastFeedbackForm.controls).length).toBe(5);
-    expect(component.newRelicTracer).toBeTruthy();
   });
 
   it('when testing dismiss(), it should dismiss', () => {

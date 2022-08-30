@@ -2,8 +2,8 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up.component';
 import { ModalController } from '@ionic/angular';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('LockTeamAssessmentPopUpComponent', () => {
   let component: LockTeamAssessmentPopUpComponent;

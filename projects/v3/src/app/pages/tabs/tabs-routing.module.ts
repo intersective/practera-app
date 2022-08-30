@@ -43,19 +43,11 @@ const routes: Routes = [
             path: '',
             loadChildren: () => import('../notifications/notifications.module').then(m => m.NotificationsPageModule)
           },
-          {
-            path: 'slide',
-            loadChildren: () => import('../notifications-slide/notifications-slide.module').then(m => m.NotificationsSlidePageModule)
-          }
-        ]
+        ],
       },
       {
         path: 'settings',
         children: [
-          {
-            path: 'slide',
-            loadChildren: () => import('../settings-slide/settings-slide.module').then(m => m.SettingsSlidePageModule)
-          },
           {
             path: '',
             loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)

@@ -1,13 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthGlobalLoginComponent } from './auth-global-login.component';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { NotificationService } from '@shared/notification/notification.service';
-import { SwitcherService } from '../../switcher/switcher.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { ExperienceService } from '@v3/services/experience.service';
 
 describe('AuthGlobalLoginComponent', () => {
   let component: AuthGlobalLoginComponent;
@@ -15,23 +13,22 @@ describe('AuthGlobalLoginComponent', () => {
   let serviceSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let switcherSpy: jasmine.SpyObj<SwitcherService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
+  let switcherSpy: jasmine.SpyObj<ExperienceService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [],
       declarations: [AuthGlobalLoginComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        NewRelicService,
         {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['globalLogin'])
         },
         {
-          provide: SwitcherService,
-          useValue: jasmine.createSpyObj('SwitcherService', ['getMyInfo', 'switchProgram'])
+          provide: ExperienceService,
+          useValue: jasmine.createSpyObj('ExperienceService', ['getMyInfo', 'switchProgram'])
         },
         {
           provide: Router,
@@ -40,8 +37,8 @@ describe('AuthGlobalLoginComponent', () => {
           }
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ActivatedRoute,
@@ -64,8 +61,8 @@ describe('AuthGlobalLoginComponent', () => {
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
-    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+    switcherSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
   });
 
   beforeEach(() => {

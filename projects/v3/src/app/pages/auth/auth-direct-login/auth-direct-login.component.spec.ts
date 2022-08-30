@@ -1,18 +1,16 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { AuthDirectLoginComponent } from './auth-direct-login.component';
-import { AuthService } from '../auth.service';
+import { AuthService } from '@v3/services/auth.service';
 import { of } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
-import { UtilsService } from '@services/utils.service';
-import { NotificationService } from '@shared/notification/notification.service';
-import { SwitcherService } from '../../switcher/switcher.service';
-import { BrowserStorageService } from '@services/storage.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
-import { SharedService } from '@services/shared.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { ExperienceService } from '@v3/services/experience.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
+import { SharedService } from '@v3/services/shared.service';
 
 
 describe('AuthDirectLoginComponent', () => {
@@ -22,18 +20,17 @@ describe('AuthDirectLoginComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
-  let switcherSpy: jasmine.SpyObj<SwitcherService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
+  let switcherSpy: jasmine.SpyObj<ExperienceService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule],
+      imports: [],
       declarations: [AuthDirectLoginComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        NewRelicService,
         {
           provide: UtilsService,
           useClass: TestUtils,
@@ -53,8 +50,8 @@ describe('AuthDirectLoginComponent', () => {
           })
         },
         {
-          provide: SwitcherService,
-          useValue: jasmine.createSpyObj('SwitcherService', {
+          provide: ExperienceService,
+          useValue: jasmine.createSpyObj('ExperienceService', {
             'getMyInfo': of(true),
             'switchProgram': of(true)
           })
@@ -66,8 +63,8 @@ describe('AuthDirectLoginComponent', () => {
           }
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ActivatedRoute,
@@ -91,8 +88,8 @@ describe('AuthDirectLoginComponent', () => {
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
-    switcherSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+    switcherSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
   });
@@ -100,7 +97,7 @@ describe('AuthDirectLoginComponent', () => {
   beforeEach(() => {
     authServiceSpy.directLogin.and.returnValue(of({}));
     switcherSpy.getMyInfo.and.returnValue(of({}));
-    switcherSpy.switchProgram.and.returnValue(of({}));
+    switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     storageSpy.get.and.returnValue([{ timeline: { id: 1 } }]);
     storageSpy.getConfig.and.returnValue({ logo: null });
   });

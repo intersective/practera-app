@@ -1,11 +1,12 @@
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ChatViewComponent } from './chat-view.component';
 import { UtilsService } from '@v3/services/utils.service';
-import { MockRouter } from '@testing/mocked.service';
-import { TestUtils } from '@testing/utils';
+import { MockRouter } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 
 describe('ChatViewComponent', () => {
   let component: ChatViewComponent;
@@ -25,6 +26,10 @@ describe('ChatViewComponent', () => {
         {
           provide: Router,
           useClass: MockRouter
+        },
+        {
+          provide: ActivatedRoute,
+          useClass: ActivatedRouteStub
         }
       ]
     })
@@ -137,7 +142,7 @@ describe('ChatViewComponent', () => {
         lastMessageCreated: null,
         canEdit: false
       };
-      component.goto(chatChannel);
+      component.desktopGoto(chatChannel);
       expect(component.loadInfo).toBe(false);
       expect(component.chatChannel).toEqual(chatChannel);
       tick();

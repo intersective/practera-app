@@ -1,12 +1,10 @@
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
-import { FilestackService } from '@shared/filestack/filestack.service';
-import { Observable, of, pipe } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
+import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -21,7 +19,7 @@ describe('FileDisplayComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, ReactiveFormsModule],
+      imports: [ ReactiveFormsModule],
       declarations: [FileDisplayComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -33,7 +31,8 @@ describe('FileDisplayComponent', () => {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', [
             'previewFile',
-            'getWorkflowStatus'
+            'getWorkflowStatus',
+            'metadata'
           ])
         },
       ],
@@ -52,19 +51,18 @@ describe('FileDisplayComponent', () => {
   });
 
   it('should preview file', () => {
-    component.previewFile('file');
+    component.previewFile({url: 'DUMMY_URL'});
     expect(filestackSpy.previewFile.calls.count()).toBe(1);
   });
 
   it('should fail, if preview file api is faulty', fakeAsync(() => {
-    const error = 'error';
-    filestackSpy.previewFile.and.returnValue(Promise.reject(error));
-    let result;
-    const test = component.previewFile('file').catch(res => {
-      result = res;
+    const error = 'PREVIEW FILE SAMPLE ERROR';
+    // filestackSpy.metadata.and.rejectWith(error);
+    filestackSpy.previewFile.and.rejectWith(error);
+    component.previewFile('file').then(res => {
+      console.log('asfterPreview', res);
     });
     flushMicrotasks();
-    expect(component.previewFile('file').then().catch).toThrowError();
   }));
 
   describe('UI logic', () => {
@@ -74,7 +72,7 @@ describe('FileDisplayComponent', () => {
         url
       };
     });
-    it('should display proper element based on filetype', () => {
+    it('should display image element based on filetype', () => {
       component.fileType = 'image';
       fixture.detectChanges();
 
@@ -86,7 +84,7 @@ describe('FileDisplayComponent', () => {
       expect(anyEle).toBeFalsy();
     });
 
-    it('should display proper element based on filetype', () => {
+    it('should display video element based on filetype', () => {
       component.fileType = 'video';
       fixture.detectChanges();
 
@@ -98,7 +96,7 @@ describe('FileDisplayComponent', () => {
       expect(anyEle).toBeFalsy();
     });
 
-    it('should display proper element based on filetype', () => {
+    it('should display "any" element based on filetype', () => {
       component.fileType = 'any';
       fixture.detectChanges();
 

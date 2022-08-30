@@ -4,12 +4,14 @@ import { RequestService } from 'request';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { AssessmentService, AssessmentSubmitParams } from './assessment.service';
-import { TestUtils } from '@testing/utils';
+import { AssessmentService } from './assessment.service';
+import { TestUtils } from '@testingv3/utils';
+import { ApolloService } from './apollo.service';
 
 describe('AssessmentService', () => {
   let service: AssessmentService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
 
@@ -22,12 +24,20 @@ describe('AssessmentService', () => {
           useClass: TestUtils,
         },
         {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'graphQLWatch', 'graphQLMutate'
+          ])
+        },
+        {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', ['modal'])
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'graphQLWatch', 'graphQLMutate', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'get', 'post', 'apiResponseFormatError'
+          ]),
         },
         {
           provide: BrowserStorageService,
@@ -38,11 +48,16 @@ describe('AssessmentService', () => {
             }
           })
         },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate', 'graphQLWatch'])
+        },
       ]
     });
     service = TestBed.inject(AssessmentService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utils = TestBed.inject(UtilsService);
   });
 
@@ -424,15 +439,18 @@ describe('AssessmentService', () => {
     });
 
     afterEach(() => {
-      requestSpy.graphQLWatch.and.returnValue(of(requestResponse));
-      service.getAssessment(1, 'assessment', 2, 3).subscribe(
-        result => {
-          expect(result.assessment).toEqual(expectedAssessment);
-          expect(result.submission).toEqual(expectedSubmission);
-          expect(result.review).toEqual(expectedReview);
-        }
-      );
-      expect(requestSpy.graphQLWatch.calls.count()).toBe(1);
+      apolloSpy.graphQLWatch.and.returnValue(of(requestResponse));
+      service.getAssessment(1, 'assessment', 2, 3);
+      service.assessment$.subscribe(assessment => {
+        expect(assessment).toEqual(expectedAssessment);
+      });
+      service.submission$.subscribe(submission => {
+        expect(submission).toEqual(expectedSubmission);
+      });
+      service.review$.subscribe(review => {
+        expect(review).toEqual(expectedReview);
+      });
+      expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);
     });
 
     it('should get correct assessment data', () => { });
@@ -466,7 +484,7 @@ describe('AssessmentService', () => {
       { questionId: 127, answer: { filename: 'abc.png' } }
     ];
     beforeEach(() => {
-      requestSpy.graphQLMutate.and.returnValue(of(true));
+      apolloSpy.graphQLMutate.and.returnValue(of(true));
     });
 
     it('should save assessment answers correctly', () => {
@@ -475,9 +493,9 @@ describe('AssessmentService', () => {
         inProgress: true,
         contextId: 2
       };
-      service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.graphQLMutate.calls.first().args[0]).toContain('submitAssessment');
-      expect(requestSpy.graphQLMutate.calls.first().args[1]).toEqual({
+      service.saveAnswers(assessment, answers, 'assessment', false).subscribe();
+      expect(apolloSpy.graphQLMutate.calls.first().args[0]).toContain('submitAssessment');
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual({
         assessmentId: assessment.id,
         inProgress: assessment.inProgress,
         contextId: assessment.contextId,
@@ -493,9 +511,9 @@ describe('AssessmentService', () => {
         submissionId: 3,
         unlock: true
       };
-      service.saveAnswers(assessment, answers, 'assessment').subscribe();
-      expect(requestSpy.graphQLMutate.calls.first().args[0]).toContain('submitAssessment');
-      expect(requestSpy.graphQLMutate.calls.first().args[1]).toEqual({
+      service.saveAnswers(assessment, answers, 'assessment', false).subscribe();
+      expect(apolloSpy.graphQLMutate.calls.first().args[0]).toContain('submitAssessment');
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual({
         assessmentId: assessment.id,
         inProgress: assessment.inProgress,
         contextId: assessment.contextId,
@@ -512,9 +530,9 @@ describe('AssessmentService', () => {
         submissionId: 3,
         reviewId: 4
       };
-      service.saveAnswers(assessment, answers, 'review').subscribe();
-      expect(requestSpy.graphQLMutate.calls.first().args[0]).toContain('submitReview');
-      expect(requestSpy.graphQLMutate.calls.first().args[1]).toEqual({
+      service.saveAnswers(assessment, answers, 'review', false).subscribe();
+      expect(apolloSpy.graphQLMutate.calls.first().args[0]).toContain('submitReview');
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual({
         assessmentId: assessment.id,
         inProgress: assessment.inProgress,
         submissionId: assessment.submissionId,
@@ -528,8 +546,8 @@ describe('AssessmentService', () => {
         id: 1,
         inProgress: true
       };
-      service.saveAnswers(assessment, answers, 'incorrect').subscribe(res => expect(res).toBe(false));
-      expect(requestSpy.graphQLMutate.calls.count()).toBe(0);
+      service.saveAnswers(assessment, answers, 'incorrect', false).subscribe(res => expect(res).toBe(false));
+      expect(apolloSpy.graphQLMutate.calls.count()).toBe(0);
     });
   });
 

@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Activity, Task } from '@v3/app/services/activity.service';
-import { Submission } from '@v3/app/services/assessment.service';
-import { NotificationsService } from '@v3/app/services/notifications.service';
-import { BrowserStorageService } from '@v3/app/services/storage.service';
-import { UtilsService } from '@v3/app/services/utils.service';
+import { Activity, Task } from '@v3/services/activity.service';
+import { Submission } from '@v3/services/assessment.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-activity',
@@ -17,7 +17,6 @@ export class ActivityComponent {
   @Output() navigate = new EventEmitter();
   constructor(
     private utils: UtilsService,
-    private notificationService: NotificationsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
   ) { }
@@ -133,7 +132,7 @@ export class ActivityComponent {
 
     return this._validateTeamAssessment(task, () => {
       if (task.type === 'Locked') {
-        return this.notificationService.alert({
+        return this.notificationsService.alert({
           message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.',
           buttons: [
             {

@@ -1,10 +1,9 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { OneofComponent } from './oneof.component';
-import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('OneofComponent', () => {
   let component: OneofComponent;
@@ -12,7 +11,7 @@ describe('OneofComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [OneofComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [

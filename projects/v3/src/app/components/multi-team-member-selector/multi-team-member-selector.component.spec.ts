@@ -1,19 +1,17 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MultiTeamMemberSelectorComponent } from './multi-team-member-selector.component';
-import { Observable, of, pipe } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('MultiTeamMemberSelectorComponent', () => {
   let component: MultiTeamMemberSelectorComponent;
   let fixture: ComponentFixture<MultiTeamMemberSelectorComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, ReactiveFormsModule],
+      imports: [ReactiveFormsModule],
       declarations: [MultiTeamMemberSelectorComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -24,7 +22,7 @@ describe('MultiTeamMemberSelectorComponent', () => {
       ],
     })
       .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(MultiTeamMemberSelectorComponent);

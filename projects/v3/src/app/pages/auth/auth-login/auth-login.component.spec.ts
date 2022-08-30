@@ -2,31 +2,27 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthLoginComponent } from './auth-login.component';
-import { AuthService } from '../auth.service';
-import { SwitcherService } from '../../switcher/switcher.service';
+import { AuthService } from '@v3/services/auth.service';
+import { ExperienceService } from '@v3/services/experience.service';
 import { Router } from '@angular/router';
 import { Observable, of, pipe, throwError } from 'rxjs';
-import { SharedModule } from '@shared/shared.module';
-import { NotificationService } from '@shared/notification/notification.service';
-import { NewRelicService } from '@shared/new-relic/new-relic.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MockNewRelicService } from '@testing/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('AuthLoginComponent', () => {
   let component: AuthLoginComponent;
   let fixture: ComponentFixture<AuthLoginComponent>;
   let serviceSpy: jasmine.SpyObj<AuthService>;
-  let notificationSpy: jasmine.SpyObj<NotificationService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let switcherServiceSpy: jasmine.SpyObj<SwitcherService>;
-  let newRelicSpy: jasmine.SpyObj<NewRelicService>;
+  let experienceServiceSpy: jasmine.SpyObj<ExperienceService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [SharedModule, RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
       declarations: [ AuthLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -39,8 +35,8 @@ describe('AuthLoginComponent', () => {
           useValue: jasmine.createSpyObj('AuthService', ['login'])
         },
         {
-          provide: NotificationService,
-          useValue: jasmine.createSpyObj('NotificationService', ['alert'])
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: Router,
@@ -51,12 +47,8 @@ describe('AuthLoginComponent', () => {
           }
         },
         {
-          provide: NewRelicService,
-          useClass: MockNewRelicService
-        },
-        {
-          provide: SwitcherService,
-          useValue: jasmine.createSpyObj('SwitcherService', ['switchProgramAndNavigate'])
+          provide: ExperienceService,
+          useValue: jasmine.createSpyObj('ExperienceService', ['switchProgramAndNavigate'])
         }
       ],
     }).compileComponents();
@@ -66,10 +58,9 @@ describe('AuthLoginComponent', () => {
     fixture = TestBed.createComponent(AuthLoginComponent);
     component = fixture.componentInstance;
     serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    notificationSpy = TestBed.inject(NotificationService) as jasmine.SpyObj<NotificationService>;
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    switcherServiceSpy = TestBed.inject(SwitcherService) as jasmine.SpyObj<SwitcherService>;
-    newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
+    experienceServiceSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
   });
 
   it('should create', () => {
@@ -90,13 +81,13 @@ describe('AuthLoginComponent', () => {
     });
 
     it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
-      switcherServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['app', 'home']));
+      experienceServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['app', 'home']));
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
-      expect(switcherServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
+      expect(experienceServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
     }));
 

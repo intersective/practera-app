@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { ReviewService } from './review.service';
 import { of } from 'rxjs';
-import { RequestService } from '@shared/request/request.service';
-import { UtilsService } from '@services/utils.service';
-import { TestUtils } from '@testing/utils';
+import { RequestService } from 'request';
+import { UtilsService } from '@v3/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('ReviewService', () => {
   let service: ReviewService;
@@ -20,7 +20,9 @@ describe('ReviewService', () => {
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'apiResponseFormatError'])
+          useValue: jasmine.createSpyObj('RequestService', [
+            'get', 'apiResponseFormatError'
+          ]),
         },
       ]
     });
@@ -36,7 +38,8 @@ describe('ReviewService', () => {
   describe('when testing getReviews()', () => {
     it('should return empty array if no response data.', () => {
       requestSpy.get.and.returnValue(of({}));
-      service.getReviews().subscribe(res => {
+      service.getReviews();
+      service.reviews$.subscribe(res => {
         expect(res).toEqual([]);
       });
     });
@@ -46,7 +49,8 @@ describe('ReviewService', () => {
         success: true,
         data: {}
       }));
-      service.getReviews().subscribe();
+      service.getReviews();
+      service.reviews$.subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -57,7 +61,8 @@ describe('ReviewService', () => {
           Assessment: {}
         }]
       }));
-      service.getReviews().subscribe();
+      service.getReviews();
+      service.reviews$.subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
 
@@ -82,7 +87,8 @@ describe('ReviewService', () => {
           }
         }]
       }));
-      service.getReviews().subscribe(res => {
+      service.getReviews();
+      service.reviews$.subscribe(res => {
         expect(res).toEqual([{
           assessmentId: 1,
           submissionId: 2,
@@ -91,7 +97,11 @@ describe('ReviewService', () => {
           submitterName: 'submitter',
           date: utils.timeFormatter('2019-01-01 19:00:00'),
           teamName: 'team',
-          contextId: 3
+          contextId: 3,
+          status: '',
+          icon: '',
+          submitter: '',
+          team: '',
         }]);
       });
     });
