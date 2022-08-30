@@ -374,25 +374,6 @@ export class AuthService {
     });
   }
 
-  /**
-   * @name getUUID
-   * @description retrieve user UUID of current requester (user)
-   * @return {Observable<string>} UUID in string
-   */
-  getUUID(): Observable<string> {
-    return this.apolloService.graphQLWatch(
-      `query user {
-        user {
-          uuid
-        }
-      }`
-    ).pipe(map(res => {
-      if (res && res.data) {
-        return res.data.user.uuid;
-      }
-      return null;
-    }));
-  }
 
   updateProfileImage(data) {
     return this.request.post(
