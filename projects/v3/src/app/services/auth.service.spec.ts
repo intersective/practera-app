@@ -253,31 +253,6 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.count()).toBe(1);
   });
 
-  describe('getUUID()', function () {
-    it('should get user uuid in string', () => {
-      const UUID = 'SAMPLE-UUID';
-      apolloSpy.graphQLWatch.and.returnValue(of({
-        data: {
-          user: {
-            uuid: UUID
-          }
-        }
-      }));
-      service.getUUID().subscribe(result => {
-        expect(result).toBe(UUID);
-      });
-    });
-
-    it('should return null when data object is undefined', () => {
-      apolloSpy.graphQLWatch.and.returnValue(of({
-        data: undefined
-      }));
-      service.getUUID().subscribe(result => {
-        expect(result).toBeNull();
-      });
-    });
-  });
-
   describe('updateProfile()', () => {
     it('should upload profile', () => {
       requestSpy.post.and.returnValue(of({}));
