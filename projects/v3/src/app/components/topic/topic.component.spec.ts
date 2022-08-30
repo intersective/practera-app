@@ -79,7 +79,7 @@ describe('TopicComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: routeStub
+          useValue: ActivatedRouteStub
         },
         {
           provide: NotificationsService,
