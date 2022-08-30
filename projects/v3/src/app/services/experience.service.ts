@@ -250,6 +250,7 @@ export class ExperienceService {
   getMyInfo(): Observable<any> {
     if (environment.demo) {
       this.storage.setUser({
+        uuid: this.demo.myInfo.uuid,
         name: this.demo.myInfo.name,
         email: this.demo.myInfo.email,
         image: this.demo.myInfo.image,
@@ -262,6 +263,7 @@ export class ExperienceService {
     return this.apolloService.graphQLFetch(
       `query user {
         user {
+          uuid
           name
           email
           image
@@ -278,6 +280,7 @@ export class ExperienceService {
         const thisUser = response.data.user;
 
         this.storage.setUser({
+          uuid: thisUser.uuid,
           name: thisUser.name,
           email: thisUser.email,
           image: thisUser.image,
