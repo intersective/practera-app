@@ -53,10 +53,6 @@ const routes: Routes = [
         path: 'settings',
         children: [
           {
-            path: 'slide',
-            loadChildren: () => import('../settings-slide/settings-slide.module').then(m => m.SettingsSlidePageModule)
-          },
-          {
             path: '',
             loadChildren: () => import('../settings/settings.module').then(m => m.SettingsPageModule)
           },
