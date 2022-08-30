@@ -6,6 +6,7 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
 });
 
 export interface User {
+  uuid?: string;
   name?: string;
   apikey?: string;
   contactNumber?: string;
