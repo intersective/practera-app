@@ -43,11 +43,7 @@ const routes: Routes = [
             path: '',
             loadChildren: () => import('../notifications/notifications.module').then(m => m.NotificationsPageModule)
           },
-          {
-            path: 'slide',
-            loadChildren: () => import('../notifications-slide/notifications-slide.module').then(m => m.NotificationsSlidePageModule)
-          }
-        ]
+        ],
       },
       {
         path: 'settings',
