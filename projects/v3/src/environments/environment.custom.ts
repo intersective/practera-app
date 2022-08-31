@@ -4,6 +4,7 @@ export const environment = {
   skipGlobalLogin: '<CUSTOMPLAIN_SKIPGLOBALLOGINFLAG>',
   appkey: '<CUSTOM_APPKEY>',
   pusherKey: '<CUSTOM_PUSHERKEY>',
+  pusherCluster: '<CUSTOM_PUSHER_CLUSTER>',
   env: '<CUSTOM_ENVIRONMENT>',
   APIEndpoint: '<CUSTOM_API_ENDPOINT>',
   graphQL: '<CUSTOM_GRAPH_QL>',
