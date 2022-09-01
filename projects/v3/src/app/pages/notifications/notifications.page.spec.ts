@@ -17,19 +17,28 @@ describe('NotificationsPage', () => {
       providers: [
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', []),
+          useValue: jasmine.createSpyObj('UtilsService', [
+            'isEmpty',
+            'timeFormatter',
+            'isMobile',
+          ]),
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', []),
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'notification$',
+            'eventReminder$',
+            'newMessage$',
+            'modal',
+          ]),
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', []),
+          useValue: jasmine.createSpyObj('Router', ['']),
         },
         {
           provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', []),
+          useValue: jasmine.createSpyObj('ModalController', ['dismiss']),
         },
       ]
     }).compileComponents();

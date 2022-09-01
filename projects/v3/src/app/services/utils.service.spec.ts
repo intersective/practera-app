@@ -26,9 +26,11 @@ describe('UtilsService', () => {
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
-            'getClient': {
-              clearStore: jasmine.createSpy('clearStore'),
-              stop: jasmine.createSpy('stop'),
+            'getClient': function () {
+              return {
+                clearStore: jasmine.createSpy('clearStore'),
+                stop: jasmine.createSpy('stop'),
+              };
             },
           }),
         },
