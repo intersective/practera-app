@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ChatService } from '@app/chat/chat.service';
-import { BrowserStorageService } from '@app/services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
+import { ChatService } from '@v3/services/chat.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, Platform } from '@ionic/angular';
-import { NotificationsService } from '@v3/app/services/notifications.service';
-import { ReviewService } from '@v3/app/services/review.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { ReviewService } from '@v3/services/review.service';
 
 import { TabsPage } from './tabs.page';
 
