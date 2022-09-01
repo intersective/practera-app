@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Platform } from '@ionic/angular';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 import { AuthService } from './services/auth.service';
 import { SharedService } from './services/shared.service';
@@ -51,7 +52,9 @@ describe('AppComponent', () => {
         },
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['']),
+          useValue: jasmine.createSpyObj('AuthService', {
+            getConfig: of(true),
+          }),
         },
         {
           provide: VersionCheckService,

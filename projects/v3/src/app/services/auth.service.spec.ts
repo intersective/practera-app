@@ -41,7 +41,9 @@ describe('AuthService', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['setUser', 'getUser', 'set', 'getConfig', 'setConfig', 'get', 'clear'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'setUser', 'getUser', 'set', 'getConfig', 'setConfig', 'get', 'clear'
+          ]),
         },
         {
           provide: UtilsService,
