@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ReviewService } from '@v3/app/services/review.service';
+import { of } from 'rxjs';
 
 import { ReviewMobilePage } from './review-mobile.page';
 
@@ -24,9 +25,10 @@ describe('ReviewMobilePage', () => {
         },
         {
           provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', [
-            'reviews$', 'getReviews'
-          ]),
+          useValue: jasmine.createSpyObj('ReviewService', {
+            'reviews$': of(),
+            'getReviews': of(),
+          }),
         },
       ],
     }).compileComponents();

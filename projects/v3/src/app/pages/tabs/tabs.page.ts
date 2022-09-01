@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonTabs, Platform } from '@ionic/angular';
-import { Review, ReviewService } from '@v3/app/services/review.service';
-import { BrowserStorageService } from '@v3/app/services/storage.service';
-import { ChatService } from '@v3/app/services/chat.service';
+import { Review, ReviewService } from '@v3/services/review.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { ChatService } from '@v3/services/chat.service';
 import { Subscription } from 'rxjs';
-import { UtilsService } from '@v3/app/services/utils.service';
-import { NotificationsService } from '@v3/app/services/notifications.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
   selector: 'app-tabs',
