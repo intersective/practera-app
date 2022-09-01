@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { AuthGlobalLoginComponent } from './auth-global-login.component';
 import { AuthService } from '@v3/services/auth.service';
 import { Observable, of, pipe } from 'rxjs';
@@ -79,6 +79,7 @@ describe('AuthGlobalLoginComponent', () => {
       fixture.whenStable().then(() => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
       });
+      flushMicrotasks();
     }));
 
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
@@ -88,10 +89,13 @@ describe('AuthGlobalLoginComponent', () => {
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
-      expect(notificationSpy.alert.calls.count()).toBe(1);
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+
+      fixture.whenStable().then(() => {
+        expect(notificationSpy.alert.calls.count()).toBe(1);
+        const button = notificationSpy.alert.calls.first().args[0].buttons[0];
+        (typeof button == 'string') ? button : button.handler(true);
+        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
+      });
     }));
 
     describe('should navigate to', () => {

@@ -82,7 +82,8 @@ describe('ChatRoomComponent', () => {
           useValue: {
             snapshot: {
               paramMap: convertToParamMap({ id: 1 })
-            }
+            },
+            params: of(true),
           }
         },
         {
