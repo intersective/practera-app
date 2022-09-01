@@ -26,7 +26,9 @@ describe('PersonalisedHeaderComponent', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'getUser',
+          ]),
         },
         {
           provide: UtilsService,

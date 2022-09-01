@@ -9,6 +9,7 @@ import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
 import { HomePage } from './home.page';
+import { of } from 'rxjs';
 
 describe('HomePage', () => {
   let component: HomePage;
@@ -29,7 +30,9 @@ describe('HomePage', () => {
         },
         {
           provide: HomeService,
-          useValue: jasmine.createSpyObj('HomeService', [''])
+          useValue: jasmine.createSpyObj('HomeService', {
+            'milestonesWithProgress$': jasmine.createSpy('milestonesWithProgress$').and.returnValue(of(true)),
+          })
         },
         {
           provide: AchievementService,

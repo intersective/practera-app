@@ -188,6 +188,7 @@ describe('AuthDirectLoginComponent', () => {
         storageSpy.get.and.returnValue('abc');
         doAuthentication = false;
       });
+
       it('program switcher page if timeline id is not passed in', () => {
         switchProgram = false;
         redirect = ['switcher', 'switcher-program'];
@@ -251,8 +252,8 @@ describe('AuthDirectLoginComponent', () => {
 
         tmpParams.redirect = 'assessment';
         redirect = [
-          'app',
-          'activity',
+          'v3',
+          'activity-desktop',
           tmpParams.act,
           {
             task: 'assessment',
