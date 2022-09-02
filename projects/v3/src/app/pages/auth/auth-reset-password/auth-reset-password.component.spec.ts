@@ -129,8 +129,11 @@ describe('AuthResetPasswordComponent', () => {
     beforeEach(() => {
       component.key = 'abc';
       component.email = 'abc@test.com',
-      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa' });
+      component.resetPasswordForm.setValue({
+        email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa'
+      });
     });
+
     it('should pop up success and redirect', () => {
       component.resetPassword();
       expect(notificationSpy.alert.calls.count()).toBe(1);

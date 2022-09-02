@@ -270,7 +270,7 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'assessment';
         tmpParams.sm = undefined;
         redirect = [
-          'assessment',
+          'assessment-mobile',
           'assessment',
           tmpParams.act,
           tmpParams.ctxt,
@@ -283,7 +283,7 @@ describe('AuthDirectLoginComponent', () => {
 
         tmpParams.redirect = 'assessment';
         redirect = [
-          'assessment',
+          'assessment-mobile',
           'assessment',
           tmpParams.act,
           tmpParams.ctxt,
@@ -402,7 +402,7 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('chat page', () => {
         tmpParams.redirect = 'chat';
-        redirect = ['v3', 'chat'];
+        redirect = ['v3', 'messages'];
       });
       it('settings page', () => {
         tmpParams.redirect = 'settings';
