@@ -453,8 +453,6 @@ describe('AssessmentService', () => {
       expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);
     });
 
-    it('should get correct assessment data', () => { });
-
     it(`should not include a question group if there's no question inside`, () => {
       // if a question group doesn't have question
       requestResponse.data.assessment.groups[1].questions = [];
