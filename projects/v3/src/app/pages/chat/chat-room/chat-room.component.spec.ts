@@ -486,7 +486,7 @@ describe('ChatRoomComponent', () => {
   describe('when testing back()', () => {
     it(`should navigate to 'chat' page`, () => {
       component.back();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['app', 'chat']);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'chat']);
     });
   });
 

@@ -4,9 +4,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ChatViewComponent } from './chat-view.component';
 import { UtilsService } from '@v3/services/utils.service';
-import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('ChatViewComponent', () => {
   let component: ChatViewComponent;

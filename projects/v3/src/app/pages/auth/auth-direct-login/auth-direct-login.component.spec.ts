@@ -201,20 +201,20 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('home page', () => {
         tmpParams.redirect = 'home';
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('project page', () => {
         tmpParams.redirect = 'project';
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity';
         tmpParams.act = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('activity page', () => {
         tmpParams.redirect = 'activity';
-        redirect = ['app', 'activity', tmpParams.act];
+        redirect = ['v3', 'activity', tmpParams.act];
       });
       it('activity-task page', () => {
         tmpParams.redirect = 'activity_task';
@@ -229,22 +229,22 @@ describe('AuthDirectLoginComponent', () => {
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity_task';
         tmpParams.act = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'assessment';
         tmpParams.act = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('home page if context id miss', () => {
         tmpParams.redirect = 'assessment';
         tmpParams.ctxt = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('home page if assessment id miss', () => {
         tmpParams.redirect = 'assessment';
         tmpParams.asmt = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('assessment page', () => {
         utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
@@ -312,7 +312,7 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.assessment_referrer_url = 'https://referrer.practera.com';
         tmpParams.redirect = 'assessment';
         redirect = [
-          'app',
+          'v3',
           'activity',
           tmpParams.act,
           {
@@ -332,7 +332,7 @@ describe('AuthDirectLoginComponent', () => {
 
         tmpParams.redirect = 'topic';
         redirect = [
-          'app',
+          'v3',
           'activity',
           tmpParams.act,
           {
@@ -369,26 +369,26 @@ describe('AuthDirectLoginComponent', () => {
       it('home page if topic id miss', () => {
         tmpParams.redirect = 'topic';
         tmpParams.top = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('reviews page', () => {
         tmpParams.redirect = 'reviews';
-        redirect = ['app', 'reviews'];
+        redirect = ['v3', 'reviews'];
       });
       it('home page if context id miss', () => {
         tmpParams.redirect = 'review';
         tmpParams.ctxt = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('home page if assessment id miss', () => {
         tmpParams.redirect = 'review';
         tmpParams.asmt = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('home page if submission id miss', () => {
         tmpParams.redirect = 'review';
         tmpParams.sm = null;
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
       it('review page', () => {
         tmpParams.redirect = 'review';
@@ -402,11 +402,11 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('chat page', () => {
         tmpParams.redirect = 'chat';
-        redirect = ['app', 'chat'];
+        redirect = ['v3', 'chat'];
       });
       it('settings page', () => {
         tmpParams.redirect = 'settings';
-        redirect = ['app', 'settings'];
+        redirect = ['v3', 'settings'];
       });
       it('settings embed page', () => {
         tmpParams.redirect = 'settings-embed';
@@ -414,7 +414,7 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('home page', () => {
         tmpParams.redirect = 'default';
-        redirect = ['app', 'home'];
+        redirect = ['v3', 'home'];
       });
 
     });

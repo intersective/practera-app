@@ -15,12 +15,6 @@ describe('TextComponent', () => {
       imports: [ReactiveFormsModule],
       declarations: [TextComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [
-        {
-          provide: UtilsService,
-          useClass: TestUtils,
-        },
-      ],
     })
       .compileComponents();
   }));

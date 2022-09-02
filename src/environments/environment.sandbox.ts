@@ -11,6 +11,7 @@ export const environment = {
   APIEndpoint: 'https://sandbox.practera.com/',
   graphQL: 'https://kixs5acl6j.execute-api.ap-southeast-2.amazonaws.com/sandbox/',
   chatGraphQL: 'https://antkrqcqa6.execute-api.ap-southeast-2.amazonaws.com/dev/graphql',
+  pusherCluster: 'mt1',
   globalLoginUrl: 'https://login.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
   intercomAppId: '',

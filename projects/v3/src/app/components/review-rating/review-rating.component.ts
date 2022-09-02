@@ -76,7 +76,7 @@ export class ReviewRatingComponent {
       // go to the desktop view pages
       if (this.redirect.includes('assessment')) {
         return this.router.navigate([
-          'app',
+          'v3',
           'activity',
           this.redirect[2],
           {
@@ -88,7 +88,7 @@ export class ReviewRatingComponent {
       }
       if (this.redirect.includes('topic')) {
         return this.router.navigate([
-          'app',
+          'v3',
           'activity',
           this.redirect[1],
           {
