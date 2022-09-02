@@ -81,14 +81,14 @@ describe('AuthLoginComponent', () => {
     });
 
     it('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
-      experienceServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['app', 'home']));
+      experienceServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['v3', 'home']));
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
       serviceSpy.login.and.returnValue(of({}));
       component.login();
       tick();
       expect(serviceSpy.login.calls.count()).toBe(1);
       expect(experienceServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['v3', 'home']);
     }));
 
     it('should pop up password compromised alert if login failed', fakeAsync(() => {

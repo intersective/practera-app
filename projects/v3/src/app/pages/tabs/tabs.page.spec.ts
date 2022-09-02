@@ -18,27 +18,35 @@ describe('TabsPage', () => {
       providers: [
         {
           provide: Platform,
-          useValue: jasmine.createSpyObj('Platform', ['']),
+          useValue: jasmine.createSpyObj('Platform', ['is']),
         },
         {
           provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', ['']),
+          useValue: jasmine.createSpyObj('ReviewService', ['reviews$']),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser']),
         },
         {
           provide: ChatService,
-          useValue: jasmine.createSpyObj('ChatService', ['']),
+          useValue: jasmine.createSpyObj('ChatService', ['getChatList']),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['']),
+          useValue: jasmine.createSpyObj('UtilsService', ['getEvent']),
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['']),
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'getTodoItemFromEvent',
+            'getChatMessage',
+            'getReminderEvent',
+            'notification$',
+            'newMessage$',
+            'getTodoItems',
+            'getChatMessage',
+          ]),
         },
       ],
       imports: [IonicModule.forRoot()]
