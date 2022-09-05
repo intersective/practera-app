@@ -1,10 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ActivityService } from '@app/activity/activity.service';
-import { TopicService } from '@app/topic/topic.service';
+import { ActivityService } from '@v3/services/activity.service';
+import { TopicService } from '@v3/services/topic.service';
 import { IonicModule } from '@ionic/angular';
+import { MockRouter } from '@testingv3/mocked.service';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 
 import { TopicMobilePage } from './topic-mobile.page';
+import { of } from 'rxjs';
 
 describe('TopicMobilePage', () => {
   let component: TopicMobilePage;
@@ -16,19 +19,28 @@ describe('TopicMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', []),
+          useClass: ActivatedRouteStub,
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', []),
+          useClass: MockRouter,
         },
         {
           provide: TopicService,
-          useValue: jasmine.createSpyObj('TopicService', []),
+          useValue: jasmine.createSpyObj('TopicService', [
+          'getTopic',
+          'updateTopicProgress',
+          ], {
+            topic$: of(true)
+          }),
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', []),
+          useValue: jasmine.createSpyObj('ActivityService', [
+            'getActivity', 'goToNextTask'
+          ], {
+            currentTask$: of(true)
+          }),
         },
       ],
       imports: [IonicModule.forRoot()]
