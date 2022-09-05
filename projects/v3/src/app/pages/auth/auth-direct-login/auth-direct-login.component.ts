@@ -171,6 +171,7 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!contextId || !assessmentId || !submissionId) {
           return this._saveOrRedirect(['v3', 'home'], redirectLater);
         }
+
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
         if (referrerUrl) {
           // save the referrer url so that we can redirect user later
@@ -179,8 +180,16 @@ export class AuthDirectLoginComponent implements OnInit {
             url: referrerUrl
           });
         }
+
         if (this.utils.isMobile()) {
-          return this._saveOrRedirect(['assessment-mobile', 'review', contextId, assessmentId, submissionId, { from: 'reviews' }], redirectLater);
+          return this._saveOrRedirect([
+            'assessment-mobile',
+            'review',
+            contextId,
+            assessmentId,
+            submissionId,
+            { from: 'reviews' }
+          ], redirectLater);
         }
         return this._saveOrRedirect(['v3', 'review-desktop', submissionId], redirectLater);
       case 'chat':
