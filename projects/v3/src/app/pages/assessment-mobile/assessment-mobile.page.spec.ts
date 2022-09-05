@@ -7,7 +7,9 @@ import { UtilsService } from '@app/services/utils.service';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { of } from 'rxjs';
 
 import { AssessmentMobilePage } from './assessment-mobile.page';
 
@@ -30,23 +32,33 @@ describe('AssessmentMobilePage', () => {
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', []),
+          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment'], {
+            assessment$: of(true),
+            submission$: of(true),
+            review$: of(true),
+          }),
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', []),
+          useValue: jasmine.createSpyObj('ActivityService', [
+            'goToNextTask',
+            'getActivity',
+          ]),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', []),
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser']),
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', []),
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'assessmentSubmittedToast',
+            'alert',
+          ]),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', []),
+          useClass: TestUtils
         },
       ]
     }).compileComponents();
