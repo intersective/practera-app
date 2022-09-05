@@ -191,7 +191,7 @@ describe('ActivityService', () => {
         }
       ]
     };
-    apolloSpy.graphQLWatch.and.returnValue(of(requestResponse));
+    apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
     service.getActivity(1);
     service.activity$.subscribe(res => expect(res).toEqual(expected));
   });
