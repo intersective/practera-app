@@ -94,7 +94,7 @@ describe('AuthResetPasswordComponent', () => {
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
       (typeof button == 'string') ? button : button.handler(true);
 
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
     });
 
     it('should verify success', () => {
