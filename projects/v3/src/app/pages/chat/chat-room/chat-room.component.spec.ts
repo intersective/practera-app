@@ -286,7 +286,8 @@ describe('ChatRoomComponent', () => {
         message: saveMessageRes.message,
         created: saveMessageRes.created,
         file: saveMessageRes.file,
-        senderUuid: saveMessageRes.senderUuid
+        senderUuid: saveMessageRes.senderUuid,
+        // sentAt: saveMessageRes.sentAt,
       });
     });
   });
