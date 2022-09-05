@@ -48,7 +48,9 @@ describe('ChatInfoComponent', () => {
         },
         {
           provide: ChatService,
-          useValue: jasmine.createSpyObj('ChatService', ['getChatMembers'])
+          useValue: jasmine.createSpyObj('ChatService', {
+            'getChatMembers': jasmine.createSpy('getChatMembers').and.returnValue(of(mockMembers))
+          })
         },
         {
           provide: BrowserStorageService,
@@ -74,7 +76,6 @@ describe('ChatInfoComponent', () => {
 
   describe('when testing ngOnInit()', () => {
     it(`should call chat service to get memeber list`, () => {
-      chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       component.selectedChat = {
         uuid: '35326928',
         name: 'Team 1',

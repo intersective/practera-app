@@ -160,7 +160,6 @@ describe('ChatRoomComponent', () => {
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
       chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
-      component.ngOnInit();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
       expect(chatServiceSpy.getChatMembers.calls.count()).toBe(1);
     });
@@ -188,7 +187,6 @@ describe('ChatRoomComponent', () => {
       chatServiceSpy.getMessageList.and.returnValue(of(null));
       chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
-      component.ngOnInit();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
       expect(component.messagePageCursor).toEqual('');
       expect(component.loadingChatMessages).toEqual(false);
@@ -220,7 +218,6 @@ describe('ChatRoomComponent', () => {
       }));
       chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
-      component.ngOnInit();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
       expect(component.messagePageCursor).toEqual('');
       expect(component.loadingChatMessages).toEqual(false);

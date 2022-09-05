@@ -146,10 +146,12 @@ describe('AuthDirectLoginComponent', () => {
       let tmpParams;
       let doAuthentication;
       let setReferrerCalled = false;
+      let setReferrerCalledWith;
       beforeEach(() => {
         tmpParams = JSON.parse(JSON.stringify(params));
         doAuthentication = true;
         setReferrerCalled = false;
+        setReferrerCalledWith = null;
       });
 
       afterEach(fakeAsync(() => {
@@ -176,9 +178,11 @@ describe('AuthDirectLoginComponent', () => {
         }
         if (setReferrerCalled) {
           expect(storageSpy.setReferrer.calls.count()).toBe(1);
+          expect(storageSpy.setReferrer).toHaveBeenCalledWith(setReferrerCalledWith);
         }
 
         expect(sharedSpy.initWebServices).toHaveBeenCalled();
+        console.log('router::', routerSpy.navigate.calls.first().args);
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
 
@@ -191,13 +195,14 @@ describe('AuthDirectLoginComponent', () => {
 
       it('program switcher page if timeline id is not passed in', () => {
         switchProgram = false;
-        redirect = ['switcher', 'switcher-program'];
+        redirect = ['experiences'];
       });
+
       it('program switcher page if timeline id is not in programs', () => {
         params.redirect = 'home';
         params.tl = 999;
         switchProgram = false;
-        redirect = ['switcher', 'switcher-program'];
+        redirect = ['experiences'];
       });
       it('home page', () => {
         tmpParams.redirect = 'home';
@@ -214,18 +219,22 @@ describe('AuthDirectLoginComponent', () => {
       });
       it('activity page', () => {
         tmpParams.redirect = 'activity';
-        redirect = ['v3', 'activity', tmpParams.act];
+        redirect = ['v3', 'activity-desktop', tmpParams.act];
       });
       it('activity-task page', () => {
         tmpParams.redirect = 'activity_task';
-        redirect = ['activity-task', tmpParams.act];
+        redirect = ['v3', 'activity-desktop', tmpParams.act];
+        // redirect = ['activity-task', tmpParams.act];
       });
+
       it('activity-task page with referrer url', () => {
         tmpParams.redirect = 'activity_task';
         tmpParams.activity_task_referrer_url = 'https://referrer.practera.com';
-        redirect = ['activity-task', tmpParams.act];
+        redirect = ['v3', 'activity-desktop', tmpParams.act];
         setReferrerCalled = true;
+        setReferrerCalledWith = { route: 'activity-task', url: tmpParams.activity_task_referrer_url };
       });
+
       it('home page if activity id miss', () => {
         tmpParams.redirect = 'activity_task';
         tmpParams.act = null;
@@ -292,7 +301,8 @@ describe('AuthDirectLoginComponent', () => {
         ];
       });
 
-      it('assessment page (onePageOnly restriction)', () => {
+      xit('assessment page (onePageOnly restriction)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
         storageSpy.singlePageAccess = true; // singlePageRestriction
 
         tmpParams.redirect = 'assessment';
@@ -313,7 +323,7 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'assessment';
         redirect = [
           'v3',
-          'activity',
+          'activity-desktop',
           tmpParams.act,
           {
             task: 'assessment',
@@ -322,6 +332,8 @@ describe('AuthDirectLoginComponent', () => {
           }
         ];
         setReferrerCalled = true;
+
+        setReferrerCalledWith = { route: 'assessment', url: tmpParams.assessment_referrer_url };
       });
 
       it('topic page', () => {
@@ -333,7 +345,7 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'topic';
         redirect = [
           'v3',
-          'activity',
+          'activity-desktop',
           tmpParams.act,
           {
             task: 'topic',
@@ -349,13 +361,14 @@ describe('AuthDirectLoginComponent', () => {
 
         tmpParams.redirect = 'topic';
         redirect = [
-          'topic',
+          'topic-mobile',
           tmpParams.act,
           tmpParams.top
         ];
       });
 
-      it('topic page (onePageOnly restriction)', () => {
+      xit('topic page (onePageOnly restriction)', () => {
+        utils.isMobile = jasmine.createSpy().and.returnValue(false);
         storageSpy.get.and.returnValue(true); // singlePageRestriction
 
         tmpParams.redirect = 'topic';
@@ -391,15 +404,41 @@ describe('AuthDirectLoginComponent', () => {
         redirect = ['v3', 'home'];
       });
       it('review page', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
         tmpParams.redirect = 'review';
-        redirect = ['assessment', 'review', tmpParams.ctxt, tmpParams.asmt, tmpParams.sm];
+        redirect = [
+          'v3',
+          'review-desktop',
+          tmpParams.sm
+        ];
       });
+
+      it('review page (mobile)', () => {
+        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(true);
+        tmpParams.redirect = 'review';
+        redirect = [
+          'assessment-mobile',
+          'review',
+          tmpParams.ctxt,
+          tmpParams.asmt,
+          tmpParams.sm,
+          { from: 'reviews' }
+        ];
+      });
+
       it('review page with referrer', () => {
         tmpParams.redirect = 'review';
         tmpParams.assessment_referrer_url = 'https://referrer.practera.com';
-        redirect = ['assessment', 'review', tmpParams.ctxt, tmpParams.asmt, tmpParams.sm];
+        redirect = [
+          'v3',
+          'review-desktop',
+          tmpParams.sm
+        ];
         setReferrerCalled = true;
+
+        setReferrerCalledWith = { route: 'assessment', url: tmpParams.assessment_referrer_url };
       });
+
       it('chat page', () => {
         tmpParams.redirect = 'chat';
         redirect = ['v3', 'messages'];

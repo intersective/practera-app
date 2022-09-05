@@ -96,7 +96,8 @@ describe('AuthService', () => {
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
     expect(requestSpy.post.calls.first().args[0].data).toContain('123');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
+
+    expect(storageSpy.setUser).toHaveBeenCalledWith({ apikey: '123456' });
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
