@@ -15,6 +15,7 @@ export class AuthLogoutComponent implements OnInit {
 
   ngOnInit() {
     this.route.params.subscribe(params => {
+console.log('asdbasdasjkdnaksjdnaksjd::', params);
       if (params && params.t) {
         return this.authService.logout(params);
       }

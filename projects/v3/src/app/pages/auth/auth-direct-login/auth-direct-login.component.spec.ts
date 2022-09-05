@@ -184,7 +184,7 @@ describe('AuthDirectLoginComponent', () => {
 
       it('skip authentication if auth token match', () => {
         switchProgram = false;
-        redirect = ['switcher', 'switcher-program'];
+        redirect = ['experiences'];
         storageSpy.get.and.returnValue('abc');
         doAuthentication = false;
       });
@@ -407,10 +407,6 @@ describe('AuthDirectLoginComponent', () => {
       it('settings page', () => {
         tmpParams.redirect = 'settings';
         redirect = ['v3', 'settings'];
-      });
-      it('settings embed page', () => {
-        tmpParams.redirect = 'settings-embed';
-        redirect = ['settings-embed'];
       });
       it('home page', () => {
         tmpParams.redirect = 'default';
