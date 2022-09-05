@@ -187,8 +187,6 @@ export class AuthDirectLoginComponent implements OnInit {
         return this._saveOrRedirect(['v3', 'messages'], redirectLater);
       case 'settings':
         return this._saveOrRedirect(['v3', 'settings'], redirectLater);
-      case 'settings-embed':
-        return this._saveOrRedirect(['v3', 'settings'], redirectLater); // need to add this route
       default:
         return this._saveOrRedirect(['v3', 'home'], redirectLater);
     }
