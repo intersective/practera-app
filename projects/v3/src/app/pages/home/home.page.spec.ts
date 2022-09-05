@@ -30,8 +30,8 @@ describe('HomePage', () => {
         },
         {
           provide: HomeService,
-          useValue: jasmine.createSpyObj('HomeService', {
-            'milestonesWithProgress$': jasmine.createSpy('milestonesWithProgress$').and.returnValue(of(true)),
+          useValue: jasmine.createSpyObj('HomeService', [], {
+            'milestonesWithProgress$': of(),
           })
         },
         {

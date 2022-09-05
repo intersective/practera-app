@@ -6,6 +6,7 @@ import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 
 import { NotificationsPage } from './notifications.page';
+import { of } from 'rxjs';
 
 describe('NotificationsPage', () => {
   let component: NotificationsPage;
@@ -23,11 +24,12 @@ describe('NotificationsPage', () => {
         {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', [
-            'notification$',
-            'eventReminder$',
-            'newMessage$',
             'modal',
-          ]),
+          ], {
+            'notification$': of(),
+            'eventReminder$': of(),
+            'newMessage$': of(),
+          }),
         },
         {
           provide: Router,

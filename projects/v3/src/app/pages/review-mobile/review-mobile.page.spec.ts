@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { ReviewService } from '@v3/app/services/review.service';
 import { of } from 'rxjs';
 
@@ -17,7 +18,8 @@ describe('ReviewMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', ['queryParams']),
+          useClass: ActivatedRouteStub,
+          // useValue: jasmine.createSpyObj('ActivatedRoute', ['queryParams']),
         },
         {
           provide: Router,
@@ -26,8 +28,9 @@ describe('ReviewMobilePage', () => {
         {
           provide: ReviewService,
           useValue: jasmine.createSpyObj('ReviewService', {
-            'reviews$': of(),
             'getReviews': of(),
+          }, {
+            'reviews$': of(),
           }),
         },
       ],
