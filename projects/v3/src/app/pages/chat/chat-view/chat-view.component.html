@@ -29,7 +29,7 @@
         ></app-chat-room>
         <app-chat-info *ngIf="loadInfo"
           [selectedChat]="chatChannel"
-          (navigate)="desktopGoto($event, { click: true })"
+          (navigate)="desktopGoto($event, { click: false })"
         ></app-chat-info>
       </ion-col>
     </ion-row>
