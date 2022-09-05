@@ -20,8 +20,10 @@ describe('ActivityMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
-          // useValue: jasmine.createSpyObj('ActivatedRoute', ['params']),
+          // useClass: ActivatedRouteStub,
+          useValue: jasmine.createSpyObj('ActivatedRoute', [], {
+            params: of(true),
+          }),
         },
         {
           provide: Router,
