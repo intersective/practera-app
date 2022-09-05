@@ -4,13 +4,15 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Platform } from '@ionic/angular';
+import { TestUtils } from '@testingv3/utils';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
-import { AuthService } from './services/auth.service';
-import { SharedService } from './services/shared.service';
-import { BrowserStorageService } from './services/storage.service';
-import { UtilsService } from './services/utils.service';
-import { VersionCheckService } from './services/version-check.service';
+import { AuthService } from '@v3/services/auth.service';
+import { SharedService } from '@v3/services/shared.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
+import { VersionCheckService } from '@v3/services/version-check.service';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
@@ -24,31 +26,37 @@ describe('AppComponent', () => {
       providers: [
         {
           provide: Platform,
-          useValue: jasmine.createSpyObj('Platform', ['']),
+          useValue: jasmine.createSpyObj('Platform', {
+            ready: Promise.resolve(true),
+          }),
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', ['']),
+          useClass: MockRouter,
         },
         {
           provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['']),
-        },
-        {
-          provide: NgZone,
-          useValue: jasmine.createSpyObj('NgZone', ['']),
+          useValue: jasmine.createSpyObj('SharedService', [
+            'onPageLoad',
+            'initWebServices',
+          ]),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'set',
+            'get',
+            'setUser',
+            'getConfig',
+          ]),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['']),
+          useClass: TestUtils,
         },
         {
           provide: DomSanitizer,
-          useValue: jasmine.createSpyObj('DomSanitizer', ['']),
+          useValue: jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustHtml']),
         },
         {
           provide: AuthService,
@@ -58,7 +66,7 @@ describe('AppComponent', () => {
         },
         {
           provide: VersionCheckService,
-          useValue: jasmine.createSpyObj('VersionCheckService', ['']),
+          useValue: jasmine.createSpyObj('VersionCheckService', ['initiateVersionCheck']),
         },
       ],
     }).compileComponents();
@@ -74,12 +82,5 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('v3');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('v3 app is running!');
   });
 });

@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 
 import { NotificationsPage } from './notifications.page';
 import { of } from 'rxjs';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('NotificationsPage', () => {
   let component: NotificationsPage;
@@ -19,7 +20,7 @@ describe('NotificationsPage', () => {
       providers: [
         {
           provide: UtilsService,
-          useValue: TestUtils,
+          useClass: TestUtils,
         },
         {
           provide: NotificationsService,
@@ -33,7 +34,7 @@ describe('NotificationsPage', () => {
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', ['']),
+          useClass: MockRouter
         },
         {
           provide: ModalController,
