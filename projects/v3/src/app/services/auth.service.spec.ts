@@ -42,7 +42,10 @@ describe('AuthService', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', [
-            'setUser', 'getUser', 'set', 'getConfig', 'setConfig', 'get', 'clear'
+            'setUser', 'getUser',
+            'set', 'getConfig',
+            'setConfig', 'get',
+            'clear',
           ]),
         },
         {
@@ -68,36 +71,37 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
+  describe('login()', () => {
+    it('should pass the correct data to API', () => {
+      requestSpy.post.and.returnValue(of({
+        success: true,
+        data: {
+          tutorial: null,
+          apikey: '123456',
+          Timelines: [
+            {
+              Program: {
+                config: {
+                  theme_color: 'abc'
+                }
+              },
+              Enrolment: {},
+              Project: {},
+              Timeline: {}
+            }
+          ]
+        }
+      }));
+      storageSpy.getConfig.and.returnValue(true);
+      utilsSpy.has.and.returnValue(true);
 
-  it('when testing login(), it should pass the correct data to API', () => {
-    requestSpy.post.and.returnValue(of({
-      success: true,
-      data: {
-        tutorial: null,
-        apikey: '123456',
-        Timelines: [
-          {
-            Program: {
-              config: {
-                theme_color: 'abc'
-              }
-            },
-            Enrolment: {},
-            Project: {},
-            Timeline: {}
-          }
-        ]
-      }
-    }));
-    storageSpy.getConfig.and.returnValue(true);
-    utilsSpy.has.and.returnValue(true);
+      service.login({ email: 'test@test.com', password: '123' }).subscribe();
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
+      expect(requestSpy.post.calls.first().args[0].data).toContain('123');
 
-    service.login({ email: 'test@test.com', password: '123' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
-    expect(requestSpy.post.calls.first().args[0].data).toContain('123');
-
-    expect(storageSpy.setUser).toHaveBeenCalledWith({ apikey: '123456' });
+      expect(storageSpy.setUser).toHaveBeenCalledWith({ apikey: '123456' });
+    });
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
