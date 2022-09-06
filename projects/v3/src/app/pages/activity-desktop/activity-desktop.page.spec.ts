@@ -24,7 +24,11 @@ describe('ActivityDesktopPage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({
+            contextId: 1,
+            id: 1,
+            assessmentId: 1,
+          }),
         },
         {
           provide: Router,
