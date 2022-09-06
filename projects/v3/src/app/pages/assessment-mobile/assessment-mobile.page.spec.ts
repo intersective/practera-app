@@ -24,7 +24,10 @@ describe('AssessmentMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({
+            from: '',
+            action: '',
+          }),
         },
         {
           provide: Router,
