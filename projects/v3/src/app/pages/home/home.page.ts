@@ -16,8 +16,8 @@ import { Subscription } from 'rxjs';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  experience$ = this.service.experience$;
-  activityCount$ = this.service.activityCount$;
+  experience$ = this.homeService.experience$;
+  activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
   milestones: Milestone[];
@@ -29,7 +29,7 @@ export class HomePage implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private service: HomeService,
+    private homeService: HomeService,
     private achievementService: AchievementService,
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
@@ -39,13 +39,13 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions = [];
-    this.subscriptions.push(this.service.milestonesWithProgress$.subscribe(res => this.milestones = res));
+    this.subscriptions.push(this.homeService.milestonesWithProgress$.subscribe(res => this.milestones = res));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(res => this.achievements = res));
-    this.subscriptions.push(this.service.experienceProgress$.subscribe(res => this.experienceProgress = res));
-    this.subscriptions.push(this.route.params.subscribe(params => {
-      this.service.getExperience();
-      this.service.getMilestones();
-      this.service.getProjectProgress();
+    this.subscriptions.push(this.homeService.experienceProgress$.subscribe(res => this.experienceProgress = res));
+    this.subscriptions.push(this.route.params.subscribe(_params => {
+      this.homeService.getExperience();
+      this.homeService.getMilestones();
+      this.homeService.getProjectProgress();
       this.achievementService.getAchievements();
     }));
   }
