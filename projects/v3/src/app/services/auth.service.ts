@@ -7,7 +7,6 @@ import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { ApolloService } from './apollo.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 
@@ -76,7 +75,6 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private apolloService: ApolloService,
     private demo: DemoService
   ) {}
 
@@ -92,11 +90,13 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
+    console.log('NAFL', environment);
     if (environment.demo) {
       return of({
         programs: []
       });
     }
+
     return this.request.post({
       endPoint: API.login,
       data: body.toString(),
@@ -156,6 +156,8 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
+
+    console.log('asdasdasdas??', norm);
     this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
@@ -186,7 +188,7 @@ export class AuthService {
             program: timeline.Program,
             project: timeline.Project,
             timeline: timeline.Timeline,
-            experience: {...timeline.Experience, lead_image: timeline.Experience.lead_url},
+            experience: {...timeline.Experience, lead_image: timeline?.Experience?.lead_url || ''},
             institution: timeline.Institution
           };
         },

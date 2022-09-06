@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { flushMicrotasks, TestBed } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from 'request';
 import { TestUtils } from '@testingv3/utils';
@@ -13,7 +13,6 @@ import { ApolloService } from './apollo.service';
 describe('AuthService', () => {
   let service: AuthService;
   let requestSpy: jasmine.SpyObj<RequestService>;
-  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
@@ -26,12 +25,14 @@ describe('AuthService', () => {
         AuthService,
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['delete', 'post', 'get', 'put'])
-        },
+          useValue: jasmine.createSpyObj('RequestService', [
+            'delete', 'post', 'get', 'put'
+          ]),
+        },/*
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch'])
-        },
+        }, */
         {
           provide: Router,
           useValue: {
@@ -60,7 +61,6 @@ describe('AuthService', () => {
     });
     service = TestBed.inject(AuthService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
@@ -99,7 +99,6 @@ describe('AuthService', () => {
       expect(requestSpy.post.calls.count()).toBe(1);
       expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
       expect(requestSpy.post.calls.first().args[0].data).toContain('123');
-
       expect(storageSpy.setUser).toHaveBeenCalledWith({ apikey: '123456' });
     });
   });
@@ -169,22 +168,23 @@ describe('AuthService', () => {
     });
   });
 
-  describe('when testing logout()', () => {
+  describe('logout()', () => {
     it('should navigate to login by default', () => {
       storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({});
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/']);
     });
+
     it('should pass navigation data', () => {
       storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({ data: 'data' });
       expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
       expect(pusherSpy.disconnect.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login'], { data: 'data' });
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/'], { data: 'data' });
     });
 
     it('should not navigate to login when it is called with redirect = false', () => {
@@ -267,19 +267,19 @@ describe('AuthService', () => {
       expect(requestSpy.post.calls.count()).toBe(1);
     });
 
-    it('should update profile image #1', () => {
+    it('should update profile image #1', fakeAsync(() => {
       requestSpy.post.and.returnValue(of({ success: true, data: 'asdf' }));
       service.updateProfileImage({}).subscribe();
       flushMicrotasks();
       expect(requestSpy.post.calls.count()).toBe(1);
-    });
+    }));
 
-    it('should update profile image #2', () => {
+    it('should update profile image #2', fakeAsync(() => {
       requestSpy.post.and.returnValue(of({ success: false, data: 'asdf' }));
       service.updateProfileImage({}).subscribe();
       flushMicrotasks();
       expect(requestSpy.post.calls.count()).toBe(1);
-    });
+    }));
   });
 });
 
