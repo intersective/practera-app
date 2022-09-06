@@ -25,7 +25,7 @@ describe('ReviewDesktopPage', () => {
         },
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({ submissionId: 1}),
         },
         {
           provide: AssessmentService,

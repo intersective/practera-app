@@ -16,7 +16,8 @@ export class ActivatedRouteStub {
       get: (key) => {
         return this.customParams[key] ? this.customParams[key] : null;
       }
-    }
+    },
+    data: {},
   };
 
   constructor(initialParams?: Params) {
@@ -33,5 +34,6 @@ export class ActivatedRouteStub {
     this.subject.next(convertToParamMap(params));
     this.customParams = params;
     this.params = of(params);
+    this.snapshot.data = this.customParams;
   }
 }

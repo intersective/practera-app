@@ -141,6 +141,7 @@ describe('FloatDirective', () => {
       const firstCard = cards[cards.length - 1];
 
       firstCard.nativeElement.top = 10;
+      console.log('boxShadow', firstCard.nativeElement.style.boxShadow);
       expect(firstCard.nativeElement.style.boxShadow).not.toEqual('none');
     });
 
