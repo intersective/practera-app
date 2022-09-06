@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { EventsPage } from './events.page';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { TestUtils } from '@testingv3/utils';
 
 describe('EventsPage', () => {
   let component: EventsPage;
@@ -21,7 +22,7 @@ describe('EventsPage', () => {
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['isMobile']),
+          useClass: TestUtils,
         },
       ]
     }).compileComponents();
