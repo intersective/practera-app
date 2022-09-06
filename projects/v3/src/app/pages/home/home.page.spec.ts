@@ -10,6 +10,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 
 import { HomePage } from './home.page';
 import { of } from 'rxjs';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('HomePage', () => {
   let component: HomePage;
@@ -22,15 +24,22 @@ describe('HomePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', [''])
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', [''])
+          useClass: MockRouter,
         },
         {
           provide: HomeService,
-          useValue: jasmine.createSpyObj('HomeService', [], {
+          useValue: jasmine.createSpyObj('HomeService', [
+            'getExperience',
+            'getMilestones',
+            'getProjectProgress',
+          ], {
+            'experience$': of(),
+            'experienceProgress$': of(),
+            'activityCount$': of(),
             'milestonesWithProgress$': of(),
           })
         },

@@ -26,7 +26,7 @@ describe('ExperiencesPage', () => {
         },
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: ExperienceService,
