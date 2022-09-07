@@ -1,15 +1,17 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService } from '@app/auth/auth.service';
-import { BrowserStorageService } from '@app/services/storage.service';
-import { UtilsService } from '@app/services/utils.service';
+import { AuthService } from '@v3/services/auth.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
-import { FilestackService } from '@v3/app/services/filestack.service';
-import { NotificationsService } from '@v3/app/services/notifications.service';
+import { TestUtils } from '@testingv3/utils';
+import { FilestackService } from '@v3/services/filestack.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 import { SettingsPage } from './settings.page';
+import { of } from 'rxjs';
 
 describe('SettingsPage', () => {
   let component: SettingsPage;
@@ -26,31 +28,35 @@ describe('SettingsPage', () => {
         },
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['']),
+          useValue: jasmine.createSpyObj('AuthService', ['logout', 'updateProfileImage']),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            'getUser': jasmine.createSpy('getUser'),
+            'get': jasmine.createSpy('get'),
+            'setUser': jasmine.createSpy('setUser'),
+          }),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['']),
+          useClass: TestUtils
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
         },
         {
           provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', ['']),
+          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes']),
         },
         {
           provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', ['']),
+          useValue: jasmine.createSpyObj('ModalController', ['dismiss']),
         },
       ],
     }).compileComponents();

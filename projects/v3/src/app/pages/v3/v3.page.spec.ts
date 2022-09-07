@@ -1,14 +1,16 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ChatService } from '@app/chat/chat.service';
-import { BrowserStorageService } from '@app/services/storage.service';
+import { ChatService } from '@v3/services/chat.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
-import { AnimationsService } from '@v3/app/services/animations.service';
-import { ReviewService } from '@v3/app/services/review.service';
+import { AnimationsService } from '@v3/services/animations.service';
+import { ReviewService } from '@v3/services/review.service';
+import { of } from 'rxjs';
 
 import { V3Page } from './v3.page';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('V3Page', () => {
   let component: V3Page;
@@ -17,7 +19,7 @@ describe('V3Page', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ V3Page ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
         {
           provide: ModalController,
@@ -32,14 +34,13 @@ describe('V3Page', () => {
         },
         {
           provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', [
-            'reviews$',
-            'getReviews',
-          ]),
+          useValue: jasmine.createSpyObj('ReviewService', ['getReviews'], {
+            'reviews$': of(),
+          }),
         },
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: Router,
@@ -47,7 +48,9 @@ describe('V3Page', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            getUser: jasmine.createSpy()
+          }),
         },
         {
           provide: ChatService,
@@ -65,10 +68,5 @@ describe('V3Page', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should render title', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('v3 app is running!');
   });
 });

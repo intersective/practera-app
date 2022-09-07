@@ -20,6 +20,7 @@ export class MockRouter extends SpyObject {
   navigate;
   events;
   url;
+  createUrlTree;
 
   constructor() {
     super(Router);
@@ -35,6 +36,7 @@ export class MockRouter extends SpyObject {
       TEST_EVENT.url,
       TEST_EVENT.urlAfterRedirects,
     ));
+    this.createUrlTree = this.spy('createUrlTree');
     this.url = 'abc';
   }
 }

@@ -92,7 +92,7 @@ export class V3Page implements OnInit, OnDestroy {
         }
       })
     );
-    this.subscriptions.push(this.route.params.subscribe(params => {
+    this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
     }));
 
