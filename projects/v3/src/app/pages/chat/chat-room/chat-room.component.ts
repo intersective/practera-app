@@ -168,6 +168,7 @@ export class ChatRoomComponent implements OnInit {
     if (this.loadingChatMessages) {
       return;
     }
+
     this.loadingChatMessages = true;
     this.chatService
       .getMessageList({
