@@ -12,6 +12,7 @@ import { HomePage } from './home.page';
 import { of } from 'rxjs';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
+import { TestUtils } from '@testingv3/utils';
 
 describe('HomePage', () => {
   let component: HomePage;
@@ -45,23 +46,29 @@ describe('HomePage', () => {
         },
         {
           provide: AchievementService,
-          useValue: jasmine.createSpyObj('AchievementService', [''])
+          useValue: jasmine.createSpyObj('AchievementService', [
+            'getAchievements',
+            'getIsPointsConfigured',
+            'getEarnedPoints',
+          ], {
+            'achievements$': of(),
+          }),
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', [''])
+          useValue: jasmine.createSpyObj('ActivityService', ['clearActivity'])
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', [''])
+          useValue: jasmine.createSpyObj('AssessmentService', ['clearAssessment'])
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', [''])
+          useClass: TestUtils
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', [''])
+          useValue: jasmine.createSpyObj('NotificationsService', ['achievementPopUp'])
         },
       ]
     }).compileComponents();

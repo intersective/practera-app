@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { AssessmentService } from '@app/assessment/assessment.service';
-import { UtilsService } from '@app/services/utils.service';
+import { AssessmentService } from '@v3/services/assessment.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { TestUtils } from '@testingv3/utils';
