@@ -19,10 +19,10 @@ export interface Review {
   date?: string;
   teamName?: string;
   contextId: number;
-  status: string;
-  icon: string;
-  submitter: string;
-  team: string;
+  status?: string;
+  icon?: string;
+  submitter?: string;
+  team?: string;
 }
 
 @Injectable({
@@ -70,7 +70,7 @@ export class ReviewService {
         submitterName: review.AssessmentSubmission.Submitter.name,
         date: this.utils.timeFormatter(review.AssessmentReview.is_done ? review.AssessmentReview.modified : review.AssessmentReview.created),
         teamName: this.utils.has(review, 'AssessmentSubmission.Team.name') ? review.AssessmentSubmission.Team.name : '',
-        contextId: review.AssessmentSubmission.context_id
+        contextId: review.AssessmentSubmission.context_id,
       });
     });
     this._reviews$.next(reviews);
