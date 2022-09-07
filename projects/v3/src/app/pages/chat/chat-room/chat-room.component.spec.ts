@@ -508,12 +508,26 @@ describe('ChatRoomComponent', () => {
         lastMessageCreated: null,
         canEdit: false
       };
+
+      // ngOnInit
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+
       component.loadingChatMessages = false;
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
       chatServiceSpy.getChatMembers.and.returnValue(of(mockMembers));
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
+
+      // loadMoreMessages (1st)
       component.loadMoreMessages({ detail: { scrollTop: 0 } });
-      expect(chatServiceSpy.getMessageList.calls.count()).toBe(1);
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(2);
+
+      // loadMoreMessages (2nd)
+      component.loadMoreMessages({ detail: { scrollTop: 0 } });
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(3);
+
+      // loadMoreMessages (3rd)
+      component.loadMoreMessages({ detail: { scrollTop: 0 } });
+      expect(chatServiceSpy.getMessageList.calls.count()).toBe(4);
     });
   });
 

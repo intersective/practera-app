@@ -32,7 +32,7 @@ describe('ChatInfoComponent', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: UtilsService,
@@ -49,7 +49,7 @@ describe('ChatInfoComponent', () => {
         {
           provide: ChatService,
           useValue: jasmine.createSpyObj('ChatService', {
-            'getChatMembers': jasmine.createSpy('getChatMembers').and.returnValue(of(mockMembers))
+            'getChatMembers': of(mockMembers)
           })
         },
         {
