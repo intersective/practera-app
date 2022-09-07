@@ -19,7 +19,9 @@ describe('TopicMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({
+            id: 1, activityId: 1
+          }),
         },
         {
           provide: Router,
