@@ -19,8 +19,7 @@ describe('ReviewMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
-          // useValue: jasmine.createSpyObj('ActivatedRoute', ['queryParams']),
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: Router,
