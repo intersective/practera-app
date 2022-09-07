@@ -18,7 +18,9 @@
 
 <ng-template #conversionPending>
   <ng-container *ngIf="waitedTooLong === false; else longWait">
-    <ion-spinner name="bubbles"></ion-spinner>please wait
+    <div class="waiting-mgs">
+      <ion-spinner name="bubbles"></ion-spinner>please wait
+    </div>
   </ng-container>
 </ng-template>
 
