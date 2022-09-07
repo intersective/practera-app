@@ -18,7 +18,10 @@ describe('EventsPage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub,
+          useValue: new ActivatedRouteStub({
+            activity_id: 1,
+            event_id: 1,
+          }),
         },
         {
           provide: UtilsService,
@@ -30,6 +33,10 @@ describe('EventsPage', () => {
     fixture = TestBed.createComponent(EventsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    component.eventList = {
+      onEnter: jasmine.createSpy(),
+    };
   }));
 
   it('should create', () => {

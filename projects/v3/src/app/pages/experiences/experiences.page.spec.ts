@@ -10,6 +10,7 @@ import { ExperiencesPage } from './experiences.page';
 import { MockRouter } from '@testingv3/mocked.service';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { TestUtils } from '@testingv3/utils';
+import { of } from 'rxjs';
 
 describe('ExperiencesPage', () => {
   let component: ExperiencesPage;
@@ -31,10 +32,11 @@ describe('ExperiencesPage', () => {
         {
           provide: ExperienceService,
           useValue: jasmine.createSpyObj('ExperienceService', [
-            'programsWithProgress$',
             'getPrograms',
             'switchProgramAndNavigate',
-          ]),
+          ], {
+            'programsWithProgress$': of(),
+          }),
         },
         {
           provide: LoadingController,
