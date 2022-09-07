@@ -124,7 +124,6 @@ describe('AchievementService', () => {
       service.achievements$.subscribe(res => {
         expect(res).toEqual(expected);
       });
-      // expect(service.totalPoints).toBe(600);
       expect(service.earnedPoints).toBe(400);
       expect(service.isPointsConfigured).toBe(true);
     });
