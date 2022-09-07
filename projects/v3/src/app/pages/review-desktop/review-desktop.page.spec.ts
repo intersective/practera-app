@@ -1,9 +1,12 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { AssessmentService } from '@app/assessment/assessment.service';
-import { UtilsService } from '@app/services/utils.service';
+import { AssessmentService } from '@v3/services/assessment.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule } from '@ionic/angular';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { TestUtils } from '@testingv3/utils';
 import { ReviewService } from '@v3/app/services/review.service';
+import { of } from 'rxjs';
 
 import { ReviewDesktopPage } from './review-desktop.page';
 
@@ -18,19 +21,25 @@ describe('ReviewDesktopPage', () => {
       providers: [
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', []),
+          useClass: TestUtils
         },
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', []),
+          useValue: new ActivatedRouteStub({ submissionId: 1}),
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', []),
+          useValue: jasmine.createSpyObj('AssessmentService', ['saveAnswers'], {
+            'assessment$': of(true),
+            'submission$': of(true),
+            'review$': of(true),
+          }),
         },
         {
           provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', []),
+          useValue: jasmine.createSpyObj('ReviewService', ['getReviews'], {
+            reviews$: of(true),
+          }),
         },
       ],
     }).compileComponents();

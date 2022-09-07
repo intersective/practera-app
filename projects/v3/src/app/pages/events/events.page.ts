@@ -35,8 +35,12 @@ export class EventsPage implements OnInit {
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
     private route: ActivatedRoute,
-    public utils: UtilsService,
+    private utils: UtilsService,
   ) { }
+
+  get isMobile(): boolean {
+    return this.utils.isMobile();
+  }
 
   ngOnInit() {
     // get activity and event id from route

@@ -26,7 +26,7 @@ export class ChatViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe(_params => {
       this._initialise();
       setTimeout(() => {
         this.chatList.onEnter();

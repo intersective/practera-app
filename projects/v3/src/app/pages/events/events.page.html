@@ -9,9 +9,9 @@
 </ion-header>
 
 <ion-content [ngClass]="{
-  'scrollable-desktop': !utils.isMobile()
+  'scrollable-desktop': !isMobile
 }">
-  <ng-container *ngIf="!utils.isMobile(); else mobileview">
+  <ng-container *ngIf="!isMobile; else mobileview">
     <ion-grid class="ion-no-padding">
       <ion-row>
         <ion-col size="12" size-md="5">

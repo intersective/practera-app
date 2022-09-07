@@ -1,12 +1,12 @@
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ChatViewComponent } from './chat-view.component';
 import { UtilsService } from '@v3/services/utils.service';
-import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('ChatViewComponent', () => {
   let component: ChatViewComponent;
@@ -14,7 +14,7 @@ describe('ChatViewComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let utils: UtilsService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ChatViewComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -29,11 +29,11 @@ describe('ChatViewComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useClass: ActivatedRouteStub
+          useValue: new ActivatedRouteStub({})
         }
       ]
     })
-      .compileComponents();
+    .compileComponents();
   }));
 
   beforeEach(() => {
@@ -41,8 +41,12 @@ describe('ChatViewComponent', () => {
     component = fixture.componentInstance;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     utils = TestBed.inject(UtilsService);
-    component.chatList = { onEnter() { } };
-    component.chatRoom = { onEnter() { } };
+    component.chatList = {
+      onEnter: jasmine.createSpy()
+    };
+    component.chatRoom = {
+      ngOnInit: jasmine.createSpy()
+    };
   });
 
   it('should create', () => {
@@ -94,7 +98,6 @@ describe('ChatViewComponent', () => {
   };
 
   it('should get correct activity id', fakeAsync(() => {
-    spyOn(component.chatList, 'onEnter');
     component.ngOnInit();
     expect(component.chatChannel).toBeNull();
     expect(component.loadInfo).toBeFalsy();
@@ -109,21 +112,18 @@ describe('ChatViewComponent', () => {
     });
   });
 
-  describe('when testing selectFirstChat()', () => {
+  describe('selectFirstChat()', () => {
     it(`should load chat room`, fakeAsync(() => {
-      spyOn(component.chatRoom, 'onEnter');
       component.chatChannel = null;
       component.selectFirstChat(mockChats.data.channels);
       expect(component.loadInfo).toBe(false);
       expect(component.chatChannel).toBe(mockChats.data.channels[0]);
       tick();
-      expect(component.chatRoom.onEnter).toHaveBeenCalled();
     }));
   });
 
-  describe('when testing goto()', () => {
+  describe('when testing desktopGoto()', () => {
     it(`should call chat room onEnter`, fakeAsync(() => {
-      spyOn(component.chatRoom, 'onEnter');
       const chatChannel = {
         uuid: '35326928',
         name: 'Team 1',
@@ -142,11 +142,11 @@ describe('ChatViewComponent', () => {
         lastMessageCreated: null,
         canEdit: false
       };
-      component.desktopGoto(chatChannel);
+      component.desktopGoto(chatChannel, { click: true });
       expect(component.loadInfo).toBe(false);
       expect(component.chatChannel).toEqual(chatChannel);
       tick();
-      expect(component.chatRoom.onEnter).toHaveBeenCalled();
+      expect(component.chatRoom.ngOnInit).toHaveBeenCalled();
     }));
   });
 

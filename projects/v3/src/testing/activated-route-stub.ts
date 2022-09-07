@@ -16,7 +16,8 @@ export class ActivatedRouteStub {
       get: (key) => {
         return this.customParams[key] ? this.customParams[key] : null;
       }
-    }
+    },
+    data: {},
   };
 
   constructor(initialParams?: Params) {
@@ -25,6 +26,7 @@ export class ActivatedRouteStub {
 
   /** The mock paramMap observable */
   readonly paramMap = this.subject.asObservable();
+  readonly queryParams = this.subject.asObservable();
   readonly queryParamMap = this.subject.asObservable();
 
   /** Set the paramMap observables's next value */
@@ -32,5 +34,6 @@ export class ActivatedRouteStub {
     this.subject.next(convertToParamMap(params));
     this.customParams = params;
     this.params = of(params);
+    this.snapshot.data = this.customParams;
   }
 }

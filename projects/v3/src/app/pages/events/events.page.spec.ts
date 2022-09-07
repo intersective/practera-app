@@ -4,6 +4,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule } from '@ionic/angular';
 
 import { EventsPage } from './events.page';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { TestUtils } from '@testingv3/utils';
 
 describe('EventsPage', () => {
   let component: EventsPage;
@@ -16,11 +18,14 @@ describe('EventsPage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', ['']),
+          useValue: new ActivatedRouteStub({
+            activity_id: 1,
+            event_id: 1,
+          }),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['']),
+          useClass: TestUtils,
         },
       ]
     }).compileComponents();
@@ -28,6 +33,10 @@ describe('EventsPage', () => {
     fixture = TestBed.createComponent(EventsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
+
+    component.eventList = {
+      onEnter: jasmine.createSpy(),
+    };
   }));
 
   it('should create', () => {

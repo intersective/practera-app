@@ -55,7 +55,11 @@ describe('AuthResetPasswordComponent', () => {
         },
         {
           provide: ActivatedRoute,
-          useValue: new ActivatedRouteStub({ apikey: 'abc' })
+          useValue: new ActivatedRouteStub({
+            apikey: 'abc',
+            key: 'abcdedfg',
+            email: 'abc@test.com',
+          })
         },
         {
           provide: UtilsService,
@@ -94,7 +98,7 @@ describe('AuthResetPasswordComponent', () => {
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
       (typeof button == 'string') ? button : button.handler(true);
 
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
     });
 
     it('should verify success', () => {
@@ -120,7 +124,7 @@ describe('AuthResetPasswordComponent', () => {
         const button = notificationSpy.alert.calls.first().args[0].buttons[0];
         (typeof button == 'string') ? button : button.handler(true);
 
-        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
       });
     });
   });
@@ -129,8 +133,11 @@ describe('AuthResetPasswordComponent', () => {
     beforeEach(() => {
       component.key = 'abc';
       component.email = 'abc@test.com',
-      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa' });
+      component.resetPasswordForm.setValue({
+        email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa'
+      });
     });
+
     it('should pop up success and redirect', () => {
       component.resetPassword();
       expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -139,7 +146,7 @@ describe('AuthResetPasswordComponent', () => {
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
       (typeof button == 'string') ? button : button.handler(true);
 
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
     });
 
     it('should pop up alert if password compromised', fakeAsync(() => {

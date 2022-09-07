@@ -9,7 +9,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
-import { environment } from '@environments/environment';
+import { environment } from '@v3/environments/environment';
 import { ModalController, IonicModule } from '@ionic/angular';
 import * as filestack from 'filestack-js';
 import { TestUtils } from '@testingv3/utils';

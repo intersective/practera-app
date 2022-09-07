@@ -61,7 +61,7 @@ describe('EventListComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', []),
+          useValue: jasmine.createSpyObj('NotificationsService', ['']),
         }
       ],
     })

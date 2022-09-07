@@ -53,10 +53,10 @@ export class ChatRoomComponent implements OnInit {
 
   constructor(
     private chatService: ChatService,
-    public router: Router,
-    public storage: BrowserStorageService,
+    private router: Router,
+    private storage: BrowserStorageService,
     public utils: UtilsService,
-    public pusherService: PusherService,
+    private pusherService: PusherService,
     private filestackService: FilestackService,
     private modalController: ModalController,
     private ngZone: NgZone,
@@ -168,6 +168,7 @@ export class ChatRoomComponent implements OnInit {
     if (this.loadingChatMessages) {
       return;
     }
+
     this.loadingChatMessages = true;
     this.chatService
       .getMessageList({

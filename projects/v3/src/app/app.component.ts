@@ -25,8 +25,8 @@ export class AppComponent implements OnInit {
     private sharedService: SharedService,
     private ngZone: NgZone,
     private storage: BrowserStorageService,
-    public utils: UtilsService,
-    public sanitizer: DomSanitizer,
+    private utils: UtilsService,
+    private sanitizer: DomSanitizer,
     private authService: AuthService,
     private versionCheckService: VersionCheckService,
   ) {
@@ -54,47 +54,43 @@ export class AppComponent implements OnInit {
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
     const domain = window.location.hostname;
-    this.authService.getConfig({ domain }).subscribe(
-      (response: any) => {
-        if (response !== null) {
-          const expConfig = response.data;
-          const numOfConfigs = expConfig.length;
-          if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo = expConfig[0].logo;
+    console.log('mmmm::', this.authService.getConfig);
+    this.authService.getConfig({ domain }).subscribe((response: any) => {
+      if (response !== null) {
+        const expConfig = response.data;
+        const numOfConfigs = expConfig.length;
+        if (numOfConfigs > 0 && numOfConfigs < 2) {
+          let logo = expConfig[0].logo;
 
-            const config = expConfig[0].config || {}; // let it fail gracefully
+          const config = expConfig[0].config || {}; // let it fail gracefully
 
-            if (config.html_branding && config.html_branding.header) {
-              this.customHeader = config.html_branding.header;
-            }
-            if (this.customHeader) {
-              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
-            }
+          if (config.html_branding && config.html_branding.header) {
+            this.customHeader = config.html_branding.header;
+          }
+          if (this.customHeader) {
+            this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
+          }
 
-            // add the domain if the logo url is not a full url
-            if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
-              logo = environment.APIEndpoint + logo;
-            }
-            const colors = {
-              theme: config.theme_color,
-            };
-            this.storage.setConfig({
-              logo,
-              colors,
-            });
+          // add the domain if the logo url is not a full url
+          if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
+            logo = environment.APIEndpoint + logo;
+          }
+          const colors = {
+            theme: config.theme_color,
+          };
+          this.storage.setConfig({
+            logo,
+            colors,
+          });
 
-            // use brand color from getConfig API if no cached color available
-            // in storage.getUser()
-            if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
-              this.utils.changeThemeColor(colors);
-            }
+          // use brand color from getConfig API if no cached color available
+          // in storage.getUser()
+          if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
+            this.utils.changeThemeColor(colors);
           }
         }
-      },
-      err => {
-
       }
-    );
+    });
 
     let searchParams = null;
     let queryString = '';

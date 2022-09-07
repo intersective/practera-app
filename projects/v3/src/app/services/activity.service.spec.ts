@@ -191,7 +191,7 @@ describe('ActivityService', () => {
         }
       ]
     };
-    apolloSpy.graphQLWatch.and.returnValue(of(requestResponse));
+    apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
     service.getActivity(1);
     service.activity$.subscribe(res => expect(res).toEqual(expected));
   });
@@ -230,7 +230,7 @@ describe('ActivityService', () => {
       }));
       service.goToNextTask(1, 2);
       tick();
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'home']);
+      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['v3', 'home']);
       expect(routerSpy.navigate.calls.first().args[1]).toEqual({
         queryParams: {
           activityId: 1,

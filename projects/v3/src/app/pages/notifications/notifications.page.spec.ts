@@ -1,10 +1,13 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { UtilsService } from '@app/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { NotificationsService } from '@v3/app/services/notifications.service';
+import { TestUtils } from '@testingv3/utils';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 import { NotificationsPage } from './notifications.page';
+import { of } from 'rxjs';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('NotificationsPage', () => {
   let component: NotificationsPage;
@@ -17,24 +20,21 @@ describe('NotificationsPage', () => {
       providers: [
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', [
-            'isEmpty',
-            'timeFormatter',
-            'isMobile',
-          ]),
+          useClass: TestUtils,
         },
         {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', [
-            'notification$',
-            'eventReminder$',
-            'newMessage$',
             'modal',
-          ]),
+          ], {
+            'notification$': of(),
+            'eventReminder$': of(),
+            'newMessage$': of(),
+          }),
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', ['']),
+          useClass: MockRouter
         },
         {
           provide: ModalController,

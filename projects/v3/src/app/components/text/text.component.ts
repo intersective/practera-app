@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
-import { Event } from '@angular/router';
-import { Question } from '@v3/app/services/assessment.service';
+import { Question } from '@v3/services/assessment.service';
 
 @Component({
   selector: 'app-text',
