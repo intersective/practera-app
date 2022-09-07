@@ -175,7 +175,7 @@ describe('AssessmentService', () => {
             submissions: [
               {
                 id: 1,
-                status: 'published',
+                status: 'feedback available',
                 modified: '2019-02-02',
                 locked: false,
                 completed: false,
@@ -259,6 +259,7 @@ describe('AssessmentService', () => {
       // team member selector
       question4 = group1.questions[1];
       expectedAssessment = {
+        id: 1,
         name: assessment.name,
         type: assessment.type,
         description: assessment.description,
@@ -448,9 +449,10 @@ describe('AssessmentService', () => {
         expect(submission).toEqual(expectedSubmission);
       });
       service.review$.subscribe(review => {
+        console.log('expectedReview::', review);
+        console.log('expectedReview2::', expectedReview);
         expect(review).toEqual(expectedReview);
       });
-      flushMicrotasks();
       expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);
     });
 
@@ -463,6 +465,9 @@ describe('AssessmentService', () => {
       expectedAssessment.groups.splice(1, 1);
       delete expectedSubmission.answers[11];
       delete expectedSubmission.answers[12];
+      delete expectedReview.answers[1];
+      delete expectedReview.answers[2];
+      delete expectedReview.answers[3];
       delete expectedReview.answers[11];
       delete expectedReview.answers[12];
     });
