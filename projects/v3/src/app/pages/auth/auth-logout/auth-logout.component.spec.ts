@@ -56,10 +56,8 @@ describe('AuthLogoutComponent', () => {
   it('when testing ngOnInit() and there is no route param should call auth Service logout', fakeAsync(() => {
     const params = of({ t: 1 });
     routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-    fixture.detectChanges();
-    component.ngOnInit();
-    // expect(newRelicSpy.setPageViewName).toHaveBeenCalledWith('logout');
     authSpy.logout.and.returnValue(Promise.resolve(true));
+    fixture.detectChanges();
     expect(authSpy.logout.calls.count()).toBe(1);
   }));
 });

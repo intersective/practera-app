@@ -3,7 +3,7 @@ import { AchievementService } from './achievement.service';
 import { of } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { UtilsService } from '@v3/app/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
 describe('AchievementService', () => {
@@ -76,7 +76,7 @@ describe('AchievementService', () => {
           name: 'achieve 4',
           description: 'des',
           badge: '',
-          points: null,
+          points: 0,
           isEarned: true,
           earnedDate: '2019-02-02'
         }
@@ -121,8 +121,9 @@ describe('AchievementService', () => {
     it('should get the correct data', () => {
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getAchievements();
-      service.achievements$.subscribe(res => expect(res).toEqual(expected));
-      // expect(service.totalPoints).toBe(600);
+      service.achievements$.subscribe(res => {
+        expect(res).toEqual(expected);
+      });
       expect(service.earnedPoints).toBe(400);
       expect(service.isPointsConfigured).toBe(true);
     });

@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { flush, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -175,7 +175,7 @@ describe('AssessmentService', () => {
             submissions: [
               {
                 id: 1,
-                status: 'published',
+                status: 'feedback available',
                 modified: '2019-02-02',
                 locked: false,
                 completed: false,
@@ -259,6 +259,7 @@ describe('AssessmentService', () => {
       // team member selector
       question4 = group1.questions[1];
       expectedAssessment = {
+        id: 1,
         name: assessment.name,
         type: assessment.type,
         description: assessment.description,
@@ -448,12 +449,12 @@ describe('AssessmentService', () => {
         expect(submission).toEqual(expectedSubmission);
       });
       service.review$.subscribe(review => {
+        console.log('expectedReview::', review);
+        console.log('expectedReview2::', expectedReview);
         expect(review).toEqual(expectedReview);
       });
       expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);
     });
-
-    it('should get correct assessment data', () => { });
 
     it(`should not include a question group if there's no question inside`, () => {
       // if a question group doesn't have question
@@ -464,6 +465,9 @@ describe('AssessmentService', () => {
       expectedAssessment.groups.splice(1, 1);
       delete expectedSubmission.answers[11];
       delete expectedSubmission.answers[12];
+      delete expectedReview.answers[1];
+      delete expectedReview.answers[2];
+      delete expectedReview.answers[3];
       delete expectedReview.answers[11];
       delete expectedReview.answers[12];
     });

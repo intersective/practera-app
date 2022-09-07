@@ -6,6 +6,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { ActivityMobilePage } from './activity-mobile.page';
 import { of } from 'rxjs';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { MockRouter } from '@testingv3/mocked.service';
 
 describe('ActivityMobilePage', () => {
   let component: ActivityMobilePage;
@@ -18,23 +20,30 @@ describe('ActivityMobilePage', () => {
       providers: [
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', ['params']),
+          // useClass: ActivatedRouteStub,
+          useValue: jasmine.createSpyObj('ActivatedRoute', [], {
+            params: of(true),
+          }),
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', ['navigate']),
+          useClass: MockRouter,
+          // useValue: jasmine.createSpyObj('Router', ['navigate']),
         },
         {
           provide: ActivityService,
           useValue: jasmine.createSpyObj('ActivityService', {
-            'activity$': of(),
             'getActivity': of(),
             'goToTask': of(),
+          }, {
+            'activity$': of(),
           }),
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', ['submission$']),
+          useValue: jasmine.createSpyObj('AssessmentService', [], {
+            'submission$': of(),
+          }),
         },
       ],
     }).compileComponents();

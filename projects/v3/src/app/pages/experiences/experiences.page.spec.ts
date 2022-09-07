@@ -7,6 +7,10 @@ import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
 import { ExperiencesPage } from './experiences.page';
+import { MockRouter } from '@testingv3/mocked.service';
+import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
+import { TestUtils } from '@testingv3/utils';
+import { of } from 'rxjs';
 
 describe('ExperiencesPage', () => {
   let component: ExperiencesPage;
@@ -19,31 +23,36 @@ describe('ExperiencesPage', () => {
       providers: [
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', ['']),
+          useClass: MockRouter,
         },
         {
           provide: ActivatedRoute,
-          useValue: jasmine.createSpyObj('ActivatedRoute', ['']),
+          useValue: new ActivatedRouteStub({}),
         },
         {
           provide: ExperienceService,
-          useValue: jasmine.createSpyObj('ExperienceService', ['']),
+          useValue: jasmine.createSpyObj('ExperienceService', [
+            'getPrograms',
+            'switchProgramAndNavigate',
+          ], {
+            'programsWithProgress$': of(),
+          }),
         },
         {
           provide: LoadingController,
-          useValue: jasmine.createSpyObj('LoadingController', ['']),
+          useValue: jasmine.createSpyObj('LoadingController', ['create']),
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['']),
+          useClass: TestUtils,
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getConfig']),
         },
       ],
     }).compileComponents();

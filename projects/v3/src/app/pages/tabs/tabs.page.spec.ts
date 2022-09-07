@@ -7,6 +7,9 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { ReviewService } from '@v3/services/review.service';
 
 import { TabsPage } from './tabs.page';
+import { RouterTestingModule } from '@angular/router/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { of } from 'rxjs';
 
 describe('TabsPage', () => {
   let component: TabsPage;
@@ -15,33 +18,44 @@ describe('TabsPage', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TabsPage ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [IonicModule.forRoot(), RouterTestingModule],
       providers: [
         {
-          provide: Platform,
-          useValue: jasmine.createSpyObj('Platform', ['']),
-        },
-        {
           provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', ['']),
+          useValue: jasmine.createSpyObj('ReviewService', [], {
+            'reviews$': of(),
+          }),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            'getUser': jasmine.createSpy()
+          }),
         },
         {
           provide: ChatService,
-          useValue: jasmine.createSpyObj('ChatService', ['']),
+          useValue: jasmine.createSpyObj('ChatService', ['getChatList']),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['']),
+          useValue: jasmine.createSpyObj('UtilsService', {
+            'getEvent': of(true),
+          }),
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['']),
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            'getTodoItemFromEvent': of(),
+            'getReminderEvent': of(),
+            'getTodoItems': of(),
+            'getChatMessage': of(),
+          }, {
+            'notification$': of(),
+            'newMessage$': of(),
+          }),
         },
       ],
-      imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TabsPage);

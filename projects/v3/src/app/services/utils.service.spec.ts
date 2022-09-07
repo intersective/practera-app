@@ -291,7 +291,8 @@ describe('UtilsService', () => {
 
     it('should clear caches that covered in this function', fakeAsync(() => {
       service['apolloService'].getClient = jasmine.createSpy('getClient').and.returnValue({
-        clearStore: jasmine.createSpy('clearStore').and.returnValue(Promise.resolve(true))
+        clearStore: jasmine.createSpy('clearStore').and.returnValue(Promise.resolve(true)),
+        stop: jasmine.createSpy('clearStore'),
       });
 
       service.clearCache();

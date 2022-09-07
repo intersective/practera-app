@@ -35,13 +35,10 @@ describe('ReviewService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('when testing getReviews()', () => {
+  describe('getReviews()', () => {
     it('should return empty array if no response data.', () => {
       requestSpy.get.and.returnValue(of({}));
-      service.getReviews();
-      service.reviews$.subscribe(res => {
-        expect(res).toEqual([]);
-      });
+      expect(service.getReviews).toThrowError();
     });
 
     it('should return error if response data format error #1.', () => {
@@ -49,9 +46,7 @@ describe('ReviewService', () => {
         success: true,
         data: {}
       }));
-      service.getReviews();
-      service.reviews$.subscribe();
-      expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
+      expect(service.getReviews).toThrowError();
     });
 
     it('should return error if response data format error #2.', () => {
@@ -98,10 +93,6 @@ describe('ReviewService', () => {
           date: utils.timeFormatter('2019-01-01 19:00:00'),
           teamName: 'team',
           contextId: 3,
-          status: '',
-          icon: '',
-          submitter: '',
-          team: '',
         }]);
       });
     });

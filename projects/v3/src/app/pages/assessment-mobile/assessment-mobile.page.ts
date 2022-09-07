@@ -25,7 +25,7 @@ export class AssessmentMobilePage implements OnInit {
   fromPage: string;
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  currentTask: Task
+  currentTask: Task;
 
   @ViewChild('assessmentEle') assessmentEle;
 

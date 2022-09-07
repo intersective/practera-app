@@ -17,7 +17,7 @@ export class ReviewMobilePage implements OnInit {
 
   ngOnInit(): void {
     this.reviewService.reviews$.subscribe(res => this.reviews = res);
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe(_params => {
       this.reviewService.getReviews();
     });
   }
