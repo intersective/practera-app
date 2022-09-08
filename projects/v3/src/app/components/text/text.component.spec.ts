@@ -1,22 +1,20 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TextComponent } from './text.component';
-import { Observable, of, pipe } from 'rxjs';
-import { ReactiveFormsModule, FormControl } from '@angular/forms';
-import { UtilsService } from '@v3/services/utils.service';
-import { TestUtils } from '@testingv3/utils';
+import { FormControl, FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 
 describe('TextComponent', () => {
   let component: TextComponent;
   let fixture: ComponentFixture<TextComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
+      imports: [IonicModule.forRoot(), FormsModule],
       declarations: [TextComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
-      .compileComponents();
+    .compileComponents();
   }));
 
   beforeEach(() => {
