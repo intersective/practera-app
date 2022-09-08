@@ -8,10 +8,11 @@ import { Router, ActivatedRoute, UrlSerializer } from '@angular/router';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
+import { IonicModule } from '@ionic/angular';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;
@@ -23,7 +24,7 @@ describe('AuthResetPasswordComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
+      imports: [ReactiveFormsModule, IonicModule.forRoot()],
       declarations: [AuthResetPasswordComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -134,7 +135,9 @@ describe('AuthResetPasswordComponent', () => {
       component.key = 'abc';
       component.email = 'abc@test.com',
       component.resetPasswordForm.setValue({
-        email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa'
+        email: 'abc@test.com',
+        password: 'aaa',
+        confirmPassword: 'aaa',
       });
     });
 
@@ -167,11 +170,19 @@ describe('AuthResetPasswordComponent', () => {
   });
   describe('when testing checkPasswordMatching()', () => {
     it('should return true if password match', () => {
-      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaa' });
+      component.resetPasswordForm.setValue({
+        email: 'abc@test.com',
+        password: 'aaa',
+        confirmPassword: 'aaa',
+      });
       expect(component.checkPasswordMatching(component.resetPasswordForm)).toBe(null);
     });
     it('should return false if password not match', () => {
-      component.resetPasswordForm.setValue({ email: 'abc@test.com', password: 'aaa', confirmPassword: 'aaaa' });
+      component.resetPasswordForm.setValue({
+        email: 'abc@test.com',
+        password: 'aaa',
+        confirmPassword: 'aaaa',
+      });
       expect(component.checkPasswordMatching(component.resetPasswordForm)).toEqual({ notMatching: true });
     });
   });
