@@ -70,10 +70,8 @@
                   (keydown)="preview(message.fileObject, $event)"
                   tabindex="0"
                   role="button">
-                  <p>
-                    <ion-label color="primary">
-                      {{ message.fileObject.filename }}
-                    </ion-label>
+                  <p class="label">
+                    {{ message.fileObject.filename }}
                   </p>
                   <div id="inner-box">
                     <p>

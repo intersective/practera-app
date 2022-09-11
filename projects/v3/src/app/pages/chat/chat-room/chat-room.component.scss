@@ -102,7 +102,6 @@ $message-body-size: 60%;
 
         &.video-attachment-container {
           min-height: 125px;
-          background: #eaeaea !important;
           line-height: 0;
           padding: 0;
           display: flex;
@@ -112,9 +111,7 @@ $message-body-size: 60%;
           align-items: stretch;
           position:relative;
           cursor: pointer;
-          border: 1px #bbbbbb solid;
-          padding-left: 10px;
-          padding-right: 10px;
+          padding: 16px;
 
           .message-text {
             margin-bottom: 10px;
@@ -128,12 +125,11 @@ $message-body-size: 60%;
           #inner-box {
             border-radius: inherit;
             min-width: inherit;
-            min-height: inherit;
             padding: 0;
             width: 100%;
 
             & p {
-              color: var(--ion-color-primary);
+              color: white;
               margin-top: 1em;
               text-align: center;
               ion-icon {
@@ -151,17 +147,8 @@ $message-body-size: 60%;
             border-radius: inherit;
           }
 
-          .label {
-            padding: 0 0.5em;
-            margin: 0.3em 0;
-            text-shadow: 1px 1px white;
-            width: 100%;
-          }
-
           &:hover {
-            background: #bbbbbb !important;
-            opacity: 0.9;
-            transition: 0.5s opacity, 0.5s background;
+            cursor: pointer;
           }
         }
       }
@@ -175,6 +162,18 @@ $message-body-size: 60%;
 
         .message-body {
           background-color: white;
+
+          &.video-attachment-container {
+            .label {
+              color: var(--ion-color-primary);
+            }
+            #inner-box {
+              p {
+                color: var(--ion-color-primary);
+              }
+            }
+          }
+
         }
 
         .time {
@@ -193,6 +192,17 @@ $message-body-size: 60%;
 
         .message-body {
           background-color: var(--ion-color-primary);
+
+          &.video-attachment-container {
+            .label {
+              color: white;
+            }
+            #inner-box {
+              p {
+                color: white;
+              }
+            }
+          }
 
           // consistent colour to make attachment standout
           .general-attachment {
