@@ -5,18 +5,47 @@
 }
 
 #inner-box {
-  border-radius: inherit;
-  min-width: inherit;
-  min-height: inherit;
-  padding: 0;
-  width: 100%;
+  ion-icon {
+    font-size: 5em !important;
+  }
+}
 
-  & p {
-    color: var(--ion-color-primary);
-    margin-top: 1em;
-    text-align: center;
-    ion-icon {
-      font-size: 5em !important;
+.send-messages {
+  .message-body {
+    &.video-attachment-container {
+      .label {
+        color: white;
+      }
+      #inner-box {
+        p {
+          display: flex;
+          flex-direction: column;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+.received-messages {
+  .message-body {
+    &.video-attachment-container {
+      .label {
+        color: var(--ion-color-primary);
+      }
+      #inner-box {
+        p {
+          display: flex;
+          flex-direction: column;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: center;
+          color: var(--ion-color-primary);
+        }
+      }
     }
   }
 }
