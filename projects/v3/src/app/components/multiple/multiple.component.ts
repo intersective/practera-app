@@ -150,4 +150,12 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
       return true;
     }
   }
+
+  get isDisplayOnly(): boolean {
+    if (this.doReview === true && this.question?.canAnswer === false) {
+      return true;
+    }
+
+    return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
+  }
 }
