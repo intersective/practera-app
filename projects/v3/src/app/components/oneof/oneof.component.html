@@ -1,5 +1,6 @@
 <h3 class="for-accessibility" [id]="'oneof-question-' + question.id">{{question.name}}</h3>
-<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
+
+<ng-container *ngIf="isDisplayOnly">
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
       <ng-container *ngFor="let choice of question.choices">
