@@ -134,5 +134,34 @@ describe('OneofComponent', () => {
     component.registerOnTouched(() => true);
   });
 
+  describe('isDisplayOnly()', () => {
+    it('should be true when learner has answered the question', () => {
+      component.doAssessment = false; // answer already submitted
+      component.doReview = false; // learner cant do review
+      component.submissionStatus = 'pending review';
+      component.reviewStatus = 'not start'; // @TODO: grammar error: "not started"
+
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be false question is being reviewed', () => {
+      component.doAssessment = false; // answer already submitted
+      component.doReview = true; // learner cant do review
+      component.question = { canAnswer: true };
+      component.submissionStatus = 'pending review';
+      component.reviewStatus = 'not start'; // @TODO: grammar error: "not started"
+
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+
+    it('should be false when learner is doing the question', () => {
+      component.doAssessment = true; // answer already submitted
+      component.doReview = false; // learner cant do review
+      component.question = { canAnswer: true };
+      component.submissionStatus = 'in progress';
+
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+  });
 });
 

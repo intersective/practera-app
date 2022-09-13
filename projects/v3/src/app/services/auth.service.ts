@@ -90,7 +90,6 @@ export class AuthService {
     if (!serviceHeader) {
       delete headers.service;
     }
-    console.log('NAFL', environment);
     if (environment.demo) {
       return of({
         programs: []
@@ -157,7 +156,6 @@ export class AuthService {
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
 
-    console.log('asdasdasdas??', norm);
     this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
