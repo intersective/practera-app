@@ -1,5 +1,5 @@
 <h3 class="for-accessibility" [id]="'multiple-choice-question-' + question.id">{{question.name}}</h3>
-<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
+<ng-container *ngIf="isDisplayOnly">
   <ion-list class="ion-no-padding">
     <ng-container *ngFor="let choice of question.choices; let i = index">
       <ion-item lines="none"
