@@ -153,7 +153,6 @@ export class ChatService {
    * }
    */
   getMessageList(data: MessageListParams): Observable<MessageListResult> {
-
     if (environment.demo) {
       return of(this._normaliseMessageListResponse(this.demo.channelLogs(data.channelUuid)));
     }

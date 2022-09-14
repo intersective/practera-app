@@ -55,7 +55,13 @@ describe('ChatRoomComponent', () => {
         },
         {
           provide: ChatService,
-          useValue: jasmine.createSpyObj('ChatService', ['getChatMembers', 'getMessageList', 'postNewMessage', 'markMessagesAsSeen', 'postAttachmentMessage'])
+          useValue: jasmine.createSpyObj('ChatService', {
+            'getChatMembers': of(true),
+            'getMessageList': of(true),
+            'postNewMessage': of(true),
+            'markMessagesAsSeen': of(true),
+            'postAttachmentMessage': of(true),
+          }),
         },
         {
           provide: BrowserStorageService,
@@ -119,7 +125,8 @@ describe('ChatRoomComponent', () => {
         isSender: false,
         message: '1',
         file: null,
-        created: '2020-08-28 05:45:52'
+        created: '2020-08-28 05:45:52',
+        sentAt: '2020-08-28 05:45:52',
       },
       {
         uuid: '0403b4d9',
@@ -127,7 +134,8 @@ describe('ChatRoomComponent', () => {
         isSender: false,
         message: '2',
         file: null,
-        created: '2020-08-28 05:45:50'
+        created: '2020-08-28 05:45:50',
+        sentAt: '2020-08-28 05:45:50',
       }
     ]
   };
@@ -136,7 +144,7 @@ describe('ChatRoomComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('when testing onEnter()', () => {
+  describe('when testing ngOnInit()', () => {
     it('should call with correct data', () => {
       component.chatChannel = {
         uuid: '35326928',
@@ -224,7 +232,7 @@ describe('ChatRoomComponent', () => {
     });
   });
 
-  describe('when testing getMessageFromEvent()', () => {
+  describe('getMessageFromEvent()', () => {
     it('should call with correct data', fakeAsync(() => {
       const pusherData = {
         uuid: '5d71c830',
@@ -249,7 +257,9 @@ describe('ChatRoomComponent', () => {
         message: pusherData.message,
         created: pusherData.created,
         file: pusherData.file,
-        channelUuid: pusherData.channelUuid
+        channelUuid: pusherData.channelUuid,
+        senderUuid: '8bee29d0-bf45',
+        sentAt: undefined
       });
     }));
   });
@@ -287,6 +297,7 @@ describe('ChatRoomComponent', () => {
         created: saveMessageRes.created,
         file: saveMessageRes.file,
         senderUuid: saveMessageRes.senderUuid,
+        sentAt: undefined
         // sentAt: saveMessageRes.sentAt,
       });
     });
