@@ -156,7 +156,7 @@ export class ChatRoomComponent implements OnInit {
         this.memberList = response;
       },
       error => {
-        console.log(error);
+        console.error(error);
       }
     );
   }
@@ -170,44 +170,46 @@ export class ChatRoomComponent implements OnInit {
     }
 
     this.loadingChatMessages = true;
-    this.chatService
-      .getMessageList({
-        channelUuid: this.channelUuid,
-        cursor: this.messagePageCursor,
-        size: this.messagePageSize
-      })
-      .subscribe(
-        (messageListResult: MessageListResult) => {
-          if (!messageListResult) {
-            this.loadingChatMessages = false;
-            return;
-          }
-          let messages = messageListResult.messages;
-          if (messages.length === 0) {
-            this.loadingChatMessages = false;
-            return;
-          }
-          this.messagePageCursor = messageListResult.cursor;
+
+    this.chatService.getMessageList({
+      channelUuid: this.channelUuid,
+      cursor: this.messagePageCursor,
+      size: this.messagePageSize
+    })
+    .subscribe(
+      (messageListResult: MessageListResult) => {
+        if (!messageListResult) {
           this.loadingChatMessages = false;
-          messages = messages.map(msg => {
-            if (msg.file && msg.fileObject) {
-              msg.preview = this.attachmentPreview(msg.fileObject);
-            }
-            return msg;
-          });
-          messages.reverse();
-          if (this.messageList.length > 0) {
-            this.messageList = messages.concat(this.messageList);
-          } else {
-            this.messageList = messages;
-            this._scrollToBottom();
-          }
-          this._markAsSeen();
-        },
-        error => {
-          this.loadingChatMessages = false;
+          return;
         }
-      );
+        let messages = messageListResult.messages;
+        if (messages.length === 0) {
+          this.loadingChatMessages = false;
+          return;
+        }
+        this.messagePageCursor = messageListResult.cursor;
+        this.loadingChatMessages = false;
+        messages = messages.map(msg => {
+          if (msg.file && msg.fileObject) {
+            msg.preview = this.attachmentPreview(msg.fileObject);
+          }
+          return msg;
+        });
+        messages.reverse();
+        if (this.messageList.length > 0) {
+          this.messageList = messages.concat(this.messageList);
+        } else {
+          this.messageList = messages;
+          this._scrollToBottom();
+        }
+
+        this._markAsSeen();
+      },
+      error => {
+        console.error('Error', error);
+        this.loadingChatMessages = false;
+      }
+    );
   }
 
   loadMoreMessages(event) {
@@ -426,7 +428,9 @@ export class ChatRoomComponent implements OnInit {
    * check date and time diffrance between current message(message object of index) old message.
    * @param {int} message
    */
-  checkToShowMessageTime(message) {
+  checkToShowMessageTime(message: {
+    uuid: string;
+  }): boolean {
     const index = this.messageList.findIndex(function (msg, i) {
       return msg.uuid === message.uuid;
     });
