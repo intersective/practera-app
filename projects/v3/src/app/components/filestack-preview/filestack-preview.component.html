@@ -4,19 +4,27 @@
       *ngIf="file.url"
       name="download-outline"
       (click)="download()"
+      (keydown.space)="download()"
+      (keydown.enter)="download()"
       color="primary"
       size="large"
       slot="end"
-      class="ion-margin-start"
+      class="ion-margin-start focusable"
+      role="button"
+      tabindex="0"
     ></ion-icon>
 
     <ion-icon
       name="close-circle-outline"
       (click)="close()"
+      (keydown.space)="close()"
+      (keydown.enter)="close()"
       color="primary"
       size="large"
       slot="end"
-      class="ion-margin-start"
+      class="ion-margin-start focusable"
+      role="button"
+      tabindex="0"
     ></ion-icon>
   </ion-toolbar>
 </ion-header>
