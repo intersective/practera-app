@@ -43,6 +43,7 @@
       [fileType]="question.fileType || 'any'"
       (complete)="onFileUploadCompleted($event)"
       [disabled]="control.disabled"
+      tabindex="0"
     ></app-file-stack>
 
     <ion-text *ngFor="let error of errors" color="danger">

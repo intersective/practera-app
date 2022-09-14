@@ -124,7 +124,11 @@
                 *ngIf="question.info"
                 fill="clear"
                 (click)="showQuestionInfo(question.info)"
-                class="btn-info ion-no-margin">
+                (keydown.enter)="showQuestionInfo(question.info)"
+                (keydown.space)="showQuestionInfo(question.info)"
+                class="btn-info ion-no-margin focusable"
+                role="button"
+                tabindex="0">
                 <ion-icon name="information-circle-outline"></ion-icon>
               </ion-button>
             </ion-list-header>
