@@ -124,8 +124,7 @@
                 *ngIf="question.info"
                 fill="clear"
                 (click)="showQuestionInfo(question.info)"
-                (keydown.enter)="showQuestionInfo(question.info)"
-                (keydown.space)="showQuestionInfo(question.info)"
+                (keydown)="showQuestionInfo(question.info, $event)"
                 class="btn-info ion-no-margin focusable"
                 role="button"
                 tabindex="0">
