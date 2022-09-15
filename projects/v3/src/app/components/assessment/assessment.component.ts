@@ -398,8 +398,14 @@ export class AssessmentComponent implements OnChanges {
   //   }
   // }
 
-  showQuestionInfo(info) {
-    this.notifications.popUp('shortMessage', { message: info });
+  showQuestionInfo(info, keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
+    return this.notifications.popUp('shortMessage', { message: info });
   }
 
   // the action that the button does
