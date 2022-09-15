@@ -49,7 +49,13 @@ export class FilestackComponent {
     readonly utils: UtilsService
   ) { }
 
-  async uploadFile() {
+  async uploadFile(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
     const s3Config = this.filestackService.getS3Config(this.fileType);
     const pickerOptions: PickerOptions = {
       storeTo: s3Config,

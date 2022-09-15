@@ -31,7 +31,11 @@
       >
         <p class="gray-2 subtitle-1">
           <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or
-          <ion-button mode="ios" size="small" class="upload-button" shape="round" (click)="uploadFile()" [disabled]="disabled">UPLOAD FILE</ion-button>
+          <ion-button mode="ios" size="small"
+            class="upload-button" shape="round"
+            (click)="uploadFile()" (keydown)="uploadFile($event)"
+            [disabled]="disabled"
+          >UPLOAD FILE</ion-button>
         </p>
       </div>
       <div *ngIf="isDroped" class="upload-progress">
