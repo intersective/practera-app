@@ -47,7 +47,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       this.utils.each((responds || []), res => {
         const { results, status } = res;
 
-        if (status.toLowerCase() === 'finished') { // status: Finished / InProgress
+        if (status?.toLowerCase() === 'finished') { // status: Finished / InProgress
           const { virus_detection, quarantine } = results;
 
           if (this.utils.isEmpty(this.virusDetection) && virus_detection && virus_detection.data) {
