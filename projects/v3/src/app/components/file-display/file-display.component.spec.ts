@@ -213,7 +213,13 @@ describe('FileDisplayComponent', () => {
 
   describe('updateWorkflowStatus()', () => {
     it('should update workflow status', () => {
-      filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([true]));
+      filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([{
+        results: {
+          virus_detection: { data: {} },
+          quarantine: { data: {} },
+        },
+        status: 'finished'
+      }]));
 
       environment.production = true;
       component.updateWorkflowStatus();
@@ -224,6 +230,16 @@ describe('FileDisplayComponent', () => {
   describe('actionBtnClick()', () => {
     beforeEach(() => {
       component.removeFile.emit = spyOn(component.removeFile, 'emit');
+    });
+
+    it('should remove uploaded file', () => {
+      component.fileType = 'not any';
+      component.actionBtnClick({
+        handle: '1234567abc',
+        url: 'http://dummy.com'
+      }, 999);
+
+      expect(component.removeFile.emit).toHaveBeenCalled();
     });
 
     it('should execute based on index code', fakeAsync(() => {
@@ -243,7 +259,6 @@ describe('FileDisplayComponent', () => {
       }, 1);
 
       tick();
-      // expect(component.removeFile.emit).toHaveBeenCalled();
       expect(filestackSpy.previewFile).toHaveBeenCalled();
 
       component.actionBtnClick({
