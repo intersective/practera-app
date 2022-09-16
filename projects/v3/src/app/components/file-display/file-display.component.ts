@@ -41,6 +41,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     if (!environment.production) {
       return ;
     }
+
     const currentFile = file || this.file;
     this.filestackService.getWorkflowStatus(currentFile.workflows).then(responds => {
       this.utils.each((responds || []), res => {
@@ -80,7 +81,6 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       return;
     }
     try {
-      console.log('previewFIle1', file);
       return await this.filestackService.previewFile(file);
     } catch (err) {
       console.log('previewFIle2', err);
