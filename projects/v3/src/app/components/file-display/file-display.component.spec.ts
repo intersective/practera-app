@@ -1,10 +1,11 @@
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
 import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
+import { environment } from '@v3/environments/environment';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -16,8 +17,9 @@ describe('FileDisplayComponent', () => {
   let component: FileDisplayComponent;
   let fixture: ComponentFixture<FileDisplayComponent>;
   let filestackSpy: jasmine.SpyObj<FilestackService>;
+  let utilsSpy: jasmine.SpyObj<UtilsService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ ReactiveFormsModule],
       declarations: [FileDisplayComponent],
@@ -44,6 +46,7 @@ describe('FileDisplayComponent', () => {
     fixture = TestBed.createComponent(FileDisplayComponent);
     component = fixture.debugElement.componentInstance;
     filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
   it('should create', () => {
@@ -205,6 +208,51 @@ describe('FileDisplayComponent', () => {
       expect(filestackSpy.getWorkflowStatus).toHaveBeenCalledWith(newJsonData.workflows);
       expect(component['virusDetection']).toEqual(virus_detection.data);
       expect(component['quarantine']).toEqual(quarantine.data);
+    }));
+  });
+
+  describe('updateWorkflowStatus()', () => {
+    it('should update workflow status', () => {
+      filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([true]));
+
+      environment.production = true;
+      component.updateWorkflowStatus();
+      expect(filestackSpy.getWorkflowStatus).toHaveBeenCalled();
+    });
+  });
+
+  describe('actionBtnClick()', () => {
+    beforeEach(() => {
+      component.removeFile.emit = spyOn(component.removeFile, 'emit');
+    });
+
+    it('should execute based on index code', fakeAsync(() => {
+      component.fileType = 'any';
+
+      component.actionBtnClick({
+        handle: '1234567abc',
+        url: 'http://dummy.com'
+      }, 0);
+
+      // expect(component.removeFile.emit).toHaveBeenCalled();
+      expect(utilsSpy.downloadFile).toHaveBeenCalled();
+
+      component.actionBtnClick({
+        handle: '1234567abc',
+        url: 'http://dummy.com'
+      }, 1);
+
+      tick();
+      // expect(component.removeFile.emit).toHaveBeenCalled();
+      expect(filestackSpy.previewFile).toHaveBeenCalled();
+
+      component.actionBtnClick({
+        handle: '1234567abc',
+        url: 'http://dummy.com'
+      }, 2);
+
+      tick();
+      expect(component.removeFile.emit).toHaveBeenCalled();
     }));
   });
 });
