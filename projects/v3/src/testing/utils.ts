@@ -43,6 +43,7 @@ export class TestUtils extends SpyObject {
   each;
   find;
   indexOf;
+  isEmpty;
   getEvent;
   broadcastEvent;
   redirectToUrl;
@@ -67,7 +68,7 @@ export class TestUtils extends SpyObject {
     super(UtilsService);
     this.lodash = _;
     // UtilsService.prototype['lodash'] = (UtilsService.prototype['lodash']) ? UtilsService.prototype['lodash'] : _;
-    // this.isEmpty = this.spy('isEmpty').and.callFake(UtilsService.prototype.isEmpty);
+    this.isEmpty = this.spy('isEmpty').and.callFake(UtilsService.prototype.isEmpty);
     this.isMobile = this.spy('isMobile');
     this.each = this.spy('each').and.callFake(UtilsService.prototype.each);
     this.find = this.spy('find');
@@ -97,15 +98,6 @@ export class TestUtils extends SpyObject {
     return {
       navigate: jasmine.createSpy('navigate'),
     };
-  }
-
-  isEmpty(value: any): boolean {
-    // number type value shouldn't be treat as empty
-    if (typeof value === 'number') {
-      return false;
-    }
-
-    return this.lodash.isEmpty(value);
   }
 
   has(object, path) {

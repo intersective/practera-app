@@ -63,7 +63,7 @@ describe('FileDisplayComponent', () => {
     // filestackSpy.metadata.and.rejectWith(error);
     filestackSpy.previewFile.and.rejectWith(error);
     component.previewFile('file').then(res => {
-      console.log('asfterPreview', res);
+      console.info('afterPreview', res);
     });
     flushMicrotasks();
   }));
@@ -213,6 +213,7 @@ describe('FileDisplayComponent', () => {
 
   describe('updateWorkflowStatus()', () => {
     it('should update workflow status', () => {
+      utilsSpy.isEmpty.and.returnValue(true);
       filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([{
         results: {
           virus_detection: { data: {} },
@@ -224,6 +225,8 @@ describe('FileDisplayComponent', () => {
       environment.production = true;
       component.updateWorkflowStatus();
       expect(filestackSpy.getWorkflowStatus).toHaveBeenCalled();
+      expect(component.virusDetection).toEqual({});
+      expect(component['quarantine']).toEqual({});
     });
   });
 
