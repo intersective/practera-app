@@ -13,10 +13,13 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { VersionCheckService } from '@v3/services/version-check.service';
 import { MockRouter } from '@testingv3/mocked.service';
+import { environment } from '@v3/environments/environment';
 
 describe('AppComponent', () => {
   let sharedServiceSpy: SharedService;
+  let versionCheckServiceSpy: VersionCheckService;
   let utilsSpy: UtilsService;
+  let routerSpy: Router;
   let /* statusBarSpy, splashScreenSpy, platformReadySpy, */ platformSpy;
 
   beforeEach(async () => {
@@ -76,7 +79,9 @@ describe('AppComponent', () => {
     }).compileComponents();
     platformSpy = TestBed.inject(Platform);
     sharedServiceSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+    versionCheckServiceSpy = TestBed.inject(VersionCheckService) as jasmine.SpyObj<VersionCheckService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
   });
 
   it('should create the app', () => {
@@ -91,12 +96,23 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('v3');
   });
 
-  it('should initialize the app', fakeAsync(() => {
-    TestBed.createComponent(AppComponent);
-    tick();
-    expect(platformSpy.ready).toHaveBeenCalled();
-    expect(sharedServiceSpy.initWebServices).toHaveBeenCalled();
-  }));
+  describe('initializeApp()', () => {
+    it('should check version on Production mode', fakeAsync(() => {
+      environment.production = true;
+      TestBed.createComponent(AppComponent);
+      tick();
+      expect(platformSpy.ready).toHaveBeenCalled();
+      expect(sharedServiceSpy.initWebServices).toHaveBeenCalled();
+      expect(versionCheckServiceSpy.initiateVersionCheck).toHaveBeenCalled();
+    }));
+
+    it('should initialize the app', fakeAsync(() => {
+      TestBed.createComponent(AppComponent);
+      tick();
+      expect(platformSpy.ready).toHaveBeenCalled();
+      expect(sharedServiceSpy.initWebServices).toHaveBeenCalled();
+    }));
+  });
 
   describe('ngOnInit()', () => {
     it('should initialize app', fakeAsync(() => {
@@ -109,6 +125,7 @@ describe('AppComponent', () => {
       app.ngOnInit();
       tick();
       // storageSpy
+      expect(routerSpy.navigate).toHaveBeenCalled();
     }));
   });
 });

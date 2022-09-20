@@ -155,16 +155,4 @@ export class AppComponent implements OnInit {
       this.sharedService.initWebServices();
     });
   }
-
-  /**
-   * checking conditions to show custom header
-   * @param type header
-   */
-     checkCustom(type: string): boolean {
-      if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
-        return true;
-      }
-      return false;
-    }
-
 }
