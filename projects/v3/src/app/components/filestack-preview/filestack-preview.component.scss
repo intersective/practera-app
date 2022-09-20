@@ -8,4 +8,5 @@ ion-header {
 
 .focusable:focus {
   border: 1px solid var(--ion-color-primary);
+  display: flex;
 }
