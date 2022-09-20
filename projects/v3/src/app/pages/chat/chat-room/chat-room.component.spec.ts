@@ -365,7 +365,7 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing typing()', () => {
     it(`should trigger Typing of pusher service with correst channel name`, () => {
-      spyOn(utils, 'isEmpty').and.returnValue(true);
+      utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
       component.chatChannel.pusherChannel = '123';
       pusherSpy.triggerTyping.and.returnValue();
       component.typing();

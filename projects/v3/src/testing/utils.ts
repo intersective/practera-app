@@ -61,6 +61,8 @@ export class TestUtils extends SpyObject {
   changeCardBackgroundImage;
   getFutureDated;
   downloadFile;
+  getCurrentLocation;
+  urlQueryToObject;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -91,7 +93,9 @@ export class TestUtils extends SpyObject {
     this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
     this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
     this.getFutureDated = this.spy('getFutureDated').and.callFake(UtilsService.prototype.getFutureDated);
+    this.urlQueryToObject = this.spy('urlQueryToObject').and.callFake(UtilsService.prototype.urlQueryToObject);
     this.downloadFile = this.spy('downloadFile');
+    this.getCurrentLocation = this.spy('getCurrentLocation');
   }
 
   static createRouterSpy() {
