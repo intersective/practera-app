@@ -236,7 +236,6 @@ export class AssessmentComponent implements OnChanges {
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
    */
   _submit(saveInProgress = false, goBack = false) {
-
     /**
      * checking if this is a submission or progress save
      * - if it's a submission
@@ -347,56 +346,7 @@ export class AssessmentComponent implements OnChanges {
       answers,
       action: this.action
     });
-
   }
-
-  // /**
-  //  * Mark review feedback as read
-  //  */
-  // async markReviewFeedbackAsRead(): Promise<void> {
-  //   // do nothing if feedback is already mark as read
-  //   if (this.feedbackReviewed) {
-  //     return;
-  //   }
-  //   this.continueBtnLoading = true;
-  //   let result;
-  //   // Mark feedback as read
-  //   try {
-  //     result = await this.assessmentService.saveFeedbackReviewed(this.submission.id).toPromise();
-  //     this.feedbackReviewed = true;
-  //     this.continueBtnLoading = false;
-  //   } catch (err) {
-  //     this.continueBtnLoading = false;
-  //     // @TODO - Removed the popup for now until we implement proper way to handle API error
-  //     /**const toasted = await this.notifications.alert({
-  //       header: 'Marking feedback as read failed',
-  //       message: err.msg || JSON.stringify(err)
-  //     });
-  //     throw new Error(err);
-  //     **/
-  //   }
-
-  //   // After marking feedback as read, popup review rating modal if
-  //   // 1. review is successfully marked as read (from above) - removing because above @TODO reason
-  //   // 2. hasReviewRating (activation): program configuration is set to enable review rating
-  //   if (!this.storage.getUser().hasReviewRating) {
-  //     return;
-  //   }
-  //   this.continueBtnLoading = true;
-  //   try {
-  //     // display review rating modal
-  //     await this.assessmentService.popUpReviewRating(this.review.id, false);
-  //     this.continueBtnLoading = false;
-  //   } catch (err) {
-  //     const msg = 'Can not get review rating information';
-  //     const toasted = await this.notifications.alert({
-  //       header: msg,
-  //       message: err.msg || JSON.stringify(err)
-  //     });
-  //     this.continueBtnLoading = false;
-  //     throw new Error(err);
-  //   }
-  // }
 
   showQuestionInfo(info, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
