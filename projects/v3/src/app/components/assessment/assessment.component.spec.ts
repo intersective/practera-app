@@ -332,10 +332,16 @@ describe('AssessmentComponent', () => {
       component.submission = mockSubmission;
       component.submission.status = 'pending review';
 
+      component.review = mockReview;
+      component.review.status = 'in progress';
+      component.savingMessage$ = new BehaviorSubject('');
+      const spy = spyOn(component.savingMessage$, 'next');
+
       component.action = 'review';
       component.ngOnChanges();
 
-      tick();
+      const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
+      expect(spy).toHaveBeenCalledWith(lastSaveMsg);
       expect(component.isPendingReview).toBeTrue();
     });
 
@@ -349,7 +355,6 @@ describe('AssessmentComponent', () => {
       component.submission.status = 'done';
       component.ngOnChanges();
 
-      tick();
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
   });
