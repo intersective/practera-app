@@ -505,9 +505,31 @@ describe('AssessmentComponent', () => {
   });
 
   describe('continueToNextTask()', () => {
-    it('should submit assessment', () => {});
-    it('should mark feedback as read', () => {});
-    it('should emit continue', () => {});
+    it('should submit assessment', () => {
+      component.doAssessment = true;
+      expect(component.btnText).toEqual('submit answers');
+
+      component.isPendingReview = true;
+      expect(component.btnText).toEqual('submit answers');
+    });
+
+    it('should mark feedback as read', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'published';
+      component.feedbackReviewed = false;
+      expect(component.btnText).toEqual('mark feedback as reviewed');
+
+      component.submission = mockSubmission;
+      component.submission.status = 'feedback available';
+      component.submission.completed = false;
+      expect(component.btnText).toEqual('mark feedback as reviewed');
+    });
+
+    it('should emit continue', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'done';
+      expect(component.btnText).toEqual('continue');
+    });
   });
 
   describe('labelColor()', () => {
