@@ -273,6 +273,19 @@ describe('AssessmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('ngOnChanges()', () => {
+    it('should update assessment with latest data', () => {
+      component.assessment = mockAssessment;
+      component.ngOnChanges();
+
+      expect(component.doAssessment).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(false);
+      expect(component.btnDisabled).toEqual(false);
+      expect(component.isNotInATeam).toEqual(false);
+      expect(component.isPendingReview).toEqual(false);
+    });
+  });
+
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
@@ -449,5 +462,54 @@ describe('AssessmentComponent', () => {
   it('showQuestionInfo() should popup info modal', () => {
     component.showQuestionInfo('abc');
     expect(notificationSpy.popUp.calls.count()).toBe(1);
+  });
+
+  describe('labelColor()', () => {
+    beforeEach(() => {
+      component.submission = mockSubmission;
+      component.assessment = mockAssessment;
+    });
+
+    it('should returns dark-blue when team submission is locked', () => {
+      component.submission.status = 'pending review';
+      component.assessment.isForTeam = true;
+      component.submission.isLocked = true;
+      expect(component.labelColor).toEqual('dark-blue');
+    });
+
+    it('should be "warning black" at submission.status = "pending review"', () => {
+      component.submission.status = 'pending review';
+      component.assessment.isForTeam = false;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('warning black');
+    });
+
+    it('should be "success" at submission.status = "feedback available"', () => {
+      component.submission.status = 'feedback available';
+      component.assessment.isForTeam = false;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('success');
+    });
+
+    it('should be "success" at submission.status = "feedback available"', () => {
+      component.submission.status = ''; // or  'in progress'
+      component.assessment.isForTeam = false;
+      component.assessment.isOverdue = true;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('danger');
+    });
+
+    it('should return empty when submission is done', () => {
+      component.submission.status = 'done';
+      expect(component.labelColor).toEqual('');
+    });
+
+    it('should return empty when status is unknown', () => {
+      component.submission.status = 'unknown123456'; // or  'in progress'
+      component.assessment.isForTeam = false;
+      component.assessment.isOverdue = true;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('');
+    });
   });
 });
