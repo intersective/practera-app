@@ -13,7 +13,7 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
-import { of } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
@@ -284,6 +284,46 @@ describe('AssessmentComponent', () => {
       expect(component.isNotInATeam).toEqual(false);
       expect(component.isPendingReview).toEqual(false);
     });
+
+    it('should not allow submission if locked', () => {
+      component.assessment = mockAssessment;
+      component.submission = mockSubmission;
+      component.submission.isLocked = true;
+      component.ngOnChanges();
+
+      expect(component.doAssessment).toEqual(false);
+      expect(component.submission.status).toEqual('done');
+      expect(component.btnDisabled).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(component.submission.completed);
+    });
+
+    it('should not allow submission', () => {
+      component.assessment = mockAssessment;
+      component.submission = mockSubmission;
+      component.submission.isLocked = true;
+      component.ngOnChanges();
+
+      expect(component.doAssessment).toEqual(false);
+      expect(component.submission.status).toEqual('done');
+      expect(component.btnDisabled).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(component.submission.completed);
+    });
+
+    it('should save & publish "saving" message', fakeAsync(() => {
+      component.assessment = mockAssessment;
+      component.submission = mockSubmission;
+      component.submission.isLocked = false;
+      component.submission.status = 'in progress';
+      component.savingMessage$ = new BehaviorSubject('');
+      const spy = spyOn(component.savingMessage$, 'next');
+      component.ngOnChanges();
+
+      tick();
+      expect(component.doAssessment).toBeTrue();
+      const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
+      expect(spy).toHaveBeenCalledWith(lastSaveMsg);
+      expect(component.btnDisabled).toEqual(false);
+    }));
   });
 
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
@@ -462,6 +502,12 @@ describe('AssessmentComponent', () => {
   it('showQuestionInfo() should popup info modal', () => {
     component.showQuestionInfo('abc');
     expect(notificationSpy.popUp.calls.count()).toBe(1);
+  });
+
+  describe('continueToNextTask()', () => {
+    it('should submit assessment', () => {});
+    it('should mark feedback as read', () => {});
+    it('should emit continue', () => {});
   });
 
   describe('labelColor()', () => {
