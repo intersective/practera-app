@@ -324,6 +324,34 @@ describe('AssessmentComponent', () => {
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
       expect(component.btnDisabled).toEqual(false);
     }));
+
+    it('should flag assessment as "pending review"', () => {
+      component.assessment = mockAssessment;
+      component.assessment.type = 'moderated';
+
+      component.submission = mockSubmission;
+      component.submission.status = 'pending review';
+
+      component.action = 'review';
+      component.ngOnChanges();
+
+      tick();
+      expect(component.isPendingReview).toBeTrue();
+    });
+
+
+    it('should flag assessment as "complete"', () => {
+      component.assessment = mockAssessment;
+      component.assessment.type = 'moderated';
+
+      component.submission = mockSubmission;
+      component.submission.isLocked = false;
+      component.submission.status = 'done';
+      component.ngOnChanges();
+
+      tick();
+      expect(component.feedbackReviewed).toEqual(component.submission.completed);
+    });
   });
 
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
