@@ -1,4 +1,3 @@
-import { By } from '@angular/platform-browser';
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -14,8 +13,9 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { RouterModule, Router } from '@angular/router';
 import { MockRouter, BrowserStorageServiceMock } from '@testingv3/mocked.service';
-import { of } from 'rxjs';
 import { TestUtils } from '@testingv3/utils';
+import { AuthService } from '@v3/services/auth.service';
+import { of } from 'rxjs';
 
 describe('ContactNumberFormComponent', () => {
   let component: ContactNumberFormComponent;
@@ -44,7 +44,13 @@ describe('ContactNumberFormComponent', () => {
         {
           provide: Router,
           useClass: MockRouter
-        }
+        },
+        {
+          provide: AuthService,
+          useValue: jasmine.createSpyObj('AuthService', {
+            'updateProfile': of({ success: true }),
+          }),
+        },
       ]
     })
       .compileComponents();
