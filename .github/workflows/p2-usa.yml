@@ -23,6 +23,7 @@ jobs:
   deploy-p2-usa-live:
     name: deploy-p2-usa-live
     runs-on: ubuntu-latest
+    environment: p2-usa
     timeout-minutes: 15
 
 

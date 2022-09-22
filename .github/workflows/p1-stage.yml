@@ -20,6 +20,7 @@ jobs:
   deploy-p1-stage:
     name: deploy-p1-stage
     runs-on: ubuntu-latest
+    environment: p1-stage
     timeout-minutes: 15
 
 
