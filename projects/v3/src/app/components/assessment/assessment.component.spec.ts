@@ -274,6 +274,10 @@ describe('AssessmentComponent', () => {
   });
 
   describe('ngOnChanges()', () => {
+    it('should straightaway return when assessment not loaded', () => {
+      expect(component.ngOnChanges()).toBeFalsy();
+    });
+
     it('should update assessment with latest data', () => {
       component.assessment = mockAssessment;
       component.ngOnChanges();
@@ -532,9 +536,31 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  it('showQuestionInfo() should popup info modal', () => {
-    component.showQuestionInfo('abc');
-    expect(notificationSpy.popUp.calls.count()).toBe(1);
+  describe('showQuestionInfo()', () => {
+    it('should popup info modal', () => {
+      component.showQuestionInfo('abc');
+      expect(notificationSpy.popUp.calls.count()).toBe(1);
+    });
+
+    it('should popup info modal (with keyboard navigation)', () => {
+      const keyboard = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        code: 'Enter',
+      });
+      const spy = spyOn(keyboard, 'preventDefault');
+      component.showQuestionInfo('abc', keyboard);
+      expect(notificationSpy.popUp.calls.count()).toBe(1);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not popup info modal (with wrong keyboard navigation)', () => {
+      const keyboard = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        code: 'Tab',
+      });
+      component.showQuestionInfo('abc', keyboard);
+      expect(notificationSpy.popUp.calls.count()).toBe(0);
+    });
   });
 
   describe('continueToNextTask()', () => {
@@ -544,6 +570,10 @@ describe('AssessmentComponent', () => {
 
       component.isPendingReview = true;
       expect(component.btnText).toEqual('submit answers');
+
+      const spy = spyOn(component, '_submit');
+      component.continueToNextTask();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should mark feedback as read', () => {
@@ -556,12 +586,52 @@ describe('AssessmentComponent', () => {
       component.submission.status = 'feedback available';
       component.submission.completed = false;
       expect(component.btnText).toEqual('mark feedback as reviewed');
+
+      const spy = spyOn(component.readFeedback, 'emit');
+      component.continueToNextTask();
+      expect(spy).toHaveBeenCalled();
     });
 
     it('should emit continue', () => {
       component.submission = mockSubmission;
       component.submission.status = 'done';
       expect(component.btnText).toEqual('continue');
+
+      const spy = spyOn(component.continue, 'emit');
+      component.continueToNextTask();
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('label()', () => {
+    it('should return "in progress"', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'in progress';
+      component.assessment = mockAssessment;
+      component.assessment.isForTeam = true;
+      component.submission.isLocked = true;
+      expect(component.label).toEqual('in progress');
+    });
+
+    it('should return "overdue"', () => {
+      component.submission = mockSubmission;
+      component.assessment = mockAssessment;
+      component.assessment.isForTeam = false;
+      component.assessment.isOverdue = true;
+      component.submission.status = 'in progress';
+      expect(component.label).toEqual('overdue');
+
+      component.assessment.isOverdue = false;
+      expect(component.label).toEqual('');
+    });
+
+    it('should return empty string ("")', () => {
+      component.submission = mockSubmission;
+      component.assessment = mockAssessment;
+      component.submission.isLocked = false;
+      component.assessment.isForTeam = false;
+      component.submission.status = 'published';
+      expect(component.label).toEqual('published');
     });
   });
 
@@ -611,6 +681,33 @@ describe('AssessmentComponent', () => {
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;
       expect(component.labelColor).toEqual('');
+    });
+  });
+
+  describe('btnSaveClicked() & btnBackClicked()', () => {
+    it('should trigger submit', () => {
+      const spy = spyOn(component, '_submit');
+
+      component.btnSaveClicked();
+      component.btnBackClicked();
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledWith(true);
+      expect(spy).toHaveBeenCalledWith(true, true);
+    });
+  });
+
+  describe('ionViewWillLeave()', () => {
+    it('should stop all playing video', () => {
+      component.ionViewWillLeave();
+      expect(shared.stopPlayingVideos).toHaveBeenCalled();
+    });
+  });
+
+  describe('restrictedAccess()', () => {
+    it('should read singlePageAccess flag from localstorage', () => {
+      const result = true;
+      storageSpy.singlePageAccess = result;
+      expect(component.restrictedAccess).toEqual(result);
     });
   });
 });
