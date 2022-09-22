@@ -24,6 +24,7 @@ jobs:
   deploy-p2-euk-appv3:
     name: deploy-p2-euk-appv3
     runs-on: ubuntu-latest
+    environment: p2-euk
     timeout-minutes: 15
 
 
