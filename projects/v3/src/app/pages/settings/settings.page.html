@@ -29,8 +29,10 @@
         </ion-avatar>
 
         <ion-label>
-          <app-file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
-            (complete)="uploadProfileImage($event)"></app-file-stack>
+          <app-file-stack [accept]="acceptFileTypes"
+            [fileType]="'image'" [type]="'profileImage'"
+            (complete)="uploadProfileImage($event)"
+          ></app-file-stack>
         </ion-label>
       </div>
     </ng-container>

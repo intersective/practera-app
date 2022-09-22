@@ -8,6 +8,7 @@ import { RequestModule } from 'request';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
 import { FilterPipe } from './pipes/filter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -26,7 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
-
+    ApolloModule,
   ],
   providers: [
     {
