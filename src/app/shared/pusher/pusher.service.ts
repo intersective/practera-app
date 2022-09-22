@@ -6,7 +6,7 @@ import { RequestService } from '@shared/request/request.service';
 import { environment } from '@environments/environment';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
-import { PusherStatic, Pusher, Config, Channel } from 'pusher-js';
+import { Pusher, Config, Channel } from 'pusher-js';
 import * as PusherLib from 'pusher-js';
 
 const api = {
@@ -118,7 +118,7 @@ export class PusherService {
     return true;
   }
 
-  private async initialisePusher(): Promise<Pusher> {
+  private async initialisePusher(): Promise<Pusher.Pusher> {
     // during the app execution lifecycle
     if (typeof this.pusher !== 'undefined') {
       return this.pusher;
@@ -149,7 +149,7 @@ export class PusherService {
           },
         },
       };
-      const newPusherInstance = await new PusherLib(this.pusherKey, config);
+      const newPusherInstance = new PusherLib(this.pusherKey, config);
       return newPusherInstance;
     } catch (err) {
       throw new Error(err);
