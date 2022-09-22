@@ -20,6 +20,7 @@ jobs:
   deploy-p2-sandbox-appv3:
     name: deploy-p2-sandbox-appv3
     runs-on: ubuntu-latest
+    environment: p2-sandbox
     timeout-minutes: 15
 
 
