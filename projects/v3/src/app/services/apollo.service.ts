@@ -34,7 +34,7 @@ export class ApolloService {
     }
 
     // create default client
-    this.apollo.create({
+    this.apollo.createDefault({
       cache: new InMemoryCache({
         dataIdFromObject: object => {
           switch (object.__typename) {
@@ -86,12 +86,12 @@ export class ApolloService {
     if (this._hasInitiated(environment.chatGraphQL, ClientType.chat)) {
       return;
     }
-    this.apollo.create({
+    this.apollo.createNamed('chat', {
       link: this.httpLink.create({
         uri: environment.chatGraphQL
       }),
       cache: new InMemoryCache(),
-    }, 'chat');
+    });
     this._url.chat = environment.chatGraphQL;
   }
 

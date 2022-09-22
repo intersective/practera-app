@@ -99,7 +99,6 @@ export class AppComponent implements OnInit {
     } else if (currentLocation.hash) {
       queryString = currentLocation.hash.substring(2);
     }
-    console.log('abcadw::', queryString);
     searchParams = new URLSearchParams(queryString);
 
     if (searchParams.has('apikey')) {
