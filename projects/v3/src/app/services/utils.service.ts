@@ -227,12 +227,14 @@ export class UtilsService {
     //   });
   }
 
+  getCurrentLocation(): Location {
+    return this.document.location;
+  }
 
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
   }
-
 
   /**
    * This is a time formatter that transfer time/date string to a nice string

@@ -41,12 +41,13 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     if (!environment.production) {
       return ;
     }
+
     const currentFile = file || this.file;
     this.filestackService.getWorkflowStatus(currentFile.workflows).then(responds => {
       this.utils.each((responds || []), res => {
         const { results, status } = res;
 
-        if (status.toLowerCase() === 'finished') { // status: Finished / InProgress
+        if (status?.toLowerCase() === 'finished') { // status: Finished / InProgress
           const { virus_detection, quarantine } = results;
 
           if (this.utils.isEmpty(this.virusDetection) && virus_detection && virus_detection.data) {
@@ -80,7 +81,6 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       return;
     }
     try {
-      console.log('previewFIle1', file);
       return await this.filestackService.previewFile(file);
     } catch (err) {
       console.log('previewFIle2', err);

@@ -51,10 +51,10 @@ export class AppComponent implements OnInit {
     this.configVerification();
     this.sharedService.onPageLoad();
 
+    const currentLocation = this.utils.getCurrentLocation();
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
-    const domain = window.location.hostname;
-    console.log('mmmm::', this.authService.getConfig);
+    const domain = currentLocation.hostname;
     this.authService.getConfig({ domain }).subscribe((response: any) => {
       if (response !== null) {
         const expConfig = response.data;
@@ -94,10 +94,10 @@ export class AppComponent implements OnInit {
 
     let searchParams = null;
     let queryString = '';
-    if (window.location.search) {
-      queryString = window.location.search.substring(1);
-    } else if (window.location.hash) {
-      queryString = window.location.hash.substring(2);
+    if (currentLocation.search) {
+      queryString = currentLocation.search.substring(1);
+    } else if (currentLocation.hash) {
+      queryString = currentLocation.hash.substring(2);
     }
     searchParams = new URLSearchParams(queryString);
 
@@ -154,16 +154,4 @@ export class AppComponent implements OnInit {
       this.sharedService.initWebServices();
     });
   }
-
-  /**
-   * checking conditions to show custom header
-   * @param type header
-   */
-     checkCustom(type: string): boolean {
-      if (type === 'header' && this.customHeader && this.authService.isAuthenticated()) {
-        return true;
-      }
-      return false;
-    }
-
 }
