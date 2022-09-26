@@ -540,4 +540,20 @@ export class UtilsService {
       minute: 'numeric'
     }).format(new Date());
   }
+
+  /**
+   * return new p2 roles for the old roles.
+   * @param role String - User role
+   * @returns String - new user roles.
+   */
+  getUserRolesForUI(role) {
+    switch (role) {
+      case 'participant':
+        return 'learner';
+      case 'mentor':
+        return 'expert';
+      default:
+        return role;
+    }
+  }
 }

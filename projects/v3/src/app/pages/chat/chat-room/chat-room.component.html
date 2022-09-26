@@ -55,7 +55,7 @@
 
           <ng-container *ngIf="!message.isSender">
             <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
-            <p class="seen-text caption gray-2">{{message.senderRole}}</p>
+            <p class="seen-text caption gray-2">{{ utils.getUserRolesForUI(message.senderRole) }}</p>
           </ng-container>
 
           <ng-container *ngIf="message.message || !message.fileObject;">
