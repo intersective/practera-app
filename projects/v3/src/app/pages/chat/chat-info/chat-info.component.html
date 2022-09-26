@@ -27,7 +27,7 @@
     <ion-label class="subtitle-1 gray-2">Who is in this chat</ion-label>
     <div class="chat-role-container">
       <ng-container *ngFor="let role of selectedChat.roles">
-        <p class="chat-role body-2">{{ role }}s</p>
+        <p class="chat-role body-2">{{ utils.getUserRolesForUI(role) }}s</p>
       </ng-container>
     </div>
   </div>
@@ -48,7 +48,7 @@
               </ion-avatar>
               <ion-label>
                 <p class="subtitle-1 black">{{member.name}}</p>
-                <p class="caption gray-2" *ngIf="member.role !== 'participant'">{{member.role}}</p>
+                <p class="caption gray-2" *ngIf="member.role !== 'participant'">{{ utils.getUserRolesForUI(member.role) }}</p>
               </ion-label>
             </ion-item>
           </ng-container>

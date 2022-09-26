@@ -590,4 +590,16 @@ describe('UtilsService', () => {
       expect(date).toEqual(expected);
     });
   });
+
+  describe('getUserRolesForUI()', () => {
+    it(`should return 'learner' for 'participant'`, () => {
+      const role = service.getUserRolesForUI('participant');
+      expect(role).toEqual('learner');
+    });
+    it(`should return 'expert' for 'mentor'`, () => {
+      const role = service.getUserRolesForUI('mentor');
+      expect(role).toEqual('expert');
+    });
+  });
+
 });
