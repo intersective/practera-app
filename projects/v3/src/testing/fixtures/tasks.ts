@@ -151,7 +151,7 @@ export const NormalisedTaskFixture = {
   id: 1,
   type: 'Topic',
   name: 'Test Topic',
-  // status: string,
+  status: '',
   // contextId?: number,
   // isForTeam?: boolean,
   // dueDate?: string,

@@ -22,6 +22,8 @@ describe('ActivityDesktopPage', () => {
   let activitySpy: ActivityService;
   let topicSpy: TopicService;
   let assessmentSpy: AssessmentService;
+  let notificationsSpy: NotificationsService;
+  let storageSpy: BrowserStorageService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -52,7 +54,9 @@ describe('ActivityDesktopPage', () => {
         },
         {
           provide: TopicService,
-          useValue: jasmine.createSpyObj('TopicService', ['updateTopicProgress'], {
+          useValue: jasmine.createSpyObj('TopicService', {
+            updateTopicProgress: of(true),
+          }, {
             topic$: of(true)
           }),
         },
@@ -99,9 +103,15 @@ describe('ActivityDesktopPage', () => {
     topicSpy = TestBed.inject(TopicService) as jasmine.SpyObj<TopicService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     assessmentSpy = TestBed.inject(AssessmentService) as jasmine.SpyObj<AssessmentService>;
+    notificationsSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   }));
 
   it('should create', () => {
+    activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
+      cb();
+    });
+
     expect(component).toBeTruthy();
   });
 
@@ -115,10 +125,23 @@ describe('ActivityDesktopPage', () => {
   });
 
   describe('topicComplete()', () => {
-    it('should request to update progress', () => {
+    it('should request to update progress', fakeAsync(() => {
       component.topicComplete(NormalisedTaskFixture);
+      activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
+        cb();
+      });
+
+      tick();
       expect(topicSpy.updateTopicProgress).toHaveBeenCalled();
       expect(activitySpy.getActivity).toHaveBeenCalled();
+    }));
+
+    it('should go to next task when task is done', () => {
+      let task = NormalisedTaskFixture;
+      task.status = 'done';2
+      component.topicComplete(task);
+      expect(topicSpy.updateTopicProgress).not.toHaveBeenCalled();
+      expect(activitySpy.goToNextTask).toHaveBeenCalled();
     });
   });
 
@@ -140,11 +163,40 @@ describe('ActivityDesktopPage', () => {
       expect(spy).toHaveBeenCalled();
       expect(component.loading).toBeFalse();
     }));
+
+    it('should save answers (when not in progress)', fakeAsync(() => {
+      assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
+        toPromise: jasmine.createSpy()
+      });
+
+      activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
+        cb();
+      });
+
+      const spy = spyOn(component.savingText$, 'next');
+
+      component.saveAssessment({
+        assessment: {
+          id: 1,
+          inProgress: false,
+          submssionId: 1,
+          contextId: 1,
+        },
+        answers: {},
+        action: '',
+      }, NormalisedTaskFixture);
+      tick();
+
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
+      expect(notificationsSpy.assessmentSubmittedToast).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
+      expect(component.loading).toBeFalse();
+    }));
   });
 
   describe('readFeedback()', () => {
     it('should mark feedback as read', fakeAsync(() => {
-      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue({ toPromise: jasmine.createSpy() })
+      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue({ toPromise: jasmine.createSpy() });
 
       component.readFeedback(1, NormalisedTaskFixture);
       // const spy = spyOn(assessmentSpy.saveFeedbackReviewed);
@@ -168,5 +220,16 @@ describe('ActivityDesktopPage', () => {
       component.goBack();
       expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'home']);
     });
+  });
+
+  describe('reviewRatingPopUp()', () => {
+    it('should halt if hasReviewRating is falsy', fakeAsync(() => {
+      storageSpy.getUser = jasmine.createSpy().and.returnValue({
+        hasReviewRating: false
+      });
+      component.reviewRatingPopUp();
+      tick();
+      expect(assessmentSpy.popUpReviewRating).not.toHaveBeenCalled();
+    }));
   });
 });
