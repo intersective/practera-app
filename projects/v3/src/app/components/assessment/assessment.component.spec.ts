@@ -13,7 +13,7 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { FastFeedbackServiceMock } from '@testing/mocked.service';
-import { of } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
@@ -273,6 +273,96 @@ describe('AssessmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('ngOnChanges()', () => {
+    it('should straightaway return when assessment not loaded', () => {
+      expect(component.ngOnChanges()).toBeFalsy();
+    });
+
+    it('should update assessment with latest data', () => {
+      component.assessment = mockAssessment;
+      component.ngOnChanges();
+
+      expect(component.doAssessment).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(false);
+      expect(component.btnDisabled).toEqual(false);
+      expect(component.isNotInATeam).toEqual(false);
+      expect(component.isPendingReview).toEqual(false);
+    });
+
+    it('should not allow submission if locked', () => {
+      component.assessment = mockAssessment;
+      component.submission = mockSubmission;
+      component.submission.isLocked = true;
+      component.ngOnChanges();
+
+      expect(component.doAssessment).toEqual(false);
+      expect(component.submission.status).toEqual('done');
+      expect(component.btnDisabled).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(component.submission.completed);
+    });
+
+    it('should not allow submission', () => {
+      component.assessment = mockAssessment;
+      component.submission = mockSubmission;
+      component.submission.isLocked = true;
+      component.ngOnChanges();
+
+      expect(component.doAssessment).toEqual(false);
+      expect(component.submission.status).toEqual('done');
+      expect(component.btnDisabled).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(component.submission.completed);
+    });
+
+    it('should save & publish "saving" message', fakeAsync(() => {
+      component.assessment = mockAssessment;
+      component.submission = mockSubmission;
+      component.submission.isLocked = false;
+      component.submission.status = 'in progress';
+      component.savingMessage$ = new BehaviorSubject('');
+      const spy = spyOn(component.savingMessage$, 'next');
+      component.ngOnChanges();
+
+      tick();
+      expect(component.doAssessment).toBeTrue();
+      const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
+      expect(spy).toHaveBeenCalledWith(lastSaveMsg);
+      expect(component.btnDisabled).toEqual(false);
+    }));
+
+    it('should flag assessment as "pending review"', () => {
+      component.assessment = mockAssessment;
+      component.assessment.type = 'moderated';
+
+      component.submission = mockSubmission;
+      component.submission.status = 'pending review';
+
+      component.review = mockReview;
+      component.review.status = 'in progress';
+      component.savingMessage$ = new BehaviorSubject('');
+      const spy = spyOn(component.savingMessage$, 'next');
+
+      component.action = 'review';
+      component.ngOnChanges();
+
+      const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
+      expect(spy).toHaveBeenCalledWith(lastSaveMsg);
+      expect(component.isPendingReview).toBeTrue();
+    });
+
+
+    it('should flag assessment as "complete"', () => {
+      component.assessment = mockAssessment;
+      component.assessment.type = 'moderated';
+
+      component.submission = mockSubmission;
+      component.submission.isLocked = false;
+      component.submission.status = 'done';
+      component.ngOnChanges();
+
+      expect(component.feedbackReviewed).toEqual(component.submission.completed);
+    });
+  });
+
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
@@ -446,8 +536,178 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  it('showQuestionInfo() should popup info modal', () => {
-    component.showQuestionInfo('abc');
-    expect(notificationSpy.popUp.calls.count()).toBe(1);
+  describe('showQuestionInfo()', () => {
+    it('should popup info modal', () => {
+      component.showQuestionInfo('abc');
+      expect(notificationSpy.popUp.calls.count()).toBe(1);
+    });
+
+    it('should popup info modal (with keyboard navigation)', () => {
+      const keyboard = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        code: 'Enter',
+      });
+      const spy = spyOn(keyboard, 'preventDefault');
+      component.showQuestionInfo('abc', keyboard);
+      expect(notificationSpy.popUp.calls.count()).toBe(1);
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should not popup info modal (with wrong keyboard navigation)', () => {
+      const keyboard = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        code: 'Tab',
+      });
+      component.showQuestionInfo('abc', keyboard);
+      expect(notificationSpy.popUp.calls.count()).toBe(0);
+    });
+  });
+
+  describe('continueToNextTask()', () => {
+    it('should submit assessment', () => {
+      component.doAssessment = true;
+      expect(component.btnText).toEqual('submit answers');
+
+      component.isPendingReview = true;
+      expect(component.btnText).toEqual('submit answers');
+
+      const spy = spyOn(component, '_submit');
+      component.continueToNextTask();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should mark feedback as read', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'published';
+      component.feedbackReviewed = false;
+      expect(component.btnText).toEqual('mark feedback as reviewed');
+
+      component.submission = mockSubmission;
+      component.submission.status = 'feedback available';
+      component.submission.completed = false;
+      expect(component.btnText).toEqual('mark feedback as reviewed');
+
+      const spy = spyOn(component.readFeedback, 'emit');
+      component.continueToNextTask();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should emit continue', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'done';
+      expect(component.btnText).toEqual('continue');
+
+      const spy = spyOn(component.continue, 'emit');
+      component.continueToNextTask();
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
+  describe('label()', () => {
+    it('should return "in progress"', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'in progress';
+      component.assessment = mockAssessment;
+      component.assessment.isForTeam = true;
+      component.submission.isLocked = true;
+      expect(component.label).toEqual('in progress');
+    });
+
+    it('should return "overdue"', () => {
+      component.submission = mockSubmission;
+      component.assessment = mockAssessment;
+      component.assessment.isForTeam = false;
+      component.assessment.isOverdue = true;
+      component.submission.status = 'in progress';
+      expect(component.label).toEqual('overdue');
+
+      component.assessment.isOverdue = false;
+      expect(component.label).toEqual('');
+    });
+
+    it('should return empty string ("")', () => {
+      component.submission = mockSubmission;
+      component.assessment = mockAssessment;
+      component.submission.isLocked = false;
+      component.assessment.isForTeam = false;
+      component.submission.status = 'published';
+      expect(component.label).toEqual('published');
+    });
+  });
+
+  describe('labelColor()', () => {
+    beforeEach(() => {
+      component.submission = mockSubmission;
+      component.assessment = mockAssessment;
+    });
+
+    it('should returns dark-blue when team submission is locked', () => {
+      component.submission.status = 'pending review';
+      component.assessment.isForTeam = true;
+      component.submission.isLocked = true;
+      expect(component.labelColor).toEqual('dark-blue');
+    });
+
+    it('should be "warning black" at submission.status = "pending review"', () => {
+      component.submission.status = 'pending review';
+      component.assessment.isForTeam = false;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('warning black');
+    });
+
+    it('should be "success" at submission.status = "feedback available"', () => {
+      component.submission.status = 'feedback available';
+      component.assessment.isForTeam = false;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('success');
+    });
+
+    it('should be "success" at submission.status = "feedback available"', () => {
+      component.submission.status = ''; // or  'in progress'
+      component.assessment.isForTeam = false;
+      component.assessment.isOverdue = true;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('danger');
+    });
+
+    it('should return empty when submission is done', () => {
+      component.submission.status = 'done';
+      expect(component.labelColor).toEqual('');
+    });
+
+    it('should return empty when status is unknown', () => {
+      component.submission.status = 'unknown123456'; // or  'in progress'
+      component.assessment.isForTeam = false;
+      component.assessment.isOverdue = true;
+      component.submission.isLocked = false;
+      expect(component.labelColor).toEqual('');
+    });
+  });
+
+  describe('btnSaveClicked() & btnBackClicked()', () => {
+    it('should trigger submit', () => {
+      const spy = spyOn(component, '_submit');
+
+      component.btnSaveClicked();
+      component.btnBackClicked();
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledWith(true);
+      expect(spy).toHaveBeenCalledWith(true, true);
+    });
+  });
+
+  describe('ionViewWillLeave()', () => {
+    it('should stop all playing video', () => {
+      component.ionViewWillLeave();
+      expect(shared.stopPlayingVideos).toHaveBeenCalled();
+    });
+  });
+
+  describe('restrictedAccess()', () => {
+    it('should read singlePageAccess flag from localstorage', () => {
+      const result = true;
+      storageSpy.singlePageAccess = result;
+      expect(component.restrictedAccess).toEqual(result);
+    });
   });
 });

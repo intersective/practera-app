@@ -43,6 +43,7 @@ export class TestUtils extends SpyObject {
   each;
   find;
   indexOf;
+  isEmpty;
   getEvent;
   broadcastEvent;
   redirectToUrl;
@@ -59,6 +60,9 @@ export class TestUtils extends SpyObject {
   getDateDifference;
   changeCardBackgroundImage;
   getFutureDated;
+  downloadFile;
+  getCurrentLocation;
+  urlQueryToObject;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -66,7 +70,7 @@ export class TestUtils extends SpyObject {
     super(UtilsService);
     this.lodash = _;
     // UtilsService.prototype['lodash'] = (UtilsService.prototype['lodash']) ? UtilsService.prototype['lodash'] : _;
-    // this.isEmpty = this.spy('isEmpty').and.callFake(UtilsService.prototype.isEmpty);
+    this.isEmpty = this.spy('isEmpty').and.callFake(UtilsService.prototype.isEmpty);
     this.isMobile = this.spy('isMobile');
     this.each = this.spy('each').and.callFake(UtilsService.prototype.each);
     this.find = this.spy('find');
@@ -89,21 +93,15 @@ export class TestUtils extends SpyObject {
     this.changeThemeColor = this.spy('changeThemeColor').and.returnValue(true);
     this.changeCardBackgroundImage = this.spy('changeCardBackgroundImage').and.returnValue(true);
     this.getFutureDated = this.spy('getFutureDated').and.callFake(UtilsService.prototype.getFutureDated);
+    this.urlQueryToObject = this.spy('urlQueryToObject').and.callFake(UtilsService.prototype.urlQueryToObject);
+    this.downloadFile = this.spy('downloadFile');
+    this.getCurrentLocation = this.spy('getCurrentLocation');
   }
 
   static createRouterSpy() {
     return {
       navigate: jasmine.createSpy('navigate'),
     };
-  }
-
-  isEmpty(value: any): boolean {
-    // number type value shouldn't be treat as empty
-    if (typeof value === 'number') {
-      return false;
-    }
-
-    return this.lodash.isEmpty(value);
   }
 
   has(object, path) {

@@ -6,14 +6,15 @@ import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { Pusher, Config, Channel } from 'pusher-js';
-import * as PusherLib from 'pusher-js';
+import { PusherStatic, Channel } from 'pusher-js';
+import * as Pusher from 'pusher-js';
 import { ApolloService } from './apollo.service';
 
 const api = {
   pusherAuth: 'api/v2/message/notify/pusher_auth.json',
   channels: 'api/v2/message/notify/channels.json'
 };
+
 
 export interface SendMessageParam {
   channelUuid:  string;
@@ -37,11 +38,10 @@ class PusherChannel {
 @Injectable({
   providedIn: 'root',
 })
-
 export class PusherService {
   private pusherKey: string;
   private apiurl: string;
-  private pusher: Pusher;
+  private pusher: Pusher.Pusher;
   private channels: {
     notification: PusherChannel;
     chat: PusherChannel[];
@@ -117,7 +117,7 @@ export class PusherService {
     return true;
   }
 
-  private async initialisePusher(): Promise<Pusher> {
+  private async initialisePusher(): Promise<Pusher.Pusher> {
     // during the app execution lifecycle
     if (typeof this.pusher !== 'undefined') {
       return this.pusher;
@@ -135,7 +135,7 @@ export class PusherService {
     }
 
     try {
-      const config: Config = {
+      const config: Pusher.Config = {
         cluster: environment.pusherCluster,
         forceTLS: true,
         authEndpoint: this.apiurl + api.pusherAuth,
@@ -148,7 +148,7 @@ export class PusherService {
           },
         },
       };
-      const newPusherInstance = await new PusherLib(this.pusherKey, config);
+      const newPusherInstance = new Pusher(this.pusherKey, config);
       return newPusherInstance;
     } catch (err) {
       throw new Error(err);
