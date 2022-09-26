@@ -118,8 +118,8 @@ export class ActivityDesktopPage implements OnInit {
     }
   }
 
-  async readFeedback(event, task: Task) {
-    await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+  async readFeedback(submissionId, task: Task) {
+    await this.assessmentService.saveFeedbackReviewed(submissionId).toPromise();
     setTimeout(
       // get the latest activity tasks and navigate to the next task
       // wait for a while for the server to save the "read feedback" status

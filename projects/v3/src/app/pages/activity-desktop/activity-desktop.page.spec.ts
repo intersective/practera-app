@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
@@ -13,10 +13,15 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { of } from 'rxjs';
 
 import { ActivityDesktopPage } from './activity-desktop.page';
+import { NormalisedTaskFixture } from '@testingv3/fixtures/tasks';
 
 describe('ActivityDesktopPage', () => {
   let component: ActivityDesktopPage;
   let fixture: ComponentFixture<ActivityDesktopPage>;
+  let routerSpy: Router;
+  let activitySpy: ActivityService;
+  let topicSpy: TopicService;
+  let assessmentSpy: AssessmentService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -73,7 +78,11 @@ describe('ActivityDesktopPage', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            'getUser': {
+              hasReviewRating: true
+            }
+          }),
         },
         {
           provide: UtilsService,
@@ -86,9 +95,78 @@ describe('ActivityDesktopPage', () => {
     fixture = TestBed.createComponent(ActivityDesktopPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    activitySpy = TestBed.inject(ActivityService) as jasmine.SpyObj<ActivityService>;
+    topicSpy = TestBed.inject(TopicService) as jasmine.SpyObj<TopicService>;
+    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    assessmentSpy = TestBed.inject(AssessmentService) as jasmine.SpyObj<AssessmentService>;
   }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('goToTask()', () => {
+    it('should focus "task-content" id element', () => {
+      const spy = spyOn(window.document, 'getElementById');
+      component.goToTask(NormalisedTaskFixture);
+      expect(spy).toHaveBeenCalledWith('task-content');
+      expect(activitySpy.goToTask).toHaveBeenCalled();
+    });
+  });
+
+  describe('topicComplete()', () => {
+    it('should request to update progress', () => {
+      component.topicComplete(NormalisedTaskFixture);
+      expect(topicSpy.updateTopicProgress).toHaveBeenCalled();
+      expect(activitySpy.getActivity).toHaveBeenCalled();
+    });
+  });
+
+  describe('saveAssessment()', () => {
+    it('should save answers', fakeAsync(() => {
+      assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
+        toPromise: jasmine.createSpy()
+      });
+      const spy = spyOn(component.savingText$, 'next');
+
+      component.saveAssessment({
+        assessment: { id: 1, inProgress: true, submssionId: 1, contextId: 1 },
+        answers: {},
+        action: '',
+      }, NormalisedTaskFixture);
+      tick();
+
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
+      expect(component.loading).toBeFalse();
+    }));
+  });
+
+  describe('readFeedback()', () => {
+    it('should mark feedback as read', fakeAsync(() => {
+      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue({ toPromise: jasmine.createSpy() })
+
+      component.readFeedback(1, NormalisedTaskFixture);
+      // const spy = spyOn(assessmentSpy.saveFeedbackReviewed);
+      tick();
+      expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
+      expect(activitySpy.getActivity).toHaveBeenCalled();
+      tick(1000);
+      expect(assessmentSpy.popUpReviewRating).toHaveBeenCalled();
+    }));
+  });
+
+  describe('nextTask()', () => {
+    it('should back to v3/home', () => {
+      component.nextTask(NormalisedTaskFixture);
+      expect(activitySpy.goToNextTask).toHaveBeenCalled();
+    });
+  });
+
+  describe('goBack()', () => {
+    it('should back to v3/home', () => {
+      component.goBack();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'home']);
+    });
   });
 });

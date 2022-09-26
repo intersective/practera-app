@@ -63,6 +63,7 @@ export class TestUtils extends SpyObject {
   downloadFile;
   getCurrentLocation;
   urlQueryToObject;
+  getFormatedCurrentTime;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -96,6 +97,7 @@ export class TestUtils extends SpyObject {
     this.urlQueryToObject = this.spy('urlQueryToObject').and.callFake(UtilsService.prototype.urlQueryToObject);
     this.downloadFile = this.spy('downloadFile');
     this.getCurrentLocation = this.spy('getCurrentLocation');
+    this.getFormatedCurrentTime = this.spy('getFormatedCurrentTime');
   }
 
   static createRouterSpy() {
