@@ -27,7 +27,7 @@
           [attr.aria-label]="'chatroom: ' + chat.name">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}">{{ chat.name }}</p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
-            <span>mentor</span>
+            <span>{{ utils.getUserRolesForUI('mentor') }}</span>
           </ng-container>
         </div>
         <ng-container *ngIf="chat.lastMessage; else messgeElseBlock">
