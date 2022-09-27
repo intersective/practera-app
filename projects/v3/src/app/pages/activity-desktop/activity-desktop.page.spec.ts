@@ -13,17 +13,19 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { of } from 'rxjs';
 
 import { ActivityDesktopPage } from './activity-desktop.page';
-import { NormalisedTaskFixture } from '@testingv3/fixtures/tasks';
+import { NormalisedTaskFixture, TaskFixture } from '@testingv3/fixtures/tasks';
 
 describe('ActivityDesktopPage', () => {
   let component: ActivityDesktopPage;
   let fixture: ComponentFixture<ActivityDesktopPage>;
+  let utilsSpy: UtilsService;
   let routerSpy: Router;
   let activitySpy: ActivityService;
   let topicSpy: TopicService;
   let assessmentSpy: AssessmentService;
   let notificationsSpy: NotificationsService;
   let storageSpy: BrowserStorageService;
+  let activatedRouteSpy: ActivatedRoute;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -100,24 +102,48 @@ describe('ActivityDesktopPage', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     activitySpy = TestBed.inject(ActivityService) as jasmine.SpyObj<ActivityService>;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     topicSpy = TestBed.inject(TopicService) as jasmine.SpyObj<TopicService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     assessmentSpy = TestBed.inject(AssessmentService) as jasmine.SpyObj<AssessmentService>;
     notificationsSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    activatedRouteSpy = TestBed.inject(ActivatedRoute) as jasmine.SpyObj<ActivatedRoute>;
   }));
 
   it('should create', () => {
-    activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
-      cb();
-    });
-
     expect(component).toBeTruthy();
+  });
+
+  describe('ngOnInit()', () => {
+    it('should get activity at init', () => {
+      spyOn(component, 'goToTask');
+      utilsSpy.find = jasmine.createSpy().and.returnValue({
+        type: 'Topic',
+        name: 'test topic',
+      });
+
+      activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
+        if (typeof cb === 'function') {
+          cb();
+        }
+      });
+
+      component.activity = {
+        id: 1,
+        name: 'test',
+        tasks: [NormalisedTaskFixture],
+      };
+
+      component.ngOnInit();
+
+      expect(component.goToTask).toHaveBeenCalled();
+    });
   });
 
   describe('goToTask()', () => {
     it('should focus "task-content" id element', () => {
-      const spy = spyOn(window.document, 'getElementById');
+      const spy = spyOn(window.document, 'getElementById').and.returnValue(document.createElement('p'));
       component.goToTask(NormalisedTaskFixture);
       expect(spy).toHaveBeenCalledWith('task-content');
       expect(activitySpy.goToTask).toHaveBeenCalled();
@@ -202,7 +228,7 @@ describe('ActivityDesktopPage', () => {
       // const spy = spyOn(assessmentSpy.saveFeedbackReviewed);
       tick();
       expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
-      expect(activitySpy.getActivity).toHaveBeenCalled();
+      // expect(activitySpy.getActivity).toHaveBeenCalled();
       tick(1000);
       expect(assessmentSpy.popUpReviewRating).toHaveBeenCalled();
     }));

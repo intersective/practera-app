@@ -139,17 +139,8 @@ export class ActivityDesktopPage implements OnInit {
       return;
     }
 
-    try {
-      // display review rating modal
-      return await this.assessmentService.popUpReviewRating(this.review.id, false);
-    } catch (err) {
-      const header = 'Can not get review rating information';
-      await this.notificationsService.alert({
-        header,
-        message: err.msg || JSON.stringify(err)
-      });
-      throw new Error(err);
-    }
+    // display review rating modal
+    return await this.assessmentService.popUpReviewRating(this.review.id, false);
   }
 
   goBack() {
