@@ -6,6 +6,36 @@ import { UtilsService } from '@v3/app/services/utils.service';
 
 import { ActivityComponent } from './activity.component';
 
+class Page {
+  get activityName() {
+    return this.query<HTMLElement>('h1');
+  }
+  get activityDescription() {
+    return this.query<HTMLElement>('app-description');
+  }
+  get taskItems() {
+    return this.queryAll<HTMLElement>('#tasks-card clickable-item');
+  }
+  get taskNames() {
+    return this.queryAll<HTMLElement>('#tasks-card clickable-item h4');
+  }
+  get eventItems() {
+    return this.queryAll<HTMLElement>('#events-card clickable-item');
+  }
+  fixture: ComponentFixture<ActivityComponent>;
+
+  constructor(fixture: ComponentFixture<ActivityComponent>) {
+    this.fixture = fixture;
+  }
+  //// query helpers ////
+  private query<T>(selector: string): T {
+    return this.fixture.nativeElement.querySelector(selector);
+  }
+  private queryAll<T>(selector: string): T[] {
+    return this.fixture.nativeElement.querySelectorAll(selector);
+  }
+}
+
 describe('ActivityComponent', () => {
   let component: ActivityComponent;
   let fixture: ComponentFixture<ActivityComponent>;
