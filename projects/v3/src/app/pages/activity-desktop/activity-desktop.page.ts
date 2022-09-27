@@ -118,8 +118,8 @@ export class ActivityDesktopPage implements OnInit {
     }
   }
 
-  async readFeedback(event, task: Task) {
-    await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+  async readFeedback(submissionId, task: Task) {
+    await this.assessmentService.saveFeedbackReviewed(submissionId).toPromise();
     setTimeout(
       // get the latest activity tasks and navigate to the next task
       // wait for a while for the server to save the "read feedback" status
@@ -139,17 +139,8 @@ export class ActivityDesktopPage implements OnInit {
       return;
     }
 
-    try {
-      // display review rating modal
-      return await this.assessmentService.popUpReviewRating(this.review.id, false);
-    } catch (err) {
-      const header = 'Can not get review rating information';
-      await this.notificationsService.alert({
-        header,
-        message: err.msg || JSON.stringify(err)
-      });
-      throw new Error(err);
-    }
+    // display review rating modal
+    return await this.assessmentService.popUpReviewRating(this.review.id, false);
   }
 
   goBack() {
