@@ -71,13 +71,26 @@ export class FilestackComponent {
           data: data
         });
       },
+      onOpen: () => {
+        setTimeout(() => {
+          const eles = document.getElementsByClassName('fsp-source-list__item');
+          if (eles.length > 0) {
+            (eles[0] as HTMLElement).focus();
+          }
+        }, 900);
+      },
     };
 
     if (this.accept) {
       pickerOptions['accept'] = this.accept;
     }
 
-    return await this.filestackService.open(pickerOptions);
+    try {
+      const res = await this.filestackService.open(pickerOptions);
+      return res;
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
   async dragAndDropUpload(dropData) {

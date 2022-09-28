@@ -34,7 +34,7 @@ const FS_MULTIPART_CONCURRENCY = 5;
   providedIn: 'root'
 })
 export class FilestackService {
-  private filestack: any;
+  private filestack: filestack.Client;
   readonly chunksConcurrency = FS_MULTIPART_CONCURRENCY;
   readonly intelligent: boolean = FS_INTELLIGENT;
 
@@ -207,6 +207,7 @@ export class FilestackService {
         return onSuccess(res);
       },
       onUploadDone: (res) => res,
+      supportEmail: 'help@practera.com',
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
