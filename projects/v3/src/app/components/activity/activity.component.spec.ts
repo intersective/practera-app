@@ -2,43 +2,28 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 
 import { ActivityComponent } from './activity.component';
 
-class Page {
-  get activityName() {
-    return this.query<HTMLElement>('h1');
-  }
-  get activityDescription() {
-    return this.query<HTMLElement>('app-description');
-  }
-  get taskItems() {
-    return this.queryAll<HTMLElement>('#tasks-card clickable-item');
-  }
-  get taskNames() {
-    return this.queryAll<HTMLElement>('#tasks-card clickable-item h4');
-  }
-  get eventItems() {
-    return this.queryAll<HTMLElement>('#events-card clickable-item');
-  }
-  fixture: ComponentFixture<ActivityComponent>;
-
-  constructor(fixture: ComponentFixture<ActivityComponent>) {
-    this.fixture = fixture;
-  }
-  //// query helpers ////
-  private query<T>(selector: string): T {
-    return this.fixture.nativeElement.querySelector(selector);
-  }
-  private queryAll<T>(selector: string): T[] {
-    return this.fixture.nativeElement.querySelectorAll(selector);
-  }
-}
+const mockSubmission = {
+  id: 1,
+  status: 'in progress',
+  answers: [],
+  submitterName: 'name',
+  modified: '2019-02-02',
+  completed: false,
+  isLocked: false,
+  submitterImage: '',
+  reviewerName: 'name'
+};
 
 describe('ActivityComponent', () => {
   let component: ActivityComponent;
   let fixture: ComponentFixture<ActivityComponent>;
+  let notificationsSpy: NotificationsService;
+  let utilsSpy: UtilsService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -52,12 +37,22 @@ describe('ActivityComponent', () => {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
         },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            'getUser': {
+              teamId: undefined
+            },
+          }),
+        },
       ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActivityComponent);
     component = fixture.componentInstance;
+    notificationsSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   }));
 
   it('should create', () => {
@@ -100,6 +95,262 @@ describe('ActivityComponent', () => {
         },
       } as any);
       expect(result).toEqual('unit tester is working on this');
+    });
+
+    it('should empty when task is not due', () => {
+      const result = component.subtitle({
+        type: 'Assessment',
+        dueDate: null,
+        submitter: {
+          name: 'unit tester'
+        },
+      } as any);
+      expect(result).toEqual('');
+    });
+
+    it('should empty when task is overdue', () => {
+      const result = component.subtitle({
+        type: 'Assessment',
+        dueDate: 'dummy/date',
+        isOverdue: true,
+        submitter: {
+          name: 'unit tester'
+        },
+      } as any);
+      expect(result).toEqual('');
+    });
+  });
+
+
+  describe('label()', () => {
+    it('should return "in progress"', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'in progress';
+      component.submission.isLocked = true;
+      expect(component.label({
+        type: 'Assessment',
+        isForTeam: true,
+        isLocked: true,
+      } as any)).toEqual('in progress');
+    });
+
+    it('should return "overdue"', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'in progress';
+
+      expect(component.label({
+        type: 'Assessment',
+        status: 'in progress',
+        isOverdue: true
+      } as any)).toEqual('overdue');
+    });
+
+    it('should return ""', () => {
+      component.submission = mockSubmission;
+      component.submission.status = 'in progress';
+
+      expect(component.label({
+        type: 'Assessment',
+        status: 'in progress',
+        isOverdue: false
+      } as any)).toEqual('');
+    });
+
+    it('should return empty string ("")', () => {
+      component.submission = mockSubmission;
+      component.submission.isLocked = false;
+      component.submission.status = 'published';
+      expect(component.label({
+        type: 'Assessment',
+        status: 'done',
+      } as any)).toEqual('');
+    });
+
+    it('should return any status', () => {
+      component.submission = mockSubmission;
+      component.submission.isLocked = false;
+      component.submission.status = 'published';
+      expect(component.label({
+        type: 'Assessment',
+        status: 'dummy',
+      } as any)).toEqual('dummy');
+    });
+  });
+
+  describe('labelColor()', () => {
+    it('should empty if not assessment or it\'s completed', () => {
+      const result = component.labelColor({
+        type: 'Assessment',
+        status: 'done',
+      } as any)
+      expect(result).toEqual('');
+    });
+
+    it('should return "dark-blue"', () => {
+      const result = component.labelColor({
+        type: 'Assessment',
+        isForTeam: true,
+        isLocked: true,
+        status: '',
+      } as any)
+      expect(result).toEqual('dark-blue');
+    });
+
+    it('should return "warning black"', () => {
+      const result = component.labelColor({
+        type: 'Assessment',
+        isForTeam: false,
+        isLocked: false,
+        status: 'pending review',
+      } as any)
+      expect(result).toEqual('warning black');
+    });
+
+    it('should return "success"', () => {
+      const result = component.labelColor({
+        type: 'Assessment',
+        isForTeam: false,
+        isLocked: false,
+        status: 'feedback available',
+      } as any)
+      expect(result).toEqual('success');
+    });
+
+    it('should return "danger"', () => {
+      const result = component.labelColor({
+        type: 'Assessment',
+        isForTeam: false,
+        isLocked: false,
+        status: 'in progress',
+        isOverdue: true,
+      } as any)
+      expect(result).toEqual('danger');
+    });
+
+    it('should return void', () => {
+      const result = component.labelColor({
+        type: 'Assessment',
+        isForTeam: false,
+        isLocked: false,
+        status: '',
+      } as any)
+      expect(result).toEqual('');
+    });
+  });
+
+  describe('endingIcon()', () => {
+    it('should return lock-closed', () => {
+      const result = component.endingIcon({
+        type: 'Locked',
+      } as any);
+      expect(result).toEqual('lock-closed');
+    });
+
+    it('should return lock-closed when task isLocked = true', () => {
+      const result = component.endingIcon({
+        isLocked: true,
+      } as any);
+      expect(result).toEqual('lock-closed');
+    });
+
+    it('should return checkmark-circle', () => {
+      const result = component.endingIcon({
+        isLocked: false,
+        status: 'done',
+      } as any);
+      expect(result).toEqual('checkmark-circle');
+    });
+
+    it('should return chevron-forward', () => {
+      const result = component.endingIcon({
+        isLocked: false,
+        status: 'in progress',
+      } as any);
+      expect(result).toEqual('chevron-forward');
+    });
+  });
+
+  describe('endingIconColor()', () => {
+    it('should return "success"', () => {
+      const result = component.endingIconColor({ status: 'done' } as any);
+      expect(result).toEqual('success');
+    });
+    it('should return "grey-75"', () => {
+      const result = component.endingIconColor({ status: 'anything not done' } as any);
+      expect(result).toEqual('grey-75');
+    });
+  });
+
+  describe('assessmentNotSubmitted()', () => {
+    it('should be truthy', () => {
+      expect(component.assessmentNotSubmitted({
+        type: 'Assessment',
+        status: undefined,
+      } as any)).toBeTrue();
+
+      expect(component.assessmentNotSubmitted({
+        type: 'Assessment',
+        status: '',
+      } as any)).toBeTrue();
+
+      expect(component.assessmentNotSubmitted({
+        type: 'Assessment',
+        status: 'in progress',
+      } as any)).toBeTrue();
+    });
+
+    it('should be falsy', () => {
+      expect(component.assessmentNotSubmitted({
+        type: 'Assessment',
+        status: 'anyhing other than truthy',
+      } as any)).toBeFalse();
+    });
+  });
+
+  describe('goto()', () => {
+    it('should warn when user not in a team', () => {
+      utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+      component.goto({
+        isForTeam: true,
+        type: 'Locked',
+      } as any);
+      expect(notificationsSpy.alert).toHaveBeenCalled();
+    });
+
+    it('should warn activity is locked', () => {
+      utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+      const spy = spyOn(component.navigate, 'emit');
+      component.goto({
+        isForTeam: false,
+        type: 'Locked',
+      } as any);
+      expect(notificationsSpy.alert).toHaveBeenCalled();
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should emit "navigate" event', () => {
+      utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+      const spy = spyOn(component.navigate, 'emit');
+      component.goto({
+        isForTeam: false,
+        type: 'in progress',
+      } as any);
+      expect(notificationsSpy.alert).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
+    });
+
+    it('should emit "navigate" event through keyboardEvent', () => {
+      utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+      const spy = spyOn(component.navigate, 'emit');
+      component.goto({
+        isForTeam: false,
+        type: 'in progress',
+      } as any, new KeyboardEvent('keydown', {
+        code: 'Enter',
+        key: 'Enter',
+      }));
+      expect(notificationsSpy.alert).not.toHaveBeenCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 });
