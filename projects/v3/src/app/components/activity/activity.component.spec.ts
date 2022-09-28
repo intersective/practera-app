@@ -63,4 +63,43 @@ describe('ActivityComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('leadIcon()', () => {
+    it('should generate task label according to type (Locked/Topic/Assessment)', () => {
+      expect(component.leadIcon({ type: 'Locked' } as any)).toEqual('lock-closed');
+      expect(component.leadIcon({ type: 'Topic' } as any)).toEqual('reader');
+      expect(component.leadIcon({ type: 'Assessment' } as any)).toEqual('eye');
+    });
+  });
+
+  describe('subtitle()', () => {
+    it('should generate subtitle for Assessment task', () => {
+      const result = component.subtitle({
+        type: 'Assessment',
+        isForTeam: false,
+        dueDate: 'dummy/date',
+        isOverdue: false,
+      } as any);
+      expect(result).toContain('<strong>Due Date</strong>:');
+    });
+
+    it('should be null when not an assessment task', () => {
+      const result = component.subtitle({
+        type: 'Topic'
+      } as any);
+      expect(result).toEqual('');
+    });
+
+    it('should show awaiting other team member working on a task', () => {
+      const result = component.subtitle({
+        type: 'Assessment',
+        isForTeam: true,
+        isLocked: true,
+        submitter: {
+          name: 'unit tester'
+        },
+      } as any);
+      expect(result).toEqual('unit tester is working on this');
+    });
+  });
 });
