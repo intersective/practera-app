@@ -28,7 +28,6 @@ describe('FilestackService', () => {
       imports: [HttpClientTestingModule, IonicModule],
       providers: [
         FilestackService,
-
         {
           provide: ModalController,
           useValue: jasmine.createSpyObj('ModalController', {
@@ -194,8 +193,8 @@ describe('FilestackService', () => {
 
   describe('open()', () => {
     beforeEach(() => {
-      spyOn(service['filestack'], 'picker').and.returnValue({
-        open: () => Promise.resolve(true)
+      spyOn<filestack.Client, any>(service['filestack'], 'picker').and.returnValue({
+        open: () => Promise.resolve(null)
       });
       spyOn(service, 'getFileTypes');
       spyOn(service, 'getS3Config');
@@ -210,7 +209,7 @@ describe('FilestackService', () => {
       flushMicrotasks();
       expect(service.getFileTypes).toHaveBeenCalled();
       expect(service.getS3Config).toHaveBeenCalled();
-      expect(result).toBeTruthy();
+      expect(result).toBeNull();
     }));
 
     it('should initiate picker with correct settings', fakeAsync(() => {
