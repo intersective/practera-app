@@ -110,6 +110,7 @@ describe('ActivityService', () => {
               isLocked: false,
               deadline: '2019-02-02',
               contextId: 211,
+              assessmentType: 'moderated',
               status: {
                 status: 'in progress',
                 isLocked: false,
@@ -125,6 +126,7 @@ describe('ActivityService', () => {
               isLocked: false,
               deadline: '2039-02-02',
               contextId: 211,
+              assessmentType: 'team360',
               status: {
                 status: 'pending approval',
                 isLocked: false,
@@ -171,7 +173,8 @@ describe('ActivityService', () => {
           submitter: {
             name: assessment1.status.submitterName,
             image: assessment1.status.submitterImage
-          }
+          },
+          assessmentType: assessment1.assessmentType
         },
         {
           id: assessment2.id,
@@ -187,7 +190,8 @@ describe('ActivityService', () => {
           submitter: {
             name: assessment2.status.submitterName,
             image: assessment2.status.submitterImage
-          }
+          },
+          assessmentType: assessment2.assessmentType
         }
       ]
     };

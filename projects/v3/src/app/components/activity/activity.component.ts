@@ -150,8 +150,8 @@ export class ActivityComponent {
     const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
     const teamId = this.storageService.getUser().teamId;
 
-    // display pop up if it is team assessment and user is not in team
-    if (doAssessment && task.isForTeam && !teamId) {
+    // display pop up if it is team assessment or team 360 assessment and user is not in team
+    if (doAssessment && (task.isForTeam || task.assessmentType === 'team360') && !teamId) {
       return this.notificationsService.alert({
         message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
         buttons: [
