@@ -10,7 +10,7 @@ export class BottomActionBarComponent {
   @Input() text: string;
   @Input() color: string = 'primary';
   @Input() disabled: boolean;
-  @Output() onClick = new EventEmitter();
+  @Output() handleClick = new EventEmitter();
 
   constructor() {}
 

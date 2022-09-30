@@ -33,7 +33,7 @@ export class FilestackComponent {
   @Input() disabled: boolean;
 
   // upon fileupload success
-  @Output() complete: EventEmitter<any> = new EventEmitter();
+  @Output() uploadCompleted: EventEmitter<any> = new EventEmitter();
 
   uploadingFile = {
     uploadProgress: 0,
@@ -60,13 +60,13 @@ export class FilestackComponent {
     const pickerOptions: PickerOptions = {
       storeTo: s3Config,
       onFileUploadFailed: data => {
-        this.complete.emit({
+        this.uploadCompleted.emit({
           success: false,
           data: data
         });
       },
       onFileUploadFinished: data => {
-        this.complete.emit({
+        this.uploadCompleted.emit({
           success: true,
           data: data
         });
@@ -106,13 +106,13 @@ export class FilestackComponent {
           this.uploadingFile.uploadSize = this._bytesToSize(progressData.totalBytes);
         },
         onFileUploadFinished: fileData => {
-          this.complete.emit({
+          this.uploadCompleted.emit({
             success: true,
             data: fileData
           });
         },
         onFileUploadFailed: err => {
-          this.complete.emit({
+          this.uploadCompleted.emit({
             success: false,
             data: err
           });
@@ -122,7 +122,7 @@ export class FilestackComponent {
       await this.filestackService.upload(dropData.file, uploadOptions, s3Config, this.uploadToken);
     } else {
       this.isDroped = false;
-      this.complete.emit({
+      this.uploadCompleted.emit({
         success: false,
         data: {
           message: dropData.message,
