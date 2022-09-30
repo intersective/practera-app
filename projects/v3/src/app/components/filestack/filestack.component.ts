@@ -46,7 +46,7 @@ export class FilestackComponent {
 
   constructor(
     private filestackService: FilestackService,
-    readonly utils: UtilsService
+    private readonly utils: UtilsService
   ) { }
 
   async uploadFile(keyboardEvent?: KeyboardEvent) {
@@ -154,4 +154,7 @@ export class FilestackComponent {
     return '0';
   }
 
+  get isMobile(): boolean {
+    return this.utils.isMobile();
+  }
 }
