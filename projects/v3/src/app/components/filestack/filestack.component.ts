@@ -33,7 +33,7 @@ export class FilestackComponent {
   @Input() disabled: boolean;
 
   // upon fileupload success
-  @Output() complete: EventEmitter<any> = new EventEmitter();
+  @Output() uploadCompleted: EventEmitter<any> = new EventEmitter();
 
   uploadingFile = {
     uploadProgress: 0,
@@ -46,7 +46,7 @@ export class FilestackComponent {
 
   constructor(
     private filestackService: FilestackService,
-    readonly utils: UtilsService
+    private readonly utils: UtilsService
   ) { }
 
   async uploadFile(keyboardEvent?: KeyboardEvent) {
@@ -60,24 +60,24 @@ export class FilestackComponent {
     const pickerOptions: PickerOptions = {
       storeTo: s3Config,
       onFileUploadFailed: data => {
-        this.complete.emit({
+        this.uploadCompleted.emit({
           success: false,
           data: data
         });
       },
       onFileUploadFinished: data => {
-        this.complete.emit({
+        this.uploadCompleted.emit({
           success: true,
           data: data
         });
       },
       onOpen: () => {
         setTimeout(() => {
-          const eles = document.getElementsByClassName('fsp-source-list__item');
+          const eles = document.getElementsByClassName('fsp-picker__close-button');
           if (eles.length > 0) {
             (eles[0] as HTMLElement).focus();
           }
-        }, 900);
+        }, 850);
       },
     };
 
@@ -106,13 +106,13 @@ export class FilestackComponent {
           this.uploadingFile.uploadSize = this._bytesToSize(progressData.totalBytes);
         },
         onFileUploadFinished: fileData => {
-          this.complete.emit({
+          this.uploadCompleted.emit({
             success: true,
             data: fileData
           });
         },
         onFileUploadFailed: err => {
-          this.complete.emit({
+          this.uploadCompleted.emit({
             success: false,
             data: err
           });
@@ -122,7 +122,7 @@ export class FilestackComponent {
       await this.filestackService.upload(dropData.file, uploadOptions, s3Config, this.uploadToken);
     } else {
       this.isDroped = false;
-      this.complete.emit({
+      this.uploadCompleted.emit({
         success: false,
         data: {
           message: dropData.message,
@@ -154,4 +154,7 @@ export class FilestackComponent {
     return '0';
   }
 
+  get isMobile(): boolean {
+    return this.utils.isMobile();
+  }
 }
