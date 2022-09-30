@@ -41,7 +41,7 @@
     <app-file-stack *ngIf="!uploadedFile && !submission.answer"
       [accept]="fileTypes"
       [fileType]="question.fileType || 'any'"
-      (complete)="onFileUploadCompleted($event)"
+      (uploadCompleted)="onFileUploadCompleted($event)"
       [disabled]="control.disabled"
     ></app-file-stack>
 
@@ -64,7 +64,7 @@
     <app-file-stack *ngIf="!uploadedFile && !review.answer"
       [accept]="fileTypes"
       [fileType]="question.fileType || 'any'"
-      (complete)="onFileUploadCompleted($event, 'answer')"
+      (uploadCompleted)="onFileUploadCompleted($event, 'answer')"
       [disabled]="control.disabled"
     ></app-file-stack>
 
