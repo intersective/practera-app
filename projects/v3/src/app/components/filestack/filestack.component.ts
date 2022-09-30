@@ -73,11 +73,11 @@ export class FilestackComponent {
       },
       onOpen: () => {
         setTimeout(() => {
-          const eles = document.getElementsByClassName('fsp-source-list__item');
+          const eles = document.getElementsByClassName('fsp-picker__close-button');
           if (eles.length > 0) {
             (eles[0] as HTMLElement).focus();
           }
-        }, 900);
+        }, 850);
       },
     };
 
