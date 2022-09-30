@@ -33,6 +33,7 @@ export interface Task {
     name: string;
     image: string;
   };
+  assessmentType?: string;
 }
 
 @Injectable({
@@ -85,7 +86,7 @@ export class ActivityService {
       `query getActivity($id: Int!) {
         activity(id:$id){
           id name description tasks{
-            id name type isLocked isTeam deadline contextId status{
+            id name type isLocked isTeam deadline contextId assessmentType status{
               status isLocked submitterName submitterImage
             }
           }
@@ -149,7 +150,8 @@ export class ActivityService {
             submitter: {
               name: task.status.submitterName,
               image: task.status.submitterImage
-            }
+            },
+            assessmentType: task.assessmentType
           };
         default:
           console.warn(`Unsupported model type ${task.type}`);
@@ -195,9 +197,11 @@ export class ActivityService {
         }
         continue;
       }
-      if (task.type !== 'Locked' &&
+
+      if ( task.type !== 'Locked' &&
         !(task.isForTeam && !this.storage.getUser().teamId) &&
-        !task.isLocked) {
+        !(task.assessmentType === 'team360' && !this.storage.getUser().teamId) &&
+        !task.isLocked ) {
         // get the next task after a specific task
         if (afterTask) {
           nextTask = task;
