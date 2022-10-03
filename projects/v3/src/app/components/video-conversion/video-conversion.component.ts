@@ -38,7 +38,7 @@ export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
     }));
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(_changes: SimpleChanges): void {
     if (this.video?.fileObject?.mimetype !== 'video/mp4') {
       this.convertVideo(this.video.fileObject);
     }
