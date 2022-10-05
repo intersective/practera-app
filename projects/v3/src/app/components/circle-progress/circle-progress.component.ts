@@ -93,7 +93,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   @ViewChild('description') descriptionRef: ElementRef;
 
   constructor (
-    public utils: UtilsService
+    private readonly utils: UtilsService
   ) {}
 
   ngOnInit() {
@@ -111,6 +111,10 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     if (changes.data) {
       this.config = this.setCircleProgress(changes.data.currentValue);
     }
+  }
+
+  get isMobile(): boolean {
+    return this.utils.isMobile();
   }
 
   setCircleProgress(data: CircleProgressOptionsInterface) {
