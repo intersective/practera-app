@@ -125,6 +125,23 @@ describe('TopicComponent', () => {
     expect(sharedSpy.stopPlayingVideos.calls.count()).toBe(1);
   });
 
+  describe('ngOnChanges()', () => {
+    it('should set video element when available', fakeAsync(() => {
+      utilsSpy.each = jasmine.createSpy('each').and.callFake((target, cb) => {
+        cb();
+      });
+
+      component.topic = {
+        videolink: 'test.com',
+      } as any;
+      component.ngOnChanges();
+      expect(component.continuing).toEqual(false);
+
+      tick(500);
+
+    }));
+  });
+
   describe('actionBarContinue()', () => {
     const dummyTOPIC = {};
     beforeEach(() => {
@@ -194,5 +211,17 @@ describe('TopicComponent', () => {
       expect(notificationSpy.alert).toHaveBeenCalledWith({ header: 'Error Previewing file', message: '{}' });
       // expect(newRelicSpy.noticeError).toHaveBeenCalled();
     }));
+  });
+
+  describe('actionBtnClick()', () => {
+    it('should perform action based on provided index number', () => {
+      component.actionBtnClick({} as any, 0);
+      expect(utilsSpy.downloadFile).toHaveBeenCalled();
+
+
+      const spy = spyOn(component, 'previewFile');
+      component.actionBtnClick({} as any, 1);
+      expect(spy).toHaveBeenCalled();
+    });
   });
 });
