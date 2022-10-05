@@ -16,6 +16,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivityService } from '@v3/services/activity.service';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
+import * as Plyr from 'plyr';
+
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -125,6 +127,63 @@ describe('TopicComponent', () => {
     expect(sharedSpy.stopPlayingVideos.calls.count()).toBe(1);
   });
 
+  describe('ngOnChanges()', () => {
+    it('should set video element when available', fakeAsync(() => {
+      /* utilsSpy.each = jasmine.createSpy('each').and.callFake((target, cb) => {
+        cb();
+      }); */
+      const spyContains = jasmine.createSpy('contains');
+      spyOn(component['document'], 'querySelectorAll').and.returnValue([
+        {
+          classList: {
+            add: () => true,
+            remove: () => true,
+            contains: spyContains,
+          },
+          nodeName: 'VIDEO',
+        }
+      ] as any);
+
+      component.topic = {
+        videolink: 'test.com/vimeo',
+      } as any;
+      component.ngOnChanges();
+      expect(component.continuing).toEqual(false);
+
+      tick(500);
+
+      expect(spyContains).toHaveBeenCalledTimes(1);
+      expect(embedSpy.embed).toHaveBeenCalled();
+    }));
+
+    it('should not set video element', fakeAsync(() => {
+      /* utilsSpy.each = jasmine.createSpy('each').and.callFake((target, cb) => {
+        cb();
+      }); */
+      const spyContains = jasmine.createSpy('contains');
+      spyOn(component['document'], 'querySelectorAll').and.returnValue([
+        {
+          classList: {
+            add: () => true,
+            remove: () => true,
+            contains: spyContains,
+          },
+          nodeName: 'NON_VIDEO',
+        }
+      ] as any);
+
+      component.topic = {
+        videolink: 'test.com',
+      } as any;
+      component.ngOnChanges();
+      expect(component.continuing).toEqual(false);
+
+      tick(500);
+
+      expect(spyContains).not.toHaveBeenCalled();
+    }));
+  });
+
   describe('actionBarContinue()', () => {
     const dummyTOPIC = {};
     beforeEach(() => {
@@ -194,5 +253,17 @@ describe('TopicComponent', () => {
       expect(notificationSpy.alert).toHaveBeenCalledWith({ header: 'Error Previewing file', message: '{}' });
       // expect(newRelicSpy.noticeError).toHaveBeenCalled();
     }));
+  });
+
+  describe('actionBtnClick()', () => {
+    it('should perform action based on provided index number', () => {
+      component.actionBtnClick({} as any, 0);
+      expect(utilsSpy.downloadFile).toHaveBeenCalled();
+
+
+      const spy = spyOn(component, 'previewFile');
+      component.actionBtnClick({} as any, 1);
+      expect(spy).toHaveBeenCalled();
+    });
   });
 });
