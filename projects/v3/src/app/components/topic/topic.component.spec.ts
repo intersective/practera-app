@@ -16,6 +16,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivityService } from '@v3/services/activity.service';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
+import * as Plyr from 'plyr';
+
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -127,9 +129,48 @@ describe('TopicComponent', () => {
 
   describe('ngOnChanges()', () => {
     it('should set video element when available', fakeAsync(() => {
-      utilsSpy.each = jasmine.createSpy('each').and.callFake((target, cb) => {
+      /* utilsSpy.each = jasmine.createSpy('each').and.callFake((target, cb) => {
         cb();
-      });
+      }); */
+      const spyContains = jasmine.createSpy('contains');
+      spyOn(component['document'], 'querySelectorAll').and.returnValue([
+        {
+          classList: {
+            add: () => true,
+            remove: () => true,
+            contains: spyContains,
+          },
+          nodeName: 'VIDEO',
+        }
+      ] as any);
+
+      component.topic = {
+        videolink: 'test.com/vimeo',
+      } as any;
+      component.ngOnChanges();
+      expect(component.continuing).toEqual(false);
+
+      tick(500);
+
+      expect(spyContains).toHaveBeenCalledTimes(1);
+      expect(embedSpy.embed).toHaveBeenCalled();
+    }));
+
+    it('should not set video element', fakeAsync(() => {
+      /* utilsSpy.each = jasmine.createSpy('each').and.callFake((target, cb) => {
+        cb();
+      }); */
+      const spyContains = jasmine.createSpy('contains');
+      spyOn(component['document'], 'querySelectorAll').and.returnValue([
+        {
+          classList: {
+            add: () => true,
+            remove: () => true,
+            contains: spyContains,
+          },
+          nodeName: 'NON_VIDEO',
+        }
+      ] as any);
 
       component.topic = {
         videolink: 'test.com',
@@ -139,6 +180,7 @@ describe('TopicComponent', () => {
 
       tick(500);
 
+      expect(spyContains).not.toHaveBeenCalled();
     }));
   });
 
