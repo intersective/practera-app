@@ -249,7 +249,7 @@
     *ngIf="!(action === 'review' && submission.status === 'feedback available' && review.status === 'done')"
     [text]="btnText"
     [disabled]="btnDisabled"
-    (onClick)="continueToNextTask()"
+    (handleClick)="continueToNextTask()"
   ></app-bottom-action-bar>
 
   <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">

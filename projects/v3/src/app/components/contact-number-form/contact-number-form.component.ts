@@ -5,7 +5,7 @@ import { environment } from '@v3/environments/environment';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { AuthService } from '@v3/app/services/auth.service';
 
-enum COUNTRIES {
+export enum COUNTRIES {
   'AUS' = 'AUS',
   'AU' = 'AUS',
   'USA' = 'US',
