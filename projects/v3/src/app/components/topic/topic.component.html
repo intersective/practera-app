@@ -37,8 +37,7 @@
 <app-bottom-action-bar
   *ngIf="topic"
   text="Mark as complete and continue"
-  [disabled]="continuing"
-  (onClick)="actionBarContinue(topic)"
+  (handleClick)="actionBarContinue(topic)"
 ></app-bottom-action-bar>
 
 <div *ngIf="!topic" class="ion-padding">
