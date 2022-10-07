@@ -5,6 +5,16 @@ import { environment } from '@v3/environments/environment';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { AuthService } from '@v3/app/services/auth.service';
 
+enum COUNTRIES {
+  'AUS' = 'AUS',
+  'AU' = 'AUS',
+  'USA' = 'US',
+  'US' = 'US',
+  'NZ' = 'NZ',
+  'DE' = 'DE',
+  'UK' = 'UK',
+};
+
 @Component({
   selector: 'app-contact-number-form',
   templateUrl: './contact-number-form.component.html',
@@ -23,7 +33,7 @@ export class ContactNumberFormComponent implements OnInit {
   // use as a ngModel to controll contact number input
   contactNumber = '';
   // default country model
-  countryModel: string;
+  countryModel: COUNTRIES;
   // country model infomation
   activeCountryModelInfo = {
     countryCode: '',
@@ -106,11 +116,7 @@ export class ContactNumberFormComponent implements OnInit {
   }
 
   private _initcomponent() {
-    this.countryModel = environment.defaultCountryModel;
-    this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
-    this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
-    this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
-    this.activeCountryModelInfo.length = this.contactNumberFormat.masks[this.countryModel].numberLength;
+    this._setCountry(environment.defaultCountryModel);
     // if user has the contact number
     if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
       this._checkCurrentContactNumberOrigin();
@@ -166,7 +172,8 @@ export class ContactNumberFormComponent implements OnInit {
   }
 
   private _setCountry(country) {
-    this.countryModel = country;
+    // fail gracefully if country code is inevitably unsupported
+    this.countryModel = COUNTRIES[country] || 'AUS';
     this.activeCountryModelInfo.countryCode = this.contactNumberFormat.masks[this.countryModel].format;
     this.activeCountryModelInfo.placeholder = this.contactNumberFormat.masks[this.countryModel].placeholder;
     this.activeCountryModelInfo.pattern = this.contactNumberFormat.masks[this.countryModel].pattern;
@@ -259,14 +266,16 @@ export class ContactNumberFormComponent implements OnInit {
               this.updating = false;
               if (result.success) {
                 // update contact number in user local storage data array.
-                this.storage.setUser({ contactNumber: this.profile.contactNumber });
+                this.storage.setUser({
+                  contactNumber: this.profile.contactNumber
+                });
                 const newContactNumber = this.profile.contactNumber;
                 // also update contact number in program object in local storage
                 const timelineId = this.storage.getUser().timelineId;  // get current timeline Id
-                const programsObj = this.utils.each(this.storage.get('programs'), function(program) {
-                    if (program.timeline.id === timelineId) {
-                      program.enrolment.contact_number = newContactNumber;
-                    }
+                const programsObj = this.utils.each(this.storage.get('programs'), program => {
+                  if (program.timeline.id === timelineId) {
+                    program.enrolment.contact_number = newContactNumber;
+                  }
                 });
                 this.storage.set('programs', programsObj);
                 return this.notificationsService.popUp('shortMessage', { message: 'Profile successfully updated!'});
