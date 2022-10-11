@@ -1,9 +1,29 @@
 ion-menu.collapsed {
-  --side-width: 5em;
-  --side-min-width: 5em;
-  --side-max-width: 5em;
-  --width: 5em;
-  max-width: 5em;
+  --side-width: 72px;
+  --side-min-width: 72px;
+  --side-max-width: 72px;
+  --width: 72px;
+  max-width: 72px;
+
+  .menu-item {
+    --padding-start: 16px;
+    & > ion-icon {
+      margin: 5px;
+    }
+
+    & > ion-label {
+      display: none;
+    }
+
+    .item-inner {
+      display: none;
+    }
+  }
+
+  .institute-logo-container {
+    padding: 2em 0.3em;
+  }
+
 }
 
 ion-menu {
