@@ -7,6 +7,7 @@ import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
+import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
   selector: 'app-v3',
@@ -28,9 +29,9 @@ export class V3Page implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private storageService: BrowserStorageService,
-    private chatService: ChatService
-  ) {
-  }
+    private chatService: ChatService,
+    private readonly utils: UtilsService,
+  ) {}
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => subs.unsubscribe());
@@ -153,6 +154,10 @@ export class V3Page implements OnInit, OnDestroy {
 
   get institutionName() {
     return this.storageService.getUser().institutionName || 'Practera';
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
   }
 
   toggleMenu() {

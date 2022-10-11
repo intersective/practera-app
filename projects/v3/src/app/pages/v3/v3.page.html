@@ -1,5 +1,5 @@
-<ion-split-pane contentId="main-content">
-  <ion-menu contentId="main-content" [ngClass]="{'collapsed': !openMenu}">
+<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
+  <ion-menu contentId="main-content" [ngClass]="{'collapsed': !isMobile && !openMenu}">
 
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>
@@ -45,7 +45,7 @@
         </ion-item>
       </ion-list>
 
-      <ion-item lines="none" detail="false" class="footer">
+      <ion-item lines="none" detail="false" class="footer" *ngIf="!isMobile">
         <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
           <ion-icon *ngIf="openMenu === false" slot="icon-only" name="caret-back-outline"></ion-icon>
           <ion-icon *ngIf="openMenu === true" slot="icon-only" name="caret-forward-outline"></ion-icon>
