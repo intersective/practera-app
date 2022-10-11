@@ -1,12 +1,18 @@
+ion-menu.collapsed {
+  --side-width: 5em;
+  --side-min-width: 5em;
+  --side-max-width: 5em;
+  --width: 5em;
+  max-width: 5em;
+}
+
 ion-menu {
   border-right: 1px solid;
   border-right-color: var(--practera-grey-25);
-  &.show-menu {
-    --width: 280px;
-  }
-  &.menu-pane-visible {
-    max-width: 280px !important;
-    min-width: 280px !important;
+
+  .footer {
+    position: absolute;
+    bottom: 0;
   }
 }
 ion-item-divider {

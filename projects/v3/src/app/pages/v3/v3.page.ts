@@ -14,6 +14,7 @@ import { SettingsPage } from '../settings/settings.page';
   styleUrls: ['./v3.page.scss'],
 })
 export class V3Page implements OnInit, OnDestroy {
+  openMenu = true; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   subscriptions: Subscription[];
@@ -108,6 +109,7 @@ export class V3Page implements OnInit, OnDestroy {
         }
       }));
     }
+    this.openMenu =false;
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
@@ -142,10 +144,18 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   get institutionLogo() {
+    if (this.openMenu !== true) {
+      return this.storageService.getUser().squareLogo || '/assets/logo.svg';
+    }
+
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
   }
 
   get institutionName() {
     return this.storageService.getUser().institutionName || 'Practera';
+  }
+
+  toggleMenu() {
+    this.openMenu = !this.openMenu;
   }
 }

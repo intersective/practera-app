@@ -33,6 +33,7 @@ export interface User {
   hasEvents?: boolean;
   hasReviews?: boolean;
   LtiReturnUrl?: string;
+  squareLogo?: string; // for collapsed sidemenu
 }
 
 export interface Referrer {

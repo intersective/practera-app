@@ -1,10 +1,12 @@
 <ion-split-pane contentId="main-content">
-  <ion-menu contentId="main-content">
+  <ion-menu contentId="main-content" [ngClass]="{'collapsed': !openMenu}">
+
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>
       <div class="institute-logo-container">
         <img [src]="institutionLogo" [attr.alt]="institutionName">
       </div>
+
       <ion-list lines="none">
         <ion-menu-toggle autoHide="false"
           *ngFor="let p of appPages; let i = index">
@@ -43,6 +45,13 @@
         </ion-item>
 
       </ion-list>
+      <ion-item lines="none" detail="false" class="footer">
+        <ion-button (click)="toggleMenu()" fill="clear">
+          <ion-icon *ngIf="openMenu === false" slot="icon-only" name="caret-back-outline"></ion-icon>
+          <ion-icon *ngIf="openMenu === true" slot="icon-only" name="caret-forward-outline"></ion-icon>
+          abcdef
+        </ion-button>
+      </ion-item>
     </ion-content>
   </ion-menu>
 
