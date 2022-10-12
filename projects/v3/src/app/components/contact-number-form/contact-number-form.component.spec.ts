@@ -5,8 +5,8 @@ import {
   HttpTestingController,
   HttpClientTestingModule
 } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ContactNumberFormComponent } from './contact-number-form.component';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ContactNumberFormComponent, COUNTRIES } from './contact-number-form.component';
 import { CommonModule } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -23,7 +23,7 @@ describe('ContactNumberFormComponent', () => {
   let storageSpy: BrowserStorageService;
   let notificationSpy: NotificationsService;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [IonicModule, CommonModule, FormsModule, HttpClientTestingModule, RouterModule],
       declarations: [ContactNumberFormComponent],
@@ -74,11 +74,24 @@ describe('ContactNumberFormComponent', () => {
     });
 
     it('should check existing contact number format if available', () => {
-      component.countryModel = 'AUS';
+      component.countryModel = COUNTRIES['AUS'];
+      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+        contactNumber: '61123456789',
+      });
+      component.ngOnInit();
+      expect(component.contactNumber).toEqual('123 456 789');
+      expect(component.activeCountryModelInfo.countryCode).toEqual('+61');
+    });
+
+    it('should take in all kind of countryCode (support/unsupported)', () => {
+      component['_setCountry']('USA');
       storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
         contactNumber: '012345678912',
       });
+
       component.ngOnInit();
+      expect(component.contactNumber).toEqual('123 456 789 12');
+      console.log('asdkjabwd awjkdnajwdn', (component.contactNumber));
     });
 
     describe('_checkCurrentContactNumberOrigin()', () => {
@@ -129,7 +142,7 @@ describe('ContactNumberFormComponent', () => {
 
   describe('updateCountry()', () => {
     beforeEach(() => {
-      component.countryModel = 'AUS';
+      component.countryModel = COUNTRIES['AUS'];
     });
 
     it('should update form model criteria based on selected locale', () => {
@@ -155,7 +168,7 @@ describe('ContactNumberFormComponent', () => {
 
   describe('updateContactNumber()', () => {
     it('should prevent wrong formated contactNumber', () => {
-      component.countryModel = 'AUS';
+      component.countryModel = COUNTRIES['AUS'];
       component.profile.contactNumber = '1234567';
       component.activeCountryModelInfo.countryCode = '10';
 
@@ -172,7 +185,7 @@ describe('ContactNumberFormComponent', () => {
         expect(submitBtn.text).toEqual('Okay');
       });
 
-      component.countryModel = 'US';
+      component.countryModel = COUNTRIES['US'];
       component.contactNumber = '12345678901';
       component.activeCountryModelInfo.countryCode = '1';
 
@@ -188,7 +201,7 @@ describe('ContactNumberFormComponent', () => {
         expect(submitBtn.text).toEqual('Okay');
       });
 
-      component.countryModel = 'AUS';
+      component.countryModel = COUNTRIES['AUS'];
       component.contactNumber = '1234567890';
       component.activeCountryModelInfo.countryCode = '10';
 
@@ -205,7 +218,7 @@ describe('ContactNumberFormComponent', () => {
         expect(notificationSpy.popUp).toHaveBeenCalledWith('shortMessage', { message: 'Profile updating failed!' });
       });
 
-      component.countryModel = 'AUS';
+      component.countryModel = COUNTRIES['AUS'];
       component.profile.contactNumber = '1234567890';
       component.activeCountryModelInfo.countryCode = '10';
 
@@ -218,7 +231,7 @@ describe('ContactNumberFormComponent', () => {
       spyOn(component, 'disableArrowKeys');
 
       component.page = 'settings';
-      component.countryModel = 'AUS';
+      component.countryModel = COUNTRIES['AUS'];
       storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
         contactNumber: '012345678912',
       });
