@@ -5,7 +5,12 @@ ion-menu.collapsed {
   }
 
   .menu-item {
-    --padding-start: 16px;
+    --padding-start: 15px;
+
+    &.selected {
+      --padding-start: 12px;
+    }
+
     & > ion-icon {
       margin: 5px;
     }
