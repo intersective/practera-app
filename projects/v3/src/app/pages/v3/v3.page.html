@@ -1,7 +1,7 @@
-<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
+<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'" [@.disabled]="isMobile">
   <ion-menu contentId="main-content"
     [ngClass]="{'collapsed': !isMobile && !openMenu}"
-    [@openClose]="!isMobile && openMenu ? 'open' : 'closed'">
+    [@openClose]="collapsibleMenu">
 
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>

@@ -189,4 +189,13 @@ export class V3Page implements OnInit, OnDestroy {
   toggleMenu() {
     this.openMenu = !this.openMenu;
   }
+
+  // only desktop version require collapsed menu
+  get collapsibleMenu() {
+    if (this.isMobile) {
+      return 'open';
+    }
+
+    return (this.openMenu ? 'open' : 'closed');
+  }
 }
