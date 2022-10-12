@@ -264,3 +264,7 @@ ion-button.practera-btn {
     opacity: 1;
   }
 }
+
+.no-ripple {
+  --ripple-color: transparent;
+}
