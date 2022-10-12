@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Animation, AnimationController, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -8,8 +8,7 @@ import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { animate, keyframes, query, stagger, state, style, transition, trigger, useAnimation } from '@angular/animations';
-import { fadeIn } from '@v3/app/animations';
+import { animate, query, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-v3',
@@ -25,13 +24,17 @@ import { fadeIn } from '@v3/app/animations';
         maxWidth: '72px',
         minWidth: '72px',
       })),
-      transition('* => closed', [
+      transition('open => closed', [
         query('.institute-logo-container', style({ opacity: 0 })),
-        animate(500),
+        animate(300),
       ]),
-      transition('* => open', [
+      transition('closed => open', [
         query('.institute-logo-container', style({ opacity: 0 })),
-        animate(500),
+        query('ion-label.body-2', style({ opacity: 0 })),
+        animate(300),
+        query('ion-label.body-2', [
+          animate(300, style({ opacity: 1 })),
+        ]),
       ]),
     ]),
   ]
@@ -43,7 +46,6 @@ export class V3Page implements OnInit, OnDestroy {
   subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
-  slideMenu: Animation;
 
   constructor(
     private modalController: ModalController,
@@ -54,17 +56,7 @@ export class V3Page implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private chatService: ChatService,
     private readonly utils: UtilsService,
-    private animationCtrl: AnimationController,
   ) {
-  }
-
-  ionViewDidEnter() {/*
-    this.slideMenu = this.animationCtrl.create()
-      .addElement(document.querySelector('.sidemenu'))
-      .duration(1000)
-      // .fromTo('transform', 'translateX(0px)', 'translateX(100px)')
-      .fromTo('max-width', '280px', '72px')
-      .fromTo('min-width', '280px', '72px'); */
   }
 
   ngOnDestroy(): void {
