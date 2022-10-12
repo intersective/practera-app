@@ -1,10 +1,14 @@
-<ion-split-pane contentId="main-content">
-  <ion-menu contentId="main-content">
+<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'" [@.disabled]="isMobile">
+  <ion-menu contentId="main-content"
+    [ngClass]="{'collapsed': !isMobile && !openMenu}"
+    [@openClose]="collapsibleMenu">
+
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>
       <div class="institute-logo-container">
         <img [src]="institutionLogo" [attr.alt]="institutionName">
       </div>
+
       <ion-list lines="none">
         <ion-menu-toggle autoHide="false"
           *ngFor="let p of appPages; let i = index">
@@ -31,7 +35,7 @@
           <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
         </ion-item>
 
-        <ion-item-divider mode="md"></ion-item-divider>
+        <ion-item-divider mode="md" @openClose></ion-item-divider>
 
         <ion-item class="menu-item"
           (keydown)="keyboardNavigate('/experiences', $event)"
@@ -41,8 +45,14 @@
           <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
           <ion-label class="body-2 black">My Experiences</ion-label>
         </ion-item>
-
       </ion-list>
+
+      <ion-item lines="none" detail="false" class="footer" *ngIf="!isMobile">
+        <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
+          <ion-icon *ngIf="openMenu === false" slot="icon-only" name="caret-back-outline"></ion-icon>
+          <ion-icon *ngIf="openMenu === true" slot="icon-only" name="caret-forward-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
     </ion-content>
   </ion-menu>
 
