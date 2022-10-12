@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { AnimationController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -31,7 +31,14 @@ export class V3Page implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private chatService: ChatService,
     private readonly utils: UtilsService,
-  ) {}
+    private animationCtrl: AnimationController,
+  ) {
+    this.animationCtrl.create()
+      .addElement(document.querySelector('ion-menu'))
+      .duration(1000)
+      .fromTo('transform', 'translateX(0px)', 'translateX(100px)')
+      .fromTo('opacity', '1', '0.5');
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => subs.unsubscribe());
