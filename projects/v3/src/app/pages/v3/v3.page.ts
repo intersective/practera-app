@@ -8,7 +8,7 @@ import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { animate, state, style, transition, trigger, useAnimation } from '@angular/animations';
+import { animate, keyframes, query, stagger, state, style, transition, trigger, useAnimation } from '@angular/animations';
 import { fadeIn } from '@v3/app/animations';
 
 @Component({
@@ -25,11 +25,13 @@ import { fadeIn } from '@v3/app/animations';
         maxWidth: '72px',
         minWidth: '72px',
       })),
-      transition('open => closed', [
-        animate('0.5s')
+      transition('* => closed', [
+        query('.institute-logo-container', style({ opacity: 0 })),
+        animate(500),
       ]),
-      transition('closed => open', [
-        animate('0.5s')
+      transition('* => open', [
+        query('.institute-logo-container', style({ opacity: 0 })),
+        animate(500),
       ]),
     ]),
   ]

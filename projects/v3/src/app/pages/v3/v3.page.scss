@@ -1,49 +1,17 @@
-@keyframes widthexpand {
+@keyframes reappear {
   from {
-    --max-width: 72px;
-    max-width: 72px;
-    --min-width: 72px;
-    min-width: 72px;
-    max-width: 72px;
+    opacity: 0;
   }
 
   to {
-    --max-width: 280px;
-    max-width: 280px;
-    --min-width: 280px;
-    min-width: 280px;
-    max-width: 280px;
-  }
-}
-
-@keyframes widthshrink {
-  from {
-    --max-width: 280px;
-    max-width: 280px;
-    --min-width: 280px;
-    min-width: 280px;
-    max-width: 280px;
-  }
-
-  to {
-    --max-width: 72px;
-    max-width: 72px;
-    --min-width: 72px;
-    min-width: 72px;
-    max-width: 72px;
+    opacity: 1;
   }
 }
 
 ion-menu.collapsed {
   &.menu-pane-visible {
     --max-width: 72px;
-    max-width: 72px;
     --min-width: 72px;
-    min-width: 72px;
-    max-width: 72px;
-
-    // animation-name: widthshrink;
-    // animation-duration: 1s;
   }
 
   .menu-item {
@@ -63,6 +31,8 @@ ion-menu.collapsed {
 
   .institute-logo-container {
     padding: 2em 0.3em;
+    animation-name: reappear;
+    animation-duration: 1s;
   }
 }
 
@@ -75,9 +45,6 @@ ion-menu {
     max-width: 280px;
     --min-width: 280px;
     min-width: 280px;
-
-    // animation-name: widthexpand;
-    // animation-duration: 1s;
   }
 
   .footer {
@@ -90,12 +57,16 @@ ion-item-divider {
 }
 
 .institute-logo-container {
+  height: 100px;
   text-align: center;
   padding: 20px;
   img {
     max-width: 80%;
     max-height: 130px;
   }
+
+  animation-name: reappear;
+  animation-duration: 1s;
 }
 
 .menu-item {

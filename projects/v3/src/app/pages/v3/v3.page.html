@@ -1,7 +1,7 @@
 <ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
-  <ion-menu contentId="main-content" class="sidemenu"
+  <ion-menu contentId="main-content"
     [ngClass]="{'collapsed': !isMobile && !openMenu}"
-    [@openClose]="!isMobile && !openMenu ? 'closed' : 'open'">
+    [@openClose]="!isMobile && openMenu ? 'open' : 'closed'">
 
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>
@@ -35,7 +35,7 @@
           <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
         </ion-item>
 
-        <ion-item-divider mode="md"></ion-item-divider>
+        <ion-item-divider mode="md" @openClose></ion-item-divider>
 
         <ion-item class="menu-item"
           (keydown)="keyboardNavigate('/experiences', $event)"
