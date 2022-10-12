@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AnimationController, ModalController } from '@ionic/angular';
+import { Animation, AnimationController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -8,11 +8,31 @@ import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
+import { animate, state, style, transition, trigger, useAnimation } from '@angular/animations';
+import { fadeIn } from '@v3/app/animations';
 
 @Component({
   selector: 'app-v3',
   templateUrl: './v3.page.html',
   styleUrls: ['./v3.page.scss'],
+  animations: [
+    trigger('openClose', [
+      state('open', style({
+        maxWidth: '280px',
+        minWidth: '280px',
+      })),
+      state('closed', style({
+        maxWidth: '72px',
+        minWidth: '72px',
+      })),
+      transition('open => closed', [
+        animate('0.5s')
+      ]),
+      transition('closed => open', [
+        animate('0.5s')
+      ]),
+    ]),
+  ]
 })
 export class V3Page implements OnInit, OnDestroy {
   openMenu = true; // collapsible submenu
@@ -21,6 +41,7 @@ export class V3Page implements OnInit, OnDestroy {
   subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
+  slideMenu: Animation;
 
   constructor(
     private modalController: ModalController,
@@ -33,11 +54,15 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private animationCtrl: AnimationController,
   ) {
-    this.animationCtrl.create()
-      .addElement(document.querySelector('ion-menu'))
+  }
+
+  ionViewDidEnter() {/*
+    this.slideMenu = this.animationCtrl.create()
+      .addElement(document.querySelector('.sidemenu'))
       .duration(1000)
-      .fromTo('transform', 'translateX(0px)', 'translateX(100px)')
-      .fromTo('opacity', '1', '0.5');
+      // .fromTo('transform', 'translateX(0px)', 'translateX(100px)')
+      .fromTo('max-width', '280px', '72px')
+      .fromTo('min-width', '280px', '72px'); */
   }
 
   ngOnDestroy(): void {
