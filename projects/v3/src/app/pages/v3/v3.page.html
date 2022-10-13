@@ -49,8 +49,9 @@
 
       <ion-item lines="none" detail="false" class="footer" *ngIf="!isMobile">
         <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
-          <ion-icon class="collapsible"
-            [name]='openMenu === false ? "chevron-back-outline" : "chevron-forward-outline"'></ion-icon>
+          <span class="material-symbols-outlined collapsible">
+            {{ openMenu === false ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'  }}
+          </span>
         </ion-button>
       </ion-item>
     </ion-content>
