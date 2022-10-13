@@ -1,4 +1,4 @@
-<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'" [@.disabled]="isMobile">
+<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
   <ion-menu contentId="main-content"
     [ngClass]="{'collapsed': !isMobile && !openMenu}"
     [@openClose]="collapsibleMenu">
@@ -35,7 +35,7 @@
           <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
         </ion-item>
 
-        <ion-item-divider mode="md" @openClose></ion-item-divider>
+        <ion-item-divider mode="md"></ion-item-divider>
 
         <ion-item class="menu-item"
           (keydown)="keyboardNavigate('/experiences', $event)"
@@ -49,8 +49,8 @@
 
       <ion-item lines="none" detail="false" class="footer" *ngIf="!isMobile">
         <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
-          <ion-icon *ngIf="openMenu === false" slot="icon-only" name="caret-back-outline"></ion-icon>
-          <ion-icon *ngIf="openMenu === true" slot="icon-only" name="caret-forward-outline"></ion-icon>
+          <ion-icon class="collapsible"
+            [name]='openMenu === false ? "chevron-back-outline" : "chevron-forward-outline"'></ion-icon>
         </ion-button>
       </ion-item>
     </ion-content>

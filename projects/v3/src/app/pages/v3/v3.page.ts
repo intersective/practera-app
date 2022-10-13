@@ -8,7 +8,7 @@ import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { animate, query, state, style, transition, trigger } from '@angular/animations';
+import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-v3',
@@ -26,15 +26,27 @@ import { animate, query, state, style, transition, trigger } from '@angular/anim
       })),
       transition('open => closed', [
         query('.institute-logo-container', style({ opacity: 0 })),
-        animate(300),
+        query('ion-icon.collapsible', style({ transform: 'rotate(0)' })),
+        group([
+          query('ion-icon.collapsible', [
+            animate(300, style({ transform: 'rotate(-180deg)' })),
+          ]),
+          animate(300),
+        ]),
       ]),
       transition('closed => open', [
         query('.institute-logo-container', style({ opacity: 0 })),
         query('ion-label.body-2', style({ opacity: 0 })),
-        animate(300),
-        query('ion-label.body-2', [
-          animate(300, style({ opacity: 1 })),
-        ]),
+        query('ion-icon.collapsible', style({ transform: 'rotate(0)' })),
+        group([
+          query('ion-label.body-2', [
+            animate(300, style({ opacity: 1 })),
+          ]),
+          query('ion-icon.collapsible', [
+            animate(300, style({ transform: 'rotate(180deg)' })),
+          ]),
+          animate(300),
+        ])
       ]),
     ]),
   ]
