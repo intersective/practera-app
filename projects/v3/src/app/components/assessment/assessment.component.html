@@ -32,7 +32,8 @@
 </ng-container>
 
 <ng-container *ngIf="action === 'review'">
-  <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission">
+  <ion-list *ngIf="submission"
+  class="ion-no-margin ion-no-padding ion-padding-horizontal main-content">
     <ion-item-group>
       <ion-item-divider>
         <ion-label color="primary">Submission Details</ion-label>
@@ -58,7 +59,7 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div [ngClass]="{'ion-padding': !isMobile}" style="min-height: 100%;">
+  <div [ngClass]="{'ion-padding': !isMobile}" class="main-content" style="min-height: 100%;">
     <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
