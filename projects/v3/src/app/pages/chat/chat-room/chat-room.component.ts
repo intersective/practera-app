@@ -93,7 +93,7 @@ export class ChatRoomComponent implements OnInit {
     this.utils.getEvent('chat:delete-message').subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const deletedMessageIndex = this.messageList.findIndex(message => {
-          return message.channelUuid === event.uuid;
+          return message.uuid === event.uuid;
         });
         if (deletedMessageIndex > -1) {
           this.messageList.splice(deletedMessageIndex, 1);
@@ -105,7 +105,7 @@ export class ChatRoomComponent implements OnInit {
         const receivedMessage = this.getMessageFromEvent(event);
 
         const editedMessageIndex = this.messageList.findIndex(message => {
-          return message.channelUuid === event.uuid;
+          return message.uuid === event.uuid;
         });
         if (editedMessageIndex > -1 && !this.utils.isEmpty(receivedMessage)) {
           this.messageList[editedMessageIndex] = receivedMessage;
