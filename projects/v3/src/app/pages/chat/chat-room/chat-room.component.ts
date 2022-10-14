@@ -91,25 +91,35 @@ export class ChatRoomComponent implements OnInit {
       }
     });
     this.utils.getEvent('chat:delete-message').subscribe(event => {
+      console.log('delete - 2', event);
       if (this._isValidPusherEvent(event)) {
+        console.log('delete - 3');
         const deletedMessageIndex = this.messageList.findIndex(message => {
           return message.channelUuid === event.uuid;
         });
+        console.log('delete - 4');
         if (deletedMessageIndex > -1) {
+          console.log('delete - 5');
           this.messageList.splice(deletedMessageIndex, 1);
         }
+        console.log('delete - 6');
       }
     });
     this.utils.getEvent('chat:edit-message').subscribe(event => {
+      console.log('edit - 2', event);
       if (this._isValidPusherEvent(event)) {
+        console.log('edit - 3');
         const receivedMessage = this.getMessageFromEvent(event);
 
         const editedMessageIndex = this.messageList.findIndex(message => {
           return message.channelUuid === event.uuid;
         });
+        console.log('edit - 4', receivedMessage);
         if (editedMessageIndex > -1 && !this.utils.isEmpty(receivedMessage)) {
+          console.log('edit - 5');
           this.messageList[editedMessageIndex] = receivedMessage;
         }
+        console.log('edit - 6');
       }
     });
   }
@@ -136,15 +146,20 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private _isValidPusherEvent(pusherData) {
+    console.log('_isValidPusherEvent - 1', pusherData, this.channelUuid);
     if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
+      console.log('_isValidPusherEvent - 2');
       return false;
     }
     if (this.utils.isMobile() && (this.router.url !== '/v3/messages/chat-room')) {
+      console.log('_isValidPusherEvent - 3');
       return false;
     }
     if (pusherData.channelUuid !== this.channelUuid) {
+      console.log('_isValidPusherEvent - 4');
       return false;
     }
+    console.log('_isValidPusherEvent - 5');
     return true;
   }
 
