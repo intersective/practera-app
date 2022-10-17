@@ -13,13 +13,14 @@
       <ion-list lines="none">
         <ion-menu-toggle autoHide="false"
           *ngFor="let p of appPages; let i = index">
-          <ion-item class="menu-item"
+          <ion-item class="menu-item tooltip"
             *ngIf="p.title !== 'Messages' || (p.title === 'Messages' && showMessages)"
             (keydown)="keyboardNavigate(p.url, $event)"
             [routerLink]="p.url"
             routerLinkActive="selected"
             routerDirection="root"
-            detail="false">
+            detail="false"
+            [title]="p.title">
             <ion-icon slot="start" [name]="p.icon" aria-hidden="true"></ion-icon>
             <ion-label class="body-2 black">
               {{p.title}}
@@ -27,10 +28,10 @@
           </ion-item>
         </ion-menu-toggle>
 
-        <ion-item class="menu-item"
+        <ion-item class="menu-item tooltip"
           (keydown)="presentModal($event)"
           (click)="presentModal()"
-          button detail="false">
+          button detail="false" title="Settings">
           <ion-icon slot="start" name="settings" aria-hidden="true"></ion-icon>
           <ion-label class="body-2 black">Settings</ion-label>
           <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
@@ -38,11 +39,11 @@
 
         <ion-item-divider mode="md"></ion-item-divider>
 
-        <ion-item class="menu-item"
+        <ion-item class="menu-item tooltip"
           (keydown)="keyboardNavigate('/experiences', $event)"
           routerLink="/experiences"
           routerDirection="root"
-          detail="false">
+          detail="false" title="Experiences">
           <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
           <ion-label class="body-2 black">My Experiences</ion-label>
         </ion-item>
