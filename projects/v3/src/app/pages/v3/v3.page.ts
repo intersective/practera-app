@@ -26,25 +26,29 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
       })),
       transition('open => closed', [
         query('.institute-logo-container', style({ opacity: 0 })),
-        query('.collapsible', style({ transform: 'rotate(0)' })),
+        query('.collapsible', style({ transform: 'rotate(0deg)' })),
         group([
-          query('.collapsible', [
-            animate(300, style({ transform: 'rotate(-180deg)' })),
-          ]),
+          query('.institute-logo-container', animate(500, style({
+            opacity: 1,
+          }))),
+          query('.collapsible', animate(300, style({
+            transform: 'rotate(180deg)',
+          }))),
           animate(300),
         ]),
       ]),
       transition('closed => open', [
         query('.institute-logo-container', style({ opacity: 0 })),
         query('ion-label.body-2', style({ opacity: 0 })),
-        query('.collapsible', style({ transform: 'rotate(0)' })),
+        query('.collapsible', style({ transform: 'rotate(0deg)' })),
         group([
-          query('ion-label.body-2', [
-            animate(300, style({ opacity: 1 })),
-          ]),
-          query('.collapsible', [
-            animate(300, style({ transform: 'rotate(180deg)' })),
-          ]),
+          query('.institute-logo-container', animate(500, style({
+            opacity: 1,
+          }))),
+          query('ion-label.body-2', animate(300, style({ opacity: 1 }))),
+          query('.collapsible', animate(300, style({
+            transform: 'rotate(-180deg)',
+          }))),
           animate(300),
         ])
       ]),
@@ -58,6 +62,7 @@ export class V3Page implements OnInit, OnDestroy {
   subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
+  directionIcon: string = this.direction();
 
   constructor(
     private modalController: ModalController,
@@ -209,5 +214,11 @@ export class V3Page implements OnInit, OnDestroy {
     }
 
     return (this.openMenu ? 'open' : 'closed');
+  }
+
+  // rotation animation logic
+  direction(): string {
+    this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
+    return this.directionIcon;
   }
 }
