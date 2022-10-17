@@ -76,3 +76,30 @@ ion-item-divider {
     }
   }
 }
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip::before {
+  content: attr(title);
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  background: #000;
+  color: #FFF;
+  border-radius: 3px;
+  opacity: 0;
+  transition: 0.3s;
+  overflow: hidden;
+  max-width: 100%;
+  pointer-events: none;
+  z-index: 2;
+  text-align: center;
+  font-size: small;
+}
+
+.tooltip:hover::before {
+  opacity: 1;
+  bottom: 0;
+}
