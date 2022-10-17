@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
+import { PopoverComponent } from './popover.component';
 
 @Component({
   selector: 'app-v3',
@@ -56,13 +57,17 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = true; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
+
+  // animations variables
+  openMenu = true; // collapsible submenu
   directionIcon: string = this.direction();
+  popover: HTMLIonPopoverElement;
+  poppedName: string;
 
   constructor(
     private modalController: ModalController,
@@ -73,6 +78,7 @@ export class V3Page implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private chatService: ChatService,
     private readonly utils: UtilsService,
+    private popoverController: PopoverController,
   ) {
   }
 
@@ -220,5 +226,26 @@ export class V3Page implements OnInit, OnDestroy {
   direction(): string {
     this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
     return this.directionIcon;
+  }
+
+  async onMouseEnter(type, e): Promise<void> {
+    if (this.popover) {
+      await this.popover.dismiss();
+    }
+
+    if (this.poppedName !== type) {
+      this.poppedName = type;
+      this.presentPopover(e);
+    }
+  }
+
+  async presentPopover(e?: Event) {
+    this.popover = await this.popoverController.create({
+      component: PopoverComponent,
+      event: e,
+      showBackdrop: false,
+    });
+
+    await this.popover.present();
   }
 }
