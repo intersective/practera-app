@@ -49,7 +49,11 @@
         </ion-item>
       </ion-list>
 
-      <ion-item lines="none" detail="false" class="footer" *ngIf="!isMobile">
+      <ion-item *ngIf="!isMobile"
+        class="footer"
+        lines="none"
+        detail="false"
+        aria-hidden="true">
         <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
           <span class="material-symbols-outlined collapsible">
             {{ directionIcon }}
