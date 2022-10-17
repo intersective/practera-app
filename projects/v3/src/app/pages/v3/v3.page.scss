@@ -85,8 +85,9 @@ ion-item-divider {
   content: attr(title);
   display: inline-block;
   position: absolute;
-  bottom: 0;
-  background: #000;
+  bottom: 8%;
+  padding: 3px;
+  background: gray;
   color: #FFF;
   border-radius: 3px;
   opacity: 0;
@@ -95,8 +96,8 @@ ion-item-divider {
   max-width: 100%;
   pointer-events: none;
   z-index: 2;
-  text-align: center;
-  font-size: small;
+  font-size: x-small;
+  right: 5%;
 }
 
 .collapsed .tooltip:hover::before {
