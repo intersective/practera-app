@@ -1,7 +1,8 @@
 <ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
   <ion-menu contentId="main-content"
     [ngClass]="{'collapsed': !isMobile && !openMenu}"
-    [@openClose]="collapsibleMenu">
+    [@openClose]="collapsibleMenu"
+    (@openClose.done)="direction()">
 
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>
@@ -50,7 +51,7 @@
       <ion-item lines="none" detail="false" class="footer" *ngIf="!isMobile">
         <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
           <span class="material-symbols-outlined collapsible">
-            {{ openMenu === false ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'  }}
+            {{ directionIcon }}
           </span>
         </ion-button>
       </ion-item>
