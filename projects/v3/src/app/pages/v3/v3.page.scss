@@ -99,7 +99,7 @@ ion-item-divider {
   font-size: small;
 }
 
-.tooltip:hover::before {
+.collapsed .tooltip:hover::before {
   opacity: 1;
   bottom: 0;
 }
