@@ -7,18 +7,62 @@ import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
 import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
+import { UtilsService } from '@v3/app/services/utils.service';
+import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-v3',
   templateUrl: './v3.page.html',
   styleUrls: ['./v3.page.scss'],
+  animations: [
+    trigger('openClose', [
+      state('open', style({
+        maxWidth: '280px',
+        minWidth: '280px',
+      })),
+      state('closed', style({
+        maxWidth: '72px',
+        minWidth: '72px',
+      })),
+      transition('open => closed', [
+        query('.institute-logo-container', style({ opacity: 0 })),
+        query('.collapsible', style({ transform: 'rotate(0deg)' })),
+        group([
+          query('.institute-logo-container', animate(500, style({
+            opacity: 1,
+          }))),
+          query('.collapsible', animate(300, style({
+            transform: 'rotate(180deg)',
+          }))),
+          animate(300),
+        ]),
+      ]),
+      transition('closed => open', [
+        query('.institute-logo-container', style({ opacity: 0 })),
+        query('ion-label.body-2', style({ opacity: 0 })),
+        query('.collapsible', style({ transform: 'rotate(0deg)' })),
+        group([
+          query('.institute-logo-container', animate(500, style({
+            opacity: 1,
+          }))),
+          query('ion-label.body-2', animate(300, style({ opacity: 1 }))),
+          query('.collapsible', animate(300, style({
+            transform: 'rotate(-180deg)',
+          }))),
+          animate(300),
+        ])
+      ]),
+    ]),
+  ]
 })
 export class V3Page implements OnInit, OnDestroy {
+  openMenu = true; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
+  directionIcon: string = this.direction();
 
   constructor(
     private modalController: ModalController,
@@ -27,7 +71,8 @@ export class V3Page implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private storageService: BrowserStorageService,
-    private chatService: ChatService
+    private chatService: ChatService,
+    private readonly utils: UtilsService,
   ) {
   }
 
@@ -108,6 +153,7 @@ export class V3Page implements OnInit, OnDestroy {
         }
       }));
     }
+    this.openMenu =false;
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
@@ -142,10 +188,37 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   get institutionLogo() {
+    if (this.openMenu !== true) {
+      return this.storageService.getUser().squareLogo || '/assets/logo.svg';
+    }
+
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
   }
 
   get institutionName() {
     return this.storageService.getUser().institutionName || 'Practera';
+  }
+
+  get isMobile() {
+    return this.utils.isMobile();
+  }
+
+  toggleMenu() {
+    this.openMenu = !this.openMenu;
+  }
+
+  // only desktop version require collapsed menu
+  get collapsibleMenu() {
+    if (this.isMobile) {
+      return 'open';
+    }
+
+    return (this.openMenu ? 'open' : 'closed');
+  }
+
+  // rotation animation logic
+  direction(): string {
+    this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
+    return this.directionIcon;
   }
 }

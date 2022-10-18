@@ -1,12 +1,48 @@
+ion-menu.collapsed {
+  &.menu-pane-visible {
+    --max-width: 72px;
+    --min-width: 72px;
+  }
+
+  .menu-item {
+    --padding-start: 15px;
+
+    &.selected {
+      --padding-start: 12px;
+    }
+
+    & > ion-icon {
+      margin: 5px;
+    }
+
+    & > ion-label {
+      display: none;
+    }
+
+    .item-inner {
+      display: none;
+    }
+  }
+
+  .institute-logo-container {
+    padding: 2em 0.3em;
+  }
+}
+
 ion-menu {
   border-right: 1px solid;
   border-right-color: var(--practera-grey-25);
-  &.show-menu {
-    --width: 280px;
+
+  &.menu-pane-visible, & > ion-item-divider {
+    --max-width: 280px;
+    max-width: 280px;
+    --min-width: 280px;
+    min-width: 280px;
   }
-  &.menu-pane-visible {
-    max-width: 280px !important;
-    min-width: 280px !important;
+
+  .footer {
+    position: absolute;
+    bottom: 0;
   }
 }
 ion-item-divider {
@@ -14,6 +50,8 @@ ion-item-divider {
 }
 
 .institute-logo-container {
+  height: 100px;
+  text-align: center;
   padding: 20px;
   img {
     max-width: 80%;
@@ -28,6 +66,7 @@ ion-item-divider {
     margin-right: 20px;
     color: var(--ion-color-primary);
   }
+
   &.selected {
     --padding-start: 17px;
     border-left: 3px solid;
@@ -36,4 +75,32 @@ ion-item-divider {
       color: var(--ion-color-primary);
     }
   }
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip::before {
+  content: attr(title);
+  display: inline-block;
+  position: absolute;
+  bottom: 8%;
+  padding: 3px;
+  background: gray;
+  color: #FFF;
+  border-radius: 3px;
+  opacity: 0;
+  transition: 0.3s;
+  overflow: hidden;
+  max-width: 100%;
+  pointer-events: none;
+  z-index: 2;
+  font-size: x-small;
+  right: 5%;
+}
+
+.collapsed .tooltip:hover::before {
+  opacity: 1;
+  bottom: 0;
 }
