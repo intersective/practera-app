@@ -63,7 +63,9 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         if (environment.demo) {
           return this.router.navigate(['v3','home']);
         }
-        return this.router.navigate(route);
+        if (route) {
+          return this.router.navigate(route);
+        }
       });
     } catch (err) {
       await this.notificationsService.alert({
