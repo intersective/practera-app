@@ -73,6 +73,22 @@ export class BrowserStorageService {
     return null;
   }
 
+  /**
+   * set cache into localStorage
+   *
+   * @param   {string}  key    index for identify a value later
+   *    - directLinkRoute: string
+   *    - fastFeedbackOpening: boolean
+   *    - authToken: string
+   *    - hasMultipleStacks: boolean
+   *    - programs: array
+   *    - tutorial: any
+   *    - unRegisteredDirectLink: boolean
+   *
+   * @param   {any}     value
+   *
+   * @return  {any}
+   */
   set(key: string, value: any) {
     return this.storage.setItem(key, JSON.stringify(value));
   }
