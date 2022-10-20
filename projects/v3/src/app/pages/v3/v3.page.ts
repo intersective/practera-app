@@ -189,7 +189,7 @@ export class V3Page implements OnInit, OnDestroy {
 
   get institutionLogo() {
     if (this.openMenu !== true) {
-      return this.storageService.getUser().squareLogo || '/assets/logo.svg';
+      return this.storageService.getUser().squareLogo || '';
     }
 
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
