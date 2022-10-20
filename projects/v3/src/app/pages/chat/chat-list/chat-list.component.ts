@@ -31,6 +31,8 @@ export class ChatListComponent {
     public pusherService: PusherService
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
+    this.utils.getEvent('chat:delete-message').subscribe(event => this._loadChatData());
+    this.utils.getEvent('chat:edit-message').subscribe(event => this._loadChatData());
     this.utils.getEvent('chat:info-update').subscribe(event => this._loadChatData());
     if (!this.utils.isMobile()) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
