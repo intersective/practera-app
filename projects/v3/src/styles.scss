@@ -268,3 +268,11 @@ ion-button.practera-btn {
 .no-ripple {
   --ripple-color: transparent;
 }
+
+.required-mark {
+  color: var(--ion-color-danger);
+
+  &.contrast {
+    color: #EDFB32 !important;
+  }
+}
