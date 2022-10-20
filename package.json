@@ -45,6 +45,7 @@
     "@ionic/storage": "^3.0.6",
     "angular2-text-mask": "^9.0.0",
     "apollo-angular": "^3.0.1",
+    "color-convert": "^2.0.1",
     "core-js": "^3.21.1",
     "exif-js": "^2.3.0",
     "filestack-js": "^3.25.0",
