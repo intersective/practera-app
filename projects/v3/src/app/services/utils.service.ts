@@ -7,6 +7,7 @@ import { ApolloService } from '@v3/services/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors } from './storage.service';
+import * as convert from 'color-convert';
 
 export enum ThemeColor {
   primary = 'primary',
@@ -555,5 +556,25 @@ export class UtilsService {
       default:
         return role;
     }
+  }
+
+  isColor(color: string, primaryColor: Colors["primary"]): boolean {
+    if (this.isEmpty(primaryColor)) {
+      return false;
+    }
+
+    const hsl = convert.hex.hsl(primaryColor);
+    switch (color.toLowerCase()) {
+      case 'red':
+        const hueMatched = hsl[0] >= 345 || hsl[0] <= 15;
+        const saturationMatched = hsl[1] >= 80 || hsl[1] <= 100;
+        const lightnessMatched = hsl[2] >= 40 || hsl[2] <= 60;
+        if (hueMatched && saturationMatched && lightnessMatched) {
+          return true;
+        }
+      break;
+    }
+
+    return false;
   }
 }
