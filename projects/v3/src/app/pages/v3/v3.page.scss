@@ -26,6 +26,9 @@ ion-menu.collapsed {
 
   .institute-logo-container {
     padding: 2em 0.3em;
+    &.hidden {
+      visibility: hidden;
+    }
   }
 }
 
