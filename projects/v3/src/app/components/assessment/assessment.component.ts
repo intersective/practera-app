@@ -451,6 +451,10 @@ export class AssessmentComponent implements OnChanges {
     return '';
   }
 
+  get isRedColor(): boolean {
+    return this.utils.isColor('red', this.storage.getUser().colors?.primary);
+  }
+
   /**
    * When user click on the back button
    */

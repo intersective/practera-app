@@ -6,7 +6,7 @@
 
     <ion-content>
       <h1 class="for-accessibility">Side menu</h1>
-      <div class="institute-logo-container">
+      <div class="institute-logo-container" [ngClass]="{'hidden': !institutionLogo}">
         <img [src]="institutionLogo" [attr.alt]="institutionName">
       </div>
 
