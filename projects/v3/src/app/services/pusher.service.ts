@@ -283,6 +283,12 @@ export class PusherService {
           .bind('client-chat-new-message', data => {
             this.utils.broadcastEvent('chat:new-message', data);
           })
+          .bind('client-chat-delete-message', data => {
+            this.utils.broadcastEvent('chat:delete-message', data);
+          })
+          .bind('client-chat-edit-message', data => {
+            this.utils.broadcastEvent('chat:edit-message', data);
+          })
           .bind('client-typing-event', data => {
             this.utils.broadcastEvent('typing-' + channelName, data);
           })
