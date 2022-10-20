@@ -88,4 +88,8 @@ export class FastFeedbackComponent implements OnInit {
       this.dismiss(submissionResult);
     }
   }
+
+  get isRedColor(): boolean {
+    return this.utils.isColor('red', this.storage.getUser().colors?.primary);
+  }
 }
