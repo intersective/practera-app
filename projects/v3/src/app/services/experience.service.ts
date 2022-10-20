@@ -32,7 +32,18 @@ export interface ProgramObj {
   institution: {
     name: string;
     logo_url: string;
-    config: string;
+    config: {
+      appv3?: boolean; // appv3 activation
+      banner_url?: string;
+      billing_plan?: string;
+      card_url?: string;
+      email_template?: string;
+      icon_url?: string; // square logo string institution logo
+      lead_url?: string;
+      primary_color?: string;
+      secondary_color?: string;
+      support_name?: string;
+    };
     uuid: string;
   };
   progress?: number;
@@ -217,6 +228,7 @@ export class ExperienceService {
       truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
       experienceId: programObj.program.experience_id,
       institutionLogo: programObj.institution ? programObj.institution.logo_url : null,
+      squareLogo: programObj.institution?.config?.icon_url || null,
       institutionName: programObj.institution ? programObj.institution.name : null,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
@@ -227,7 +239,7 @@ export class ExperienceService {
       chatEnabled: this.utils.has(programObj, 'experience.config.chat_enable') ? programObj.experience.config.chat_enable : true,
       teamId: null,
       hasEvents: false,
-      hasReviews: false
+      hasReviews: false,
     });
 
     this.sharedService.onPageLoad();
