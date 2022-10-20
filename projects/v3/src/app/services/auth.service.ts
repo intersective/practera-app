@@ -159,11 +159,6 @@ export class AuthService {
     this.storage.setUser({ apikey: norm.apikey });
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
-    if (norm.institution?.config?.icon_url) {
-      this.storage.setUser({
-        squareLogo: norm.institution.config.icon_url
-      });
-    }
     return norm;
   }
 
