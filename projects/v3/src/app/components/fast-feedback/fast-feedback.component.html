@@ -16,7 +16,7 @@
         [formGroup]="fastFeedbackForm">
         <ion-list-header class="question-title">
           {{ question.title }}
-          <ion-text color="danger" *ngIf="question.isRequired">*</ion-text>
+          <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
           <ion-text>
             <p><i>{{ question.description }}</i></p>
           </ion-text>

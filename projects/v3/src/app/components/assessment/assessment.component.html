@@ -118,7 +118,10 @@
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
               <ion-label class="ion-margin-vertical">
                 {{ question.name }}
-                <span class="required-mark" *ngIf="question.isRequired">&nbsp;*</span>
+                <span class="required-mark"
+                  [ngClass]="{'contrast': isRedColor}"
+                  *ngIf="question.isRequired"
+                >&nbsp;*</span>
               </ion-label>
 
               <ion-button mode="ios"
