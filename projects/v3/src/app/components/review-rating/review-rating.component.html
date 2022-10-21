@@ -22,6 +22,38 @@
 
   <div class="ion-padding-top ion-padding-bottom">
     <div class="ion-padding-top">
+      <div class="rating-range">
+        <div class="mood">
+          <span class="material-symbols-outlined">
+            mood_bad
+          </span>
+          <p>Very Poor</p>
+        </div>
+        <div class="mood">
+          <span class="material-symbols-outlined">
+            sentiment_dissatisfied
+          </span>
+          <p>Poor</p>
+        </div>
+        <div class="mood">
+          <span class="material-symbols-outlined">
+            sentiment_neutral
+          </span>
+          <p>Average</p>
+        </div>
+        <div class="mood">
+          <span class="material-symbols-outlined">
+            sentiment_satisfied
+          </span>
+          <p>Good</p>
+        </div>
+        <div class="mood">
+          <span class="material-symbols-outlined">
+            mood
+          </span>
+          <p>Excellent</p>
+        </div>
+      </div>
       <ion-range mode="ios" min="0" max="1"
         step="0.25" snaps="true"
         [(ngModel)]="ratingData.rating"
