@@ -10,13 +10,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
-import { FilterPipe } from './pipes/filter.pipe';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
     AppComponent,
-    FilterPipe,
   ],
   imports: [
     BrowserModule,

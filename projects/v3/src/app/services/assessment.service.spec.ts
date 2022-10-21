@@ -449,8 +449,6 @@ describe('AssessmentService', () => {
         expect(submission).toEqual(expectedSubmission);
       });
       service.review$.subscribe(review => {
-        console.log('expectedReview::', review);
-        console.log('expectedReview2::', expectedReview);
         expect(review).toEqual(expectedReview);
       });
       expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);
