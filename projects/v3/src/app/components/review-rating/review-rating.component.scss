@@ -41,27 +41,25 @@
     margin-top:35px;
   }
 
-  .range-text {
-    display: inline-flex;
-    width: 100%;
+  .rating-range {
+    display: flex;
+    justify-content: space-evenly;
+    .mood {
+      cursor: pointer;
+      text-align: center;
+      &.selected {
+        color: var(--ion-color-primary);
+      }
 
-    p {
-      margin: auto;
-      font-size: 14px;
-      padding-left:10px;
-      padding-right:10px;
+      p {
+        margin-top: auto;
+      }
     }
 
-    p:nth-child(1) {
-      margin-left: 0;
-      color: #666666;
+    .material-symbols-outlined {
+      font-weight: 300;
+      font-size: 32px;
     }
-
-    p:nth-child(2) {
-      margin-right: 0;
-      color: #666666;
-    }
-
   }
 
   .quick-tagging {

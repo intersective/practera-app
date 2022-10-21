@@ -182,7 +182,6 @@ describe('AuthDirectLoginComponent', () => {
         }
 
         expect(sharedSpy.initWebServices).toHaveBeenCalled();
-        console.log('router::', routerSpy.navigate.calls.first().args);
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(redirect);
       }));
 
