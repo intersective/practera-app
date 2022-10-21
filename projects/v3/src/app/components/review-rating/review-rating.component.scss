@@ -41,6 +41,22 @@
     margin-top:35px;
   }
 
+  .rating-range {
+    display: flex;
+    justify-content: space-evenly;
+    .mood {
+      text-align: center;
+      p {
+        margin-top: auto;
+      }
+    }
+
+    .material-symbols-outlined {
+      font-weight: 300;
+      font-size: 32px;
+    }
+  }
+
   .range-text {
     display: inline-flex;
     width: 100%;
