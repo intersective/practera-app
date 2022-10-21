@@ -91,7 +91,6 @@ describe('ContactNumberFormComponent', () => {
 
       component.ngOnInit();
       expect(component.contactNumber).toEqual('123 456 789 12');
-      console.log('asdkjabwd awjkdnajwdn', (component.contactNumber));
     });
 
     describe('_checkCurrentContactNumberOrigin()', () => {

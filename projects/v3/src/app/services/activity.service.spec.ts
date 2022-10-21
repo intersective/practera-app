@@ -218,7 +218,6 @@ describe('ActivityService', () => {
       service.getNextTask(1, '', 1).subscribe(res => {
         expect(res).toEqual(expected);
       }, err => {
-        console.log('ERR123::', err);
         expect(err).toBeFalsy();
       });
     });
