@@ -250,8 +250,6 @@ describe('EventService', () => {
       ];
       requestSpy.get.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => {
-        console.log('res', res);
-        console.log('expected', expected);
         expect(res).toEqual(expected);
       });
     });

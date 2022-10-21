@@ -5,7 +5,6 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { DOCUMENT, ViewportScroller } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 3000;
@@ -71,8 +70,6 @@ export class AssessmentComponent implements OnChanges {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    @Inject(DOCUMENT) private readonly document: Document,
-    private scroller: ViewportScroller,
   ) {}
 
   ngOnChanges() {
@@ -451,6 +448,7 @@ export class AssessmentComponent implements OnChanges {
     return '';
   }
 
+  // [AV2-1270] condition to present asterisk in more obvious color
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
