@@ -173,7 +173,7 @@ export class SharedService {
           this.storage.remove('startReadTopic');
         },
         err => {
-          console.log('error in mark Topic Stop On Navigating - ', err);
+          console.error('error in mark Topic Stop On Navigating - ', err);
         }
       );
     }
