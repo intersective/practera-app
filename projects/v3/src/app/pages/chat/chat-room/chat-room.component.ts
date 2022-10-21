@@ -558,7 +558,7 @@ export class ChatRoomComponent implements OnInit {
         return this._postAttachment(res);
       },
       err => {
-        console.log(err);
+        console.error(err);
       }
     );
   }
