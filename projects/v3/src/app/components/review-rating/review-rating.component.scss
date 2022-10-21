@@ -45,7 +45,12 @@
     display: flex;
     justify-content: space-evenly;
     .mood {
+      cursor: pointer;
       text-align: center;
+      &.selected {
+        color: var(--ion-color-primary);
+      }
+
       p {
         margin-top: auto;
       }
@@ -55,29 +60,6 @@
       font-weight: 300;
       font-size: 32px;
     }
-  }
-
-  .range-text {
-    display: inline-flex;
-    width: 100%;
-
-    p {
-      margin: auto;
-      font-size: 14px;
-      padding-left:10px;
-      padding-right:10px;
-    }
-
-    p:nth-child(1) {
-      margin-left: 0;
-      color: #666666;
-    }
-
-    p:nth-child(2) {
-      margin-right: 0;
-      color: #666666;
-    }
-
   }
 
   .quick-tagging {
