@@ -12,13 +12,41 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
   styleUrls: ['./review-rating.component.scss']
 })
 export class ReviewRatingComponent {
+  moods = [
+    {
+      icon: 'mood_bad',
+      description: 'Very Poor',
+      score: 0,
+    },
+    {
+      icon: 'sentiment_dissatisfied',
+      description: 'Poor',
+      score: 0.25,
+    },
+    {
+      icon: 'sentiment_neutral',
+      description: 'Average',
+      score: 0.5,
+    },
+    {
+      icon: 'sentiment_satisfied',
+      description: 'Good',
+      score: 0.75,
+    },
+    {
+      icon: 'mood',
+      description: 'Excellent',
+      score: 1,
+    },
+  ];
+  moodSelected: number;
 
   // Default redirect i.e home page.
   redirect = ['/'];
 
   ratingData: ReviewRating = {
     assessment_review_id: null,
-    rating : 0.5,
+    rating : null,
     comment: '',
     tags: []
   };
@@ -45,20 +73,25 @@ export class ReviewRatingComponent {
   }
 
   submitReviewRating() {
+    if (this.ratingData?.rating === undefined || this.moodSelected === undefined) {
+      return;
+    }
+
     this.isSubmitting = true;
     // round to 2 decimal place
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
 
     this.reviewRatingService.submitRating(this.ratingData).subscribe(
-      result => {
+      _result => {
         this.isSubmitting = false;
         this._closeReviewRating();
       },
-      err => {
-        const toasted = this.notificationsService.alert({
+      async err => {
+        await this.notificationsService.alert({
           header: 'Error submitting rating',
-          message: err.msg || JSON.stringify(err)
+          message: err.msg || JSON.stringify(err),
         });
+        this.isSubmitting = false;
 
         throw new Error(err);
       }
@@ -106,4 +139,8 @@ export class ReviewRatingComponent {
     this.ratingData.tags = this.utils.addOrRemove(this.ratingData.tags, tag);
   }
 
+  rateMood(mood: number): void {
+    this.moodSelected = mood;
+    this.ratingData.rating = this.moods[mood].score;
+  }
 }
