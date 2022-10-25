@@ -52,6 +52,10 @@ export class TabsPage implements OnInit, OnDestroy {
       this.notificationsService.getChatMessage().subscribe();
     }));
 
+    this.subscriptions.push(this.utils.getEvent('chat:delete-message').subscribe(() => {
+      this.notificationsService.getChatMessage().subscribe();
+    }));
+
     this.subscriptions.push(this.utils.getEvent('event-reminder').subscribe(event => {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
