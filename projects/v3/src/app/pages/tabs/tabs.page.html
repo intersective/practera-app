@@ -4,7 +4,7 @@
       <ion-icon name="home"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="events" [ngClass]="{'selected': selectedTab === 'events'}">
+    <ion-tab-button class="tab-item" tab="events" [ngClass]="{'selected': selectedTab === 'events'}" *ngIf="showEvents">
       <ion-icon name="today"></ion-icon>
     </ion-tab-button>
 
