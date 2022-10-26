@@ -11,6 +11,9 @@ import { of } from 'rxjs';
 
 import { V3Page } from './v3.page';
 import { RouterTestingModule } from '@angular/router/testing';
+import { UtilsService } from '@v3/app/services/utils.service';
+import { TestUtils } from '@testingv3/utils';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 describe('V3Page', () => {
   let component: V3Page;
@@ -19,7 +22,7 @@ describe('V3Page', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ V3Page ],
-      imports: [IonicModule.forRoot(), RouterTestingModule],
+      imports: [IonicModule.forRoot(), RouterTestingModule, NoopAnimationsModule],
       providers: [
         {
           provide: ModalController,
@@ -57,6 +60,10 @@ describe('V3Page', () => {
           useValue: jasmine.createSpyObj('ChatService', [
             'getChatList',
           ]),
+        },
+        {
+          provide: UtilsService,
+          useClass: TestUtils,
         },
       ]
     }).compileComponents();
