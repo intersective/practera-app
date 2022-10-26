@@ -28,7 +28,7 @@ const programObj: ProgramObj[] = [1, 2].map(num => {
     institution: {
       name: '',
       logo_url: '',
-      config: '',
+      config: {},
       uuid: '',
     }
   };
@@ -61,7 +61,7 @@ programObj.push(...[3].map(num => {
     institution: {
       name: '',
       logo_url: '',
-      config: '',
+      config: {},
       uuid: '',
     }
   };
@@ -94,7 +94,7 @@ programObj.push(...[4].map(num => {
     institution: {
       name: '',
       logo_url: '',
-      config: '',
+      config: {},
       uuid: '',
     },
   };
