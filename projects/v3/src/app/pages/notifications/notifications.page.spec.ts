@@ -66,9 +66,6 @@ describe('NotificationsPage', () => {
     it('should initiate subscriptions', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(false);
       component['_addChatTodoItem'] = jasmine.createSpy('_addChatTodoItem');
-      // notificationSpy.notification$
-      // notificationSpy.eventReminder$
-      // notificationSpy.newMessage$
       component.ngOnInit();
 
       expect(component.todoItems).toEqual(true as any);
