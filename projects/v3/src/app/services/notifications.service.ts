@@ -289,8 +289,6 @@ export class NotificationsService {
     return this.modal(ReviewRatingComponent, {
       reviewId,
       redirect
-    }, {
-      canDismiss: false,
     });
   }
 
