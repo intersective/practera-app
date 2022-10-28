@@ -140,7 +140,7 @@ export class ActivityDesktopPage implements OnInit {
     }
 
     // display review rating modal
-    return await this.assessmentService.popUpReviewRating(this.review.id, false);
+    return await this.notificationsService.popUpReviewRating(this.review.id, false);
   }
 
   goBack() {
