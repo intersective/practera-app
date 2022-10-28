@@ -40,7 +40,6 @@ export class ReviewRatingComponent {
     },
   ];
   moodSelected: number;
-  ratingSessionEnd: boolean = false;
 
   // Default redirect i.e home page.
   redirect = ['/'];
@@ -73,7 +72,7 @@ export class ReviewRatingComponent {
     return this.utils.isMobile();
   }
 
-  async submitReviewRating() {
+  submitReviewRating() {
     if (this.ratingData?.rating === undefined || this.moodSelected === undefined) {
       return;
     }
@@ -82,25 +81,28 @@ export class ReviewRatingComponent {
     // round to 2 decimal place
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
 
-    try {
-      await this.reviewRatingService.submitRating(this.ratingData).toPromise();
-      this.isSubmitting = false;
-      this.ratingSessionEnd = true;
-    } catch (err) {
-      await this.notificationsService.alert({
-        header: 'Error submitting rating',
-        message: err.msg || JSON.stringify(err),
-      });
-      this.isSubmitting = false;
+    this.reviewRatingService.submitRating(this.ratingData).subscribe(
+      _result => {
+        this.isSubmitting = false;
+        this._closeReviewRating();
+      },
+      async err => {
+        await this.notificationsService.alert({
+          header: 'Error submitting rating',
+          message: err.msg || JSON.stringify(err),
+        });
+        this.isSubmitting = false;
 
-      throw new Error(err);
-    }
+        throw new Error(err);
+      }
+    );
   }
 
   private async _closeReviewRating(): Promise<any> {
+    this.modalController.dismiss();
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
-      return await this.fastFeedbackService.pullFastFeedback().toPromise();
+      return this.fastFeedbackService.pullFastFeedback().toPromise();
     }
 
     if (!this.utils.isMobile()) {
@@ -140,10 +142,5 @@ export class ReviewRatingComponent {
   rateMood(mood: number): void {
     this.moodSelected = mood;
     this.ratingData.rating = this.moods[mood].score;
-  }
-
-  async dismissModal(): Promise<void> {
-    await this.modalController.dismiss();
-    await this._closeReviewRating();
   }
 }

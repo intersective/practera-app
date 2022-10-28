@@ -10,91 +10,73 @@
 </ion-header>
 
 <ion-content class="review-rating ion-padding">
-  <ng-container *ngIf="ratingSessionEnd === false; else successful">
-    <div class="ion-padding-top ion-padding-bottom">
-      <div class="ion-padding-top">
-        <div class="rating-range">
-          <div class="mood" *ngFor="let mood of moods; let i = index"
-            [ngClass]="{'selected': moodSelected === i}"
-            (click)="rateMood(i)">
-            <span class="material-symbols-outlined">
-              {{ mood.icon }}
-            </span>
-            <p>{{ mood.description }}</p>
-          </div>
+  <div class="ion-padding-top ion-padding-bottom">
+    <div class="ion-padding-top">
+      <div class="rating-range">
+        <div class="mood" *ngFor="let mood of moods; let i = index"
+          [ngClass]="{'selected': moodSelected === i}"
+          (click)="rateMood(i)">
+          <span class="material-symbols-outlined">
+            {{ mood.icon }}
+          </span>
+          <p>{{ mood.description }}</p>
         </div>
       </div>
     </div>
-
-    <ng-container *ngIf="ratingData.rating >= 0 && this.moodSelected !== undefined">
-      <h2 class="subTitle">Send a quick thank you note!</h2>
-      <div class="quick-tagging">
-        <ion-button color="medium" class="toggle" fill="outline"
-          [disabled]="ratingData.comment.length > 0"
-          [class.active]="ratingData.tags.includes('Thanks')"
-          (click)="addOrRemoveTags('Thanks')"
-        >Thanks</ion-button>
-        <ion-button color="medium" class="toggle" fill="outline"
-          [disabled]="ratingData.comment.length > 0"
-          [class.active]="ratingData.tags.includes('Thank You')"
-          (click)="addOrRemoveTags('Thank You')"
-        >Thank You</ion-button>
-        <ion-button color="medium" class="toggle" fill="outline"
-          [disabled]="ratingData.comment.length > 0"
-          [class.active]="ratingData.tags.includes('You are awesome!')"
-          (click)="addOrRemoveTags('You are awesome!')"
-        >You are awesome!</ion-button>
-        <ion-button color="medium" class="toggle" fill="outline"
-          [disabled]="ratingData.comment.length > 0"
-          [class.active]="ratingData.tags.includes('Great support')"
-          (click)="addOrRemoveTags('Great support')"
-        >Great support</ion-button>
-        <ion-button color="medium" class="toggle" fill="outline"
-          [disabled]="ratingData.comment.length > 0"
-          [class.active]="ratingData.tags.includes('Very helpful')"
-          (click)="addOrRemoveTags('Very helpful')"
-        >Very helpful</ion-button>
-        <ion-button color="medium" class="toggle" fill="outline"
-          [disabled]="ratingData.comment.length > 0"
-          [class.active]="ratingData.tags.includes('Friendly')"
-          (click)="addOrRemoveTags('Friendly')"
-        >Friendly</ion-button>
-      </div>
-
-      <ion-input placeholder="Add a comment"
-        [disabled]="ratingData.tags.length > 0"
-        aria-label="thank you message for reviewer"
-        class="comment-box ion-padding"
-        [(ngModel)]="ratingData.comment"
-        [clearInput]="true"
-      ></ion-input>
-    </ng-container>
-
-    <div class="div-after-logo ion-text-center ion-padding-top">
-      <ion-button mode="ios"
-        [disabled]="isSubmitting ||  this.moodSelected === undefined"
-        (click)="submitReviewRating()"
-        shape="round"
-        class="btn-cta">
-        <ng-container *ngIf="!isSubmitting">Submit Feedback</ng-container>
-        <ng-container *ngIf="isSubmitting">Submitting...</ng-container>
-      </ion-button>
-    </div>
-  </ng-container>
-</ion-content>
-
-<ng-template #successful>
-  <h1 class="for-accessibility">Your information has been submitted successfully.</h1>
-  <div class="successful-submission" ria-hidden="true">
-    <ion-icon name="thumbs-up-sharp"></ion-icon>
-    <p>Thank you, feedback received.</p>
   </div>
+
+  <ng-container *ngIf="ratingData.rating >= 0 && this.moodSelected !== undefined">
+    <h2 class="subTitle">Send a quick thank you note!</h2>
+    <div class="quick-tagging">
+      <ion-button color="medium" class="toggle" fill="outline"
+        [disabled]="ratingData.comment.length > 0"
+        [class.active]="ratingData.tags.includes('Thanks')"
+        (click)="addOrRemoveTags('Thanks')"
+      >Thanks</ion-button>
+      <ion-button color="medium" class="toggle" fill="outline"
+        [disabled]="ratingData.comment.length > 0"
+        [class.active]="ratingData.tags.includes('Thank You')"
+        (click)="addOrRemoveTags('Thank You')"
+      >Thank You</ion-button>
+      <ion-button color="medium" class="toggle" fill="outline"
+        [disabled]="ratingData.comment.length > 0"
+        [class.active]="ratingData.tags.includes('You are awesome!')"
+        (click)="addOrRemoveTags('You are awesome!')"
+      >You are awesome!</ion-button>
+      <ion-button color="medium" class="toggle" fill="outline"
+        [disabled]="ratingData.comment.length > 0"
+        [class.active]="ratingData.tags.includes('Great support')"
+        (click)="addOrRemoveTags('Great support')"
+      >Great support</ion-button>
+      <ion-button color="medium" class="toggle" fill="outline"
+        [disabled]="ratingData.comment.length > 0"
+        [class.active]="ratingData.tags.includes('Very helpful')"
+        (click)="addOrRemoveTags('Very helpful')"
+      >Very helpful</ion-button>
+      <ion-button color="medium" class="toggle" fill="outline"
+        [disabled]="ratingData.comment.length > 0"
+        [class.active]="ratingData.tags.includes('Friendly')"
+        (click)="addOrRemoveTags('Friendly')"
+      >Friendly</ion-button>
+    </div>
+
+    <ion-input placeholder="Add a comment"
+      [disabled]="ratingData.tags.length > 0"
+      aria-label="thank you message for reviewer"
+      class="comment-box ion-padding"
+      [(ngModel)]="ratingData.comment"
+      [clearInput]="true"
+    ></ion-input>
+  </ng-container>
 
   <div class="div-after-logo ion-text-center ion-padding-top">
     <ion-button mode="ios"
-      (click)="dismissModal()"
-      shape="round" class="btn-cta">
-      Continue
+      [disabled]="isSubmitting ||  this.moodSelected === undefined"
+      (click)="submitReviewRating()"
+      shape="round"
+      class="btn-cta">
+      <ng-container *ngIf="!isSubmitting">Submit Feedback</ng-container>
+      <ng-container *ngIf="isSubmitting">Submitting...</ng-container>
     </ion-button>
   </div>
-</ng-template>
+</ion-content>
