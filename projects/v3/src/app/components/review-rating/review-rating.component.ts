@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
@@ -11,7 +11,7 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
 })
-export class ReviewRatingComponent {
+export class ReviewRatingComponent implements OnInit {
   moods = [
     {
       icon: 'mood_bad',
@@ -40,10 +40,13 @@ export class ReviewRatingComponent {
     },
   ];
   moodSelected: number;
-  ratingSessionEnd: boolean = false;
+  ratingSessionEnd: boolean = true;
 
   // Default redirect i.e home page.
-  redirect = ['/'];
+  @Input() redirect = ['/'];
+
+  // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
+  @Input() reviewId: number;
 
   ratingData: ReviewRating = {
     assessment_review_id: null,
@@ -63,10 +66,8 @@ export class ReviewRatingComponent {
     readonly fastFeedbackService: FastFeedbackService,
   ) {}
 
-  // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
-  @Input()
-  set reviewId(reviewId: number) {
-    this.ratingData.assessment_review_id = reviewId;
+  ngOnInit(): void {
+    this.ratingData.assessment_review_id = this.reviewId;
   }
 
   get isMobile() {
@@ -97,7 +98,7 @@ export class ReviewRatingComponent {
     }
   }
 
-  private async _closeReviewRating(): Promise<any> {
+  private async fastFeedbackOrRedirect(): Promise<any> {
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
       return await this.fastFeedbackService.pullFastFeedback().toPromise();
@@ -143,7 +144,7 @@ export class ReviewRatingComponent {
   }
 
   async dismissModal(): Promise<void> {
-    await this.modalController.dismiss();
-    await this._closeReviewRating();
+    await this.modalController.dismiss(null, 'cancel', `review-popup-${this.reviewId}`);
+    await this.fastFeedbackOrRedirect();
   }
 }
