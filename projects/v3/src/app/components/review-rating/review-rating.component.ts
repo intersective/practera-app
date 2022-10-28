@@ -40,7 +40,7 @@ export class ReviewRatingComponent implements OnInit {
     },
   ];
   moodSelected: number;
-  ratingSessionEnd: boolean = true;
+  ratingSessionEnd: boolean = false;
 
   // Default redirect i.e home page.
   @Input() redirect = ['/'];
