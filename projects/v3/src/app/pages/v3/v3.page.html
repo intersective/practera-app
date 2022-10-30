@@ -14,7 +14,7 @@
         <ion-menu-toggle autoHide="false"
           *ngFor="let p of appPages; let i = index">
           <ion-item class="menu-item tooltip"
-            *ngIf="p.title !== 'Messages' || (p.title === 'Messages' && showMessages)"
+            *ngIf="isVisible(p.title)"
             (keydown)="keyboardNavigate(p.url, $event)"
             [routerLink]="p.url"
             routerLinkActive="selected"

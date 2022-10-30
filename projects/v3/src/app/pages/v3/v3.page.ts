@@ -62,6 +62,8 @@ export class V3Page implements OnInit, OnDestroy {
   subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
+  showEvents: boolean = false;
+  showReviews: boolean = false;
   directionIcon: string = this.direction();
 
   constructor(
@@ -73,14 +75,13 @@ export class V3Page implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private chatService: ChatService,
     private readonly utils: UtilsService,
-  ) {
-  }
+  ) { }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => subs.unsubscribe());
   }
 
-  private _menuWithReview() {
+  private _initMenuItems() {
     this.appPages = [
       {
         title: 'Home',
@@ -105,40 +106,28 @@ export class V3Page implements OnInit, OnDestroy {
     ];
   }
 
-  private _menuWithoutReview() {
-    this.appPages = [
-      {
-        title: 'Home',
-        url: '/v3/home',
-        icon: 'home'
-      },
-      {
-        title: 'Events',
-        url: '/v3/events',
-        icon: 'today'
-      },
-      {
-        title: 'Messages',
-        url: '/v3/messages',
-        icon: 'mail'
-      }
-    ];
-  }
-
   ngOnInit(): void {
-    this._menuWithoutReview();
+    this._initMenuItems();
     this.subscriptions = [];
     this.subscriptions.push(
       this.reviewService.reviews$.subscribe(res => {
         if (res && res.length) {
-          this._menuWithReview();
+          this.showReviews = true;
         } else {
-          this._menuWithoutReview();
+          this.showReviews = false;
         }
       })
     );
+
     this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
+
+      // Hide events tab to other user roles. Show only for participants
+      if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
+        this.showEvents = true;
+      } else {
+        this.showEvents = false;
+      }
     }));
 
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
@@ -220,5 +209,18 @@ export class V3Page implements OnInit, OnDestroy {
   direction(): string {
     this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
     return this.directionIcon;
+  }
+
+  isVisible (menuTitle: string): boolean {
+    switch (menuTitle) {
+      case 'Messages':
+        return this.showMessages;
+      case 'Events':
+        return this.showEvents;
+      case 'Reviews':
+        return this.showReviews;
+      default:
+        return true;
+    }
   }
 }
