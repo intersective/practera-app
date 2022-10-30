@@ -13,8 +13,6 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./assessment-mobile.page.scss'],
 })
 export class AssessmentMobilePage implements OnInit {
-
-
   assessment: Assessment;
   submission: Submission;
   review: AssessmentReview;
@@ -118,7 +116,7 @@ export class AssessmentMobilePage implements OnInit {
 
     try {
       // display review rating modal
-      return await this.assessmentService.popUpReviewRating(this.review.id, false);
+      return await this.notificationsService.popUpReviewRating(this.review.id, false);
     } catch (err) {
       const header = 'Can not get review rating information';
       await this.notificationsService.alert({

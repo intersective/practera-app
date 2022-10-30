@@ -49,7 +49,7 @@ export class ActivityCompletePopUpComponent {
   confirmed(continueToActivity: boolean) {
     this.modalController.dismiss();
     if (!continueToActivity) {
-      const route = this.utils.isMobile() ? ['v3', 'activity-mobile', this.activityId] : ['v3', 'activity-desktop', this.activityId]
+      const route = this.utils.isMobile() ? ['v3', 'activity-mobile', this.activityId] : ['v3', 'activity-desktop', this.activityId];
       this.router.navigate(route);
     } else {
       if (this.activityCompleted) {
