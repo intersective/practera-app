@@ -7,7 +7,6 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ApolloService } from './apollo.service';
-import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
