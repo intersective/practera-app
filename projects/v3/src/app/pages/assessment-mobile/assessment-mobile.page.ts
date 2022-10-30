@@ -13,8 +13,6 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./assessment-mobile.page.scss'],
 })
 export class AssessmentMobilePage implements OnInit {
-
-
   assessment: Assessment;
   submission: Submission;
   review: AssessmentReview;
