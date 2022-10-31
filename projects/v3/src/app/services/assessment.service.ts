@@ -7,7 +7,6 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ApolloService } from './apollo.service';
-import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
@@ -527,22 +526,6 @@ export class AssessmentService {
         endPoint: api.post.todoitem,
         data: postData
       });
-  }
-
-  /**
-   * trigger reviewer rating modal
-   *
-   * @param   {number}          reviewId  submission review record id
-   * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
-   *                                      routing (stay at same component)
-   *
-   * @return  {Promise<void>}             deferred ionic modal
-   */
-  popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.NotificationsService.modal(ReviewRatingComponent, {
-      reviewId,
-      redirect
-    });
   }
 
   checkReviewer(reviewer): string {

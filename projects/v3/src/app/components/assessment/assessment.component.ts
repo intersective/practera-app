@@ -206,9 +206,9 @@ export class AssessmentComponent implements OnChanges {
    * When user click the bottom button
    */
   continueToNextTask() {
-    this.btnDisabled = true;
     switch (this._btnAction) {
       case 'submit':
+        this.btnDisabled = true;
         return this._submit();
       case 'readFeedback':
         return this.readFeedback.emit(this.submission.id);
