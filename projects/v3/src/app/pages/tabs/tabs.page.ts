@@ -62,7 +62,6 @@ export class TabsPage implements OnInit, OnDestroy {
 
     // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
     this.subscriptions.push(this.notificationsService.notification$.subscribe());
-    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
 
     this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
     this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
