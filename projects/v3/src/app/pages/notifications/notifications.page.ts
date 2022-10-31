@@ -50,14 +50,6 @@ export class NotificationsPage implements OnInit, OnDestroy {
         this.eventReminders.push(session);
       }
     }));
-
-    this.subscriptions.push(this.notificationsService.newMessage$.subscribe(chatMessage => {
-      if (!this.utils.isEmpty(chatMessage)) {
-        this._addChatTodoItem(chatMessage);
-      } else {
-        this._removeChatTodoItem();
-      }
-    }));
   }
 
   ngOnDestroy(): void {

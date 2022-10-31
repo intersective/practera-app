@@ -1,14 +1,15 @@
 import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
+import { DOCUMENT } from '@angular/common';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-chat-room',
@@ -62,6 +63,7 @@ export class ChatRoomComponent implements OnInit {
     private ngZone: NgZone,
     public element: ElementRef,
     private route: ActivatedRoute,
+    private notificationsService: NotificationsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => {
@@ -353,6 +355,8 @@ export class ChatRoomComponent implements OnInit {
               channelUuid: this.chatChannel.uuid,
               readcount: messageIds.length
             });
+            // after messages read need to update chat notification data on notification service
+            this.notificationsService.getChatMessage().subscribe();
           }
         },
         err => { }

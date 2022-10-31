@@ -13,6 +13,7 @@ import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
 import { mockMembers } from '@testingv3/fixtures';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -25,6 +26,7 @@ describe('ChatRoomComponent', () => {
   let chatServiceSpy: jasmine.SpyObj<ChatService>;
   let utils: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let filestackSpy: jasmine.SpyObj<FilestackService>;
   let routerSpy: jasmine.SpyObj<Router>;
@@ -61,6 +63,12 @@ describe('ChatRoomComponent', () => {
             'postNewMessage': of(true),
             'markMessagesAsSeen': of(true),
             'postAttachmentMessage': of(true),
+          }),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            'getChatMessage': of(),
           }),
         },
         {
