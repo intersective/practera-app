@@ -8,7 +8,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "v3": "ng serve --project=v3",
+    "v3": "ng serve --project=v3 -c development",
     "poststart": "npm run generate-version",
     "local": "ng serve -c local",
     "postlocal": "npm run generate-version",
@@ -74,6 +74,7 @@
     "@angular/compiler": "~13.3.11",
     "@angular/compiler-cli": "~13.3.11",
     "@angular/language-service": "~13.3.11",
+    "@angular/localize": "^13.3.11",
     "@compodoc/compodoc": "^1.1.18",
     "@ionic/angular-toolkit": "^6.0.0",
     "@types/jasmine": "~3.10.3",

@@ -362,6 +362,17 @@
               "outputHashing": "all"
             },
             "development": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5.5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "15kb",
+                  "maximumError": "20kb"
+                }
+              ],
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
