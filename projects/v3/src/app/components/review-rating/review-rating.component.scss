@@ -1,5 +1,4 @@
 .review-rating {
-  --overflow: hidden;
   top: 0 !important;
   padding: 0 10px 0 10px;
 
@@ -68,10 +67,10 @@
   .quick-tagging {
     display: flex;
     flex-wrap: wrap;
-    width: 100%;
     justify-content: center;
     margin-top: 16px;
-    padding: 0 0 0 10px;
+    margin-left: auto;
+    margin-right: auto;
 
     &.disabled > ion-button {
       background-color: var(--ion-color-light-tint);
@@ -101,5 +100,25 @@
     &[aria-disabled=true] {
       background-color: var(--ion-color-light-tint);
     }
+  }
+
+  .successful-submission {
+    display: flex;
+    height: 80%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    flex-direction: column;
+    ion-icon {
+      width: 100%;
+      font-size: 8em;
+      color: var(--ion-color-secondary);
+    }
+  }
+}
+
+@media (min-width: 576px) {
+  .review-rating .quick-tagging {
+    width: 70%;
   }
 }
