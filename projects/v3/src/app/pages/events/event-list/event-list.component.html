@@ -1,22 +1,22 @@
 <ion-content class="ion-text-center">
 
   <div class="btn-filter">
-    <h3 class="for-accessibility">Event categories</h3>
+    <h3 class="for-accessibility" i18n>Event categories</h3>
     <ion-segment (ionChange)="switchEvents($event)" [value]="activated">
       <ion-segment-button value="browse" mode="ios" aria-label="browse new event">
-        <ion-label>Browse</ion-label>
+        <ion-label i18n>Browse</ion-label>
       </ion-segment-button>
       <ion-segment-button value="booked" mode="ios" aria-label="booked event">
-        <ion-label>Booked</ion-label>
+        <ion-label i18n>Booked</ion-label>
       </ion-segment-button>
       <ion-segment-button value="attended" mode="ios" aria-label="attended event">
-        <ion-label>Attended</ion-label>
+        <ion-label i18n>Attended</ion-label>
       </ion-segment-button>
     </ion-segment>
   </div>
 
   <ion-item lines="none" color="light" class="ion-margin-top item-filter" *ngIf="hasActivitySession">
-    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'">Filter by Activity</ion-label>
+    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'" i18n>Filter by Activity</ion-label>
     <ion-select
       multiple="true"
       aria-labelledby="activity-filter"
@@ -72,16 +72,16 @@
     <ion-card class="practera-card list-empty-message">
       <ng-container [ngSwitch]="activated">
         <ng-container *ngSwitchCase="'browse'">
-          <p aria-live="polite" class="subtitle-1 gray-3">There's no new event.</p>
-          <span class="gray-1 body-2">Go to the booked tab to see the events you've booked.</span>
+          <p aria-live="polite" class="subtitle-1 gray-3" i18n>There's no new event.</p>
+          <span class="gray-1 body-2" i18n>Go to the booked tab to see the events you've booked.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'booked'">
-          <p aria-live="polite" class="subtitle-1 gray-3">You have no booked events.</p>
-          <span class="gray-1 body-2">Go to the browse tab and book an event to see it here.</span>
+          <p aria-live="polite" class="subtitle-1 gray-3" i18n>You have no booked events.</p>
+          <span class="gray-1 body-2" i18n>Go to the browse tab and book an event to see it here.</span>
         </ng-container>
         <ng-container *ngSwitchCase="'attended'">
-          <p aria-live="polite" class="subtitle-1 gray-3">You have not attended any events.</p>
-          <span class="gray-1 body-2">You can see all your past events in this tab.</span>
+          <p aria-live="polite" class="subtitle-1 gray-3" i18n>You have not attended any events.</p>
+          <span class="gray-1 body-2" i18n>You can see all your past events in this tab.</span>
         </ng-container>
       </ng-container>
     </ion-card>

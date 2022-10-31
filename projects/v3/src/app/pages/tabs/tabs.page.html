@@ -1,22 +1,27 @@
 <ion-tabs #tabs (ionTabsDidChange)="setCurrentTab()">
   <ion-tab-bar slot="bottom" *ngIf="isMobile">
-    <ion-tab-button class="tab-item" tab="home" [ngClass]="{'selected': selectedTab === 'home'}">
+    <ion-tab-button class="tab-item" tab="home"
+      [ngClass]="{'selected': selectedTab === 'home'}">
       <ion-icon name="home"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="events" [ngClass]="{'selected': selectedTab === 'events'}" *ngIf="showEvents">
+    <ion-tab-button class="tab-item" tab="events"
+      [ngClass]="{'selected': selectedTab === 'events'}" *ngIf="showEvents">
       <ion-icon name="today"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="reviews" [ngClass]="{'selected': selectedTab === 'reviews'}" *ngIf="reviews && reviews.length">
+    <ion-tab-button class="tab-item" tab="reviews"
+      [ngClass]="{'selected': selectedTab === 'reviews'}" *ngIf="reviews && reviews.length">
       <ion-icon name="eye"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="messages" [ngClass]="{'selected': selectedTab === 'messages'}" *ngIf="showMessages">
+    <ion-tab-button class="tab-item" tab="messages"
+      [ngClass]="{'selected': selectedTab === 'messages'}" *ngIf="showMessages">
       <ion-icon name="mail"></ion-icon>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="settings" [ngClass]="{'selected': selectedTab === 'settings'}">
+    <ion-tab-button class="tab-item" tab="settings"
+      [ngClass]="{'selected': selectedTab === 'settings'}">
       <ion-icon name="settings"></ion-icon>
     </ion-tab-button>
   </ion-tab-bar>
