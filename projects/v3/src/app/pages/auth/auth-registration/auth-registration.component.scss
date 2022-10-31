@@ -15,6 +15,10 @@
   }
 }
 
+#registerAgreement:focus {
+  outline: var(--ion-color-primary) auto;
+}
+
 .title {
   .headline-6 {
     font-size: 19px !important;

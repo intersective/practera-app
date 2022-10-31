@@ -38,21 +38,23 @@
     font-size: 16px;
     font-weight: normal;
     text-align: center;
-    margin-top:35px;
   }
 
   .rating-range {
     display: flex;
     justify-content: space-evenly;
+    color: #666666;
     .mood {
       cursor: pointer;
       text-align: center;
-      &.selected {
+      &.selected > span {
         color: var(--ion-color-primary);
       }
 
       p {
         margin-top: auto;
+        font-weight: 400;
+        font-size: 12px;
       }
     }
 
@@ -65,36 +67,58 @@
   .quick-tagging {
     display: flex;
     flex-wrap: wrap;
-    width: 100%;
     justify-content: center;
     margin-top: 16px;
-    padding: 0 0 0 10px;
+    margin-left: auto;
+    margin-right: auto;
 
-    a.toggle {
-      background-color: var(--ion-color-light);
+    &.disabled > ion-button {
+      background-color: var(--ion-color-light-tint);
+    }
+
+    ion-button.toggle {
+      color: #333333;
       font-size: 14px;
-      padding: 12px;
-      border: 1px;
-      border-style: solid;
+      font-weight: 400;
       margin-bottom: 12px;
       margin-right: 12px;
       border-radius: 12px;
 
       &.active {
-        color: var(--ion-color-light);
-        background-color: var(--ion-color-primary);
+        --ion-color-base: var(--ion-color-secondary, var(--ion-color-primary)) !important;
+        border-color: var(--ion-color-secondary);
+        color: var(--ion-color-secondary);
       }
-
     }
-
   }
 
   .comment-box {
     font-size:14px;
-    width: 100%;
-    border: none;
+    border: 1px solid #CCCCCC;
     border-radius: 12px;
-    margin: 16px 0 0 0;
-    background-color: var(--ion-color-light-tint);
+    background-color: #FFFFFF;
+    &[aria-disabled=true] {
+      background-color: var(--ion-color-light-tint);
+    }
+  }
+
+  .successful-submission {
+    display: flex;
+    height: 80%;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    flex-direction: column;
+    ion-icon {
+      width: 100%;
+      font-size: 8em;
+      color: var(--ion-color-secondary);
+    }
+  }
+}
+
+@media (min-width: 576px) {
+  .review-rating .quick-tagging {
+    width: 70%;
   }
 }

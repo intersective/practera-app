@@ -146,7 +146,9 @@ export class NotificationsService {
   }
 
   async modalOnly(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
-    const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
+    const modal = await this.modalController.create(
+      this.modalConfig({ component, componentProps }, options)
+    );
 
     if (event) {
       modal.onDidDismiss().then(event);
@@ -283,11 +285,15 @@ export class NotificationsService {
    *
    * @return  {Promise<void>}             deferred ionic modal
    */
-  popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.modal(ReviewRatingComponent, {
+  async popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
+    const reviewPopupModal = await this.modalOnly(ReviewRatingComponent, {
       reviewId,
       redirect
+    }, {
+      id: `review-popup-${reviewId}`,
+      backdropDismiss: false,
     });
+    return reviewPopupModal.present();
   }
 
   /**
