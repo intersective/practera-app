@@ -257,6 +257,14 @@
       }
     },
     "v3": {
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "ja": {
+            "translation": "projects/v3/src/locale/messages.ja.xlf"
+          }
+        }
+      },
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -273,6 +281,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "localize": true,
+            "i18nMissingTranslation": "error",
+            "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
             "index": "projects/v3/src/index.html",
             "main": "projects/v3/src/main.ts",
