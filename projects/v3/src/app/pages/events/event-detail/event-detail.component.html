@@ -1,7 +1,7 @@
 <ion-header mode="ios" *ngIf="utils.isMobile()" aria-label="event details">
   <ion-toolbar>
     <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
-    <ion-title *ngIf="utils.isMobile()" class="ion-text-center" aria-label="event">Event</ion-title>
+    <ion-title *ngIf="utils.isMobile()" class="ion-text-center" aria-label="event" i18n>Event</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,7 +13,7 @@
     <app-description *ngIf="event.description" class="body-1" [content]="event.description"></app-description>
   </div>
 
-  <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2">Event Expired</p>
+  <p *ngIf="event.isPast && !event.isBooked" class="expired-text ion-margin-horizontal subtitle-2 gray-2" i18n>Event Expired</p>
 
   <ion-list lines="full">
     <ion-item>
@@ -23,7 +23,7 @@
     <ng-container *ngIf="event.videoConference">
       <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
         <img src="../../assets/icon_zoom_24.svg" alt="booked zoom meeting">
-        <div class="subtitle-1 ion-text-capitalize"> {{ event.videoConference.provider }} Meeting </div>
+        <div class="subtitle-1 ion-text-capitalize" i18n> {{ event.videoConference.provider }} Meeting </div>
       </ion-item>
       <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
         <img src="../../assets/icon_zoom_24.svg" alt="open zoom meeting">
@@ -40,7 +40,7 @@
     </ion-item>
     <ion-item lines="none" *ngIf="event.capacity">
       <ion-icon class="leading-icon gray-2" name="people-outline"></ion-icon>
-      <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
+      <div id="capacity" class="subtitle-1" i18n>{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>
 

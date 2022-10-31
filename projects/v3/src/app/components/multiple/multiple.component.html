@@ -6,11 +6,11 @@
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
           <div class="answer-text" [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}">{{ choice.name }}</div>
-          <ion-chip
+          <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
           >Learner's answer</ion-chip>
-          <ion-chip
+          <ion-chip i18n
             class="label yellow black"
             *ngIf="review?.answer?.includes(choice.id)"
           >Expert's answer</ion-chip>
@@ -72,7 +72,9 @@
       <ion-label class="ion-text-wrap body-2 black">
         {{ choice.name }}
         <p *ngIf="submission?.answer?.includes(choice.id)">
-          <ion-chip class="label orange" *ngIf="submission?.answer?.includes(choice.id)">Learner's answer</ion-chip>
+          <ion-chip class="label orange" i18n
+            *ngIf="submission?.answer?.includes(choice.id)"
+          >Learner's answer</ion-chip>
         </p>
       </ion-label>
       <ion-checkbox color="success"
@@ -95,5 +97,6 @@
     [(ngModel)]="comment"
     (ngModelChange)="onChange(comment, 'comment')"
     placeholder="Please put your feedback here"
+    i18n-placeholder
     [disabled]="control.disabled"></ion-textarea>
 </ng-container>

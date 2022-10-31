@@ -14,10 +14,10 @@
         <ion-col class="ion-align-self-start"
           size-sm="6" size-xs="12"
           aria-hidden="true">
-          <ion-label class="headline-4">Mobile Number</ion-label>
+          <ion-label class="headline-4" i18n>Mobile Number</ion-label>
         </ion-col>
         <ion-col class="ion-align-self-end">
-          <h3 id="country-code" class="for-accessibility">Country code</h3>
+          <h3 id="country-code" class="for-accessibility" i18n>Country code</h3>
           <ion-select class="subtitle-1 ion-no-padding ion-no-margin"
             aria-labelledby="country-code"
             [(ngModel)]="countryModel"
@@ -45,7 +45,7 @@
     </ion-grid>
   </ion-item>
   <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
-    <ion-note class="ion-padding body-3">Your mobile number is important to get SMS notifications.</ion-note>
+    <ion-note class="ion-padding body-3" i18n>Your mobile number is important to get SMS notifications.</ion-note>
   </ion-item-divider>
 
   <div [class]="{'xc': !isMobile }">
@@ -59,8 +59,8 @@
       [attr.aria-descripedby]="'updateMobileNumber'"
       role="button"
     >
-      <ng-container id="updateMobileNumber" *ngIf="!updating">Update mobile number</ng-container>
-      <ng-container id="updateMobileNumber" *ngIf="updating">Updating..</ng-container>
+      <ng-container id="updateMobileNumber" *ngIf="!updating" i18n>Update mobile number</ng-container>
+      <ng-container id="updateMobileNumber" *ngIf="updating" i18n>Updating..</ng-container>
     </ion-button>
   </div>
 
