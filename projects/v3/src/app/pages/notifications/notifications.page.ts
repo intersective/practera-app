@@ -56,33 +56,6 @@ export class NotificationsPage implements OnInit, OnDestroy {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
-  private _addChatTodoItem(chatTodoItem) {
-    let currentChatTodoIndex = -1;
-    const currentChatTodo = this.todoItems.find((todoItem, index) => {
-      if (todoItem.type === 'chat') {
-        currentChatTodoIndex = index;
-        return true;
-      }
-    });
-    if (currentChatTodo) {
-      this.todoItems.splice(currentChatTodoIndex, 1);
-    }
-    this.todoItems.push(chatTodoItem);
-  }
-
-  private _removeChatTodoItem() {
-    let currentChatTodoIndex = -1;
-    const currentChatTodo = this.todoItems.find((todoItem, index) => {
-      if (todoItem.type === 'chat') {
-        currentChatTodoIndex = index;
-        return true;
-      }
-    });
-    if (currentChatTodo) {
-      this.todoItems.splice(currentChatTodoIndex, 1);
-    }
-  }
-
   get isMobile() {
     return this.utils.isMobile();
   }

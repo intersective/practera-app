@@ -93,8 +93,12 @@ describe('ReviewRatingComponent', () => {
     });
     it('should submit rating', () => {
       component.redirect = null;
+      component.moodSelected = 0;
+      component.ratingData.rating = 1;
     });
     it('should submit rating and navigate', () => {
+      component.ratingData.rating = 1;
+      component.moodSelected = 1;
       component.redirect = ['home'];
     });
   });
@@ -109,6 +113,9 @@ describe('ReviewRatingComponent', () => {
         comment: '',
         tags: []
       };
+
+      component.moodSelected = 0;
+
       serviceSpy.submitRating.and.returnValue(of(''));
       component.submitReviewRating();
       expect(serviceSpy.submitRating.calls.count()).toBe(1);
