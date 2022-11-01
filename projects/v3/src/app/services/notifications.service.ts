@@ -95,7 +95,12 @@ export class NotificationsService {
     private storage: BrowserStorageService,
     private apolloService: ApolloService,
     private eventsService: EventService,
-  ) { }
+  ) {
+    // after messages read need to update chat notification data on notification service
+    this.utils.getEvent('chat-badge-update').subscribe(event => {
+      this.getChatMessage().subscribe();
+    });
+   }
 
   dismiss() {
     return this.modalController.dismiss();
