@@ -350,14 +350,10 @@ export class ChatRoomComponent implements OnInit {
       .markMessagesAsSeen(messageIds)
       .subscribe(
         res => {
-          if (!this.utils.isMobile()) {
-            this.utils.broadcastEvent('chat-badge-update', {
-              channelUuid: this.chatChannel.uuid,
-              readcount: messageIds.length
-            });
-            // after messages read need to update chat notification data on notification service
-            this.notificationsService.getChatMessage().subscribe();
-          }
+          this.utils.broadcastEvent('chat-badge-update', {
+            channelUuid: this.chatChannel.uuid,
+            readcount: messageIds.length
+          });
         },
         err => { }
       );
