@@ -261,10 +261,12 @@
         "sourceLocale": "en-US",
         "locales": {
           "ja": {
-            "translation": "projects/v3/src/locales/messages.ja.xlf"
+            "translation": "projects/v3/src/locales/messages.ja.xlf",
+            "baseHref": ""
           },
           "ms": {
-            "translation": "projects/v3/src/locales/messages.ms.xlf"
+            "translation": "projects/v3/src/locales/messages.ms.xlf",
+            "baseHref": ""
           }
         }
       },
@@ -284,9 +286,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "localize": [
-              "ms"
-            ],
+            "localize": true,
             "i18nMissingTranslation": "error",
             "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
@@ -330,6 +330,9 @@
             "namedChunks": true
           },
           "configurations": {
+            "ms": {
+              "localize": ["ms"]
+            },
             "custom": {
               "budgets": [
                 {
@@ -402,6 +405,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
+            "ms": {
+              "browserTarget": "v3:build:development,ms"
+            },
             "custom": {
               "browserTarget": "v3:build:custom"
             },
