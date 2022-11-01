@@ -7,7 +7,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
-import { NotificationsService } from '@v3/services/notifications.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 
@@ -63,7 +62,6 @@ export class ChatRoomComponent implements OnInit {
     private ngZone: NgZone,
     public element: ElementRef,
     private route: ActivatedRoute,
-    private notificationsService: NotificationsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => {
