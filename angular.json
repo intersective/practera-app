@@ -373,12 +373,6 @@
                   "maximumError": "20kb"
                 }
               ],
-              "fileReplacements": [
-                {
-                  "replace": "projects/v3/src/environments/environment.ts",
-                  "with": "projects/v3/src/environments/environment.custom.ts"
-                }
-              ],
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
