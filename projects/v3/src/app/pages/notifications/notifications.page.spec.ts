@@ -35,7 +35,6 @@ describe('NotificationsPage', () => {
           ], {
             'notification$': of(true),
             'eventReminder$': of(true),
-            'newMessage$': of(true),
           }),
         },
         {

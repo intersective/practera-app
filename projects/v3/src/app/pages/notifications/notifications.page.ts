@@ -50,45 +50,10 @@ export class NotificationsPage implements OnInit, OnDestroy {
         this.eventReminders.push(session);
       }
     }));
-
-    this.subscriptions.push(this.notificationsService.newMessage$.subscribe(chatMessage => {
-      if (!this.utils.isEmpty(chatMessage)) {
-        this._addChatTodoItem(chatMessage);
-      } else {
-        this._removeChatTodoItem();
-      }
-    }));
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-  }
-
-  private _addChatTodoItem(chatTodoItem) {
-    let currentChatTodoIndex = -1;
-    const currentChatTodo = this.todoItems.find((todoItem, index) => {
-      if (todoItem.type === 'chat') {
-        currentChatTodoIndex = index;
-        return true;
-      }
-    });
-    if (currentChatTodo) {
-      this.todoItems.splice(currentChatTodoIndex, 1);
-    }
-    this.todoItems.push(chatTodoItem);
-  }
-
-  private _removeChatTodoItem() {
-    let currentChatTodoIndex = -1;
-    const currentChatTodo = this.todoItems.find((todoItem, index) => {
-      if (todoItem.type === 'chat') {
-        currentChatTodoIndex = index;
-        return true;
-      }
-    });
-    if (currentChatTodo) {
-      this.todoItems.splice(currentChatTodoIndex, 1);
-    }
   }
 
   get isMobile() {

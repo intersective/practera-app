@@ -52,7 +52,6 @@ describe('TabsPage', () => {
             'getChatMessage': of(),
           }, {
             'notification$': of(),
-            'newMessage$': of(),
           }),
         },
       ],
