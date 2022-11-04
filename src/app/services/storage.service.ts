@@ -172,4 +172,8 @@ export class BrowserStorageService {
   set singlePageAccess(val) {
     this.set('singlePageAccess', val);
   }
+
+  set setAppV3(value: boolean) {
+    this.set('appV3', value);
+  }
 }
