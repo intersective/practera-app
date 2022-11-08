@@ -72,6 +72,7 @@ $message-body-size: 60%;
         .general-attachment {
           background: white;
           --background: white;
+          cursor: pointer;
         }
 
         p {
@@ -179,6 +180,7 @@ $message-body-size: 60%;
           .general-attachment {
             background: transparent;
             --background: transparent;
+            cursor: pointer;
             ion-icon, ion-note, ion-label {
               color: white !important;
             }

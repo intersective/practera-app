@@ -15,6 +15,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NewRelicService } from '@shared/new-relic/new-relic.service';
 import { MockRouter } from '@testing/mocked.service';
 import { Apollo } from 'apollo-angular';
+import { BrowserStorageService } from '@services/storage.service';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
@@ -54,6 +55,7 @@ describe('ProjectComponent', () => {
   let routeSpy: ActivatedRoute;
   let utils: UtilsService;
   let homeSpy: jasmine.SpyObj<HomeService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -96,6 +98,10 @@ describe('ProjectComponent', () => {
         {
           provide: Document,
           useClass: MockDocument
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'getUser'])
         }
       ],
     })
@@ -108,14 +114,38 @@ describe('ProjectComponent', () => {
       name: 'm' + i,
       description: 'des' + i,
       isLocked: false,
-      progress: (i + 1) / 10,
       Activity: Array.from({length: 3}, (y, j) => {
         return {
           id: i * 10 + j + 1,
           name: 'activity name' + j,
           isLocked: false,
           leadImage: '',
-          progress: (i * 10 + j + 1) / 100,
+        };
+      })
+    };
+  });
+
+  const milestoneProgressLocal = Array.from({length: 5}, (x, i) => {
+    return {
+      id: i + 1,
+      progress: 0.27,
+      activities: Array.from({length: 3}, (y, j) => {
+        return {
+          id: i * 10 + j + 1,
+          progress: 0.45,
+        };
+      })
+    };
+  });
+
+  const milestoneProgress = Array.from({length: 5}, (x, i) => {
+    return {
+      id: i + 1,
+      progress: 0.13,
+      activities: Array.from({length: 3}, (y, j) => {
+        return {
+          id: i * 10 + j + 1,
+          progress: 0.55,
         };
       })
     };
@@ -130,9 +160,20 @@ describe('ProjectComponent', () => {
     routeSpy = TestBed.inject(ActivatedRoute);
     utils = TestBed.inject(UtilsService);
     homeSpy = TestBed.inject(HomeService) as jasmine.SpyObj<HomeService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     // homeSpy.getProgramName.and.returnValue(of('program name'));
     projectSpy.getProject.and.returnValue(of(milestones));
     component.refresh = of(true);
+    storageSpy.get.and.returnValue({
+      project: {
+        progress: 0.10,
+        milestones: milestoneProgressLocal
+      }
+    });
+    storageSpy.getUser.and.returnValue({
+      truncateDescription: true,
+      activityCompleteMessage: null
+    });
   });
 
   it('should create', () => {
@@ -155,6 +196,25 @@ describe('ProjectComponent', () => {
   it('when testing goToActivity(), should navigate to the correct page', () => {
     component.goToActivity(1);
     expect(routerSpy.navigate.calls.first().args[0]).toEqual(['app', 'activity', 1]);
+  });
+
+  it('when testing updateProgress(), should load data from local stroage if no data pass to', () => {
+    component.milestones = milestones;
+    component.updateProgress();
+    expect(component.milestones[0].progress).toEqual(0.27);
+    expect(component.milestones[0].Activity[0].progress).toEqual(0.45);
+  });
+
+  it('when testing updateProgress(), should load data from pass data if data pass to', () => {
+    component.milestones = milestones;
+    component.updateProgress({
+      project: {
+        progress: 0.10,
+        milestones: milestoneProgress
+      }
+    });
+    expect(component.milestones[0].progress).toEqual(0.13);
+    expect(component.milestones[0].Activity[0].progress).toEqual(0.55);
   });
 });
 

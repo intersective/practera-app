@@ -1,7 +1,7 @@
-import { Subscription } from 'rxjs/Subscription';
-import { Component, HostListener, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { FilestackService } from './filestack.service';
 import { UtilsService } from '@services/utils.service';
+import { PickerOptions } from 'filestack-js/build/main/lib/picker';
 
 export interface FilestackUploaded {
   handle: string;
@@ -48,7 +48,7 @@ export class FilestackComponent {
 
   async uploadFile() {
     const s3Config = this.filestackService.getS3Config(this.fileType);
-    const pickerOptions = {
+    const pickerOptions: PickerOptions = {
       storeTo: s3Config,
       onFileUploadFailed: data => {
         this.complete.emit({

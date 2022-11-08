@@ -78,7 +78,12 @@ export class ChatRoomComponent extends RouterEnter {
         return;
       }
       if (receivedMessage && receivedMessage.file) {
-        receivedMessage.fileObject = JSON.parse(receivedMessage.file);
+        let fileObject = null;
+        fileObject = JSON.parse(receivedMessage.file);
+        if (this.utils.isEmpty(fileObject)) {
+          fileObject = null;
+        }
+        receivedMessage.fileObject = fileObject;
         receivedMessage.preview = this.attachmentPreview(receivedMessage.fileObject);
       }
       if (!this.utils.isEmpty(receivedMessage)) {

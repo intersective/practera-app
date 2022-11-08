@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ProjectService } from './project.service';
+import { OverviewService } from './overview.service';
 import { of } from 'rxjs';
 import { RequestService } from '@shared/request/request.service';
 import { UtilsService } from '@services/utils.service';
@@ -7,8 +7,8 @@ import { BrowserStorageService } from '@services/storage.service';
 import { TestUtils } from '@testing/utils';
 import { Apollo } from 'apollo-angular';
 
-describe('ProjectService', () => {
-  let service: ProjectService;
+describe('OverviewService', () => {
+  let service: OverviewService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let utils: UtilsService;
 
@@ -26,12 +26,13 @@ describe('ProjectService', () => {
           useValue: jasmine.createSpyObj('BrowserStorageService', {
             getUser: {
               projectId: 1
-            }
+            },
+            set : true
           })
         },
       ]
     });
-    service = TestBed.inject(ProjectService);
+    service = TestBed.inject(OverviewService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utils = TestBed.inject(UtilsService);
   });
@@ -44,41 +45,41 @@ describe('ProjectService', () => {
     const response = {
       success: true,
       data: {
+        project: {
+          progress: 0.26,
+          milestones: Array.from({length: 5}, (x, i) => {
+            return {
+              id: i + 1,
+              progress: 0.17,
+              activities: Array.from({length: 3}, (y, j) => {
+                return {
+                  id: i * 10 + j + 1,
+                  progress: 0.13
+                };
+              })
+            };
+          })
+        }
+      }
+    };
+    const expected = {
+      project: {
+        progress: 0.26,
         milestones: Array.from({length: 5}, (x, i) => {
           return {
             id: i + 1,
-            name: 'm' + i,
-            description: 'des' + i,
-            isLocked: false,
+            progress: 0.17,
             activities: Array.from({length: 3}, (y, j) => {
               return {
                 id: i * 10 + j + 1,
-                name: 'activity name' + j,
-                isLocked: false,
-                leadImage: ''
+                progress: 0.13
               };
             })
           };
         })
       }
     };
-    const expected = Array.from({length: 5}, (x, i) => {
-      return {
-        id: i + 1,
-        name: 'm' + i,
-        description: 'des' + i,
-        isLocked: false,
-        Activity: Array.from({length: 3}, (y, j) => {
-          return {
-            id: i * 10 + j + 1,
-            name: 'activity name' + j,
-            isLocked: false,
-            leadImage: ''
-          };
-        })
-      };
-    });
     requestSpy.graphQLWatch.and.returnValue(of(response));
-    service.getProject().subscribe(milestones => expect(milestones).toEqual(expected));
+    service.getProgress().subscribe(progress => expect(progress).toEqual(expected));
   });
 });

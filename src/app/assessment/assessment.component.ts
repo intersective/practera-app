@@ -91,6 +91,8 @@ export class AssessmentComponent extends RouterEnter {
 
   elIdentities = {}; // virtual element id for accessibility "aria-describedby" purpose
 
+  isNotInATeam = false; // to hide assessment content if user not is a team.
+
   constructor (
     public router: Router,
     private route: ActivatedRoute,
@@ -203,6 +205,11 @@ export class AssessmentComponent extends RouterEnter {
     this.savingButtonDisabled = false;
     this.savingMessage = '';
     this.continueBtnLoading = false;
+    this.id = null;
+    this.activityId = null;
+    this.contextId = null;
+    this.submissionId = null;
+    this.isNotInATeam = false;
   }
 
   onEnter() {
@@ -251,31 +258,22 @@ export class AssessmentComponent extends RouterEnter {
           this._handleSubmissionData(result.submission);
           // display pop up if it is team assessment and user is not in team
           if (this.doAssessment && this.assessment.isForTeam && !this.storage.getUser().teamId) {
+            this.isNotInATeam = true;
             return this.notificationService.alert({
-              message: 'To do this assessment, you have to be in a team.',
+              message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
               buttons: [
                 {
                   text: 'OK',
                   role: 'cancel',
-                  handler: async () => {
-                    if (this.activityId) {
-                      let direction = ['app', 'activity', this.activityId];
-
-                      // Due to onSameUrlNavigation: "ignore", unintended same URL navigation is now default to "/app/home".
-                      if (this.router.url === `/${direction.join('/')}`) {
-                        direction = ['app', 'home'];
-                      }
-
-                      await this._navigate(direction);
-                    } else {
-                      await this._navigate(['app', 'home']);
-                    }
+                  handler: () => {
+                    this.goToNextTask();
                   }
                 }
               ]
             });
           }
-          await this._handleReviewData(result.review);
+          this.isNotInATeam = false;
+          this._handleReviewData(result.review);
         },
         error => {
           this.newRelic.noticeError(error);

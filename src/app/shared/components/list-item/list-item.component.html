@@ -8,7 +8,12 @@
   <ion-icon [name]="leadingIcon" slot="start" [color]="leadingIconColor || 'primary'" class="leading-icon" [ngClass]="{'pulsing': leadingIconPulsing}"></ion-icon>
 
   <div class="item-content ion-padding-vertical" [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
-    <p class="item-title subtitle-3" [ngClass]="'color-' + titleColor">{{ title }}</p>
+    <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
+      <p class="item-title subtitle-3" [ngClass]="'color-' + titleColor">{{ title }}</p>
+      &nbsp; <!-- this is to add some space between two elements -->
+      <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
+    </div>
+    <p *ngIf="!isEventItem" class="item-title subtitle-3" [ngClass]="'color-' + titleColor">{{ title }}</p>
     <p *ngIf="subtitle1" class="item-subtitle-1 caption gray-2" [ngClass]="'color-' + subtitle1Color">{{ subtitle1 }}</p>
     <p *ngIf="subtitle2" class="item-subtitle-2 caption gray-2">{{ subtitle2 }}</p>
   </div>

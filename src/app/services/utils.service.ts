@@ -435,4 +435,16 @@ export class UtilsService {
     const slugs = crypto.getRandomValues(new Uint32Array(1));
     return slugs[0];
   }
+
+  getDateDifference(dateOne: string, datetwo: string) {
+    const dt1 = new Date(this.iso8601Formatter(dateOne));
+    const dt2 = new Date(this.iso8601Formatter(datetwo));
+    const diff = Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate());
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  getFutureDated(date: string, dayCount: number) {
+    const currentDate = moment(this.iso8601Formatter(date));
+    return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
+  }
 }

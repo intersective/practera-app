@@ -7,11 +7,11 @@ name: Deploy to p1-us live environment
 ################################################
 #  GITHUB ACTION EVENT TRIGGER
 ################################################
-on: 
+on:
   workflow_dispatch:
     inputs:
       BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'     
+        description: 'New tag version based on create-release-tag workflow'
         required: true
         default: ''
 
@@ -21,17 +21,18 @@ on:
 ################################################
 jobs:
   deploy-p1-us-live:
-    name: release-us
+    name: deploy-p1-au-live
     runs-on: ubuntu-latest
+    environment: p1-us
     timeout-minutes: 15
 
 ################################################
-#  GITHUB ACTIONS GLOBAL ENV VARIABLES  
+#  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
     env:
       REGION : us-east-1
       ENV : live # Valid values are sandbox,stage,live only
-      STACK_NAME: us  # Valid values are au,us,uk,p2,lf,nu,sandbox only
+      STACK_NAME: p1-us  # Valid values are au,us,uk,p2,lf,nu,sandbox only
       DOMAIN: us.practera.com
       SUBDOMAIN: app
       BUILD_CONFIG: custom
@@ -47,26 +48,27 @@ jobs:
 
 
 ################################################
-#  GITHUB REPO CHECKOUT 
+#  GITHUB REPO CHECKOUT
 ################################################
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 
 
 ################################################
 #  NODE ENV
-################################################    
+################################################
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      
+
 
 ################################################
-#  NODE MODULES CACHE  
+#  NODE MODULES CACHE
 ################################################
       - name: Cache node modules
         uses: actions/cache@v2
@@ -87,17 +89,17 @@ jobs:
 
 
 ################################################
-#  NODE MODULES INSTALL  
+#  NODE MODULES INSTALL
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
- 
-      
- 
+
+
+
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS 
-################################################ 
+#  AWS CLI CONFIGURATION - DEVOPS
+################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -116,7 +118,7 @@ jobs:
           SLACK_WEBHOOK_URL=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .SLACK_WEBHOOK_URL)
           echo "::add-mask::$SLACK_WEBHOOK_URL"
           echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
-    
+
           echo "Enable P1 Live AU & US ACCOUNT CLI Login"
           P1_PROD_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_PROD_AWS_ACCESS_KEY_ID)
           P1_PROD_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_PROD_AWS_SECRET_ACCESS_KEY)
@@ -124,7 +126,7 @@ jobs:
           echo "::add-mask::$P1_PROD_AWS_SECRET_ACCESS_KEY"
           echo "::set-output name=P1_PROD_AWS_ACCESS_KEY_ID::$P1_PROD_AWS_ACCESS_KEY_ID"
           echo "::set-output name=P1_PROD_AWS_SECRET_ACCESS_KEY::$P1_PROD_AWS_SECRET_ACCESS_KEY"
-        
+
         env:  #TODO: Update once manually to new stack accordingly
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
           ENV: live # Valid values are sandbox,stage,live only
@@ -137,12 +139,12 @@ jobs:
         with:
           aws-access-key-id: ${{ steps.DeploySecret.outputs.P1_PROD_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ steps.DeploySecret.outputs.P1_PROD_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.REGION}} 
+          aws-region: ${{env.REGION}}
         env:
           AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P1_PROD_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P1_PROD_AWS_SECRET_ACCESS_KEY }}
-          
-    
+
+
 ###############################################################
 #  ANGULAR ENVIRONMENT CREATION
 ##############################################################
@@ -165,7 +167,7 @@ jobs:
           sed -i "s/<CUSTOM_PIWIK_ENVIRONEMENT>/$CUSTOM_PIWIK_ENVIRONEMENT/" src/index.html
           sed -i "s/<SHA256_KEYSTORE_CERT_FINGERPRINTS>/$SHA256_KEYSTORE_CERT_FINGERPRINTS/" src/well-known/assetlinks.json
           chmod +x env.sh && ./env.sh
-          
+
         env:
           CUSTOM_PATH_IMAGE: /appv2/live/uploads/
           CUSTOM_PATH_VIDEO: /media/fpvideo/upload/
@@ -174,8 +176,8 @@ jobs:
           CUSTOM_S3_BUCKET: practera-us
           CUSTOM_ENVIRONMENT: live
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.us.practera.com/graphql
-          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
-          CUSTOM_COUNTRY: AUS
+          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com
+          CUSTOM_COUNTRY: US
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
           CUSTOM_PATH_ANY: /appv2/live/uploads/
           CUSTOM_AWS_REGION: us-east-1
@@ -194,7 +196,7 @@ jobs:
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
           npm run generate-version
-      
+
 
 
 ##########################################################
@@ -215,7 +217,7 @@ jobs:
 
 # #########################################################
 # # SLACK NOTIFICATION
-# ######################################################### 
+# #########################################################
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -250,7 +252,7 @@ jobs:
 
 # ################################################
 # #  STATUS VARIABLE UPDATE
-# ################################################ 
+# ################################################
       - name: Deployment status variable update
         if: ${{ failure() }}
         run: |
@@ -258,7 +260,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |

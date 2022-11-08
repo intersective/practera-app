@@ -16,6 +16,8 @@ export class EventListComponent {
   @Input() activityId;
   // if eventId has value, hightlight this event
   @Input() eventId;
+  // if multiDayId has value, hightlight this event
+  @Input() multiDayId;
   // the current active tab
   activated = 'browse';
   events: Array<EventGroup> = [];
@@ -199,7 +201,7 @@ export class EventListComponent {
       return ;
     }
     let eventsCount = 0, eventGroup;
-    const maxEvents = 7;
+    const maxEvents = 10;
     while (eventsCount < maxEvents) {
       // stop if there's no remaining events
       if (!this.remainingEvents.length) {
@@ -248,7 +250,7 @@ export class EventListComponent {
    * @param {Boolean} isBrowse     If this is for browse (will group all past events in "Expired")
    */
   private _groupEvents(event, events, eventGroup, compareDate, isBrowse = false) {
-    const date = this.utils.utcToLocal(event.startTime, 'date');
+    const date = event.isMultiDay ? this.utils.utcToLocal(event.multiDayInfo.startTime, 'date') : this.utils.utcToLocal(event.startTime, 'date');
     // initialise compareDate & eventGroup
     if (!compareDate) {
       compareDate = date;
@@ -287,7 +289,7 @@ export class EventListComponent {
       if (!this.utils.isEmpty(eventGroup.events)) {
         events.push(eventGroup);
       }
-      compareDate = this.utils.utcToLocal(event.startTime, 'date');
+      compareDate = event.isMultiDay ? this.utils.utcToLocal(event.multiDayInfo.startTime, 'date') : this.utils.utcToLocal(event.startTime, 'date');
       eventGroup = {
         date: compareDate,
         events: [event]

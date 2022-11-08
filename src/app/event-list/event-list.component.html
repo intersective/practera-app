@@ -74,10 +74,11 @@
           [eventVideoConference]="event.videoConference"
           [eventExpired]="event.isPast && !event.isBooked"
           [eventFullyBooked]="event.remainingCapacity === 0"
-          [active]="eventId === event.id"
+          [active]="event.isMultiDay ? (event.multiDayInfo.id === multiDayId) : (eventId === event.id)"
           [lines]="i == eventObj.events.length - 1 ? 'none' : ''"
           (click)="goto(event)"
           (keyup.enter)="goto(event)"
+          [eventDayCount]="event.isMultiDay ? event.multiDayInfo.dayCount : null"
         ></app-list-item>
       </ion-list>
     </ion-card>

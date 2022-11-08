@@ -89,6 +89,39 @@ describe('EventsComponent', () => {
     expect(component.contextId).toBeNull();
   });
 
+  it('goto() should get correct data for multi day event', () => {
+    const event = {
+      id: 11,
+      name: 'event',
+      description: 'des',
+      location: 'location',
+      activityId: 1,
+      activityName: 'activity',
+      startTime: '',
+      endTime: '',
+      capacity: 10,
+      remainingCapacity: 1,
+      isBooked: true,
+      singleBooking: true,
+      canBook: true,
+      allDay: false,
+      isMultiDay: true,
+      multiDayInfo: {
+        startTime: '',
+        endTime: '',
+        dayCount: '',
+        id: 'E12345',
+        isMiddleDay: false
+      }
+    };
+    component.goto(event);
+    expect(component.currentEvent).toEqual(event);
+    expect(component.eventId).toEqual(11);
+    expect(component.multiDayId).toEqual(event.multiDayInfo.id);
+    expect(component.assessmentId).toBeNull();
+    expect(component.contextId).toBeNull();
+  });
+
   it('checkin() should get correct data', fakeAsync(() => {
     const params = {
       assessmentId: 1,

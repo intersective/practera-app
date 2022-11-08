@@ -18,7 +18,7 @@ export interface Milestone {
   name: string;
   description?: string;
   isLocked: boolean;
-  progress: number;
+  progress?: number;
   Activity: Array <Activity>;
 }
 
@@ -41,11 +41,10 @@ export class ProjectService {
         milestones{
           id
           name
-          progress
           description
           isLocked
           activities{
-            id name progress isLocked leadImage
+            id name isLocked leadImage
           }
         }
       }`,
@@ -61,13 +60,11 @@ export class ProjectService {
         id: m.id,
         name: m.name,
         description: m.description,
-        progress: m.progress,
         isLocked: m.isLocked,
         Activity: (m.activities === null ? [] : m.activities).map(a => {
           return {
             id: a.id,
             name: a.name,
-            progress: a.progress,
             isLocked: a.isLocked,
             leadImage: a.leadImage
           };

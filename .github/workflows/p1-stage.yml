@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches: [ 'trunk' ]
-    
+
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -20,11 +20,12 @@ jobs:
   deploy-p1-stage:
     name: deploy-p1-stage
     runs-on: ubuntu-latest
+    environment: p1-stage
     timeout-minutes: 15
 
 
 ################################################
-#  GITHUB ACTIONS GLOBAL ENV VARIABLES  
+#  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
     env:
       REGION : ap-southeast-2
@@ -45,7 +46,7 @@ jobs:
 
 
 ################################################
-#  GITHUB REPO CHECKOUT 
+#  GITHUB REPO CHECKOUT
 ################################################
     steps:
       - uses: actions/checkout@v2
@@ -54,17 +55,18 @@ jobs:
 
 
 
+
 ################################################
 #  NODE ENV
-################################################    
+################################################
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      
+
 
 ################################################
-#  NODE MODULES CACHE  
+#  NODE MODULES CACHE
 ################################################
       - name: Cache node modules
         uses: actions/cache@v2
@@ -85,16 +87,16 @@ jobs:
 
 
 ################################################
-#  NODE MODULES INSTALL  
+#  NODE MODULES INSTALL
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-      
+
 
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS 
-################################################ 
+#  AWS CLI CONFIGURATION - DEVOPS
+################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -109,9 +111,9 @@ jobs:
       - name: Serverless deployment variables created from shared account
         run: |
           cat >> .env <<EOF
-          FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID) 
-          P1STACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1PRODID) 
-         
+          FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID)
+          P1STACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1PRODID)
+
           EOF
         env:  #TODO: Update once manually to new stack accordingly
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
@@ -128,7 +130,7 @@ jobs:
           SLACK_WEBHOOK_URL=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .SLACK_WEBHOOK_URL)
           echo "::add-mask::$SLACK_WEBHOOK_URL"
           echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
-    
+
           echo "Enable P1 Stage ACCOUNT CLI Login"
           P1_STAGE_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_STAGE_AWS_ACCESS_KEY_ID)
           P1_STAGE_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_STAGE_AWS_SECRET_ACCESS_KEY)
@@ -136,7 +138,7 @@ jobs:
           echo "::add-mask::$P1_STAGE_AWS_SECRET_ACCESS_KEY"
           echo "::set-output name=P1_STAGE_AWS_ACCESS_KEY_ID::$P1_STAGE_AWS_ACCESS_KEY_ID"
           echo "::set-output name=P1_STAGE_AWS_SECRET_ACCESS_KEY::$P1_STAGE_AWS_SECRET_ACCESS_KEY"
-        
+
         env:  #TODO: Update once manually to new stack accordingly
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
           ENV: live # Valid values are sandbox,stage,live only
@@ -149,7 +151,7 @@ jobs:
         with:
           aws-access-key-id: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.REGION}} 
+          aws-region: ${{env.REGION}}
         env:
           AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P1_STAGE_AWS_SECRET_ACCESS_KEY }}
@@ -162,14 +164,17 @@ jobs:
         run: |
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
-          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
-          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature) 
-          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection) 
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
+          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature)
+          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection)
           export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
           export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
-          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
+          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -202,7 +207,7 @@ jobs:
         run:  |
           npm run lint --if-present
 
-          
+
 ###############################################################
 #  BUILD WEB PACKAGES
 ##############################################################
@@ -214,30 +219,29 @@ jobs:
 
 
 
-# ###############################################################
-# #  PERFORM UNIT TEST
-# ##############################################################
-      - name: Performing Unit test
-        run: |
-          node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+# # ###############################################################
+# # #  PERFORM UNIT TEST
+# # ##############################################################
+#       - name: Performing Unit test
+#         run: |
+#           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
 
 
-# ###############################################################
-# #  SONARCLOUD SCANNER
-# ##############################################################
-      - name: Performing Sonarcloud Scanner
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+# # ###############################################################
+# # #  SONARCLOUD SCANNER
+# # ##############################################################
+#       - name: Performing Sonarcloud Scanner
+#         uses: SonarSource/sonarcloud-github-action@master
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 ##########################################################
-#  AWS S3 SYNC - SERVERLESS TEMPLATES 
+#  AWS S3 SYNC - SERVERLESS TEMPLATES
 ##########################################################
       - name: AWS S3 Sync operation
         run: |
-          
+
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -249,10 +253,10 @@ jobs:
           cat >> .env <<EOF
           CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-CDNSharedACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
           ChatBotSNSTopicARN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text)
-          
-          
+
+
           EOF
-          
+
 ###############################################################
 #  SERVERLESS DEPLOYMENT
 ##############################################################
@@ -265,9 +269,9 @@ jobs:
           APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: false
-          S3VERSIONING: true 
+          S3VERSIONING: true
           NONCURRENTVERSION_EXPIREINDAYS: 30
-          
+
 
 
 ##########################################################
@@ -293,7 +297,7 @@ jobs:
 
 #########################################################
 # SLACK NOTIFICATION
-#########################################################  
+#########################################################
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -326,10 +330,10 @@ jobs:
             }]
             }
 
-          
+
 # ################################################
 # #  STATUS VARIABLE UPDATE
-# ################################################ 
+# ################################################
       - name: Deployment status variable update
         if: ${{ failure() }}
         run: |
@@ -337,7 +341,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |

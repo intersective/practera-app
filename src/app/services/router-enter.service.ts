@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -9,7 +9,7 @@ export class RouterEnter implements OnInit, OnDestroy {
   routeUrls: string[];
 
   constructor (
-    public router: Router
+    public router: Router,
   ) {}
 
   /**
@@ -44,7 +44,7 @@ export class RouterEnter implements OnInit, OnDestroy {
     this.subscription = this.router.events.subscribe(event => {
       // invoke the onEnter() function of the component if the routing match current page view and stacked components' routeUrl
       if (event instanceof NavigationEnd && this._itIsMyRoute(event.url)) {
-        // always unsubscribe previously subscribed Observables to prevent duplication subscription
+        // always unsubscribe previously subscribed Observables to prevent duplicating subscription
         if (this.subscriptions) {
           this.subscriptions.forEach(sub => sub.unsubscribe());
           this.subscriptions = [];

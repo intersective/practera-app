@@ -10,6 +10,7 @@ import { Observable, of, pipe } from 'rxjs';
 import { BrowserStorageService } from '@services/storage.service';
 import { Apollo } from 'apollo-angular';
 import { SharedService } from '@app/services/shared.service';
+import { OverviewService } from './overview.service';
 
 describe('OverviewComponent', () => {
   const PROGRAM_NAME = 'Dummy Program name';
@@ -20,6 +21,8 @@ describe('OverviewComponent', () => {
   let utils: UtilsService;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
+  let overviewSpy: jasmine.SpyObj<OverviewService>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -33,7 +36,8 @@ describe('OverviewComponent', () => {
           useValue: jasmine.createSpyObj('BrowserStorageService', {
             getUser: {
               programName: PROGRAM_NAME,
-            }
+            },
+            set: true
           })
         },
         {
@@ -53,7 +57,11 @@ describe('OverviewComponent', () => {
           useValue: jasmine.createSpyObj('SharedService', {
             getTeamInfo: of(true)
           })
-        }
+        },
+        {
+          provide: OverviewService,
+          useValue: jasmine.createSpyObj('OverviewService', ['getProgress'])
+        },
       ]
     });
   });
@@ -61,11 +69,14 @@ describe('OverviewComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(OverviewComponent);
     component = fixture.componentInstance;
+    overviewSpy = TestBed.inject(OverviewService) as jasmine.SpyObj<OverviewService>;
     routeSpy = TestBed.inject(ActivatedRoute);
     sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
     utils = TestBed.inject(UtilsService);
     fastfeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
-    fastfeedbackSpy.pullFastFeedback.and.returnValue(of(true));
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    fastfeedbackSpy.pullFastFeedback.and.returnValue(of({}));
+    overviewSpy.getProgress.and.returnValue(of({}));
     component.initiator$ = of({});
   });
 
@@ -75,9 +86,11 @@ describe('OverviewComponent', () => {
 
   describe('ngOnInit', () => {
     it('should get program name and pull fastfeedback', fakeAsync(() => {
+      spyOn(utils, 'broadcastEvent');
       component.ngOnInit();
 
       flushMicrotasks();
+      fixture.detectChanges();
       expect(component.programName).toEqual(PROGRAM_NAME);
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalled();
       expect(sharedSpy.getTeamInfo).toHaveBeenCalled();

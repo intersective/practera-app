@@ -1,7 +1,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Deploy to p1-uk live environment
+name: Deploy to p2-stage-appv3 environment
 
 
 ################################################
@@ -9,21 +9,18 @@ name: Deploy to p1-uk live environment
 ################################################
 on:
   workflow_dispatch:
-    inputs:
-      BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'
-        required: true
-        default: ''
+  push:
+    branches: [ 'trunk-v3' ]
 
 
 ################################################
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  deploy-p1-uk-live:
-    name: deploy-p1-uk-live
+  deploy-p2-stage-appv3:
+    name: deploy-p2-stage-appv3
     runs-on: ubuntu-latest
-    environment: p1-uk
+    environment: p2-stage
     timeout-minutes: 15
 
 
@@ -31,21 +28,20 @@ jobs:
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
     env:
-      REGION : eu-west-2
-      ENV : live # Valid values are dev,test,live only
-      STACK_NAME: p1-uk # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-      ROOTSTACK: app-v2
+      REGION : ap-southeast-2
+      ENV : test # Valid values are dev,test,live only
+      STACK_NAME: p2-stage # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-stage,shared only
+      ROOTSTACK: app-v3
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
-      PUBLICZONENAME: uk.practera.com
-      APPPUBLICZONENAME: uk.practera.app
+      PUBLICZONENAME: p2-stage.practera.com
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app.uk.practera.com
-      BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+      ENDPOINT: appv3.p2-stage.practera.com
+      BRANCH_TAG_NAME: trunk-v3
 
 
 
@@ -120,7 +116,7 @@ jobs:
 
           EOF
         env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
+          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-stage,shared only
           ENV: live # Valid values are sandbox,stage,live only
 
 
@@ -135,31 +131,31 @@ jobs:
           echo "::add-mask::$SLACK_WEBHOOK_URL"
           echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
 
-          echo "Enable P1 UK ACCOUNT CLI Login"
-          P1_UK_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_UK_AWS_ACCESS_KEY_ID)
-          P1_UK_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1_UK_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$P1_UK_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$P1_UK_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=P1_UK_AWS_ACCESS_KEY_ID::$P1_UK_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=P1_UK_AWS_SECRET_ACCESS_KEY::$P1_UK_AWS_SECRET_ACCESS_KEY"
+          echo "Enable P2 Stage ACCOUNT CLI Login"
+          P2_STAGE_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_STAGE_AWS_ACCESS_KEY_ID)
+          P2_STAGE_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_STAGE_AWS_SECRET_ACCESS_KEY)
+          echo "::add-mask::$P2_STAGE_AWS_ACCESS_KEY_ID"
+          echo "::add-mask::$P2_STAGE_AWS_SECRET_ACCESS_KEY"
+          echo "::set-output name=P2_STAGE_AWS_ACCESS_KEY_ID::$P2_STAGE_AWS_ACCESS_KEY_ID"
+          echo "::set-output name=P2_STAGE_AWS_SECRET_ACCESS_KEY::$P2_STAGE_AWS_SECRET_ACCESS_KEY"
 
         env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
+          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-stage,shared only
           ENV: live # Valid values are sandbox,stage,live only
 
-
 ##########################################################
-#  AWS P1 UK ACCOUNT STEPS BELOW
+#  AWS P1SANDBOX ACCOUNT STEPS BELOW
 ##########################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P1_UK_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P1_UK_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{env.REGION}}
         env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P1_UK_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P1_UK_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_SECRET_ACCESS_KEY }}
+
 
 
 ###############################################################
@@ -175,10 +171,10 @@ jobs:
           export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
           export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
-          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
-          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret) 
+          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster) 
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
 
           printf "Angular environment variable creation  complete\n\n"
@@ -189,20 +185,22 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
 
         env:
-          CUSTOM_PATH_IMAGE: /images
-          CUSTOM_PATH_VIDEO: /videos
+          CUSTOM_PATH_IMAGE: /appv3/test/images/
+          CUSTOM_PATH_VIDEO: /appv3/test/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_API_ENDPOINT: https://${{ env.PUBLICZONENAME }}/
+          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com
-          CUSTOM_COUNTRY: UK #TODO CHECK
+          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
+          CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
-          CUSTOM_PATH_ANY: /any
+          CUSTOM_PATH_ANY: /appv3/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
-          CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
-          CUSTOM_NEWRELIC: false
+          CUSTOM_JS_ENVIRONEMENT: test #TODO CHECK
+          CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
+          CUSTOM_NEWRELIC: true
+
 
 
 ###############################################################
@@ -210,9 +208,9 @@ jobs:
 ##############################################################
       - name: Build Web Packages
         run: |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
-          npm run generate-version
+          test -f projects/v3/src/environments/environment.ts && echo "environment here" || cp projects/v3/src/environments/environment.local.ts projects/v3/src/environments/environment.ts
+          node_modules/.bin/ng build request --configuration=${{ env.BUILD_CONFIG }}
+          node_modules/.bin/ng build v3 --configuration=${{ env.BUILD_CONFIG }}
 
 
 ##########################################################
@@ -220,6 +218,7 @@ jobs:
 ##########################################################
       - name: AWS S3 Sync operation
         run: |
+          mv serverless-appv3.yml serverless.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -240,15 +239,16 @@ jobs:
 ##############################################################
       - name: Serverless deployment
         run: |
-          echo "Serverless Deploying Appv2"
+          echo "Serverless Deploying appv3"
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true
           NONCURRENTVERSION_EXPIREINDAYS: 30
+
 
 
 ##########################################################
@@ -256,9 +256,8 @@ jobs:
 ##########################################################
       - name: AWS S3 Sync Operations
         run: |
-          cp -R src/well-known www/.well-known/
-          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
-          aws s3 sync www/ s3://$APP_V2_S3 --delete
+          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
+          aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
 
 
 
@@ -267,7 +266,7 @@ jobs:
 ##########################################################
       - name: AWS Cloudfront Cache invalidation
         run: |
-          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
+          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
           for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
@@ -286,7 +285,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: deploy-p1-uk-live # Match the name above.
+          job_name: deploy-p2-stage-appv3 # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
@@ -308,6 +307,7 @@ jobs:
             }
 
 
+
 # ################################################
 # #  STATUS VARIABLE UPDATE
 # ################################################
@@ -315,7 +315,6 @@ jobs:
         if: ${{ failure() }}
         run: |
           echo "STATUS=FAILURE" >> $GITHUB_ENV
-
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
@@ -333,4 +332,3 @@ jobs:
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
           echo $REASON
           echo $REQUESTOR
-

@@ -65,6 +65,10 @@ export class ProjectComponent implements OnInit {
    ) {
     this.showingMilestones = [];
     this.isMobile = this.utils.isMobile();
+
+    this.utils.getEvent('progress:update').subscribe(event => {
+      this.updateProgress(event);
+    });
   }
 
   ngOnInit() {
@@ -95,11 +99,7 @@ export class ProjectComponent implements OnInit {
           return;
         }
         this.milestones = milestones;
-        milestones.forEach(m => {
-          if (m.progress !== 1) {
-            this.showingMilestones.push(m);
-          }
-        });
+        this.updateProgress();
         this.loadingMilestone = false;
         // scroll to highlighted activity if has one
         if (this.highlightedActivityId) {
@@ -162,12 +162,43 @@ export class ProjectComponent implements OnInit {
       const finding = this.showingMilestones.find(m => m.id === milestone.id);
       return finding === undefined;
     }
-    return true;
+    return false;
   }
 
   goToActivity(id) {
     this.router.navigate(['app', 'activity', id]);
     this.newRelic.addPageAction('Navigate activity', id);
+  }
+
+  updateProgress(data?) {
+
+    let fullProgressData = data;
+    if (!data) {
+      fullProgressData = this.storage.get('progress') ? this.storage.get('progress') : {};
+    }
+
+    if (fullProgressData.project && fullProgressData.project.milestones && this.milestones.length > 0) {
+      const milestonesProgress = fullProgressData.project.milestones;
+      milestonesProgress.forEach(mp => {
+      this.milestones.forEach(m => {
+        if (m.progress !== 1) {
+          this.showingMilestones.push(m);
+        }
+        if (m.id === mp.id) {
+          m.progress = mp.progress;
+          if (m.Activity && mp.activities) {
+            mp.activities.forEach(ap => {
+              m.Activity.forEach(a => {
+                if (a.id === ap.id) {
+                  a.progress = ap.progress;
+                }
+              });
+            });
+          }
+        }
+      });
+    });
+    }
   }
 
 }

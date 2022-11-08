@@ -19,6 +19,7 @@ jobs:
   deploy-p2-sandbox:
     name: deploy-p2-sandbox
     runs-on: ubuntu-latest
+    environment: p2-sandbox
     timeout-minutes: 15
 
 
@@ -312,7 +313,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |
