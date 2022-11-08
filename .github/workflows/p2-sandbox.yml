@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'develop' ]
+    branches: [ 'hotfix/AV2-1280/retain-appv2-review' ]
 
 
 ################################################
