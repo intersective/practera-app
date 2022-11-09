@@ -23,6 +23,7 @@ jobs:
   deploy-p1-us-live:
     name: deploy-p1-au-live
     runs-on: ubuntu-latest
+    environment: p1-us
     timeout-minutes: 15
 
 ################################################
