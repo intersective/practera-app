@@ -88,7 +88,18 @@ export class AuthService {
       headers
     }).pipe(tap(res => {
       if (res?.data?.appv3 === true) {
+        if (this.deeplink) {
+          const onePageOnly = this.deeplink.match(/(one_page_only=true)/g);
+          const redirectReview = this.deeplink.match(/(redirect=review)/g);
+          if (onePageOnly !== null && redirectReview !== null) { // temporary allow review to be done on AppV2
+            this.deeplink = null;
+            return;
+          }
+        }
+
+        this.storage.setAppV3(true);
         let finalURL = '';
+
         if (this.deeplink) {
           finalURL = this.deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
         } else {
