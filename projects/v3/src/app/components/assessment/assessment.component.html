@@ -251,7 +251,9 @@
   </div>
 
   <app-bottom-action-bar
-    *ngIf="!(action === 'review' && submission.status === 'feedback available' && review.status === 'done')"
+    *ngIf="!(action === 'review'
+      && submission.status === 'feedback available'
+      && review.status === 'done')"
     [text]="btnText"
     [disabled]="btnDisabled"
     (handleClick)="continueToNextTask()"
