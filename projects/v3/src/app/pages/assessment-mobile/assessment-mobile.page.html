@@ -1,12 +1,12 @@
 <ion-header class="ion-no-border header-border">
   <ion-toolbar>
-    <ion-buttons slot="start">
+    <ion-buttons slot="start" *ngIf="!restrictedAccess">
       <ion-button (click)="goBack()">
         <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title class="headline-4 grey-75">Task</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="!restrictedAccess">
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
