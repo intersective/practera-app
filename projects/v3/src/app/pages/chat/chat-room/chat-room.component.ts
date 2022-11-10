@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
+import { DOCUMENT } from '@angular/common';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
@@ -8,7 +9,6 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-chat-room',
@@ -347,12 +347,10 @@ export class ChatRoomComponent implements OnInit {
       .markMessagesAsSeen(messageIds)
       .subscribe(
         res => {
-          if (!this.utils.isMobile()) {
-            this.utils.broadcastEvent('chat-badge-update', {
-              channelUuid: this.chatChannel.uuid,
-              readcount: messageIds.length
-            });
-          }
+          this.utils.broadcastEvent('chat-badge-update', {
+            channelUuid: this.chatChannel.uuid,
+            readcount: messageIds.length
+          });
         },
         err => { }
       );
