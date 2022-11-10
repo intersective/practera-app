@@ -1,5 +1,8 @@
 import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
+
+import { QuillModule } from 'ngx-quill';
+
 import { ChatPage } from './chat.page';
 import { ChatListComponent } from './chat-list/chat-list.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
@@ -18,6 +21,13 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
     ComponentsModule,
     ChatRoutingModule,
     PersonalisedHeaderModule,
+    QuillModule.forRoot(
+      {
+        modules: {
+          toolbar: [['bold', 'italic', 'underline', 'strike'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]
+        }
+      }
+    )
   ],
   declarations: [
     ChatPage,
