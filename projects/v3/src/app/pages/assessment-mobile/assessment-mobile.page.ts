@@ -32,9 +32,9 @@ export class AssessmentMobilePage implements OnInit {
     private router: Router,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
-    private storageService: BrowserStorageService,
+    private readonly storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
-    private utils: UtilsService,
+    private readonly utils: UtilsService,
   ) { }
 
   ngOnInit() {
@@ -52,6 +52,10 @@ export class AssessmentMobilePage implements OnInit {
       this.submissionId = +params.submissionId;
       this.assessmentService.getAssessment(+params.id, this.action, this.activityId, this.contextId, this.submissionId);
     });
+  }
+
+  get restrictedAccess() {
+    return this.storageService.singlePageAccess;
   }
 
   get task() {
