@@ -380,6 +380,9 @@ export class AssessmentComponent implements OnChanges {
   get btnText() {
     switch (this._btnAction) {
       case 'submit':
+        if (this.action === 'review') {
+          return 'submit review';
+        }
         return 'submit answers';
       case 'readFeedback':
         return 'mark feedback as reviewed';

@@ -181,7 +181,7 @@ export class AuthDirectLoginComponent implements OnInit {
           });
         }
 
-        if (this.utils.isMobile()) {
+        if (this.utils.isMobile() || restrictedAccess === true) {
           return this._saveOrRedirect([
             'assessment-mobile',
             'review',
