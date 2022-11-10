@@ -130,7 +130,10 @@ export class NotificationsPage implements OnInit, OnDestroy {
         await this.showEventDetail(eventOrTodoItem);
         break;
     }
-    this.dismiss(); // dismiss modal
+    const hasModal = await this.modalController.getTop();
+    if (hasModal) {
+      this.dismiss(); // dismiss modal
+    }
   }
 
   async goToAssessment(activityId, contextId, assessmentId): Promise<void> {
