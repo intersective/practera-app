@@ -40,9 +40,11 @@ export class ReviewDesktopPage implements OnInit {
     this.assessmentService.assessment$.subscribe(res => this.assessment = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
-    this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     this.route.paramMap.subscribe(_params => {
       this.reviewService.getReviews();
+    });
+    this.route.params.subscribe(params => {
+      this.submissionId = +params?.submissionId;
     });
     this.reviews$.subscribe(reviews => {
       if (this.utils.isEmpty(this.submissionId) || this.submissionId == 0) {
