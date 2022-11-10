@@ -139,7 +139,7 @@
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
       <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center">
-        <ion-textarea
+        <!-- <ion-textarea
           aria-label="chat message input"
           placeholder="Enter your message"
           required="true"
@@ -149,7 +149,8 @@
           appAutoresize="100"
           rows="1"
           (ionFocus)="showBottomAttachmentButtons = true;"
-        ></ion-textarea>
+        ></ion-textarea> -->
+        <quill-editor class="content-editor" [modules]="quillConfig" [placeholder]="'Enter your message'" [styles]="{'min-height': '120px'}" (onContentChanged)="onContentChangedQull($event)"></quill-editor>
       </ion-col>
       <ng-container *ngIf="utils.isMobile() && !showBottomAttachmentButtons">
         <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 0 }"></ng-container>

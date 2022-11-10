@@ -51,6 +51,10 @@ export class ChatRoomComponent implements OnInit {
   showBottomAttachmentButtons = false;
   videoHandles = [];
 
+  quillConfig = {
+    toolbar: [['bold', 'italic', 'underline', 'strike'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]
+  };
+
   constructor(
     private chatService: ChatService,
     private router: Router,
@@ -775,4 +779,9 @@ export class ChatRoomComponent implements OnInit {
       await modal.present();
     }
   }
+
+  onContentChangedQull(data) {
+    console.log(data);
+  }
+
 }
