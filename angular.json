@@ -267,6 +267,14 @@
           "ms": {
             "translation": "projects/v3/src/locales/messages.ms.xlf",
             "baseHref": ""
+          },
+          "es": {
+            "translation": "projects/v3/src/locales/messages.es.xlf",
+            "baseHref": ""
+          },
+          "hi": {
+            "translation": "projects/v3/src/locales/messages.hi.xlf",
+            "baseHref": ""
           }
         }
       },
