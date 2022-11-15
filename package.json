@@ -31,7 +31,7 @@
     "pubdocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build",
     "buildv3": "ng build v3 -c development",
     "prebuildv3": "ng build request",
-    "i18n": "ng extract-i18n v3 --output-path projects/v3/"
+    "i18n": "ng extract-i18n v3 --output-path locales/"
   },
   "dependencies": {
     "@angular/animations": "~13.3.11",
