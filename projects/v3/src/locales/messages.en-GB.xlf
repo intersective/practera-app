@@ -104,7 +104,7 @@
         <source>Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
-          <context context-type="linenumber">263,264</context>
+          <context context-type="linenumber">261,262</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7571110135159465275" datatype="html">
@@ -407,10 +407,6 @@
       <trans-unit id="5306473977542913614" datatype="html">
         <source>Activity</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/activity-desktop/activity-desktop.page.html</context>
-          <context context-type="linenumber">11</context>
-        </context-group>
-        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/activity-mobile/activity-mobile.page.html</context>
           <context context-type="linenumber">8</context>
         </context-group>
@@ -475,54 +471,32 @@
           <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="4768749765465246664" datatype="html">
-        <source>Email</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">20</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="1431416938026210429" datatype="html">
-        <source>Password</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">34</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">95</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="2255738207434422096" datatype="html">
         <source>LOGIN</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">50</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2633010980479369274" datatype="html">
         <source>LOGGING IN...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8600010496045622616" datatype="html">
         <source>Problem signing in?</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">58</context>
+          <context context-type="linenumber">56</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7933384538978087776" datatype="html">
         <source>Powered by</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">61</context>
+          <context context-type="linenumber">59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="152009032311101647" datatype="html">
@@ -536,70 +510,74 @@
         <source>setup practera password</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">34</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="3782563238994348625" datatype="html">
-        <source>Confirm password</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">33</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3330329515985411103" datatype="html">
         <source>confirm password</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">49</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5150135294711720220" datatype="html">
         <source> I agree to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;subtitle-2&quot; (click)=&quot;openLink()&quot; tabindex=&quot;0&quot; aria-label=&quot;terms &amp; conditions&quot;&gt;"/>Terms &amp; Conditions<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">58,59</context>
+          <context context-type="linenumber">56,57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3866977477834057134" datatype="html">
         <source>REGISTER</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">64</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4871864888462368754" datatype="html">
         <source>Welcome <x id="INTERPOLATION" equiv-text="{{user.email}}"/>.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">70</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2409422726276457207" datatype="html">
-        <source>Please accept the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a (click)=&quot;termsAndConditionsPopup()&quot;&gt;"/>Terms and Conditions<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> in order to continue.</source>
+      <trans-unit id="664573589261423471" datatype="html">
+        <source>Terms and Conditions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
+          <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7741310431486070608" datatype="html">
         <source>I agree to the Terms and Conditions</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">79</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6892068562944277349" datatype="html">
         <source>Optionally, create an account password as an additional future login option.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">88</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1431416938026210429" datatype="html">
+        <source>Password</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
+          <context context-type="linenumber">93</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5850331735806504848" datatype="html">
         <source>CONTINUE </source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">115,116</context>
+          <context context-type="linenumber">113,114</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2544569632476723854" datatype="html">
@@ -863,39 +841,11 @@
           <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="8869115284417096267" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ count }}"/> Activities</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">29</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="41203728025345244" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{ experienceProgress }}"/>% Progress</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">31</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="2309808536212982229" datatype="html">
         <source>Activities</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">45</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="187187500641108332" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{getIsPointsConfigured ? &apos;Badges &amp; Points&apos;: &apos;Badges&apos;}}"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">51</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="8570846134708162776" datatype="html">
-        <source>Activity list</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8443593199200325653" datatype="html">
@@ -1020,6 +970,13 @@
         </context-group>
         <note priority="1" from="description">user&apos;s name</note>
       </trans-unit>
+      <trans-unit id="4768749765465246664" datatype="html">
+        <source>Email</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="8736779660701073898" datatype="html">
         <source>If you need to update your name or email please contact the experience administrator.</source>
         <context-group purpose="location">
@@ -1039,13 +996,6 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">87</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="664573589261423471" datatype="html">
-        <source>Terms and Conditions</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
-          <context context-type="linenumber">89</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5113165610004622651" datatype="html">
