@@ -22,11 +22,11 @@
     </ion-item>
     <ng-container *ngIf="event.videoConference">
       <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
-        <img src="../../assets/icon_zoom_24.svg" alt="booked zoom meeting">
+        <img src="./assets/icon_zoom_24.svg" alt="booked zoom meeting">
         <div class="subtitle-1 ion-text-capitalize" i18n> {{ event.videoConference.provider }} Meeting </div>
       </ion-item>
       <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
-        <img src="../../assets/icon_zoom_24.svg" alt="open zoom meeting">
+        <img src="./assets/icon_zoom_24.svg" alt="open zoom meeting">
         <div class="item-content">
           <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
           <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
