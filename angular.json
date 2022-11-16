@@ -146,7 +146,7 @@
               {
                 "glob": "favicon.ico",
                 "input": "src/",
-                "output": "/"
+                "output": "./"
               },
               {
                 "glob": "**/*",
@@ -262,23 +262,23 @@
         "locales": {
           "en-GB": {
             "translation": "projects/v3/src/locales/messages.en-GB.xlf",
-            "baseHref": ""
+            "baseHref": "en/"
           },
           "ja": {
             "translation": "projects/v3/src/locales/messages.ja.xlf",
-            "baseHref": ""
+            "baseHref": "ja/"
           },
           "ms": {
             "translation": "projects/v3/src/locales/messages.ms.xlf",
-            "baseHref": ""
+            "baseHref": "ms/"
           },
           "es": {
             "translation": "projects/v3/src/locales/messages.es.xlf",
-            "baseHref": ""
+            "baseHref": "es/"
           },
           "hi": {
             "translation": "projects/v3/src/locales/messages.hi.xlf",
-            "baseHref": ""
+            "baseHref": "hi/"
           }
         }
       },
@@ -299,7 +299,7 @@
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "localize": true,
-            "i18nMissingTranslation": "error",
+            "i18nMissingTranslation": "warning",
             "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
             "index": "projects/v3/src/index.html",
@@ -311,7 +311,7 @@
               {
                 "glob": "**/*",
                 "input": "projects/v3/src/assets",
-                "output": "assets"
+                "output": "./assets"
               },
               {
                 "glob": "**/*.svg",
