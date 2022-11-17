@@ -157,7 +157,7 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   openLink() {
-    const fileURL = 'https://images.practera.com/terms_and_conditions/practera_default_terms_conditions_july2018.pdf';
+    const fileURL = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
     this.newRelic.actionText(`opened ${fileURL}`);
     window.open(fileURL, '_system');
   }
