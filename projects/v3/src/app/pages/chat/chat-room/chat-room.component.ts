@@ -51,10 +51,6 @@ export class ChatRoomComponent implements OnInit {
   showBottomAttachmentButtons = false;
   videoHandles = [];
 
-  quillConfig = {
-    toolbar: [['bold', 'italic', 'underline', 'strike'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]
-  };
-
   constructor(
     private chatService: ChatService,
     private router: Router,
@@ -257,7 +253,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!this.typingMessage) {
+    if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
       return;
     }
     const message = this.typingMessage;
@@ -315,7 +311,6 @@ export class ChatRoomComponent implements OnInit {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
     this.typingMessage = '';
-    this.element.nativeElement.querySelector('textarea').style.height = 'auto';
   }
 
   private _afterSendMessage() {
