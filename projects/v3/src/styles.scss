@@ -276,3 +276,40 @@ ion-button.practera-btn {
     color: #EDFB32 !important;
   }
 }
+
+/*********
+chat text editor
+**********/
+.editor-class {
+  border: none !important;
+
+  &.desktop {
+    .ql-editor {
+      max-height: 100px;
+      min-height: 80px;
+    }
+  }
+}
+
+.last-message {
+  pointer-events: none;
+  cursor: default;
+  ol, ul, p, a {
+    margin: 0 !important;
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
+.send-messages {
+  .message-text {
+    color: white !important;
+    p {
+      color: white !important;
+      a {
+        text-decoration: underline;
+        color: white !important;
+      }
+    }
+  }
+}

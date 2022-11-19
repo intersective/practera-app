@@ -6,6 +6,16 @@ ion-avatar {
   background-color: var(--ion-color-primary);
 }
 
+.last-message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  display: -moz-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
 clickable-item {
   .bold {
     font-weight: bold;

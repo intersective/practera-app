@@ -21,13 +21,7 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
     ComponentsModule,
     ChatRoutingModule,
     PersonalisedHeaderModule,
-    QuillModule.forRoot(
-      {
-        modules: {
-          toolbar: [['bold', 'italic', 'underline', 'strike'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']]
-        }
-      }
-    )
+    QuillModule.forRoot()
   ],
   declarations: [
     ChatPage,
