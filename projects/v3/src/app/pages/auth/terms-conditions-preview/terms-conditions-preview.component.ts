@@ -17,7 +17,7 @@ export class TermsConditionsPreviewComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.termsURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://images.practera.com/terms_and_conditions/practera_default_terms_conditions_july2018.pdf#toolbar=0&navpanes=0&scrollbar=0"');
+    this.termsURL = this.sanitizer.bypassSecurityTrustResourceUrl('https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf#toolbar=0&navpanes=0&scrollbar=0"');
   }
 
   close(Agreed = false) {
