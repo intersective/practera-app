@@ -1,12 +1,12 @@
 <ion-header class="ion-no-border header-border" aria-label="home">
-  <h1 class="for-accessibility">Home</h1>
+  <h1 class="for-accessibility" i18n>Home</h1>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" aria-label="back to experience list">
         <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title class="ion-no-padding headline-4 grey-75">Home</ion-title>
+    <ion-title class="ion-no-padding headline-4 grey-75" i18n>Home</ion-title>
     <ion-buttons slot="end">
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
@@ -15,20 +15,20 @@
 
 <ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
   <main aria-labelledby="homecontent">
-    <h1 id="homecontent" class="for-accessibility">Home content</h1>
+    <h1 id="homecontent" class="for-accessibility" i18n>Home content</h1>
     <ion-grid style="padding: inherit;">
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
-          <h2 class="for-accessibility">Experience Details</h2>
+          <h2 class="for-accessibility" i18n>Experience Details</h2>
           <ng-container *ngIf="(experience$ | async ) as experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
             <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100" aria-hidden="true"></ion-progress-bar>
             <div class="exp-content">
               <h1 class="headline-2">{{ experience.name }}</h1>
               <ion-text class="subtitle-3" color="grey-75">
-                <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress">{{ count }} Activities</ng-container>
+                <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress" i18n>{{ count }} Activities</ng-container>
                 <span style="margin: 0 10px">|</span>
-                <ng-container *ngIf="experienceProgress >= 0; else loadingProgress">{{ experienceProgress }}% Progress</ng-container>
+                <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
                 <ng-template #loadingProgress>
                   <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
                 </ng-template>
@@ -42,13 +42,13 @@
         </ion-col>
 
         <ion-col size="12" size-md="8" class="activity-col" [ngClass]="{'mobile': isMobile}">
-          <h2 class="for-accessibility">Activities</h2>
+          <h2 class="for-accessibility" i18n>Activities</h2>
           <ion-segment (ionChange)="switchContent($event)" [value]="display">
             <ion-segment-button value="activities" mode="ios">
               <ion-label>Activities</ion-label>
             </ion-segment-button>
             <ion-segment-button value="badges" mode="ios">
-              <ion-label>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
+              <ion-label i18n>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
             </ion-segment-button>
           </ion-segment>
 
@@ -62,7 +62,7 @@
 </ion-content>
 
 <ng-template #activityList>
-  <h3 class="for-accessibility">Activity list</h3>
+  <h3 class="for-accessibility" i18n>Activity list</h3>
   <ng-container *ngIf="!milestones">
     <ion-item>
       <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
@@ -100,15 +100,15 @@
 </ng-template>
 
 <ng-template #badgePoints>
-  <h3 class="for-accessibility">Badges awarded</h3>
+  <h3 class="for-accessibility" i18n>Badges awarded</h3>
   <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
     <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
     <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
-    <p id="nobadges" class="body-1" aria-live="polite">You have no badges yet!</p>
-    <ion-text class="subtitle-2" color="grey-75" aria-live="polite">Experience badge will show up here.</ion-text>
+    <p id="nobadges" class="body-1" aria-live="polite" i18n>You have no badges yet!</p>
+    <ion-text class="subtitle-2" color="grey-75" aria-live="polite" i18n>Experience badge will show up here.</ion-text>
   </div>
   <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
-    <ion-label class="headline-4">
+    <ion-label class="headline-4" i18n>
       Total Points Earned: {{getEarnedPoints}}
     </ion-label>
   </ion-item>

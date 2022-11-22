@@ -7,8 +7,12 @@
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
             <div class="answer-text" [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}">{{ choice.name }}</div>
-            <ion-chip class="label orange" *ngIf="submission?.answer === choice.id">Learner's answer</ion-chip>
-            <ion-chip class="label yellow black" *ngIf="review?.answer === choice.id">Expert's answer</ion-chip>
+            <ion-chip class="label orange"
+              *ngIf="submission?.answer === choice.id" i18n
+            >Learner's answer</ion-chip>
+            <ion-chip class="label yellow black"
+              *ngIf="review?.answer === choice.id" i18n
+            >Expert's answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
@@ -89,6 +93,7 @@
       rows="4"
       (ngModelChange)="onChange(comment, 'comment')"
       placeholder="Please put your feedback here"
+      i18n-placeholder
       [disabled]="control.disabled"></ion-textarea>
   </div>
 </ng-container>
