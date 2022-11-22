@@ -3,7 +3,7 @@
     <ion-icon *ngIf="utils.isMobile()" name="arrow-back"
       (click)="close()" color="primary" slot="start" margin-start
     ></ion-icon>
-    <ion-title class="heading-6 black" aria-label="channel details">
+    <ion-title class="heading-6 black" aria-label="channel details" i18n>
       Channel details
     </ion-title>
     <ion-button mode="ios" *ngIf="!utils.isMobile()"
@@ -24,7 +24,7 @@
     <ion-label class="subtitle-1 black">{{ selectedChat.name }}</ion-label>
   </div>
   <div class="who-in-chat-container">
-    <ion-label class="subtitle-1 gray-2">Who is in this chat</ion-label>
+    <ion-label class="subtitle-1 gray-2" i18n>Who is in this chat</ion-label>
     <div class="chat-role-container">
       <ng-container *ngFor="let role of selectedChat.roles">
         <p class="chat-role body-2">{{ utils.getUserRolesForUI(role) }}s</p>
@@ -32,7 +32,7 @@
     </div>
   </div>
   <div class="member-container">
-    <p class="subtitle-1 gray-2">{{ memberList.length }} Members</p>
+    <p class="subtitle-1 gray-2" i18n>{{ memberList.length }} Members</p>
     <ng-container *ngIf="loadingMembers">
       <div class="ion-text-center">
         <ion-spinner></ion-spinner>

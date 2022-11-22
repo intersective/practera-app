@@ -16,7 +16,7 @@
 
 <ng-template #conversionPending>
   <ng-container *ngIf="waitedTooLong === false; else longWait">
-    <div class="waiting-mgs">
+    <div class="waiting-mgs" i18n>
       <ion-spinner name="bubbles"></ion-spinner>please wait
     </div>
   </ng-container>
@@ -24,7 +24,7 @@
 
 <ng-template #longWait>
   <div>
-    <p>Waited too long?</p>
-    <p>Download <a target="_blank" href="{{video?.fileObject?.url}}">here</a></p>
+    <p i18n>Waited too long?</p>
+    <p i18n>Download <a target="_blank" href="{{video?.fileObject?.url}}">here</a></p>
   </div>
 </ng-template>

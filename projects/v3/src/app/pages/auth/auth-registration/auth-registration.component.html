@@ -15,7 +15,7 @@
         <p class="body-1">{{user.email}}</p>
       </ng-container>
       <ng-container *ngIf="hide_password">
-        <p class="headline-6">Your Mobile Number</p>
+        <p class="headline-6" i18n>Your Mobile Number</p>
         <p class="body-1">{{user.contact}}</p>
       </ng-container>
       <form [formGroup]="registerationForm">
@@ -28,9 +28,10 @@
               [(ngModel)]="password"
               inputmode="password"
               formControlName="password"
-              autocomplete="on" required [type]="showPassword ? 'text' : 'password'"
+              autocomplete="on" required
+              [type]="showPassword ? 'text' : 'password'"
               placeholder="Set up Practera password*">
-              <p id="setup-password" class="for-accessibility">setup practera password</p>
+              <p id="setup-password" class="for-accessibility" i18n>setup practera password</p>
             </ion-input>
             <ion-button mode="ios" (click)="showPassword = !showPassword" fill="clear">
               <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
@@ -43,17 +44,18 @@
               inputmode="password"
               formControlName="confirmPassword"
               [type]="showPassword ? 'text' : 'password'"
-              placeholder="Confirm password*"
+              placeholder="Confirm password"
+              i18n-placeholder
               autocomplete="on"
               required>
-              <p id="confirm-password" class="for-accessibility">confirm password</p>
+              <p id="confirm-password" class="for-accessibility" i18n>confirm password</p>
             </ion-input>
           </ion-item>
         </ion-list>
         <div class="list-terms">
           <ion-checkbox id="registerAgreement" color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
             name="isAgreed" aria-labelledby="registerAgreement" [attr.aria-label]="isAgreed ? 'Agree to the terms & conditions' : 'Disagree to the terms & conditions'"></ion-checkbox>
-          <ion-label class="body-2" aria-label="I agree to the terms & conditions">
+          <ion-label class="body-2" aria-label="I agree to the terms & conditions" i18n>
             I agree to the <a class="subtitle-2" (click)="openLink()" tabindex="0" aria-label="terms & conditions">Terms & Conditions</a>
           </ion-label>
         </div>
@@ -61,22 +63,22 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button mode="ios" id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
+        <ion-button mode="ios" id="btn-register" shape="round" expand="full" (click)="register()" color="primary" i18n>REGISTER</ion-button>
       </form>
     </ng-container>
 
     <ng-container *ngIf="unRegisteredDirectLink">
       <div class="title div-after-logo directlink">
-        <p class="headline-6">Welcome {{user.email}}.</p>
+        <p class="headline-6" i18n>Welcome {{user.email}}.</p>
       </div>
       <div class="tc-container">
         <div class="div-after-logo directlink">
-          <p class="subtitle-1">Please accept the <a (click)="termsAndConditionsPopup()">Terms and Conditions</a> in order to continue.</p>
+          <p class="subtitle-1" i18n>Please accept the <a (click)="termsAndConditionsPopup()">Terms and Conditions</a> in order to continue.</p>
         </div>
         <div [ngClass]="{'div-after-logo directlink': !utils.isMobile()}">
           <ion-list margin lines="none">
             <ion-item>
-              <ion-label class="body-2" aria-label="I agree to the terms & conditions">I agree to the Terms and Conditions</ion-label>
+              <ion-label class="body-2" aria-label="I agree to the terms & conditions" i18n>I agree to the Terms and Conditions</ion-label>
               <ion-toggle color="primary" slot="end" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
                 name="isAgreed" tabindex="0" aria-checked="isAgreed"></ion-toggle>
             </ion-item>
@@ -85,12 +87,12 @@
       </div>
       <div class="password-container">
         <div class="title div-after-logo directlink">
-          <p class="subtitle-1">Optionally, create an account password as an additional future login option.</p>
+          <p class="subtitle-1" i18n>Optionally, create an account password as an additional future login option.</p>
         </div>
         <div [ngClass]="{'div-after-logo directlink': !utils.isMobile()}">
           <ion-list margin lines="none">
             <ion-item>
-              <ion-label class="body-2" position="fixed">Password</ion-label>
+              <ion-label class="body-2" position="fixed" i18n>Password</ion-label>
               <ion-input name="password"
                 aria-label="password"
                 [(ngModel)]="password"
@@ -110,7 +112,7 @@
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
         <ion-button mode="ios" class="continue-btn" id="btn-register" shape="round" expand="full" (click)="register()"
-          [disabled]="!isAgreed" color="primary">CONTINUE
+          [disabled]="!isAgreed" color="primary" i18n>CONTINUE
         </ion-button>
       </div>
     </ng-container>
