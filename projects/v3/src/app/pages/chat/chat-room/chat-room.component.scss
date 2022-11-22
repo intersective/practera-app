@@ -300,19 +300,6 @@ $message-body-size: 60%;
         ion-col {
           min-height: 80px;
           max-height: 121px;
-
-          .message-text-editor {
-            height: 90px;
-            .ql-toolbar, .text-editor {
-              border: none;
-            }
-            .text-editor {
-              .ql-editor {
-                max-height: 100px;
-                min-height: 80px;
-              }
-            }
-          }
         }
       }
     }
@@ -329,10 +316,8 @@ $message-body-size: 60%;
   ion-grid {
     background-color: white;
     min-height: 48px;
-    // max-height: 169px;
     ion-row {
       min-height: 48px;
-      // max-height: 121px;
       &.action-buttons {
         min-height: 48px;
         max-height: 66px;
@@ -343,7 +328,6 @@ $message-body-size: 60%;
       }
       ion-col {
         min-height: 48px;
-        // max-height: 121px;
 
         .message-text-editor {
           .ql-toolbar, .ql-container.ql-snow {

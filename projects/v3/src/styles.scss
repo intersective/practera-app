@@ -282,6 +282,9 @@ chat text editor
 **********/
 .editor-class {
   border: none !important;
+  .ql-editor {
+    max-height: 100px;
+  }
 
   &.desktop {
     .ql-editor {
@@ -291,6 +294,10 @@ chat text editor
   }
 }
 
+.ql-editor ol, .ql-editor ul {
+  padding-left: 0;
+}
+
 .last-message {
   pointer-events: none;
   cursor: default;
@@ -298,6 +305,15 @@ chat text editor
     margin: 0 !important;
     pointer-events: none;
     cursor: default;
+  }
+}
+
+.message-text {
+  ol, ul, p, a {
+    margin: 0 !important;
+  }
+  ol, ul {
+    padding-left: 16px;
   }
 }
 
