@@ -219,6 +219,13 @@ $message-body-size: 60%;
 
           .message-text {
             color: white !important;
+            p {
+              color: white !important;
+              a {
+                text-decoration: underline;
+                color: white !important;
+              }
+            }
           }
         }
       }
@@ -267,7 +274,7 @@ $message-body-size: 60%;
   text-align: left !important;
 }
 .ion-content-absolute-with-footer {
-  height: calc(100% - 155px);
+  height: calc(100% - 230px);
 
   &.announcement {
     height: calc(100% - 60px);
@@ -279,10 +286,22 @@ $message-body-size: 60%;
   padding: 0;
 
   &.ion-footer-absolute {
-    height: 96px;
+    height: 169px;
+
     ion-grid {
       padding: 0;
       min-height: 96px;
+      max-height: 169px;
+
+      ion-row {
+        min-height: 80px;
+        max-height: 121px;
+
+        ion-col {
+          min-height: 80px;
+          max-height: 121px;
+        }
+      }
     }
   }
 
@@ -299,8 +318,23 @@ $message-body-size: 60%;
     min-height: 48px;
     ion-row {
       min-height: 48px;
+      &.action-buttons {
+        min-height: 48px;
+        max-height: 66px;
+        ion-col {
+          min-height: 48px;
+          max-height: 66px;
+        }
+      }
       ion-col {
         min-height: 48px;
+
+        .message-text-editor {
+          .ql-toolbar, .ql-container.ql-snow {
+            border: none;
+          }
+        }
+
         ion-button {
           padding-top: 6px;
           min-height: 24px;

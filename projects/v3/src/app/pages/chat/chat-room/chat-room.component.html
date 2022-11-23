@@ -138,31 +138,50 @@
 <ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': showBottomAttachmentButtons}">
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
-      <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center">
-        <ion-textarea
-          aria-label="chat message input"
-          placeholder="Enter your message"
-          required="true"
-          name="message"
-          [(ngModel)]="typingMessage"
-          (ngModelChange)="typing()"
-          appAutoresize="100"
-          rows="1"
-          (ionFocus)="showBottomAttachmentButtons = true;"
-        ></ion-textarea>
+      <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center ion-no-padding">
+        <!-- quill editor -->
+        <quill-editor aria-label="chat message input"
+        customToolbarPosition="top"
+        [classes]="utils.isMobile() ? 'editor-class' : 'editor-class desktop'"
+        [required]="true"
+        class="message-text-editor"
+        [placeholder]="'Enter your message'"
+        [(ngModel)]="typingMessage"
+        (ngModelChange)="typing()"
+        (onFocus)="showBottomAttachmentButtons = true;"
+        (onBlur)="showBottomAttachmentButtons = false;">
+          <div quill-editor-toolbar>
+            <span class="ql-formats">
+              <button class="ql-bold" [title]="'Bold'"></button>
+              <button class="ql-italic" [title]="'Italic'"></button>
+              <button class="ql-underline" [title]="'Underline'"></button>
+              <button class="ql-strike" [title]="'Strike'"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-list" value="ordered"></button>
+              <button class="ql-list" value="bullet"></button>
+            </span>
+            <span class="ql-formats">
+              <button class="ql-link"></button>
+            </span>
+          </div>
+        </quill-editor>
+      <!-- quill editor -->
+
       </ion-col>
       <ng-container *ngIf="utils.isMobile() && !showBottomAttachmentButtons">
         <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 0 }"></ng-container>
       </ng-container>
     </ion-row>
-    <ion-row nowrap class="ion-no-padding ion-align-items-end" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">
+    <ion-row nowrap class="ion-no-padding ion-align-items-end action-buttons" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">
       <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 8 }"></ng-container>
       <ion-col class="ion-no-padding ion-text-center">
         <ion-button (click)="sendMessage()"
           aria-label="send message"
           type="submit"
           fill="clear"
-          class="ion-no-padding">
+          class="ion-no-padding"
+          [disabled]="!typingMessage || utils.isQuillContentEmpty(this.typingMessage)">
           <ion-icon name="send-outline" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-col>

@@ -14,6 +14,10 @@ ion-grid {
   }
 }
 
+.border-left {
+  border-left: 1px solid var(--practera-grey-25);
+}
+
 ion-col#chatroom {
   display: block;
 }

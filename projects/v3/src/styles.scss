@@ -276,3 +276,56 @@ ion-button.practera-btn {
     color: #EDFB32 !important;
   }
 }
+
+/*********
+chat text editor
+**********/
+.editor-class {
+  border: none !important;
+  .ql-editor {
+    max-height: 100px;
+  }
+
+  &.desktop {
+    .ql-editor {
+      max-height: 100px;
+      min-height: 80px;
+    }
+  }
+}
+
+.ql-editor ol, .ql-editor ul {
+  padding-left: 0;
+}
+
+.last-message {
+  pointer-events: none;
+  cursor: default;
+  ol, ul, p, a {
+    margin: 0 !important;
+    pointer-events: none;
+    cursor: default;
+  }
+}
+
+.message-text {
+  ol, ul, p, a {
+    margin: 0 !important;
+  }
+  ol, ul {
+    padding-left: 16px;
+  }
+}
+
+.send-messages {
+  .message-text {
+    color: white !important;
+    p {
+      color: white !important;
+      a {
+        text-decoration: underline;
+        color: white !important;
+      }
+    }
+  }
+}
