@@ -775,8 +775,4 @@ export class ChatRoomComponent implements OnInit {
     }
   }
 
-  onContentChangedQull(data) {
-    console.log(data);
-  }
-
 }
