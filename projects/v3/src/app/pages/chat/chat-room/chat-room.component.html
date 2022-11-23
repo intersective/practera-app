@@ -59,7 +59,8 @@
           </ng-container>
 
           <ng-container *ngIf="message.message || !message.fileObject;">
-            <p id="message-content" class="message-text subtitle-1" [innerHTML]="message.message" tabindex="0"></p>
+            <!-- Quill read only view/ use to render html content -->
+            <quill-view id="message-content" [content]="message.message" tabindex="0"></quill-view>
           </ng-container>
 
           <ng-container *ngIf="message.fileObject">
