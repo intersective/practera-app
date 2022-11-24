@@ -92,7 +92,7 @@ $message-body-size: 60%;
           }
         }
 
-        p, .message-text {
+        p {
           color: black;
           margin: 0;
           text-align: left;
@@ -216,17 +216,6 @@ $message-body-size: 60%;
 
           // margin-left: calc(100% - 150px) !important;
           float: right;
-
-          .message-text {
-            color: white !important;
-            p {
-              color: white !important;
-              a {
-                text-decoration: underline;
-                color: white !important;
-              }
-            }
-          }
         }
       }
     }
