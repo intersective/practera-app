@@ -1,4 +1,4 @@
-# Practera-app-v2
+# Practera-app-v3
 
 ![Build Status](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYVA3Zi9rVHlUSlNWT1VkZkY3R1FPS3pwd01EeWo4UTlFanUyQk1UanUveW1VRlgvdnhudVR3RUhsUXBhYk9kYXhmNnJTYjBramVuTkRTc3JyNkZJajZFPSIsIml2UGFyYW1ldGVyU3BlYyI6IkVabm9Va3hoUnhhSmNTSTEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
@@ -67,20 +67,20 @@ Run `npm run v3` to serve appv3 on localhost
 
 ## External link format
 
-### 1. Direct link login
+### Login Options
+1. Normal login with user's credentials
+1. Direct link Login (core / login app)
+    - Simplest form - `*.com?do=secure&auth_token=*`
+    - Deeplinking form - `*.com?do=secure&auth_token=*&redirect=*&tl=*`
+1. Global Login (core / login app)
+    - Format: `*.com?service=LOGIN&multiple=true&apikey=*&stack_uuid=*`
 
-`*.com?do=secure&auth_token=*`
-
-### 2. Direct link login and redirect to a specific page
-
-`*.com?do=secure&auth_token=*&redirect=*&tl=*`
-
-#### Required parameters:
+#### Deeplinking parameters:
 - `auth_token` - the auth token used to authenticate user
-- `redirect` - the page you will be redirect to
 - `tl` - timeline id of the program you are in
+- `redirect` - the page you will be redirect to (see details below)
 
-#### Valid `redirect` values:
+##### Valid `redirect` parameter values/options:
 - `home` - redirect to home page
 - `project` - redirect to project page
 - `activity` - redirect to activity page with the following parameters
@@ -107,11 +107,10 @@ Run `npm run v3` to serve appv3 on localhost
 - `settings` - redirect to settings page
 - `settings-embed` - redirect to settings embed page
 
-#### Optional parameters:
+##### Optional parameters:
 - `return_url` - when user switch program, he/she will be redirect to this url
 
-#### Examples:
-
+##### Examples:
 1. `*.com?do=secure&auth_token=abcdefg&redirect=project&tl=312` will redirect you to the project page
 1. `*.com?do=secure&auth_token=abcdefg&redirect=assessment&tl=312&act=231&ctxt=393&asmt=928` will redirect you to the assessment page
 
