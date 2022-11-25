@@ -6,6 +6,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
+import { SharedService } from '@v3/app/services/shared.service';
 
 @Component({
   selector: 'app-auth-global-login',
@@ -20,6 +21,7 @@ export class AuthGlobalLoginComponent implements OnInit {
     private experienceService: ExperienceService,
     private ngZone: NgZone,
     private readonly storage: BrowserStorageService,
+    private readonly sharedService: SharedService,
   ) {}
 
   async ngOnInit() {
@@ -50,6 +52,7 @@ export class AuthGlobalLoginComponent implements OnInit {
   // force every navigation happen under radar of angular
   private navigate(direction): Promise<boolean> {
     return this.ngZone.run(() => {
+      this.sharedService.initWebServices();
       return this.router.navigate(direction);
     });
   }
