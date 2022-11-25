@@ -61,7 +61,6 @@ const largeCircleDefaultConfig = {
   ],
   declarations: [
     AchievementPopUpComponent,
-    AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
     ActivityComponent,
     AssessmentComponent,
@@ -94,7 +93,6 @@ const largeCircleDefaultConfig = {
     BottomActionBarComponent
   ],
   exports: [
-    AchievementPopUpComponent,
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,
     ActivityComponent,
