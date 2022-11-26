@@ -1,12 +1,10 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable, concat } from 'rxjs';
 import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { SharedService } from '@v3/app/services/shared.service';
 
 @Component({
   selector: 'app-auth-global-login',
@@ -21,7 +19,6 @@ export class AuthGlobalLoginComponent implements OnInit {
     private experienceService: ExperienceService,
     private ngZone: NgZone,
     private readonly storage: BrowserStorageService,
-    private readonly sharedService: SharedService,
   ) {}
 
   async ngOnInit() {
@@ -34,6 +31,7 @@ export class AuthGlobalLoginComponent implements OnInit {
     try {
       await this.authService.globalLogin({ apikey, service }).toPromise();
       await this.experienceService.getMyInfo().toPromise();
+
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
       }
@@ -52,7 +50,6 @@ export class AuthGlobalLoginComponent implements OnInit {
   // force every navigation happen under radar of angular
   private navigate(direction): Promise<boolean> {
     return this.ngZone.run(() => {
-      this.sharedService.initWebServices();
       return this.router.navigate(direction);
     });
   }
