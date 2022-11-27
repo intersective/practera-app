@@ -119,18 +119,15 @@ export class PusherService {
 
   private async initialisePusher(): Promise<Pusher.Pusher> {
     // during the app execution lifecycle
-    if (typeof this.pusher !== 'undefined') {
+    // never reinstantiate another instance of Pusher
+    const pusherHasInitiated = typeof this.pusher !== 'undefined' || !this.utils.isEmpty(this.pusher);
+    if (pusherHasInitiated) {
       return this.pusher;
     }
 
     // prevent pusher auth before user authenticated (skip silently)
     const { apikey, timelineId } = this.storage.getUser();
-    if (!apikey || !timelineId) {
-      return this.pusher;
-    }
-
-    // never reinstantiate another instance of Pusher
-    if (!this.utils.isEmpty(this.pusher)) {
+    if ((!apikey || !timelineId) && !pusherHasInitiated) {
       return this.pusher;
     }
 
@@ -143,8 +140,8 @@ export class PusherService {
           headers: {
             'Authorization': 'pusherKey=' + this.pusherKey,
             'appkey': environment.appkey,
-            'apikey': this.storage.getUser().apikey,
-            'timelineid': this.storage.getUser().timelineId
+            'apikey': apikey,
+            'timelineid': timelineId,
           },
         },
       };

@@ -204,9 +204,6 @@ export class ExperienceService {
   }
 
   async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
-    // initialise Pusher
-    this.sharedService.initWebServices();
-
     const colors = this.extractColors(programObj);
 
     let cardBackgroundImage = '';
@@ -244,6 +241,9 @@ export class ExperienceService {
 
     this.sharedService.onPageLoad();
     this.homeService.clearExperience();
+
+    // initialise Pusher
+    this.sharedService.initWebServices();
     try {
       const jwt = await this.getNewJwt().toPromise();
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
