@@ -10,6 +10,7 @@ import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
+import { SharedService } from './shared.service';
 
 export interface Activity {
   id: number;
@@ -56,7 +57,8 @@ export class ActivityService {
     private notification: NotificationsService,
     private apolloService: ApolloService,
     private topic: TopicService,
-    private assessment: AssessmentService
+    private assessment: AssessmentService,
+    private sharedService: SharedService,
   ) {}
 
   public clearActivity(): void {
@@ -238,7 +240,11 @@ export class ActivityService {
     return this.router.navigate(['v3', 'home']);
   }
 
-  goToTask(task: Task, getData = true): void | Subscription | Promise<boolean> {
+  async goToTask(task: Task, getData = true): Promise<void | Subscription | boolean> {
+    if (task.isForTeam === true) {
+      await this.sharedService.getTeamInfo().toPromise();
+    }
+
     this._currentTask$.next(task);
     if (!getData) {
       return ;
