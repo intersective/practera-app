@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
@@ -39,6 +40,7 @@ export class ActivityDesktopPage implements OnInit {
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private utils: UtilsService,
+    private readonly sharedService: SharedService,
     @Inject(DOCUMENT) private readonly document: Document
   ) { }
 
@@ -78,12 +80,15 @@ export class ActivityDesktopPage implements OnInit {
     });
   }
 
-  goToTask(task: Task) {
+  async goToTask(task: Task): Promise<any> {
     const taskContentElement = this.document.getElementById('task-content');
     if (taskContentElement) {
       taskContentElement.focus();
     }
 
+    if (task.isForTeam === true) {
+      await this.sharedService.getTeamInfo().toPromise();
+    }
     return this.activityService.goToTask(task);
   }
 
