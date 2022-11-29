@@ -569,10 +569,11 @@ export class ChatRoomComponent implements OnInit {
       return;
     }
     this.sendingMessage = true;
+    const message = this.typingMessage;
     this._beforeSenMessages();
     this.chatService.postAttachmentMessage({
       channelUuid: this.channelUuid,
-      message: this.typingMessage,
+      message: message,
       file: JSON.stringify(file)
     }).subscribe(
       response => {
