@@ -10,6 +10,7 @@ import { TopicService } from '../topic/topic.service';
 import { PusherService } from '@shared/pusher/pusher.service';
 import { map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
+import { AuthService } from '@app/auth/auth.service';
 
 export interface Profile {
   contact_number: string;
@@ -42,13 +43,14 @@ export class SharedService {
     private newrelic: NewRelicService,
     private readonly topicService: TopicService,
     private readonly pusherService: PusherService,
+    private readonly authService: AuthService,
   ) {}
 
   // call this function on every page refresh and after switch program
   onPageLoad(): void {
     const appV3Activated = this.storage.getAppV3();
     if (appV3Activated === true) {
-      return this.utils.redirectToUrl(`${environment.appv3URL}?apikey=${this.storage.getUser().apikey}`);
+      return this.authService.forceRedirectToV3(this.storage.getUser().apikey);
     }
     this.getIpLocation();
     const {

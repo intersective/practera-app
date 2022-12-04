@@ -86,29 +86,22 @@ export class AuthService {
     }
     return this.request.post(api.login, body.toString(), {
       headers
-    }).pipe(tap(res => {
-      if (res?.data?.appv3 === true) {
-        if (this.deeplink) {
-          const onePageOnly = this.deeplink.match(/(one_page_only=true)/g);
-          const redirectReview = this.deeplink.match(/(redirect=review)/g);
-          if (onePageOnly !== null && redirectReview !== null) { // temporary allow review to be done on AppV2
-            this.deeplink = null;
-            return;
-          }
-        }
+    }).pipe(map(res => this._handleLoginResponse(res)));
+  }
 
-        this.storage.setAppV3(true);
-        let finalURL = '';
+  // forced redirect user to appv3
+  forceRedirectToV3(apikey) {
+    this.storage.setAppV3(true);
+    let finalURL = '';
 
-        if (this.deeplink) {
-          finalURL = this.deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
-        } else {
-          finalURL = `${environment.appv3URL}?apikey=${res.data.apikey}`;
-        }
-        this.utils.redirectToUrl(finalURL);
-        return;
-      }
-    }),     map(res => this._handleLoginResponse(res)));
+    if (this.deeplink) {
+      finalURL = this.deeplink.replace(/https?\:\/\/[\w\W]+\//g, environment.appv3URL);
+    } else {
+      finalURL = `${environment.appv3URL}?apikey=${apikey}`;
+    }
+    this.logout({}, false);
+    this.utils.redirectToUrl(finalURL);
+    return;
   }
 
   /**
@@ -154,7 +147,11 @@ export class AuthService {
     return this._login(body, service);
   }
 
-  private _handleLoginResponse(response): Observable<any> {
+  private _handleLoginResponse(response): void | Observable<any> {
+    if (response?.data?.appv3 === true) {
+      return this.forceRedirectToV3(response.data.apikey);
+    }
+
     const norm = this._normaliseAuth(response);
     this.storage.setUser({apikey: norm.apikey});
     this.storage.set('programs', norm.programs);
