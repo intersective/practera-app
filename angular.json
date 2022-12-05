@@ -260,24 +260,12 @@
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
-          "en-GB": {
-            "translation": "projects/v3/src/locales/messages.en-GB.xlf",
-            "baseHref": ""
-          },
           "ja": {
             "translation": "projects/v3/src/locales/messages.ja.xlf",
             "baseHref": ""
           },
           "ms": {
             "translation": "projects/v3/src/locales/messages.ms.xlf",
-            "baseHref": ""
-          },
-          "es": {
-            "translation": "projects/v3/src/locales/messages.es.xlf",
-            "baseHref": ""
-          },
-          "hi": {
-            "translation": "projects/v3/src/locales/messages.hi.xlf",
             "baseHref": ""
           }
         }
