@@ -265,10 +265,10 @@ jobs:
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
 ##########################################################
-      - name: AWS Cloudfront Cache invalidation
-        run: |
-          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
-          for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
+      # - name: AWS Cloudfront Cache invalidation
+      #   run: |
+      #     APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
+      #     for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
 
