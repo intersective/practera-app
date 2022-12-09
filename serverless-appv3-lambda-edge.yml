@@ -54,6 +54,7 @@ resources:
 
               if (locale === "" || locale === "index.html") {
                 request.uri = "/en-US/index.html";
+                console.log('Go to default page and locale.');
                 return cb(null, request);
               }
 
