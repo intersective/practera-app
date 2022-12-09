@@ -1,4 +1,4 @@
-service: ${env:STACK_NAME}-${env:ROOTSTACK}
+service: ${env:STACK_NAME}-lambda-edge-${env:ROOTSTACK}
 frameworkVersion: "2"
 useDotenv: true
 enableLocalInstallationFallback: true
@@ -7,7 +7,7 @@ provider:
   logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
   name: aws
   runtime: nodejs14.x
-  region: ${env:REGION}
+  region: us-east-1
   stage: ${env:ENV}
   deploymentBucket:
     maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
