@@ -28,7 +28,6 @@ provider:
 
 resources:
   Resources:
-    # Lambda@Edge function
     LambdaFunction:
       DependsOn: [LambdaFunctionRole]
       Type: "AWS::Lambda::Function"
@@ -70,7 +69,6 @@ resources:
               return cb(null, request);
             };
 
-
     LambdaFunctionRole:
       Type: AWS::IAM::Role
       Properties:
@@ -84,25 +82,57 @@ resources:
                   - edgelambda.amazonaws.com
               Action:
                 - sts:AssumeRole
-        Path: "/"
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+    IndexLambdaVersion:
+      Type: Custom::LatestLambdaVersion
+      Properties:
+        ServiceToken: !GetAtt PublishLambdaVersion.Arn
+        FunctionName: !Ref LambdaFunction
+        Nonce: ${env:Nonce}
+
+    PublishLambdaVersion:
+      Type: AWS::Lambda::Function
+      Properties:
+        Handler: index.handler
+        Runtime: nodejs6.10
+        Role: !GetAtt PublishLambdaVersionRole.Arn
+        Code:
+          ZipFile: |
+            const {Lambda} = require('aws-sdk')
+            const {send, SUCCESS, FAILED} = require('cfn-response')
+            const lambda = new Lambda()
+            exports.handler = (event, context) => {
+              const {RequestType, ResourceProperties: {FunctionName}} = event
+              if (RequestType == 'Delete') return send(event, context, SUCCESS)
+              lambda.publishVersion({FunctionName}, (err, {FunctionArn}) => {
+                err
+                  ? send(event, context, FAILED, err)
+                  : send(event, context, SUCCESS, {FunctionArn})
+              })
+            }
+
+    PublishLambdaVersionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         Policies:
-          - PolicyName: ${env:ROOTSTACK}-reroute-role-${env:ENV}
+          - PolicyName: PublishVersion
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
                 - Effect: Allow
-                  Action:
-                    - logs:CreateLogGroup
-                    - logs:CreateLogStream
-                    - logs:PutLogEvents
+                  Action: lambda:PublishVersion
                   Resource: "*"
-
-    IndexLambdaVersion:
-      DependsOn: [LambdaFunction]
-      Type: AWS::Lambda::Version
-      Properties:
-        Description: CDN Lambda@Edge
-        FunctionName: !GetAtt LambdaFunction.Arn
 
   Outputs:
     LambdaFunctionArn:
@@ -113,6 +143,6 @@ resources:
 
     IndexLambdaVersionArnVersion:
       Description: "Arn Version for Lambda function to associate unto CDN"
-      Value: !Ref IndexLambdaVersion
+      Value: !GetAtt IndexLambdaVersion.FunctionArn
       Export:
         Name: ${env:STACK_NAME}-IndexLambdaVersionArnVersion-${env:ENV}
