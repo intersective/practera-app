@@ -123,7 +123,7 @@ resources:
             ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
             LambdaFunctionAssociations:
             - EventType: origin-request
-              LambdaFunctionARN: {'Fn::ImportValue': '${env:STACK_NAME}-IndexLambdaVersionArnVersion-${env:ENV}'}
+              LambdaFunctionARN: ${env:IndexLambdaVersionArnVersion}
           DefaultRootObject: index.html
           # CustomErrorResponses:
           #   - ErrorCode: 404
