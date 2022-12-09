@@ -95,7 +95,7 @@ resources:
       Type: AWS::Lambda::Function
       Properties:
         Handler: index.handler
-        Runtime: nodejs6.10
+        Runtime: nodejs14.x
         Role: !GetAtt PublishLambdaVersionRole.Arn
         Code:
           ZipFile: |
