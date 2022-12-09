@@ -219,6 +219,7 @@ jobs:
       - name: AWS S3 Sync operation
         run: |
           mv serverless-appv3.yml serverless.yml
+          aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless-appv3-lambda-edge.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -233,6 +234,25 @@ jobs:
 
 
           EOF
+
+###############################################################
+#  SERVERLESS DEPLOYMENT
+##############################################################
+      - name: Serverless deployment Lambda Function
+        run: |
+          echo "Serverless Deploying appv3 lambda@edge fn"
+          mv serverless.yml serverless.yml.bak
+          mv serverless-appv3-lambda-edge.yml serverless.yml
+          node_modules/.bin/serverless deploy
+          
+          rm serverless.yml .env
+          mv serverless.yml.bak serverless.yml
+        env:
+          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKETEXIST: true
+          S3VERSIONING: true
+          NONCURRENTVERSION_EXPIREINDAYS: 30
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
