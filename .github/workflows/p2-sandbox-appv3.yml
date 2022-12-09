@@ -255,7 +255,7 @@ jobs:
         run: |
           cat >> .env <<EOF
           IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
-
+          Nonce=$GITHUB_SHA
           EOF
 
 ##########################################################
@@ -293,37 +293,37 @@ jobs:
 ###############################################################
 #  SERVERLESS DEPLOYMENT
 ##############################################################
-      - name: Serverless deployment
-        run: |
-          echo "Serverless Deploying appv3"
-          node_modules/.bin/serverless deploy
-          rm serverless.yml .env
-        env:
-          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
-          S3VERSIONING: true
-          NONCURRENTVERSION_EXPIREINDAYS: 30
+      # - name: Serverless deployment
+      #   run: |
+      #     echo "Serverless Deploying appv3"
+      #     node_modules/.bin/serverless deploy
+      #     rm serverless.yml .env
+      #   env:
+      #     AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+      #     FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+      #     FILESS3BUCKETEXIST: true
+      #     S3VERSIONING: true
+      #     NONCURRENTVERSION_EXPIREINDAYS: 30
 
 
 
 ##########################################################
 #  AWS S3 SYNC OPERATIONS
 ##########################################################
-      - name: AWS S3 Sync Operations
-        run: |
-          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
-          aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
+      # - name: AWS S3 Sync Operations
+      #   run: |
+      #     APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
+      #     aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
 
 
 
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
 ##########################################################
-      - name: AWS Cloudfront Cache invalidation
-        run: |
-          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
-          for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
+      # - name: AWS Cloudfront Cache invalidation
+      #   run: |
+      #     APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
+      #     for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
 
