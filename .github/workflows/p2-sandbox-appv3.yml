@@ -235,6 +235,42 @@ jobs:
 
           EOF
 
+##########################################################
+#  AWS P2SANDBOX ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
+##########################################################
+      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+
+##########################################################
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
+
+          EOF
+
+##########################################################
+#  AWS P2SANDBOX ACCOUNT STEPS BELOW ap-southeast-2
+##########################################################
+      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{env.REGION}}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+
 ###############################################################
 #  SERVERLESS DEPLOYMENT
 ##############################################################
