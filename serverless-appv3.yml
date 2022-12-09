@@ -92,9 +92,88 @@ resources:
         CloudFrontOriginAccessIdentityConfig:
           Comment: "Cloudfront Origin identity for ${env:AppV3S3Bucket}"
 
+    # Lambda@Edge function
+    LambdaFunction:
+      DependsOn: [LambdaFunctionRole]
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        FunctionName: ${env:ROOTSTACK}-reroute-${env:ENV}
+        Runtime: nodejs14.x
+        Role: !GetAtt LambdaFunctionRole.Arn
+        MemorySize: 1024
+        Code:
+          ZipFile: |
+            'use strict';
+
+            const path = require('path');
+
+            exports.handler = async (evt, context, cb) => {
+              const { request } = evt.Records[0].cf;
+              const { response } = evt.Records[0].cf;
+
+              const uriParts = request.uri.split("/");
+
+              const locale = uriParts[1] ? uriParts[1] : "";
+              const locales = ["en-US", "ja", "ms"];
+
+              if (!uriParts || !locales.includes(locale)) {
+                console.log("Invalid locale request.");
+                return cb(null, response);
+              }
+
+              const requestFile = uriParts[uriParts.length - 1];
+              const extension = path.extname(requestFile);
+              
+              response.headers["practera"] = "true";
+              
+              if (extension == ".js")
+                response.headers["content-type"] = "application/javascript";
+
+              if (extension == ".html") response.headers["content-type"] = "text/html";
+
+              if (extension == ".css") response.headers["content-type"] = "text/css";
+              
+              console.log(`File requested: ${requestFile}`);
+              console.log(`Response: ${JSON.stringify(response)}`);
+              return cb(null, response);
+            };
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - lambda.amazonaws.com
+              - edgelambda.amazonaws.com
+            Action:
+            - sts:AssumeRole
+        Path: "/"
+        Policies:
+        - PolicyName: ${env:ROOTSTACK}-reroute-role-${env:ENV}
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              Resource: "*"
+    
+    IndexLambdaVersion:
+      DependsOn: [LambdaFunction]
+      Type: AWS::Lambda::Version
+      Properties: 
+        Description: CDN Lambda@Edge
+        FunctionName: !GetAtt LambdaFunction.Arn
+
     ## Specifying the CloudFront Distribution to server your Web Application
     AppV2CloudFrontDistribution:
-      DependsOn: [AppV2CloudFrontSecurityHeaderResponse]
+      DependsOn: [AppV2CloudFrontSecurityHeaderResponse, IndexLambdaVersion]
       Type: AWS::CloudFront::Distribution
       Properties:
         DistributionConfig:
@@ -121,14 +200,17 @@ resources:
             TargetOriginId: ${env:AppV3S3Bucket}
             ViewerProtocolPolicy: 'redirect-to-https'
             ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
+            LambdaFunctionAssociations:
+            - EventType: origin-request
+              LambdaFunctionARN: !Ref IndexLambdaVersion
           DefaultRootObject: index.html
-          CustomErrorResponses:
-            - ErrorCode: 404
-              ResponseCode: 200
-              ResponsePagePath: /index.html
-            - ErrorCode: 403
-              ResponseCode: 200
-              ResponsePagePath: /index.html
+          # CustomErrorResponses:
+          #   - ErrorCode: 404
+          #     ResponseCode: 200
+          #     ResponsePagePath: /index.html
+          #   - ErrorCode: 403
+          #     ResponseCode: 200
+          #     ResponsePagePath: /index.html
           Enabled: true
           HttpVersion: http2
           IPV6Enabled: true
