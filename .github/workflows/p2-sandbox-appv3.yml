@@ -245,7 +245,7 @@ jobs:
           mv serverless-appv3-lambda-edge.yml serverless.yml
           node_modules/.bin/serverless deploy
           
-          rm serverless.yml .env
+          rm serverless.yml
           mv serverless.yml.bak serverless.yml
         env:
           AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
