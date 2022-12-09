@@ -1,7 +1,6 @@
 service: ${env:STACK_NAME}-lambda-edge-${env:ROOTSTACK}
 frameworkVersion: "2"
 useDotenv: true
-enableLocalInstallationFallback: true
 
 provider:
   logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
@@ -85,7 +84,7 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
 
-    IndexLambdaVersion:
+    LambdaVersion:
       Type: Custom::LatestLambdaVersion
       Properties:
         ServiceToken: !GetAtt PublishLambdaVersion.Arn
@@ -143,6 +142,6 @@ resources:
 
     IndexLambdaVersionArnVersion:
       Description: "Arn Version for Lambda function to associate unto CDN"
-      Value: !GetAtt IndexLambdaVersion.FunctionArn
+      Value: !GetAtt LambdaVersion.FunctionArn
       Export:
         Name: ${env:STACK_NAME}-IndexLambdaVersionArnVersion-${env:ENV}
