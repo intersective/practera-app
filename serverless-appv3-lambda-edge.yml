@@ -42,38 +42,34 @@ resources:
           ZipFile: |
             'use strict';
 
-            const path = require('path');
+            const path = require("path");
 
-            exports.handler = async (evt, context, cb) => {
+            exports.handler = async (evt,context,cb) => {
               const { request } = evt.Records[0].cf;
-              const { response } = evt.Records[0].cf;
+
+              console.log(`Original Uri: ${request.uri}`);
 
               const uriParts = request.uri.split("/");
 
-              const locale = uriParts[1] ? uriParts[1] : "";
+              const locale = uriParts.length > 1 ? uriParts[1] : "";
               const locales = ["en-US", "ja", "ms"];
 
-              if (!uriParts || !locales.includes(locale)) {
-                console.log("Invalid locale request.");
-                return cb(null, response);
+              if (locale === "" || locale === "index.html") {
+                request.uri = "/en-US/index.html";
+                return cb(null, request);
               }
 
-              const requestFile = uriParts[uriParts.length - 1];
-              const extension = path.extname(requestFile);
-              
-              response.headers["practera"] = "true";
-              
-              if (extension == ".js")
-                response.headers["content-type"] = "application/javascript";
+              if (!locales.includes(locale)) return cb(null, request);
 
-              if (extension == ".html") response.headers["content-type"] = "text/html";
+              const lastPartUrl = uriParts[uriParts.length - 1];
+              const fileExt = path.extname(lastPartUrl);
 
-              if (extension == ".css") response.headers["content-type"] = "text/css";
-              
-              console.log(`File requested: ${requestFile}`);
-              console.log(`Response: ${JSON.stringify(response)}`);
-              return cb(null, response);
+              if (!fileExt) request.uri = `/${locale}/index.html`;
+
+              console.log(`New Uri: ${request.uri}`);
+              return cb(null, request);
             };
+
 
     LambdaFunctionRole:
       Type: AWS::IAM::Role
