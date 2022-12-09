@@ -98,6 +98,7 @@ resources:
       Type: 'AWS::Lambda::Function'
       Properties:
         FunctionName: ${env:ROOTSTACK}-reroute-${env:ENV}
+        Handler: index.handler
         Runtime: nodejs14.x
         Role: !GetAtt LambdaFunctionRole.Arn
         MemorySize: 1024
