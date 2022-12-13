@@ -1,6 +1,7 @@
 import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController } from '@ionic/angular';
+import { DOCUMENT } from '@angular/common';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
@@ -8,7 +9,6 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
-import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-chat-room',
@@ -65,35 +65,51 @@ export class ChatRoomComponent implements OnInit {
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => {
-      if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
-        return;
-      }
-      if (this.utils.isMobile() && (this.router.url !== '/v3/messages/chat-room')) {
-        return;
-      }
-      const receivedMessage = this.getMessageFromEvent(event);
-      if (receivedMessage.channelUuid !== this.channelUuid) {
-        return;
-      }
-      if (receivedMessage && receivedMessage.file) {
-        let fileObject = null;
-        fileObject = JSON.parse(receivedMessage.file);
-        if (this.utils.isEmpty(fileObject)) {
-          fileObject = null;
+      if (this._isValidPusherEvent(event)) {
+        const receivedMessage = this.getMessageFromEvent(event);
+
+        if (receivedMessage && receivedMessage.file) {
+          let fileObject = null;
+          fileObject = JSON.parse(receivedMessage.file);
+          if (this.utils.isEmpty(fileObject)) {
+            fileObject = null;
+          }
+          receivedMessage.fileObject = fileObject;
+          receivedMessage.preview = this.attachmentPreview(receivedMessage.fileObject);
         }
-        receivedMessage.fileObject = fileObject;
-        receivedMessage.preview = this.attachmentPreview(receivedMessage.fileObject);
+        if (receivedMessage.senderUuid &&
+          this.storage.getUser().uuid &&
+          receivedMessage.senderUuid === this.storage.getUser().uuid
+        ) {
+          receivedMessage.isSender = true;
+        }
+        if (!this.utils.isEmpty(receivedMessage)) {
+          this.messageList.push(receivedMessage);
+          this._markAsSeen();
+          this._scrollToBottom();
+        }
       }
-      if (receivedMessage.senderUuid &&
-        this.storage.getUser().uuid &&
-        receivedMessage.senderUuid === this.storage.getUser().uuid
-      ) {
-        receivedMessage.isSender = true;
+    });
+    this.utils.getEvent('chat:delete-message').subscribe(event => {
+      if (this._isValidPusherEvent(event)) {
+        const deletedMessageIndex = this.messageList.findIndex(message => {
+          return message.uuid === event.uuid;
+        });
+        if (deletedMessageIndex > -1) {
+          this.messageList.splice(deletedMessageIndex, 1);
+        }
       }
-      if (!this.utils.isEmpty(receivedMessage)) {
-        this.messageList.push(receivedMessage);
-        this._markAsSeen();
-        this._scrollToBottom();
+    });
+    this.utils.getEvent('chat:edit-message').subscribe(event => {
+      if (this._isValidPusherEvent(event)) {
+        const receivedMessage = this.getMessageFromEvent(event);
+
+        const editedMessageIndex = this.messageList.findIndex(message => {
+          return message.uuid === event.uuid;
+        });
+        if (editedMessageIndex > -1 && !this.utils.isEmpty(receivedMessage)) {
+          this.messageList[editedMessageIndex] = receivedMessage;
+        }
       }
     });
   }
@@ -117,6 +133,19 @@ export class ChatRoomComponent implements OnInit {
     this.sendingMessage = false;
     this.whoIsTyping = '';
     this.showBottomAttachmentButtons = false;
+  }
+
+  private _isValidPusherEvent(pusherData) {
+    if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
+      return false;
+    }
+    if (this.utils.isMobile() && (this.router.url !== '/v3/messages/chat-room')) {
+      return false;
+    }
+    if (pusherData.channelUuid !== this.channelUuid) {
+      return false;
+    }
+    return true;
   }
 
   private _subscribeToTypingEvent() {
@@ -224,7 +253,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!this.typingMessage) {
+    if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
       return;
     }
     const message = this.typingMessage;
@@ -282,7 +311,6 @@ export class ChatRoomComponent implements OnInit {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
     this.typingMessage = '';
-    this.element.nativeElement.querySelector('textarea').style.height = 'auto';
   }
 
   private _afterSendMessage() {
@@ -319,12 +347,10 @@ export class ChatRoomComponent implements OnInit {
       .markMessagesAsSeen(messageIds)
       .subscribe(
         res => {
-          if (!this.utils.isMobile()) {
-            this.utils.broadcastEvent('chat-badge-update', {
-              channelUuid: this.chatChannel.uuid,
-              readcount: messageIds.length
-            });
-          }
+          this.utils.broadcastEvent('chat-badge-update', {
+            channelUuid: this.chatChannel.uuid,
+            readcount: messageIds.length
+          });
         },
         err => { }
       );
@@ -529,7 +555,7 @@ export class ChatRoomComponent implements OnInit {
         return this._postAttachment(res);
       },
       err => {
-        console.log(err);
+        console.error(err);
       }
     );
   }
@@ -543,9 +569,11 @@ export class ChatRoomComponent implements OnInit {
       return;
     }
     this.sendingMessage = true;
+    const message = this.typingMessage;
+    this._beforeSenMessages();
     this.chatService.postAttachmentMessage({
       channelUuid: this.channelUuid,
-      message: this.typingMessage,
+      message: message,
       file: JSON.stringify(file)
     }).subscribe(
       response => {
@@ -748,4 +776,5 @@ export class ChatRoomComponent implements OnInit {
       await modal.present();
     }
   }
+
 }

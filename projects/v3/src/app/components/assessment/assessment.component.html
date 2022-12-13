@@ -46,11 +46,12 @@
           </ion-row>
         </ion-grid>
       </ion-item>
-      <ion-item class="ion-no-padding">
+
+      <ion-item class="ion-no-padding" *ngIf="review?.teamName">
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
             <ion-col size="6" class="ion-align-self-center">Team</ion-col>
-            <ion-col size="6" class="ion-align-self-center"></ion-col>
+            <ion-col size="6" class="ion-align-self-center">{{ review.teamName }}</ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -250,7 +251,9 @@
   </div>
 
   <app-bottom-action-bar
-    *ngIf="!(action === 'review' && submission.status === 'feedback available' && review.status === 'done')"
+    *ngIf="!(action === 'review'
+      && submission.status === 'feedback available'
+      && review.status === 'done')"
     [text]="btnText"
     [disabled]="btnDisabled"
     (handleClick)="continueToNextTask()"

@@ -49,7 +49,6 @@ export class ReviewService {
     if (!response || !response.success || !response.data || !Array.isArray(response.data)) {
       throw this.request.apiResponseFormatError('Reviews format error');
     }
-
     const reviews = [];
     response.data.forEach(review => {
       if (!this.utils.has(review, 'Assessment.id') ||
@@ -69,10 +68,11 @@ export class ReviewService {
         name: review.Assessment.name,
         submitterName: review.AssessmentSubmission.Submitter.name,
         date: this.utils.timeFormatter(review.AssessmentReview.is_done ? review.AssessmentReview.modified : review.AssessmentReview.created),
-        teamName: this.utils.has(review, 'AssessmentSubmission.Team.name') ? review.AssessmentSubmission.Team.name : '',
+        teamName: review.AssessmentSubmission?.Team?.name,
         contextId: review.AssessmentSubmission.context_id,
       });
     });
+
     this._reviews$.next(reviews);
     return reviews;
   }

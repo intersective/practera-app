@@ -83,7 +83,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     try {
       return await this.filestackService.previewFile(file);
     } catch (err) {
-      console.log('previewFIle2', err);
+      console.error('FILESTACK_PREVIEW::', err);
       return err;
     }
   }

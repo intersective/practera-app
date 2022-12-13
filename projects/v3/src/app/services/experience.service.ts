@@ -347,10 +347,11 @@ export class ExperienceService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs): Promise<any> {
+  async switchProgramAndNavigate(programs): Promise<string[]> {
     if (environment.demo) {
       return ['experiences'];
     }
+
     if (!this.utils.isEmpty(programs)) {
       // Array with multiple program objects or one program object -> [{},{},{},{}] pr [{}]
       if (Array.isArray(programs)) {
