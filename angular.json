@@ -146,7 +146,7 @@
               {
                 "glob": "favicon.ico",
                 "input": "src/",
-                "output": "/"
+                "output": "./"
               },
               {
                 "glob": "**/*",
@@ -257,6 +257,19 @@
       }
     },
     "v3": {
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "ja": {
+            "translation": "projects/v3/src/locales/messages.ja.xlf",
+            "baseHref": "ja/"
+          },
+          "ms": {
+            "translation": "projects/v3/src/locales/messages.ms.xlf",
+            "baseHref": "ms/"
+          }
+        }
+      },
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -273,6 +286,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "localize": true,
+            "i18nMissingTranslation": "warning",
+            "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
             "index": "projects/v3/src/index.html",
             "main": "projects/v3/src/main.ts",
@@ -283,7 +299,7 @@
               {
                 "glob": "**/*",
                 "input": "projects/v3/src/assets",
-                "output": "assets"
+                "output": "./assets"
               },
               {
                 "glob": "**/*.svg",
@@ -314,6 +330,9 @@
             "namedChunks": true
           },
           "configurations": {
+            "ms": {
+              "localize": ["ms"]
+            },
             "custom": {
               "budgets": [
                 {
@@ -386,6 +405,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
+            "ms": {
+              "browserTarget": "v3:build:development,ms"
+            },
             "custom": {
               "browserTarget": "v3:build:custom"
             },
@@ -401,7 +423,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "v3:build"
+            "browserTarget": "v3:build:development"
           }
         },
         "test": {

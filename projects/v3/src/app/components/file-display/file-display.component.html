@@ -3,7 +3,7 @@
 
   <ng-container [ngSwitch]="fileType">
     <ng-container *ngSwitchCase="'image'">
-      <app-img [imgSrc]="file.url" alt="generic image uploaded by user"></app-img>
+      <app-img [imgSrc]="file.url" alt="generic image uploaded by user" i18n-alt></app-img>
       <ng-container *ngIf="isFileComponent">
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
       </ng-container>
@@ -27,7 +27,7 @@
     <ng-container *ngSwitchCase="'any'">
       <div *ngIf="!(virusDetection && virusDetection.infected); else virusDetected">
         <ng-container *ngIf="isFileComponent; else onlyfilename">
-            <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
+          <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
         </ng-container>
         <ng-template #onlyfilename>
           <app-list-item
@@ -42,7 +42,7 @@
       <ng-template #virusDetected>
         <ion-item lines="none" color="transparent">
           <ion-icon name="alert" color="danger" slot="start"></ion-icon>
-          <ion-label class="warning">
+          <ion-label class="warning" i18n>
             The file you have uploaded contains a virus and is potentially harmful. Please contact your program coordinator
           </ion-label>
         </ion-item>
