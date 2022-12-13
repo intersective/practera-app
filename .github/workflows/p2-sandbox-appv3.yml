@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'task/AV2-1926/multi-locales' ]
+    branches: [ 'develop-v3' ]
 
 
 ################################################
@@ -280,7 +280,7 @@ jobs:
           mv serverless.yml serverless.yml.bak
           mv serverless-appv3-lambda-edge.yml serverless.yml
           node_modules/.bin/serverless deploy
-          
+
           rm serverless.yml
           mv serverless.yml.bak serverless.yml
         env:
