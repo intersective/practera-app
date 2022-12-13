@@ -1,12 +1,12 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(programs$ | async ) as programs">
     <header>
-      <h1 id="experiences" class="for-accessibility">Experiences</h1>
+      <h1 id="experiences" class="for-accessibility" i18n>Experiences</h1>
       <ion-grid class="ion-no-padding ion-no-margin">
         <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin">
             <div class="institute-logo-container ion-text-center">
-              <img [src]="instituteLogo || '/assets/logo.svg'" [attr.alt]="'branding logo'">
+              <img [src]="instituteLogo || '/assets/logo.svg'" i18n-alt [attr.alt]="'branding logo'">
             </div>
           </ion-col>
         </ion-row>
@@ -16,15 +16,15 @@
       <ion-grid class="ion-no-padding ion-no-margin">
         <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin">
-            <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none">Experiences</ion-item>
+            <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none" i18n>Experiences</ion-item>
           </ion-col>
         </ion-row>
         <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin exp-col">
             <ion-card class="exp-card-container">
               <ion-card-header class="title-container ion-hide-sm-down">
-                <h1 class="headline-1 m-0 black ion-hide-sm-down">Your experiences</h1>
-                <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down">Access and check the progress of your experiences below
+                <h1 class="headline-1 m-0 black ion-hide-sm-down" i18n>Your experiences</h1>
+                <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down" i18n>Access and check the progress of your experiences below
                 </p>
               </ion-card-header>
               <ion-card-content class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">

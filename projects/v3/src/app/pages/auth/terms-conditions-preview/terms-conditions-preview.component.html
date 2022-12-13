@@ -1,15 +1,15 @@
 <ion-header mode="ios" aria-label="teams and conditions">
   <ion-toolbar>
     <ion-button slot="start" color="primary" fill="clear" (click)="close()">Cancel</ion-button>
-    <ion-title>Terms</ion-title>
+    <ion-title i18n>Terms</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content text-center class="ion-padding">
-  <p class="subtitle-1">Please review the following reviewer terms and conditions, before you continue to practera.</p>
+  <p class="subtitle-1" i18n>Please review the following reviewer terms and conditions, before you continue to practera.</p>
   <iframe class="iframe-box" [src]="termsURL" allowfullscreen="true" frameborder="0"></iframe>
 </ion-content>
 <ion-footer class="ion-border">
   <ion-toolbar>
-    <ion-button mode="ios" size="large" expand="full" color="primary" fill="clear" (click)="close(true)">I agree</ion-button>
+    <ion-button mode="ios" size="large" expand="full" color="primary" fill="clear" (click)="close(true)" i18n="t&c agree button text">I agree</ion-button>
   </ion-toolbar>
 </ion-footer>

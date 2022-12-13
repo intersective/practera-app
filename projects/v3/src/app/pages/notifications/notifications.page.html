@@ -1,5 +1,5 @@
 <ion-header class="ion-no-border" aria-label="notifications">
-  <h1 class="for-accessibility">Notifications</h1>
+  <h1 class="for-accessibility" i18n>Notifications</h1>
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button (keydown)="dismiss($event)" (click)="dismiss()" *ngIf="mode === 'modal'">
@@ -11,13 +11,13 @@
       </ion-button>
     </ion-buttons>
 
-    <ion-title class="headline-4 grey-75">Notifications</ion-title>
+    <ion-title class="headline-4 grey-75" i18n>Notifications</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content fullscreen="true">
   <main aria-labelledby="notifications">
-    <h1 id="notifications" class="for-accessibility">Notifications list</h1>
+    <h1 id="notifications" class="for-accessibility" i18n>Notifications list</h1>
     <ng-container *ngIf="isMobile; else notificationsDesktop">
       <ng-container *ngIf="loadingTodoItems; else doneLoading">
         <div class="margin-left-right ion-padding-bottom">

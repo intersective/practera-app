@@ -5,8 +5,8 @@
       <ion-item class="item-bottom-border" lines="none">
         <ion-label>
           {{ teamMember.userName }}
-          <ion-chip *ngIf="submission?.answer?.includes(teamMember.key)" class="label orange">Learner's answer</ion-chip>
-          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow black">Expert's answer</ion-chip>
+          <ion-chip *ngIf="submission?.answer?.includes(teamMember.key)" class="label orange" i18n>Learner's answer</ion-chip>
+          <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow black" i18n>Expert's answer</ion-chip>
         </ion-label>
       </ion-item>
     </ng-container>
@@ -63,7 +63,7 @@
   <ion-textarea *ngIf="question.canComment"
     [attr.aria-label]="'expert\'s review feedback'"
     class="textarea" #commentEle rows="4" [(ngModel)]="comment"
-    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
+    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here" i18n-placeholder
     [disabled]="control.disabled"
   ></ion-textarea>
 </ng-container>
