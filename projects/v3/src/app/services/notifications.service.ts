@@ -75,8 +75,6 @@ const api = {
   providedIn: 'root'
 })
 export class NotificationsService {
-  private _newMessage$ = new Subject<TodoItem>();
-  newMessage$ = this._newMessage$.pipe(shareReplay(1));
 
   private _notification$ = new Subject<TodoItem[]>();
   notification$ = this._notification$.pipe(shareReplay(1));
@@ -97,7 +95,12 @@ export class NotificationsService {
     private storage: BrowserStorageService,
     private apolloService: ApolloService,
     private eventsService: EventService,
-  ) { }
+  ) {
+    // after messages read need to update chat notification data on notification service
+    this.utils.getEvent('chat-badge-update').subscribe(event => {
+      this.getChatMessage().subscribe();
+    });
+   }
 
   dismiss() {
     return this.modalController.dismiss();
@@ -148,7 +151,9 @@ export class NotificationsService {
   }
 
   async modalOnly(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
-    const modal = await this.modalController.create(this.modalConfig({ component, componentProps }, options));
+    const modal = await this.modalController.create(
+      this.modalConfig({ component, componentProps }, options)
+    );
 
     if (event) {
       modal.onDidDismiss().then(event);
@@ -285,11 +290,15 @@ export class NotificationsService {
    *
    * @return  {Promise<void>}             deferred ionic modal
    */
-  popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.modal(ReviewRatingComponent, {
+  async popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
+    const reviewPopupModal = await this.modalOnly(ReviewRatingComponent, {
       reviewId,
       redirect
+    }, {
+      id: `review-popup-${reviewId}`,
+      backdropDismiss: false,
     });
+    return reviewPopupModal.present();
   }
 
   /**
@@ -463,7 +472,11 @@ export class NotificationsService {
     ).pipe(map(response => {
       if (response.data) {
         const normalized = this._normaliseChatMessage(response.data);
-        this._newMessage$.next(normalized);
+        if (!this.utils.isEmpty(normalized)) {
+          this._addChatTodoItem(normalized);
+        } else {
+          this._removeChatTodoItem();
+        }
         return normalized;
       }
     }));
@@ -502,9 +515,54 @@ export class NotificationsService {
     if (unreadMessages > 1) {
       // group the chat notifiations
       todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+    }
+    if (todoItem) {
       todoItem.meta = {};
     }
     return todoItem;
+  }
+/**
+ * Will add chat notification to the notification list.
+ *  - before it add check is there any other chat notification there.
+ *  - if it is, it will replace that with the new chat notification todo item.
+ *  - if not will add chat notification todo item to notification list.
+ * and after this will update _notifications$ subject to broadcast the new update
+ * @param chatTodoItem normalized Todo item for chat
+ */
+  private _addChatTodoItem(chatTodoItem) {
+    let currentChatTodoIndex = -1;
+    const currentChatTodo = this.notifications.find((todoItem, index) => {
+      if (todoItem.type === 'chat') {
+        currentChatTodoIndex = index;
+        return true;
+      }
+    });
+    if (currentChatTodo) {
+      this.notifications.splice(currentChatTodoIndex, 1);
+    }
+    this.notifications.push(chatTodoItem);
+    this._notification$.next(this.notifications);
+  }
+
+  /**
+  * Will remove chat notification to the notification list.
+  * This method use when there are no unread messages but old chat notification still on the notification list.
+  *  - before it execute any codes for remove notifications. it checks is there any chat notification todo items.
+  *  - if it is, it will remove chat notification todo item from notification list
+  * and after this will update _notifications$ subject to broadcast the new update
+  */
+  private _removeChatTodoItem() {
+    let currentChatTodoIndex = -1;
+    const currentChatTodo = this.notifications.find((todoItem, index) => {
+      if (todoItem.type === 'chat') {
+        currentChatTodoIndex = index;
+        return true;
+      }
+    });
+    if (currentChatTodo) {
+      this.notifications.splice(currentChatTodoIndex, 1);
+      this._notification$.next(this.notifications);
+    }
   }
 
   /**

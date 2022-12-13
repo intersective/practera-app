@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonTabs, Platform } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ChatService } from '@v3/services/chat.service';
@@ -16,6 +17,7 @@ export class TabsPage implements OnInit, OnDestroy {
   reviews: Review[];
   subscriptions: Subscription[] = [];
   showMessages: boolean = false;
+  showEvents: boolean = false;
 
   @ViewChild('tabs', { static: false }) tabs: IonTabs;
   selectedTab: string = '';
@@ -27,6 +29,7 @@ export class TabsPage implements OnInit, OnDestroy {
     private chatService: ChatService,
     private utils: UtilsService,
     private notificationsService: NotificationsService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -44,11 +47,24 @@ export class TabsPage implements OnInit, OnDestroy {
       }));
     }
 
+    // Hide events tab to other user roles. Show only for participants
+    this.subscriptions.push(this.route.params.subscribe(_params => {
+      if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
+        this.showEvents = true;
+      } else {
+        this.showEvents = false;
+      }
+    }));
+
     this.subscriptions.push(this.utils.getEvent('notification').subscribe(event => {
       this.notificationsService.getTodoItemFromEvent(event);
     }));
 
     this.subscriptions.push(this.utils.getEvent('chat:new-message').subscribe(() => {
+      this.notificationsService.getChatMessage().subscribe();
+    }));
+
+    this.subscriptions.push(this.utils.getEvent('chat:delete-message').subscribe(() => {
       this.notificationsService.getChatMessage().subscribe();
     }));
 
@@ -58,7 +74,6 @@ export class TabsPage implements OnInit, OnDestroy {
 
     // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
     this.subscriptions.push(this.notificationsService.notification$.subscribe());
-    this.subscriptions.push(this.notificationsService.newMessage$.subscribe());
 
     this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
     this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());

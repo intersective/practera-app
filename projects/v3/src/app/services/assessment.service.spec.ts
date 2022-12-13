@@ -181,7 +181,10 @@ describe('AssessmentService', () => {
                 completed: false,
                 submitter: {
                   name: 'test name',
-                  image: ''
+                  image: '',
+                  team: {
+                    name: 'team-test',
+                  }
                 },
                 answers: [
                   {
@@ -414,6 +417,7 @@ describe('AssessmentService', () => {
         id: review.id,
         status: review.status,
         modified: review.modified,
+        teamName: submission.submitter.team.name,
         answers: {
           1: {
             answer: review.answers[0].answer,
@@ -449,8 +453,6 @@ describe('AssessmentService', () => {
         expect(submission).toEqual(expectedSubmission);
       });
       service.review$.subscribe(review => {
-        console.log('expectedReview::', review);
-        console.log('expectedReview2::', expectedReview);
         expect(review).toEqual(expectedReview);
       });
       expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);

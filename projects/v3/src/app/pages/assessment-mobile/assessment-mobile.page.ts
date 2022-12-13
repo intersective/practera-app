@@ -13,8 +13,6 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./assessment-mobile.page.scss'],
 })
 export class AssessmentMobilePage implements OnInit {
-
-
   assessment: Assessment;
   submission: Submission;
   review: AssessmentReview;
@@ -34,9 +32,9 @@ export class AssessmentMobilePage implements OnInit {
     private router: Router,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
-    private storageService: BrowserStorageService,
+    private readonly storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
-    private utils: UtilsService,
+    private readonly utils: UtilsService,
   ) { }
 
   ngOnInit() {
@@ -54,6 +52,10 @@ export class AssessmentMobilePage implements OnInit {
       this.submissionId = +params.submissionId;
       this.assessmentService.getAssessment(+params.id, this.action, this.activityId, this.contextId, this.submissionId);
     });
+  }
+
+  get restrictedAccess() {
+    return this.storageService.singlePageAccess;
   }
 
   get task() {
@@ -118,7 +120,7 @@ export class AssessmentMobilePage implements OnInit {
 
     try {
       // display review rating modal
-      return await this.assessmentService.popUpReviewRating(this.review.id, false);
+      return await this.notificationsService.popUpReviewRating(this.review.id, false);
     } catch (err) {
       const header = 'Can not get review rating information';
       await this.notificationsService.alert({

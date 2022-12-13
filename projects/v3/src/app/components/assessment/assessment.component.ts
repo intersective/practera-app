@@ -5,7 +5,6 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { DOCUMENT, ViewportScroller } from '@angular/common';
 import { BehaviorSubject } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 3000;
@@ -71,8 +70,6 @@ export class AssessmentComponent implements OnChanges {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    @Inject(DOCUMENT) private readonly document: Document,
-    private scroller: ViewportScroller,
   ) {}
 
   ngOnChanges() {
@@ -209,9 +206,9 @@ export class AssessmentComponent implements OnChanges {
    * When user click the bottom button
    */
   continueToNextTask() {
-    this.btnDisabled = true;
     switch (this._btnAction) {
       case 'submit':
+        this.btnDisabled = true;
         return this._submit();
       case 'readFeedback':
         return this.readFeedback.emit(this.submission.id);
@@ -405,6 +402,9 @@ export class AssessmentComponent implements OnChanges {
   get btnText() {
     switch (this._btnAction) {
       case 'submit':
+        if (this.action === 'review') {
+          return 'submit review';
+        }
         return 'submit answers';
       case 'readFeedback':
         return 'mark feedback as reviewed';
@@ -473,6 +473,7 @@ export class AssessmentComponent implements OnChanges {
     return '';
   }
 
+  // [AV2-1270] condition to present asterisk in more obvious color
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }

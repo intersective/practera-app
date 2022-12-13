@@ -7,7 +7,6 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ApolloService } from './apollo.service';
-import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
@@ -101,6 +100,7 @@ export interface AssessmentReview {
   answers: any;
   status: string;
   modified: string;
+  teamName?: string;
 }
 
 @Injectable({
@@ -163,8 +163,11 @@ export class AssessmentService {
             id status completed modified locked
             submitter {
               name image
+              team {
+                name
+              }
             }
-            answers{
+            answers {
               questionId answer
             }
             review {
@@ -332,7 +335,7 @@ export class AssessmentService {
     }
   }
 
-  private _normaliseReview(data, action): AssessmentReview {
+  private _normaliseReview(data, action: string): AssessmentReview {
     if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
       return null;
     }
@@ -345,6 +348,7 @@ export class AssessmentService {
       id: firstSubmissionReview.id,
       status: firstSubmissionReview.status,
       modified: firstSubmissionReview.modified,
+      teamName: firstSubmission.submitter.team?.name,
       answers: {}
     };
 
@@ -522,22 +526,6 @@ export class AssessmentService {
         endPoint: api.post.todoitem,
         data: postData
       });
-  }
-
-  /**
-   * trigger reviewer rating modal
-   *
-   * @param   {number}          reviewId  submission review record id
-   * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
-   *                                      routing (stay at same component)
-   *
-   * @return  {Promise<void>}             deferred ionic modal
-   */
-  popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.NotificationsService.modal(ReviewRatingComponent, {
-      reviewId,
-      redirect
-    });
   }
 
   checkReviewer(reviewer): string {

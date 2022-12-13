@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
@@ -11,14 +11,46 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
 })
-export class ReviewRatingComponent {
+export class ReviewRatingComponent implements OnInit {
+  moods = [
+    {
+      icon: 'mood_bad',
+      description: 'Very Poor',
+      score: 0,
+    },
+    {
+      icon: 'sentiment_dissatisfied',
+      description: 'Poor',
+      score: 0.25,
+    },
+    {
+      icon: 'sentiment_neutral',
+      description: 'Average',
+      score: 0.5,
+    },
+    {
+      icon: 'sentiment_satisfied',
+      description: 'Good',
+      score: 0.75,
+    },
+    {
+      icon: 'mood',
+      description: 'Excellent',
+      score: 1,
+    },
+  ];
+  moodSelected: number;
+  ratingSessionEnd: boolean = false;
 
   // Default redirect i.e home page.
-  redirect = ['/'];
+  @Input() redirect = ['/'];
+
+  // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
+  @Input() reviewId: number;
 
   ratingData: ReviewRating = {
     assessment_review_id: null,
-    rating : 0.5,
+    rating : null,
     comment: '',
     tags: []
   };
@@ -34,42 +66,42 @@ export class ReviewRatingComponent {
     readonly fastFeedbackService: FastFeedbackService,
   ) {}
 
-  // Review ID is required if this component is to be used.upon detecting incoming/changes of value, set passed reviewId into local var
-  @Input()
-  set reviewId(reviewId: number) {
-    this.ratingData.assessment_review_id = reviewId;
+  ngOnInit(): void {
+    this.ratingData.assessment_review_id = this.reviewId;
   }
 
   get isMobile() {
     return this.utils.isMobile();
   }
 
-  submitReviewRating() {
+  async submitReviewRating() {
+    if (this.ratingData?.rating === undefined || this.moodSelected === undefined) {
+      return;
+    }
+
     this.isSubmitting = true;
     // round to 2 decimal place
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
 
-    this.reviewRatingService.submitRating(this.ratingData).subscribe(
-      result => {
-        this.isSubmitting = false;
-        this._closeReviewRating();
-      },
-      err => {
-        const toasted = this.notificationsService.alert({
-          header: 'Error submitting rating',
-          message: err.msg || JSON.stringify(err)
-        });
+    try {
+      await this.reviewRatingService.submitRating(this.ratingData).toPromise();
+      this.isSubmitting = false;
+      this.ratingSessionEnd = true;
+    } catch (err) {
+      await this.notificationsService.alert({
+        header: 'Error submitting rating',
+        message: err.msg || JSON.stringify(err),
+      });
+      this.isSubmitting = false;
 
-        throw new Error(err);
-      }
-    );
+      throw new Error(err);
+    }
   }
 
-  private async _closeReviewRating(): Promise<any> {
-    this.modalController.dismiss();
+  private async fastFeedbackOrRedirect(): Promise<any> {
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
-      return this.fastFeedbackService.pullFastFeedback().toPromise();
+      return await this.fastFeedbackService.pullFastFeedback().toPromise();
     }
 
     if (!this.utils.isMobile()) {
@@ -106,4 +138,13 @@ export class ReviewRatingComponent {
     this.ratingData.tags = this.utils.addOrRemove(this.ratingData.tags, tag);
   }
 
+  rateMood(mood: number): void {
+    this.moodSelected = mood;
+    this.ratingData.rating = this.moods[mood].score;
+  }
+
+  async dismissModal(): Promise<void> {
+    await this.modalController.dismiss(null, 'cancel', `review-popup-${this.reviewId}`);
+    await this.fastFeedbackOrRedirect();
+  }
 }
