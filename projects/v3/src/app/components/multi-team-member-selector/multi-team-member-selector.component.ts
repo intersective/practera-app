@@ -94,7 +94,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.saveProgress.emit(true);
+    // this.saveProgress.emit(true); AV2-1324
   }
 
   // From ControlValueAccessor interface

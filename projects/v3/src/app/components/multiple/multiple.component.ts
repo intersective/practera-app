@@ -95,7 +95,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.saveProgress.emit(true);
+    // this.saveProgress.emit(true); AV2-1324
   }
 
   // From ControlValueAccessor interface
