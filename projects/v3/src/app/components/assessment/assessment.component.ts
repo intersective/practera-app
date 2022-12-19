@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject } from 'rxjs';
 
-const SAVE_PROGRESS_TIMEOUT = 3000;
+const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
   selector: 'app-assessment',
@@ -256,20 +256,16 @@ export class AssessmentComponent implements OnChanges {
     }
 
     /**
-     * checking if this is a submission or progress save
-     * - if it's a submission
-     *    - assign true to saving variable to disable duplicate saving
-     *    - change submitting variable value to true
-     * - if it's a progress save
-     *    - if this is a manual save or there is no other auto save in progress
-     *      - change saving variable value to true to disable duplicate saving
-     *      - make manual save button disable
-     *      - change savingMessage variable value to 'Saving...' to show save in progress
-     *    - if this is not manual save or there is one save in progress
-     *      - do nothing
+     * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.
+     * Check saveInProgress
+     * If it's true. that means it's an auto save or manual save acction.
+     * Then check btnDisabled
+     * If it's true. that means save API request or submit API request already send and waitng for response.
+     * Then we are not doing anything.
      */
-    // allow submitting/saving after a few seconds
-    setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
+    if (saveInProgress && this.btnDisabled) {
+      return;
+    }
 
     this.btnDisabled = true;
 
@@ -359,6 +355,9 @@ export class AssessmentComponent implements OnChanges {
         ],
       });
     }
+
+    // allow submitting/saving after a few seconds
+    setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
 
     this.save.emit({
       assessment,
