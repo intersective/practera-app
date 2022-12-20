@@ -76,7 +76,7 @@ export class AuthService {
     private router: Router,
     private pusherService: PusherService,
     private demo: DemoService
-  ) {}
+  ) { }
 
   private _clearCache(): any {
     // do clear user cache here
@@ -169,11 +169,19 @@ export class AuthService {
       tutorial: data.tutorial,
       apikey: data.apikey,
       programs: data.Timelines.map(
-        timeline => {
+        (timeline): {
+          enrolment: any;
+          program: any;
+          project: any;
+          timeline: any;
+          experience: any;
+          institution: any;
+          locale: string;
+        } => {
           // make sure 'Program.config.theme_color' exist
           if (!timeline.Program.config?.theme_color) {
             const PRIMARY_COLOR = 'var(--ion-color-primary)';
-            if (!timeline.Program.config) {
+            if (!timeline.Program?.config) {
               timeline.Program.config = {
                 theme_color: PRIMARY_COLOR
               };
@@ -181,13 +189,17 @@ export class AuthService {
               timeline.Program.config.theme_color = PRIMARY_COLOR;
             }
           }
+
+          const app_locale = timeline.Institution.config?.application_language;
+
           return {
             enrolment: timeline.Enrolment,
             program: timeline.Program,
             project: timeline.Project,
             timeline: timeline.Timeline,
-            experience: {...timeline.Experience, lead_image: timeline?.Experience?.lead_url || ''},
-            institution: timeline.Institution
+            experience: { ...timeline.Experience, lead_image: timeline?.Experience?.lead_url || '' },
+            institution: timeline.Institution,
+            locale: app_locale || 'en',
           };
         },
         this
@@ -388,6 +400,6 @@ export class AuthService {
           return [];
         }
       })
-    );
+      );
   }
 }
