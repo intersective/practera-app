@@ -43,6 +43,7 @@ export interface ProgramObj {
       primary_color?: string;
       secondary_color?: string;
       support_name?: string;
+      application_language?: string;
     };
     uuid: string;
   };
@@ -214,6 +215,8 @@ export class ExperienceService {
       cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
     }
 
+    const institution = programObj?.institution;
+    const program = programObj.program;
     this.storage.setUser({
       colors: {
         theme: colors.themeColor,
@@ -221,22 +224,23 @@ export class ExperienceService {
         secondary: colors.secondary,
       },
 
-      programId: programObj.program.id,
-      programName: programObj.program.name,
+      programId: program.id,
+      programName: program.name,
       programImage: programObj.project.lead_image,
-      hasReviewRating: this.utils.has(programObj, 'program.config.review_rating') ? programObj.program.config.review_rating : false,
-      truncateDescription: this.utils.has(programObj, 'program.config.truncate_description') ? programObj.program.config.truncate_description : true,
-      experienceId: programObj.program.experience_id,
-      institutionLogo: programObj.institution ? programObj.institution.logo_url : null,
-      squareLogo: programObj.institution?.config?.icon_url || null,
-      institutionName: programObj.institution ? programObj.institution.name : null,
+      hasReviewRating: program.config?.review_rating || false,
+      truncateDescription: program.config?.truncate_description || true,
+      experienceId: program.experience_id,
+      institutionLogo: institution?.logo_url || null,
+      squareLogo: institution.config?.icon_url || null,
+      app_locale: institution?.config?.application_language,
+      institutionName: institution?.name || null,
       projectId: programObj.project.id,
       timelineId: programObj.timeline.id,
       contactNumber: programObj.enrolment.contact_number,
       activityCardImage: cardBackgroundImage,
       enrolment: programObj.enrolment,
-      activityCompleteMessage: this.utils.has(programObj, 'experience.config.activity_complete_message') ? programObj.experience.config.activity_complete_message : null,
-      chatEnabled: this.utils.has(programObj, 'experience.config.chat_enable') ? programObj.experience.config.chat_enable : true,
+      activityCompleteMessage: programObj?.experience?.config?.activity_complete_message || null,
+      chatEnabled: programObj?.experience?.config?.chat_enable || true,
       teamId: null,
       hasEvents: false,
       hasReviews: false,
