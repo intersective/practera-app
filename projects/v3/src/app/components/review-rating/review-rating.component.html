@@ -11,53 +11,55 @@
 
 <ion-content class="review-rating ion-padding">
   <ng-container *ngIf="ratingSessionEnd === false; else successful">
-    <div class="ion-padding-top ion-padding-bottom">
-      <div class="ion-padding-top">
-        <div class="rating-range">
-          <div class="mood" *ngFor="let mood of moods; let i = index"
-            [ngClass]="{'selected': moodSelected === i}"
-            (click)="rateMood(i)">
-            <span class="material-symbols-outlined">
-              {{ mood.icon }}
-            </span>
-            <p>{{ mood.description }}</p>
-          </div>
-        </div>
+    <div class="rating-range">
+      <div class="mood" *ngFor="let mood of moods; let i = index"
+        [ngClass]="{'selected': moodSelected === i}"
+        (click)="rateMood(i)">
+        <span class="material-symbols-outlined">
+          {{ mood.icon }}
+        </span>
+        <p>{{ mood.description }}</p>
       </div>
     </div>
 
     <ng-container *ngIf="ratingData.rating >= 0 && this.moodSelected !== undefined">
-      <h2 class="subTitle">Send a quick thank you note!</h2>
+      <h2 class="subTitle" i18n>Send a quick thank you note!</h2>
       <div class="quick-tagging">
         <ion-button color="medium" class="toggle" fill="outline"
           [disabled]="ratingData.comment.length > 0"
           [class.active]="ratingData.tags.includes('Thanks')"
           (click)="addOrRemoveTags('Thanks')"
+          i18n
         >Thanks</ion-button>
         <ion-button color="medium" class="toggle" fill="outline"
           [disabled]="ratingData.comment.length > 0"
           [class.active]="ratingData.tags.includes('Thank You')"
           (click)="addOrRemoveTags('Thank You')"
+          i18n
         >Thank You</ion-button>
         <ion-button color="medium" class="toggle" fill="outline"
           [disabled]="ratingData.comment.length > 0"
           [class.active]="ratingData.tags.includes('You are awesome!')"
           (click)="addOrRemoveTags('You are awesome!')"
+          i18n
         >You are awesome!</ion-button>
         <ion-button color="medium" class="toggle" fill="outline"
           [disabled]="ratingData.comment.length > 0"
           [class.active]="ratingData.tags.includes('Great support')"
           (click)="addOrRemoveTags('Great support')"
+          i18n
         >Great support</ion-button>
         <ion-button color="medium" class="toggle" fill="outline"
           [disabled]="ratingData.comment.length > 0"
           [class.active]="ratingData.tags.includes('Very helpful')"
           (click)="addOrRemoveTags('Very helpful')"
+          i18n
         >Very helpful</ion-button>
         <ion-button color="medium" class="toggle" fill="outline"
           [disabled]="ratingData.comment.length > 0"
           [class.active]="ratingData.tags.includes('Friendly')"
           (click)="addOrRemoveTags('Friendly')"
+          i18n
         >Friendly</ion-button>
       </div>
 
@@ -70,14 +72,15 @@
       ></ion-input>
     </ng-container>
 
-    <div class="div-after-logo ion-text-center ion-padding-top">
+    <div class="ion-text-center ion-padding-top">
       <ion-button mode="ios"
         [disabled]="isSubmitting ||  this.moodSelected === undefined"
         (click)="submitReviewRating()"
         shape="round"
-        class="btn-cta">
-        <ng-container *ngIf="!isSubmitting">Submit Feedback</ng-container>
-        <ng-container *ngIf="isSubmitting">Submitting...</ng-container>
+        [ngClass]="{'btn-cta': !isMobile}"
+        [expand]="isMobile ? 'block': ''">
+        <ng-container *ngIf="!isSubmitting" i18n>Submit Feedback</ng-container>
+        <ng-container *ngIf="isSubmitting" i18n>Submitting...</ng-container>
       </ion-button>
     </div>
   </ng-container>
@@ -90,10 +93,11 @@
     <p i18n>Thank you, feedback received.</p>
   </div>
 
-  <div class="div-after-logo ion-text-center ion-padding-top">
+  <div class="ion-text-center ion-padding-top">
     <ion-button mode="ios" i18n
       (click)="dismissModal()"
-      shape="round" class="btn-cta">
+      [ngClass]="{'btn-cta': !isMobile}"
+      shape="round" [expand]="isMobile ? 'block': ''">
       Continue
     </ion-button>
   </div>
