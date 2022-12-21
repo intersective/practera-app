@@ -381,6 +381,7 @@
               "outputHashing": "all"
             },
             "development": {
+              "localize": ["en-US"],
               "budgets": [
                 {
                   "type": "initial",
