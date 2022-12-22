@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { SharedService } from '@v3/app/services/shared.service';
 import { Activity, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -19,6 +20,7 @@ export class ActivityComponent {
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
+    private sharedService: SharedService,
   ) { }
 
   /**
@@ -146,7 +148,11 @@ export class ActivityComponent {
     });
   }
 
-  private _validateTeamAssessment(task: Task, proceedCB) {
+  private async _validateTeamAssessment(task: Task, proceedCB) {
+    if (task.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+    }
+
     const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
     const teamId = this.storageService.getUser().teamId;
 
