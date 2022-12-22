@@ -36,6 +36,7 @@
             [review]="review"
             [contextId]="currentTask.contextId"
             [savingMessage$]="savingText$"
+            [btnDisabled$]="btnDisabled$"
             action="assessment"
             (save)="saveAssessment($event, currentTask)"
             (readFeedback)="readFeedback($event, currentTask)"
