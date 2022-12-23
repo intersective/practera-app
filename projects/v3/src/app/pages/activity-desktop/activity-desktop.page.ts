@@ -9,6 +9,8 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
 
+const SAVE_PROGRESS_TIMEOUT = 10000;
+
 @Component({
   selector: 'app-activity-desktop',
   templateUrl: './activity-desktop.page.html',
@@ -23,6 +25,7 @@ export class ActivityDesktopPage implements OnInit {
   topic: Topic;
   loading: boolean;
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   // grabs from URL parameter
   urlParams = {
@@ -102,7 +105,11 @@ export class ActivityDesktopPage implements OnInit {
   }
 
   async saveAssessment(event, task: Task) {
+    if (event.assessment.inProgress && this.loading) {
+      return;
+    }
     this.loading = true;
+    this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
@@ -111,10 +118,14 @@ export class ActivityDesktopPage implements OnInit {
       // get the latest activity tasks and navigate to the next task
       this.activityService.getActivity(this.activity.id, false, task, () => {
         this.loading = false;
+        this.btnDisabled$.next(false);
       });
       return this.assessmentService.getAssessment(event.assessment.id, 'assessment', this.activity.id, event.assessment.contextId, event.assessment.submissionId);
     } else {
-      this.loading = false;
+      setTimeout(() => {
+        this.btnDisabled$.next(false);
+        this.loading = false;
+      }, SAVE_PROGRESS_TIMEOUT);
     }
   }
 
