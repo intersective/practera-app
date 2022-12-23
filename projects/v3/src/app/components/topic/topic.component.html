@@ -21,7 +21,7 @@
   ></app-description>
 
   <ion-list *ngIf="topic.files && topic.files.length > 0" class="ion-margin-vertical">
-    <ion-item class="headline-4 downloads" lines="none">Supporting Downloads</ion-item>
+    <ion-item class="headline-4 downloads" lines="none" i18n="downloadable reading materials">Supporting Downloads</ion-item>
 
     <app-list-item *ngFor="let file of topic.files"
       [title]="file.name"

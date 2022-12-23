@@ -3,7 +3,7 @@
     <ion-button class="upload"
       mode="ios" size="large"
       fill="outline" expand="block"
-      (click)="uploadFile()">
+      (click)="uploadFile()" i18n>
       Upload Profile Image
     </ion-button>
   </ng-container>
@@ -11,7 +11,7 @@
   <ng-container *ngSwitchDefault>
     <ng-container *ngIf="isMobile">
       <div style="display: flex; align-items: center; justify-content: space-between;">
-        <ion-text>Upload file(s)</ion-text>
+        <ion-text i18n>Upload file(s)</ion-text>
         <ion-button mode="ios" size="small"
           class="upload-button"
           shape="round"
@@ -31,7 +31,7 @@
       >
         <p class="gray-2 subtitle-1">
           <ion-icon name="cloud-upload-outline"></ion-icon> Drag and drop file here or
-          <ion-button mode="ios" size="small"
+          <ion-button mode="ios" size="small" i18n
             class="upload-button" shape="round"
             (click)="uploadFile()" (keydown)="uploadFile($event)"
             [disabled]="disabled"

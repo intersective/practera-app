@@ -7,7 +7,7 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
-  <ion-button fill="clear" slot="end"
+  <ion-button fill="clear" slot="end" i18n
     [disabled]="!assessment || (btnDisabled$ | async)" (click)="btnSaveClicked()">
     Save
   </ion-button>
@@ -17,12 +17,12 @@
   <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission.reviewerName">
     <ion-item-group>
       <ion-item-divider>
-        <ion-label color="primary">Reviewer Details</ion-label>
+        <ion-label color="primary" i18n>Reviewer Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center">Expert</ion-col>
+            <ion-col size="6" class="ion-align-self-center" i18n>Expert</ion-col>
             <ion-col size="6" class="ion-align-self-center">{{ submission.reviewerName }}</ion-col>
           </ion-row>
         </ion-grid>
@@ -36,12 +36,12 @@
   class="ion-no-margin ion-no-padding ion-padding-horizontal main-content">
     <ion-item-group>
       <ion-item-divider>
-        <ion-label color="primary">Submission Details</ion-label>
+        <ion-label color="primary" i18n>Submission Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center">Learner</ion-col>
+            <ion-col size="6" class="ion-align-self-center" i18n>Learner</ion-col>
             <ion-col size="6" class="ion-align-self-center">{{ submission.submitterName }}</ion-col>
           </ion-row>
         </ion-grid>
@@ -50,7 +50,7 @@
       <ion-item class="ion-no-padding" *ngIf="review?.teamName">
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center">Team</ion-col>
+            <ion-col size="6" class="ion-align-self-center" i18n>Team</ion-col>
             <ion-col size="6" class="ion-align-self-center">{{ review.teamName }}</ion-col>
           </ion-row>
         </ion-grid>
@@ -71,7 +71,7 @@
       </ion-chip>
 
       <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
-        <strong>Due Date</strong>: {{ assessment.dueDate | date : 'd MMMM y' }}
+        <strong i18n>Due Date</strong>: {{ assessment.dueDate | date : 'd MMMM y' }}
       </p>
 
       <ion-text class="ion-text-left">
@@ -91,7 +91,7 @@
 
           <ion-label>
             <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
-            <p class="caption gray-2">Please wait until the user finishes editing</p>
+            <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -152,7 +152,7 @@
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
               )" class="no-answers item-bottom-border" lines="none">
                 <ion-icon slot="start" color="orange" name="information-circle-outline" class="ion-margin-end"></ion-icon>
-                <ion-label size="small">No answer for this question.</ion-label>
+                <ion-label size="small" i18n>No answer for this question.</ion-label>
               </ion-item>
 
               <app-text *ngSwitchCase="'text'"
@@ -260,7 +260,7 @@
   ></app-bottom-action-bar>
 
   <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
-    <p class="black subtitle-1">Currently you are not in a team, please reach out to your Administrator or Coordinator to
+    <p class="black subtitle-1" i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
       proceed with next steps.</p>
   </div>
 </ng-container>
