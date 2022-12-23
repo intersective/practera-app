@@ -1,0 +1,17 @@
+service: cloudfront-service
+useDotenv: false
+enableLocalInstallationFallback: true
+variablesResolutionMode: 20210326
+
+provider:
+  name: aws
+  stage: sandbox
+  runtime: nodejs14.x
+
+functions:
+  i18nForwarder:
+    handler: functions/handler.i18nForwarder
+    events:
+      - cloudFront:
+          eventType: origin-request
+          origin: https://appv3.p2-sandbox.practera.com

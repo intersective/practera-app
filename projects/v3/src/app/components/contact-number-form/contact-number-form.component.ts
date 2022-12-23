@@ -79,22 +79,27 @@ export class ContactNumberFormComponent implements OnInit {
     countryCodes: [
       {
         name: 'Australia',
+        abbr: 'AUS',
         code: 'AUS'
       },
       {
-        name: 'US/Canada',
+        name: 'US/CA',
+        abbr: 'US/CA',
         code: 'US'
       },
       {
         name: 'New Zealand',
+        abbr: 'NZ',
         code: 'NZ'
       },
       {
         name: 'Germany',
+        abbr: 'DE',
         code: 'DE'
       },
       {
         name: 'United Kingdom',
+        abbr: 'UK',
         code: 'UK'
       }
     ]
@@ -312,7 +317,7 @@ export class ContactNumberFormComponent implements OnInit {
         }
         break;
 
-      case 'US' :
+      case 'US':
         if (contactNumber.length === 12) {
           return true;
         } else if (contactNumber.length === 2) {

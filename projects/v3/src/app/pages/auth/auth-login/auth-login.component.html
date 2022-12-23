@@ -18,6 +18,7 @@
               inputmode="email"
               type="email"
               placeholder="Email"
+              i18n-placeholder
               autofocus="true"
               ></ion-input>
           </ion-item>
@@ -31,6 +32,7 @@
               required
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Password"
+              i18n-placeholder
               ></ion-input>
               <ion-button (click)="showPassword = !showPassword" fill="clear">
                 <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'"></ion-icon>
@@ -47,16 +49,16 @@
           [attr.aria-describedby]="'login-desc'"
           (keydown)="login($event)"
           >
-          <ng-container *ngIf="!isLoggingIn" id="login-desc">LOGIN</ng-container>
-          <ng-container *ngIf="isLoggingIn" id="login-desc">LOGGING IN...</ng-container>
+          <ng-container *ngIf="!isLoggingIn" id="login-desc" i18n>LOGIN</ng-container>
+          <ng-container *ngIf="isLoggingIn" id="login-desc" i18n>LOGGING IN...</ng-container>
         </ion-button>
       </form>
     </div>
     <div class="text-split">
-      <a routerLink="/auth/forgot_password" class="subtitle-2">Problem signing in?</a>
+      <a routerLink="/auth/forgot_password" class="subtitle-2" i18n>Problem signing in?</a>
     </div>
     <div>
-      <a>Powered by</a><img src="/assets/logo.svg" height="25" class="img-inline" alt="Practera">
+      <a i18n>Powered by</a><img src="./assets/logo.svg" height="25" class="img-inline" alt="Practera">
     </div>
   </main>
 </ion-content>

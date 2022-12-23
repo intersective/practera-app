@@ -37,7 +37,6 @@ resources:
     HadVersioning: !Equals [ '${env:S3VERSIONING}', 'false-but-was-true']
     HasNoncurrentVersionExpirationInDays: !Not [!Equals [ '${env:NONCURRENTVERSION_EXPIREINDAYS}', 0]]
     LiveServerOnly: !Equals [ '${env:ENV}', 'live']
-  
     
   Resources:
     AppV2S3Bucket:
@@ -337,8 +336,7 @@ resources:
             Principal:
               AWS: 
                 - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
-          
-
+    
   Outputs:
     AppV2CloudFrontDistributionOutput:
       Value:

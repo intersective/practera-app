@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border header-border" aria-label="events">
   <h1 class="for-accessibility">Events</h1>
   <ion-toolbar>
-    <ion-title class="headline-4 grey-75">Events</ion-title>
+    <ion-title class="headline-4 grey-75" i18n>Events</ion-title>
     <ion-buttons slot="end">
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
@@ -15,7 +15,7 @@
     <ion-grid class="ion-no-padding">
       <ion-row>
         <ion-col size="12" size-md="4">
-          <h2 class="for-accessibility">Events list by category</h2>
+          <h2 class="for-accessibility" i18n>Events list by category</h2>
           <app-event-list
             #eventList
             [activityId]="activityId"
@@ -25,7 +25,7 @@
           ></app-event-list>
         </ion-col>
         <ion-col size="12" size-md="8" class="border-left">
-          <h2 class="for-accessibility">Event details</h2>
+          <h2 class="for-accessibility" i18n>Event details</h2>
           <app-event-detail
             tabindex="0"
             id="eventDetail"
