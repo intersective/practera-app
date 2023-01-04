@@ -1,6 +1,9 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { IonTextarea } from '@ionic/angular';
 import { Question } from '@v3/services/assessment.service';
+import { fromEvent } from 'rxjs';
+import { debounce, debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-text',
@@ -14,7 +17,7 @@ import { Question } from '@v3/services/assessment.service';
     }
   ]
 })
-export class TextComponent implements ControlValueAccessor, OnInit {
+export class TextComponent implements ControlValueAccessor, OnInit, AfterViewInit {
   @Input() question: Question;
   @Input() submission;
   @Input() review;
@@ -29,7 +32,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
   // answer field for submitter & reviewer
-  @ViewChild('answerEle') answerRef: ElementRef;
+  @ViewChild('answerEle') answerRef: IonTextarea;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
   // call back for save changes
@@ -46,6 +49,18 @@ export class TextComponent implements ControlValueAccessor, OnInit {
 
   ngOnInit() {
     this._showSavedAnswers();
+  }
+
+  ngAfterViewInit() {
+    this.answerRef.ionInput.pipe(
+      map(e => (e.target as HTMLInputElement).value),
+      filter(text => text.length > 2),
+      debounceTime(500),
+      distinctUntilChanged(),
+    ).subscribe(data => {
+      console.log('data::', data);
+      this.saveProgress.emit(true);
+    });
   }
 
   // propagate changes into the form control
@@ -69,7 +84,6 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     }
   }
 
-
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(type: string = null) {
@@ -90,7 +104,6 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    this.saveProgress.emit(true);
 
     // 05/02/2019
     // Don't check "is required" error for now, it has some error.
