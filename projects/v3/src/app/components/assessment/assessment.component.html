@@ -165,7 +165,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-text>
+                [submitActions$]="submitActions"></app-text>
 
               <app-oneof *ngSwitchCase="'oneof'"
                 [question]="question"
@@ -177,7 +177,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-oneof>
+                [submitActions$]="submitActions"></app-oneof>
 
               <app-multiple *ngSwitchCase="'multiple'"
                 [question]="question"
