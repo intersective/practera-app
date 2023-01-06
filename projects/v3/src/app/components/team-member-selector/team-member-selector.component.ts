@@ -79,7 +79,10 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.submitActions$.next('from teamMemberSelector component');
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface

@@ -94,7 +94,10 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.submitActions$.next('from multiTeamMemberSelector component');
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface
