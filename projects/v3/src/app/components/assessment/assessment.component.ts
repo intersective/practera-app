@@ -1,11 +1,12 @@
-import { Component, Input, Output, EventEmitter, OnChanges, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
@@ -46,6 +47,8 @@ export class AssessmentComponent implements OnChanges {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
+  submitActions = new Subject();
+
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment: boolean;
@@ -70,7 +73,14 @@ export class AssessmentComponent implements OnChanges {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-  ) {}
+  ) {
+    this.submitActions.pipe(
+      debounceTime(2000),
+    ).subscribe(res => {
+      console.log('actions::', res);
+      this.btnSaveClicked();
+    });
+  }
 
   ngOnChanges() {
     if (!this.assessment) {
@@ -218,6 +228,7 @@ export class AssessmentComponent implements OnChanges {
 
   // When user click the save button
   btnSaveClicked() {
+    // debounce here
     return this._submit(true);
   }
 
