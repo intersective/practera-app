@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-team-member-selector',
@@ -14,6 +15,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl }
   ]
 })
 export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit {
+  @Input() submitActions$: Subject<any>;
 
   @Input() question;
   @Input() submission;
@@ -32,8 +34,6 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
-  // call back for save changes
-  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer
   innerValue: any;
@@ -79,7 +79,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.saveProgress.emit(true);
+    this.submitActions$.next('from teamMemberSelector component');
   }
 
   // From ControlValueAccessor interface
