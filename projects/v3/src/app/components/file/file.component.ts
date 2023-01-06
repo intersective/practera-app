@@ -118,7 +118,10 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
-    this.submitActions$.next('from file component');
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface

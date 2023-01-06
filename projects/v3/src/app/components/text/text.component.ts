@@ -59,7 +59,10 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
       distinctUntilChanged(),
     ).subscribe(_data => {
       console.log('text is getting input');
-      this.submitActions$.next('from text component');
+      this.submitActions$.next({
+        saveInProgress: true,
+        goBack: false,
+      });
     });
   }
 

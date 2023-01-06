@@ -76,9 +76,11 @@ export class AssessmentComponent implements OnChanges {
   ) {
     this.submitActions.pipe(
       debounceTime(2000),
-    ).subscribe(res => {
-      console.log('actions::', res);
-      this.btnSaveClicked();
+    ).subscribe((data: {
+      saveInProgress: boolean;
+      goBack: boolean;
+    }): Promise<void> => {
+      return this._submit(data.saveInProgress, data.goBack);
     });
   }
 
@@ -218,7 +220,10 @@ export class AssessmentComponent implements OnChanges {
     switch (this._btnAction) {
       case 'submit':
         this.btnDisabled$.next(true);
-        return this._submit();
+        return this.submitActions.next({
+          saveInProgress: false,
+          goBack: false,
+        });
       case 'readFeedback':
         return this.readFeedback.emit(this.submission.id);
       default:
@@ -228,13 +233,18 @@ export class AssessmentComponent implements OnChanges {
 
   // When user click the save button
   btnSaveClicked() {
-    // debounce here
-    return this._submit(true);
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // When user click the back tutton
   btnBackClicked() {
-    return this._submit(true, true);
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: true,
+    });
   }
 
   /**

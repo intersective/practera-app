@@ -95,7 +95,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.submitActions$.next('from multiple component');
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface
