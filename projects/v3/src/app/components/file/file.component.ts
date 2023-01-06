@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { FilestackService } from '@v3/services/filestack.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-file',
@@ -15,6 +16,8 @@ import { FilestackService } from '@v3/services/filestack.service';
   ]
 })
 export class FileComponent implements ControlValueAccessor, OnInit {
+  @Input() submitActions$: Subject<any>;
+
   @Input() videoOnly?: boolean;
   @Input() question: {
     name: string;
@@ -49,8 +52,6 @@ export class FileComponent implements ControlValueAccessor, OnInit {
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
-  // call back for save changes
-  @Output() saveProgress = new EventEmitter<boolean>();
 
   uploadedFile;
   fileTypes = '';
@@ -117,7 +118,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
-    this.saveProgress.emit(true);
+    this.submitActions$.next('from file component');
   }
 
   // From ControlValueAccessor interface
