@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-oneof',
@@ -14,6 +15,7 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl }
   ]
 })
 export class OneofComponent implements ControlValueAccessor, OnInit {
+  @Input() submitActions$: Subject<any>;
 
   @Input() question;
   @Input() submission;
@@ -32,8 +34,6 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
-  // call back for save changes
-  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer
   innerValue: any;
@@ -46,6 +46,7 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   ngOnInit() {
     this._showSavedAnswers();
   }
+
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
@@ -79,7 +80,11 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.saveProgress.emit(true);
+
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface
