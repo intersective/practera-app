@@ -8,7 +8,7 @@
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
   <ion-button fill="clear" slot="end" i18n
-    [disabled]="!assessment || btnDisabled" (click)="btnSaveClicked()">
+    [disabled]="!assessment || (btnDisabled$ | async)" (click)="btnSaveClicked()">
     Save
   </ion-button>
 </div>
@@ -255,7 +255,7 @@
       && submission.status === 'feedback available'
       && review.status === 'done')"
     [text]="btnText"
-    [disabled]="btnDisabled"
+    [disabled]="(btnDisabled$ | async)"
     (handleClick)="continueToNextTask()"
   ></app-bottom-action-bar>
 

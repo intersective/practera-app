@@ -176,7 +176,8 @@ describe('ActivityDesktopPage', () => {
       assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
         toPromise: jasmine.createSpy()
       });
-      const spy = spyOn(component.savingText$, 'next');
+      const saveTextSpy = spyOn(component.savingText$, 'next');
+      const btnDisabledSpy = spyOn(component.btnDisabled$, 'next');
 
       component.saveAssessment({
         assessment: { id: 1, inProgress: true, submssionId: 1, contextId: 1 },
@@ -186,7 +187,8 @@ describe('ActivityDesktopPage', () => {
       tick();
 
       expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
-      expect(spy).toHaveBeenCalled();
+      expect(saveTextSpy).toHaveBeenCalled();
+      expect(btnDisabledSpy).toHaveBeenCalled();
       expect(component.loading).toBeFalse();
     }));
 
@@ -199,7 +201,8 @@ describe('ActivityDesktopPage', () => {
         cb();
       });
 
-      const spy = spyOn(component.savingText$, 'next');
+      const saveTextSpy = spyOn(component.savingText$, 'next');
+      const btnDisabledSpy = spyOn(component.btnDisabled$, 'next');
 
       component.saveAssessment({
         assessment: {
@@ -215,7 +218,8 @@ describe('ActivityDesktopPage', () => {
 
       expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
       expect(notificationsSpy.assessmentSubmittedToast).toHaveBeenCalled();
-      expect(spy).toHaveBeenCalled();
+      expect(saveTextSpy).toHaveBeenCalled();
+      expect(btnDisabledSpy).toHaveBeenCalled();
       expect(component.loading).toBeFalse();
     }));
   });

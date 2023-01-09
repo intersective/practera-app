@@ -1,6 +1,5 @@
 import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable, concat } from 'rxjs';
 import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
@@ -32,6 +31,7 @@ export class AuthGlobalLoginComponent implements OnInit {
     try {
       await this.authService.globalLogin({ apikey, service }).toPromise();
       await this.experienceService.getMyInfo().toPromise();
+
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
       }
