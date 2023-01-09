@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject } from 'rxjs';
 
-const SAVE_PROGRESS_TIMEOUT = 3000;
+// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
 @Component({
   selector: 'app-assessment',
@@ -36,6 +36,9 @@ export class AssessmentComponent implements OnChanges {
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
 
+  // whether the bottom button(and the save button) is disabled
+  @Input() btnDisabled$: BehaviorSubject<boolean>;
+
   // save the assessment/review answers
   @Output() save = new EventEmitter();
   // mark the feedback as read
@@ -53,9 +56,6 @@ export class AssessmentComponent implements OnChanges {
 
   // whether the learner has seen the feedback
   feedbackReviewed = false;
-
-  // whether the bottom button(and the save button) is disabled
-  btnDisabled: boolean;
 
   // virtual element id for accessibility "aria-describedby" purpose
   elIdentities = {};
@@ -86,7 +86,6 @@ export class AssessmentComponent implements OnChanges {
     this.doAssessment = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
-    this.btnDisabled = false;
     this.isNotInATeam = false;
     this.isPendingReview = false;
   }
@@ -123,7 +122,7 @@ export class AssessmentComponent implements OnChanges {
     if (this.submission && this.submission.isLocked) {
       this.doAssessment = false;
       this.submission.status = 'done';
-      this.btnDisabled = true;
+      this.btnDisabled$.next(true);
       return;
     }
 
@@ -134,7 +133,7 @@ export class AssessmentComponent implements OnChanges {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.submission.modified));
-        this.btnDisabled = false;
+        this.btnDisabled$.next(false);
       }
       return;
     }
@@ -155,7 +154,7 @@ export class AssessmentComponent implements OnChanges {
   private _handleReviewData() {
     if (this.isPendingReview && this.review.status === 'in progress') {
       this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
-      this.btnDisabled = false;
+      this.btnDisabled$.next(false);
     }
   }
 
@@ -208,7 +207,7 @@ export class AssessmentComponent implements OnChanges {
   continueToNextTask() {
     switch (this._btnAction) {
       case 'submit':
-        this.btnDisabled = true;
+        this.btnDisabled$.next(true);
         return this._submit();
       case 'readFeedback':
         return this.readFeedback.emit(this.submission.id);
@@ -232,24 +231,44 @@ export class AssessmentComponent implements OnChanges {
    * @param saveInProgress whether it is for save in progress or submit
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
    */
-  _submit(saveInProgress = false, goBack = false) {
-    /**
-     * checking if this is a submission or progress save
-     * - if it's a submission
-     *    - assign true to saving variable to disable duplicate saving
-     *    - change submitting variable value to true
-     * - if it's a progress save
-     *    - if this is a manual save or there is no other auto save in progress
-     *      - change saving variable value to true to disable duplicate saving
-     *      - make manual save button disable
-     *      - change savingMessage variable value to 'Saving...' to show save in progress
-     *    - if this is not manual save or there is one save in progress
-     *      - do nothing
-     */
-    // allow submitting/saving after a few seconds
-    setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
+  async _submit(saveInProgress = false, goBack = false) {
+    // @NOTE forgiveable redundancy: 2022_11_29
+    // now we allow user to retrieve latest team status without re-login, so
+    // we need to make sure left opened assessment page cannot be submitted
+    // (e.g. the team submission page may still visible on client side even after
+    // user team status got modified)
+    if (this.doAssessment && this.assessment.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+      const teamId = this.storage.getUser().teamId;
+      if (typeof teamId !== 'number') {
 
-    this.btnDisabled = true;
+        return this.notifications.alert({
+          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel',
+            }
+          ],
+        });
+      }
+    }
+
+    /**
+     * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.
+     * Check saveInProgress
+     * If it's true. that means it's an auto save or manual save acction.
+     * Then check btnDisabled
+     * If it's true. that means save API request or submit API request already send and waitng for response.
+     * Then we are not doing anything.
+     */
+    /* comment for the tempery solution autosave AV2-1326
+    // if (saveInProgress && this.btnDisabled$.getValue()) {
+    //   return;
+    // }
+
+    // this.btnDisabled$.next(true);
+    */
 
     const answers = [];
     let questionId = 0;
@@ -313,7 +332,7 @@ export class AssessmentComponent implements OnChanges {
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
-      this.btnDisabled = false;
+      this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
         message: 'Required question answer missing!',
@@ -337,6 +356,11 @@ export class AssessmentComponent implements OnChanges {
         ],
       });
     }
+
+    /* comment for the tempery solution autosave AV2-1326
+    // allow submitting/saving after a few seconds
+    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
+    */
 
     this.save.emit({
       assessment,

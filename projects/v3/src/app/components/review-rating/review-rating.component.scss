@@ -42,19 +42,30 @@
 
   .rating-range {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     color: #666666;
     .mood {
+      flex-direction: column;
       cursor: pointer;
+      text-align: center;
+      min-width: 20%;
+      min-height: 100px;
+      display: flex;
+      justify-content: center;
       text-align: center;
       &.selected > span {
         color: var(--ion-color-primary);
       }
 
       p {
-        margin-top: auto;
         font-weight: 400;
         font-size: 12px;
+        margin: 5px 0 0 0;
+      }
+      &:hover, &.selected {
+        border: 1px solid #EFEFF4;
+        border-radius: 4px;
+        background-color: #F7F7F9;
       }
     }
 
@@ -77,6 +88,7 @@
     }
 
     ion-button.toggle {
+      --border-radius: 21px;
       color: #333333;
       font-size: 14px;
       font-weight: 400;

@@ -26,7 +26,7 @@
             <ion-select-option [value]="countryCode.code"
               aria-labelledby="country-code"
               *ngFor="let countryCode of contactNumberFormat.countryCodes">
-              {{countryCode.code}} {{contactNumberFormat.masks[countryCode.code].format}}
+              {{countryCode.abbr}} {{contactNumberFormat.masks[countryCode.code].format}}
             </ion-select-option>
           </ion-select>
         </ion-col>
