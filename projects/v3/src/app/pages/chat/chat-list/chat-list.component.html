@@ -31,7 +31,7 @@
           </ng-container>
         </div>
         <ng-container *ngIf="chat.lastMessage; else messgeElseBlock">
-          <p class="body-2" [attr.aria-label]="'last message: ' + chat.lastMessage">{{ chat.lastMessage }}</p>
+          <p class="body-2 last-message" [attr.aria-label]="'last message: ' + chat.lastMessage" [innerHTML]="chat.lastMessage"></p>
         </ng-container>
         <ng-template #messgeElseBlock>
           <p class="body-2 gray-2" i18n>No messages.</p>

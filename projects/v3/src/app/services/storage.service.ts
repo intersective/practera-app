@@ -34,6 +34,7 @@ export interface User {
   hasReviews?: boolean;
   LtiReturnUrl?: string;
   squareLogo?: string; // for collapsed sidemenu
+  app_locale?: string;
 }
 
 export interface Referrer {

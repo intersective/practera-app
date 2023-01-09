@@ -577,4 +577,21 @@ export class UtilsService {
 
     return false;
   }
+
+  /**
+ * This will check if quill editor content is empty or not.
+ * reason we need this is quill will return html tags. if user hit enter without any text quill still send html content.
+ * so we can't just check null, ''.
+ * ex: - if user just hist enter 2 times without type any word quill will return this.
+ * <p><br/></p><p><br/></p>
+ * if we only check null or '' user will be able to submit empty values in quill editor.
+ * @param editorContent content user typed in quill editor.
+ * @returns boolean - if content is only empty html tags or it have text in it.
+ */
+  isQuillContentEmpty(editorContent: string) {
+    if (editorContent.replace(/<(.|\n)*?>/g, '').trim().length === 0) {
+      return true;
+    }
+    return false;
+  }
 }
