@@ -57,7 +57,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
       this.subcriptions.push(this.answerRef.ionInput.pipe(
         map(e => (e.target as HTMLInputElement).value),
         filter(text => text.length > 0),
-        debounceTime(1500),
+        debounceTime(1250),
         distinctUntilChanged(),
       ).subscribe(_data => {
         this.submitActions$.next({
