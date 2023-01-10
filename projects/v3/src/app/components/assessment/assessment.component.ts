@@ -76,7 +76,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private sharedService: SharedService,
   ) {
     this.subscriptions.push(this.submitActions.pipe(
-      debounceTime(2000),
+      debounceTime(1500),
     ).subscribe((data: {
       saveInProgress: boolean;
       goBack: boolean;
