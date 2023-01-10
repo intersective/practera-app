@@ -1,11 +1,11 @@
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
@@ -15,7 +15,7 @@ import { debounceTime } from 'rxjs/operators';
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent implements OnChanges {
+export class AssessmentComponent implements OnChanges, OnDestroy {
   /**
    * -- action --
    * Options: assessment/review
@@ -48,6 +48,7 @@ export class AssessmentComponent implements OnChanges {
   @Output() continue = new EventEmitter();
 
   submitActions = new Subject();
+  subscriptions: Subscription[] = [];
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
@@ -74,14 +75,14 @@ export class AssessmentComponent implements OnChanges {
     private storage: BrowserStorageService,
     private sharedService: SharedService,
   ) {
-    this.submitActions.pipe(
+    this.subscriptions.push(this.submitActions.pipe(
       debounceTime(2000),
     ).subscribe((data: {
       saveInProgress: boolean;
       goBack: boolean;
     }): Promise<void> => {
       return this._submit(data.saveInProgress, data.goBack);
-    });
+    }));
   }
 
   ngOnChanges() {
@@ -92,6 +93,14 @@ export class AssessmentComponent implements OnChanges {
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if (!subscription.closed) {
+        subscription.unsubscribe();
+      }
+    });
   }
 
   private _initialise() {
