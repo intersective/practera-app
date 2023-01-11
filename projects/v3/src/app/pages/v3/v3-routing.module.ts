@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { TabsPage } from '../tabs/tabs.page';
 
 import { V3Page } from './v3.page';
 

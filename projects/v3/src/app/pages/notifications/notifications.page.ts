@@ -176,7 +176,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return await this.dismiss();
   }
 
-  goToChat(todoItem?: TodoItem) {
+  goToChat(_todoItem?: TodoItem) {
     return this.router.navigate(['v3', 'messages']);
   }
 
