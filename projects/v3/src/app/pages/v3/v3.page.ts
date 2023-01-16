@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-v3',
@@ -55,7 +56,7 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
     ]),
   ]
 })
-export class V3Page implements OnInit, OnDestroy {
+export class V3Page {
   openMenu = true; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
@@ -75,10 +76,15 @@ export class V3Page implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private chatService: ChatService,
     private readonly utils: UtilsService,
+    private readonly notificationsService: NotificationsService,
   ) { }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => subs.unsubscribe());
+  ionViewDidLeave(): void {
+    this.subscriptions.forEach(subs => {
+      if (subs.closed !== true) {
+        subs.unsubscribe();
+      }
+    });
   }
 
   private _initMenuItems() {
@@ -106,7 +112,7 @@ export class V3Page implements OnInit, OnDestroy {
     ];
   }
 
-  ngOnInit(): void {
+  ionViewWillEnter(): void {
     this._initMenuItems();
     this.subscriptions = [];
     this.subscriptions.push(
@@ -143,6 +149,12 @@ export class V3Page implements OnInit, OnDestroy {
       }));
     }
     this.openMenu =false;
+
+    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
+    this.subscriptions.push(this.notificationsService.notification$.subscribe());
+
+    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
+    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
