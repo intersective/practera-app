@@ -164,7 +164,7 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.projectProgress().pipe(map(res => this._handleProjectProgress(res))).subscribe();
     }
-    return this.apolloService.graphQLWatch(
+    return this.apolloService.graphQLFetch(
       `query {
           project {
             progress
