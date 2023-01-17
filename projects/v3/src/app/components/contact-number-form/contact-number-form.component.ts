@@ -60,7 +60,7 @@ export class ContactNumberFormComponent implements OnInit {
       NZ: {
         format: '+64',
         placeholder: '0000000000',
-        pattern: '^[0-9]{9-10}$',
+        pattern: '^\d{9,10}$',
         numberLength: '12'
       },
       DE: {
