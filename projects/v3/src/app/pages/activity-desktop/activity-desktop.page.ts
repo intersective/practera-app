@@ -7,7 +7,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -16,7 +16,8 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   templateUrl: './activity-desktop.page.html',
   styleUrls: ['./activity-desktop.page.scss'],
 })
-export class ActivityDesktopPage implements OnInit {
+export class ActivityDesktopPage {
+  subscriptions: Subscription[] = [];
   activity: Activity;
   currentTask: Task;
   assessment: Assessment;
@@ -45,15 +46,27 @@ export class ActivityDesktopPage implements OnInit {
     @Inject(DOCUMENT) private readonly document: Document
   ) { }
 
-  ngOnInit() {
-    this.activityService.activity$.subscribe(res => this.activity = res);
-    this.activityService.currentTask$.subscribe(res => this.currentTask = res);
-    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
-    this.assessmentService.submission$.subscribe(res => this.submission = res);
-    this.assessmentService.review$.subscribe(res => this.review = res);
-    this.topicService.topic$.subscribe(res => this.topic = res);
+  ionViewWillEnter() {
+    this.subscriptions.push(
+      this.activityService.activity$.subscribe(res => this.activity = res)
+    );
+    this.subscriptions.push(
+      this.activityService.currentTask$.subscribe(res => this.currentTask = res)
+    );
+    this.subscriptions.push(
+      this.assessmentService.assessment$.subscribe(res => this.assessment = res)
+    );
+    this.subscriptions.push(
+      this.assessmentService.submission$.subscribe(res => this.submission = res)
+    );
+    this.subscriptions.push(
+      this.assessmentService.review$.subscribe(res => this.review = res)
+    );
+    this.subscriptions.push(
+      this.topicService.topic$.subscribe(res => this.topic = res)
+    );
 
-    this.route.paramMap.subscribe(params => {
+    this.subscriptions.push(this.route.paramMap.subscribe(params => {
       const contextId = +params.get('contextId');
       const activityId = +params.get('id');
       const assessmentId = +params.get('assessmentId');
@@ -78,6 +91,14 @@ export class ActivityDesktopPage implements OnInit {
           });
         }
       });
+    }));
+  }
+
+  ionViewDidLeave() {
+    this.subscriptions.forEach(sub => {
+      if (sub.closed !== true) {
+        sub.unsubscribe();
+      }
     });
   }
 
