@@ -29,9 +29,17 @@ export class PersonalisedHeaderComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.notificationsService.notification$.subscribe(notifications => {
+    this.subscriptions.push(this.notificationsService.notification$.subscribe(notifications => {
       const notiCount = notifications.length;
       this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => {
+      if (sub.closed !== true) {
+        sub.unsubscribe();
+      }
     });
   }
 
