@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonTabs, Platform } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
@@ -13,7 +13,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
 })
-export class TabsPage {
+export class TabsPage implements OnInit, OnDestroy {
   reviews: Review[];
   subscriptions: Subscription[] = [];
   showMessages: boolean = false;
@@ -32,7 +32,7 @@ export class TabsPage {
     private route: ActivatedRoute
   ) {}
 
-  ionViewWillEnter() {
+  ngOnInit() {
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -77,7 +77,7 @@ export class TabsPage {
     return this.platform.is('mobile');
   }
 
-  ionViewDidLeave(): void {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(sub => {
       if (sub.closed == false) {
         sub.unsubscribe();
