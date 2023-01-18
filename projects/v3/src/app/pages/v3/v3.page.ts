@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
@@ -56,7 +56,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
     ]),
   ]
 })
-export class V3Page {
+export class V3Page implements OnInit, OnDestroy {
   openMenu = true; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
@@ -79,7 +79,7 @@ export class V3Page {
     private readonly notificationsService: NotificationsService,
   ) { }
 
-  ionViewDidLeave(): void {
+  ngOnDestroy(): void {
     this.subscriptions.forEach(subs => {
       if (subs.closed !== true) {
         subs.unsubscribe();
@@ -112,7 +112,7 @@ export class V3Page {
     ];
   }
 
-  ionViewWillEnter(): void {
+  ngOnInit(): void {
     this._initMenuItems();
     this.subscriptions = [];
     this.subscriptions.push(
@@ -151,8 +151,6 @@ export class V3Page {
     this.openMenu =false;
 
     // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.notification$.subscribe());
-
     this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
     this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
   }
