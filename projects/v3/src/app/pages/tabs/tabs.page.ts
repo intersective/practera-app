@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonTabs, Platform } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
@@ -13,7 +13,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
 })
-export class TabsPage implements OnInit, OnDestroy {
+export class TabsPage {
   reviews: Review[];
   subscriptions: Subscription[] = [];
   showMessages: boolean = false;
@@ -32,7 +32,7 @@ export class TabsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -71,24 +71,21 @@ export class TabsPage implements OnInit, OnDestroy {
     this.subscriptions.push(this.utils.getEvent('event-reminder').subscribe(event => {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
-
-    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.notification$.subscribe());
-
-    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
-    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
   }
 
   get isMobile() {
     return this.platform.is('mobile');
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => subs.unsubscribe());
+  ionViewDidLeave(): void {
+    this.subscriptions.forEach(sub => {
+      if (sub.closed == false) {
+        sub.unsubscribe();
+      }
+    });
   }
 
   setCurrentTab() {
     this.selectedTab = this.tabs.getSelected();
   }
-
 }

@@ -23,8 +23,8 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
     private readonly animationService: AnimationsService,
     private readonly storageService: BrowserStorageService,
     private readonly utilService: UtilsService,
-    private router: Router,
-    private notificationsService: NotificationsService,
+    private readonly router: Router,
+    private readonly notificationsService: NotificationsService,
   ) {
   }
 
@@ -35,12 +35,12 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
     }));
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => {
-      if (subscription?.closed === false) {
-        subscription.unsubscribe();
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => {
+      if (sub.closed !== true) {
+        sub.unsubscribe();
       }
-    })
+    });
   }
 
   get isMobile(): boolean {
