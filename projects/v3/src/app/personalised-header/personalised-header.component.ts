@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
@@ -14,7 +14,7 @@ import { UtilsService } from '../services/utils.service';
   templateUrl: './personalised-header.component.html',
   styleUrls: ['./personalised-header.component.scss'],
 })
-export class PersonalisedHeaderComponent implements OnInit {
+export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   notiCount: number = 0;
 
