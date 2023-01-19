@@ -78,7 +78,7 @@ export class ActivityDesktopPage implements OnInit {
     });
   }
 
-  goToTask(task: Task) {
+  async goToTask(task: Task): Promise<any> {
     const taskContentElement = this.document.getElementById('task-content');
     if (taskContentElement) {
       taskContentElement.focus();
