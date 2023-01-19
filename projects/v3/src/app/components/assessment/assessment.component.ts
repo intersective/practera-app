@@ -232,7 +232,29 @@ export class AssessmentComponent implements OnChanges {
    * @param saveInProgress whether it is for save in progress or submit
    * @param goBack use to unlock team assessment when leave assessment by clicking back button
    */
-  _submit(saveInProgress = false, goBack = false) {
+  async _submit(saveInProgress = false, goBack = false) {
+    // @NOTE forgiveable redundancy: 2022_11_29
+    // now we allow user to retrieve latest team status without re-login, so
+    // we need to make sure left opened assessment page cannot be submitted
+    // (e.g. the team submission page may still visible on client side even after
+    // user team status got modified)
+    if (this.doAssessment && this.assessment.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+      const teamId = this.storage.getUser().teamId;
+      if (typeof teamId !== 'number') {
+
+        return this.notifications.alert({
+          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+          buttons: [
+            {
+              text: 'OK',
+              role: 'cancel',
+            }
+          ],
+        });
+      }
+    }
+
     /**
      * checking if this is a submission or progress save
      * - if it's a submission

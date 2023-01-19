@@ -90,7 +90,7 @@ export class TextComponent implements ControlValueAccessor, OnInit {
     // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
 
-    this.saveProgress.emit(true);
+    // this.saveProgress.emit(true); AV2-1324
 
     // 05/02/2019
     // Don't check "is required" error for now, it has some error.
