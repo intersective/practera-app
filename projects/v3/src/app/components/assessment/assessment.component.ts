@@ -54,8 +54,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment: boolean;
 
-  // if isPendingReview is true, it means this user is actually doing review, meaning this assessment is pending review
-  // if action == 'review' and isPendingReview is false, it means the review is done and this user is reading the submission and review
+  // if isPendingReview is true, it means this review is WIP, meaning this assessment is pending review
+  // if action == 'review' and isPendingReview is false, it means the review is done and this student is reading the submission and review
   isPendingReview = false;
 
   // whether the learner has seen the feedback
@@ -314,7 +314,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       assessment.submissionId = this.submission.id;
     }
 
-    // form submission answers
+    // form submission answers (submission API doesn't accept zero length array)
     if (this.doAssessment) {
       assessment.contextId = this.contextId;
 
@@ -345,17 +345,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // form feedback answers
+    // form feedback answers (submission API doesn't accept zero length array)
     if (this.isPendingReview) {
       assessment = Object.assign(assessment, {
         reviewId: this.review.id
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        if (!this.utils.isEmpty(answer)) {
-          answer.questionId = +key.replace('q-', '');
-          answers.push(answer);
-        }
+        questionId = +key.replace('q-', '');
+        answers.push({ questionId, answer });
       });
     }
 
