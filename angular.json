@@ -260,6 +260,10 @@
       "i18n": {
         "sourceLocale": "en-US",
         "locales": {
+          "es": {
+            "translation": "projects/v3/src/locales/messages.es.xlf",
+            "baseHref": "es/"
+          },
           "ja": {
             "translation": "projects/v3/src/locales/messages.ja.xlf",
             "baseHref": "ja/"
