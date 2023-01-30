@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file source-language="en-US" datatype="plaintext" original="ng2.template">
+  <file source-language="en-us" target-language="ja" datatype="plaintext" original="ng2.template">
     <body>
       <trans-unit id="855735721940425245" datatype="html">
         <source>Congratulations</source>
+        <target>おめでとうございます</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
           <context context-type="linenumber">20</context>
@@ -11,6 +12,7 @@
       </trans-unit>
       <trans-unit id="6566475916683677680" datatype="html">
         <source>You have earned a new badge</source>
+        <target>新しいバッジを獲得しました</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
           <context context-type="linenumber">21</context>
@@ -18,6 +20,7 @@
       </trans-unit>
       <trans-unit id="8392242918539490687" datatype="html">
         <source> You have remaining tasks in the current activity. Would you like to review them before progressing? </source>
+        <target> 現在のアクティビティには、残りのタスクがあります。先に進める前に確認しますか？ </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -25,6 +28,7 @@
       </trans-unit>
       <trans-unit id="5433685098313731480" datatype="html">
         <source>REVIEW TASKS</source>
+        <target>レビュータスク</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.html</context>
           <context context-type="linenumber">17</context>
@@ -32,6 +36,7 @@
       </trans-unit>
       <trans-unit id="3710074594934360101" datatype="html">
         <source>CONTINUE</source>
+        <target>コンティニュー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity-complete-pop-up/activity-complete-pop-up.component.html</context>
           <context context-type="linenumber">25</context>
@@ -39,6 +44,7 @@
       </trans-unit>
       <trans-unit id="3620188369327429839" datatype="html">
         <source> Save </source>
+        <target> セーブ </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">11,13</context>
@@ -46,6 +52,7 @@
       </trans-unit>
       <trans-unit id="7948045921889473653" datatype="html">
         <source>Reviewer Details</source>
+        <target>レビュアーの詳細</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">20</context>
@@ -53,6 +60,7 @@
       </trans-unit>
       <trans-unit id="7287607689388981179" datatype="html">
         <source>Expert</source>
+        <target>専門家</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">25</context>
@@ -60,6 +68,7 @@
       </trans-unit>
       <trans-unit id="270360988844157127" datatype="html">
         <source>Submission Details</source>
+        <target>投稿の詳細</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">39</context>
@@ -67,6 +76,7 @@
       </trans-unit>
       <trans-unit id="3085055964513581271" datatype="html">
         <source>Learner</source>
+        <target>学習者</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">44</context>
@@ -74,6 +84,7 @@
       </trans-unit>
       <trans-unit id="3724068243287682962" datatype="html">
         <source>Team</source>
+        <target>チーム</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">53</context>
@@ -81,6 +92,7 @@
       </trans-unit>
       <trans-unit id="1917979079769004212" datatype="html">
         <source>Due Date</source>
+        <target>期限日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">74</context>
@@ -88,6 +100,7 @@
       </trans-unit>
       <trans-unit id="8127984505357293604" datatype="html">
         <source>Please wait until the user finishes editing</source>
+        <target>ユーザーが編集を終了するまでお待ちください</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">94</context>
@@ -95,6 +108,7 @@
       </trans-unit>
       <trans-unit id="4080900879569361921" datatype="html">
         <source>No answer for this question.</source>
+        <target>この質問に対する回答はありません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">155</context>
@@ -102,13 +116,15 @@
       </trans-unit>
       <trans-unit id="5301693178039706546" datatype="html">
         <source>Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.</source>
+        <target>現在、チームに所属していない方は、次のステップに進むために、管理者またはコーディネーターに連絡してください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
-          <context context-type="linenumber">261,262</context>
+          <context context-type="linenumber">263,264</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7571110135159465275" datatype="html">
         <source>Mobile Number</source>
+        <target>携帯電話番号</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.html</context>
           <context context-type="linenumber">17</context>
@@ -116,6 +132,7 @@
       </trans-unit>
       <trans-unit id="5470706554452951501" datatype="html">
         <source>Country code</source>
+        <target>国名コード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.html</context>
           <context context-type="linenumber">20</context>
@@ -123,6 +140,7 @@
       </trans-unit>
       <trans-unit id="9162949080934051777" datatype="html">
         <source>Your mobile number is important to get SMS notifications.</source>
+        <target>SMSの通知を受けるには、携帯電話番号が重要です。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.html</context>
           <context context-type="linenumber">48</context>
@@ -130,6 +148,7 @@
       </trans-unit>
       <trans-unit id="4706506290962815509" datatype="html">
         <source>Update mobile number</source>
+        <target>携帯電話番号の更新</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.html</context>
           <context context-type="linenumber">62</context>
@@ -137,6 +156,7 @@
       </trans-unit>
       <trans-unit id="5770408771349384867" datatype="html">
         <source>Updating..</source>
+        <target>更新中...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.html</context>
           <context context-type="linenumber">63</context>
@@ -144,6 +164,7 @@
       </trans-unit>
       <trans-unit id="9128706967627404664" datatype="html">
         <source>Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>We want to know how are you doing.</source>
+        <target>ご協力をお願いいたします。<x id="LINE_BREAK" ctype="lb" equiv-text="&lt;br&gt;"/>私たちは、あなたがどうしているのかを知りたいのです。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/fast-feedback/fast-feedback.component.html</context>
           <context context-type="linenumber">9</context>
@@ -151,6 +172,7 @@
       </trans-unit>
       <trans-unit id="935187492052582731" datatype="html">
         <source>Submit</source>
+        <target>提出</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/fast-feedback/fast-feedback.component.html</context>
           <context context-type="linenumber">43</context>
@@ -158,6 +180,7 @@
       </trans-unit>
       <trans-unit id="9220610088040281121" datatype="html">
         <source>generic image uploaded by user</source>
+        <target>ユーザがアップロードした汎用画像</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file-display/file-display.component.html</context>
           <context context-type="linenumber">6</context>
@@ -165,6 +188,7 @@
       </trans-unit>
       <trans-unit id="207096406772081345" datatype="html">
         <source> The file you have uploaded contains a virus and is potentially harmful. Please contact your program coordinator </source>
+        <target> あなたがアップロードしたファイルにはウイルスが含まれており、有害である可能性があります。担当のプログラム・コーディネーターにご連絡ください。 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file-display/file-display.component.html</context>
           <context context-type="linenumber">45,47</context>
@@ -172,6 +196,7 @@
       </trans-unit>
       <trans-unit id="9081075303920400841" datatype="html">
         <source>Expert&apos;s answer</source>
+        <target>専門家の回答</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
           <context context-type="linenumber">17</context>
@@ -199,6 +224,7 @@
       </trans-unit>
       <trans-unit id="8429316238784832901" datatype="html">
         <source>Feedback</source>
+        <target>フィードバック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
           <context context-type="linenumber">30</context>
@@ -210,6 +236,7 @@
       </trans-unit>
       <trans-unit id="527514296718036461" datatype="html">
         <source> Upload Profile Image </source>
+        <target> プロフィール画像のアップロード </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/filestack/filestack.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -217,6 +244,7 @@
       </trans-unit>
       <trans-unit id="8948022378653178553" datatype="html">
         <source>Upload file(s)</source>
+        <target>ファイルのアップロード</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/filestack/filestack.component.html</context>
           <context context-type="linenumber">14</context>
@@ -224,6 +252,7 @@
       </trans-unit>
       <trans-unit id="6320773786268696326" datatype="html">
         <source>UPLOAD FILE</source>
+        <target>ファイルをアップロードする</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/filestack/filestack.component.html</context>
           <context context-type="linenumber">38</context>
@@ -231,6 +260,7 @@
       </trans-unit>
       <trans-unit id="6414892769953030718" datatype="html">
         <source>is currently edting this team submission. Click on</source>
+        <target>は現在、このチーム投稿を編集中です。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.html</context>
           <context context-type="linenumber">12</context>
@@ -238,6 +268,7 @@
       </trans-unit>
       <trans-unit id="8063426853697927884" datatype="html">
         <source>&apos;View Read Only&apos;</source>
+        <target>&apos;読み取り専用を表示&apos;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.html</context>
           <context context-type="linenumber">12</context>
@@ -245,6 +276,7 @@
       </trans-unit>
       <trans-unit id="2970588833106142772" datatype="html">
         <source>to open in read only mode</source>
+        <target>リードモード時オープン </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.html</context>
           <context context-type="linenumber">12</context>
@@ -252,6 +284,7 @@
       </trans-unit>
       <trans-unit id="3647612159511777504" datatype="html">
         <source>View Read Only</source>
+        <target>表示 読み取り専用</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component.html</context>
           <context context-type="linenumber">17</context>
@@ -259,6 +292,7 @@
       </trans-unit>
       <trans-unit id="2368226120793868228" datatype="html">
         <source>Learner&apos;s answer</source>
+        <target>学習者の回答</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.html</context>
           <context context-type="linenumber">8</context>
@@ -294,6 +328,7 @@
       </trans-unit>
       <trans-unit id="6654658731991152766" datatype="html">
         <source>Please put your feedback here</source>
+        <target>ご意見・ご感想はこちらへ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.html</context>
           <context context-type="linenumber">66</context>
@@ -313,6 +348,7 @@
       </trans-unit>
       <trans-unit id="1861072274070577746" datatype="html">
         <source>We have sent an email to &quot;<x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/><x id="INTERPOLATION" equiv-text="{{ data.email }}"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/>&quot; with a link to log into the system - please check your inbox. </source>
+        <target>システムへログインするためのリンクを記載した電子メールを  &quot;<x id="START_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;i&gt;"/><x id="INTERPOLATION" equiv-text="{{ data.email }}"/><x id="CLOSE_ITALIC_TEXT" ctype="x-i" equiv-text="&lt;/i&gt;"/>&quot; ログインするためのリンクが貼られたメールが届きますので、ご確認ください </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/pop-up/pop-up.component.html</context>
           <context context-type="linenumber">7</context>
@@ -320,6 +356,7 @@
       </trans-unit>
       <trans-unit id="7269536304614040643" datatype="html">
         <source>If you haven&apos;t received an email in a few minutes, please make sure the email you entered is correct and check your spam folder. Thank you.</source>
+        <target>数分経ってもメールが届かない場合は、入力されたメールに間違いがないか、迷惑メールフォルダをご確認ください。ありがとうございました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/pop-up/pop-up.component.html</context>
           <context context-type="linenumber">8</context>
@@ -327,14 +364,16 @@
       </trans-unit>
       <trans-unit id="8998179362936748717" datatype="html">
         <source>OK</source>
+        <target>オッケー</target>
+        <note priority="1" from="description">OK button name</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/pop-up/pop-up.component.html</context>
           <context context-type="linenumber">21</context>
         </context-group>
-        <note priority="1" from="description">OK button name</note>
       </trans-unit>
       <trans-unit id="7549814212544511383" datatype="html">
         <source>You have no <x id="INTERPOLATION" equiv-text="{{ noReviews }}"/> review yet!</source>
+        <target>まだレビュー <x id="INTERPOLATION" equiv-text="{{ noReviews }}"/> はありません</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.html</context>
           <context context-type="linenumber">40</context>
@@ -342,6 +381,7 @@
       </trans-unit>
       <trans-unit id="3714289051977432060" datatype="html">
         <source>Reviews show up here, so you can easily view them here later.</source>
+        <target>レビューはここに表示されるので、後で簡単にここで見ることができます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.html</context>
           <context context-type="linenumber">41</context>
@@ -349,6 +389,7 @@
       </trans-unit>
       <trans-unit id="5632254720330452822" datatype="html">
         <source>Thank you, feedback received.</source>
+        <target>ありがとうございます、ご意見をいただきました。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.html</context>
           <context context-type="linenumber">90</context>
@@ -356,6 +397,7 @@
       </trans-unit>
       <trans-unit id="2917314929120683887" datatype="html">
         <source> Continue </source>
+        <target> 継続 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.html</context>
           <context context-type="linenumber">96,98</context>
@@ -363,6 +405,7 @@
       </trans-unit>
       <trans-unit id="1968182737545623217" datatype="html">
         <source>No answers were submitted.</source>
+        <target>回答はありませんでした。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
           <context context-type="linenumber">41</context>
@@ -370,6 +413,7 @@
       </trans-unit>
       <trans-unit id="6592236532352314965" datatype="html">
         <source>You have no new notifications.</source>
+        <target>新しい通知はありません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.html</context>
           <context context-type="linenumber">16</context>
@@ -377,14 +421,17 @@
       </trans-unit>
       <trans-unit id="1848807236922852435" datatype="html">
         <source>Supporting Downloads</source>
+        <target>サポート・ダウンロード</target>
+        <note priority="1" from="description">downloadable reading materials</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/topic/topic.component.html</context>
           <context context-type="linenumber">24</context>
         </context-group>
-        <note priority="1" from="description">downloadable reading materials</note>
       </trans-unit>
       <trans-unit id="8768931699620871504" datatype="html">
         <source><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>please wait </source>
+        <target><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>お待ちください 
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/video-conversion/video-conversion.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -392,6 +439,7 @@
       </trans-unit>
       <trans-unit id="6657819937397307140" datatype="html">
         <source>Waited too long?</source>
+        <target>待ち時間が長すぎる？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/video-conversion/video-conversion.component.html</context>
           <context context-type="linenumber">27</context>
@@ -399,6 +447,7 @@
       </trans-unit>
       <trans-unit id="1843438758864351185" datatype="html">
         <source>Download <x id="START_LINK" ctype="x-a" equiv-text="&lt;a target=&quot;_blank&quot; href=&quot;{{video?.fileObject?.url}}&quot;&gt;"/>here<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+        <target>ダウンロー<x id="START_LINK" ctype="x-a" equiv-text="&lt;a target=&quot;_blank&quot; href=&quot;{{video?.fileObject?.url}}&quot;&gt;"/>ドはこちら<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/video-conversion/video-conversion.component.html</context>
           <context context-type="linenumber">28</context>
@@ -406,6 +455,11 @@
       </trans-unit>
       <trans-unit id="5306473977542913614" datatype="html">
         <source>Activity</source>
+        <target>活動内容</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/activity-desktop/activity-desktop.page.html</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/activity-mobile/activity-mobile.page.html</context>
           <context context-type="linenumber">8</context>
@@ -413,6 +467,7 @@
       </trans-unit>
       <trans-unit id="4578192247039196794" datatype="html">
         <source>Task</source>
+        <target>タスク</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.html</context>
           <context context-type="linenumber">8</context>
@@ -420,6 +475,8 @@
       </trans-unit>
       <trans-unit id="3024098431274321979" datatype="html">
         <source>We are redirecting you to the page you want to go to, please be patient <x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;dots&quot; class=&quot;vertical-middle&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/></source>
+        <target>ご希望のページにリダイレクトしていますので、しばらくお待ちください。<x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;dots&quot; class=&quot;vertical-middle&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.html</context>
           <context context-type="linenumber">6,7</context>
@@ -431,6 +488,7 @@
       </trans-unit>
       <trans-unit id="4525702490124471511" datatype="html">
         <source>Forgot your password? No worries, mate!</source>
+        <target>パスワードをお忘れの方 心配ない、仲間だ!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
           <context context-type="linenumber">8</context>
@@ -438,6 +496,7 @@
       </trans-unit>
       <trans-unit id="8140492306889495910" datatype="html">
         <source>Enter your email and we&apos;ll send you a link that will let you pick a new password.</source>
+        <target>Eメールアドレスを入力すると、新しいパスワードを選ぶためのリンクが送信されます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
           <context context-type="linenumber">9</context>
@@ -445,6 +504,7 @@
       </trans-unit>
       <trans-unit id="2226625262738940373" datatype="html">
         <source>Send Email</source>
+        <target>メール送信</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
           <context context-type="linenumber">29</context>
@@ -452,6 +512,7 @@
       </trans-unit>
       <trans-unit id="1118027788072351320" datatype="html">
         <source>Sending...</source>
+        <target>送信...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
           <context context-type="linenumber">30</context>
@@ -459,6 +520,7 @@
       </trans-unit>
       <trans-unit id="327534766307158513" datatype="html">
         <source>Remembered it?</source>
+        <target>覚えている？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
           <context context-type="linenumber">34</context>
@@ -466,41 +528,71 @@
       </trans-unit>
       <trans-unit id="82744417109404626" datatype="html">
         <source>Login here</source>
+        <target>ログインはこちら</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
           <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2255738207434422096" datatype="html">
-        <source>LOGIN</source>
+      <trans-unit id="4768749765465246664" datatype="html">
+        <source>Email</source>
+        <target>Eメール</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">50</context>
+          <context context-type="linenumber">20</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
+          <context context-type="linenumber">66</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1431416938026210429" datatype="html">
+        <source>Password</source>
+        <target>暗証番号</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
+          <context context-type="linenumber">95</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2255738207434422096" datatype="html">
+        <source>LOGIN</source>
+        <target>ログイン</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
+          <context context-type="linenumber">52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2633010980479369274" datatype="html">
         <source>LOGGING IN...</source>
+        <target>ログイン中...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">53</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8600010496045622616" datatype="html">
         <source>Problem signing in?</source>
+        <target>サインインに問題がありますか？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">58</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7933384538978087776" datatype="html">
         <source>Powered by</source>
+        <target>Powered by</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
-          <context context-type="linenumber">59</context>
+          <context context-type="linenumber">61</context>
         </context-group>
       </trans-unit>
       <trans-unit id="152009032311101647" datatype="html">
         <source>Your Mobile Number</source>
+        <target>携帯電話番号</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
           <context context-type="linenumber">18</context>
@@ -508,80 +600,89 @@
       </trans-unit>
       <trans-unit id="7366249928516885231" datatype="html">
         <source>setup practera password</source>
+        <target>Practeraパスワードの設定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">33</context>
+          <context context-type="linenumber">34</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3782563238994348625" datatype="html">
+        <source>Confirm password</source>
+        <target>パスワードの確認</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3330329515985411103" datatype="html">
         <source>confirm password</source>
+        <target>パスワードの確認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">49</context>
+          <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5150135294711720220" datatype="html">
         <source> I agree to the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;subtitle-2&quot; (click)=&quot;openLink()&quot; tabindex=&quot;0&quot; aria-label=&quot;terms &amp; conditions&quot;&gt;"/>Terms &amp; Conditions<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></source>
+        <target> その通り<x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;subtitle-2&quot; (click)=&quot;openLink()&quot; tabindex=&quot;0&quot; aria-label=&quot;terms &amp; conditions&quot;&gt;"/>取引条件<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">56,57</context>
+          <context context-type="linenumber">58,59</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3866977477834057134" datatype="html">
         <source>REGISTER</source>
+        <target>登録</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">64</context>
+          <context context-type="linenumber">66</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4871864888462368754" datatype="html">
         <source>Welcome <x id="INTERPOLATION" equiv-text="{{user.email}}"/>.</source>
+        <target>ウェルカム <x id="INTERPOLATION" equiv-text="{{user.email}}"/>.
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="664573589261423471" datatype="html">
-        <source>Terms and Conditions</source>
+      <trans-unit id="2409422726276457207" datatype="html">
+        <source>Please accept the <x id="START_LINK" ctype="x-a" equiv-text="&lt;a (click)=&quot;termsAndConditionsPopup()&quot;&gt;"/>Terms and Conditions<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> in order to continue.</source>
+        <target>
+をお受け取りください<x id="START_LINK" ctype="x-a" equiv-text="&lt;a (click)=&quot;termsAndConditionsPopup()&quot;&gt;"/>ご利用条件<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> を続けるために</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">74</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
-          <context context-type="linenumber">89</context>
+          <context context-type="linenumber">76</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7741310431486070608" datatype="html">
         <source>I agree to the Terms and Conditions</source>
+        <target>利用規約に同意する</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">79</context>
+          <context context-type="linenumber">81</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6892068562944277349" datatype="html">
         <source>Optionally, create an account password as an additional future login option.</source>
+        <target>オプションとして、将来の追加ログインオプションとして、アカウントパスワードを作成することができます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">88</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="1431416938026210429" datatype="html">
-        <source>Password</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">93</context>
+          <context context-type="linenumber">90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5850331735806504848" datatype="html">
         <source>CONTINUE </source>
+        <target>コンティニュー </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">113,114</context>
+          <context context-type="linenumber">115,116</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2544569632476723854" datatype="html">
         <source>Terms</source>
+        <target>用語解説</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.html</context>
           <context context-type="linenumber">4</context>
@@ -589,6 +690,7 @@
       </trans-unit>
       <trans-unit id="1670372697626839143" datatype="html">
         <source>Please review the following reviewer terms and conditions, before you continue to practera.</source>
+        <target>以下のレビュー条件をご確認の上、Practeraをご利用ください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.html</context>
           <context context-type="linenumber">8</context>
@@ -596,14 +698,16 @@
       </trans-unit>
       <trans-unit id="1708201283688549233" datatype="html">
         <source>I agree</source>
+        <target>その通り</target>
+        <note priority="1" from="description">t&amp;c agree button text</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.html</context>
           <context context-type="linenumber">13</context>
         </context-group>
-        <note priority="1" from="description">t&amp;c agree button text</note>
       </trans-unit>
       <trans-unit id="5094796500262498649" datatype="html">
         <source> Channel details </source>
+        <target> チャンネル詳細 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-info/chat-info.component.html</context>
           <context context-type="linenumber">6,8</context>
@@ -611,6 +715,7 @@
       </trans-unit>
       <trans-unit id="8576105078074477473" datatype="html">
         <source>Who is in this chat</source>
+        <target>このチャットの参加者</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-info/chat-info.component.html</context>
           <context context-type="linenumber">27</context>
@@ -618,6 +723,7 @@
       </trans-unit>
       <trans-unit id="6904557731443529200" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> Members</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> メンバー紹介</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-info/chat-info.component.html</context>
           <context context-type="linenumber">35</context>
@@ -625,6 +731,7 @@
       </trans-unit>
       <trans-unit id="8102950868343891133" datatype="html">
         <source>No messages.</source>
+        <target>メッセージはありません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-list/chat-list.component.html</context>
           <context context-type="linenumber">37</context>
@@ -632,6 +739,7 @@
       </trans-unit>
       <trans-unit id="1924392404153631649" datatype="html">
         <source>uploaded attachment preview</source>
+        <target>アップロードされた添付ファイルのプレビュー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-preview/chat-preview.component.html</context>
           <context context-type="linenumber">32</context>
@@ -639,6 +747,8 @@
       </trans-unit>
       <trans-unit id="2070993748441835920" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> members </source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> 構成員 
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -646,6 +756,7 @@
       </trans-unit>
       <trans-unit id="8701837612152614012" datatype="html">
         <source>empty chat</source>
+        <target>エンプティチャット</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
           <context context-type="linenumber">33</context>
@@ -653,6 +764,7 @@
       </trans-unit>
       <trans-unit id="8482447808539383068" datatype="html">
         <source>Type your first message!</source>
+        <target>最初のメッセージを入力してください</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
           <context context-type="linenumber">36</context>
@@ -660,6 +772,7 @@
       </trans-unit>
       <trans-unit id="8256965592665590894" datatype="html">
         <source>It&apos;s time to start a chat</source>
+        <target>チャットを開始する時間です</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
           <context context-type="linenumber">37</context>
@@ -667,6 +780,7 @@
       </trans-unit>
       <trans-unit id="3304972143698843178" datatype="html">
         <source>Event</source>
+        <target>イベント</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.html</context>
           <context context-type="linenumber">4</context>
@@ -674,6 +788,7 @@
       </trans-unit>
       <trans-unit id="2225836937031088049" datatype="html">
         <source>Event Expired</source>
+        <target>イベント終了</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.html</context>
           <context context-type="linenumber">16</context>
@@ -681,6 +796,7 @@
       </trans-unit>
       <trans-unit id="3450091106853938930" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ event.videoConference.provider }}"/> Meeting </source>
+        <target> <x id="INTERPOLATION" equiv-text="{{ event.videoConference.provider }}"/> ミーティング </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.html</context>
           <context context-type="linenumber">26</context>
@@ -688,6 +804,8 @@
       </trans-unit>
       <trans-unit id="5582511219204657614" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{ event.remainingCapacity }}"/> Seats Available Out of <x id="INTERPOLATION_1" equiv-text="{{ event.capacity }}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{ event.remainingCapacity }}"/> 座席数 <x id="INTERPOLATION_1" equiv-text="{{ event.capacity }}"/>
+</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.html</context>
           <context context-type="linenumber">43</context>
@@ -695,6 +813,7 @@
       </trans-unit>
       <trans-unit id="8285340704230281659" datatype="html">
         <source>Event categories</source>
+        <target>イベントカテゴリ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">4</context>
@@ -702,6 +821,7 @@
       </trans-unit>
       <trans-unit id="787163983066183218" datatype="html">
         <source>Browse</source>
+        <target>ブラウズ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">7</context>
@@ -709,6 +829,7 @@
       </trans-unit>
       <trans-unit id="702805796649798080" datatype="html">
         <source>Booked</source>
+        <target>予約済み</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">10</context>
@@ -716,6 +837,7 @@
       </trans-unit>
       <trans-unit id="1669277742108379782" datatype="html">
         <source>Attended</source>
+        <target>出席者</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">13</context>
@@ -723,6 +845,7 @@
       </trans-unit>
       <trans-unit id="6050655545481968184" datatype="html">
         <source>Filter by Activity</source>
+        <target>アクティビティで絞り込む</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">19</context>
@@ -730,6 +853,7 @@
       </trans-unit>
       <trans-unit id="1116924057959091997" datatype="html">
         <source>There&apos;s no new event.</source>
+        <target>新しいイベントはありません。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">75</context>
@@ -737,6 +861,7 @@
       </trans-unit>
       <trans-unit id="2242670592109293944" datatype="html">
         <source>Go to the booked tab to see the events you&apos;ve booked.</source>
+        <target>予約済みタブに移動して、予約したイベントを確認します。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">76</context>
@@ -744,6 +869,7 @@
       </trans-unit>
       <trans-unit id="367975521206020910" datatype="html">
         <source>You have no booked events.</source>
+        <target>予約したイベントがない。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">79</context>
@@ -751,6 +877,7 @@
       </trans-unit>
       <trans-unit id="5436148754209669967" datatype="html">
         <source>Go to the browse tab and book an event to see it here.</source>
+        <target>ブラウズタブからイベントを予約して、ここで見ることができます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">80</context>
@@ -758,6 +885,7 @@
       </trans-unit>
       <trans-unit id="157264996352576717" datatype="html">
         <source>You have not attended any events.</source>
+        <target>イベントに参加していない。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">83</context>
@@ -765,6 +893,7 @@
       </trans-unit>
       <trans-unit id="4403419709762168713" datatype="html">
         <source>You can see all your past events in this tab.</source>
+        <target>このタブでは、過去のすべてのイベントを見ることができます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-list/event-list.component.html</context>
           <context context-type="linenumber">84</context>
@@ -772,6 +901,7 @@
       </trans-unit>
       <trans-unit id="5729418620241283277" datatype="html">
         <source>Events</source>
+        <target>イベント情報</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/events.page.html</context>
           <context context-type="linenumber">4</context>
@@ -779,6 +909,7 @@
       </trans-unit>
       <trans-unit id="998728513627286561" datatype="html">
         <source>Events list by category</source>
+        <target>カテゴリー別イベント一覧</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/events.page.html</context>
           <context context-type="linenumber">18</context>
@@ -786,6 +917,7 @@
       </trans-unit>
       <trans-unit id="2706142123061420693" datatype="html">
         <source>Event details</source>
+        <target>イベント内容</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/events.page.html</context>
           <context context-type="linenumber">28</context>
@@ -793,6 +925,7 @@
       </trans-unit>
       <trans-unit id="1824510134640326733" datatype="html">
         <source>Experiences</source>
+        <target>体験談</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.html</context>
           <context context-type="linenumber">4</context>
@@ -804,6 +937,7 @@
       </trans-unit>
       <trans-unit id="2723813723728895182" datatype="html">
         <source>Your experiences</source>
+        <target>あなたの経験</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.html</context>
           <context context-type="linenumber">26</context>
@@ -811,6 +945,7 @@
       </trans-unit>
       <trans-unit id="1123820395102522366" datatype="html">
         <source>Access and check the progress of your experiences below </source>
+        <target>以下からアクセスし、体験の進捗を確認することができます。 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.html</context>
           <context context-type="linenumber">27,28</context>
@@ -818,6 +953,7 @@
       </trans-unit>
       <trans-unit id="2821179408673282599" datatype="html">
         <source>Home</source>
+        <target>ホーム</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">2</context>
@@ -829,6 +965,7 @@
       </trans-unit>
       <trans-unit id="3454112391854626716" datatype="html">
         <source>Home content</source>
+        <target>ホームコンテンツ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">18</context>
@@ -836,20 +973,57 @@
       </trans-unit>
       <trans-unit id="696402385693282132" datatype="html">
         <source>Experience Details</source>
+        <target>エクスペリエンス詳細</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="8869115284417096267" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ count }}"/> Activities</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ count }}"/> 活動内容</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="41203728025345244" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{ experienceProgress }}"/>% Progress</source>
+        <target><x id="INTERPOLATION" equiv-text="{{ experienceProgress }}"/>% 進捗状況
+</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="2309808536212982229" datatype="html">
         <source>Activities</source>
+        <target>活動内容</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">45</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{getIsPointsConfigured ? 'Badges &amp; Points': 'Badges'}}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{getIsPointsConfigured ? 'バッジとポイント': 'バッジ'}}"/>
+</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8570846134708162776" datatype="html">
+        <source>Activity list</source>
+        <target>活動内容一覧</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">65</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="8443593199200325653" datatype="html">
         <source>Badges awarded</source>
+        <target>バッジの授与</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">103</context>
@@ -857,6 +1031,7 @@
       </trans-unit>
       <trans-unit id="4908331048011159003" datatype="html">
         <source>You have no badges yet!</source>
+        <target>まだバッジはありません</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">107</context>
@@ -864,6 +1039,7 @@
       </trans-unit>
       <trans-unit id="139333798539154442" datatype="html">
         <source>Experience badge will show up here.</source>
+        <target>経験値バッジはここに表示されます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">108</context>
@@ -871,6 +1047,7 @@
       </trans-unit>
       <trans-unit id="2167454210982120089" datatype="html">
         <source> Total Points Earned: <x id="INTERPOLATION" equiv-text="{{getEarnedPoints}}"/> </source>
+        <target> 獲得した合計ポイント <x id="INTERPOLATION" equiv-text="{{getEarnedPoints}}"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">111,113</context>
@@ -878,6 +1055,7 @@
       </trans-unit>
       <trans-unit id="5851560788527570644" datatype="html">
         <source>Notifications</source>
+        <target>お知らせ</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/notifications/notifications.page.html</context>
           <context context-type="linenumber">2</context>
@@ -889,6 +1067,7 @@
       </trans-unit>
       <trans-unit id="46597763320652476" datatype="html">
         <source>Notifications list</source>
+        <target>お知らせ一覧</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/notifications/notifications.page.html</context>
           <context context-type="linenumber">20</context>
@@ -896,6 +1075,7 @@
       </trans-unit>
       <trans-unit id="6578397717654172779" datatype="html">
         <source>Page Not Found</source>
+        <target>ページが見つかりません</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/page-not-found/page-not-found.page.html</context>
           <context context-type="linenumber">3</context>
@@ -903,6 +1083,7 @@
       </trans-unit>
       <trans-unit id="5306728370945378331" datatype="html">
         <source>Go Home</source>
+        <target>帰る</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/page-not-found/page-not-found.page.html</context>
           <context context-type="linenumber">6</context>
@@ -910,6 +1091,7 @@
       </trans-unit>
       <trans-unit id="9029286143304711365" datatype="html">
         <source>Reviews</source>
+        <target>レビュー</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/review-desktop/review-desktop.page.html</context>
           <context context-type="linenumber">3</context>
@@ -921,6 +1103,7 @@
       </trans-unit>
       <trans-unit id="1428402536910601096" datatype="html">
         <source>It&apos;s empty here.</source>
+        <target>ここは空っぽなんです。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/review-desktop/review-desktop.page.html</context>
           <context context-type="linenumber">36</context>
@@ -928,6 +1111,7 @@
       </trans-unit>
       <trans-unit id="2533123412329459102" datatype="html">
         <source>Oops! Seems like there&apos;s nothing in this yet.</source>
+        <target>おっと！まだ何も入っていないようですね。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/review-desktop/review-desktop.page.html</context>
           <context context-type="linenumber">37</context>
@@ -935,6 +1119,7 @@
       </trans-unit>
       <trans-unit id="4930506384627295710" datatype="html">
         <source>Settings</source>
+        <target>設定</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">2</context>
@@ -950,6 +1135,7 @@
       </trans-unit>
       <trans-unit id="7226684209936743036" datatype="html">
         <source>Your Details</source>
+        <target>あなたの詳細</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">19</context>
@@ -957,6 +1143,7 @@
       </trans-unit>
       <trans-unit id="6421100116763949889" datatype="html">
         <source>user profile</source>
+        <target>ユーザープロファイル</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">25</context>
@@ -964,21 +1151,16 @@
       </trans-unit>
       <trans-unit id="8953033926734869941" datatype="html">
         <source>Name</source>
+        <target>名称</target>
+        <note priority="1" from="description">user&apos;s name</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">59</context>
         </context-group>
-        <note priority="1" from="description">user&apos;s name</note>
-      </trans-unit>
-      <trans-unit id="4768749765465246664" datatype="html">
-        <source>Email</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
-          <context context-type="linenumber">66</context>
-        </context-group>
       </trans-unit>
       <trans-unit id="8736779660701073898" datatype="html">
         <source>If you need to update your name or email please contact the experience administrator.</source>
+        <target>お名前やメールアドレスの更新が必要な場合は、体験管理者までご連絡ください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">78</context>
@@ -986,6 +1168,7 @@
       </trans-unit>
       <trans-unit id="2288513108450439427" datatype="html">
         <source>Support</source>
+        <target>サポート</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">84</context>
@@ -993,13 +1176,23 @@
       </trans-unit>
       <trans-unit id="8049752003309039780" datatype="html">
         <source>Contact support</source>
+        <target>お問い合わせ先</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">87</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="664573589261423471" datatype="html">
+        <source>Terms and Conditions</source>
+        <target>ご利用条件</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
+          <context context-type="linenumber">89</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="5113165610004622651" datatype="html">
         <source>Log Out</source>
+        <target>ログアウト</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.html</context>
           <context context-type="linenumber">98</context>
@@ -1007,6 +1200,7 @@
       </trans-unit>
       <trans-unit id="3912381813825224310" datatype="html">
         <source>My Experiences</source>
+        <target>私の体験談</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.html</context>
           <context context-type="linenumber">48</context>
