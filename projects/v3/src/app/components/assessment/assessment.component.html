@@ -7,7 +7,7 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
-  <ion-button fill="clear" slot="end" i18n
+  <ion-button fill="clear" slot="end" i18n="save assessment progress button"
     [disabled]="!assessment || (btnDisabled$ | async)" (click)="btnSaveClicked()">
     Save
   </ion-button>
@@ -90,7 +90,7 @@
           </ion-avatar>
 
           <ion-label>
-            <p class="subtitle-1" i18n>Locked by {{ submission.submitterName }}</p>
+            <p class="subtitle-1" i18n="indicator of a team member is working on the same assessment">Locked by {{ submission.submitterName }}</p>
             <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
