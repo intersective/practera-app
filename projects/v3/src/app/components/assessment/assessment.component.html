@@ -90,7 +90,7 @@
           </ion-avatar>
 
           <ion-label>
-            <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
+            <p class="subtitle-1" i18n>Locked by {{ submission.submitterName }}</p>
             <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
@@ -241,7 +241,7 @@
                 [submitActions$]="submitActions"></app-multi-team-member-selector>
 
               <div *ngSwitchDefault>
-                <p class="ion-padding-horizontal" style="color:red;">Unsupported question type: {{ question.type }}</p>
+                <p class="ion-padding-horizontal" style="color:red;" i18n>Unsupported question type: {{ question.type }}</p>
               </div>
             </ng-container>
           </ion-list>
