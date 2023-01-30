@@ -54,6 +54,7 @@
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">11,13</context>
         </context-group>
+        <note priority="1" from="description">save assessment progress button</note>
       </trans-unit>
       <trans-unit id="7948045921889473653" datatype="html">
         <source>Reviewer Details</source>
@@ -103,6 +104,7 @@
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">93</context>
         </context-group>
+        <note priority="1" from="description">indicator of a team member is working on the same assessment</note>
       </trans-unit>
       <trans-unit id="8127984505357293604" datatype="html">
         <source>Please wait until the user finishes editing</source>
@@ -308,6 +310,7 @@
           <context context-type="sourcefile">projects/v3/src/app/components/filestack/filestack.component.html</context>
           <context context-type="linenumber">22</context>
         </context-group>
+        <note priority="1" from="description">attachment upload button</note>
       </trans-unit>
       <trans-unit id="6320773786268696326" datatype="html">
         <source>UPLOAD FILE</source>
