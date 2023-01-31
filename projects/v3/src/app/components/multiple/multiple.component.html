@@ -64,7 +64,7 @@
 <ng-container *ngIf="doReview">
   <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
     <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
-      <ion-label class="ion-text-wrap subtitle-2 black">Your Answer is</ion-label>
+      <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
     </ion-list-header>
     <ion-item *ngFor="let choice of question.choices; let i = index"
       [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"

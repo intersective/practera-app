@@ -11,7 +11,7 @@
   <div [ngClass]="{'ion-text-center div-after-logo': !unRegisteredDirectLink}">
     <ng-container *ngIf="!unRegisteredDirectLink">
       <ng-container *ngIf="!hide_password">
-        <p class="headline-6">Your Login Email Address</p>
+        <p class="headline-6" i18n>Your Login Email Address</p>
         <p class="body-1">{{user.email}}</p>
       </ng-container>
       <ng-container *ngIf="hide_password">
