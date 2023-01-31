@@ -45,7 +45,7 @@
           <h2 class="for-accessibility" i18n>Activities</h2>
           <ion-segment (ionChange)="switchContent($event)" [value]="display">
             <ion-segment-button value="activities" mode="ios">
-              <ion-label>Activities</ion-label>
+              <ion-label i18n>Activities</ion-label>
             </ion-segment-button>
             <ion-segment-button value="badges" mode="ios">
               <ion-label i18n>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
