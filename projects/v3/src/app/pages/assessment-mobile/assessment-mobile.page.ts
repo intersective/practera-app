@@ -138,7 +138,7 @@ export class AssessmentMobilePage implements OnInit {
       // display review rating modal
       return await this.notificationsService.popUpReviewRating(this.review.id, false);
     } catch (err) {
-      const header = 'Can not get review rating information';
+      const header = $localize`Can not get review rating information`;
       await this.notificationsService.alert({
         header,
         message: err.msg || JSON.stringify(err)
