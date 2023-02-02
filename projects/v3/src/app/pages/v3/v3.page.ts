@@ -97,22 +97,26 @@ export class V3Page implements OnInit, OnDestroy {
       {
         title: $localize`Home`,
         url: '/v3/home',
-        icon: 'home'
+        icon: 'home',
+        code: 'Home',
       },
       {
         title: $localize`Events`,
         url: '/v3/events',
-        icon: 'today'
+        icon: 'today',
+        code: 'Events',
       },
       {
         title: $localize`Reviews`,
         url: '/v3/review-desktop',
-        icon: 'eye'
+        icon: 'eye',
+        code: 'Reviews',
       },
       {
         title: $localize`Messages`,
         url: '/v3/messages',
-        icon: 'mail'
+        icon: 'mail',
+        code: 'Messages',
       }
     ];
   }

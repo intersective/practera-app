@@ -224,10 +224,10 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
     return this.notificationsService.alert({
-      message: 'Your link is invalid or expired.',
+      message: $localize`Your link is invalid or expired.`,
       buttons: [
         {
-          text: 'OK',
+          text: $localize`OK`,
           role: 'cancel',
           handler: () => {
             this.navigate(['login']);
