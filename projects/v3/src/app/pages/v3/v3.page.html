@@ -31,9 +31,9 @@
         <ion-item class="menu-item tooltip"
           (keydown)="presentModal($event)"
           (click)="presentModal()"
-          button detail="false" title="Settings">
+          button detail="false" [title]="i18nText.setting">
           <ion-icon slot="start" name="settings" aria-hidden="true"></ion-icon>
-          <ion-label class="body-2 black" i18n>Settings</ion-label>
+          <ion-label class="body-2 black">{{i18nText.setting}}</ion-label>
           <ion-spinner slot="end" *ngIf="wait"></ion-spinner>
         </ion-item>
 
@@ -43,9 +43,9 @@
           (keydown)="keyboardNavigate('/experiences', $event)"
           routerLink="/experiences"
           routerDirection="root"
-          detail="false" title="Experiences">
+          detail="false" [title]="i18nText.myExperience">
           <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
-          <ion-label class="body-2 black" i18n>My Experiences</ion-label>
+          <ion-label class="body-2 black">{{i18nText.myExperience}}</ion-label>
         </ion-item>
       </ion-list>
 
