@@ -80,9 +80,7 @@ export class AuthResetPasswordComponent implements OnInit {
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             return this.notificationsService.alert({
-              message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                Please try again. <br>
-                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+              message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>Please try again.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
               buttons: [
                 {
                   text: $localize`OK`,
