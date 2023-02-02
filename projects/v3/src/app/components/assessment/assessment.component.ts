@@ -346,6 +346,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
 
     // form feedback answers (submission API doesn't accept zero length array)
+    // In review we also have comments for a question. and questionsForm value have both
+    // answer and comment. need to add them as separately
     if (this.isPendingReview) {
       assessment = Object.assign(assessment, {
         reviewId: this.review.id
@@ -353,7 +355,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
         questionId = +key.replace('q-', '');
-        answers.push({ questionId, answer });
+        answers.push({
+          questionId: questionId,
+          answer: answer.answer,
+          comment: answer.comment
+        });
       });
     }
 
