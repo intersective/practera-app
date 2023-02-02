@@ -66,9 +66,7 @@ export class AuthLoginComponent {
           if (err.data.type === 'password_compromised') {
             this.isLoggingIn = false;
             return this.notificationsService.alert({
-              message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                We have sent you an email with a link to reset your password. <br>
-                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+              message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>We have sent you an email with a link to reset your password.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
               buttons: [
                 {
                   text: $localize`OK`,
