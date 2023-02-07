@@ -7,7 +7,7 @@
 
     <div class="task-count">
       <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75" i18n>
-        {{ activity.tasks.length }} {activity.tasks.length, plural,
+        {{ activity.tasks.length }}&nbsp;{activity.tasks.length, plural,
           =1 {Task}
           other {Tasks}
         }
@@ -18,12 +18,7 @@
     <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
   </div>
 
-  <ion-item class="headline-4 task-header" lines="none" i18n>
-    {activity.tasks.length, plural,
-      =1 {Task}
-      other {Tasks}
-    }
-  </ion-item>
+  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
 
   <app-list-item class="focusable"
     role="button"

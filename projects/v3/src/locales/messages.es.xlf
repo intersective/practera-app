@@ -119,6 +119,10 @@
         <source>Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.</source>
         <target>No estás en un equipo, por favor ponte en contacto con el coordinador de la experiencia to continuar.</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">162</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">263,264</context>
         </context-group>
@@ -257,7 +261,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Sube Archivo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/filestack/filestack.component.html</context>
-          <context context-type="linenumber">39</context>
+          <context context-type="linenumber">40</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6414892769953030718" datatype="html">
@@ -385,8 +389,92 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="linenumber">46</context>
         </context-group>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">141</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">165</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">279</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">370</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">266</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/pop-up/pop-up.component.html</context>
           <context context-type="linenumber">21</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.ts</context>
+          <context context-type="linenumber">230</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
+          <context context-type="linenumber">85</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">193</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">86</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">73</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.ts</context>
+          <context context-type="linenumber">172</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.ts</context>
+          <context context-type="linenumber">184</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.ts</context>
+          <context context-type="linenumber">195</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7549814212544511383" datatype="html">
@@ -584,7 +672,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">95</context>
+          <context context-type="linenumber">96</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2255738207434422096" datatype="html">
@@ -636,7 +724,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Configura tu clave</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3782563238994348625" datatype="html">
@@ -644,7 +732,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Confirmar clave</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">47</context>
+          <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3330329515985411103" datatype="html">
@@ -652,7 +740,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Confirmar clave</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5150135294711720220" datatype="html">
@@ -660,7 +748,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target> Acepto los <x id="START_LINK" ctype="x-a" equiv-text="&lt;a class=&quot;subtitle-2&quot; (click)=&quot;openLink()&quot; tabindex=&quot;0&quot; aria-label=&quot;terms &amp; conditions&quot;&gt;"/>términos y condiciones.<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">58,59</context>
+          <context context-type="linenumber">59,60</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3866977477834057134" datatype="html">
@@ -668,7 +756,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Registrate</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">66</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4871864888462368754" datatype="html">
@@ -676,7 +764,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Bienvenido <x id="INTERPOLATION" equiv-text="{{user.email}}"/>.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2409422726276457207" datatype="html">
@@ -684,7 +772,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Por favor acepta<x id="START_LINK" ctype="x-a" equiv-text="&lt;a (click)=&quot;termsAndConditionsPopup()&quot;&gt;"/> los términos y condiciones <x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/> para continuar.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">76</context>
+          <context context-type="linenumber">77</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7741310431486070608" datatype="html">
@@ -692,7 +780,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Acepto los terminos y condiciones</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">82</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6892068562944277349" datatype="html">
@@ -700,7 +788,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Opcionalmente, cree una contraseña de cuenta como opción adicional de inicio de sesión en el futuro.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">90</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5850331735806504848" datatype="html">
@@ -708,7 +796,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Continuar </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
-          <context context-type="linenumber">115,116</context>
+          <context context-type="linenumber">116,117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2544569632476723854" datatype="html">
@@ -935,6 +1023,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/pages/events/events.page.html</context>
           <context context-type="linenumber">4</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
+          <context context-type="linenumber">104</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="998728513627286561" datatype="html">
         <source>Events list by category</source>
@@ -991,6 +1083,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">9</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
+          <context context-type="linenumber">98</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="3454112391854626716" datatype="html">
         <source>Home content</source>
@@ -1021,6 +1117,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <source><x id="INTERPOLATION" equiv-text="{{ experienceProgress }}"/>% Progress</source>
         <target><x id="INTERPOLATION" equiv-text="{{ experienceProgress }}"/>% Progreso</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.html</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">31</context>
         </context-group>
@@ -1037,20 +1137,12 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="linenumber">48</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="187187500641108332" datatype="html">
-        <source><x id="INTERPOLATION" equiv-text="{{getIsPointsConfigured ? 'Badges &amp; Points': 'Badges'}}"/></source>
-        <target><x id="INTERPOLATION" equiv-text="{{getIsPointsConfigured ? 'Insignias y Puntos': 'Insignias'}}"/></target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">51</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="8570846134708162776" datatype="html">
         <source>Activity list</source>
         <target>Lista actividades</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">65</context>
+          <context context-type="linenumber">67</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8443593199200325653" datatype="html">
@@ -1058,7 +1150,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Insignias ganadas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">103</context>
+          <context context-type="linenumber">105</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4908331048011159003" datatype="html">
@@ -1066,7 +1158,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>¡No tienes insignias aún!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">107</context>
+          <context context-type="linenumber">109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="139333798539154442" datatype="html">
@@ -1074,7 +1166,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Las insignias de las experiencia aparecerán acá.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">108</context>
+          <context context-type="linenumber">110</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2167454210982120089" datatype="html">
@@ -1082,7 +1174,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target> Total Puntos: <x id="INTERPOLATION" equiv-text="{{getEarnedPoints}}"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">111,113</context>
+          <context context-type="linenumber">113,115</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5851560788527570644" datatype="html">
@@ -1132,6 +1224,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/pages/review-mobile/review-mobile.page.html</context>
           <context context-type="linenumber">3</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
+          <context context-type="linenumber">110</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="1428402536910601096" datatype="html">
         <source>It&apos;s empty here.</source>
@@ -1161,8 +1257,8 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="linenumber">11</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
+          <context context-type="linenumber">71</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7226684209936743036" datatype="html">
@@ -1235,8 +1331,8 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <source>My Experiences</source>
         <target>Mis experiencias</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.html</context>
-          <context context-type="linenumber">48</context>
+          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2350635861556728738" datatype="html">
@@ -1281,6 +1377,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/components/list-item/list-item.component.html</context>
           <context context-type="linenumber">66</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">151</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="2797219889453562954" datatype="html">
         <source>Fully Booked</source>
@@ -1288,6 +1388,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/list-item/list-item.component.html</context>
           <context context-type="linenumber">68</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">154</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8390665650111942563" datatype="html">
@@ -1463,8 +1567,20 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <source>Cancel</source>
         <target>Cancelar</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">258</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/terms-conditions-preview/terms-conditions-preview.component.html</context>
           <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">161</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6452372740127749380" datatype="html">
@@ -1474,6 +1590,493 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-view/chat-view.component.html</context>
           <context context-type="linenumber">4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
+          <context context-type="linenumber">116</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2091899494677002458" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {Task}           other {Tasks}         }" xid="2504048830737920959"/> </source>
+        <target>␣<x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {Tarea}           other {Tareas}         }" xid="2504048830737920959"/>␣</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
+          <context context-type="linenumber">9,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2504048830737920959" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {Task} other {Tasks}}</source>
+        <target>{VAR_PLURAL, plural, =1 {Tarea} other {Tareas}}</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
+          <context context-type="linenumber">10,13</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
+          <context context-type="linenumber">22,25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8856905278208146821" datatype="html">
+        <source> <x id="ICU" equiv-text="{activity.tasks.length, plural,       =1 {Task}       other {Tasks}     }" xid="2504048830737920959"/> </source>
+        <target>␣<x id="ICU" equiv-text="{activity.tasks.length, plural,       =1 {Tarea}       other {Tareas}     }" xid="2504048830737920959"/>␣</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
+          <context context-type="linenumber">21,26</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">51,53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1222528157669122896" datatype="html">
+        <source>This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.</source>
+        <target>Esta parte de la aplicación aún está bloqueada. Puedes desbloquear las funciones si utilizas la aplicación y completas todas las tareas.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">138</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7546909310466449608" datatype="html">
+        <source>Last saved <x id="PH" equiv-text="this.utils.timeFormatter(this.submission.modified)"/></source>
+        <target>Guardado hace <x id="PH" equiv-text="this.utils.timeFormatter(this.submission.modified)"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">156</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">177</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.ts</context>
+          <context context-type="linenumber">105</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/review-desktop/review-desktop.page.ts</context>
+          <context context-type="linenumber">103</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3342122462272850289" datatype="html">
+        <source>submit review</source>
+        <target>Enviar comentarios</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">436</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3206937768137423633" datatype="html">
+        <source>submit answers</source>
+        <target>Enviar respuestas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">438</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9131367952360276688" datatype="html">
+        <source>mark feedback as reviewed</source>
+        <target>Marcar comentarios como leídos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">440</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7132705977879866263" datatype="html">
+        <source>continue</source>
+        <target>Continuar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">442</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3247153808694041723" datatype="html">
+        <source>in progress</source>
+        <target>En progreso</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">475</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2929655947743447381" datatype="html">
+        <source>overdue</source>
+        <target>pendiente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">479</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3281085894846138772" datatype="html">
+        <source>Invalid contact number</source>
+        <target>Número de contacto inválido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">250</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="935836356119933355" datatype="html">
+        <source>Update Profile</source>
+        <target>Actualizar Pérfil</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">254</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9093138365863479011" datatype="html">
+        <source>Are you sure to update your profile?</source>
+        <target>¿Estás seguro de actualizar tu perfil?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">255</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2746553589571317882" datatype="html">
+        <source>Profile successfully updated!</source>
+        <target>Perfil actualizado</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">287</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4205488868642853222" datatype="html">
+        <source>Profile updating failed!</source>
+        <target>Falló la actualización de perfil</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
+          <context context-type="linenumber">292</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4233781883842408263" datatype="html">
+        <source>Drag and drop file here or</source>
+        <target>Arrastra tu documento acá</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/filestack/filestack.component.html</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3745685222865786462" datatype="html">
+        <source>Error submitting rating</source>
+        <target>Error al enviar to nota</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.ts</context>
+          <context context-type="linenumber">92</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4012976913704056618" datatype="html">
+        <source>Mark as complete and continue</source>
+        <target>Marcar como completado y continuar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/topic/topic.component.html</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2752613319211367636" datatype="html">
+        <source>Can not get review rating information</source>
+        <target>No es posible obtener la información</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.ts</context>
+          <context context-type="linenumber">141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2018834571550078317" datatype="html">
+        <source>Your link is invalid or expired.</source>
+        <target>Su enlace no es válido o ha caducado.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.ts</context>
+          <context context-type="linenumber">227</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.ts</context>
+          <context context-type="linenumber">59</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2591356364591403634" datatype="html">
+        <source>Please enter email</source>
+        <target>Introduzca su dirección de correo electrónico</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="712841907063299090" datatype="html">
+        <source>Please wait 2 minutes before attempting to reset your password again</source>
+        <target>Por favor, espere 2 minutos antes de intentar restablecer su contraseña de nuevo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts</context>
+          <context context-type="linenumber">53</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7736967482850862763" datatype="html">
+        <source>Issue occured. Please try again</source>
+        <target>Se ha producido un problema. Por favor, inténtelo de nuevo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts</context>
+          <context context-type="linenumber">63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5129693204187951753" datatype="html">
+        <source>Your email or password is empty, please fill them in.</source>
+        <target>Su correo electrónico o contraseña están vacíos, por favor, rellénelos.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1810372108402791211" datatype="html">
+        <source></source>
+        <target></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
+          <context context-type="linenumber">69</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5624784294940712428" datatype="html">
+        <source>Your email or password is incorrect, please try again.</source>
+        <target>Su correo electrónico o contraseña son incorrectos, inténtelo de nuevo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2612618080749136749" datatype="html">
+        <source>Set up Practera password*</source>
+        <target>Configurar tu contraseña</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.html</context>
+          <context context-type="linenumber">33</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1935083600637590520" datatype="html">
+        <source></source>
+        <target></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">190</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">83</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5997363193055860110" datatype="html">
+        <source>Invalid reset password link</source>
+        <target>Enlace para restablecer clave incorrecto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6870348367697268209" datatype="html">
+        <source>Password successfully changed! Please login with the new password.</source>
+        <target>¡Contraseña cambiada correctamente! Inicie sesión con la nueva contraseña.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">77</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3219298460695800149" datatype="html">
+        <source>Error updating password. Please try again.</source>
+        <target>Problema modificando tu clave. Por favor inténtalo otra vez.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.ts</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2716481514879198255" datatype="html">
+        <source>Booking this event will cancel your booking for other events within the same activity, do you still wanna book?</source>
+        <target>Reservar este evento cancelará tu reserva para otros eventos dentro de la misma actividad, ¿Aún quieres reservar?</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1746563907608787855" datatype="html">
+        <source>Booking cancelled Successfully!</source>
+        <target>¡Reserva cancelada con éxito!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9092801342023595318" datatype="html">
+        <source>Booked Successfully!</source>
+        <target>¡Reservado con éxito!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4960176435072062642" datatype="html">
+        <source>Booking failed, please try again later!</source>
+        <target>Error en la reserva, inténtelo más tarde.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">133</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4335548177977692221" datatype="html">
+        <source>Book</source>
+        <target>Reservar</target>
+        <note priority="1" from="description">make reservation</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">157</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6794541525427692323" datatype="html">
+        <source>Cancel Booking</source>
+        <target>Cancelar Reserva</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">163</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="896596999689981805" datatype="html">
+        <source>View Check In</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">171</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1223420702229395921" datatype="html">
+        <source>Check In</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">173</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4454458467959086944" datatype="html">
+        <source><x id="PH" equiv-text="startDate"/>, All Day - <x id="PH_1" equiv-text="endDate"/>, All Day</source>
+        <target><x id="PH" equiv-text="startDate"/>, Todo el día- <x id="PH_1" equiv-text="endDate"/>, Todo el día</target>
+        <note priority="1" from="description">event duration</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">229</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8455336263418471876" datatype="html">
+        <source><x id="PH" equiv-text="startDate"/>, All Day</source>
+        <target><x id="PH" equiv-text="startDate"/>, Todo el día</target>
+        <note priority="1" from="description">event duration</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
+          <context context-type="linenumber">231</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1831648043663242062" datatype="html">
+        <source>Error switching program</source>
+        <target>Error cambiando de programa</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.ts</context>
+          <context context-type="linenumber">72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6490468620246338568" datatype="html">
+        <source>{VAR_SELECT, select, true {Badges &amp; Points} false {Badges}}</source>
+        <target>{VAR_SELECT, select, true {Insignias y Puntos} false {Insignias}}</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4486465551928677917" datatype="html">
+        <source>Profile picture successfully updated!</source>
+        <target>¡Foto de perfil actualizada con éxito!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.ts</context>
+          <context context-type="linenumber">169</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2906092390922229468" datatype="html">
+        <source>File upload failed, please try again later.</source>
+        <target>Falló en la subida del archivo. Por favor inténtelo otra vez más tarde</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.ts</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/settings/settings.page.ts</context>
+          <context context-type="linenumber">192</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5958230301934136468" datatype="html">
+        <source>Error retrieving pulse check data</source>
+        <target>Error obteniendo tu información</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/assessment.service.ts</context>
+          <context context-type="linenumber">507</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2938422419101518319" datatype="html">
+        <source>All Day</source>
+        <target>Todo el día</target>
+        <note priority="1" from="description">event duration</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/event.service.ts</context>
+          <context context-type="linenumber">288</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="453160612346270269" datatype="html">
+        <source>Until <x id="PH" equiv-text="this.utils.utcToLocal(event.endTime, 'time')"/></source>
+        <target>Hasta <x id="PH" equiv-text="this.utils.utcToLocal(event.endTime, 'time')"/></target>
+        <note priority="1" from="description">Valid until a specific time</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/event.service.ts</context>
+          <context context-type="linenumber">294</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1835742108510450222" datatype="html">
+        <source>No Filestack responses</source>
+        <target>Sin respuesta</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">135</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3321070043500258391" datatype="html">
+        <source>Inaccessible file</source>
+        <target>No se puede acceder al archivo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">140</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5769421591562826244" datatype="html">
+        <source>The uploaded file is suspicious and being scanned for potential risk. Please try again later.</source>
+        <target>El archivo cargado es sospechoso y está siendo analizado para detectar posibles riesgos. Vuelva a intentarlo más tarde.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">141</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6195919705840121196" datatype="html">
+        <source>File size too large</source>
+        <target>Tamaño del archivo muy grande</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">149</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8277652107867975203" datatype="html">
+        <source>Attachment size has exceeded the size of <x id="PH" equiv-text="Math.floor(megabyte)"/>mb please consider downloading the file for better reading experience.</source>
+        <target>El tamaño del archivo adjunto ha superado el tamaño de <x id="PH" equiv-text="Math.floor(megabyte)"/>mb por favor considere descargar el archivo para una mejor experiencia de lectura.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">150</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3099741642167775297" datatype="html">
+        <source>Download</source>
+        <target>Descargar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
+          <context context-type="linenumber">153</context>
         </context-group>
       </trans-unit>
     </body>
