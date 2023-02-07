@@ -102,7 +102,7 @@ export class AssessmentMobilePage implements OnInit {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
-    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
+    this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data
@@ -138,7 +138,7 @@ export class AssessmentMobilePage implements OnInit {
       // display review rating modal
       return await this.notificationsService.popUpReviewRating(this.review.id, false);
     } catch (err) {
-      const header = 'Can not get review rating information';
+      const header = $localize`Can not get review rating information`;
       await this.notificationsService.alert({
         header,
         message: err.msg || JSON.stringify(err)

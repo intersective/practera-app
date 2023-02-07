@@ -153,7 +153,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       if (this.submission) {
-        this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.submission.modified));
+        this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
         this.btnDisabled$.next(false);
       }
       return;
@@ -174,7 +174,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
   private _handleReviewData() {
     if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
+      this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
   }
@@ -276,7 +276,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
           message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel',
             }
           ],
@@ -373,7 +373,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         // Please fill out the required fields.
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel',
             /*
               // doesn't work on iOS device, disable now to visit back later when it has cross-browser support
@@ -439,13 +439,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     switch (this._btnAction) {
       case 'submit':
         if (this.action === 'review') {
-          return 'submit review';
+          return $localize`submit review`;
         }
-        return 'submit answers';
+        return $localize`submit answers`;
       case 'readFeedback':
-        return 'mark feedback as reviewed';
+        return $localize`mark feedback as reviewed`;
       default:
-        return 'continue';
+        return $localize`continue`;
     }
   }
 
@@ -478,11 +478,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
     // for locked team assessment
     if (this.assessment.isForTeam && this.submission?.isLocked) {
-      return 'in progress';
+      return $localize`in progress`;
     }
     if (!this.submission?.status || this.submission?.status === 'in progress') {
       if (this.assessment.isOverdue) {
-        return 'overdue';
+        return $localize`overdue`;
       }
       return '';
     }

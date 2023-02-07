@@ -285,13 +285,13 @@ export class EventService {
       return '';
     }
     if (event.allDay) {
-      return 'All Day';
+      return $localize`:event duration:All Day`;
     }
     if (event.isMultiDay && (this.utils.utcToLocal(event.startTime, 'date') === this.utils.utcToLocal(event.multiDayInfo.startTime, 'date'))) {
       return this.utils.utcToLocal(event.startTime, 'time');
     }
     if (event.isMultiDay && (this.utils.utcToLocal(event.endTime, 'date') === this.utils.utcToLocal(event.multiDayInfo.startTime, 'date'))) {
-      return `Until ${this.utils.utcToLocal(event.endTime, 'time')}`;
+      return $localize`:Valid until a specific time:Until ${this.utils.utcToLocal(event.endTime, 'time')}`;
     }
     // otherwise display time only
     return `${this.utils.utcToLocal(event.startTime, 'time')} - ${this.utils.utcToLocal(event.endTime, 'time')}`;
