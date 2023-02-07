@@ -247,15 +247,15 @@ export class ContactNumberFormComponent implements OnInit {
     this.profile.contactNumber = this.profile.contactNumber.replace(/[^0-9+]+/ig, '');
     // check if newly input number is valid or not.
     if (!this.validateContactNumber(this.profile.contactNumber)) {
-      return this.notificationsService.presentToast('Invalid contact number');
+      return this.notificationsService.presentToast($localize`Invalid contact number`);
     }
     this.updating = true;
     return this.notificationsService.alert({
-      header: 'Update Profile',
-      message: 'Are you sure to update your profile?',
+      header: $localize`Update Profile`,
+      message: $localize`Are you sure to update your profile?`,
       buttons: [
         {
-          text: 'Cancel',
+          text: $localize`Cancel`,
           role: 'cancel',
           handler: () => {
             this.updating = false;
@@ -263,7 +263,7 @@ export class ContactNumberFormComponent implements OnInit {
           }
         },
         {
-          text: 'Okay',
+          text: $localize`OK`,
           handler: () => {
             this.authService.updateProfile({
               contact_number: this.profile.contactNumber,
@@ -283,10 +283,14 @@ export class ContactNumberFormComponent implements OnInit {
                   }
                 });
                 this.storage.set('programs', programsObj);
-                return this.notificationsService.popUp('shortMessage', { message: 'Profile successfully updated!'});
+                return this.notificationsService.popUp('shortMessage', {
+                  message: $localize`Profile successfully updated!`
+                });
 
               } else {
-                return this.notificationsService.popUp('shortMessage', { message: 'Profile updating failed!'});
+                return this.notificationsService.popUp('shortMessage', {
+                  message: $localize`Profile updating failed!`
+                });
               }
             });
           }

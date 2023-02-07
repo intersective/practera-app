@@ -36,10 +36,10 @@ export class AuthLoginComponent {
 
     if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {
       this.notificationsService.alert({
-        message: 'Your email or password is empty, please fill them in.',
+        message: $localize`Your email or password is empty, please fill them in.`,
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel',
             handler: () => {
               this.isLoggingIn = false;
@@ -66,12 +66,10 @@ export class AuthLoginComponent {
           if (err.data.type === 'password_compromised') {
             this.isLoggingIn = false;
             return this.notificationsService.alert({
-              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                We have sent you an email with a link to reset your password. <br>
-                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+              message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>We have sent you an email with a link to reset your password.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
               buttons: [
                 {
-                  text: 'OK',
+                  text: $localize`OK`,
                   role: 'cancel'
                 }
               ],
@@ -81,10 +79,10 @@ export class AuthLoginComponent {
 
         // credential issue
         this.notificationsService.alert({
-          message: 'Your email or password is incorrect, please try again.',
+          message: $localize`Your email or password is incorrect, please try again.`,
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel',
               handler: () => {
                 this.isLoggingIn = false;

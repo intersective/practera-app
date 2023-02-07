@@ -166,10 +166,10 @@ export class SettingsPage implements OnInit, OnDestroy {
             image: file.data.url
           });
           return this.notificationsService.alert({
-            message: 'Profile picture successfully updated!',
+            message: $localize`Profile picture successfully updated!`,
             buttons: [
               {
-                text: 'OK',
+                text: $localize`OK`,
                 role: 'cancel'
               }
             ]
@@ -178,10 +178,10 @@ export class SettingsPage implements OnInit, OnDestroy {
         () => {
           this.imageUpdating = false;
           return this.notificationsService.alert({
-            message: 'File upload failed, please try again later.',
+            message: $localize`File upload failed, please try again later.`,
             buttons: [
               {
-                text: 'OK',
+                text: $localize`OK`,
                 role: 'cancel'
               }
             ]
@@ -189,10 +189,10 @@ export class SettingsPage implements OnInit, OnDestroy {
         });
     } else {
       return this.notificationsService.alert({
-        message: 'File upload failed, please try again later.',
+        message: $localize`File upload failed, please try again later.`,
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel'
           }
         ]

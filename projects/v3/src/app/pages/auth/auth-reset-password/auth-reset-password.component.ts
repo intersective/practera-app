@@ -48,7 +48,7 @@ export class AuthResetPasswordComponent implements OnInit {
     this.email = this.route.snapshot.paramMap.get('email');
 
     if (!this.key || !this.email) {
-      return this._notifyAndRedirect('Invalid reset password link');
+      return this._notifyAndRedirect($localize`Invalid reset password link`);
     }
 
     // Call API to verify that key and email parameters from reset password URL are valid
@@ -58,7 +58,7 @@ export class AuthResetPasswordComponent implements OnInit {
         this.verifySuccess = true;
       },
       err => {
-        return this._notifyAndRedirect('Invalid reset password link');
+        return this._notifyAndRedirect($localize`Invalid reset password link`);
       }
     );
   }
@@ -74,25 +74,23 @@ export class AuthResetPasswordComponent implements OnInit {
     this.authService.resetPassword(data).subscribe(
       res => {
         this.resetPasswordForm.reset();
-        return this._notifyAndRedirect('Password successfully changed! Please login with the new password.');
+        return this._notifyAndRedirect($localize`Password successfully changed! Please login with the new password.`);
       },
       err => {
         if (this.utils.has(err, 'data.type')) {
           if (err.data.type === 'password_compromised') {
             return this.notificationsService.alert({
-              message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                Please try again. <br>
-                You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+              message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>Please try again.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
               buttons: [
                 {
-                  text: 'OK',
+                  text: $localize`OK`,
                   role: 'cancel'
                 }
               ],
             });
           }
         }
-        return this.notificationsService.presentToast('Error updating password.Try again');
+        return this.notificationsService.presentToast($localize`Error updating password. Please try again.`);
       }
     );
   }
@@ -104,12 +102,12 @@ export class AuthResetPasswordComponent implements OnInit {
     return password === confirmPassword ? null : { notMatching : true };
   }
 
-  private _notifyAndRedirect(msg) {
+  private _notifyAndRedirect(msg: string) {
     this.notificationsService.alert({
       message: msg,
       buttons: [
         {
-          text: 'OK',
+          text: $localize`OK`,
           role: 'cancel',
           handler: () => {
             this.router.navigate(['auth', 'login']);

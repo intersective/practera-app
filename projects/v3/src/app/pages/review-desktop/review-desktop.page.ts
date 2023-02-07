@@ -100,7 +100,7 @@ export class ReviewDesktopPage implements OnInit {
       event.action,
       this.assessment.pulseCheck
     ).toPromise();
-    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
+    this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
     if (!event.assessment.inProgress) {
       setTimeout(
         () => {

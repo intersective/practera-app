@@ -28,7 +28,7 @@ export class AuthForgotPasswordComponent {
 
     // basic validation
     if (this.email.length < 0 || !this.email) {
-      return this.notificationsService.presentToast('Please enter email');
+      return this.notificationsService.presentToast($localize`Please enter email`);
     }
     this.isSending = true;
 
@@ -50,17 +50,17 @@ export class AuthForgotPasswordComponent {
           // pop up if trying to reset password too frequently
           if (err.data.type === 'reset_too_frequently') {
             return this.notificationsService.alert({
-              message: `Please wait 2 minutes before attempting to reset your password again`,
+              message: $localize`Please wait 2 minutes before attempting to reset your password again`,
               buttons: [
                 {
-                  text: 'OK',
+                  text: $localize`OK`,
                   role: 'cancel'
                 }
               ],
             });
           }
         }
-        return this.notificationsService.presentToast('Issue occured. Please try again');
+        return this.notificationsService.presentToast($localize`Issue occured. Please try again`);
       }
     );
   }
