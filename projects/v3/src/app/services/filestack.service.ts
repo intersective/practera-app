@@ -185,6 +185,7 @@ export class FilestackService {
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err): Promise<any> {
+    const currentLocale = this.utils.getCurrentLocale();
     const pickerOptions: filestack.PickerOptions = {
       dropPane: {},
       fromSources: [
@@ -208,6 +209,7 @@ export class FilestackService {
       },
       onUploadDone: (res) => res,
       supportEmail: 'help@practera.com',
+      lang: currentLocale != 'en-US' ? currentLocale : 'en',
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();

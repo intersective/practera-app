@@ -181,7 +181,7 @@ export class NotificationsService {
   }
 
   assessmentSubmittedToast() {
-    return this.presentToast('Assessment Submitted', {
+    return this.presentToast($localize`Assessment Submitted`, {
       color: 'success',
       icon: 'checkmark-circle'
     });

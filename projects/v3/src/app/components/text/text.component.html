@@ -28,6 +28,7 @@
       [disabled]="control?.disabled"
       class="ion-no-margin"
       placeholder="Please add your answer here"
+      i18n-placeholder
     ></ion-textarea>
     <ion-text *ngFor="let error of errors" color="danger">
       <p>{{error}}</p>
