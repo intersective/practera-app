@@ -1,9 +1,9 @@
 <ion-segment (ionChange)="switchStatus()" value="pending">
   <ion-segment-button value="pending" mode="ios">
-    <ion-label>Pending</ion-label>
+    <ion-label i18n>Pending</ion-label>
   </ion-segment-button>
   <ion-segment-button value="completed" mode="ios">
-    <ion-label>Completed</ion-label>
+    <ion-label i18n>Completed</ion-label>
   </ion-segment-button>
 </ion-segment>
 
@@ -37,6 +37,6 @@
 
 <div *ngIf="noReviews" class="ion-text-center no-review">
   <ion-icon class="large-icon" color="primary" name="chatbox-ellipses-outline"></ion-icon>
-  <p class="body-1">You have no {{ noReviews }} review yet!</p>
-  <ion-text class="subtitle-2" color="grey-75">Reviews show up here, so you can easily view them here later.</ion-text>
+  <p class="body-1" i18n>You have no {{ noReviews }} review yet!</p>
+  <ion-text class="subtitle-2" color="grey-75" i18n>Reviews show up here, so you can easily view them here later.</ion-text>
 </div>

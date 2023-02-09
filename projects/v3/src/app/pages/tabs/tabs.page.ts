@@ -71,12 +71,6 @@ export class TabsPage implements OnInit, OnDestroy {
     this.subscriptions.push(this.utils.getEvent('event-reminder').subscribe(event => {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
-
-    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.notification$.subscribe());
-
-    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
-    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
   }
 
   get isMobile() {
@@ -84,11 +78,14 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => subs.unsubscribe());
+    this.subscriptions.forEach(sub => {
+      if (sub.closed == false) {
+        sub.unsubscribe();
+      }
+    });
   }
 
   setCurrentTab() {
     this.selectedTab = this.tabs.getSelected();
   }
-
 }

@@ -8,7 +8,7 @@
         </ion-button>
       </ion-buttons>
     </ion-buttons>
-    <ion-title class="ion-no-padding headline-4 grey-75">Activity</ion-title>
+    <ion-title class="ion-no-padding headline-4 grey-75" i18n>Activity</ion-title>
     <ion-buttons slot="end">
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
@@ -36,6 +36,7 @@
             [review]="review"
             [contextId]="currentTask.contextId"
             [savingMessage$]="savingText$"
+            [btnDisabled$]="btnDisabled$"
             action="assessment"
             (save)="saveAssessment($event, currentTask)"
             (readFeedback)="readFeedback($event, currentTask)"

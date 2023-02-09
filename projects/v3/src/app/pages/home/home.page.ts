@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
-import { Activity, ActivityService } from '@v3/app/services/activity.service';
+import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
@@ -27,7 +27,6 @@ export class HomePage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
@@ -39,19 +38,30 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.milestonesWithProgress$.subscribe(res => this.milestones = res));
-    this.subscriptions.push(this.achievementService.achievements$.subscribe(res => this.achievements = res));
-    this.subscriptions.push(this.homeService.experienceProgress$.subscribe(res => this.experienceProgress = res));
-    this.subscriptions.push(this.route.params.subscribe(_params => {
-      this.homeService.getExperience();
-      this.homeService.getMilestones();
-      this.homeService.getProjectProgress();
-      this.achievementService.getAchievements();
-    }));
+    this.subscriptions.push(this.homeService.milestonesWithProgress$.subscribe(
+      res => this.milestones = res
+    ));
+    this.subscriptions.push(this.achievementService.achievements$.subscribe(
+      res => this.achievements = res
+    ));
+    this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
+      res => this.experienceProgress = res
+    ));
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => subs.unsubscribe());
+    this.subscriptions.forEach(subs => {
+      if (subs.closed !== true) {
+        subs.unsubscribe();
+      }
+    });
+  }
+
+  ionViewDidEnter() {
+    this.homeService.getExperience()
+    this.homeService.getMilestones();
+    this.homeService.getProjectProgress();
+    this.achievementService.getAchievements();
   }
 
   goBack() {

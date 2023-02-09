@@ -103,7 +103,6 @@ export class ChatRoomComponent implements OnInit {
     this.utils.getEvent('chat:edit-message').subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const receivedMessage = this.getMessageFromEvent(event);
-
         const editedMessageIndex = this.messageList.findIndex(message => {
           return message.uuid === event.uuid;
         });

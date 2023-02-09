@@ -1,20 +1,21 @@
-import { Component, Input, Output, EventEmitter, OnChanges, Inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
-const SAVE_PROGRESS_TIMEOUT = 3000;
+// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent implements OnChanges {
+export class AssessmentComponent implements OnChanges, OnDestroy {
   /**
    * -- action --
    * Options: assessment/review
@@ -36,6 +37,9 @@ export class AssessmentComponent implements OnChanges {
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
 
+  // whether the bottom button(and the save button) is disabled
+  @Input() btnDisabled$: BehaviorSubject<boolean>;
+
   // save the assessment/review answers
   @Output() save = new EventEmitter();
   // mark the feedback as read
@@ -43,19 +47,19 @@ export class AssessmentComponent implements OnChanges {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
+  submitActions = new Subject();
+  subscriptions: Subscription[] = [];
+
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment: boolean;
 
-  // if isPendingReview is true, it means this user is actually doing review, meaning this assessment is pending review
-  // if action == 'review' and isPendingReview is false, it means the review is done and this user is reading the submission and review
+  // if isPendingReview is true, it means this review is WIP, meaning this assessment is pending review
+  // if action == 'review' and isPendingReview is false, it means the review is done and this student is reading the submission and review
   isPendingReview = false;
 
   // whether the learner has seen the feedback
   feedbackReviewed = false;
-
-  // whether the bottom button(and the save button) is disabled
-  btnDisabled: boolean;
 
   // virtual element id for accessibility "aria-describedby" purpose
   elIdentities = {};
@@ -70,7 +74,16 @@ export class AssessmentComponent implements OnChanges {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-  ) {}
+  ) {
+    this.subscriptions.push(this.submitActions.pipe(
+      debounceTime(1500),
+    ).subscribe((data: {
+      saveInProgress: boolean;
+      goBack: boolean;
+    }): Promise<void> => {
+      return this._submit(data.saveInProgress, data.goBack);
+    }));
+  }
 
   ngOnChanges() {
     if (!this.assessment) {
@@ -82,11 +95,18 @@ export class AssessmentComponent implements OnChanges {
     this._handleReviewData();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => {
+      if (!subscription.closed) {
+        subscription.unsubscribe();
+      }
+    });
+  }
+
   private _initialise() {
     this.doAssessment = false;
     this.feedbackReviewed = false;
     this.questionsForm = new FormGroup({});
-    this.btnDisabled = false;
     this.isNotInATeam = false;
     this.isPendingReview = false;
   }
@@ -123,7 +143,7 @@ export class AssessmentComponent implements OnChanges {
     if (this.submission && this.submission.isLocked) {
       this.doAssessment = false;
       this.submission.status = 'done';
-      this.btnDisabled = true;
+      this.btnDisabled$.next(true);
       return;
     }
 
@@ -133,8 +153,8 @@ export class AssessmentComponent implements OnChanges {
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.doAssessment = true;
       if (this.submission) {
-        this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.submission.modified));
-        this.btnDisabled = false;
+        this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
+        this.btnDisabled$.next(false);
       }
       return;
     }
@@ -154,8 +174,8 @@ export class AssessmentComponent implements OnChanges {
 
   private _handleReviewData() {
     if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage$.next('Last saved ' + this.utils.timeFormatter(this.review.modified));
-      this.btnDisabled = false;
+      this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.review.modified)}`);
+      this.btnDisabled$.next(false);
     }
   }
 
@@ -208,8 +228,11 @@ export class AssessmentComponent implements OnChanges {
   continueToNextTask() {
     switch (this._btnAction) {
       case 'submit':
-        this.btnDisabled = true;
-        return this._submit();
+        this.btnDisabled$.next(true);
+        return this.submitActions.next({
+          saveInProgress: false,
+          goBack: false,
+        });
       case 'readFeedback':
         return this.readFeedback.emit(this.submission.id);
       default:
@@ -219,12 +242,18 @@ export class AssessmentComponent implements OnChanges {
 
   // When user click the save button
   btnSaveClicked() {
-    return this._submit(true);
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // When user click the back tutton
   btnBackClicked() {
-    return this._submit(true, true);
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: true,
+    });
   }
 
   /**
@@ -247,7 +276,7 @@ export class AssessmentComponent implements OnChanges {
           message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel',
             }
           ],
@@ -256,22 +285,20 @@ export class AssessmentComponent implements OnChanges {
     }
 
     /**
-     * checking if this is a submission or progress save
-     * - if it's a submission
-     *    - assign true to saving variable to disable duplicate saving
-     *    - change submitting variable value to true
-     * - if it's a progress save
-     *    - if this is a manual save or there is no other auto save in progress
-     *      - change saving variable value to true to disable duplicate saving
-     *      - make manual save button disable
-     *      - change savingMessage variable value to 'Saving...' to show save in progress
-     *    - if this is not manual save or there is one save in progress
-     *      - do nothing
+     * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.
+     * Check saveInProgress
+     * If it's true. that means it's an auto save or manual save acction.
+     * Then check btnDisabled
+     * If it's true. that means save API request or submit API request already send and waitng for response.
+     * Then we are not doing anything.
      */
-    // allow submitting/saving after a few seconds
-    setTimeout(() => this.btnDisabled = false, SAVE_PROGRESS_TIMEOUT);
+    /* comment for the tempery solution autosave AV2-1326
+    // if (saveInProgress && this.btnDisabled$.getValue()) {
+    //   return;
+    // }
 
-    this.btnDisabled = true;
+    // this.btnDisabled$.next(true);
+    */
 
     const answers = [];
     let questionId = 0;
@@ -287,7 +314,7 @@ export class AssessmentComponent implements OnChanges {
       assessment.submissionId = this.submission.id;
     }
 
-    // form submission answers
+    // form submission answers (submission API doesn't accept zero length array)
     if (this.doAssessment) {
       assessment.contextId = this.contextId;
 
@@ -318,31 +345,35 @@ export class AssessmentComponent implements OnChanges {
       });
     }
 
-    // form feedback answers
+    // form feedback answers (submission API doesn't accept zero length array)
+    // In review we also have comments for a question. and questionsForm value have both
+    // answer and comment. need to add them as separately
     if (this.isPendingReview) {
       assessment = Object.assign(assessment, {
         reviewId: this.review.id
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        if (!this.utils.isEmpty(answer)) {
-          answer.questionId = +key.replace('q-', '');
-          answers.push(answer);
-        }
+        questionId = +key.replace('q-', '');
+        answers.push({
+          questionId: questionId,
+          answer: answer.answer,
+          comment: answer.comment
+        });
       });
     }
 
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
-      this.btnDisabled = false;
+      this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
         message: 'Required question answer missing!',
         // Please fill out the required fields.
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel',
             /*
               // doesn't work on iOS device, disable now to visit back later when it has cross-browser support
@@ -359,6 +390,11 @@ export class AssessmentComponent implements OnChanges {
         ],
       });
     }
+
+    /* comment for the tempery solution autosave AV2-1326
+    // allow submitting/saving after a few seconds
+    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
+    */
 
     this.save.emit({
       assessment,
@@ -403,13 +439,13 @@ export class AssessmentComponent implements OnChanges {
     switch (this._btnAction) {
       case 'submit':
         if (this.action === 'review') {
-          return 'submit review';
+          return $localize`submit review`;
         }
-        return 'submit answers';
+        return $localize`submit answers`;
       case 'readFeedback':
-        return 'mark feedback as reviewed';
+        return $localize`mark feedback as reviewed`;
       default:
-        return 'continue';
+        return $localize`continue`;
     }
   }
 
@@ -442,11 +478,11 @@ export class AssessmentComponent implements OnChanges {
     }
     // for locked team assessment
     if (this.assessment.isForTeam && this.submission?.isLocked) {
-      return 'in progress';
+      return $localize`in progress`;
     }
     if (!this.submission?.status || this.submission?.status === 'in progress') {
       if (this.assessment.isOverdue) {
-        return 'overdue';
+        return $localize`overdue`;
       }
       return '';
     }
