@@ -234,6 +234,26 @@ export class UtilsService {
     return this.document.location;
   }
 
+  // extract locale from URL
+  getCurrentLocale(): string {
+    const checkings = {
+      '/en-US/': 'en-US',
+      '/ja/': 'ja',
+      '/es/': 'es',
+    };
+    const curLoc = this.getCurrentLocation();
+
+    let result = null;
+    for (const check in checkings) {
+      if (curLoc?.pathname.indexOf(check) === 0) {
+        result = checkings[check];
+      }
+    }
+
+    // english as default
+    return result || 'en-US';
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
@@ -265,14 +285,19 @@ export class UtilsService {
     if (date.isSame(tomorrow, 'd')) {
       return 'Tomorrow';
     }
+
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to format of "en-GB" from previous code
+    let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat('en-US', {
+      return new Intl.DateTimeFormat(defaultLocale, {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
