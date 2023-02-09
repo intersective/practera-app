@@ -53,7 +53,7 @@ export class DragAndDropDirective {
     if (this.acceptFileType && this.acceptFileType !== 'any' && !file.type.includes(this.acceptFileType)) {
       this.fileDropped.emit({
         success: false,
-        message: $localize`Not a maching file type`
+        message: $localize`Not a matching file type`
       });
       return;
     }

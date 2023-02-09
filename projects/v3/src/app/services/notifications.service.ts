@@ -408,7 +408,7 @@ export class NotificationsService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = todoItem.meta.reviewer_name + ' has provided feedback';
+    item.description = $localize`:John Doe has provided feedback:${todoItem.meta.reviewer_name} has provided feedback`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -514,7 +514,7 @@ export class NotificationsService {
     });
     if (unreadMessages > 1) {
       // group the chat notifiations
-      todoItem.name = $localize`${unreadMessages} messages from ${noOfChats} chats`;
+      todoItem.name = $localize`:99 messages from 99 chats:${unreadMessages} messages from ${noOfChats} chats`;
     }
     if (todoItem) {
       todoItem.meta = {};
@@ -593,7 +593,7 @@ export class NotificationsService {
         result = {
           type: 'feedback_available',
           name: event.meta.AssessmentReview.assessment_name,
-          description: $localize`${event.meta.AssessmentReview.reviewer_name} has provided feedback`,
+          description: $localize`:John Doe has provided feedback:${event.meta.AssessmentReview.reviewer_name} has provided feedback`,
           time: this.utils.timeFormatter(event.meta.AssessmentReview.published_date),
           meta: {
             activity_id: event.meta.AssessmentReview.activity_id,
