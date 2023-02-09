@@ -48,7 +48,7 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return `${ task.submitter.name } is working on this`;
+      return $localize`:team assessment:${ task.submitter.name } is working on this`;
     }
     // due date
     if (!task.dueDate) {
@@ -67,14 +67,20 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return 'in progress';
+      return $localize`in progress`;
     }
     if (!task.status || task.status === 'in progress') {
       if (task.isOverdue) {
-        return 'overdue';
+        return $localize`overdue`;
       }
       return '';
     }
+
+    // below is redundant, but it's added for the sake of i18n
+    if (task?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
     return task.status;
   }
 
