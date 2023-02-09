@@ -69,7 +69,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       });
     } catch (err) {
       await this.notificationsService.alert({
-        header: 'Error switching program',
+        header: $localize`Error switching program`,
         message: err.msg || JSON.stringify(err)
       });
     }

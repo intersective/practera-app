@@ -89,7 +89,7 @@ export class ReviewRatingComponent implements OnInit {
       this.ratingSessionEnd = true;
     } catch (err) {
       await this.notificationsService.alert({
-        header: 'Error submitting rating',
+        header: $localize`Error submitting rating`,
         message: err.msg || JSON.stringify(err),
       });
       this.isSubmitting = false;

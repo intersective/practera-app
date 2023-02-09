@@ -2,7 +2,7 @@
   <ng-container *ngIf="submission?.answer">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
-        <p><ion-chip class="label orange">Learner's answer</ion-chip></p>
+        <p><ion-chip class="label orange" i18n>Learner's answer</ion-chip></p>
       </ion-label>
     </ion-item>
     <app-file-display [file]="submission.answer"
@@ -14,7 +14,7 @@
   <ng-container *ngIf="review?.answer && reviewStatus === 'done'">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
-        <p><ion-chip class="label yellow black">Expert's answer</ion-chip></p>
+        <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
       </ion-label>
     </ion-item>
     <app-file-display
@@ -27,7 +27,7 @@
   <ng-container *ngIf="review?.comment">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
-      <ion-label>Feedback</ion-label>
+      <ion-label i18n>Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin textarea white-space-pre"
       [value]="review.comment"
@@ -81,7 +81,7 @@
   <div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question.canComment && submission.answer">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
-      <ion-label>Feedback</ion-label>
+      <ion-label i18n>Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin textarea"
       [attr.aria-label]="'expert\'s review feedback'"

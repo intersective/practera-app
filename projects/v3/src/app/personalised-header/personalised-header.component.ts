@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
@@ -14,23 +14,33 @@ import { UtilsService } from '../services/utils.service';
   templateUrl: './personalised-header.component.html',
   styleUrls: ['./personalised-header.component.scss'],
 })
-export class PersonalisedHeaderComponent {
+export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
+  notiCount: number = 0;
 
   constructor(
     private modalController: ModalController,
     private readonly animationService: AnimationsService,
     private readonly storageService: BrowserStorageService,
     private readonly utilService: UtilsService,
-    private router: Router,
-    private notificationsService: NotificationsService,
+    private readonly router: Router,
+    private readonly notificationsService: NotificationsService,
   ) {
   }
 
-  // amount of unread notifications
-  get notiCount(): number {
-    const count = this.notificationsService.notificationsCount;
-    return count < 100 ? count : 99; // max show 99 only
+  ngOnInit() {
+    this.subscriptions.push(this.notificationsService.notification$.subscribe(notifications => {
+      const notiCount = notifications.length;
+      this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
+    }));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => {
+      if (sub.closed !== true) {
+        sub.unsubscribe();
+      }
+    });
   }
 
   get isMobile(): boolean {

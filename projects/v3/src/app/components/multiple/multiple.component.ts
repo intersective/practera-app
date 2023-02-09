@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { UtilsService } from '@v3/app/services/utils.service';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-multiple',
@@ -15,6 +16,7 @@ import { UtilsService } from '@v3/app/services/utils.service';
   ]
 })
 export class MultipleComponent implements ControlValueAccessor, OnInit {
+  @Input() submitActions$: Subject<any>;
 
   @Input() question;
   @Input() submission;
@@ -33,8 +35,6 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
-  // call back for save changes
-  @Output() saveProgress = new EventEmitter<boolean>();
 
   // the value of answer
   innerValue: any;
@@ -95,7 +95,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
         this.errors.push(this.control.errors[key]);
       }
     }
-    // this.saveProgress.emit(true); AV2-1324
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface

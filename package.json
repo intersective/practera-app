@@ -8,7 +8,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "v3": "ng serve --project=v3",
+    "v3": "ng serve --project=v3 -c development",
     "poststart": "npm run generate-version",
     "local": "ng serve -c local",
     "postlocal": "npm run generate-version",
@@ -30,7 +30,8 @@
     "generate-version": "node ./hooks/post-build.js",
     "pubdocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build",
     "buildv3": "ng build v3 -c development",
-    "prebuildv3": "ng build request"
+    "prebuildv3": "ng build request",
+    "i18n": "ng extract-i18n v3 --output-path locales/"
   },
   "dependencies": {
     "@angular/animations": "~13.3.11",
@@ -58,6 +59,7 @@
     "plyr": "^3.6.12",
     "pusher-js": "^4.4.0",
     "quill": "^1.3.7",
+    "quill-delta": "^5.0.0",
     "rxjs": "~6.6.0",
     "rxjs-compat": "^6.6.7",
     "ts-md5": "^1.2.11",
@@ -76,6 +78,7 @@
     "@angular/compiler": "~13.3.11",
     "@angular/compiler-cli": "~13.3.11",
     "@angular/language-service": "~13.3.11",
+    "@angular/localize": "^13.3.11",
     "@compodoc/compodoc": "^1.1.18",
     "@ionic/angular-toolkit": "^6.0.0",
     "@types/jasmine": "~3.10.3",

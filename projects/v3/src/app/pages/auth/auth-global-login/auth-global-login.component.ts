@@ -56,10 +56,10 @@ export class AuthGlobalLoginComponent implements OnInit {
 
   private _error(res?): Promise<any> {
     return this.notificationsService.alert({
-      message: 'Your link is invalid or expired.',
+      message: $localize`Your link is invalid or expired.`,
       buttons: [
         {
-          text: 'OK',
+          text: $localize`OK`,
           role: 'cancel',
           handler: () => {
             this.navigate(['auth', 'login']);
