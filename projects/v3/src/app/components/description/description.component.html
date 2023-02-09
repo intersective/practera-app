@@ -18,7 +18,7 @@
 
   <ng-container *ngIf="isTruncating && heightExceeded">
     <ion-button mode="ios" color="primary" fill="clear" (click)="openShut()">
-      MORE
+      <ng-container i18n="expand article">MORE</ng-container>
       <ion-icon slot="end" name="arrow-forward"></ion-icon>
     </ion-button>
   </ng-container>
@@ -26,7 +26,7 @@
   <ng-container *ngIf="!isTruncating && heightExceeded">
     <ion-button mode="ios" color="primary" fill="clear" (click)="openShut()">
       <ion-icon slot="start" name="arrow-back"></ion-icon>
-      LESS
+      <ng-container i18n="shrink article">LESS</ng-container>
     </ion-button>
   </ng-container>
 </div>
