@@ -147,7 +147,7 @@
         [classes]="utils.isMobile() ? 'editor-class' : 'editor-class desktop'"
         [required]="true"
         class="message-text-editor"
-        [placeholder]="'Enter your message'"
+        placeholder="Enter your message"
         [(ngModel)]="typingMessage"
         (ngModelChange)="typing()"
         (onFocus)="showBottomAttachmentButtons = true;"
