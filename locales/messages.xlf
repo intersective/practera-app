@@ -16,6 +16,20 @@
           <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="5391191655981300425" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{achievement.points}}"/> <x id="ICU" equiv-text="{achievement.points, plural, =1 {point} other {points}}" xid="3756585612258761738"/>!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3756585612258761738" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {point} other {points}}</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="8998179362936748717" datatype="html">
         <source>OK</source>
         <context-group purpose="location">
@@ -1811,6 +1825,13 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">111,113</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{achievement.points ? achievement.points + &apos; Pts&apos; : null}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">117</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5851560788527570644" datatype="html">
