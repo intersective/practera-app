@@ -408,7 +408,7 @@ export class NotificationsService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = todoItem.meta.reviewer_name + ' has provided feedback';
+    item.description = $localize`:John Doe has provided feedback:${todoItem.meta.reviewer_name} has provided feedback`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -430,7 +430,7 @@ export class NotificationsService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = 'Please review the assessment';
+    item.description = $localize`Please review the assessment`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -508,13 +508,13 @@ export class NotificationsService {
         unreadMessages += message.unreadMessageCount;
         noOfChats++;
         todoItem.name = message.name;
-        todoItem.description = message.lastMessage;
+        todoItem.description = message.lastMessage === 'file received' ? $localize`:notification description:file received` : message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
       }
     });
     if (unreadMessages > 1) {
       // group the chat notifiations
-      todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+      todoItem.name = $localize`:99 messages from 99 chats:${unreadMessages} messages from ${noOfChats} chats`;
     }
     if (todoItem) {
       todoItem.meta = {};
@@ -593,7 +593,7 @@ export class NotificationsService {
         result = {
           type: 'feedback_available',
           name: event.meta.AssessmentReview.assessment_name,
-          description: event.meta.AssessmentReview.reviewer_name + ' has provided feedback',
+          description: $localize`:John Doe has provided feedback:${event.meta.AssessmentReview.reviewer_name} has provided feedback`,
           time: this.utils.timeFormatter(event.meta.AssessmentReview.published_date),
           meta: {
             activity_id: event.meta.AssessmentReview.activity_id,
@@ -619,7 +619,7 @@ export class NotificationsService {
         result = {
           type: 'review_submission',
           name: event.meta.AssessmentReview.assessment_name,
-          description: 'Please review the assessment',
+          description: $localize`Please review the assessment`,
           time: this.utils.timeFormatter(event.meta.AssessmentReview.assigned_date),
           meta: {
             context_id: event.meta.AssessmentReview.context_id,
