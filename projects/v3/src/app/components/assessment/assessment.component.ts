@@ -357,8 +357,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         questionId = +key.replace('q-', '');
         answers.push({
           questionId: questionId,
-          answer: answer.answer,
-          comment: answer.comment
+          answer: answer?.answer,
+          comment: answer?.comment
         });
       });
     }
