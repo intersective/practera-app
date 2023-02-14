@@ -354,12 +354,14 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        questionId = +key.replace('q-', '');
-        answers.push({
-          questionId: questionId,
-          answer: answer.answer,
-          comment: answer.comment
-        });
+        if (answer && (answer.answer || answer.comment)) {
+          questionId = +key.replace('q-', '');
+          answers.push({
+            questionId: questionId,
+            answer: answer.answer,
+            comment: answer.comment
+          });
+        }
       });
     }
 
