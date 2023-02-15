@@ -120,11 +120,15 @@
         <target>現在、チームに所属していない方は、次のステップに進むために、管理者またはコーディネーターに連絡してください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">168</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">263,264</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">276</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7571110135159465275" datatype="html">
@@ -204,7 +208,11 @@
         <target>専門家の回答</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
+          <context context-type="linenumber">75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.html</context>
@@ -232,11 +240,11 @@
         <target>フィードバック</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="527514296718036461" datatype="html">
@@ -340,7 +348,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6654658731991152766" datatype="html">
@@ -360,7 +368,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1861072274070577746" datatype="html">
@@ -389,11 +397,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">141</context>
+          <context context-type="linenumber">147</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">171</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
@@ -401,7 +409,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">370</context>
+          <context context-type="linenumber">378</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
@@ -479,6 +487,7 @@
       <trans-unit id="7549814212544511383" datatype="html">
         <source>You have no <x id="INTERPOLATION" equiv-text="{{ noReviews }}"/> review yet!</source>
         <target>まだレビュー <x id="INTERPOLATION" equiv-text="{{ noReviews }}"/> はありません</target>
+        <note priority="1" from="description">Sample: You have no pending/completed review yet!</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.html</context>
           <context context-type="linenumber">40</context>
@@ -513,7 +522,7 @@
         <target>回答はありませんでした。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6592236532352314965" datatype="html">
@@ -616,7 +625,7 @@
         <target>メール送信</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1118027788072351320" datatype="html">
@@ -624,7 +633,7 @@
         <target>送信...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="327534766307158513" datatype="html">
@@ -632,7 +641,7 @@
         <target>覚えている？</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.html</context>
@@ -644,7 +653,7 @@
         <target>ログインはこちら</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.html</context>
@@ -654,6 +663,10 @@
       <trans-unit id="4768749765465246664" datatype="html">
         <source>Email</source>
         <target>Eメール</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
           <context context-type="linenumber">20</context>
@@ -1146,7 +1159,7 @@
         <target>活動内容一覧</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">67</context>
+          <context context-type="linenumber">65</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8443593199200325653" datatype="html">
@@ -1154,7 +1167,7 @@
         <target>バッジの授与</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">105</context>
+          <context context-type="linenumber">103</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4908331048011159003" datatype="html">
@@ -1162,7 +1175,7 @@
         <target>まだバッジはありません</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">109</context>
+          <context context-type="linenumber">107</context>
         </context-group>
       </trans-unit>
       <trans-unit id="139333798539154442" datatype="html">
@@ -1170,7 +1183,7 @@
         <target>経験値バッジはここに表示されます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">108</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2167454210982120089" datatype="html">
@@ -1178,7 +1191,7 @@
         <target> 獲得した合計ポイント <x id="INTERPOLATION" equiv-text="{{getEarnedPoints}}"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">113,115</context>
+          <context context-type="linenumber">111,113</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5851560788527570644" datatype="html">
@@ -1387,7 +1400,7 @@
       </trans-unit>
       <trans-unit id="2797219889453562954" datatype="html">
         <source>Fully Booked</source>
-        <target>フルブッキング</target>
+        <target>満室</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/list-item/list-item.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1598,14 +1611,6 @@
           <context context-type="linenumber">116</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="2091899494677002458" datatype="html">
-        <source> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {Task}           other {Tasks}         }" xid="2504048830737920959"/> </source>
-        <target>␣<x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {タスク}           other {ようじ}         }" xid="2504048830737920959"/>␣</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
-          <context context-type="linenumber">9,14</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="2504048830737920959" datatype="html">
         <source>{VAR_PLURAL, plural, =1 {Task} other {Tasks}}</source>
         <target>{VAR_PLURAL, plural, =1 {タスク} other {ようじ}}</target>
@@ -1615,19 +1620,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
-          <context context-type="linenumber">22,25</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="8856905278208146821" datatype="html">
-        <source> <x id="ICU" equiv-text="{activity.tasks.length, plural,       =1 {Task}       other {Tasks}     }" xid="2504048830737920959"/> </source>
-        <target>␣<x id="ICU" equiv-text="{activity.tasks.length, plural,       =1 {タスク}       other {ようじ}     }" xid="2504048830737920959"/>␣</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
-          <context context-type="linenumber">21,26</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">51,53</context>
+          <context context-type="linenumber">21</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1222528157669122896" datatype="html">
@@ -1635,7 +1628,7 @@
         <target>アプリのこの部分はまだロックされています。アプリに関わり、すべてのタスクを完了することで、機能をアンロックできます。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">144</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7546909310466449608" datatype="html">
@@ -1667,7 +1660,7 @@
         <target>レビューを提出する</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">436</context>
+          <context context-type="linenumber">444</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3206937768137423633" datatype="html">
@@ -1675,7 +1668,7 @@
         <target>答えを出す</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">438</context>
+          <context context-type="linenumber">446</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9131367952360276688" datatype="html">
@@ -1683,7 +1676,7 @@
         <target>レビューのフィードバックをマークする</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">440</context>
+          <context context-type="linenumber">448</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7132705977879866263" datatype="html">
@@ -1691,23 +1684,31 @@
         <target>続ける</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">442</context>
+          <context context-type="linenumber">450</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3247153808694041723" datatype="html">
         <source>in progress</source>
         <target>進行中</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">475</context>
+          <context context-type="linenumber">483</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2929655947743447381" datatype="html">
         <source>overdue</source>
         <target>みはらい</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">479</context>
+          <context context-type="linenumber">487</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3281085894846138772" datatype="html">
@@ -1924,7 +1925,7 @@
       </trans-unit>
       <trans-unit id="4335548177977692221" datatype="html">
         <source>Book</source>
-        <target>書籍</target>
+        <target>予約</target>
         <note priority="1" from="description">make reservation</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
@@ -1941,6 +1942,7 @@
       </trans-unit>
       <trans-unit id="896596999689981805" datatype="html">
         <source>View Check In</source>
+        <target>登録の再確認</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
           <context context-type="linenumber">171</context>
@@ -1948,6 +1950,7 @@
       </trans-unit>
       <trans-unit id="1223420702229395921" datatype="html">
         <source>Check In</source>
+        <target>レジラース</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
           <context context-type="linenumber">173</context>
@@ -1984,7 +1987,7 @@
         <target>{VAR_SELECT, select, true {バッジとポイント} false {バッジ}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
-          <context context-type="linenumber">52</context>
+          <context context-type="linenumber">51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4486465551928677917" datatype="html">
@@ -2079,6 +2082,377 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/filestack.service.ts</context>
           <context context-type="linenumber">153</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1714834505006308721" datatype="html">
+        <source> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {Task}           other {Tasks}         }" xid="2504048830737920959"/> </source>
+        <target>␣<x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {タスク}           other {ようじ}         }" xid="2504048830737920959"/>␣</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
+          <context context-type="linenumber">9,14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1283804907586536887" datatype="html">
+        <source><x id="PH" equiv-text="task.submitter.name"/> is working on this</source>
+        <target><x id="PH" equiv-text="task.submitter.name"/> はこれに取り組んでいます</target>
+        <note priority="1" from="description">team assessment</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">51</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="870126198208677814" datatype="html">
+        <source>feedback available</source>
+        <target>フィードバックあり</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">81</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7800414877557954276" datatype="html">
+        <source>Required question answer missing!</source>
+        <target>必須項目の回答がありません</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">374</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="791949949690563465" datatype="html">
+        <source>No file droped</source>
+        <target>追加されたファイルはありません</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/directives/drag-and-drop/drag-and-drop.directive.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4254981051062164817" datatype="html">
+        <source>More than one file droped</source>
+        <target>複数のファイルがドロップされた</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/directives/drag-and-drop/drag-and-drop.directive.ts</context>
+          <context context-type="linenumber">47</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7259784839825011799" datatype="html">
+        <source>Not a matching file type</source>
+        <target>一致するファイルタイプではありません</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/directives/drag-and-drop/drag-and-drop.directive.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5380911945506713264" datatype="html">
+        <source>This channel is for institution announcements. Only admins and coordinator can send messages on it.</source>
+        <target>このチャンネルは、施設のお知らせのためのものです。管理者とコーディネータのみがメッセージを送信することができます。</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-list/chat-list.component.html</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3903798265121704662" datatype="html">
+        <source>Enter your message</source>
+        <target>メッセージを入力してください。</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
+          <context context-type="linenumber">150</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2849064100927111571" datatype="html">
+        <source>loading...</source>
+        <target>ロード...</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2870489062371500475" datatype="html">
+        <source>Choice Description</source>
+        <target>チョイスの説明</target>
+        <note priority="1" from="description">multiple choice question</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/assessment.service.ts</context>
+          <context context-type="linenumber">265</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6541985036282880795" datatype="html">
+        <source><x id="PH" equiv-text="todoItem.meta.reviewer_name"/> has provided feedback</source>
+        <target><x id="PH" equiv-text="todoItem.meta.reviewer_name"/> さんからのフィードバック</target>
+        <note priority="1" from="description">John Doe has provided feedback</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">411</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">596</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3458181538319821871" datatype="html">
+        <source>Please review the assessment</source>
+        <target>評価をご確認ください</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">433</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">622</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2540803582621285846" datatype="html">
+        <source>file received</source>
+        <target>ファイル受信</target>
+        <note priority="1" from="description">notification description</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">511</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1937685239363295307" datatype="html">
+        <source>MORE</source>
+        <target>もっと見る</target>
+        <note priority="1" from="description">expand article</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/description/description.component.html</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="783891382504772456" datatype="html">
+        <source>LESS</source>
+        <target>少なく</target>
+        <note priority="1" from="description">shrink article</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/description/description.component.html</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7510279840486540181" datatype="html">
+        <source>completed</source>
+        <target>済</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8986421314427632087" datatype="html">
+        <source>pending</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.ts</context>
+          <context context-type="linenumber">55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7322623193969318063" datatype="html">
+        <source>Please add your answer here</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
+          <context context-type="linenumber">30</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7364302813171348265" datatype="html">
+        <source>Registration link invalid!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">130</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">136</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">140</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9120857314478358342" datatype="html">
+        <source>Registration success!</source>
+        <target>正常に登録!</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">178</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6544718109142600274" datatype="html">
+        <source>Registration not complete!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">181</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">200</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4677083101078705490" datatype="html">
+        <source>You need to agree with terms and Conditions.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">215</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">224</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="678309375605028582" datatype="html">
+        <source>Your passwords don&apos;t match.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">234</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5244922288714378997" datatype="html">
+        <source>Please fill in your password</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">256</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7761838594354031064" datatype="html">
+        <source>Your password needs to be more than 8 characters.</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
+          <context context-type="linenumber">260</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2822096884003813787" datatype="html">
+        <source>Assessment Submitted</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">184</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3045386854898816680" datatype="html">
+        <source><x id="PH" equiv-text="unreadMessages"/> messages from <x id="PH_1" equiv-text="noOfChats"/> chats</source>
+        <note priority="1" from="description">99 messages from 99 chats</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
+          <context context-type="linenumber">517</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4498682414491138092" datatype="html">
+        <source>Yesterday</source>
+        <target>昨日</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">283</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="9129734193759025482" datatype="html">
+        <source>Tomorrow</source>
+        <target>明日</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">286</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="2036588713578345721" datatype="html">
+        <source>Overdue <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">526</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="8405047916216508371" datatype="html">
+        <source>Due <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">528</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4611677244202358193" datatype="html">
+        <source>learner</source>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">580</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3825319751391625987" datatype="html">
+        <source>expert</source>
+        <target>本職</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">582</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="931773981157828593" datatype="html">
+        <source>admin</source>
+        <target>管理者</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">584</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7978101932847504722" datatype="html">
+        <source>admins</source>
+        <target>管理者</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">586</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="4060595931040751333" datatype="html">
+        <source>sysadmin</source>
+        <target>システム管理者</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">588</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="7294220956990424336" datatype="html">
+        <source>sysadmins</source>
+        <target>システム管理者</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">590</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5109712737720657574" datatype="html">
+        <source>coordinator</source>
+        <target>コーディネーター</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">592</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5507119337652002645" datatype="html">
+        <source>coordinators</source>
+        <target>コーディネーター</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">594</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5391191655981300425" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{achievement.points}}"/> <x id="ICU" equiv-text="{achievement.points, plural, =1 {point} other {points}}" xid="3756585612258761738"/>!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3756585612258761738" datatype="html">
+        <source>{VAR_PLURAL, plural, =1 {point} other {points}}</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="187187500641108332" datatype="html">
+        <source><x id="INTERPOLATION" equiv-text="{{achievement.points ? achievement.points + ' Pts' : null}}"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
+          <context context-type="linenumber">117</context>
         </context-group>
       </trans-unit>
     </body>
