@@ -52,6 +52,6 @@ export class ReviewListComponent implements OnInit {
     if (review) {
       return '';
     }
-    return this.showDone ? 'completed' : 'pending';
+    return this.showDone ? $localize`completed` : $localize`pending`;
   }
 }
