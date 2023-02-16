@@ -544,8 +544,7 @@
       </trans-unit>
       <trans-unit id="8768931699620871504" datatype="html">
         <source><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>please wait </source>
-        <target><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>お待ちください 
-</target>
+        <target><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>お待ちください </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/video-conversion/video-conversion.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -881,8 +880,7 @@
       </trans-unit>
       <trans-unit id="2070993748441835920" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> members </source>
-        <target> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> 構成員 
-</target>
+        <target> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> 構成員 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -2086,7 +2084,7 @@
       </trans-unit>
       <trans-unit id="1714834505006308721" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {Task}           other {Tasks}         }" xid="2504048830737920959"/> </source>
-        <target>␣<x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {タスク}           other {ようじ}         }" xid="2504048830737920959"/>␣</target>
+        <target> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {タスク}           other {ようじ}         }" xid="2504048830737920959"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
           <context context-type="linenumber">9,14</context>
