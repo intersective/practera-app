@@ -37,7 +37,7 @@ export class EventDetailComponent implements OnInit {
 
     this.ctaIsActing = true;
     switch (this.buttonText()) {
-      case 'Book':
+      case $localize`Book`:
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
           this.NotificationsService.alert({
@@ -63,7 +63,7 @@ export class EventDetailComponent implements OnInit {
         }
         break;
 
-      case 'Cancel Booking':
+      case $localize`Cancel Booking`:
         this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.NotificationsService.alert({
@@ -87,8 +87,8 @@ export class EventDetailComponent implements OnInit {
         });
         break;
 
-      case 'Check In':
-      case 'View Check In':
+      case $localize`Check In`:
+      case $localize`View Check In`:
         if (this.utils.isMobile()) {
           this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
         } else {
