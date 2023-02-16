@@ -234,6 +234,26 @@ export class UtilsService {
     return this.document.location;
   }
 
+  // extract locale from URL
+  getCurrentLocale(): string {
+    const checkings = {
+      '/en-US/': 'en-US',
+      '/ja/': 'ja',
+      '/es/': 'es',
+    };
+    const curLoc = this.getCurrentLocation();
+
+    let result = null;
+    for (const check in checkings) {
+      if (curLoc?.pathname.indexOf(check) === 0) {
+        result = checkings[check];
+      }
+    }
+
+    // english as default
+    return result || 'en-US';
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
@@ -260,19 +280,24 @@ export class UtilsService {
     const yesterday = compareDate.clone().subtract(1, 'day').startOf('day');
 
     if (date.isSame(yesterday, 'd')) {
-      return 'Yesterday';
+      return $localize`Yesterday`;
     }
     if (date.isSame(tomorrow, 'd')) {
-      return 'Tomorrow';
+      return $localize`Tomorrow`;
     }
+
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to format of "en-GB" from previous code
+    let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat('en-US', {
+      return new Intl.DateTimeFormat(defaultLocale, {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -498,9 +523,9 @@ export class UtilsService {
     }
     const difference = this.timeComparer(dueDate);
     if (difference < 0) {
-      return 'Overdue ' + this.utcToLocal(dueDate);
+      return $localize`Overdue ${this.utcToLocal(dueDate)}`;
     }
-    return 'Due ' + this.utcToLocal(dueDate);
+    return $localize`Due ${this.utcToLocal(dueDate)}`;
   }
 
   getDateDifference(dateOne: string, datetwo: string) {
@@ -552,10 +577,22 @@ export class UtilsService {
   getUserRolesForUI(role) {
     switch (role) {
       case 'participant':
-        return 'learner';
+        return $localize`:labelling:learner`;
       case 'mentor':
-        return 'expert';
-      default:
+        return $localize`:labelling:expert`;
+      case 'admin':
+        return $localize`:labelling:admin`;
+      case 'admins':
+        return $localize`:labelling:admins`;
+      case 'sysadmin':
+        return $localize`:labelling:sysadmin`;
+      case 'sysadmins':
+        return $localize`:labelling:sysadmins`;
+      case 'coordinator':
+        return $localize`:labelling:coordinator`;
+      case 'coordinators':
+        return $localize`:labelling:coordinators`;
+      default: // added default to allow graceful failure handling
         return role;
     }
   }
