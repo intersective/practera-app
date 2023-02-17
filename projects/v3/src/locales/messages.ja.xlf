@@ -544,8 +544,7 @@
       </trans-unit>
       <trans-unit id="8768931699620871504" datatype="html">
         <source><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>please wait </source>
-        <target><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>お待ちください 
-</target>
+        <target><x id="START_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;ion-spinner name=&quot;bubbles&quot;&gt;"/><x id="CLOSE_TAG_ION_SPINNER" ctype="x-ion_spinner" equiv-text="&lt;/ion-spinner&gt;"/>お待ちください </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/video-conversion/video-conversion.component.html</context>
           <context context-type="linenumber">20,21</context>
@@ -881,8 +880,7 @@
       </trans-unit>
       <trans-unit id="2070993748441835920" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> members </source>
-        <target> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> 構成員 
-</target>
+        <target> <x id="INTERPOLATION" equiv-text="{{ memberList.length }}"/> 構成員 </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/chat/chat-room/chat-room.component.html</context>
           <context context-type="linenumber">9,11</context>
@@ -1400,7 +1398,7 @@
       </trans-unit>
       <trans-unit id="2797219889453562954" datatype="html">
         <source>Fully Booked</source>
-        <target>フルブッキング</target>
+        <target>満室</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/list-item/list-item.component.html</context>
           <context context-type="linenumber">68</context>
@@ -1925,7 +1923,7 @@
       </trans-unit>
       <trans-unit id="4335548177977692221" datatype="html">
         <source>Book</source>
-        <target>書籍</target>
+        <target>予約</target>
         <note priority="1" from="description">make reservation</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
@@ -2086,7 +2084,7 @@
       </trans-unit>
       <trans-unit id="1714834505006308721" datatype="html">
         <source> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {Task}           other {Tasks}         }" xid="2504048830737920959"/> </source>
-        <target>␣<x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {タスク}           other {ようじ}         }" xid="2504048830737920959"/>␣</target>
+        <target> <x id="INTERPOLATION" equiv-text="{{ activity.tasks.length }}"/> <x id="ICU" equiv-text="{activity.tasks.length, plural,           =1 {タスク}           other {ようじ}         }" xid="2504048830737920959"/> </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.html</context>
           <context context-type="linenumber">9,14</context>
@@ -2094,6 +2092,7 @@
       </trans-unit>
       <trans-unit id="1283804907586536887" datatype="html">
         <source><x id="PH" equiv-text="task.submitter.name"/> is working on this</source>
+        <target><x id="PH" equiv-text="task.submitter.name"/> はこれに取り組んでいます</target>
         <note priority="1" from="description">team assessment</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
@@ -2264,6 +2263,7 @@
       </trans-unit>
       <trans-unit id="9120857314478358342" datatype="html">
         <source>Registration success!</source>
+        <target>正常に登録!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
           <context context-type="linenumber">178</context>
@@ -2333,6 +2333,7 @@
       </trans-unit>
       <trans-unit id="4498682414491138092" datatype="html">
         <source>Yesterday</source>
+        <target>昨日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">283</context>
@@ -2340,6 +2341,7 @@
       </trans-unit>
       <trans-unit id="9129734193759025482" datatype="html">
         <source>Tomorrow</source>
+        <target>明日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">286</context>
@@ -2369,6 +2371,7 @@
       </trans-unit>
       <trans-unit id="3825319751391625987" datatype="html">
         <source>expert</source>
+        <target>本職</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
@@ -2377,6 +2380,7 @@
       </trans-unit>
       <trans-unit id="931773981157828593" datatype="html">
         <source>admin</source>
+        <target>管理者</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
@@ -2385,6 +2389,7 @@
       </trans-unit>
       <trans-unit id="7978101932847504722" datatype="html">
         <source>admins</source>
+        <target>管理者</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
@@ -2393,6 +2398,7 @@
       </trans-unit>
       <trans-unit id="4060595931040751333" datatype="html">
         <source>sysadmin</source>
+        <target>システム管理者</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
@@ -2401,6 +2407,7 @@
       </trans-unit>
       <trans-unit id="7294220956990424336" datatype="html">
         <source>sysadmins</source>
+        <target>システム管理者</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
@@ -2409,6 +2416,7 @@
       </trans-unit>
       <trans-unit id="5109712737720657574" datatype="html">
         <source>coordinator</source>
+        <target>コーディネーター</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
@@ -2417,6 +2425,7 @@
       </trans-unit>
       <trans-unit id="5507119337652002645" datatype="html">
         <source>coordinators</source>
+        <target>コーディネーター</target>
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
