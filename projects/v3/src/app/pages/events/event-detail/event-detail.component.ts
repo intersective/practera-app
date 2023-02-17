@@ -36,8 +36,7 @@ export class EventDetailComponent implements OnInit {
     }
 
     this.ctaIsActing = true;
-    const code = this.buttonText ? this.buttonText.code : false;
-    switch (code) {
+    switch (this.buttonText.code) {
       case 'book':
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
@@ -166,7 +165,7 @@ export class EventDetailComponent implements OnInit {
           code: 'book',
         };
       }
-      return false;
+      return {};
     }
     // can only cancel booking before event start
     if (!this.event.isPast) {
@@ -177,7 +176,7 @@ export class EventDetailComponent implements OnInit {
     }
     // for event that doesn't have check in
     if (!this.utils.has(this.event, 'assessment.id')) {
-      return false;
+      return {};
     }
     // for event that have check in
     if (this.event.assessment.isDone) {
