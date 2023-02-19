@@ -70,4 +70,15 @@ describe('NotificationsService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  describe('when testing popUpReviewRating()', () => {
+    it('should pass the correct data to notification modal', () => {
+      service.popUpReviewRating(1, ['home']);
+      expect(service.modal).toHaveBeenCalledTimes(1);
+      expect(service.modal).toHaveBeenCalledWith({} as any, {
+        reviewId: 1,
+        redirect: ['home']
+      });
+    });
+  });
 });
