@@ -617,5 +617,21 @@ describe('UtilsService', () => {
 
       expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
     });
+
+
+    it('should change URL to one with proper locale', () => {
+      const subject = {
+        origin: 'https://sample.com',
+        pathname: '/en-US/v3/home',
+      };
+      const targetLocale = 'new-locale';
+
+      service.getCurrentLocation = jasmine.createSpy('getCurrentLocation').and.returnValue(subject);
+      service.getCurrentLocale = jasmine.createSpy('getCurrentLocale').and.returnValue('en-US');
+      service.redirectToUrl = jasmine.createSpy('service.redirectToUrl');
+      service.moveToNewLocale(targetLocale);
+
+      expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+    });
   });
 });
