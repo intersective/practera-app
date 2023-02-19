@@ -54,7 +54,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
     let destination = ['v3', 'home'];
     const loading = await this.loadingController.create({
-      message: 'loading...'
+      message: $localize`loading...`
     });
     await loading.present();
     try {
