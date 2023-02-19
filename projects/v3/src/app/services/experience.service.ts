@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap, shareReplay, tap } from 'rxjs/operators';
@@ -388,6 +388,13 @@ export class ExperienceService {
   }
 
   getLocale(): Observable<any> {
+    const currentURL = this.utils.getCurrentLocation();
+    if (currentURL.origin.includes('localhost')) { // ignore development
+      return of({
+        locale: 'en-US'
+      });
+    }
+
     return this.apolloService.graphQLFetch(
       `query experience {
         experience {
@@ -398,6 +405,8 @@ export class ExperienceService {
           locale
         }
       }`,
-    );
+    ).pipe(map(res => {
+      return res?.data?.experience;
+    }));
   }
 }
