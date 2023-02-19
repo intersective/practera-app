@@ -10,6 +10,7 @@ import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 
 @Component({
   selector: 'app-v3',
@@ -82,6 +83,7 @@ export class V3Page implements OnInit, OnDestroy {
     private chatService: ChatService,
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
+    private readonly experienceService: ExperienceService,
   ) { }
 
   ngOnDestroy(): void {
@@ -135,6 +137,9 @@ export class V3Page implements OnInit, OnDestroy {
     );
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
+      this.experienceService.getLocale().subscribe(res => {
+        this.utils.getCurrentLocation();
+      });
       this.reviewService.getReviews();
 
       // Hide events tab to other user roles. Show only for participants
