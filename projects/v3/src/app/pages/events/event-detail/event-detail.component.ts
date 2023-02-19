@@ -36,8 +36,8 @@ export class EventDetailComponent implements OnInit {
     }
 
     this.ctaIsActing = true;
-    switch (this.buttonText()) {
-      case $localize`Book`:
+    switch (this.buttonText.code) {
+      case 'book':
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
           this.NotificationsService.alert({
@@ -63,7 +63,7 @@ export class EventDetailComponent implements OnInit {
         }
         break;
 
-      case $localize`Cancel Booking`:
+      case 'cancel-booking':
         this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.NotificationsService.alert({
@@ -87,8 +87,8 @@ export class EventDetailComponent implements OnInit {
         });
         break;
 
-      case $localize`Check In`:
-      case $localize`View Check In`:
+      case 'check-in':
+      case 'view-check-in':
         if (this.utils.isMobile()) {
           this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
         } else {
@@ -143,34 +143,52 @@ export class EventDetailComponent implements OnInit {
     );
   }
 
-  buttonText() {
+  get buttonText() {
     // for not booked event
     if (!this.event.isBooked) {
       // for expired event
       if (this.event.isPast) {
-        return $localize`Expired`;
+        return {
+          label: $localize`Expired`,
+          code: 'expired',
+        };
       }
       if (this.event.remainingCapacity === 0) {
-        return $localize`Fully Booked`;
+        return {
+          label: $localize`Fully Booked`,
+          code: 'fully-booked',
+        };
       }
       if (this.event.remainingCapacity > 0 && this.event.canBook) {
-        return $localize`:make reservation:Book`;
+        return {
+          label: $localize`:make reservation:Book`,
+          code: 'book',
+        };
       }
-      return false;
+      return {};
     }
     // can only cancel booking before event start
     if (!this.event.isPast) {
-      return $localize`Cancel Booking`;
+      return {
+        label: $localize`Cancel Booking`,
+        code: 'cancel-booking',
+      };
     }
     // for event that doesn't have check in
     if (!this.utils.has(this.event, 'assessment.id')) {
-      return false;
+      return {};
     }
     // for event that have check in
     if (this.event.assessment.isDone) {
-      return $localize`View Check In`;
+      return {
+        label: $localize`View Check In`,
+        code: 'view-check-in',
+      };
     }
-    return $localize`Check In`;
+    return {
+      label: $localize`Check In`,
+      code: 'check-in',
+    };
   }
 
   close() {

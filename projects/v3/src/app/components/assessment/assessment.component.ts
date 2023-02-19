@@ -273,7 +273,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       if (typeof teamId !== 'number') {
 
         return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
           buttons: [
             {
               text: $localize`OK`,
@@ -354,12 +354,14 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
 
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        questionId = +key.replace('q-', '');
-        answers.push({
-          questionId: questionId,
-          answer: answer.answer,
-          comment: answer.comment
-        });
+        if (answer && (answer.answer || answer.comment)) {
+          questionId = +key.replace('q-', '');
+          answers.push({
+            questionId: questionId,
+            answer: answer.answer,
+            comment: answer.comment
+          });
+        }
       });
     }
 
@@ -369,7 +371,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
-        message: 'Required question answer missing!',
+        message: $localize`Required question answer missing!`,
         // Please fill out the required fields.
         buttons: [
           {
