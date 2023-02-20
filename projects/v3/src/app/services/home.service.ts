@@ -110,9 +110,6 @@ export class HomeService {
     return this.apolloService.graphQLFetch(`
       query {
         experience{
-          id
-          uuid
-          status
           locale
           name
           description
