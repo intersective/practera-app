@@ -388,8 +388,7 @@ export class ExperienceService {
   }
 
   getLocale(): Observable<any> {
-    const currentURL = this.utils.getCurrentLocation();
-    if (currentURL.origin.includes('localhost')) { // ignore development
+    if (environment.production === false) { // ignore development
       return of({
         locale: 'en-US'
       });
