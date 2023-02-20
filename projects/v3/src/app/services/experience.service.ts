@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { catchError, map, mergeMap, shareReplay, tap } from 'rxjs/operators';
+import { map, mergeMap, shareReplay } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -385,27 +385,5 @@ export class ExperienceService {
 
   getNewJwt() {
     return this.requestService.get(api.get.jwt);
-  }
-
-  getLocale(): Observable<any> {
-    if (environment.production === false) { // ignore development
-      return of({
-        locale: 'en-US'
-      });
-    }
-
-    return this.apolloService.graphQLFetch(
-      `query experience {
-        experience {
-          id
-          uuid
-          name
-          status
-          locale
-        }
-      }`,
-    ).pipe(map(res => {
-      return res?.data?.experience;
-    }));
   }
 }
