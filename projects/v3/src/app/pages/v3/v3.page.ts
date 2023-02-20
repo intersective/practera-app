@@ -136,11 +136,13 @@ export class V3Page implements OnInit, OnDestroy {
       })
     );
 
+    this.homeService.experience$.subscribe(expInfo => {
+      this.utils.moveToNewLocale(expInfo.locale);
+    });
+
     this.subscriptions.push(this.route.params.subscribe(_params => {
-      this.homeService.getLocale().subscribe(expInfo => {
-        this.utils.moveToNewLocale(expInfo.locale);
-      });
       this.reviewService.getReviews();
+      this.homeService.getExperience();
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
