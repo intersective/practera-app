@@ -11,6 +11,7 @@ import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-v3',
@@ -137,7 +138,7 @@ export class V3Page implements OnInit, OnDestroy {
     );
 
     this.homeService.experience$.subscribe(expInfo => {
-      if (expInfo?.locale) {
+      if (expInfo?.locale && environment.production === true) {
         this.utils.moveToNewLocale(expInfo?.locale);
       }
     });
