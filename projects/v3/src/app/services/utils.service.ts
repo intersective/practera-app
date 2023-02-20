@@ -580,18 +580,18 @@ export class UtilsService {
         return $localize`:labelling:learner`;
       case 'mentor':
         return $localize`:labelling:expert`;
-      case 'admin':
-        return $localize`:labelling:admin`;
       case 'admins':
         return $localize`:labelling:admins`;
-      case 'sysadmin':
-        return $localize`:labelling:sysadmin`;
+      case 'admin':
+        return $localize`:labelling:admin`;
       case 'sysadmins':
         return $localize`:labelling:sysadmins`;
-      case 'coordinator':
-        return $localize`:labelling:coordinator`;
+      case 'sysadmin':
+        return $localize`:labelling:sysadmin`;
       case 'coordinators':
         return $localize`:labelling:coordinators`;
+      case 'coordinator':
+        return $localize`:labelling:coordinator`;
       default: // added default to allow graceful failure handling
         return role;
     }

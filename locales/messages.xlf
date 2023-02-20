@@ -38,11 +38,11 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">147</context>
+          <context context-type="linenumber">152</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">176</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
@@ -171,7 +171,7 @@
         <source><x id="PH" equiv-text="task.submitter.name"/> is working on this</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">51</context>
+          <context context-type="linenumber">52</context>
         </context-group>
         <note priority="1" from="description">team assessment</note>
       </trans-unit>
@@ -179,7 +179,7 @@
         <source>in progress</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">70</context>
+          <context context-type="linenumber">71</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
@@ -190,7 +190,7 @@
         <source>overdue</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">74</context>
+          <context context-type="linenumber">75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
@@ -201,21 +201,28 @@
         <source>feedback available</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">81</context>
+          <context context-type="linenumber">82</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1296595677360340695" datatype="html">
+        <source>pending review</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">86</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1222528157669122896" datatype="html">
         <source>This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">144</context>
+          <context context-type="linenumber">149</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5301693178039706546" datatype="html">
         <source>Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">168</context>
+          <context context-type="linenumber">173</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
@@ -1485,7 +1492,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">118</context>
         </context-group>
         <note priority="1" from="description">chat view title</note>
       </trans-unit>
@@ -1675,7 +1682,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">106</context>
         </context-group>
       </trans-unit>
       <trans-unit id="998728513627286561" datatype="html">
@@ -1732,7 +1739,7 @@
         <source>loading...</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/experiences/experiences.page.ts</context>
-          <context context-type="linenumber">56</context>
+          <context context-type="linenumber">57</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1831648043663242062" datatype="html">
@@ -1754,7 +1761,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">100</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3454112391854626716" datatype="html">
@@ -1882,7 +1889,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">112</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1428402536910601096" datatype="html">
@@ -1911,7 +1918,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">71</context>
+          <context context-type="linenumber">72</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7226684209936743036" datatype="html">
@@ -1993,7 +2000,7 @@
         <source>My Experiences</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2870489062371500475" datatype="html">
@@ -2159,27 +2166,19 @@
         </context-group>
         <note priority="1" from="description">labelling</note>
       </trans-unit>
-      <trans-unit id="931773981157828593" datatype="html">
-        <source>admin</source>
+      <trans-unit id="7978101932847504722" datatype="html">
+        <source>admins</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">584</context>
         </context-group>
         <note priority="1" from="description">labelling</note>
       </trans-unit>
-      <trans-unit id="7978101932847504722" datatype="html">
-        <source>admins</source>
+      <trans-unit id="931773981157828593" datatype="html">
+        <source>admin</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">586</context>
-        </context-group>
-        <note priority="1" from="description">labelling</note>
-      </trans-unit>
-      <trans-unit id="4060595931040751333" datatype="html">
-        <source>sysadmin</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">588</context>
         </context-group>
         <note priority="1" from="description">labelling</note>
       </trans-unit>
@@ -2187,20 +2186,28 @@
         <source>sysadmins</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">588</context>
+        </context-group>
+        <note priority="1" from="description">labelling</note>
+      </trans-unit>
+      <trans-unit id="4060595931040751333" datatype="html">
+        <source>sysadmin</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">590</context>
         </context-group>
         <note priority="1" from="description">labelling</note>
       </trans-unit>
-      <trans-unit id="5109712737720657574" datatype="html">
-        <source>coordinator</source>
+      <trans-unit id="5507119337652002645" datatype="html">
+        <source>coordinators</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">592</context>
         </context-group>
         <note priority="1" from="description">labelling</note>
       </trans-unit>
-      <trans-unit id="5507119337652002645" datatype="html">
-        <source>coordinators</source>
+      <trans-unit id="5109712737720657574" datatype="html">
+        <source>coordinator</source>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">594</context>

@@ -107,8 +107,9 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
+
     return this.apolloService.graphQLFetch(`
-      query {
+      query experience {
         experience{
           locale
           name
