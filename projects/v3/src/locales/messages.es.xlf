@@ -20,6 +20,7 @@
       </trans-unit>
       <trans-unit id="5391191655981300425" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{achievement.points}}"/> <x id="ICU" equiv-text="{achievement.points, plural, =1 {point} other {points}}" xid="3756585612258761738"/>!</source>
+        <target><x id="INTERPOLATION" equiv-text="{{achievement.points}}"/> <x id="ICU" equiv-text="{achievement.points, plural, =1 {punto} other {puntos}}" xid="3756585612258761738"/>!</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
           <context context-type="linenumber">27</context>
@@ -27,6 +28,7 @@
       </trans-unit>
       <trans-unit id="3756585612258761738" datatype="html">
         <source>{VAR_PLURAL, plural, =1 {point} other {points}}</source>
+        <target>{VAR_PLURAL, plural, =1 {punto} other {puntos}}</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/achievement-pop-up/achievement-pop-up.component.html</context>
           <context context-type="linenumber">27</context>
@@ -1254,6 +1256,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
       </trans-unit>
       <trans-unit id="1810372108402791211" datatype="html">
         <source></source>
+        <target></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -1409,6 +1412,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
       </trans-unit>
       <trans-unit id="1935083600637590520" datatype="html">
         <source></source>
+        <target></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
           <context context-type="linenumber">190</context>
@@ -2042,6 +2046,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
       </trans-unit>
       <trans-unit id="187187500641108332" datatype="html">
         <source><x id="INTERPOLATION" equiv-text="{{achievement.points ? achievement.points + ' Pts' : null}}"/></source>
+        <target><x id="INTERPOLATION" equiv-text="{{achievement.points ? achievement.points + ' Pts' : null}}"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/home/home.page.html</context>
           <context context-type="linenumber">117</context>
