@@ -10,6 +10,7 @@ export interface Experience {
   leadImage: string;
   name: string;
   description: string;
+  locale: string;
 }
 
 export interface Milestone {
@@ -109,6 +110,7 @@ export class HomeService {
     return this.apolloService.graphQLFetch(`
       query {
         experience{
+          locale
           name
           description
           leadImage
