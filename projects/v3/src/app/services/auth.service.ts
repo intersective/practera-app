@@ -386,7 +386,6 @@ export class AuthService {
     });
   }
 
-
   updateProfileImage(data) {
     return this.request.post(
       {
