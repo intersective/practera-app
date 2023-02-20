@@ -81,6 +81,10 @@ export class ActivityComponent {
       return $localize`feedback available`;
     }
 
+    if (task?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+
     return task.status;
   }
 
