@@ -2485,6 +2485,15 @@
           <context context-type="linenumber">494</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="2618074658531765809" datatype="html">
+        <source>inst_admin</source>
+        <target>機関管理者</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">596</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
