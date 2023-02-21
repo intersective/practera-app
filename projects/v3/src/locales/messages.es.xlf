@@ -2565,6 +2565,15 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="2618074658531765809" datatype="html">
+        <source>inst_admin</source>
+        <target>administrador de la institución</target>
+        <note priority="1" from="description">labelling</note>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">596</context>
+        </context-group>
+      </trans-unit>
     </body>
   </file>
 </xliff>
