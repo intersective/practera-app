@@ -488,6 +488,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       }
       return '';
     }
+
+    // for i18n
+    if (this.submission?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+    if (this.submission?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
     return this.submission?.status;
   }
 
