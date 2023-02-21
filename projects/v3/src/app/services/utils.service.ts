@@ -592,6 +592,8 @@ export class UtilsService {
         return $localize`:labelling:coordinators`;
       case 'coordinator':
         return $localize`:labelling:coordinator`;
+      case 'inst_admin':
+        return $localize`:labelling:inst_admin`;
       default: // added default to allow graceful failure handling
         return role;
     }
