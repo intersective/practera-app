@@ -8,8 +8,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
-
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -392,11 +390,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         ],
       });
     }
-
-    /* comment for the tempery solution autosave AV2-1326
-    // allow submitting/saving after a few seconds
-    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
-    */
 
     this.save.emit({
       assessment,
