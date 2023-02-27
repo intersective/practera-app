@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -34,7 +33,6 @@ export class ReviewDesktopPage implements OnInit {
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private reviewService: ReviewService,
-    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit(): void {
