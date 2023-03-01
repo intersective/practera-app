@@ -20,6 +20,7 @@ export class DemoService {
           name: 'Welcome to the Global Trade Accelerator',
           description: this.description,
           leadImage: this.image,
+          locale: 'en-US',
         }
       }
     }).pipe(delay(1000));

@@ -11,12 +11,12 @@ on:
   workflow_dispatch:
     inputs:
       BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'     
+        description: 'New tag version based on create-release-tag workflow'
         required: true
-        default: ''  
+        default: ''
   push:
     branches:
-      - 'golive/3*'
+      - 'golive/v3+.[0-9]+.[0-9]+*'
 
 
 ################################################
@@ -67,7 +67,7 @@ jobs:
           ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 ################################################
-#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER 
+#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
         id: AWS_ORG
@@ -120,8 +120,8 @@ jobs:
 
 
 ################################################
-#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT 
-################################################ 
+#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
+################################################
       - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
@@ -145,7 +145,7 @@ jobs:
 
 ################################################
 #  AWS CLI CONFIGURATION - DEVOPS P2 PRERELEASE
-################################################ 
+################################################
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
@@ -188,7 +188,7 @@ jobs:
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
-          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
           CUSTOM_PATH_ANY: /appv3/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: test #TODO CHECK
