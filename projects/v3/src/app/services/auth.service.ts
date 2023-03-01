@@ -155,6 +155,7 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
+    console.log('norm: ', norm);
     console.log('-- before set the apikey --');
     console.log('apikey: ', norm.apikey);
     this.storage.setUser({ apikey: norm.apikey });
@@ -167,6 +168,7 @@ export class AuthService {
   }
 
   private _normaliseAuth(rawData): any {
+    console.log('-- normalise auth -- ');
     const data = rawData.data;
     return {
       success: rawData.success,
