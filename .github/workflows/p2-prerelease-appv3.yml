@@ -9,11 +9,6 @@ name: Deploy to p2-prerelease-appv3 environment
 ################################################
 on:
   workflow_dispatch:
-    inputs:
-      BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'     
-        required: true
-        default: ''  
   push:
     branches:
       - 'golive/3*'
@@ -67,7 +62,7 @@ jobs:
           ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 ################################################
-#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER 
+#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
         id: AWS_ORG
@@ -120,8 +115,8 @@ jobs:
 
 
 ################################################
-#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT 
-################################################ 
+#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
+################################################
       - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
@@ -145,7 +140,7 @@ jobs:
 
 ################################################
 #  AWS CLI CONFIGURATION - DEVOPS P2 PRERELEASE
-################################################ 
+################################################
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
