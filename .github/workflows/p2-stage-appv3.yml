@@ -258,6 +258,7 @@ jobs:
           IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
           Nonce=$GITHUB_SHA
           EOF
+
 ##########################################################
 #  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
 ##########################################################
