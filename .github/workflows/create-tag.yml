@@ -41,7 +41,7 @@ jobs:
     env:
       ENV : live # Valid values are dev,test,live only
       STACK_NAME: live # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared,p2-usa only
-      ROOTSTACK: preference-api
+      ROOTSTACK: app-v2
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
       STATUSREPORTS3Bucket: deployment-status.practera.com
