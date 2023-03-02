@@ -343,7 +343,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // form feedback answers (submission API doesn't accept zero length array)
     // In review we also have comments for a question. and questionsForm value have both
     // answer and comment. need to add them as separately
     if (this.isPendingReview) {
@@ -351,15 +350,20 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         reviewId: this.review.id
       });
 
+      // post answers API doesn't accept empty array
+      // compulsory format: (even when no answers provided)
+      // [
+      //   { questionId: 1, answer: null, comment: null },
+      //   { questionId: 2, answer: null, comment: null },
+      //   { questionId: 3, answer: null, comment: null },
+      // ]
       this.utils.each(this.questionsForm.value, (answer, key) => {
-        if (answer && (answer.answer || answer.comment)) {
-          questionId = +key.replace('q-', '');
-          answers.push({
-            questionId: questionId,
-            answer: answer.answer,
-            comment: answer.comment
-          });
-        }
+        questionId = +key.replace('q-', '');
+        answers.push({
+          questionId,
+          answer: answer?.answer,
+          comment: answer?.comment,
+        });
       });
     }
 
