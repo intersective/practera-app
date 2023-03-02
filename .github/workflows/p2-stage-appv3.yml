@@ -171,10 +171,10 @@ jobs:
           export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
           export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
-          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret) 
-          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster) 
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
+          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
 
           printf "Angular environment variable creation  complete\n\n"
@@ -219,6 +219,7 @@ jobs:
       - name: AWS S3 Sync operation
         run: |
           mv serverless-appv3.yml serverless.yml
+          aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless-appv3-lambda-edge.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -233,6 +234,60 @@ jobs:
 
 
           EOF
+
+
+##########################################################
+#  AWS P2STAGE ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
+##########################################################
+      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_SECRET_ACCESS_KEY }}
+
+##########################################################
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
+          Nonce=$GITHUB_SHA
+          EOF
+##########################################################
+#  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
+##########################################################
+      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{env.REGION}}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_STAGE_AWS_SECRET_ACCESS_KEY }}
+
+###############################################################
+#  SERVERLESS DEPLOYMENT (Lambda@Edge)
+##############################################################
+      - name: Serverless deployment Lambda Function
+        run: |
+          echo "Serverless Deploying appv3 lambda@edge fn"
+          mv serverless.yml serverless.yml.bak
+          mv serverless-appv3-lambda-edge.yml serverless.yml
+          node_modules/.bin/serverless deploy
+          rm serverless.yml
+          mv serverless.yml.bak serverless.yml
+        env:
+          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKETEXIST: true
+          S3VERSIONING: true
+          NONCURRENTVERSION_EXPIREINDAYS: 30
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
