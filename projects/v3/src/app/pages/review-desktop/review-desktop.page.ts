@@ -101,10 +101,10 @@ export class ReviewDesktopPage implements OnInit {
       this.assessment.pulseCheck
     ).toPromise();
     this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
+    this.reviewService.getReviews();
     if (!event.assessment.inProgress) {
       setTimeout(
         () => {
-          this.reviewService.getReviews();
           this.loading = false;
           this.btnDisabled$.next(false);
         },500
