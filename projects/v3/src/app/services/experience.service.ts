@@ -384,6 +384,6 @@ export class ExperienceService {
   }
 
   getNewJwt() {
-    return this.requestService.get(api.get.jwt, {params: { t: Date.now() }});
+    return this.requestService.get(api.get.jwt);
   }
 }
