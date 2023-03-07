@@ -44,7 +44,7 @@
     </ion-item>
   </ion-list>
 
-  <div class="ion-margin-top ion-text-center" *ngIf="buttonText()">
+  <div class="ion-margin-top ion-text-center" *ngIf="buttonText.label">
     <ion-button class="btn-cta"
       (click)="confirmed($event)"
       [attr.aria-disabled]="bookButtonDisabled(event)"
@@ -53,7 +53,7 @@
       shape="round"
       role="button"
       (keydown)="confirmed($event)">
-      {{ buttonText() }}
+      {{ buttonText.label }}
     </ion-button>
   </div>
   </div>

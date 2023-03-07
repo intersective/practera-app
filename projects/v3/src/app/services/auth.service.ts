@@ -155,8 +155,8 @@ export class AuthService {
 
   private _handleLoginResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
-
     this.storage.setUser({ apikey: norm.apikey });
+
     this.storage.set('programs', norm.programs);
     this.storage.set('isLoggedIn', true);
     return norm;
@@ -385,7 +385,6 @@ export class AuthService {
       }
     });
   }
-
 
   updateProfileImage(data) {
     return this.request.post(
