@@ -8,8 +8,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
-
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -273,7 +271,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       if (typeof teamId !== 'number') {
 
         return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
           buttons: [
             {
               text: $localize`OK`,
@@ -345,7 +343,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    // form feedback answers (submission API doesn't accept zero length array)
     // In review we also have comments for a question. and questionsForm value have both
     // answer and comment. need to add them as separately
     if (this.isPendingReview) {
@@ -353,12 +350,19 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         reviewId: this.review.id
       });
 
+      // post answers API doesn't accept empty array
+      // compulsory format: (even when no answers provided)
+      // [
+      //   { questionId: 1, answer: null, comment: null },
+      //   { questionId: 2, answer: null, comment: null },
+      //   { questionId: 3, answer: null, comment: null },
+      // ]
       this.utils.each(this.questionsForm.value, (answer, key) => {
         questionId = +key.replace('q-', '');
         answers.push({
-          questionId: questionId,
-          answer: answer.answer,
-          comment: answer.comment
+          questionId,
+          answer: answer?.answer,
+          comment: answer?.comment,
         });
       });
     }
@@ -369,7 +373,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
-        message: 'Required question answer missing!',
+        message: $localize`Required question answer missing!`,
         // Please fill out the required fields.
         buttons: [
           {
@@ -390,11 +394,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         ],
       });
     }
-
-    /* comment for the tempery solution autosave AV2-1326
-    // allow submitting/saving after a few seconds
-    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
-    */
 
     this.save.emit({
       assessment,
@@ -486,6 +485,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       }
       return '';
     }
+
+    // for i18n
+    if (this.submission?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+    if (this.submission?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
     return this.submission?.status;
   }
 

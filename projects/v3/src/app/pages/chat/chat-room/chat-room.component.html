@@ -147,10 +147,11 @@
         [classes]="utils.isMobile() ? 'editor-class' : 'editor-class desktop'"
         [required]="true"
         class="message-text-editor"
-        [placeholder]="'Enter your message'"
+        placeholder="Enter your message"
         [(ngModel)]="typingMessage"
         (ngModelChange)="typing()"
-        (onEditorCreated)="utils.formatQuillClipboard($event)">
+        (onEditorCreated)="utils.formatQuillClipboard($event)"
+        i18n-placeholder>
           <div quill-editor-toolbar>
             <span class="ql-formats">
               <button class="ql-bold" [title]="'Bold'"></button>
