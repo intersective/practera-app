@@ -98,6 +98,13 @@ export class ReviewDesktopPage implements OnInit {
       this.assessment.pulseCheck
     ).toPromise();
 
+    // AV2-1371: added to reduce API call & waiting time for API to response.
+    if (!event.assessment.inProgress
+      && res?.data?.submitReview?.success === true) {
+      this.submission.status = 'feedback available';
+      this.review.status = 'done';
+    }
+
     // fail gracefully: Review submission API may sometimes fail silently
     if (res?.data?.submitReview === false) {
       this.savingText$.next($localize`Save failed.`);
@@ -108,19 +115,8 @@ export class ReviewDesktopPage implements OnInit {
 
     this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
     this.reviewService.getReviews();
-    if (!event.assessment.inProgress) {
-      setTimeout(
-        () => {
-          this.loading = false;
-          this.btnDisabled$.next(false);
-        },500
-      );
-    } else {
-      setTimeout(() => {
-        this.btnDisabled$.next(false);
-        this.loading = false;
-      }, SAVE_PROGRESS_TIMEOUT);
-    }
+    this.loading = false;
+    this.btnDisabled$.next(false);
   }
 
 }
