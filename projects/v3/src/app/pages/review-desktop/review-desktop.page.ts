@@ -94,27 +94,25 @@ export class ReviewDesktopPage implements OnInit {
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    await this.assessmentService.saveAnswers(
+    const submission = await this.assessmentService.saveAnswers(
       event.assessment,
       event.answers,
       event.action,
       this.assessment.pulseCheck
     ).toPromise();
-    this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
-    if (!event.assessment.inProgress) {
-      setTimeout(
-        () => {
-          this.reviewService.getReviews();
-          this.loading = false;
-          this.btnDisabled$.next(false);
-        },500
-      );
-    } else {
-      setTimeout(() => {
-        this.btnDisabled$.next(false);
-        this.loading = false;
-      }, SAVE_PROGRESS_TIMEOUT);
+
+    // AV2-1371: added to reduce API call & waiting time for API to response.
+    if (!event.assessment.inProgress
+      && submission?.data?.submitReview?.success === true) {
+      this.submission.status = 'feedback available';
+      this.review.status = 'done';
     }
+
+    this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
+    this.reviewService.getReviews();
+
+    this.loading = false;
+    this.btnDisabled$.next(false);
   }
 
 }
