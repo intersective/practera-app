@@ -268,11 +268,19 @@ $message-body-size: 60%;
   &.announcement {
     height: calc(100% - 60px);
   }
+
+  &.attach-preview {
+    height: calc(100% - 329px);
+  }
 }
 
 .footer {
   min-height: 48px;
   padding: 0;
+
+  ion-grid {
+    padding: 0;
+  }
 
   &.ion-footer-absolute {
     height: 169px;
@@ -291,6 +299,13 @@ $message-body-size: 60%;
           max-height: 121px;
         }
       }
+    }
+  }
+
+  &.attach-preview {
+    min-height: 269px !important;
+    ion-grid {
+      max-height: 269px;
     }
   }
 
@@ -333,12 +348,159 @@ $message-body-size: 60%;
             font-size: 24px;
           }
         }
-        ion-textarea {
-          --padding-top: 0;
-          --padding-end: 0;
-          --padding-bottom: 0;
-          --padding-start: 0;
-          margin-top: 8px;
+      }
+      &.attach-preview {
+        min-height: 100px;
+        max-height: 100px;
+        ion-col {
+          .image {
+            min-height: 100px;
+            max-height: 100px;
+            padding: 10px;
+            border-radius: 4px;
+            img {
+              border-radius: 4px;
+            }
+            .overlay {
+              left: 10px;
+            }
+            &:hover {
+              .remove-attach {
+                display: block;
+                text-align: center;
+                left: 80px;
+              }
+              .overlay {
+                display: block;
+                background: rgba(0, 0, 0, .6);
+              }
+            }
+            &.mobile {
+              .overlay {
+                display: none;
+              }
+              .remove-attach {
+                display: block;
+                text-align: center;
+                left: 80px;
+              }
+            }
+          }
+          .video {
+            width: 80px;
+            height: 80px;
+            margin: 10px;
+            padding: 20px;
+            background: var(--practera-light-grey-50);
+            border: 1px solid;
+            border-color: var(--practera-light-grey-75);
+            border-radius: 4px;
+            .play-icon {
+              width: 40px;
+              height: 40px;
+              margin: auto;
+              border-radius: 50%;
+              border: 1px solid;
+              border-color: var(--practera-light-grey-100);
+              background: white;
+              ion-icon {
+                padding: 11px;
+              }
+            }
+            .overlay {
+              left: 10px;
+            }
+            &:hover {
+              .remove-attach {
+                display: block;
+                text-align: center;
+                left: 80px;
+              }
+              .overlay {
+                display: block;
+                background: rgba(0, 0, 0, .6);
+              }
+            }
+            &.mobile {
+              .overlay {
+                display: none;
+              }
+              .remove-attach {
+                display: block;
+                text-align: center;
+                left: 80px;
+              }
+            }
+          }
+          .file-preview {
+            height: fit-content;
+            width: fit-content;
+            margin: 10px;
+            .general-attachment {
+              --min-height: 80px;
+              max-width: 300px;
+              min-width: 300px;
+              --background: var(--practera-light-grey-50);
+              --border-color: var(--practera-light-grey-75);
+              --border-radius: 4px;
+              ion-label {
+                max-width: 210px;
+                .mimetype {
+                  color: var(--practera-grey-75);
+                }
+              }
+            }
+            .overlay {
+              left: 10px;
+              width: 300px;
+              border-radius: 4px;
+              z-index: 2;
+            }
+            .remove-attach {
+              left: 300px;
+              z-index: 2;
+            }
+            &:hover {
+              .remove-attach {
+                display: block;
+              }
+              .overlay {
+                display: block;
+                background: rgba(0, 0, 0, .6);
+              }
+            }
+            &.mobile {
+              .overlay {
+                display: none;
+              }
+              .remove-attach {
+                display: block;
+              }
+            }
+          }
+          .remove-attach {
+            cursor: pointer;
+            position: absolute;
+            top: 0px;
+            left: 100px;
+            background: var(--practera-ocean-100);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            color: white;
+            display: none;
+          }
+          .overlay {
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            left: 28px;
+            width: 80px;
+            height: 80px;
+            display: none;
+            color: transparent;
+            border-radius: 4px;
+          }
         }
       }
     }
