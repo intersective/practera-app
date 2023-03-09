@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { RequestService } from 'request';
-import { map, mergeMap, shareReplay } from 'rxjs/operators';
+import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 
 export interface Experience {
   leadImage: string;
   name: string;
   description: string;
+  locale: string;
 }
 
 export interface Milestone {
@@ -106,15 +106,23 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
+
     return this.apolloService.graphQLFetch(`
-      query {
+      query experience {
         experience{
+          locale
           name
           description
           leadImage
         }
       }`,
-    ).pipe(map(res => this._normaliseExperience(res))).subscribe();
+    ).pipe(
+      map(res => this._normaliseExperience(res)),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        return throwError(err);
+      }),
+    ).subscribe();
   }
 
   private _normaliseExperience(res) {
