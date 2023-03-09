@@ -23,7 +23,7 @@
             [title]="p.title">
             <div class="badge-wrapper">
               <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
-              <ion-badge color="danger" class="hint">2</ion-badge>
+              <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
             </div>
             <ion-label class="body-2 black">
               {{p.title}}
