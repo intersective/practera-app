@@ -1,7 +1,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Deploy to p2-euk live environment
+name: Deploy to p2-prerelease environment
 
 
 ################################################
@@ -9,20 +9,20 @@ name: Deploy to p2-euk live environment
 ################################################
 on:
   workflow_dispatch:
-    inputs:
-      BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'
-        required: true
-        default: ''
+  push:
+    branches:
+      - 'golive/2*'
+
 
 ################################################
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  deploy-p2-euk-live:
-    name: deploy-p2-euk-live
+  deploy-p2-prerelease:
+    name: deploy-p2-prerelease
     runs-on: ubuntu-latest
-    environment: p2-euk
+    permissions: write-all
+    # environment: p2-prerelease
     timeout-minutes: 15
 
 
@@ -30,34 +30,57 @@ jobs:
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
 ################################################
     env:
-      REGION : eu-west-2
-      ENV : live # Valid values are dev,test,live only
-      STACK_NAME: p2-euk # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
+      REGION : ap-southeast-2
+      ENV : golive # Valid values are dev,test,live only
+      STACK_NAME: p2-prerelease # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
       ROOTSTACK: app-v2
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
-      PUBLICZONENAME: euk.practera.com
-      APPPUBLICZONENAME: euk.practera.app
+      PUBLICZONENAME: p2-prerelease.practera.com
+      APPPUBLICZONENAME: p2-prerelease.practera.app
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app.euk.practera.com
-      BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+      ENDPOINT: app.p2-prerelease.practera.com
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 
+
+
+
+    steps:
+
+################################################
+#  Export BRANCH_TAG_NAME
+################################################
+      - name: Get branch for env BRANCH_TAG_NAME
+        run: |
+          echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
 
 ################################################
 #  GITHUB REPO CHECKOUT 
 ################################################
-    steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 
+################################################
+#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER 
+################################################
+      - name: Get AWS Organization Number
+        id: AWS_ORG
+        run: |
+          RESULTP2PRERELEASE=$(echo $AWS_ACCOUNT_ID | jq -r .P2PRERELEASE)
+          RESULTCENTRAL=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
+
+          echo "::add-mask::$RESULTP2PRERELEASE"
+          echo "::add-mask::$RESULTCENTRAL"
+
+          echo "P2PRERELEASE=$RESULTP2PRERELEASE" >> $GITHUB_OUTPUT
+          echo "CENTRALIZED=$RESULTCENTRAL" >> $GITHUB_OUTPUT
 
 ################################################
 #  NODE ENV
@@ -98,15 +121,14 @@ jobs:
       
 
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS 
+#  c. P1 AWS ACCESS
+#  AWS CLI CONFIGURATION - P1 MAIN ACCOUNT 
 ################################################ 
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS Credentials from P1 Centralized account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ secrets.DEVOPS_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEVOPS_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-2
-
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-role-app-v2
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
@@ -123,43 +145,14 @@ jobs:
           ENV: live # Valid values are sandbox,stage,live only
 
 
-##########################################################
-#  AWS DEPLOY SECRET - MASK CONSOLE DISPLAY
-##########################################################
-      - name: AWS Deploy Secret
-        id: DeploySecret
-        run: |
-          echo "Enable SLACK NOTIFY"
-          SLACK_WEBHOOK_URL=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .SLACK_WEBHOOK_URL)
-          echo "::add-mask::$SLACK_WEBHOOK_URL"
-          echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
-    
-          echo "Enable P2 EUK ACCOUNT CLI Login"
-          P2_EUK_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_EUK_AWS_ACCESS_KEY_ID)
-          P2_EUK_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_EUK_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$P2_EUK_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$P2_EUK_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=P2_EUK_AWS_ACCESS_KEY_ID::$P2_EUK_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=P2_EUK_AWS_SECRET_ACCESS_KEY::$P2_EUK_AWS_SECRET_ACCESS_KEY"
-        
-        env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-          ENV: live # Valid values are sandbox,stage,live only
-
-
-##########################################################
-#  AWS P2 EUK ACCOUNT STEPS BELOW
-##########################################################
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+################################################
+#  AWS CLI CONFIGURATION - DEVOPS P2 PRERELEASE
+################################################ 
+      - name: Configure AWS Credentials from p2 prerelease AU account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.REGION}}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_SECRET_ACCESS_KEY }}
-
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-role-app-v2
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  ANGULAR ENVIRONMENT CREATION
@@ -188,24 +181,33 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           
         env:
-          CUSTOM_PATH_IMAGE: /appv2/live/images/
-          CUSTOM_PATH_VIDEO: /appv2/live/videos/
+          CUSTOM_PATH_IMAGE: /appv2/test/images/
+          CUSTOM_PATH_VIDEO: /appv2/test/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_API_ENDPOINT: https://${{ env.PUBLICZONENAME }}/
+          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
+          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com 
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
-          CUSTOM_PATH_ANY: /appv2/live/any/
+          CUSTOM_PATH_ANY: /appv2/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
-          CUSTOM_LOGIN_API_URL: https://login-api.practera.com
+          CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: false
           CUSTOM_APPV3_URL: https://appv3.${{ env.PUBLICZONENAME }}
           CUSTOM_SWITCH_APP3: true
 
+
+# ################################################
+# #  PERFORM LINT TEST
+# ################################################
+      - name: Run lint test if present
+        run:  |
+          npm run lint --if-present
+
+          
 ###############################################################
 #  BUILD WEB PACKAGES
 ##############################################################
@@ -214,6 +216,24 @@ jobs:
           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
           npm run generate-version
+
+
+# # ###############################################################
+# # #  PERFORM UNIT TEST
+# # ##############################################################
+#       - name: Performing Unit test
+#         run: |
+#           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
+
+# # ###############################################################
+# # #  SONARCLOUD SCANNER
+# # ##############################################################
+#       - name: Performing Sonarcloud Scanner
+#         uses: SonarSource/sonarcloud-github-action@master
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
 ##########################################################
@@ -264,7 +284,6 @@ jobs:
           aws s3 sync www/ s3://$APP_V2_S3 --delete
 
 
-
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
 ##########################################################
@@ -289,7 +308,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: deploy-p2-euk-live # Match the name above.
+          job_name: deploy-p2-prerelease # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
@@ -335,4 +354,3 @@ jobs:
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
           echo $REASON
           echo $REQUESTOR
-
