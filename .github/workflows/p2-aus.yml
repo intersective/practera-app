@@ -7,11 +7,11 @@ name: Deploy to p2-aus live environment
 ################################################
 #  GITHUB ACTION EVENT TRIGGER
 ################################################
-on: 
+on:
   workflow_dispatch:
     inputs:
       BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'     
+        description: 'New tag version based on create-release-tag workflow'
         required: true
         default: ''
 
