@@ -234,6 +234,26 @@ export class UtilsService {
     return this.document.location;
   }
 
+  // extract locale from URL
+  getCurrentLocale(): string {
+    const checkings = {
+      '/en-US/': 'en-US',
+      '/ja/': 'ja',
+      '/es/': 'es',
+    };
+    const curLoc = this.getCurrentLocation();
+
+    let result = null;
+    for (const check in checkings) {
+      if (curLoc?.pathname.indexOf(check) === 0) {
+        result = checkings[check];
+      }
+    }
+
+    // english as default
+    return result || 'en-US';
+  }
+
   // transfer url query string to an object
   urlQueryToObject(query: string) {
     return JSON.parse('{"' + decodeURI(query).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
@@ -265,14 +285,19 @@ export class UtilsService {
     if (date.isSame(tomorrow, 'd')) {
       return $localize`Tomorrow`;
     }
+
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to format of "en-GB" from previous code
+    let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat('en-US', {
+      return new Intl.DateTimeFormat(defaultLocale, {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat('en-GB', {
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -555,18 +580,20 @@ export class UtilsService {
         return $localize`:labelling:learner`;
       case 'mentor':
         return $localize`:labelling:expert`;
-      case 'admin':
-        return $localize`:labelling:admin`;
       case 'admins':
         return $localize`:labelling:admins`;
-      case 'sysadmin':
-        return $localize`:labelling:sysadmin`;
+      case 'admin':
+        return $localize`:labelling:admin`;
       case 'sysadmins':
         return $localize`:labelling:sysadmins`;
-      case 'coordinator':
-        return $localize`:labelling:coordinator`;
+      case 'sysadmin':
+        return $localize`:labelling:sysadmin`;
       case 'coordinators':
         return $localize`:labelling:coordinators`;
+      case 'coordinator':
+        return $localize`:labelling:coordinator`;
+      case 'inst_admin':
+        return $localize`:labelling:inst_admin`;
       default: // added default to allow graceful failure handling
         return role;
     }
@@ -623,5 +650,24 @@ export class UtilsService {
       const plaintext = node.innerText;
       return new Delta().insert(plaintext);
     });
+  }
+
+  moveToNewLocale(newLocale: string) {
+    const currentURL = this.getCurrentLocation();
+    const currentLocale = this.getCurrentLocale();
+
+    if (currentLocale === newLocale) {
+      return;
+    }
+
+    // if pathname begin with "/v3/" (for development purpose only)
+    const pathname = currentURL.pathname.match(/\/(\w\-?){2,5}\//);
+    if (currentURL.pathname.indexOf('/v3/') === 0) {
+      return this.redirectToUrl(`${currentURL.origin}/${newLocale}${currentURL.pathname}`);
+    }
+
+    // if pathname begin with different locale
+    const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
+    return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 }

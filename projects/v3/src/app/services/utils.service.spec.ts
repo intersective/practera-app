@@ -344,7 +344,7 @@ describe('UtilsService', () => {
 
     it('should standardize date format', () => {
       const result = service.timeFormatter(NOW);
-      const formatted = new Intl.DateTimeFormat('en-US', {
+      const formatted = new Intl.DateTimeFormat('en-GB', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -355,7 +355,7 @@ describe('UtilsService', () => {
     it('should standardize date format international format', () => {
       const onePMUTC = `${thisMoment.format('YYYY-MM-DD')} 13:00:00.000Z`;
       const result = service.timeFormatter(onePMUTC); // follows local GMT
-      const formatted = new Intl.DateTimeFormat('en-US', {
+      const formatted = new Intl.DateTimeFormat('en-GB', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -366,7 +366,7 @@ describe('UtilsService', () => {
     it('should ensure all numeric time format is return in expected time format (h:mm a)', () => {
       LOCAL_TIME_TODAY.forEach(timeString => {
         const result = service.timeFormatter(timeString);
-        const formatted = new Intl.DateTimeFormat('en-US', {
+        const formatted = new Intl.DateTimeFormat('en-GB', {
           hour12: true,
           hour: 'numeric',
           minute: 'numeric'
@@ -602,4 +602,36 @@ describe('UtilsService', () => {
     });
   });
 
+  describe('moveToNewLocale()', () => {
+    it('should change URL to one with proper locale', () => {
+      const subject = {
+        origin: 'https://sample.com',
+        pathname: '/v3/home',
+      };
+      const targetLocale = 'sample-locale';
+
+      service.getCurrentLocation = jasmine.createSpy('getCurrentLocation').and.returnValue(subject);
+      service.getCurrentLocale = jasmine.createSpy('getCurrentLocale').and.returnValue('en-US');
+      service.redirectToUrl = jasmine.createSpy('service.redirectToUrl');
+      service.moveToNewLocale(targetLocale);
+
+      expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+    });
+
+
+    it('should change URL to one with proper locale', () => {
+      const subject = {
+        origin: 'https://sample.com',
+        pathname: '/en-US/v3/home',
+      };
+      const targetLocale = 'new-locale';
+
+      service.getCurrentLocation = jasmine.createSpy('getCurrentLocation').and.returnValue(subject);
+      service.getCurrentLocale = jasmine.createSpy('getCurrentLocale').and.returnValue('en-US');
+      service.redirectToUrl = jasmine.createSpy('service.redirectToUrl');
+      service.moveToNewLocale(targetLocale);
+
+      expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+    });
+  });
 });
