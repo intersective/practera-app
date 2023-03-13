@@ -1,0 +1,148 @@
+service: ${env:STACK_NAME}-lambda-edge-${env:ROOTSTACK}
+frameworkVersion: "2"
+useDotenv: true
+
+provider:
+  logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  stage: ${env:ENV}
+  deploymentBucket:
+    maxPreviousDeploymentArtifacts: 10 # On every deployment the framework prunes the bucket to remove artifacts older than this limit. The default is 5
+    blockPublicAccess: true
+    serverSideEncryption: AES256
+    tags:
+      StackName: ${env:STACK_NAME}
+      Env: ${env:ENV}
+      RootStack: ${env:ROOTSTACK}
+  stackTags: # Optional CF stack tags
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    RootStack: ${env:ROOTSTACK}
+  tags: # Optional service wide function tags
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    RootStack: ${env:ROOTSTACK}
+
+resources:
+  Resources:
+    LambdaFunction:
+      DependsOn: [LambdaFunctionRole]
+      Type: "AWS::Lambda::Function"
+      Properties:
+        FunctionName: ${env:ROOTSTACK}-forwarder-${env:ENV}
+        Handler: index.handler
+        Runtime: nodejs14.x
+        Role: !GetAtt LambdaFunctionRole.Arn
+        MemorySize: 1024
+        Code:
+          ZipFile: |
+            'use strict';
+
+            const path = require("path");
+
+            exports.handler = async (evt, context, cb) => {
+              const { request } = evt.Records[0].cf;
+
+              console.log(`Original Uri: ${request.uri}`);
+
+              const uriParts = request.uri.split("/");
+
+              const locale = uriParts.length > 1 ? uriParts[1] : "";
+              const locales = ["en-US", "ja", "ms", "es"];
+
+              if (locale === "" || locale === "index.html") {
+                request.uri = "/en-US/index.html";
+                console.log('Go to default page and locale.');
+                return cb(null, request);
+              }
+
+              if (!locales.includes(locale)) return cb(null, request);
+
+              const lastPartUrl = uriParts[uriParts.length - 1];
+              const fileExt = path.extname(lastPartUrl);
+
+              if (!fileExt) request.uri = `/${locale}/index.html`;
+
+              console.log(`New Uri: ${request.uri}`);
+              return cb(null, request);
+            };
+
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+                  - edgelambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+    LambdaVersion:
+      Type: Custom::LatestLambdaVersion
+      Properties:
+        ServiceToken: !GetAtt PublishLambdaVersion.Arn
+        FunctionName: !Ref LambdaFunction
+        Nonce: ${env:Nonce}
+
+    PublishLambdaVersion:
+      Type: AWS::Lambda::Function
+      Properties:
+        Handler: index.handler
+        Runtime: nodejs14.x
+        Role: !GetAtt PublishLambdaVersionRole.Arn
+        Code:
+          ZipFile: |
+            const {Lambda} = require('aws-sdk')
+            const {send, SUCCESS, FAILED} = require('cfn-response')
+            const lambda = new Lambda()
+            exports.handler = (event, context) => {
+              const {RequestType, ResourceProperties: {FunctionName}} = event
+              if (RequestType == 'Delete') return send(event, context, SUCCESS)
+              lambda.publishVersion({FunctionName}, (err, {FunctionArn}) => {
+                err
+                  ? send(event, context, FAILED, err)
+                  : send(event, context, SUCCESS, {FunctionArn})
+              })
+            }
+
+    PublishLambdaVersionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        Policies:
+          - PolicyName: PublishVersion
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action: lambda:PublishVersion
+                  Resource: "*"
+
+  Outputs:
+    LambdaFunctionArn:
+      Description: "Lambda Function ARN"
+      Value: !GetAtt LambdaFunction.Arn
+      Export:
+        Name: ${env:STACK_NAME}-LambdaFunctionArn-${env:ENV}
+
+    IndexLambdaVersionArnVersion:
+      Description: "Arn Version for Lambda function to associate unto CDN"
+      Value: !GetAtt LambdaVersion.FunctionArn
+      Export:
+        Name: ${env:STACK_NAME}-IndexLambdaVersionArnVersion-${env:ENV}
