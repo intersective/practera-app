@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'release/live'
+      - 'release/live-v3'
 
 
 
@@ -40,7 +40,7 @@ jobs:
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
-      BRANCH_TAG_NAME: release/live
+      BRANCH_TAG_NAME: release/live-v3
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: appv3.p2-prerelease.practera.com
