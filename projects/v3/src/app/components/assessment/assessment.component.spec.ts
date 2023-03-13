@@ -284,7 +284,7 @@ describe('AssessmentComponent', () => {
 
       expect(component.doAssessment).toEqual(true);
       expect(component.feedbackReviewed).toEqual(false);
-      expect(component.btnDisabled).toEqual(false);
+      expect(component.btnDisabled$.value).toEqual(false);
       expect(component.isNotInATeam).toEqual(false);
       expect(component.isPendingReview).toEqual(false);
     });
@@ -297,7 +297,7 @@ describe('AssessmentComponent', () => {
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
-      expect(component.btnDisabled).toEqual(true);
+      expect(component.btnDisabled$.value).toEqual(true);
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
 
@@ -309,7 +309,7 @@ describe('AssessmentComponent', () => {
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
-      expect(component.btnDisabled).toEqual(true);
+      expect(component.btnDisabled$.value).toEqual(true);
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
 
@@ -326,7 +326,7 @@ describe('AssessmentComponent', () => {
       expect(component.doAssessment).toBeTrue();
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
-      expect(component.btnDisabled).toEqual(false);
+      expect(component.btnDisabled$.value).toEqual(false);
     }));
 
     it('should flag assessment as "pending review"', () => {
@@ -415,7 +415,7 @@ describe('AssessmentComponent', () => {
     });
 
     afterEach(() => {
-      expect(component.btnDisabled).toBe(btnDisabled);
+      expect(component.btnDisabled$.value).toBe(btnDisabled);
       expect(notificationSpy.popUp.calls.count()).toBe(0);
       expect(component.assessment.id).toBe(1);
       expect(component.contextId).toBe(2);
