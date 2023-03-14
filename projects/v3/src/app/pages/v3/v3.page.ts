@@ -183,10 +183,8 @@ export class V3Page implements OnInit, OnDestroy {
 
     // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
     const notifications = this.notificationsService.getTodoItems().pipe(
-      mergeMap(generic => {
-        return this.notificationsService.getChatMessage().pipe(
-          map(chats => (generic || []).push(chats)
-        ));
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
       })
     );
     this.subscriptions.push(notifications.subscribe());
