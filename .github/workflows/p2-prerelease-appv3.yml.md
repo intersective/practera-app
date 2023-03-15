@@ -11,8 +11,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      # - 'golive/3*'
-      - 'hotfix/v3.0.9'
+      - 'golive/3*'
+
 
 
 ################################################
@@ -47,12 +47,12 @@ jobs:
 
     steps:
 
-# ################################################
-# #  Export BRANCH_TAG_NAME
-# ################################################
-#       - name: Get branch for env BRANCH_TAG_NAME
-#         run: |
-#           echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+################################################
+#  Export BRANCH_TAG_NAME
+################################################
+      - name: Get branch for env BRANCH_TAG_NAME
+        run: |
+          echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
 
 ################################################
 #  GITHUB REPO CHECKOUT
@@ -60,8 +60,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          # ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
-          ref: hotfix/v3.0.9
+          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 ################################################
 #  GET P2 PRERELEASE AWS ORGANIZATION NUMBER
