@@ -161,7 +161,11 @@ export class NotificationsService {
 
     return modal;
   }
-
+  /**
+   * Displays an alert dialog with the given configuration options.
+   * @param {AlertOptions} config - The options for the alert dialog.
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
