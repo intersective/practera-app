@@ -21,7 +21,7 @@
             routerDirection="root"
             detail="false"
             [title]="p.title">
-            <ng-container *ngIf="p.badges > 0;else iconOnly">
+            <ng-container *ngIf="!openMenu; else iconOnly">
               <div class="badge-wrapper">
                 <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
                 <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
@@ -33,6 +33,9 @@
             <ion-label class="body-2 black">
               {{p.title}}
             </ion-label>
+            <ion-badge *ngIf="p.badges > 0 && openMenu"
+              slot="end" color="danger" class="hint"
+            >{{p.badges}}</ion-badge>
           </ion-item>
         </ion-menu-toggle>
 
