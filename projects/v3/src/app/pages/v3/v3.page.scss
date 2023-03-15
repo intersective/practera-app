@@ -10,6 +10,7 @@ ion-menu.collapsed {
     margin: 0px 5px 0px 5px;
     .hint {
       right: -1.5px;
+      top: -5px;
     }
   }
 
@@ -42,6 +43,12 @@ ion-menu.collapsed {
 }
 
 ion-menu {
+  .hint {
+    font-size: 10px;
+    background-color: red;
+    border-radius: 8px;
+    padding: 2px 5px;
+  }
   border-right: 1px solid;
   border-right-color: var(--practera-grey-25);
 
@@ -65,13 +72,9 @@ ion-menu {
     }
 
     .hint {
-      background-color: red;
       position: absolute;
       right: 1.5px;
-      top: 10px;
-      border-radius: 100%;
       /* overflow: visible; */
-      font-size: 0.7em;
       display: flex;
       align-items: center;
 
@@ -109,6 +112,7 @@ ion-item-divider {
 
 .menu-item {
   --padding-start: 20px;
+
   ion-icon {
     // margin-left: 4px;
     margin-right: 20px;
