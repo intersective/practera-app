@@ -407,8 +407,8 @@ export class NotificationsService {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
-    item.name = todoItem.meta.assessment_name;
-    item.description = todoItem.meta.reviewer_name + ' has provided feedback';
+    item.name = $localize`New Feedback`;
+    item.description = $localize`Feedback received from ${todoItem.meta.reviewer_name} for ${todoItem.meta.assessment_name}`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -429,8 +429,8 @@ export class NotificationsService {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
-    item.name = todoItem.meta.assessment_name;
-    item.description = 'Please review the assessment';
+    item.name = $localize`New Submission for Review`;
+    item.description = $localize`Submission received from ${todoItem.meta.submitter_name} for ${todoItem.meta.assessment_name}`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -455,7 +455,7 @@ export class NotificationsService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = this.utils.dueDateFormatter(todoItem.meta.due_date);
+    item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date)}`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -514,7 +514,7 @@ export class NotificationsService {
     });
     if (unreadMessages > 1) {
       // group the chat notifiations
-      todoItem.name = unreadMessages + ' messages from ' + noOfChats + ' chats';
+      todoItem.name = $localize`You have ${unreadMessages} unread messages from ${noOfChats} of chats`;
     }
     if (todoItem) {
       todoItem.meta = {};
@@ -592,8 +592,8 @@ export class NotificationsService {
         }
         result = {
           type: 'feedback_available',
-          name: event.meta.AssessmentReview.assessment_name,
-          description: event.meta.AssessmentReview.reviewer_name + ' has provided feedback',
+          name: $localize`New Feedback`,
+          description: $localize`Feedback received from ${event.meta.AssessmentReview.reviewer_name} for ${event.meta.AssessmentReview.assessment_name}`,
           time: this.utils.timeFormatter(event.meta.AssessmentReview.published_date),
           meta: {
             activity_id: event.meta.AssessmentReview.activity_id,
@@ -618,8 +618,8 @@ export class NotificationsService {
         }
         result = {
           type: 'review_submission',
-          name: event.meta.AssessmentReview.assessment_name,
-          description: 'Please review the assessment',
+          name: $localize`New Submission for Review`,
+          description: $localize`Submission received from ${event.meta.AssessmentReview.submitter_name} for ${event.meta.AssessmentReview.assessment_name}`,
           time: this.utils.timeFormatter(event.meta.AssessmentReview.assigned_date),
           meta: {
             context_id: event.meta.AssessmentReview.context_id,
@@ -643,8 +643,8 @@ export class NotificationsService {
         }
         result = {
           type: 'assessment_submission_reminder',
-          name: event.meta.AssessmentSubmissionReminder.assessment_name,
-          description: this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date),
+          name: $localize`Submission Reminder`,
+          description: $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date)}`,
           time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
