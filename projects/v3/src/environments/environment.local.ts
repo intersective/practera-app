@@ -13,7 +13,7 @@ export const environment = {
   chatGraphQL: 'http://localhost:3000/local/graphql/',
   globalLoginUrl: 'https://login.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
-  intercomAppId: '',
+  intercomAppId: ' ',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
