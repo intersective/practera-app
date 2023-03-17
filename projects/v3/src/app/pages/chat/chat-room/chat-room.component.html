@@ -152,7 +152,8 @@
         (ngModelChange)="typing()"
         (onFocus)="showBottomAttachmentButtons = true;"
         (onBlur)="showBottomAttachmentButtons = false;"
-        (onEditorCreated)="utils.formatQuillClipboard($event)">
+        (onEditorCreated)="utils.formatQuillClipboard($event)"
+        i18n-placeholder>
           <div quill-editor-toolbar>
             <span class="ql-formats">
               <button class="ql-bold" [title]="'Bold'"></button>
