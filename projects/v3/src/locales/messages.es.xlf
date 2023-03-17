@@ -43,19 +43,19 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">141</context>
+          <context context-type="linenumber">151</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">165</context>
+          <context context-type="linenumber">175</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">279</context>
+          <context context-type="linenumber">277</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">382</context>
+          <context context-type="linenumber">380</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/contact-number-form/contact-number-form.component.ts</context>
@@ -187,16 +187,24 @@
         <source>in progress</source>
         <target>En progreso</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">70</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">487</context>
+          <context context-type="linenumber">480</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2929655947743447381" datatype="html">
         <source>overdue</source>
         <target>pendiente</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
+          <context context-type="linenumber">74</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">491</context>
+          <context context-type="linenumber">484</context>
         </context-group>
       </trans-unit>
       <trans-unit id="870126198208677814" datatype="html">
@@ -216,7 +224,7 @@
         <target>Esta parte de la aplicación aún está bloqueada. Puedes desbloquear las funciones si utilizas la aplicación y completas todas las tareas.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">138</context>
+          <context context-type="linenumber">148</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5301693178039706546" datatype="html">
@@ -224,11 +232,15 @@
         <target>No estás en un equipo, por favor ponte en contacto con el coordinador de la experiencia to continuar.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/activity/activity.component.ts</context>
-          <context context-type="linenumber">162</context>
+          <context context-type="linenumber">172</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.html</context>
           <context context-type="linenumber">263,264</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
+          <context context-type="linenumber">274</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3620188369327429839" datatype="html">
@@ -326,11 +338,11 @@
         <target>Guardado hace <x id="PH" equiv-text="this.utils.timeFormatter(this.submission.modified)"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">156</context>
+          <context context-type="linenumber">154</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">177</context>
+          <context context-type="linenumber">175</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts</context>
@@ -342,7 +354,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/review-desktop/review-desktop.page.ts</context>
-          <context context-type="linenumber">111</context>
+          <context context-type="linenumber">116</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7800414877557954276" datatype="html">
@@ -358,7 +370,7 @@
         <target>Enviar comentarios</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">448</context>
+          <context context-type="linenumber">441</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3206937768137423633" datatype="html">
@@ -366,7 +378,7 @@
         <target>Enviar respuestas</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">450</context>
+          <context context-type="linenumber">443</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9131367952360276688" datatype="html">
@@ -374,7 +386,7 @@
         <target>Marcar comentarios como leídos</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">452</context>
+          <context context-type="linenumber">445</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7132705977879866263" datatype="html">
@@ -382,7 +394,7 @@
         <target>Continuar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/assessment/assessment.component.ts</context>
-          <context context-type="linenumber">454</context>
+          <context context-type="linenumber">447</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7571110135159465275" datatype="html">
@@ -590,7 +602,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9081075303920400841" datatype="html">
@@ -598,7 +610,11 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Respuesta del experto</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
-          <context context-type="linenumber">17</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
+          <context context-type="linenumber">75</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/multi-team-member-selector/multi-team-member-selector.component.html</context>
@@ -626,11 +642,11 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Comentarios</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">32</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/file/file.component.html</context>
-          <context context-type="linenumber">84</context>
+          <context context-type="linenumber">91</context>
         </context-group>
       </trans-unit>
       <trans-unit id="527514296718036461" datatype="html">
@@ -683,7 +699,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">151</context>
+          <context context-type="linenumber">152</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2797219889453562954" datatype="html">
@@ -695,7 +711,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">154</context>
+          <context context-type="linenumber">158</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6414892769953030718" datatype="html">
@@ -763,7 +779,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1861072274070577746" datatype="html">
@@ -943,6 +959,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.ts</context>
           <context context-type="linenumber">92</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/devtool/devtool.page.ts</context>
+          <context context-type="linenumber">61</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="7322623193969318063" datatype="html">
         <source>Please add your answer here</source>
@@ -957,7 +977,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Sin respuesta.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6592236532352314965" datatype="html">
@@ -1110,6 +1130,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <source>Email</source>
         <target>Correo</target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
+          <context context-type="linenumber">18</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.html</context>
           <context context-type="linenumber">20</context>
         </context-group>
@@ -1123,7 +1147,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Enviar correo</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1118027788072351320" datatype="html">
@@ -1131,7 +1155,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Enviando...</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">30</context>
+          <context context-type="linenumber">31</context>
         </context-group>
       </trans-unit>
       <trans-unit id="327534766307158513" datatype="html">
@@ -1139,7 +1163,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>¿Lo recordaste?</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">34</context>
+          <context context-type="linenumber">35</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.html</context>
@@ -1151,7 +1175,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Ingresa acá</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html</context>
-          <context context-type="linenumber">36</context>
+          <context context-type="linenumber">37</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-reset-password/auth-reset-password.component.html</context>
@@ -1239,8 +1263,8 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
       </trans-unit>
       <trans-unit id="1810372108402791211" datatype="html">
-        <source></source>
-        <target></target>
+        <source>We’ve checked this password against a global database of insecure passwords and your password was on it.&lt;br&gt;We have sent you an email with a link to reset your password.&lt;br&gt;You can learn more about how we check that &lt;a href=&quot;https://haveibeenpwned.com/Passwords&quot;&gt;database&lt;/a&gt;</source>
+        <target>Hemos cotejado esta contraseña con una base de datos global de contraseñas inseguras y su contraseña estaba en ella.&lt;br&gt;Le hemos enviado un correo electrónico con un enlace para restablecer su contraseña.&lt;br&gt;Puede obtener más información sobre cómo lo comprobamos&lt;a href=&quot;https://haveibeenpwned.com/Passwords&quot;&gt;aquí&lt;/a&gt;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
           <context context-type="linenumber">69</context>
@@ -1395,8 +1419,8 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
       </trans-unit>
       <trans-unit id="1935083600637590520" datatype="html">
-        <source></source>
-        <target></target>
+        <source>We’ve checked this password against a global database of insecure passwords and your password was on it.&lt;br&gt;Please try again.&lt;br&gt;You can learn more about how we check that &lt;a href=&quot;https://haveibeenpwned.com/Passwords&quot;&gt;database&lt;/a&gt;</source>
+        <target>Hemos cotejado esta contraseña con una base de datos global de contraseñas inseguras y su contraseña estaba en ella.&lt;br&gt;Le hemos enviado un correo electrónico con un enlace para restablecer su contraseña.&lt;br&gt;Puede obtener más información sobre cómo lo comprobamos&lt;a href=&quot;https://haveibeenpwned.com/Passwords&quot;&gt;aquí&lt;/a&gt;</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
           <context context-type="linenumber">190</context>
@@ -1637,7 +1661,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">116</context>
+          <context context-type="linenumber">123</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3304972143698843178" datatype="html">
@@ -1710,7 +1734,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">make reservation</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">157</context>
+          <context context-type="linenumber">164</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6794541525427692323" datatype="html">
@@ -1718,7 +1742,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Cancelar Reserva</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">163</context>
+          <context context-type="linenumber">173</context>
         </context-group>
       </trans-unit>
       <trans-unit id="896596999689981805" datatype="html">
@@ -1726,7 +1750,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>ver registro</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">171</context>
+          <context context-type="linenumber">184</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1223420702229395921" datatype="html">
@@ -1734,7 +1758,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>registrarse</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">173</context>
+          <context context-type="linenumber">189</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4454458467959086944" datatype="html">
@@ -1743,7 +1767,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">event duration</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">229</context>
+          <context context-type="linenumber">247</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8455336263418471876" datatype="html">
@@ -1752,7 +1776,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">event duration</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/events/event-detail/event-detail.component.ts</context>
-          <context context-type="linenumber">231</context>
+          <context context-type="linenumber">249</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8285340704230281659" datatype="html">
@@ -1852,7 +1876,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">104</context>
+          <context context-type="linenumber">109</context>
         </context-group>
       </trans-unit>
       <trans-unit id="998728513627286561" datatype="html">
@@ -1940,7 +1964,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">98</context>
+          <context context-type="linenumber">102</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3454112391854626716" datatype="html">
@@ -2085,7 +2109,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">110</context>
+          <context context-type="linenumber">116</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1428402536910601096" datatype="html">
@@ -2117,7 +2141,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">71</context>
+          <context context-type="linenumber">74</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7226684209936743036" datatype="html">
@@ -2211,7 +2235,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Mis experiencias</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/v3/v3.page.ts</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">75</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2870489062371500475" datatype="html">
@@ -2302,7 +2326,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Tarea enviada</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">184</context>
+          <context context-type="linenumber">188</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6541985036282880795" datatype="html">
@@ -2311,11 +2335,11 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">John Doe has provided feedback</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">411</context>
+          <context context-type="linenumber">415</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">596</context>
+          <context context-type="linenumber">600</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3458181538319821871" datatype="html">
@@ -2323,11 +2347,11 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Por favor, revisa la tarea </target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">433</context>
+          <context context-type="linenumber">437</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">622</context>
+          <context context-type="linenumber">626</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2540803582621285846" datatype="html">
@@ -2336,7 +2360,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">notification description</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">511</context>
+          <context context-type="linenumber">515</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3045386854898816680" datatype="html">
@@ -2345,7 +2369,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">99 messages from 99 chats</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">517</context>
+          <context context-type="linenumber">521</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4498682414491138092" datatype="html">
@@ -2353,7 +2377,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Ayer</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">283</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9129734193759025482" datatype="html">
@@ -2361,7 +2385,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Mañana</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">266</context>
+          <context context-type="linenumber">286</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2036588713578345721" datatype="html">
@@ -2369,7 +2393,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Atrasado <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">501</context>
+          <context context-type="linenumber">526</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8405047916216508371" datatype="html">
@@ -2377,7 +2401,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <target>Pendiente <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">503</context>
+          <context context-type="linenumber">528</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4611677244202358193" datatype="html">
@@ -2386,7 +2410,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">555</context>
+          <context context-type="linenumber">580</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3825319751391625987" datatype="html">
@@ -2395,7 +2419,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">557</context>
+          <context context-type="linenumber">582</context>
         </context-group>
       </trans-unit>
       <trans-unit id="931773981157828593" datatype="html">
@@ -2404,7 +2428,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">559</context>
+          <context context-type="linenumber">586</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7978101932847504722" datatype="html">
@@ -2413,7 +2437,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">561</context>
+          <context context-type="linenumber">584</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4060595931040751333" datatype="html">
@@ -2422,7 +2446,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">563</context>
+          <context context-type="linenumber">590</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7294220956990424336" datatype="html">
@@ -2431,7 +2455,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">565</context>
+          <context context-type="linenumber">588</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5109712737720657574" datatype="html">
@@ -2440,7 +2464,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">567</context>
+          <context context-type="linenumber">594</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5507119337652002645" datatype="html">
@@ -2449,7 +2473,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">569</context>
+          <context context-type="linenumber">592</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1296595677360340695" datatype="html">
@@ -2527,6 +2551,18 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.ts</context>
           <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="555643923731315330" datatype="html">
+        <source>Apologies for the inconvenience caused. Something went wrong. Error: <x id="PH" equiv-text="err.msg"/></source>
+        <target>Disculpas por las molestias ocasionadas. Algo salió mal. Error: <x id="PH" equiv-text="err.msg"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.ts</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/devtool/devtool.page.ts</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
     </body>
