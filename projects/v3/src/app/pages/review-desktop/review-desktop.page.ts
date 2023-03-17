@@ -94,25 +94,31 @@ export class ReviewDesktopPage implements OnInit {
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    const submission = await this.assessmentService.saveAnswers(
-      event.assessment,
-      event.answers,
-      event.action,
-      this.assessment.pulseCheck
-    ).toPromise();
+    try {
+      const submission = await this.assessmentService.saveAnswers(
+        event.assessment,
+        event.answers,
+        event.action,
+        this.assessment.pulseCheck
+      ).toPromise();
 
-    // AV2-1371: added to reduce API call & waiting time for API to response.
-    if (!event.assessment.inProgress
-      && submission?.data?.submitReview?.success === true) {
-      this.submission.status = 'feedback available';
-      this.review.status = 'done';
+      // AV2-1371: added to reduce API call & waiting time for API to response.
+      if (!event.assessment.inProgress
+        && submission?.data?.submitReview?.success === true) {
+        this.submission.status = 'feedback available';
+        this.review.status = 'done';
+        this.reviewService.getReviews();
+      }
+
+      this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
+
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    } catch (err) {
+      this.savingText$.next($localize`Save Failed.`);
+      this.loading = false;
+      this.btnDisabled$.next(false);
     }
-
-    this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
-    this.reviewService.getReviews();
-
-    this.loading = false;
-    this.btnDisabled$.next(false);
   }
 
 }
