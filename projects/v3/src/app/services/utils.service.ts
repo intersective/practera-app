@@ -260,10 +260,10 @@ export class UtilsService {
     const yesterday = compareDate.clone().subtract(1, 'day').startOf('day');
 
     if (date.isSame(yesterday, 'd')) {
-      return 'Yesterday';
+      return $localize`Yesterday`;
     }
     if (date.isSame(tomorrow, 'd')) {
-      return 'Tomorrow';
+      return $localize`Tomorrow`;
     }
     if (date.isSame(compareDate, 'd')) {
       return new Intl.DateTimeFormat('en-US', {
@@ -498,9 +498,9 @@ export class UtilsService {
     }
     const difference = this.timeComparer(dueDate);
     if (difference < 0) {
-      return 'Overdue ' + this.utcToLocal(dueDate);
+      return $localize`Overdue ${this.utcToLocal(dueDate)}`;
     }
-    return 'Due ' + this.utcToLocal(dueDate);
+    return $localize`Due ${this.utcToLocal(dueDate)}`;
   }
 
   getDateDifference(dateOne: string, datetwo: string) {
@@ -552,10 +552,22 @@ export class UtilsService {
   getUserRolesForUI(role) {
     switch (role) {
       case 'participant':
-        return 'learner';
+        return $localize`:labelling:learner`;
       case 'mentor':
-        return 'expert';
-      default:
+        return $localize`:labelling:expert`;
+      case 'admin':
+        return $localize`:labelling:admin`;
+      case 'admins':
+        return $localize`:labelling:admins`;
+      case 'sysadmin':
+        return $localize`:labelling:sysadmin`;
+      case 'sysadmins':
+        return $localize`:labelling:sysadmins`;
+      case 'coordinator':
+        return $localize`:labelling:coordinator`;
+      case 'coordinators':
+        return $localize`:labelling:coordinators`;
+      default: // added default to allow graceful failure handling
         return role;
     }
   }
