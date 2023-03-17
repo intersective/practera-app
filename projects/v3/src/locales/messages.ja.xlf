@@ -340,7 +340,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">46</context>
+          <context context-type="linenumber">47</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6654658731991152766" datatype="html">
@@ -360,7 +360,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">72</context>
+          <context context-type="linenumber">73</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1861072274070577746" datatype="html">
@@ -514,7 +514,7 @@
         <target>回答はありませんでした。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/text/text.component.html</context>
-          <context context-type="linenumber">41</context>
+          <context context-type="linenumber">42</context>
         </context-group>
       </trans-unit>
       <trans-unit id="6592236532352314965" datatype="html">
@@ -1809,7 +1809,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="1810372108402791211" datatype="html">
-        <source></source>
+        <source>We’ve checked this password against a global database of insecure passwords and your password was on it.&lt;br&gt;We have sent you an email with a link to reset your password.&lt;br&gt;You can learn more about how we check that &lt;a href=&quot;https://haveibeenpwned.com/Passwords&quot;&gt;database&lt;/a&gt;</source>
         <target>このパスワードを安全でないパスワードのグローバルデータベースと照合したところ、あなたのパスワードはその中に入っていました。もう一度お試しください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-login/auth-login.component.ts</context>
@@ -1833,7 +1833,7 @@
         </context-group>
       </trans-unit>
       <trans-unit id="1935083600637590520" datatype="html">
-        <source></source>
+        <source>We’ve checked this password against a global database of insecure passwords and your password was on it.&lt;br&gt;Please try again.&lt;br&gt;You can learn more about how we check that &lt;a href=&quot;https://haveibeenpwned.com/Passwords&quot;&gt;database&lt;/a&gt;</source>
         <target>このパスワードを安全でないパスワードのグローバルデータベースと照合したところ、あなたのパスワードはその中に入っていました。もう一度お試しください。</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/pages/auth/auth-registration/auth-registration.component.ts</context>
@@ -2165,11 +2165,11 @@
         <note priority="1" from="description">John Doe has provided feedback</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">411</context>
+          <context context-type="linenumber">415</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">596</context>
+          <context context-type="linenumber">600</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3458181538319821871" datatype="html">
@@ -2177,11 +2177,11 @@
         <target>タスクを確認してください</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">433</context>
+          <context context-type="linenumber">437</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">622</context>
+          <context context-type="linenumber">626</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2540803582621285846" datatype="html">
@@ -2190,7 +2190,7 @@
         <note priority="1" from="description">notification description</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">511</context>
+          <context context-type="linenumber">515</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1937685239363295307" datatype="html">
@@ -2216,7 +2216,7 @@
         <target>済</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8986421314427632087" datatype="html">
@@ -2224,7 +2224,7 @@
         <target>ペンディング</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-list/review-list.component.ts</context>
-          <context context-type="linenumber">53</context>
+          <context context-type="linenumber">55</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7322623193969318063" datatype="html">
@@ -2325,7 +2325,7 @@
         <note priority="1" from="description">99 messages from 99 chats</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">517</context>
+          <context context-type="linenumber">521</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4498682414491138092" datatype="html">
@@ -2333,7 +2333,7 @@
         <target>昨日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">263</context>
+          <context context-type="linenumber">283</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9129734193759025482" datatype="html">
@@ -2341,7 +2341,7 @@
         <target>明日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">266</context>
+          <context context-type="linenumber">286</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2036588713578345721" datatype="html">
@@ -2349,7 +2349,7 @@
         <target>遅れた <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">501</context>
+          <context context-type="linenumber">526</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8405047916216508371" datatype="html">
@@ -2357,7 +2357,7 @@
         <target>期限 <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">503</context>
+          <context context-type="linenumber">528</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4611677244202358193" datatype="html">
@@ -2366,7 +2366,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">555</context>
+          <context context-type="linenumber">580</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3825319751391625987" datatype="html">
@@ -2375,7 +2375,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">557</context>
+          <context context-type="linenumber">582</context>
         </context-group>
       </trans-unit>
       <trans-unit id="931773981157828593" datatype="html">
@@ -2384,7 +2384,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">559</context>
+          <context context-type="linenumber">584</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7978101932847504722" datatype="html">
@@ -2393,7 +2393,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">561</context>
+          <context context-type="linenumber">586</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4060595931040751333" datatype="html">
@@ -2402,7 +2402,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">563</context>
+          <context context-type="linenumber">588</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7294220956990424336" datatype="html">
@@ -2411,7 +2411,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">565</context>
+          <context context-type="linenumber">590</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5109712737720657574" datatype="html">
@@ -2420,7 +2420,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">567</context>
+          <context context-type="linenumber">592</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5507119337652002645" datatype="html">
@@ -2429,7 +2429,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">569</context>
+          <context context-type="linenumber">594</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5391191655981300425" datatype="html">
@@ -2531,6 +2531,18 @@
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.ts</context>
           <context context-type="linenumber">38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="555643923731315330" datatype="html">
+        <source>Apologies for the inconvenience caused. Something went wrong. Error: <x id="PH" equiv-text="err.msg"/></source>
+        <target>ご迷惑をおかけして申し訳ありません。何か問題が発生しました。エラー: <x id="PH" equiv-text="err.msg"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.ts</context>
+          <context context-type="linenumber">93</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/pages/devtool/devtool.page.ts</context>
+          <context context-type="linenumber">62</context>
         </context-group>
       </trans-unit>
     </body>
