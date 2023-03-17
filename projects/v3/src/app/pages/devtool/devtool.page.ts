@@ -59,7 +59,7 @@ export class DevtoolPage implements OnInit {
     } catch (err) {
       await this.notificationsService.alert({
         header: $localize`Error submitting rating`,
-        message: err.message ? $localize`Apologize for the inconvenience caused, something went wrong with the submission. Error: ${err.message}` : JSON.stringify(err),
+        message: err.message ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.message}` : JSON.stringify(err),
       });
       throw new Error(err);
     }

@@ -90,7 +90,7 @@ export class ReviewRatingComponent implements OnInit {
     } catch (err) {
       await this.notificationsService.alert({
         header: $localize`Error submitting rating`,
-        message: err.msg ? $localize`Apologize for the inconvenience caused, something went wrong with the submission. Error: ${err.msg}` : JSON.stringify(err),
+        message: err.msg ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.msg}` : JSON.stringify(err),
       });
       this.isSubmitting = false;
 
