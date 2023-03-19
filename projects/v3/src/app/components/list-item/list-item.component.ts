@@ -1,4 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+interface CTABtnType {
+  name: string;
+  handler: any;
+}
 
 @Component({
   selector: 'app-list-item',
@@ -18,6 +22,8 @@ export class ListItemComponent {
   @Input() subtitle1Color: string;
   @Input() subtitle2: string;
   @Input() subtitle2Color: string;
+  @Input() callToActionBtn: CTABtnType;
+  @Input() callToActionBtnColor: string;
   @Input() label: string;
   @Input() labelColor: string;
   @Input() endingText: string | number;

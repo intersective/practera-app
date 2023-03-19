@@ -9,6 +9,7 @@ import { TodoItem } from '@v3/app/services/notifications.service';
 export class TodoCardComponent {
   @Input() loading: boolean;
   @Input() todoItem: TodoItem;
+  @Input() callToActionBtn: string;
   icons = {
     feedback_available: 'information-circle-outline',
     review_submission: 'information-circle-outline',
@@ -19,4 +20,21 @@ export class TodoCardComponent {
 
   constructor() {}
 
+  gotoAction() {
+    return;
+  }
+
+  get todoTitle(): string {
+    switch (this.todoItem.type) {
+      case 'review_submission':
+        return 'Review submission';
+      case 'feedback_available':
+        return 'Check feedback';
+      case 'assessment_submission_reminder':
+        return 'Check task';
+      case 'chat':
+        return 'Check the message';
+    }
+    return this.todoItem.type;
+  }
 }

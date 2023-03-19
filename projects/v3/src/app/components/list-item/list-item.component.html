@@ -28,10 +28,21 @@
       [attr.aria-label]="title"
     >{{ title }}</div>
 
-    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color" [innerHTML]="subtitle1" [attr.aria-label]="subtitle1"></div>
+    <div *ngIf="subtitle1"
+      [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color"
+      [innerHTML]="subtitle1"
+      [attr.aria-label]="subtitle1"
+    ></div>
 
     <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color" [attr.aria-label]="subtitle2">
       {{ subtitle2 }}
+    </div>
+
+    <div *ngIf="callToActionBtn"
+      [class]="'call-to-action ion-color-' + callToActionBtnColor"
+      [attr.aria-label]="callToActionBtn.name"
+    >
+      <ion-button size="small" color="notification">{{callToActionBtn.name}}</ion-button>
     </div>
 
     <div *ngIf="label" [attr.aria-label]="label">

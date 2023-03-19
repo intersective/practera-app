@@ -4,10 +4,12 @@
   [title]="todoItem.name"
   titleColor="bolder"
   [subtitle1]="todoItem.description"
-  [endingText]="todoItem.time"
-  lines="none"
+  [subtitle2]="todoItem.time"
+  subtitle2Color="grey-50"
   tabindex="0"
   class="focusable"
+  callToActionBtnColor="notification"
+  [callToActionBtn]="{ name: todoTitle, handler: gotoAction }"
 ></app-list-item>
 
 <app-list-item *ngIf="loading" [loading]="true" lines="none"></app-list-item>
@@ -16,5 +18,3 @@
   <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
   <ion-text color="medium" i18n>You have no new notifications.</ion-text>
 </ion-item>
-
-<ion-button color="notification">Test</ion-button>
