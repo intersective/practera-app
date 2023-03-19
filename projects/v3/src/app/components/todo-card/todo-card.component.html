@@ -2,6 +2,7 @@
   *ngIf="todoItem.type"
   [leadingIcon]="icons[todoItem.type] || 'information-circle-outline'"
   [title]="todoItem.name"
+  titleColor="bolder"
   [subtitle1]="todoItem.description"
   [endingText]="todoItem.time"
   lines="none"
@@ -15,3 +16,5 @@
   <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
   <ion-text color="medium" i18n>You have no new notifications.</ion-text>
 </ion-item>
+
+<ion-button color="notification">Test</ion-button>
