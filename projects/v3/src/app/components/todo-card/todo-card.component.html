@@ -1,6 +1,6 @@
 <app-list-item
   *ngIf="todoItem.type"
-  [leadingIcon]="icons[todoItem.type] || 'information-circle-outline'"
+  [notificationIcon]="icon || 'information-circle-outline'"
   [title]="todoItem.name"
   titleColor="bolder"
   [subtitle1]="todoItem.description"

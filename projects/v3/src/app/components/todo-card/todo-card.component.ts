@@ -15,7 +15,7 @@ export class TodoCardComponent {
     review_submission: 'information-circle-outline',
     chat: 'chatbubbles-outline',
     event: 'calendar',
-    assessment_submission_reminder: 'clipboard-outline'
+    assessment_submission_reminder: 'clipboard-outline',
   };
 
   constructor() {}
@@ -36,5 +36,19 @@ export class TodoCardComponent {
         return 'Check the message';
     }
     return this.todoItem.type;
+  }
+
+  get icon(): string {
+    switch (this.todoItem.type) {
+      case 'review_submission':
+        return 'eye';
+      case 'feedback_available':
+        return 'notifications';
+      case 'assessment_submission_reminder':
+        return 'document-text';
+      case 'chat':
+        return 'mail';
+    }
+    return this.icons[this.todoItem.type];
   }
 }

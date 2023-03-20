@@ -11,6 +11,13 @@
     aria-hidden="true"
   ></ion-icon>
 
+  <ion-icon *ngIf="notificationIcon"
+    [name]="notificationIcon"
+    slot="start"
+    class="notification-icon"
+    aria-hidden="true"
+  ></ion-icon>
+
   <ion-avatar *ngIf="leadImage" slot="start" aria-hidden="true">
     <img [src]="leadImage" [alt]="title">
   </ion-avatar>
