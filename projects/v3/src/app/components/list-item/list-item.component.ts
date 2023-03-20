@@ -13,6 +13,7 @@ export class ListItemComponent {
   @Input() loading: boolean;
   @Input() lines? = '';
   @Input() leadingIcon: string;
+  @Input() notificationIcon: string;
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
   @Input() leadImage: string;
