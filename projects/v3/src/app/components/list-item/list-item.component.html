@@ -49,11 +49,7 @@
       [class]="'call-to-action ion-color-' + callToActionBtnColor"
       [attr.aria-label]="callToActionBtn.name"
     >
-      <ion-button size="small"
-        (click)="callToActionBtn.handler()"
-        color="notification">
-        {{callToActionBtn.name}}
-      </ion-button>
+      <ion-button size="small" color="notification">{{callToActionBtn.name}}</ion-button>
     </div>
 
     <div *ngIf="label" [attr.aria-label]="label">
