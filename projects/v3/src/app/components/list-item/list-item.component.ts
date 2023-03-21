@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 interface CTABtnType {
   name: string;
-  handler: any;
+  color: string;
 }
 
 @Component({
@@ -24,7 +24,6 @@ export class ListItemComponent {
   @Input() subtitle2: string;
   @Input() subtitle2Color: string;
   @Input() callToActionBtn: CTABtnType;
-  @Input() callToActionBtnColor: string;
   @Input() label: string;
   @Input() labelColor: string;
   @Input() endingText: string | number;
@@ -44,6 +43,8 @@ export class ListItemComponent {
 
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];
+  // named as "any" to support any callback parameter format
+  @Output() anyBtnClick = new EventEmitter<any>();
   @Output() actionBtnClick = new EventEmitter<number>();
 
   statusDescriptions(iconName): string {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TodoItem } from '@v3/app/services/notifications.service';
 
 @Component({
@@ -10,6 +10,7 @@ export class TodoCardComponent {
   @Input() loading: boolean;
   @Input() todoItem: TodoItem;
   @Input() callToActionBtn: string;
+  @Output() clickAction = new EventEmitter();
   icons = {
     feedback_available: 'information-circle-outline',
     review_submission: 'information-circle-outline',
@@ -20,8 +21,14 @@ export class TodoCardComponent {
 
   constructor() {}
 
-  gotoAction() {
-    return;
+  gotoAction(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
+    return this.clickAction.emit(this.todoItem);
   }
 
   get todoTitle(): string {
