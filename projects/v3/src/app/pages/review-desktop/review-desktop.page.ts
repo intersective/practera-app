@@ -5,8 +5,6 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
 
-const SAVE_PROGRESS_TIMEOUT = 10000;
-
 @Component({
   selector: 'app-review-desktop',
   templateUrl: './review-desktop.page.html',
@@ -91,32 +89,39 @@ export class ReviewDesktopPage implements OnInit {
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    const res = await this.assessmentService.saveAnswers(
-      event.assessment,
-      event.answers,
-      event.action,
-      this.assessment.pulseCheck
-    ).toPromise();
+    try {
+      const res = await this.assessmentService.saveAnswers(
+        event.assessment,
+        event.answers,
+        event.action,
+        this.assessment.pulseCheck
+      ).toPromise();
 
-    // AV2-1371: added to reduce API call & waiting time for API to response.
-    if (!event.assessment.inProgress
-      && res?.data?.submitReview?.success === true) {
-      this.submission.status = 'feedback available';
-      this.review.status = 'done';
-    }
+      // AV2-1371: added to reduce API call & waiting time for API to response.
+      if (!event.assessment.inProgress
+        && res?.data?.submitReview?.success === true) {
+        this.submission.status = 'feedback available';
+        this.review.status = 'done';
+        this.reviewService.getReviews();
+      }
 
-    // fail gracefully: Review submission API may sometimes fail silently
-    if (res?.data?.submitReview === false) {
-      this.savingText$.next($localize`Save failed.`);
-      this.btnDisabled$.next(false);
+      // fail gracefully: Review submission API may sometimes fail silently
+      if (res?.data?.submitReview === false) {
+        this.savingText$.next($localize`Save failed.`);
+        this.btnDisabled$.next(false);
+        this.loading = false;
+        return;
+      }
+
+      this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
+
       this.loading = false;
-      return;
+      this.btnDisabled$.next(false);
+    } catch (err) {
+      this.savingText$.next($localize`Save Failed.`);
+      this.loading = false;
+      this.btnDisabled$.next(false);
     }
-
-    this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
-    this.reviewService.getReviews();
-    this.loading = false;
-    this.btnDisabled$.next(false);
   }
 
 }
