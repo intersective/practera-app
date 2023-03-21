@@ -1,5 +1,5 @@
 <ion-item *ngIf="!loading"
-  [ngClass]="{'active': active}"
+  [ngClass]="{'active': active, 'hasCallToActionBtn': callToActionBtn}"
   [lines]="lines"
   tabindex="0">
 
@@ -46,10 +46,15 @@
     </div>
 
     <div *ngIf="callToActionBtn"
-      [class]="'call-to-action ion-color-' + callToActionBtnColor"
+      [class]="'call-to-action ion-color-' + callToActionBtn.color"
       [attr.aria-label]="callToActionBtn.name"
     >
-      <ion-button size="small" color="notification">{{callToActionBtn.name}}</ion-button>
+      <ion-button size="small"
+        color="notification"
+        (keydown)="anyBtnClick.emit($event)"
+        (click)="anyBtnClick.emit()">
+        {{callToActionBtn.name}}
+      </ion-button>
     </div>
 
     <div *ngIf="label" [attr.aria-label]="label">

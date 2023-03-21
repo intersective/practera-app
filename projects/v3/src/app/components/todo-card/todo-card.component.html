@@ -8,8 +8,8 @@
   subtitle2Color="grey-50"
   tabindex="0"
   class="focusable"
-  callToActionBtnColor="notification"
-  [callToActionBtn]="{ name: todoTitle, handler: gotoAction }"
+  [callToActionBtn]="{ name: todoTitle, color: 'notification' }"
+  (anyBtnClick)="gotoAction($event)"
 ></app-list-item>
 
 <app-list-item *ngIf="loading" [loading]="true" lines="none"></app-list-item>

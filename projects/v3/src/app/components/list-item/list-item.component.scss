@@ -4,6 +4,9 @@
 
 ion-item {
   cursor: pointer;
+  &.hasCallToActionBtn {
+    cursor: unset;
+  }
   &:hover, &:focus {
     --background: var(--practera-light-grey-25);
   }
