@@ -30,8 +30,7 @@
           <ng-container *ngIf="notices.length > 0; else noNotices">
             <app-todo-card *ngFor="let notice of notices"
               [todoItem]="notice" [ngStyle]="{width: '100%'}"
-              (keydown)="clickTodoItem(notice, $event)"
-              (click)="clickTodoItem(notice)"
+              [clickAction]="clickTodoItem"
             ></app-todo-card>
           </ng-container>
 
@@ -62,16 +61,14 @@
       type: 'event',
       time: timeFormatter(event.startTime)
     }"
-    (keydown)="showEventDetail(event, $event)"
-    (click)="showEventDetail(event)"></app-todo-card>
+    [clickAction]="clickTodoItem"></app-todo-card>
   </div>
 
   <ng-container *ngIf="todoItems.length; else noItemsTpl">
     <div *ngFor="let todoItem of todoItems" @newLoaded>
       <app-todo-card
         [todoItem]="todoItem"
-        (keydown)="clickTodoItem(todoItem, $event)"
-        (click)="clickTodoItem(todoItem)"
+        [clickAction]="clickTodoItem"
       ></app-todo-card>
     </div>
   </ng-container>

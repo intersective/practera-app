@@ -10,6 +10,7 @@ export class TodoCardComponent {
   @Input() loading: boolean;
   @Input() todoItem: TodoItem;
   @Input() callToActionBtn: string;
+  @Input() clickAction: (item: any) => Promise<any>;
   icons = {
     feedback_available: 'information-circle-outline',
     review_submission: 'information-circle-outline',
@@ -20,8 +21,8 @@ export class TodoCardComponent {
 
   constructor() {}
 
-  gotoAction() {
-    return;
+  async gotoAction(): Promise<void> {
+    return this.clickAction(this.todoItem).then(console.log);
   }
 
   get todoTitle(): string {
