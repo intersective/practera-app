@@ -1,4 +1,4 @@
-<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !isMobile}"
+<ion-content color="light" class="pop-up-content" [scrollY]="false" [ngClass]="{'desktop-view': !isMobile}"
   text-center
   role="dialog"
   aria-modal="true"
@@ -24,7 +24,7 @@
 
     <div class="div-after-img" *ngIf="type !== 'notification' && hideName !== true">
       <p class="headline-6" *ngIf="achievement.name" tabindex="0" [attr.aria-label]="achievement.name" #achievementName>{{achievement.name}}</p>
-      <p class="body-1" *ngIf="achievement.points && type !== 'notification'">{{achievement.points}} points!</p>
+      <p class="body-1" *ngIf="achievement.points && type !== 'notification'" i18n>{{achievement.points}}&nbsp;{achievement.points, plural, =1 {point} other {points}}!</p>
     </div>
 
     <ion-text color="medium" *ngIf="achievement.description" text-center>
