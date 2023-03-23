@@ -82,7 +82,7 @@ export class NotificationsService {
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
-  private notifications: TodoItem[];
+  private notifications: TodoItem[] = [];
 
   constructor(
     private modalController: ModalController,
@@ -161,7 +161,11 @@ export class NotificationsService {
 
     return modal;
   }
-
+  /**
+   * Displays an alert dialog with the given configuration options.
+   * @param {AlertOptions} config - The options for the alert dialog.
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
@@ -508,7 +512,7 @@ export class NotificationsService {
         unreadMessages += message.unreadMessageCount;
         noOfChats++;
         todoItem.name = message.name;
-        todoItem.description = message.lastMessage;
+        todoItem.description = message.lastMessage === 'file received' ? $localize`:notification description:file received` : message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
       }
     });
@@ -529,7 +533,7 @@ export class NotificationsService {
  * and after this will update _notifications$ subject to broadcast the new update
  * @param chatTodoItem normalized Todo item for chat
  */
-  private _addChatTodoItem(chatTodoItem) {
+  private _addChatTodoItem(chatTodoItem: TodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
       if (todoItem.type === 'chat') {
