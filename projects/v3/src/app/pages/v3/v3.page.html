@@ -21,7 +21,10 @@
             routerDirection="root"
             detail="false"
             [title]="p.title">
-            <ion-icon slot="start" [name]="p.icon" aria-hidden="true"></ion-icon>
+            <div class="badge-wrapper">
+              <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
+              <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
+            </div>
             <ion-label class="body-2 black">
               {{p.title}}
             </ion-label>
