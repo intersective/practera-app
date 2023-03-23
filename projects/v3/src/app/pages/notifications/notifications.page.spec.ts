@@ -243,7 +243,7 @@ describe('NotificationsPage', () => {
           assessment_submission_id: 4,
         },
         type: 'any type',
-      }, keyboardEvent).then(clickTodoItem => {
+      }).then(clickTodoItem => {
         expect(clickTodoItem).toBeUndefined();
       });
       const showEventDetail = component.showEventDetail({} as any, keyboardEvent);
@@ -273,7 +273,7 @@ describe('NotificationsPage', () => {
           assessment_submission_id: 4,
         },
         type: 'any type',
-      }, keyboardEvent);
+      });
       const showEventDetail = component.showEventDetail({} as any, keyboardEvent);
       component.goBack(keyboardEvent);
       flushMicrotasks();
