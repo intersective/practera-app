@@ -135,7 +135,7 @@ describe('ActivityDesktopPage', () => {
         tasks: [NormalisedTaskFixture],
       };
 
-      component.ngOnInit();
+      component.ionViewWillEnter();
 
       expect(component.goToTask).toHaveBeenCalled();
     });
@@ -234,7 +234,7 @@ describe('ActivityDesktopPage', () => {
       expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
       // expect(activitySpy.getActivity).toHaveBeenCalled();
       tick(1000);
-      expect(assessmentSpy.popUpReviewRating).toHaveBeenCalled();
+      expect(notificationsSpy.popUpReviewRating).toHaveBeenCalled();
     }));
   });
 
@@ -259,7 +259,7 @@ describe('ActivityDesktopPage', () => {
       });
       component.reviewRatingPopUp();
       tick();
-      expect(assessmentSpy.popUpReviewRating).not.toHaveBeenCalled();
+      expect(notificationsSpy.popUpReviewRating).not.toHaveBeenCalled();
     }));
   });
 });
