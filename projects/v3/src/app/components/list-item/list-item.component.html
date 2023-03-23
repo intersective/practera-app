@@ -1,5 +1,5 @@
 <ion-item *ngIf="!loading"
-  [ngClass]="{'active': active}"
+  [ngClass]="{'active': active, 'hasCallToActionBtn': callToActionBtn}"
   [lines]="lines"
   tabindex="0">
 
@@ -8,6 +8,13 @@
     slot="start"
     class="leading-icon"
     [ngClass]="{'pulsing': leadingIconPulsing}"
+    aria-hidden="true"
+  ></ion-icon>
+
+  <ion-icon *ngIf="notificationIcon"
+    [name]="notificationIcon"
+    slot="start"
+    class="notification-icon"
     aria-hidden="true"
   ></ion-icon>
 
@@ -23,12 +30,31 @@
       <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
     </div>
 
-    <div *ngIf="!isEventItem" [class]="'body-2 ' + titleColor" [attr.aria-label]="title">{{ title }}</div>
+    <div *ngIf="!isEventItem"
+      [class]="'body-2 ' + titleColor"
+      [attr.aria-label]="title"
+    >{{ title }}</div>
 
-    <div *ngIf="subtitle1" [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color" [innerHTML]="subtitle1" [attr.aria-label]="subtitle1"></div>
+    <div *ngIf="subtitle1"
+      [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color"
+      [innerHTML]="subtitle1"
+      [attr.aria-label]="subtitle1"
+    ></div>
 
     <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color" [attr.aria-label]="subtitle2">
       {{ subtitle2 }}
+    </div>
+
+    <div *ngIf="callToActionBtn"
+      [class]="'call-to-action ion-color-' + callToActionBtn.color"
+      [attr.aria-label]="callToActionBtn.name"
+    >
+      <ion-button size="small"
+        color="notification"
+        (keydown)="anyBtnClick.emit($event)"
+        (click)="anyBtnClick.emit()">
+        {{callToActionBtn.name}}
+      </ion-button>
     </div>
 
     <div *ngIf="label" [attr.aria-label]="label">

@@ -23,6 +23,7 @@ $colors: (
   surface: var(--practera-surface),
   surface-light: var(--practera-surface-light),
   black: black,
+  notification: var(--practera-notification),
   arctic-100: var(--practera-arctic-100),
   arctic-75: var(--practera-arctic-75),
   arctic-50: var(--practera-arctic-50),
@@ -85,6 +86,16 @@ $colors: (
 	--ion-color-contrast-rgb: var(--practera-arctic-100-contrast-rgb);
 	--ion-color-shade: var(--practera-arctic-100-shade);
 	--ion-color-tint: var(--practera-arctic-100-tint);
+}
+
+.ion-color-notification {
+  color: var(--practera-notification);
+  --ion-color-base: var(--practera-notification);
+  --ion-color-base-rgb: var(--practera-notification-rgb);
+  --ion-color-contrast: var(--practera-notification-contrast);
+  --ion-color-contrast-rgb: var(--practera-notification-contrast-rgb);
+  --ion-color-shade: var(--practera-notification-shade);
+  --ion-color-tint: var(--practera-notification-tint);
 }
 
 .ion-color-lime {
