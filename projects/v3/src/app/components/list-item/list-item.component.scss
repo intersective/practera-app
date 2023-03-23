@@ -1,5 +1,12 @@
+.bolder {
+  font-weight: bolder !important;
+}
+
 ion-item {
   cursor: pointer;
+  &.hasCallToActionBtn {
+    cursor: unset;
+  }
   &:hover, &:focus {
     --background: var(--practera-light-grey-25);
   }
@@ -21,6 +28,13 @@ ion-avatar {
   padding: 8px 8px;
   color: white;
   background: var(--ion-color-primary);
+}
+.notification-icon {
+  margin-right: 20px;
+  font-size: 24px !important;
+  border-radius: 1em;
+  padding: 8px 8px;
+  background: var(--practera-15-percent-gray);
 }
 .item-content {
   width: 100%;
@@ -44,7 +58,9 @@ ion-avatar {
       margin: 0;
     }
   }
-
+  .call-to-action {
+    margin: 0 1em;
+  }
 }
 .skeleton-icon {
   width: 30px;
