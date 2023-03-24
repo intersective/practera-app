@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   programs$ = this.experienceService.programsWithProgress$;
+  latestPrograms = [];
 
   constructor(
     private router: Router,
@@ -31,10 +32,20 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
       this.experienceService.getPrograms();
     });
+    this.subscriptions[1] = this.programs$.subscribe(programs => {
+      this.latestPrograms = programs;
+    });
   }
 
   ngOnDestroy(): void {
     this.subscriptions[0].unsubscribe();
+  }
+
+  ionViewDidEnter() {
+    const projectIds = this.latestPrograms.map(program => program.project.id);
+    this.experienceService.getProgresses(projectIds).subscribe(res => {
+      console.log('asd', res);
+    });
   }
 
   get isMobile() {
@@ -73,8 +84,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         message: err.msg || JSON.stringify(err)
       });
     }
-    
+
     return this.router.navigate(destination);
   }
-
 }

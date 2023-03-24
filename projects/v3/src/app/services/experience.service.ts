@@ -95,9 +95,6 @@ export interface ProjectProgress {
   providedIn: 'root'
 })
 export class ExperienceService {
-
-  review$ = this.reviewService.reviews$;
-
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
 
