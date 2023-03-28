@@ -43,6 +43,7 @@ export interface Meta {
 }
 
 export interface TodoItem {
+  unreadMessages?: number; // for chat
   type?: string;
   name?: string;
   description?: string;
@@ -519,10 +520,12 @@ export class NotificationsService {
     if (unreadMessages > 1) {
       // group the chat notifiations
       todoItem.name = $localize`You have ${unreadMessages} unread messages from ${noOfChats} of chats`;
+      todoItem.unreadMessages = unreadMessages;
     }
     if (todoItem) {
       todoItem.meta = {};
     }
+
     return todoItem;
   }
 /**

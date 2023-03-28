@@ -144,9 +144,15 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
-      this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length;
-      this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length;
-      this.appPages[3].badges = notifications.filter(noti => noti.type === 'chat').length;
+      const chat = notifications.find(noti => {
+        if (noti.type === 'chat') {
+          return noti;
+        }
+      });
+      this.appPages[3].badges = chat?.unreadMessages || 0; // messages tab
+
+      this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length; // events tab
+      this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
     });
 
     this.homeService.experience$.subscribe(expInfo => {
