@@ -2,13 +2,11 @@ import { AuthService } from './auth.service';
 import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from 'request';
-import { TestUtils } from '@testingv3/utils';
 import { Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { ApolloService } from './apollo.service';
 
 describe('AuthService', () => {
   let service: AuthService;
