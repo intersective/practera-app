@@ -22,6 +22,12 @@ export class TabsPage implements OnInit, OnDestroy {
   @ViewChild('tabs', { static: false }) tabs: IonTabs;
   selectedTab: string = '';
 
+  badges = {
+    event: 0,
+    review: 0,
+    chat: 0,
+  };
+
   constructor(
     private platform: Platform,
     private reviewService: ReviewService,
@@ -72,11 +78,12 @@ export class TabsPage implements OnInit, OnDestroy {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
 
-    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.notification$.subscribe());
-
-    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
-    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
+    this.notificationsService.notification$.subscribe(notifications => {
+      // assign notification badge to each tab
+      this.badges.event = notifications.filter(noti => noti.type === 'event-reminder').length;
+      this.badges.review = notifications.filter(noti => noti.type === 'review_submission').length;
+      this.badges.chat = notifications.filter(noti => noti.type === 'chat').length;
+    });
   }
 
   get isMobile() {
@@ -84,11 +91,14 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => subs.unsubscribe());
+    this.subscriptions.forEach(sub => {
+      if (sub.closed == false) {
+        sub.unsubscribe();
+      }
+    });
   }
 
   setCurrentTab() {
     this.selectedTab = this.tabs.getSelected();
   }
-
 }

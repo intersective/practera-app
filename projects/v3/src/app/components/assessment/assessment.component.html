@@ -7,7 +7,7 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
-  <ion-button fill="clear" slot="end" i18n
+  <ion-button fill="clear" slot="end" i18n="save assessment progress button"
     [disabled]="!assessment || (btnDisabled$ | async)" (click)="btnSaveClicked()">
     Save
   </ion-button>
@@ -90,7 +90,7 @@
           </ion-avatar>
 
           <ion-label>
-            <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
+            <p class="subtitle-1" i18n="indicator of a team member is working on the same assessment">Locked by {{ submission.submitterName }}</p>
             <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
@@ -189,7 +189,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-multiple>
+                [submitActions$]="submitActions"></app-multiple>
 
               <app-file *ngSwitchCase="'video'"
                 [question]="question"
@@ -202,7 +202,7 @@
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
-                (saveProgress)="btnSaveClicked()"></app-file>
+                [submitActions$]="submitActions"></app-file>
 
               <app-file *ngSwitchCase="'file'"
                 [question]="question"
@@ -214,7 +214,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-file>
+                [submitActions$]="submitActions"></app-file>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
                 [question]="question"
@@ -226,7 +226,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-team-member-selector>
+                [submitActions$]="submitActions"></app-team-member-selector>
 
               <app-multi-team-member-selector *ngSwitchCase="'multi team member selector'"
                 [question]="question"
@@ -238,10 +238,10 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                (saveProgress)="btnSaveClicked()"></app-multi-team-member-selector>
+                [submitActions$]="submitActions"></app-multi-team-member-selector>
 
               <div *ngSwitchDefault>
-                <p class="ion-padding-horizontal" style="color:red;">Unsupported question type: {{ question.type }}</p>
+                <p class="ion-padding-horizontal" style="color:red;" i18n>Unsupported question type: {{ question.type }}</p>
               </div>
             </ng-container>
           </ion-list>
@@ -252,8 +252,8 @@
 
   <app-bottom-action-bar
     *ngIf="!(action === 'review'
-      && submission.status === 'feedback available'
-      && review.status === 'done')"
+      && submission?.status === 'feedback available'
+      && review?.status === 'done')"
     [text]="btnText"
     [disabled]="(btnDisabled$ | async)"
     (handleClick)="continueToNextTask()"

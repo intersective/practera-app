@@ -21,7 +21,7 @@ jobs:
     name: deploy-p2-stage-appv3
     runs-on: ubuntu-latest
     environment: p2-stage
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
@@ -194,7 +194,7 @@ jobs:
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
-          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
           CUSTOM_PATH_ANY: /appv3/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: test #TODO CHECK
@@ -258,6 +258,7 @@ jobs:
           IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
           Nonce=$GITHUB_SHA
           EOF
+
 ##########################################################
 #  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
 ##########################################################

@@ -262,7 +262,7 @@ export class AssessmentService {
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info = '<h3>'+ $localize`:multiple choice question:Choice Description` + ':</h3>' + info;
             }
             question.info = info;
             question.choices = choices;
@@ -504,7 +504,7 @@ export class AssessmentService {
       }
     } catch (err) {
       const toasted = await this.NotificationsService.alert({
-        header: 'Error retrieving pulse check data',
+        header: $localize`Error retrieving pulse check data`,
         message: err.msg || JSON.stringify(err)
       });
       throw new Error(err);

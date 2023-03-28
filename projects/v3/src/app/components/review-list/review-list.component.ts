@@ -1,7 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { Review } from '@v3/app/services/review.service';
-import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
   selector: 'app-review-list',
@@ -52,6 +50,6 @@ export class ReviewListComponent implements OnInit {
     if (review) {
       return '';
     }
-    return this.showDone ? 'completed' : 'pending';
+    return this.showDone ? $localize`completed` : $localize`pending`;
   }
 }

@@ -6,7 +6,7 @@
         <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin">
             <div class="institute-logo-container ion-text-center">
-              <img [src]="instituteLogo || '/assets/logo.svg'" i18n-alt [attr.alt]="'branding logo'">
+              <img [src]="instituteLogo || './assets/logo.svg'" i18n-alt [attr.alt]="'branding logo'">
             </div>
           </ion-col>
         </ion-row>
@@ -44,7 +44,7 @@
                         <ion-card-content>
                           <p class="m-0 headline-3 exp-title black">{{ program.experience.name }}</p>
                           <div class="exp-info subtitle-3 grey-50">
-                            <p class="m-0 subtitle-3 grey-50">{{program.progress}}% Progress</p>
+                            <p class="m-0 subtitle-3 grey-50" i18n>{{program.progress}}% Progress</p>
                           </div>
                         </ion-card-content>
                       </ion-card>

@@ -36,21 +36,21 @@ export class EventDetailComponent implements OnInit {
     }
 
     this.ctaIsActing = true;
-    switch (this.buttonText()) {
-      case 'Book':
+    switch (this.buttonText.code) {
+      case 'book':
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
           this.NotificationsService.alert({
-            message: new IonicSafeString('<p aria-live="assertive">Booking this event will cancel your booking for other events within the same activity, do you still wanna book?'),
+            message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booking this event will cancel your booking for other events within the same activity, do you still wanna book?` + '</p>'),
             buttons: [
               {
-                text: 'OK',
+                text: $localize`OK`,
                 handler: () => {
                   this._bookEvent();
                 }
               },
               {
-                text: 'Cancel',
+                text: $localize`Cancel`,
                 role: 'cancel',
                 handler: () => {
                   this.ctaIsActing = false;
@@ -63,14 +63,14 @@ export class EventDetailComponent implements OnInit {
         }
         break;
 
-      case 'Cancel Booking':
+      case 'cancel-booking':
         this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.NotificationsService.alert({
-              message: new IonicSafeString('<p aria-live="assertive">Booking cancelled Successfully!</p>'),
+              message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booking cancelled Successfully!` + '</p>'),
               buttons: [
                 {
-                  text: 'OK',
+                  text: $localize`OK`,
                   role: 'cancel'
                 }
               ]
@@ -87,8 +87,8 @@ export class EventDetailComponent implements OnInit {
         });
         break;
 
-      case 'Check In':
-      case 'View Check In':
+      case 'check-in':
+      case 'view-check-in':
         if (this.utils.isMobile()) {
           this.router.navigate(['assessment', 'event', this.event.assessment.contextId, this.event.assessment.id]);
         } else {
@@ -110,10 +110,10 @@ export class EventDetailComponent implements OnInit {
     this.eventService.bookEvent(this.event).subscribe(
       _response => {
         this.NotificationsService.alert({
-          message: new IonicSafeString('<p aria-live="assertive">Booked Successfully!</p>'),
+          message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booked Successfully!` + '</p>'),
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel',
             }
           ],
@@ -130,10 +130,10 @@ export class EventDetailComponent implements OnInit {
       },
       error => {
         this.NotificationsService.alert({
-          message: new IonicSafeString('<p aria-live="assertive">Booking failed, please try again later!'),
+          message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booking failed, please try again later!` + '</p>'),
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel'
             }
           ]
@@ -143,34 +143,52 @@ export class EventDetailComponent implements OnInit {
     );
   }
 
-  buttonText() {
+  get buttonText() {
     // for not booked event
     if (!this.event.isBooked) {
       // for expired event
       if (this.event.isPast) {
-        return 'Expired';
+        return {
+          label: $localize`Expired`,
+          code: 'expired',
+        };
       }
       if (this.event.remainingCapacity === 0) {
-        return 'Fully Booked';
+        return {
+          label: $localize`Fully Booked`,
+          code: 'fully-booked',
+        };
       }
       if (this.event.remainingCapacity > 0 && this.event.canBook) {
-        return 'Book';
+        return {
+          label: $localize`:make reservation:Book`,
+          code: 'book',
+        };
       }
-      return false;
+      return {};
     }
     // can only cancel booking before event start
     if (!this.event.isPast) {
-      return 'Cancel Booking';
+      return {
+        label: $localize`Cancel Booking`,
+        code: 'cancel-booking',
+      };
     }
     // for event that doesn't have check in
     if (!this.utils.has(this.event, 'assessment.id')) {
-      return false;
+      return {};
     }
     // for event that have check in
     if (this.event.assessment.isDone) {
-      return 'View Check In';
+      return {
+        label: $localize`View Check In`,
+        code: 'view-check-in',
+      };
     }
-    return 'Check In';
+    return {
+      label: $localize`Check In`,
+      code: 'check-in',
+    };
   }
 
   close() {
@@ -226,9 +244,9 @@ export class EventDetailComponent implements OnInit {
      *  - If the event is not All day we show date with start and end time.
      */
     if (startDate !== endDate) {
-      return this.event.allDay ? `${startDate}, All Day - ${endDate}, All Day` : `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
+      return this.event.allDay ? $localize`:event duration:${startDate}, All Day - ${endDate}, All Day` : `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
     }
-    return this.event.allDay ? `${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
+    return this.event.allDay ? $localize`:event duration:${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
   }
 
   bookButtonDisabled(event): boolean {

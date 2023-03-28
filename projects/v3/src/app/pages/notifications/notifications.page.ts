@@ -95,13 +95,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return this.utils.timeFormatter(startTime);
   }
 
-  async clickTodoItem(eventOrTodoItem, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
-      keyboardEvent.preventDefault();
-    } else if (keyboardEvent) {
-      return;
-    }
-
+  async clickTodoItem(eventOrTodoItem: TodoItem) {
     const {
       activity_id,
       context_id,
@@ -176,7 +170,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
     return await this.dismiss();
   }
 
-  goToChat(todoItem?: TodoItem) {
+  goToChat(_todoItem?: TodoItem) {
     return this.router.navigate(['v3', 'messages']);
   }
 

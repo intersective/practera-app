@@ -52,28 +52,29 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       return;
     }
 
+    let destination = ['v3', 'home'];
     const loading = await this.loadingController.create({
-      message: 'loading...'
+      message: $localize`loading...`
     });
     await loading.present();
-
     try {
       const route = await this.experienceService.switchProgramAndNavigate(program);
-      loading.dismiss().then(() => {
-        if (environment.demo) {
-          return this.router.navigate(['v3','home']);
-        }
-        if (route) {
-          return this.router.navigate(route);
-        }
-      });
+      await loading.dismiss();
+      if (environment.demo) {
+        destination = ['v3','home'];
+      }
+
+      if (route) {
+        destination = route;
+      }
     } catch (err) {
       await this.notificationsService.alert({
-        header: 'Error switching program',
+        header: $localize`Error switching program`,
         message: err.msg || JSON.stringify(err)
       });
     }
-    return this.router.navigate(['v3','home']);
+    
+    return this.router.navigate(destination);
   }
 
 }

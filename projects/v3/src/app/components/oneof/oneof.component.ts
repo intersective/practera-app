@@ -81,7 +81,10 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
       }
     }
 
-    this.submitActions$.next('from oneoff component');
+    this.submitActions$.next({
+      saveInProgress: true,
+      goBack: false,
+    });
   }
 
   // From ControlValueAccessor interface

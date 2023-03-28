@@ -48,7 +48,7 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return `${ task.submitter.name } is working on this`;
+      return $localize`:team assessment:${ task.submitter.name } is working on this`;
     }
     // due date
     if (!task.dueDate) {
@@ -67,14 +67,24 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return 'in progress';
+      return $localize`in progress`;
     }
     if (!task.status || task.status === 'in progress') {
       if (task.isOverdue) {
-        return 'overdue';
+        return $localize`overdue`;
       }
       return '';
     }
+
+    // below is redundant, but it's added for the sake of i18n
+    if (task?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
+    if (task?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+
     return task.status;
   }
 
@@ -135,10 +145,10 @@ export class ActivityComponent {
     return this._validateTeamAssessment(task, () => {
       if (task.type === 'Locked') {
         return this.notificationsService.alert({
-          message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.',
+          message: $localize`This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.`,
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel'
             }
           ]
@@ -159,10 +169,10 @@ export class ActivityComponent {
     // display pop up if it is team assessment or team 360 assessment and user is not in team
     if (doAssessment && (task.isForTeam || task.assessmentType === 'team360') && !teamId) {
       return this.notificationsService.alert({
-        message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+        message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel',
           }
         ]

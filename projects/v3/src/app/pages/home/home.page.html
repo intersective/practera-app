@@ -45,10 +45,10 @@
           <h2 class="for-accessibility" i18n>Activities</h2>
           <ion-segment (ionChange)="switchContent($event)" [value]="display">
             <ion-segment-button value="activities" mode="ios">
-              <ion-label>Activities</ion-label>
+              <ion-label i18n>Activities</ion-label>
             </ion-segment-button>
             <ion-segment-button value="badges" mode="ios">
-              <ion-label i18n>{{getIsPointsConfigured ? 'Badges & Points': 'Badges'}}</ion-label>
+              <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
             </ion-segment-button>
           </ion-segment>
 
@@ -114,9 +114,10 @@
   </ion-item>
   <app-list-item *ngFor="let achievement of achievements"
     [title]="achievement.name"
-    [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''" subtitle1Color="medium"
+    subtitle1="{{achievement.points ? achievement.points + ' Pts' : null}}" subtitle1Color="medium"
     [leadImage]="achievement.image" lines="full" (click)="achievePopup(achievement)"
     (keydown)="achievePopup(achievement, $event)"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
-    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"></app-list-item>
+    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"
+    i18n-subtitle1></app-list-item>
 </ng-template>
