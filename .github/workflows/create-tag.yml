@@ -8,7 +8,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Practera Release Tag Creation
+name: Practera Release Tag/Branch Creation
 
 
 ################################################
@@ -18,10 +18,12 @@ on:
   workflow_dispatch:
     inputs:
       RELEASE_BRANCH:
-        description: '# Allowed values are : trunk,stable only'     
+        description: '# Branch name that has code to release!'     
         required: true
-        default: 'trunk'
-
+        default: ''
+      HOTFIX_TAG:
+        description: '# Optional, if Hotfix Release, then mandatory to input recent tag version (include prefix - v as well) deployed to live otherwise ignore this input'
+        default: 'false'
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -30,7 +32,7 @@ jobs:
   create-release-tag:
     name: create-release-tag
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
@@ -44,7 +46,9 @@ jobs:
       PRIVATES3BucketName: devops-shared-private
       STATUSREPORTS3Bucket: deployment-status.practera.com
       VERSION_FILE: package.json
-      RELEASE_BRANCH: ${{ github.event.inputs.RELEASE_BRANCH }} # Allowed values are : trunk only
+      RELEASE_BRANCH: ${{ github.event.inputs.RELEASE_BRANCH }} 
+      HOTFIX_TAG: ${{ github.event.inputs.HOTFIX_TAG }} 
+
 
 
 ################################################
@@ -72,13 +76,22 @@ jobs:
 #  NEW TAG DEFINED FOR RELEASE PROCESS
 ################################################ 
       - name: New tag defined for release process
+        if: env.HOTFIX_TAG == 'false'
         run: |
           aws s3 cp s3://$STATUSREPORTS3Bucket/scripts/create-tag-release.sh create-tag-release.sh
           chmod +x ./create-tag-release.sh
           ./create-tag-release.sh
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+
+##########################################################
+#  NEW TAG DEFINED FOR RELEASE PROCESS - For Hotfix Release
+###########################################################
+      - name: New tag defined for release process
+        if: env.HOTFIX_TAG != 'false'
+        run: |
+          aws s3 cp s3://$STATUSREPORTS3Bucket/scripts/create-hotfix-tag-release.sh create-hotfix-tag-release.sh
+          chmod +x ./create-hotfix-tag-release.sh
+          ./create-hotfix-tag-release.sh
 
 
 ################################################
@@ -108,6 +121,7 @@ jobs:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           release_name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+
 
 
 # ##########################################################

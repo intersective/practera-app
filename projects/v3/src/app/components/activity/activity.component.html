@@ -6,8 +6,11 @@
     <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
 
     <div class="task-count">
-      <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75">
-        {{ activity.tasks.length }} {{ 'Task' + (activity.tasks.length > 1 ? 's' : '') }}
+      <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75" i18n>
+        {{ activity.tasks.length }}&nbsp;{activity.tasks.length, plural,
+          =1 {Task}
+          other {Tasks}
+        }
       </ion-text>
     </div>
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"  aria-hidden="true"></ion-skeleton-text>
@@ -15,7 +18,7 @@
     <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
   </div>
 
-  <ion-item class="headline-4 task-header" lines="none">{{ 'Task' + (activity.tasks.length > 1 ? 's' : '') }}</ion-item>
+  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
 
   <app-list-item class="focusable"
     role="button"

@@ -1,9 +1,9 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
+import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Question } from '@v3/services/assessment.service';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-text',
@@ -17,8 +17,9 @@ import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs
     }
   ]
 })
-export class TextComponent implements ControlValueAccessor, OnInit, AfterViewInit {
+export class TextComponent implements ControlValueAccessor, OnInit, AfterViewInit, OnDestroy {
   @Input() submitActions$: Subject<any>;
+  subcriptions: Subscription[] = [];
 
   @Input() question: Question;
   @Input() submission;
@@ -52,14 +53,26 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   }
 
   ngAfterViewInit() {
-    this.answerRef.ionInput.pipe(
-      map(e => (e.target as HTMLInputElement).value),
-      filter(text => text.length > 0),
-      debounceTime(1000),
-      distinctUntilChanged(),
-    ).subscribe(_data => {
-      console.log('text is getting input');
-      this.submitActions$.next('from text component');
+    if (this.answerRef?.ionInput) {
+      this.subcriptions.push(this.answerRef.ionInput.pipe(
+        map(e => (e.target as HTMLInputElement).value),
+        filter(text => text.length > 0),
+        debounceTime(1250),
+        distinctUntilChanged(),
+      ).subscribe(_data => {
+        this.submitActions$.next({
+          saveInProgress: true,
+          goBack: false,
+        });
+      }));
+    }
+  }
+
+  ngOnDestroy() {
+    this.subcriptions.forEach(subscription => {
+      if (!subscription.closed) {
+        subscription.unsubscribe();
+      }
     });
   }
 

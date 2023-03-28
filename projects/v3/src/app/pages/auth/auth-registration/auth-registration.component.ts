@@ -127,17 +127,17 @@ export class AuthRegistrationComponent implements OnInit {
                     }
                   },
                   err => {
-                    this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+                    this.showPopupMessages('shortMessage', $localize`Registration link invalid!`, redirect);
                   }
                 );
               }
             },
             error => {
-              this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+              this.showPopupMessages('shortMessage', $localize`Registration link invalid!`, redirect);
             }
           );
       } else {
-        this.showPopupMessages('shortMessage', 'Registration link invalid!', redirect);
+        this.showPopupMessages('shortMessage', $localize`Registration link invalid!`, redirect);
       }
     });
   }
@@ -175,10 +175,10 @@ export class AuthRegistrationComponent implements OnInit {
                 async res => {
                   this.storage.remove('unRegisteredDirectLink');
                   const route = await this.experienceService.switchProgramAndNavigate(res.programs);
-                  this.showPopupMessages('shortMessage', 'Registration success!', route);
+                  this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
                 },
                 err => {
-                  this.showPopupMessages('shortMessage', 'Registration not complete!');
+                  this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
                 }
               );
           },
@@ -187,19 +187,17 @@ export class AuthRegistrationComponent implements OnInit {
             if (this.utils.has(error, 'data.type')) {
               if (error.data.type === 'password_compromised') {
                 return this.notificationsService.alert({
-                  message: `We’ve checked this password against a global database of insecure passwords and your password was on it. <br>
-                    Please try again. <br>
-                    You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+                  message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>Please try again.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
                   buttons: [
                     {
-                      text: 'OK',
+                      text: $localize`OK`,
                       role: 'cancel'
                     }
                   ],
                 });
               }
             }
-            this.showPopupMessages('shortMessage', 'Registration not complete!');
+            this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
         );
     }
@@ -214,7 +212,7 @@ export class AuthRegistrationComponent implements OnInit {
     this.errors = [];
     if (this.unRegisteredDirectLink) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push($localize`You need to agree with terms and Conditions.`);
         isValid = false;
         return isValid;
       } else {
@@ -223,7 +221,7 @@ export class AuthRegistrationComponent implements OnInit {
     }
     if (this.hide_password) {
       if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push($localize`You need to agree with terms and Conditions.`);
         isValid = false;
         return isValid;
       } else {
@@ -233,11 +231,11 @@ export class AuthRegistrationComponent implements OnInit {
       const pass = this.registerationForm.controls.password.value;
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
-        this.errors.push('Your passwords don\'t match.');
+        this.errors.push($localize`Your passwords don't match.`);
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
-        this.errors.push('You need to agree with terms and Conditions.');
+        this.errors.push($localize`You need to agree with terms and Conditions.`);
         isValid = false;
         return isValid;
       } else {
@@ -255,11 +253,11 @@ export class AuthRegistrationComponent implements OnInit {
             ) {
               switch (key) {
                 case 'required':
-                  this.errors.push('Please fill in your password');
+                  this.errors.push($localize`Please fill in your password`);
                   break;
                 case 'minlength':
                   this.errors.push(
-                    'Your password needs to be more than 8 characters.'
+                    $localize`Your password needs to be more than 8 characters.`
                   );
                   break;
                 default:

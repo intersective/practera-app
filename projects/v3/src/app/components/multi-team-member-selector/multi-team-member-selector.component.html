@@ -40,7 +40,7 @@
   <ion-list class="no-bg ion-no-padding"
     *ngIf="question.canAnswer">
     <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
-      <ion-label class="ion-text-wrap subtitle-2 black">Your Answer is</ion-label>
+      <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
     </ion-list-header>
     <ion-item lines="none"
       *ngFor="let teamMember of question.teamMembers;let i = index"
@@ -48,7 +48,7 @@
       <ion-label class="white-space-normal body-2 black">
         {{ teamMember.userName }}
         <p *ngIf="submission.answer.includes(teamMember.key)">
-          <ion-chip class="label orange">Learner's answer</ion-chip>
+          <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
         </p>
       </ion-label>
       <ion-checkbox color="success"

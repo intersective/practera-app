@@ -15,27 +15,27 @@ export class ReviewRatingComponent implements OnInit {
   moods = [
     {
       icon: 'mood_bad',
-      description: 'Very Poor',
+      description: $localize`Very Poor`,
       score: 0,
     },
     {
       icon: 'sentiment_dissatisfied',
-      description: 'Poor',
+      description: $localize`Poor`,
       score: 0.25,
     },
     {
       icon: 'sentiment_neutral',
-      description: 'Average',
+      description: $localize`Average`,
       score: 0.5,
     },
     {
       icon: 'sentiment_satisfied',
-      description: 'Good',
+      description: $localize`Good`,
       score: 0.75,
     },
     {
       icon: 'mood',
-      description: 'Excellent',
+      description: $localize`Excellent`,
       score: 1,
     },
   ];
@@ -89,8 +89,8 @@ export class ReviewRatingComponent implements OnInit {
       this.ratingSessionEnd = true;
     } catch (err) {
       await this.notificationsService.alert({
-        header: 'Error submitting rating',
-        message: err.msg || JSON.stringify(err),
+        header: $localize`Error submitting rating`,
+        message: err.msg ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.msg}` : JSON.stringify(err),
       });
       this.isSubmitting = false;
 
