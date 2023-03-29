@@ -13,6 +13,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
 import { map, mergeMap } from 'rxjs/operators';
+import { ExperienceService, ProgramObj } from '@v3/app/services/experience.service';
+import { AuthService } from '@v3/app/services/auth.service';
 
 @Component({
   selector: 'app-v3',
@@ -86,6 +88,8 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
+    private readonly experienceService: ExperienceService,
+    private readonly authService: AuthService
   ) { }
 
   ngOnDestroy(): void {
@@ -142,6 +146,32 @@ export class V3Page implements OnInit, OnDestroy {
       })
     );
 
+    this.experienceService.programs$.subscribe((experiences: ProgramObj[]) => {
+      const { programId } = this.storageService.getUser();
+      const currentProgram = experiences?.find(experience => experience.program.id === programId);
+      if (
+        !this.utils.isEmpty(programId) &&
+        !this.utils.isEmpty(experiences) &&
+        this.utils.isEmpty(currentProgram) &&
+        this.authService.isAuthenticated()
+      ) {
+        this.notificationsService.alert({
+          header: $localize`It looks like there's a glitch!`,
+          message: $localize`We regret to inform you that there appears to be a technical issue preventing your enrollment in any programs at the moment. Please log in again and try once more.`,
+          backdropDismiss: false,
+          buttons: [
+            {
+              text: $localize`Login`,
+              handler: () => {
+                this.authService.logout({}, true);
+              },
+            }
+          ]
+        });
+        throw new Error('Tech Error: No experience config found!');
+      }
+    });
+
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
       this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length;
@@ -188,6 +218,10 @@ export class V3Page implements OnInit, OnDestroy {
       })
     );
     this.subscriptions.push(notifications.subscribe());
+  }
+
+  ionViewDidEnter() {
+    this.experienceService.getPrograms();
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {

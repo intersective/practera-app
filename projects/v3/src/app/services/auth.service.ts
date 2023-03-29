@@ -310,24 +310,7 @@ export class AuthService {
   getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
     return this.request.get(API.getConfig, {
       params: data
-    }).pipe(tap((response) => {
-      if (this.isAuthenticated() && response.data?.length === 0) {
-        this.notificationsService.alert({
-          header: $localize`It looks like there's a glitch!`,
-          message: $localize`We regret to inform you that there appears to be a technical issue preventing your enrollment in any programs at the moment. Please log in again and try once more.`,
-          backdropDismiss: false,
-          buttons: [
-            {
-              text: $localize`Login`,
-              handler: () => {
-                this.logout({}, true);
-              },
-            }
-          ]
-        });
-        throw new Error('Tech Error: No experience config found!');
-      }
-    }));
+    });
   }
 
   /**
