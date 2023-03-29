@@ -310,7 +310,8 @@ export class AuthService {
   getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
     return this.request.get(API.getConfig, {
       params: data
-    }).pipe(tap((response) => {
+    })/* comment out until BACKEND is resolved
+    .pipe(tap((response) => {
       if (environment.production === false) {
         return;
       }
@@ -331,7 +332,7 @@ export class AuthService {
         });
         throw new Error('Tech Error: No experience config found!');
       }
-    }));
+    })) */;
   }
 
   /**
