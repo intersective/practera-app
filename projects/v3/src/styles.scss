@@ -38,7 +38,7 @@
     margin-bottom: 0;
     &.achievement-popup {
       --width: 320px;
-      --max-height: 400px;
+      --max-height: 425px;
     }
   }
   &.activity-complete-popup {
@@ -286,13 +286,13 @@ chat text editor
 .editor-class {
   border: none !important;
   .ql-editor {
-    max-height: 100px;
+    max-height: 82px;
   }
 
   &.desktop {
     .ql-editor {
-      max-height: 100px;
-      min-height: 80px;
+      max-height: 82px;
+      min-height: 62px;
     }
   }
 }

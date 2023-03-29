@@ -1,0 +1,15 @@
+<ion-list lines="full">
+  <ion-list-header>Select a type</ion-list-header>
+  <ion-item button (click)="openAttachPopup('any')">
+    <ion-icon color="ocean" name="document" slot="start"></ion-icon>
+    File
+  </ion-item>
+  <ion-item button (click)="openAttachPopup('image')">
+    <ion-icon color="ocean" name="images" slot="start"></ion-icon>
+    Photos
+  </ion-item>
+  <ion-item button (click)="openAttachPopup('video')" lines="none">
+    <ion-icon color="ocean" name="videocam" slot="start"></ion-icon>
+    Videos
+  </ion-item>
+</ion-list>
