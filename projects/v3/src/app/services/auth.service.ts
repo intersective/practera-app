@@ -311,6 +311,10 @@ export class AuthService {
     return this.request.get(API.getConfig, {
       params: data
     }).pipe(tap((response) => {
+      if (environment.production === false) {
+        return;
+      }
+
       if (this.isAuthenticated() && response.data?.length === 0) {
         this.notificationsService.alert({
           header: $localize`It looks like there's a glitch!`,
