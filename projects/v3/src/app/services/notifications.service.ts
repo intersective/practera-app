@@ -454,7 +454,7 @@ export class NotificationsService {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
-    item.name = todoItem.meta.assessment_name;
+    item.name = $localize`Submission Reminder`;
     item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date)}`;
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
