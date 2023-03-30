@@ -34,7 +34,7 @@
           <p class="body-2 last-message" [attr.aria-label]="'last message: ' + chat.lastMessage" [innerHTML]="chat.lastMessage"></p>
         </ng-container>
         <ng-template #messgeElseBlock>
-          <p class="body-2 gray-2">No messages.</p>
+          <p class="body-2 gray-2" i18n>No messages.</p>
         </ng-template>
       </ion-label>
       <div slot="end" class="time-container">
@@ -43,7 +43,7 @@
         </div>
         <div class="indicator-container">
           <ng-container *ngIf="chat.isAnnouncement">
-            <ion-button aria-label="announcement channel Indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it.">
+            <ion-button aria-label="announcement channel Indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it." i18n-title>
               <ion-icon color="grey-50" name="information-circle" slot="icon-only"></ion-icon>
             </ion-button>
           </ng-container>

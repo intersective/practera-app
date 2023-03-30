@@ -6,7 +6,7 @@
       aria-live="polite"
       [attr.aria-label]="memberList.length + ' members'">
       {{ chatChannel.name }}
-      <div class="ion-text-center sub-title caption gray-1 saving-msg">
+      <div class="ion-text-center sub-title caption gray-1 saving-msg" i18n>
         {{ memberList.length }} members
       </div>
     </ion-title>
@@ -30,10 +30,11 @@
 
   <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status" aria-live="polite">
     <img class="image" [ngClass]="{'desktop': !utils.isMobile()}"
-      src="/assets/icon-epmty-chat.svg" alt="empty chat"
+      src="./assets/icon-epmty-chat.svg" alt="empty chat"
+      i18n-alt
       aria-hidden="true">
-    <p class="head-text headline-5 gray-3">Type your first message!</p>
-    <p class="sub-text subtitle-1 gray-1">It's time to start a chat</p>
+    <p class="head-text headline-5 gray-3" i18n>Type your first message!</p>
+    <p class="sub-text subtitle-1 gray-1" i18n>It's time to start a chat</p>
   </div>
 
   <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !utils.isMobile()}">
@@ -150,7 +151,9 @@
         [(ngModel)]="typingMessage"
         (ngModelChange)="typing()"
         (onFocus)="showBottomAttachmentButtons = true;"
-        (onBlur)="showBottomAttachmentButtons = false;">
+        (onBlur)="showBottomAttachmentButtons = false;"
+        (onEditorCreated)="utils.formatQuillClipboard($event)"
+        i18n-placeholder>
           <div quill-editor-toolbar>
             <span class="ql-formats">
               <button class="ql-bold" [title]="'Bold'"></button>

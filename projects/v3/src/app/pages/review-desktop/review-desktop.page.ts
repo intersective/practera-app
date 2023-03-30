@@ -5,6 +5,8 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
 
+const SAVE_PROGRESS_TIMEOUT = 10000;
+
 @Component({
   selector: 'app-review-desktop',
   templateUrl: './review-desktop.page.html',
@@ -17,6 +19,7 @@ export class ReviewDesktopPage implements OnInit {
   assessment$ = this.assessmentService.assessment$;
   loading: boolean; // loading indicator (true = loading | false = done loaded)
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   reviews: Review[];
   assessment: Assessment;
@@ -85,23 +88,37 @@ export class ReviewDesktopPage implements OnInit {
   }
 
   async saveAssessment(event) {
-    this.loading = true;
-    this.savingText$.next('Saving...');
-    await this.assessmentService.saveAnswers(
-      event.assessment,
-      event.answers,
-      event.action,
-      this.assessment.pulseCheck
-    ).toPromise();
-    if (!event.assessment.inProgress) {
-      setTimeout(
-        () => this.reviewService.getReviews(),
-        500
-      );
+    if (event.assessment.inProgress && this.loading) {
+      return;
     }
+    this.loading = true;
+    this.btnDisabled$.next(true);
+    this.savingText$.next('Saving...');
+    try {
+      const submission = await this.assessmentService.saveAnswers(
+        event.assessment,
+        event.answers,
+        event.action,
+        this.assessment.pulseCheck
+      ).toPromise();
 
-    this.loading = false;
-    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
+      // AV2-1371: added to reduce API call & waiting time for API to response.
+      if (!event.assessment.inProgress
+        && submission?.data?.submitReview?.success === true) {
+        this.submission.status = 'feedback available';
+        this.review.status = 'done';
+        this.reviewService.getReviews();
+      }
+
+      this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
+
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    } catch (err) {
+      this.savingText$.next($localize`Save Failed.`);
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    }
   }
 
 }

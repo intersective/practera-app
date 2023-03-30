@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { SharedService } from '@v3/app/services/shared.service';
 import { Activity, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -19,6 +20,7 @@ export class ActivityComponent {
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
+    private sharedService: SharedService,
   ) { }
 
   /**
@@ -133,10 +135,10 @@ export class ActivityComponent {
     return this._validateTeamAssessment(task, () => {
       if (task.type === 'Locked') {
         return this.notificationsService.alert({
-          message: 'This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.',
+          message: $localize`This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.`,
           buttons: [
             {
-              text: 'OK',
+              text: $localize`OK`,
               role: 'cancel'
             }
           ]
@@ -146,17 +148,21 @@ export class ActivityComponent {
     });
   }
 
-  private _validateTeamAssessment(task: Task, proceedCB) {
+  private async _validateTeamAssessment(task: Task, proceedCB) {
+    if (task.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+    }
+
     const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
     const teamId = this.storageService.getUser().teamId;
 
     // display pop up if it is team assessment or team 360 assessment and user is not in team
     if (doAssessment && (task.isForTeam || task.assessmentType === 'team360') && !teamId) {
       return this.notificationsService.alert({
-        message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+        message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
         buttons: [
           {
-            text: 'OK',
+            text: $localize`OK`,
             role: 'cancel',
           }
         ]

@@ -504,7 +504,7 @@ export class AssessmentService {
       }
     } catch (err) {
       const toasted = await this.NotificationsService.alert({
-        header: 'Error retrieving pulse check data',
+        header: $localize`Error retrieving pulse check data`,
         message: err.msg || JSON.stringify(err)
       });
       throw new Error(err);

@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-v3',
@@ -66,6 +67,11 @@ export class V3Page implements OnInit, OnDestroy {
   showReviews: boolean = false;
   directionIcon: string = this.direction();
 
+  i18nText = {
+    'setting': $localize`Settings`,
+    'myExperience': $localize`My Experiences`
+  };
+
   constructor(
     private modalController: ModalController,
     private animationService: AnimationsService,
@@ -75,33 +81,42 @@ export class V3Page implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private chatService: ChatService,
     private readonly utils: UtilsService,
+    private readonly notificationsService: NotificationsService,
   ) { }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => subs.unsubscribe());
+    this.subscriptions.forEach(subs => {
+      if (subs.closed !== true) {
+        subs.unsubscribe();
+      }
+    });
   }
 
   private _initMenuItems() {
     this.appPages = [
       {
-        title: 'Home',
+        title: $localize`Home`,
         url: '/v3/home',
-        icon: 'home'
+        icon: 'home',
+        code: 'Home',
       },
       {
-        title: 'Events',
+        title: $localize`Events`,
         url: '/v3/events',
-        icon: 'today'
+        icon: 'today',
+        code: 'Events',
       },
       {
-        title: 'Reviews',
+        title: $localize`Reviews`,
         url: '/v3/review-desktop',
-        icon: 'eye'
+        icon: 'eye',
+        code: 'Reviews',
       },
       {
-        title: 'Messages',
+        title: $localize`Messages`,
         url: '/v3/messages',
-        icon: 'mail'
+        icon: 'mail',
+        code: 'Messages',
       }
     ];
   }
@@ -143,6 +158,10 @@ export class V3Page implements OnInit, OnDestroy {
       }));
     }
     this.openMenu =false;
+
+    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
+    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
+    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {

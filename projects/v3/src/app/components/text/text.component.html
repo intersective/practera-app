@@ -1,12 +1,12 @@
 <h3 class="for-accessibility" [id]="'text-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <div class="ion-padding" *ngIf="submission?.answer">
-    <ion-chip class="label orange">Learner's answer</ion-chip>
+    <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
     <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
   <div class="ion-padding" *ngIf="(review?.answer || review?.comment)">
-    <ion-chip class="label yellow black">Expert's answer</ion-chip>
+    <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
     <ng-container *ngIf="review?.answer">
       <p class="body-2 gray-3 white-space-pre">{{ review.answer }}</p>
     </ng-container>
@@ -28,6 +28,7 @@
       [disabled]="control?.disabled"
       class="ion-no-margin"
       placeholder="Please add your answer here"
+      i18n-placeholder
     ></ion-textarea>
     <ion-text *ngFor="let error of errors" color="danger">
       <p>{{error}}</p>
@@ -38,12 +39,12 @@
 <ng-container *ngIf="doReview">
   <ion-item *ngIf="!submission?.answer && !question.reviewerOnly" class="no-answers item-bottom-border" lines="none">
     <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
-    <ion-label size="small">No answers were submitted.</ion-label>
+    <ion-label size="small" i18n>No answers were submitted.</ion-label>
   </ion-item>
 
   <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
     <h3 class="for-accessibility" aria-labelledby="learner-indicator" aria-describedby="learner-answer"></h3>
-    <ion-chip id="learner-indicator" class="label orange">Learner's answer</ion-chip>
+    <ion-chip id="learner-indicator" class="label orange" i18n>Learner's answer</ion-chip>
     <p id="learner-answer" class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
@@ -70,6 +71,7 @@
       (ionFocus)="onFocus($event)"
       (ionChange)="onChange('comment')"
       placeholder="Please put your feedback here"
+      i18n-placeholder
       [disabled]="control.disabled"></ion-textarea>
   </div>
 </ng-container>

@@ -3,12 +3,12 @@
   aria-modal="true"
   aria-hidden="false"
   #activityComplete>
-  <p class="ion-margin">
+  <p class="ion-margin" i18n>
     You have remaining tasks in the current activity. Would you like to review them before progressing?
   </p>
 
   <div class="fixed-bottom">
-    <ion-button mode="ios"
+    <ion-button mode="ios" i18n
       (keydown.space)="confirmed(false)"
       (keydown.enter)="confirmed(false)"
       (click)="confirmed(false)"
@@ -16,7 +16,7 @@
       #reviewTasks tabindex="0"
     >REVIEW TASKS</ion-button>
     <hr>
-    <ion-button mode="ios"
+    <ion-button mode="ios" i18n
       (keydown.space)="confirmed(true)"
       (keydown.enter)="confirmed(true)"
       (click)="confirmed(true)"
