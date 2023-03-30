@@ -181,7 +181,7 @@ export class NotificationsService {
   }
 
   assessmentSubmittedToast() {
-    return this.presentToast('Assessment Submitted', {
+    return this.presentToast($localize`Assessment Submitted`, {
       color: 'success',
       icon: 'checkmark-circle'
     });
@@ -531,7 +531,7 @@ export class NotificationsService {
  */
   private _addChatTodoItem(chatTodoItem) {
     let currentChatTodoIndex = -1;
-    const currentChatTodo = this.notifications.find((todoItem, index) => {
+    const currentChatTodo = this.notifications?.find((todoItem, index) => {
       if (todoItem.type === 'chat') {
         currentChatTodoIndex = index;
         return true;
@@ -553,7 +553,7 @@ export class NotificationsService {
   */
   private _removeChatTodoItem() {
     let currentChatTodoIndex = -1;
-    const currentChatTodo = this.notifications.find((todoItem, index) => {
+    const currentChatTodo = this.notifications?.find((todoItem, index) => {
       if (todoItem.type === 'chat') {
         currentChatTodoIndex = index;
         return true;

@@ -132,13 +132,13 @@ export class FilestackService {
     } catch (e) {
       if (e.status === 0) {
         return this.notificationsService.alert({
-          subHeader: 'No Filestack responses',
+          subHeader: $localize`No Filestack responses`,
           message: e.message,
         });
       }
       return this.notificationsService.alert({
-        subHeader: 'Inaccessible file',
-        message: 'The uploaded file is suspicious and being scanned for potential risk. Please try again later.',
+        subHeader: $localize`Inaccessible file`,
+        message: $localize`The uploaded file is suspicious and being scanned for potential risk. Please try again later.`,
       });
     }
 
@@ -146,11 +146,11 @@ export class FilestackService {
       const megabyte = (metadata && metadata.size) ? metadata.size / 1000 / 1000 : 0;
       if (megabyte > 10) {
         return this.notificationsService.alert({
-          subHeader: 'File size too large',
-          message: `Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
+          subHeader: $localize`File size too large`,
+          message: $localize`Attachment size has exceeded the size of ${Math.floor(megabyte)}mb please consider downloading the file for better reading experience.`,
           buttons: [
             {
-              text: 'Download',
+              text: $localize`Download`,
               handler: () => {
                 return this.utils.openUrl(file.url, {
                   target: '_blank',
@@ -158,7 +158,7 @@ export class FilestackService {
               }
             },
             {
-              text: 'Cancel',
+              text: $localize`Cancel`,
               role: 'cancel',
               handler: () => {
                 return;
@@ -185,6 +185,7 @@ export class FilestackService {
   }
 
   async open(options = {}, onSuccess = res => res, onError = err => err): Promise<any> {
+    const currentLocale = this.utils.getCurrentLocale();
     const pickerOptions: filestack.PickerOptions = {
       dropPane: {},
       fromSources: [
@@ -208,6 +209,7 @@ export class FilestackService {
       },
       onUploadDone: (res) => res,
       supportEmail: 'help@practera.com',
+      lang: currentLocale != 'en-US' ? currentLocale : 'en',
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();

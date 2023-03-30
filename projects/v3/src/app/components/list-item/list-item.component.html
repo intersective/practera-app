@@ -60,9 +60,12 @@
   </div>
 
   <div *ngIf="isEventItem" aria-labelledby="event-status">
-    <div id="event-status" *ngIf="eventExpired" class="expired-batch gray-2">Expired</div>
+    <div id="event-status"
+      *ngIf="eventExpired"
+      class="expired-batch gray-2"
+      i18n>Expired</div>
     <!-- Show fully booked label if event is not expired -->
-    <div id="event-status" *ngIf="eventFullyBooked && !eventExpired" class="expired-batch gray-2">Fully Booked</div>
+    <div id="event-status" *ngIf="eventFullyBooked && !eventExpired" class="expired-batch gray-2" i18n>Fully Booked</div>
     <!-- Show video conference label if event is not expired and not fully booked -->
     <div id="event-status" *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
   </div>

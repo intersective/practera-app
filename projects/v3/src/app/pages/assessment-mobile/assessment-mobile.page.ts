@@ -7,6 +7,8 @@ import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
 
+const SAVE_PROGRESS_TIMEOUT = 10000;
+
 @Component({
   selector: 'app-assessment-mobile',
   templateUrl: './assessment-mobile.page.html',
@@ -22,6 +24,8 @@ export class AssessmentMobilePage implements OnInit {
   action: string;
   fromPage: string;
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  saving: boolean;
 
   currentTask: Task;
 
@@ -91,14 +95,26 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async saveAssessment(event) {
+    if (event.assessment.inProgress && this.saving) {
+      return;
+    }
+    this.saving = true;
+    this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
-    this.savingText$.next('Last saved ' + this.utils.getFormatedCurrentTime());
+    this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
     if (!event.assessment.inProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data
       this.activityService.getActivity(this.activityId);
+      this.btnDisabled$.next(false);
+      this.saving = false;
       return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
+    } else {
+      setTimeout(() => {
+        this.btnDisabled$.next(false);
+        this.saving = false;
+      }, SAVE_PROGRESS_TIMEOUT);
     }
   }
 
@@ -122,7 +138,7 @@ export class AssessmentMobilePage implements OnInit {
       // display review rating modal
       return await this.notificationsService.popUpReviewRating(this.review.id, false);
     } catch (err) {
-      const header = 'Can not get review rating information';
+      const header = $localize`Can not get review rating information`;
       await this.notificationsService.alert({
         header,
         message: err.msg || JSON.stringify(err)
