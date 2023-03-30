@@ -460,7 +460,10 @@ export class NotificationsService {
       return todoItems;
     }
     item.name = $localize`Submission Reminder`;
-    item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date)}`;
+    item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task`;
+    if (todoItem?.meta?.due_date) {
+      item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date)}`;
+    }
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
