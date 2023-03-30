@@ -8,8 +8,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
-
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -150,7 +148,12 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // user is trying to do the assessment if
     // - there is no submission or
     // - submission is in progress
-    if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
+    if (this.action !== 'review'
+      && (
+        this.utils.isEmpty(this.submission)
+        || this.submission.status === 'in progress'
+      )
+    ) {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
@@ -273,7 +276,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       if (typeof teamId !== 'number') {
 
         return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
           buttons: [
             {
               text: $localize`OK`,
@@ -375,7 +378,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
-        message: 'Required question answer missing!',
+        message: $localize`Required question answer missing!`,
         // Please fill out the required fields.
         buttons: [
           {
@@ -396,11 +399,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         ],
       });
     }
-
-    /* comment for the tempery solution autosave AV2-1326
-    // allow submitting/saving after a few seconds
-    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
-    */
 
     this.save.emit({
       assessment,
@@ -492,6 +490,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       }
       return '';
     }
+
+    // for i18n
+    if (this.submission?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+    if (this.submission?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
     return this.submission?.status;
   }
 

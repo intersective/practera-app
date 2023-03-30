@@ -10,6 +10,9 @@ import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { HomeService } from '@v3/app/services/home.service';
+import { environment } from '@v3/environments/environment';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-v3',
@@ -82,6 +85,7 @@ export class V3Page implements OnInit, OnDestroy {
     private chatService: ChatService,
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
+    private readonly homeService: HomeService,
   ) { }
 
   ngOnDestroy(): void {
@@ -140,13 +144,26 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
-      this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length;
-      this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length;
-      this.appPages[3].badges = notifications.filter(noti => noti.type === 'chat').length;
+      const chat = notifications.find(noti => {
+        if (noti.type === 'chat') {
+          return noti;
+        }
+      });
+      this.appPages[3].badges = chat?.unreadMessages || 0; // messages tab
+
+      this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length; // events tab
+      this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
+    });
+
+    this.homeService.experience$.subscribe(expInfo => {
+      if (expInfo?.locale && environment.production === true) {
+        this.utils.moveToNewLocale(expInfo?.locale);
+      }
     });
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
+      this.homeService.getExperience();
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
@@ -170,9 +187,13 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.openMenu = false;
 
-    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
-    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
+    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
+    const notifications = this.notificationsService.getTodoItems().pipe(
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
+      })
+    );
+    this.subscriptions.push(notifications.subscribe());
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {

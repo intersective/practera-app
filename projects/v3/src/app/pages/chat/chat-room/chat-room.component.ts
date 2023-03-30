@@ -1,14 +1,15 @@
 import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IonContent, ModalController } from '@ionic/angular';
+import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { PusherService } from '@v3/services/pusher.service';
+import { PusherService, SendMessageParam } from '@v3/services/pusher.service';
 import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
+import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 
 @Component({
   selector: 'app-chat-room',
@@ -47,9 +48,9 @@ export class ChatRoomComponent implements OnInit {
   sendingMessage = false;
   // display "someone is typing" when received a typing event
   whoIsTyping: string;
-  // this use to show/hide bottom section of text field which have attachment buttons and send button, when user start typing text messages
-  showBottomAttachmentButtons = false;
   videoHandles = [];
+
+  selectedAttachments: any[] = [];
 
   constructor(
     private chatService: ChatService,
@@ -62,6 +63,7 @@ export class ChatRoomComponent implements OnInit {
     private ngZone: NgZone,
     public element: ElementRef,
     private route: ActivatedRoute,
+    public popoverController: PopoverController,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils.getEvent('chat:new-message').subscribe(event => {
@@ -131,7 +133,6 @@ export class ChatRoomComponent implements OnInit {
     this.messagePageSize = 20;
     this.sendingMessage = false;
     this.whoIsTyping = '';
-    this.showBottomAttachmentButtons = false;
   }
 
   private _isValidPusherEvent(pusherData) {
@@ -252,49 +253,116 @@ export class ChatRoomComponent implements OnInit {
   }
 
   sendMessage() {
-    if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
+    if (this.sendingMessage) {
       return;
     }
-    const message = this.typingMessage;
+    if (this.selectedAttachments.length > 0) {
+      this.postAttachment();
+    } else {
+      this.postTextOnlyMessage();
+    }
+  }
+
+  private getPostMessageParams(type, file?: any) {
+    if (type === 'text') {
+      if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
+        return;
+      }
+      const message = this.typingMessage;
+      return {
+        channelUuid: this.channelUuid,
+        message: message
+      };
+    }
+    if (type === 'file' && file) {
+      if (!file.mimetype) {
+        file.mimetype = '';
+      }
+      const message = this.typingMessage;
+      return {
+        channelUuid: this.channelUuid,
+        message: message,
+        file: JSON.stringify(file)
+      };
+    } else {
+      return;
+    }
+  }
+
+  private postTextOnlyMessage() {
+    const param = this.getPostMessageParams('text');
     this._beforeSenMessages();
-    this.chatService.postNewMessage({
-      channelUuid: this.channelUuid,
-      message: message
-    }).subscribe(
+    this.chatService.postNewMessage(param).subscribe(
       response => {
-        this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
-          channelUuid: this.channelUuid,
-          uuid: response.uuid,
-          isSender: response.isSender,
-          message: response.message,
-          file: response.file,
-          created: response.created,
-          senderUuid: response.senderUuid,
-          senderName: response.senderName,
-          senderRole: response.senderRole,
-          senderAvatar: response.senderAvatar,
-          sentAt: response.sentAt
-        });
-        this.messageList.push(
-          {
-            uuid: response.uuid,
-            isSender: response.isSender,
-            message: response.message,
-            file: response.file,
-            created: response.created,
-            senderUuid: response.senderUuid,
-            senderName: response.senderName,
-            senderRole: response.senderRole,
-            senderAvatar: response.senderAvatar,
-            sentAt: response.sentAt
-          }
-        );
+        this.triggerPusherEvent(response);
+        this.updateListData(response);
         this.utils.broadcastEvent('chat:info-update', true);
         this._scrollToBottom();
         this._afterSendMessage();
       },
       error => {
         this._afterSendMessage();
+      }
+    );
+  }
+
+  private postAttachment() {
+    const selectedAttachments = this.selectedAttachments;
+    this.selectedAttachments = [];
+    selectedAttachments.forEach(attachment => {
+      const param = this.getPostMessageParams('file', attachment);
+      this._beforeSenMessages();
+      this.chatService.postAttachmentMessage(param).subscribe(
+        response => {
+          this.triggerPusherEvent(response, attachment);
+          this.updateListData(response);
+          this.utils.broadcastEvent('chat:info-update', true);
+          this._scrollToBottom();
+          this.removeSelectAttachment(attachment);
+          this._afterSendMessage();
+        },
+        error => {
+          this._afterSendMessage();
+        }
+      );
+    });
+  }
+
+  triggerPusherEvent(response, file?: any) {
+    const pusherData: SendMessageParam = {
+      channelUuid: this.channelUuid,
+      uuid: response.uuid,
+      isSender: response.isSender,
+      message: response.message,
+      file: response.file,
+      created: response.created,
+      senderUuid: response.senderUuid,
+      senderName: response.senderName,
+      senderRole: response.senderRole,
+      senderAvatar: response.senderAvatar,
+      sentAt: response.sentAt
+    };
+    if (file) {
+      pusherData.file = JSON.stringify(file);
+    }
+    this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, pusherData);
+  }
+
+  updateListData(response) {
+    this.messageList.push(
+      {
+        uuid: response.uuid,
+        isSender: response.isSender,
+        message: response.message,
+        file: response.file,
+        fileObject: response.fileObject,
+        preview: this.attachmentPreview(response.fileObject),
+        created: response.created,
+        senderUuid: response.senderUuid,
+        senderName: response.senderName,
+        senderRole: response.senderRole,
+        senderAvatar: response.senderAvatar,
+        sentAt: response.sentAt
       }
     );
   }
@@ -314,7 +382,6 @@ export class ChatRoomComponent implements OnInit {
 
   private _afterSendMessage() {
     this.sendingMessage = false;
-    this.showBottomAttachmentButtons = false;
     /**
      * if there are no previous messages message page cursor is empty.
      * after user start sending message, if page cursor is empty we need to set cursor.
@@ -497,10 +564,7 @@ export class ChatRoomComponent implements OnInit {
    */
   typing() {
     if (!this.utils.isEmpty(this.typingMessage)) {
-      this.showBottomAttachmentButtons = true;
       this._scrollToBottom();
-    } else {
-      this.showBottomAttachmentButtons = false;
     }
     this.pusherService.triggerTyping(this.chatChannel.pusherChannel);
   }
@@ -525,6 +589,9 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private attachmentPreview(filestackRes) {
+    if (!filestackRes) {
+      return;
+    }
     let preview = `Uploaded ${filestackRes.filename}`;
     const dimension = 224;
     if (!filestackRes.mimetype) {
@@ -541,78 +608,8 @@ export class ChatRoomComponent implements OnInit {
     return preview;
   }
 
-  async attach(type: string) {
-    const options: any = {};
-
-    if (this.filestackService.getFileTypes(type)) {
-      options.accept = this.filestackService.getFileTypes(type);
-      options.storeTo = this.filestackService.getS3Config(type);
-    }
-    await this.filestackService.open(
-      options,
-      res => {
-        return this._postAttachment(res);
-      },
-      err => {
-        console.error(err);
-      }
-    );
-  }
-
   previewFile(file) {
     return this.filestackService.previewFile(file);
-  }
-
-  private _postAttachment(file) {
-    if (this.sendingMessage) {
-      return;
-    }
-    this.sendingMessage = true;
-    const message = this.typingMessage;
-    this._beforeSenMessages();
-    this.chatService.postAttachmentMessage({
-      channelUuid: this.channelUuid,
-      message: message,
-      file: JSON.stringify(file)
-    }).subscribe(
-      response => {
-        this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, {
-          channelUuid: this.channelUuid,
-          uuid: response.uuid,
-          isSender: response.isSender,
-          message: response.message,
-          file: JSON.stringify(file),
-          created: response.created,
-          senderUuid: response.senderUuid,
-          senderName: response.senderName,
-          senderRole: response.senderRole,
-          senderAvatar: response.senderAvatar,
-          sentAt: response.sentAt
-        });
-        this.messageList.push(
-          {
-            uuid: response.uuid,
-            isSender: response.isSender,
-            message: response.message,
-            file: response.file,
-            fileObject: response.fileObject,
-            preview: this.attachmentPreview(response.fileObject),
-            created: response.created,
-            senderUuid: response.senderUuid,
-            senderName: response.senderName,
-            senderRole: response.senderRole,
-            senderAvatar: response.senderAvatar,
-            sentAt: response.sentAt
-          }
-        );
-        this.utils.broadcastEvent('chat:info-update', true);
-        this._scrollToBottom();
-        this._afterSendMessage();
-      },
-      error => {
-        this._afterSendMessage();
-      }
-    );
   }
 
   getTypeByMime(mimetype: string): string {
@@ -773,6 +770,39 @@ export class ChatRoomComponent implements OnInit {
         }
       });
       await modal.present();
+    }
+  }
+
+  async attachmentSelectPopover(ev: any) {
+    const popover = await this.popoverController.create({
+      component: AttachmentPopoverComponent,
+      cssClass: 'my-custom-class',
+      event: ev,
+      translucent: true,
+    });
+    await popover.present();
+
+    const { data } = await popover.onDidDismiss();
+    if (data && data.selectedFile) {
+      this.selectedAttachments.push(data.selectedFile);
+    }
+  }
+
+  getResizedImageUrl(fileStackObject, dimension) {
+    return `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${fileStackObject.handle}`;
+  }
+
+  removeSelectAttachment(attachment, index?: number, isDelete = false) {
+    if (!attachment) {
+      return;
+    }
+    let attachIndex = this.selectedAttachments.indexOf(attachment);
+    if (index) {
+      attachIndex = index;
+    }
+    this.selectedAttachments.splice(attachIndex, 1);
+    if (isDelete) {
+      this.filestackService.deleteFile(attachment.handle).subscribe(console.log);
     }
   }
 
