@@ -15,7 +15,7 @@ jobs:
   release-nu:
     name: release-nu
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
     #Global Env variables declare here
     env:
