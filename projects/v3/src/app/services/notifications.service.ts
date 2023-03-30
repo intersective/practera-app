@@ -455,9 +455,9 @@ export class NotificationsService {
       this.request.apiResponseFormatError('TodoItem meta format error');
       return todoItems;
     }
-    item.name = todoItem.meta.assessment_name;
+    item.name = $localize`Submission Reminder`;
     item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task`;
-    if (todoItem.meta.due_date) {
+    if (todoItem?.meta?.due_date) {
       item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${todoItem.meta.due_date}`;
     }
     item.time = this.utils.timeFormatter(todoItem.created);
@@ -664,7 +664,7 @@ export class NotificationsService {
           }
         };
 
-        if (event.meta.due_date) {
+        if (event?.meta?.due_date) {
           result.description = $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${event.meta.AssessmentSubmissionReminder.due_date}`;
         }
         break;
