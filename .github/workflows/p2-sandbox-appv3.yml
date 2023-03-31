@@ -35,7 +35,7 @@ jobs:
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
       PUBLICZONENAME: p2-sandbox.practera.com
-      BUILD_CONFIG: custom-sandbox
+      BUILD_CONFIG: customsandbox
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}

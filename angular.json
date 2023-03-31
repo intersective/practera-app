@@ -363,7 +363,7 @@
               "extractLicenses": true,
               "vendorChunk": false
             },
-            "custom-sandbox": {
+            "customsandbox": {
               "budgets": [
                 {
                   "type": "initial",
@@ -442,8 +442,8 @@
             "custom": {
               "browserTarget": "v3:build:custom"
             },
-            "custom-sandbox": {
-              "browserTarget": "v3:build:custom-sandbox"
+            "customsandbox": {
+              "browserTarget": "v3:build:customsandbox"
             },
             "production": {
               "browserTarget": "v3:build:production"
