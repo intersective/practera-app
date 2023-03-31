@@ -442,6 +442,9 @@
             "custom": {
               "browserTarget": "v3:build:custom"
             },
+            "custom-sandbox": {
+              "browserTarget": "v3:build:custom-sandbox"
+            },
             "production": {
               "browserTarget": "v3:build:production"
             },
