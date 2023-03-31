@@ -13,11 +13,13 @@
     <ion-tab-button class="tab-item" tab="reviews"
       [ngClass]="{'selected': selectedTab === 'reviews'}" *ngIf="reviews && reviews.length">
       <ion-icon name="eye"></ion-icon>
+      <ion-badge color="danger" *ngIf="badges.review > 0">{{ badges.review }}</ion-badge>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="messages"
       [ngClass]="{'selected': selectedTab === 'messages'}" *ngIf="showMessages">
       <ion-icon name="mail"></ion-icon>
+      <ion-badge color="danger" *ngIf="badges.chat > 0">{{ badges.chat }}</ion-badge>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="settings"

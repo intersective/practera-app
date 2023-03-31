@@ -2,25 +2,28 @@ import { AuthService } from './auth.service';
 import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from 'request';
-import { TestUtils } from '@testingv3/utils';
 import { Router } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { ApolloService } from './apollo.service';
+import { NotificationsService } from './notifications.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+
 
 describe('AuthService', () => {
   let service: AuthService;
+  let httpTestingController: HttpTestingController;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
+  let notificationsService: NotificationsService;
 
   beforeEach(() => {
+    const notificationsSpy = jasmine.createSpyObj('NotificationsService', ['alert']);
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
+      imports: [HttpClientTestingModule],
       providers: [
         AuthService,
         {
@@ -57,6 +60,7 @@ describe('AuthService', () => {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
         },
+        { provide: NotificationsService, useValue: notificationsSpy },
       ]
     });
     service = TestBed.inject(AuthService);
@@ -65,6 +69,12 @@ describe('AuthService', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    notificationsService = TestBed.inject(NotificationsService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
   });
 
   it('should be created', () => {
@@ -234,6 +244,29 @@ describe('AuthService', () => {
       expect(requestSpy.post.calls.count()).toBe(1);
       expect(storageSpy.set.calls.count()).toBe(0);
     });
+  });
+
+  it('should call getConfig with the correct parameters and handle response', () => {
+    const configParams: any = { param1: 'value1', param2: 'value2' };
+    const responseData: any = {
+      data: [
+        { id: 1, name: 'Experience 1' },
+        { id: 2, name: 'Experience 2' },
+      ],
+    };
+    spyOn(service, 'isAuthenticated').and.returnValue(true);
+
+    service.getConfig(configParams).subscribe(response => {
+      expect(response).toEqual(responseData);
+    });
+
+    const req = httpTestingController.expectOne('api/v2/plan/experience/list');
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(responseData);
+
+    expect(service.isAuthenticated).not.toHaveBeenCalled();
+    expect(notificationsService.alert).not.toHaveBeenCalled();
   });
 
   it('when testing checkDomain()', () => {
