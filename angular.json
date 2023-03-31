@@ -504,6 +504,9 @@
             "custom": {
               "tsConfig": "projects/request/tsconfig.lib.prod.json"
             },
+            "customsandbox": {
+              "tsConfig": "projects/request/tsconfig.lib.prod.json"
+            },
             "production": {
               "tsConfig": "projects/request/tsconfig.lib.prod.json"
             },
