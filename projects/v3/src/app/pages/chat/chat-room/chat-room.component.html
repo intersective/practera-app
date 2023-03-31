@@ -22,7 +22,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile(), 'announcement': chatChannel.isAnnouncement}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile(), 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
 
   <div *ngIf="loadingChatMessages" class="ion-text-center" aria-label="loading message">
     <ion-spinner></ion-spinner>
@@ -137,21 +137,19 @@
     </ng-container>
   </ion-list>
 </ion-content>
-<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'focus': showBottomAttachmentButtons}">
+<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'attach-preview': (selectedAttachments.length > 0 && !utils.isMobile())}">
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
-      <ion-col [size]="!utils.isMobile() || showBottomAttachmentButtons ? '12' : '9'" class="ion-align-self-center ion-no-padding">
+      <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
         <!-- quill editor -->
         <quill-editor aria-label="chat message input"
         customToolbarPosition="top"
         [classes]="utils.isMobile() ? 'editor-class' : 'editor-class desktop'"
         [required]="true"
         class="message-text-editor"
-        [placeholder]="'Enter your message'"
+        placeholder="Enter your message"
         [(ngModel)]="typingMessage"
         (ngModelChange)="typing()"
-        (onFocus)="showBottomAttachmentButtons = true;"
-        (onBlur)="showBottomAttachmentButtons = false;"
         (onEditorCreated)="utils.formatQuillClipboard($event)"
         i18n-placeholder>
           <div quill-editor-toolbar>
@@ -171,45 +169,71 @@
           </div>
         </quill-editor>
       <!-- quill editor -->
-
       </ion-col>
-      <ng-container *ngIf="utils.isMobile() && !showBottomAttachmentButtons">
-        <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 0 }"></ng-container>
-      </ng-container>
     </ion-row>
-    <ion-row nowrap class="ion-no-padding ion-align-items-end action-buttons" *ngIf="!utils.isMobile() || showBottomAttachmentButtons">
-      <ng-container *ngTemplateOutlet="attachmentButtons; context: { offset: 8 }"></ng-container>
-      <ion-col class="ion-no-padding ion-text-center">
+    <!-- Attachment Preview section -->
+    <ng-container *ngIf="selectedAttachments.length > 0">
+      <ion-row nowrap class="ion-no-padding ion-align-items-left ion-justify-content-start attach-preview">
+        <ng-container *ngFor="let attachment of selectedAttachments; let i = index">
+          <!-- Image preview -->
+          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('image')">
+            <div class="image" [ngClass]="{'mobile': utils.isMobile()}">
+              <img [src]="getResizedImageUrl(attachment, 80)" (click)="preview(attachment)">
+              <div class="overlay" (click)="preview(attachment)"></div>
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
+                <ion-icon name="close"></ion-icon>
+              </span>
+            </div>
+          </ion-col>
+          <!-- video preview -->
+          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('video')">
+            <div class="video" [ngClass]="{'mobile': utils.isMobile()}">
+              <div class="play-icon" (click)="preview(attachment)">
+                <ion-icon name="play" color="ocean"></ion-icon>
+              </div>
+              <div class="overlay" (click)="preview(attachment)"></div>
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
+                <ion-icon name="close"></ion-icon>
+              </span>
+            </div>
+          </ion-col>
+          <!-- File preview -->
+          <ion-col size="10" size-lg="6" class="ion-no-padding ion-text-center" *ngIf="!attachment.mimetype || !attachment.mimetype.includes('image') && !attachment.mimetype.includes('video')">
+            <div class="file-preview" [ngClass]="{'mobile': utils.isMobile()}">
+              <ion-item lines="none" class="general-attachment" (click)="preview(attachment)">
+                <ion-ripple-effect></ion-ripple-effect>
+                <ion-icon name="document" slot="start"></ion-icon>
+                <ion-label color="black">
+                  <p>{{ attachment.filename }}</p>
+                  <p class="mimetype" *ngIf="getTypeByMime(attachment.mimetype)">{{ getTypeByMime(attachment.mimetype) }}</p>
+                </ion-label>
+              </ion-item>
+              <div class="overlay" (click)="preview(attachment)"></div>
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
+                <ion-icon name="close"></ion-icon>
+              </span>
+            </div>
+          </ion-col>
+        </ng-container>
+      </ion-row>
+    </ng-container>
+    <!-- Action button section -->
+    <ion-row nowrap class="ion-no-padding ion-align-items-center ion-justify-content-between action-buttons">
+      <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
+        <ion-button [disabled]="selectedAttachments.length > 0" (click)="attachmentSelectPopover($event)" fill="clear" class="ion-no-padding">
+          <ion-icon name="attach" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-col>
+      <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
         <ion-button (click)="sendMessage()"
           aria-label="send message"
           type="submit"
           fill="clear"
           class="ion-no-padding"
-          [disabled]="!typingMessage || utils.isQuillContentEmpty(this.typingMessage)">
+          [disabled]="(!typingMessage || utils.isQuillContentEmpty(this.typingMessage)) && selectedAttachments.length === 0">
           <ion-icon name="send-outline" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>
 </ion-footer>
-
-<ng-template #attachmentButtons let-offset="offset">
-  <ion-col [offset]="offset" class="ion-no-padding ion-text-center">
-    <ion-button (click)="attach('video')" fill="clear"
-      class="ion-no-padding" aria-label="attach video">
-      <ion-icon name="film-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-    </ion-button>
-  </ion-col>
-  <ion-col class="ion-no-padding ion-text-center">
-    <ion-button (click)="attach('image')" fill="clear"
-      class="ion-no-padding" aria-label="attach image">
-      <ion-icon name="images-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-    </ion-button>
-  </ion-col>
-  <ion-col class="ion-no-padding ion-text-center">
-    <ion-button (click)="attach('any')" fill="clear"
-      class="ion-no-padding" aria-label="attach document">
-      <ion-icon name="attach-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-    </ion-button>
-  </ion-col>
-</ng-template>
