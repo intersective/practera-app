@@ -12,7 +12,7 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
-import { map, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-v3',
