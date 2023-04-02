@@ -127,7 +127,7 @@ resources:
               ResponsePagePath: /index.html
             - ErrorCode: 403
               ResponseCode: 200
-              ResponsePagePath: /custom-error-page.html
+              ResponsePagePath: /custom-error-page.html 
           Enabled: true
           HttpVersion: http2
           IPV6Enabled: true
