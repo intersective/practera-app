@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'develop' ]
+    branches: [ 'feature/customer-error-page' ]
 
 
 ################################################
@@ -257,7 +257,8 @@ jobs:
         run: |
           cp -R src/well-known www/.well-known/
           APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
-          aws s3 sync www/ s3://$APP_V2_S3 --delete
+          aws s3 sync www/ s3://$APP_V2_S3 --delete 
+          aws s3 cp custom-error-page.html s3://$APP_V2_S3/
 
 
 
@@ -271,64 +272,64 @@ jobs:
 
 
 
-# #########################################################
-# # SLACK NOTIFICATION
-# #########################################################
-      - name: Slack Notification
-        if: always() # Pick up events even if the job fails or is canceled.
-        uses: 8398a7/action-slack@v3
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-        with:
-          status: ${{ job.status }}
-          author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
-          mention: 'here'
-          if_mention: failure,cancelled
-          job_name: deploy-p2-sandbox # Match the name above.
-          fields: repo,commit,eventName,ref,workflow,message,author,job,took
-          custom_payload: |
-            {
-            username: 'GitHub Action CI WorkFlow',
-            icon_emoji: ':github:',
-            attachments: [{
-              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-              text:
-             `${process.env.AS_REPO}\n
-              ${process.env.AS_COMMIT}\n
-              ${process.env.AS_EVENT_NAME}\n
-              @${process.env.AS_REF}\n
-              @${process.env.AS_WORKFLOW}\n
-              ${process.env.AS_MESSAGE}\n
-              ${process.env.AS_AUTHOR}\n
-              ${process.env.AS_JOB}\n
-              ${process.env.AS_TOOK}`,
-            }]
-            }
+# # #########################################################
+# # # SLACK NOTIFICATION
+# # #########################################################
+#       - name: Slack Notification
+#         if: always() # Pick up events even if the job fails or is canceled.
+#         uses: 8398a7/action-slack@v3
+#         env:
+#           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+#           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+#         with:
+#           status: ${{ job.status }}
+#           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
+#           mention: 'here'
+#           if_mention: failure,cancelled
+#           job_name: deploy-p2-sandbox # Match the name above.
+#           fields: repo,commit,eventName,ref,workflow,message,author,job,took
+#           custom_payload: |
+#             {
+#             username: 'GitHub Action CI WorkFlow',
+#             icon_emoji: ':github:',
+#             attachments: [{
+#               color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+#               text:
+#              `${process.env.AS_REPO}\n
+#               ${process.env.AS_COMMIT}\n
+#               ${process.env.AS_EVENT_NAME}\n
+#               @${process.env.AS_REF}\n
+#               @${process.env.AS_WORKFLOW}\n
+#               ${process.env.AS_MESSAGE}\n
+#               ${process.env.AS_AUTHOR}\n
+#               ${process.env.AS_JOB}\n
+#               ${process.env.AS_TOOK}`,
+#             }]
+#             }
 
 
 
-# ################################################
-# #  STATUS VARIABLE UPDATE
-# ################################################
-      - name: Deployment status variable update
-        if: ${{ failure() }}
-        run: |
-          echo "STATUS=FAILURE" >> $GITHUB_ENV
+# # ################################################
+# # #  STATUS VARIABLE UPDATE
+# # ################################################
+#       - name: Deployment status variable update
+#         if: ${{ failure() }}
+#         run: |
+#           echo "STATUS=FAILURE" >> $GITHUB_ENV
 
-# ################################################
-# #  DEVOPS-DEPLOYMENT REPORT
-# ################################################
-      - name: DevOps Deployment Reporting
-        if: always()
-        run: |
-          pip install --upgrade pip
-          pip install --upgrade csvtotable
-          export REASON=$(git log -2 --format=%s | sed -n 2p)
-          export REQUESTOR=${{ github.actor }}
+# # ################################################
+# # #  DEVOPS-DEPLOYMENT REPORT
+# # ################################################
+#       - name: DevOps Deployment Reporting
+#         if: always()
+#         run: |
+#           pip install --upgrade pip
+#           pip install --upgrade csvtotable
+#           export REASON=$(git log -2 --format=%s | sed -n 2p)
+#           export REQUESTOR=${{ github.actor }}
 
-          aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
-          chmod +x deploy-reporting.sh && ./deploy-reporting.sh
-          echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
-          echo $REASON
-          echo $REQUESTOR
+#           aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
+#           chmod +x deploy-reporting.sh && ./deploy-reporting.sh
+#           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
+#           echo $REASON
+#           echo $REQUESTOR
