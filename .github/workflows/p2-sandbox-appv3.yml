@@ -10,7 +10,8 @@ name: Deploy to p2-sandbox-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'develop-v3' ]
+    branches: [ 'develop-v3','feature/customer-error-page-v3']
+
 
 
 ################################################
