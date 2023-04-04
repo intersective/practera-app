@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-     - 'golive/3*'
+     - 'release/live-v3'
 
 
 
