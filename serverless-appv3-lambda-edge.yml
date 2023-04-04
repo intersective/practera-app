@@ -52,7 +52,7 @@ resources:
               const locale = uriParts.length > 1 ? uriParts[1] : "";
               const locales = ["en-US", "ja", "ms", "es"];
 
-              if (locale === "" || !locales.includes(locale) || locale === "index.html") {
+              if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
                 request.uri = "/en-US/index.html";
                 console.log('Go to default page and locale.');
                 return cb(null, request);
