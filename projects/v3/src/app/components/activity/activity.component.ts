@@ -75,6 +75,16 @@ export class ActivityComponent {
       }
       return '';
     }
+
+    // below is redundant, but it's added for the sake of i18n
+    if (task?.status === 'feedback available') {
+      return $localize`feedback available`;
+    }
+
+    if (task?.status === 'pending review') {
+      return $localize`pending review`;
+    }
+
     return task.status;
   }
 
