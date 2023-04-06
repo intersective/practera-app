@@ -580,18 +580,20 @@ export class UtilsService {
         return $localize`:labelling:learner`;
       case 'mentor':
         return $localize`:labelling:expert`;
-      case 'admin':
-        return $localize`:labelling:admin`;
       case 'admins':
         return $localize`:labelling:admins`;
-      case 'sysadmin':
-        return $localize`:labelling:sysadmin`;
+      case 'admin':
+        return $localize`:labelling:admin`;
       case 'sysadmins':
         return $localize`:labelling:sysadmins`;
-      case 'coordinator':
-        return $localize`:labelling:coordinator`;
+      case 'sysadmin':
+        return $localize`:labelling:sysadmin`;
       case 'coordinators':
         return $localize`:labelling:coordinators`;
+      case 'coordinator':
+        return $localize`:labelling:coordinator`;
+      case 'inst_admin':
+        return $localize`:labelling:inst_admin`;
       default: // added default to allow graceful failure handling
         return role;
     }
@@ -648,5 +650,24 @@ export class UtilsService {
       const plaintext = node.innerText;
       return new Delta().insert(plaintext);
     });
+  }
+
+  moveToNewLocale(newLocale: string) {
+    const currentURL = this.getCurrentLocation();
+    const currentLocale = this.getCurrentLocale();
+
+    if (currentLocale === newLocale) {
+      return;
+    }
+
+    // if pathname begin with "/v3/" (for development purpose only)
+    const pathname = currentURL.pathname.match(/\/(\w\-?){2,5}\//);
+    if (currentURL.pathname.indexOf('/v3/') === 0) {
+      return this.redirectToUrl(`${currentURL.origin}/${newLocale}${currentURL.pathname}`);
+    }
+
+    // if pathname begin with different locale
+    const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
+    return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 }
