@@ -602,4 +602,20 @@ describe('UtilsService', () => {
     });
   });
 
+  describe('moveToNewLocale()', () => {
+    it('should change URL to one with proper locale', () => {
+      const subject = {
+        origin: 'https://sample.com',
+        pathname: '/v3/home',
+      };
+      const targetLocale = 'sample-locale';
+
+      jasmine.createSpy('service.getCurrentLocation').and.returnValue(subject);
+      jasmine.createSpy('service.getCurrentLocale').and.returnValue('en-US');
+      const redirection = jasmine.createSpy('service.redirectToUrl');
+      service.moveToNewLocale(targetLocale);
+
+      expect(redirection).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+    });
+  });
 });
