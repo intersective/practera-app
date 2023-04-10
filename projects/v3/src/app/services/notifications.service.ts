@@ -512,6 +512,7 @@ export class NotificationsService {
         todoItem.name = message.name;
         todoItem.description = message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
+        todoItem.unreadMessages = unreadMessages;
       }
     });
     if (unreadMessages > 1) {
