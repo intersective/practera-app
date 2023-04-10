@@ -517,12 +517,12 @@ export class NotificationsService {
         todoItem.name = message.name;
         todoItem.description = message.lastMessage === 'file received' ? $localize`:notification description:file received` : message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
+        todoItem.unreadMessages = unreadMessages;
       }
     });
     if (unreadMessages > 1) {
       // group the chat notifiations
       todoItem.name = $localize`You have ${unreadMessages} unread messages from ${noOfChats} of chats`;
-      todoItem.unreadMessages = unreadMessages;
     }
     if (todoItem) {
       todoItem.meta = {};
