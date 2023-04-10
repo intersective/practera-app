@@ -482,6 +482,8 @@ export class NotificationsService {
         } else {
           this._removeChatTodoItem();
         }
+
+        this._notification$.next(this.notifications);
         return normalized;
       }
     }));
@@ -548,7 +550,6 @@ export class NotificationsService {
       this.notifications.splice(currentChatTodoIndex, 1);
     }
     this.notifications.push(chatTodoItem);
-    this._notification$.next(this.notifications);
   }
 
   /**
@@ -568,7 +569,6 @@ export class NotificationsService {
     });
     if (currentChatTodo) {
       this.notifications.splice(currentChatTodoIndex, 1);
-      this._notification$.next(this.notifications);
     }
   }
 
