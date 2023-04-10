@@ -15,6 +15,7 @@ import { ChatViewComponent } from './chat-view/chat-view.component';
 import { ChatInfoComponent } from './chat-info/chat-info.component';
 import { ComponentsModule } from '../../components/components.module';
 import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
+import { AttachmentPopoverComponent } from './attachment-popover/attachment-popover.component';
 
 @NgModule({
   imports: [
@@ -29,9 +30,10 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
     ChatPreviewComponent,
     ChatRoomComponent,
     ChatViewComponent,
-    ChatInfoComponent
+    ChatInfoComponent,
+    AttachmentPopoverComponent
   ],
-  entryComponents: [ChatPreviewComponent, ChatInfoComponent],
+  entryComponents: [ChatPreviewComponent, ChatInfoComponent, AttachmentPopoverComponent],
   providers: [],
   exports: [
     ChatRoomComponent,

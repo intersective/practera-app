@@ -1,4 +1,4 @@
-<ion-content color="light" class="pop-up-content" [ngClass]="{'desktop-view': !isMobile}"
+<ion-content color="light" class="pop-up-content" [scrollY]="false" [ngClass]="{'desktop-view': !isMobile}"
   text-center
   role="dialog"
   aria-modal="true"
@@ -16,7 +16,7 @@
   </div>
 
   <div class="details-container ion-text-center">
-    <div class="div-after-img" *ngIf="type === 'notification'">
+    <div class="div-after-img" *ngIf="type === 'notification' && hideName !== true">
       <p class="headline-6" i18n>Congratulations</p>
       <p class="body-1" i18n>You have earned a new badge</p>
       <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" #achievementName>{{achievement.name}}</div>
