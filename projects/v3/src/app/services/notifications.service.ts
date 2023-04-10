@@ -500,6 +500,8 @@ export class NotificationsService {
         !this.utils.has(message, 'lastMessageCreated')) {
         return this.request.apiResponseFormatError('Chat object format error');
       }
+
+      // if there is any unread message
       if (message.unreadMessageCount > 0) {
         todoItem = {
           type: 'chat',
