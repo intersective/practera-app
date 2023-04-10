@@ -485,6 +485,8 @@ export class NotificationsService {
         } else {
           this._removeChatTodoItem();
         }
+
+        this._notification$.next(this.notifications);
         return normalized;
       }
     }));
@@ -506,6 +508,8 @@ export class NotificationsService {
         !this.utils.has(message, 'lastMessageCreated')) {
         return this.request.apiResponseFormatError('Chat object format error');
       }
+
+      // if there is any unread message
       if (message.unreadMessageCount > 0) {
         todoItem = {
           type: 'chat',
@@ -518,12 +522,12 @@ export class NotificationsService {
         todoItem.name = message.name;
         todoItem.description = message.lastMessage === 'file received' ? $localize`:notification description:file received` : message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
+        todoItem.unreadMessages = unreadMessages;
       }
     });
     if (unreadMessages > 1) {
       // group the chat notifiations
       todoItem.name = $localize`You have ${unreadMessages} unread messages from ${noOfChats} of chats`;
-      todoItem.unreadMessages = unreadMessages;
     }
     if (todoItem) {
       todoItem.meta = {};
@@ -551,7 +555,6 @@ export class NotificationsService {
       this.notifications.splice(currentChatTodoIndex, 1);
     }
     this.notifications.push(chatTodoItem);
-    this._notification$.next(this.notifications);
   }
 
   /**
@@ -571,7 +574,6 @@ export class NotificationsService {
     });
     if (currentChatTodo) {
       this.notifications.splice(currentChatTodoIndex, 1);
-      this._notification$.next(this.notifications);
     }
   }
 
