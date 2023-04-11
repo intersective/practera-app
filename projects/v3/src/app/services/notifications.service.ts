@@ -455,7 +455,10 @@ export class NotificationsService {
       return todoItems;
     }
     item.name = todoItem.meta.assessment_name;
-    item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date)}`;
+    item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task`;
+    if (todoItem.meta.due_date) {
+      item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${todoItem.meta.due_date}`;
+    }
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
     todoItems.push(item);
@@ -647,7 +650,7 @@ export class NotificationsService {
         result = {
           type: 'assessment_submission_reminder',
           name: $localize`Submission Reminder`,
-          description: $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date)}`,
+          description: $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task`,
           time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
@@ -657,6 +660,10 @@ export class NotificationsService {
             due_date: event.meta.AssessmentSubmissionReminder.due_date
           }
         };
+
+        if (event.meta.due_date) {
+          result.description = $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${event.meta.AssessmentSubmissionReminder.due_date}`;
+        }
         break;
     }
 
