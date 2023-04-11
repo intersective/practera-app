@@ -517,9 +517,12 @@ export class UtilsService {
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
    */
-  dueDateFormatter(dueDate: string) {
+  dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
       return '';
+    }
+    if (plain === true) {
+      return this.utcToLocal(dueDate);
     }
     const difference = this.timeComparer(dueDate);
     if (difference < 0) {
