@@ -526,7 +526,7 @@ export class NotificationsService {
     // group the chat notifiations
     if (unreadMessages === 1) {
       todoItem.name = $localize`Unread Message`;
-      todoItem.description = $localize`You have 1 unread message in 1 of chat`;
+      todoItem.description = $localize`You have 1 unread message in 1 chat`;
     }
 
     if (todoItem) {
