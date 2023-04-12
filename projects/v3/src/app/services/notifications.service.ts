@@ -667,7 +667,7 @@ export class NotificationsService {
           }
         };
 
-        if (event?.meta?.due_date) {
+        if (event?.meta?.AssessmentSubmissionReminder?.due_date) {
           result.description = $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date, true)}`;
         }
         break;
