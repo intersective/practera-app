@@ -517,18 +517,22 @@ export class NotificationsService {
           description: '',
           time: '',
         };
+
+        todoItem.name = $localize`Unread Messages`;
         unreadMessages += message.unreadMessageCount;
         noOfChats++;
-        todoItem.name = message.name;
-        todoItem.description = message.lastMessage === 'file received' ? $localize`:notification description:file received` : message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
         todoItem.unreadMessages = unreadMessages;
+        todoItem.description = $localize`You have ${unreadMessages} unread messages in ${noOfChats} chats`;
       }
     });
-    if (unreadMessages > 1) {
-      // group the chat notifiations
-      todoItem.name = $localize`You have ${unreadMessages} unread messages from ${noOfChats} of chats`;
+
+    // group the chat notifiations
+    if (unreadMessages === 1) {
+      todoItem.name = $localize`Unread Message`;
+      todoItem.description = $localize`You have 1 unread message in 1 chat`;
     }
+
     if (todoItem) {
       todoItem.meta = {};
     }
