@@ -42,7 +42,7 @@
     "@angular/platform-browser-dynamic": "~13.3.11",
     "@angular/router": "~13.3.11",
     "@apollo/client": "^3.5.9",
-    "@ionic/angular": "^6.2.8",
+    "@ionic/angular": "~6.2.9",
     "@ionic/storage": "^3.0.6",
     "angular2-text-mask": "^9.0.0",
     "apollo-angular": "^3.0.1",
