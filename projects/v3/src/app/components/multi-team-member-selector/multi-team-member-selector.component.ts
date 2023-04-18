@@ -20,6 +20,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   @Input() question;
   @Input() submission;
+  @Input() submissionId: number;
   @Input() review;
   // this is for review status
   @Input() reviewStatus;
@@ -97,6 +98,11 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     this.submitActions$.next({
       saveInProgress: true,
       goBack: false,
+      questionSave: {
+        questionId: this.question.id,
+        submissionId: this.submissionId,
+        answer: this.innerValue,
+      }
     });
   }
 

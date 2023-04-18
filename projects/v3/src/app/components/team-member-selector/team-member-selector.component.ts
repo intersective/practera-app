@@ -19,6 +19,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
 
   @Input() question;
   @Input() submission;
+  @Input() submissionId: number;
   @Input() review;
   // this is for review status
   @Input() reviewStatus;
@@ -82,6 +83,11 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
     this.submitActions$.next({
       saveInProgress: true,
       goBack: false,
+      questionSave: {
+        questionId: this.question.id,
+        submissionId: this.submissionId,
+        answer: this.innerValue,
+      }
     });
   }
 
