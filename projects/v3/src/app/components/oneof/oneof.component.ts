@@ -19,6 +19,7 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
 
   @Input() question;
   @Input() submission;
+  @Input() submissionId: number;
   @Input() review;
   // this is for review status
   @Input() reviewStatus;
@@ -84,6 +85,11 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
     this.submitActions$.next({
       saveInProgress: true,
       goBack: false,
+      questionSave: {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue,
+      }
     });
   }
 
