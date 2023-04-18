@@ -20,6 +20,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   @Input() videoOnly?: boolean;
   @Input() question: {
+    id: number;
     name: string;
     description: string;
     isRequired: boolean;
@@ -28,6 +29,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     canAnswer: boolean;
     canComment: boolean;
   } = {
+    id: null,
     name: '',
     description: '',
     isRequired: false,
@@ -37,6 +39,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     canComment: false,
   };
   @Input() submission;
+  @Input() submissionId: number;
   @Input() review;
   // this is for review status
   @Input() reviewStatus;
@@ -121,6 +124,11 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.submitActions$.next({
       saveInProgress: true,
       goBack: false,
+      questionSave: {
+        questionId: this.question.id,
+        submissionId: this.submissionId,
+        answer: this.innerValue,
+      }
     });
   }
 
