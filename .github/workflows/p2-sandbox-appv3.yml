@@ -21,9 +21,7 @@ jobs:
     name: deploy-p2-sandbox-appv3
     runs-on: ubuntu-latest
     # environment: p2-sandbox
-    permissions:
-      id-token: write
-      contents: read
+    permissions: write-all
     timeout-minutes: 15
 
 
