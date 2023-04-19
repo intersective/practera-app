@@ -20,7 +20,10 @@ jobs:
   deploy-p2-sandbox-appv3:
     name: deploy-p2-sandbox-appv3
     runs-on: ubuntu-latest
-    environment: p2-sandbox
+    # environment: p2-sandbox
+    permissions:
+      id-token: write
+      contents: read
     timeout-minutes: 15
 
 
@@ -42,6 +45,8 @@ jobs:
       REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: appv3.p2-sandbox.practera.com
       BRANCH_TAG_NAME: develop-v3
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+
 
 
 
@@ -95,15 +100,28 @@ jobs:
 
 
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS
+#  GET P2 LOAD  TEST AWS ORGANIZATION NUMBER
 ################################################
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.DEVOPS_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEVOPS_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-2
+      - name: Get AWS Organization Number
+        id: AWS_ORG
+        run: |
+          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
+          P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
 
+          echo "::add-mask::$CENTRALIZED"
+          echo "::add-mask::$P2SANDBOX"
+
+          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
+          echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
+
+################################################
+#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
+################################################
+      - name: Configure AWS Credentials from CENTRALIZED Account
+        uses: ./.github/actions/aws-oidc
+        with:
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
@@ -120,41 +138,14 @@ jobs:
           ENV: live # Valid values are sandbox,stage,live only
 
 
-##########################################################
-#  AWS DEPLOY SECRET - MASK CONSOLE DISPLAY
-##########################################################
-      - name: AWS Deploy Secret
-        id: DeploySecret
-        run: |
-          echo "Enable SLACK NOTIFY"
-          SLACK_WEBHOOK_URL=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .SLACK_WEBHOOK_URL)
-          echo "::add-mask::$SLACK_WEBHOOK_URL"
-          echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
-
-          echo "Enable P2 Sandbox ACCOUNT CLI Login"
-          P2_SANDBOX_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_SANDBOX_AWS_ACCESS_KEY_ID)
-          P2_SANDBOX_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_SANDBOX_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$P2_SANDBOX_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$P2_SANDBOX_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=P2_SANDBOX_AWS_ACCESS_KEY_ID::$P2_SANDBOX_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=P2_SANDBOX_AWS_SECRET_ACCESS_KEY::$P2_SANDBOX_AWS_SECRET_ACCESS_KEY"
-
-        env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-          ENV: live # Valid values are sandbox,stage,live only
-
-##########################################################
-#  AWS P1SANDBOX ACCOUNT STEPS BELOW
-##########################################################
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+################################################
+#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
+################################################
+      - name: Configure AWS Credentials from P2SANDBOX Account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.REGION}}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
+          region: ${{ env.REGION }}
 
 
 
@@ -235,18 +226,14 @@ jobs:
 
           EOF
 
-##########################################################
-#  AWS P2SANDBOX ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
-##########################################################
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+################################################
+#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT LAMBDA@EDGE
+################################################
+      - name: Configure AWS Credentials from P2SANDBOX Account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-        env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
+          region: us-east-1
 
 ##########################################################
 #  CLOUDFORMATION EXPORT VARIABLES
@@ -258,18 +245,14 @@ jobs:
           Nonce=$GITHUB_SHA
           EOF
 
-##########################################################
-#  AWS P2SANDBOX ACCOUNT STEPS BELOW ap-southeast-2
-##########################################################
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+################################################
+#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
+################################################
+      - name: Configure AWS Credentials from P2SANDBOX Account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.REGION}}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_SANDBOX_AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
