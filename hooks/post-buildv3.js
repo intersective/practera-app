@@ -25,31 +25,14 @@ let mainBundleRegexp = /^main.?([a-z0-9]*)?(\.bundle)?.js$/;
 // read the dist folder files and find the one we're looking for
 const dir = {
   project: '../dist/v3/',
-  locale: {
+  locales: {
     en: '../dist/v3/en-US/',
     ja: '../dist/v3/ja/',
     es: '../dist/v3/es/',
   },
 };
 
-readDir(path.join(__dirname, dir.project))
-  .then(projectDir => {
-    const mainFilesCollection = [];
-    projectDir.forEach(locale => {
-      mainFilesCollection.push(readStats(path.join(__dirname, dir.project, locale)));
-    });
-    return Promise.all(mainFilesCollection);
-  })
-  .then(mainFilesCollection => {
-    const readings = [];
-    mainFilesCollection.filter(mainFile => {
-      if (mainFile.isDirectory()) {
-        console.log(mainFile.path);
-        readings.push(readDir(mainFile.path));
-      }
-    })
-    return Promise.all(readings);
-  })
+readDir(path.join(__dirname, dir.locales.en))
   .then(files => {
     console.log('all-files::', files);
     mainBundleFile = files.find(f => mainBundleRegexp.test(f));
@@ -76,13 +59,29 @@ readDir(path.join(__dirname, dir.project))
 
     console.log(`Replacing hash in the ${mainBundleFile}`);
 
-    // replace hash placeholder in our main.js file so the code knows it's current hash
-    const mainFilepath = path.join(__dirname, '../www/', mainBundleFile);
-    return readFile(mainFilepath, 'utf8')
-      .then(mainFileData => {
-        const replacedFile = mainFileData.replace(/{{POST_BUILD_ENTERS_HASH_HERE}}/g, mainHash);
-        return writeFile(mainFilepath, replacedFile);
-      });
+    return writeMultipleFiles();
   }).catch(err => {
     console.log('Error with post build:', err);
   });
+
+// replace hash placeholder in our main.js file so the code knows it's current hash
+function writeMultipleFiles() {
+  const writes = [];
+  for(let [locale, localeDir] of Object.entries(dir.locales)) {
+    console.log(locale);
+    const mainFilepath = path.join(__dirname, localeDir, mainBundleFile);
+    fs.stat(path.join(__dirname, localeDir), (err, stats) => {
+      if (err) {
+        console.log('skip non-directory file');
+        return;
+      }
+
+      readFile(mainFilepath, 'utf8')
+        .then(mainFileData => {
+          const replacedFile = mainFileData.replace(/{{POST_BUILD_ENTERS_HASH_HERE}}/g, mainHash);
+          writes.push(writeFile(mainFilepath, replacedFile));
+        });
+    });
+  }
+  return writes;
+}
