@@ -409,7 +409,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "localize": ["en-US"],
+              "localize": ["en-US", "ja"],
               "budgets": [
                 {
                   "type": "initial",
@@ -417,8 +417,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "15kb",
-                  "maximumError": "20kb"
+                  "maximumWarning": "20kb"
                 }
               ],
               "buildOptimizer": false,
