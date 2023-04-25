@@ -9,11 +9,12 @@ const appVersion = require('../package.json').version;
 const readDir = util.promisify(fs.readdir);
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
+const readStats = util.promisify(fs.stat);
 
 console.log('\nRunning post-build tasks');
 
-// our version.json will be in the dist folder
-const versionFilePath = path.join(__dirname + '/../version.json');
+// our version.json will be generate inside the dist folder
+const versionFilePath = path.join(__dirname + '/../dist/v3/version.json');
 
 let mainHash = '';
 let mainBundleFile = '';
@@ -22,9 +23,35 @@ let mainBundleFile = '';
 let mainBundleRegexp = /^main.?([a-z0-9]*)?(\.bundle)?.js$/;
 
 // read the dist folder files and find the one we're looking for
-readDir(path.join(__dirname, '../'))
+const dir = {
+  project: '../dist/v3/',
+  locale: {
+    en: '../dist/v3/en-US/',
+    ja: '../dist/v3/ja/',
+    es: '../dist/v3/es/',
+  },
+};
+
+readDir(path.join(__dirname, dir.project))
+  .then(projectDir => {
+    const mainFilesCollection = [];
+    projectDir.forEach(locale => {
+      mainFilesCollection.push(readStats(path.join(__dirname, dir.project, locale)));
+    });
+    return Promise.all(mainFilesCollection);
+  })
+  .then(mainFilesCollection => {
+    const readings = [];
+    mainFilesCollection.filter(mainFile => {
+      if (mainFile.isDirectory()) {
+        console.log(mainFile.path);
+        readings.push(readDir(mainFile.path));
+      }
+    })
+    return Promise.all(readings);
+  })
   .then(files => {
-    console.log(files);
+    console.log('all-files::', files);
     mainBundleFile = files.find(f => mainBundleRegexp.test(f));
 
     if (mainBundleFile) {
@@ -42,15 +69,15 @@ readDir(path.join(__dirname, '../'))
     const src = `{"version": "${appVersion}", "hash": "${mainHash}"}`;
     return writeFile(versionFilePath, src);
   }).then(() => {
-    // main bundle file not found, dev build?
     if (!mainBundleFile) {
+      console.log('post-build terminated - main bundle file not found');
       return;
     }
 
     console.log(`Replacing hash in the ${mainBundleFile}`);
 
     // replace hash placeholder in our main.js file so the code knows it's current hash
-    const mainFilepath = path.join(__dirname, '../', mainBundleFile);
+    const mainFilepath = path.join(__dirname, '../www/', mainBundleFile);
     return readFile(mainFilepath, 'utf8')
       .then(mainFileData => {
         const replacedFile = mainFileData.replace(/{{POST_BUILD_ENTERS_HASH_HERE}}/g, mainHash);
