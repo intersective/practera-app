@@ -51,6 +51,12 @@ resources:
 
               const locale = uriParts.length > 1 ? uriParts[1] : "";
               const locales = ["en-US", "ja", "ms", "es"];
+              const lastPartUrl = uriParts[uriParts.length - 1];
+
+              // whitelisted URL
+              if (lastPartUrl.match(/^version\.json\?t=\d+$/)) {
+                return cb(null, request);
+              }
 
               console.log('parts', uriParts);
               console.log('locale', locale);
@@ -60,9 +66,7 @@ resources:
                 return cb(null, request);
               }
 
-              const lastPartUrl = uriParts[uriParts.length - 1];
               const fileExt = path.extname(lastPartUrl);
-
               if (!fileExt) request.uri = `/${locale}/index.html`;
 
               console.log(`New Uri: ${request.uri}`);
