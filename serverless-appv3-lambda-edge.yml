@@ -54,7 +54,7 @@ resources:
               const lastPartUrl = uriParts[uriParts.length - 1];
 
               // whitelisted URL
-              if (lastPartUrl.match(/^version\.json\?t=\d+$/)) {
+              if (lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/)) {
                 return cb(null, request);
               }
 
