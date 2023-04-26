@@ -53,10 +53,8 @@ resources:
               const locales = ["en-US", "ja", "ms", "es"];
               const lastPartUrl = uriParts[uriParts.length - 1];
 
-              // whitelisted URL
-              console.log('lastpart::', lastPartUrl);
+              // whitelisted version.json request
               if (lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/) !== null) {
-                console.log('matching??', lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/));
                 return cb(null, request);
               }
 
