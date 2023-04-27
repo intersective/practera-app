@@ -901,6 +901,38 @@
           <context context-type="linenumber">19</context>
         </context-group>
       </trans-unit>
+      <trans-unit id="6970969629263334522" datatype="html">
+        <source>Review submission</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+        <note priority="1" from="description">call to action btn</note>
+      </trans-unit>
+      <trans-unit id="9193221682721730907" datatype="html">
+        <source>Check feedback</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
+          <context context-type="linenumber">39</context>
+        </context-group>
+        <note priority="1" from="description">call to action btn</note>
+      </trans-unit>
+      <trans-unit id="8400886248195940333" datatype="html">
+        <source>Check task</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
+          <context context-type="linenumber">41</context>
+        </context-group>
+        <note priority="1" from="description">call to action btn</note>
+      </trans-unit>
+      <trans-unit id="2528252522806423830" datatype="html">
+        <source>Check the message</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
+          <context context-type="linenumber">43</context>
+        </context-group>
+        <note priority="1" from="description">call to action btn</note>
+      </trans-unit>
       <trans-unit id="1848807236922852435" datatype="html">
         <source>Supporting Downloads</source>
         <context-group purpose="location">
