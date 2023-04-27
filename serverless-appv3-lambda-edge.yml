@@ -54,6 +54,7 @@ resources:
               const lastPartUrl = uriParts[uriParts.length - 1];
 
               // whitelisted version.json request
+              console.log('trailingURL::', lastPartUrl);
               if (lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/) !== null) {
                 return cb(null, request);
               }
