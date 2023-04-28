@@ -51,6 +51,13 @@ resources:
 
               const locale = uriParts.length > 1 ? uriParts[1] : "";
               const locales = ["en-US", "ja", "ms", "es"];
+              const lastPartUrl = uriParts[uriParts.length - 1];
+
+              // whitelisted version.json request
+              console.log('trailingURL::', lastPartUrl);
+              if (lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/) !== null) {
+                return cb(null, request);
+              }
 
               if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
                 request.uri = "/en-US/index.html";
@@ -58,9 +65,7 @@ resources:
                 return cb(null, request);
               }
 
-              const lastPartUrl = uriParts[uriParts.length - 1];
               const fileExt = path.extname(lastPartUrl);
-
               if (!fileExt) request.uri = `/${locale}/index.html`;
 
               console.log(`New Uri: ${request.uri}`);
