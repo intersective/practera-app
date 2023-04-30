@@ -3,11 +3,13 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { ApolloService } from '@v3/services/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors } from './storage.service';
 import * as convert from 'color-convert';
+import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 
 import Delta from 'quill-delta';
 
@@ -36,7 +38,8 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apolloService: ApolloService
+    private apolloService: ApolloService,
+    private modalController: ModalController,
   ) {
     if (_) {
       this.lodash = _;
@@ -676,5 +679,16 @@ export class UtilsService {
     // if pathname begin with different locale
     const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
+  }
+
+  async openSupportPopup() {
+    const modal = await this.modalController.create({
+      component: SupportPopupComponent,
+      componentProps: {
+        mode: 'modal',
+      },
+      cssClass: 'support-popup'
+    });
+    return modal.present();
   }
 }
