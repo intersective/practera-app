@@ -58,6 +58,12 @@
   }
 }
 
+.support-popup {
+  --height: 544px;
+  --width: 600px;
+  --border-radius: 8px;
+}
+
 .pulsing {
   -webkit-animation: pulse 2s infinite;
   animation: pulse 2s infinite;
