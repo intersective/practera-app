@@ -1,4 +1,8 @@
 <div class="buttons">
+  <ion-button (click)="openSupport()" class="support-btn" shape="round" size="small">
+    Do you need help?
+  </ion-button>
+
   <ion-button (click)="notifications()" class="notify-btn">
     <ion-icon name="notifications" alt="notification" color="primary"></ion-icon>
     <ion-badge class="hint" color="danger" *ngIf="notiCount > 0">{{notiCount}}</ion-badge>

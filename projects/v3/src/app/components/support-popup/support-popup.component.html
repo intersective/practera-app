@@ -1,0 +1,59 @@
+<ion-content class="ion-padding" [scrollY]="false" [ngClass]="" text-center role="dialog" aria-modal="true"
+  aria-hidden="false">
+  <ng-container>
+    <ng-container *ngIf="!isShowForm; else formTpl">
+      <div class="header-container">
+        <p class="headline-3 black ion-no-margin">How we can help?</p>
+        <ion-button (click)="showSupportForm()">
+          Contact support
+        </ion-button>
+      </div>
+      <p class="subtitle-1 black support-description">Need help with a problem? Check out our list of common solutions
+        first. If you're still stuck, don't worry! Our <a (click)="showSupportForm()">support team is here</a> to assist
+        you.</p>
+
+      <ion-accordion-group class="question-list">
+        <ng-container *ngFor="let question of questionList">
+          <ion-accordion value="{{ question.questionId}}" class="question-item">
+            <ion-item slot="header">
+              <ion-label class="subtitle-1 black">{{ question.question }}</ion-label>
+            </ion-item>
+            <div class="ion-padding body-2" slot="content">
+              {{ question.answer }}
+            </div>
+          </ion-accordion>
+        </ng-container>
+      </ion-accordion-group>
+    </ng-container>
+    <ion-button class="close-button" (click)="closePopup()" fill="outline" color="medium">
+      Close
+    </ion-button>
+  </ng-container>
+</ion-content>
+
+<ng-template #formTpl>
+  <ion-button class="back-button" (click)="showSupportForm()" fill="outline" color="medium">
+    Back
+  </ion-button>
+  <p class="headline-3 black form-titile">Contact our support team</p>
+  <p class="form-field-label subtitle-1 black">What problem are you having?</p>
+  <ion-item fill="outline" lines="none" class="form-field">
+    <ion-input></ion-input>
+  </ion-item>
+  <p class="form-field-label subtitle-1 black">Please describe your problem</p>
+  <ion-item fill="outline" lines="none" class="form-field">
+    <ion-textarea rows="4" spellcheck="true"></ion-textarea>
+  </ion-item>
+  <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
+  <div class="file-container">
+    <input style="display: none" type="file" (change)="onFileSelect($event)" #hiddenfileinput>
+    <ion-button class="back-button" (click)="hiddenfileinput.click()" fill="outline" color="medium" size="small">
+      Choose files
+    </ion-button>
+    <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.name : 'No file chosen' }}</p>
+    <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon></p>
+  </div>
+  <ion-button (click)="hiddenfileinput.click()">
+    Submit message
+  </ion-button>
+</ng-template>
