@@ -166,7 +166,7 @@ export class EventDetailComponent implements OnInit {
           code: 'book',
         };
       }
-      return false;
+      return {};
     }
     // can only cancel booking before event start
     if (!this.event.isPast) {
@@ -177,7 +177,7 @@ export class EventDetailComponent implements OnInit {
     }
     // for event that doesn't have check in
     if (!this.utils.has(this.event, 'assessment.id')) {
-      return false;
+      return {};
     }
     // for event that have check in
     if (this.event.assessment.isDone) {

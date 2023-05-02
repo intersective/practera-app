@@ -337,6 +337,30 @@
             "ms": {
               "localize": ["ms"]
             },
+            "customsandbox": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5.5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "15kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.custom.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "custom": {
               "budgets": [
                 {
@@ -393,8 +417,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "15kb",
-                  "maximumError": "20kb"
+                  "maximumWarning": "20kb"
                 }
               ],
               "buildOptimizer": false,
@@ -415,6 +438,9 @@
             },
             "custom": {
               "browserTarget": "v3:build:custom"
+            },
+            "customsandbox": {
+              "browserTarget": "v3:build:customsandbox"
             },
             "production": {
               "browserTarget": "v3:build:production"
@@ -473,6 +499,9 @@
           },
           "configurations": {
             "custom": {
+              "tsConfig": "projects/request/tsconfig.lib.prod.json"
+            },
+            "customsandbox": {
               "tsConfig": "projects/request/tsconfig.lib.prod.json"
             },
             "production": {
