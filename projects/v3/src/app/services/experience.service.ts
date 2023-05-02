@@ -248,6 +248,7 @@ export class ExperienceService {
 
     // initialise Pusher
     this.sharedService.initWebServices();
+    this.utils.checkIsPracteraSupportEmail();
     try {
       const jwt = await this.getNewJwt().toPromise();
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();

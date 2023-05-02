@@ -8,7 +8,6 @@ import { NotificationsPage } from '../pages/notifications/notifications.page';
 import { NotificationsService } from '../services/notifications.service';
 import { BrowserStorageService, User } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
-import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 
 @Component({
   selector: 'app-personalised-header',
@@ -18,6 +17,7 @@ import { SupportPopupComponent } from '@v3/components/support-popup/support-popu
 export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   notiCount: number = 0;
+  isShowSupportBtn: boolean = false;
 
   constructor(
     private modalController: ModalController,
@@ -34,6 +34,10 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
       const notiCount = notifications.length;
       this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
     }));
+    this.subscriptions.push(this.utilService.getEvent('support-email-checked').subscribe(event => {
+      this.isShowSupportBtn = event;
+    }));
+    this.utilService.checkIsPracteraSupportEmail();
   }
 
   ngOnDestroy() {

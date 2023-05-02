@@ -1,5 +1,5 @@
 <div class="buttons">
-  <ion-button (click)="openSupport()" class="support-btn" shape="round" size="small">
+  <ion-button *ngIf="isShowSupportBtn" (click)="openSupport()" class="support-btn" shape="round" size="small">
     Do you need help?
   </ion-button>
 
