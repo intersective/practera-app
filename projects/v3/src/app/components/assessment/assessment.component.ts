@@ -1,12 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question } from '@v3/services/assessment.service';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { concatMap, debounceTime, delay, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -45,7 +45,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
-  submitActions = new Subject();
+  submitActions = new Subject<{
+    saveInProgress: boolean;
+    goBack: boolean;
+    questionSave?: {
+      submissionId: number;
+      questionId: number;
+      answer: string;
+    }
+  }>();
   subscriptions: Subscription[] = [];
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
@@ -72,15 +80,37 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
+    private assessmentService: AssessmentService
   ) {
     this.subscriptions.push(this.submitActions.pipe(
-      debounceTime(1500),
+      concatMap(request => this.saveQuestionAnswer(request.questionSave))
     ).subscribe((data: {
       saveInProgress: boolean;
       goBack: boolean;
+      questionSave: {
+        submissionId: number;
+        questionId: number;
+        answer: string;
+      }
     }): Promise<void> => {
-      return this._submit(data.saveInProgress, data.goBack);
+      return;
+      // return this._submit(data.saveInProgress, data.goBack);
     }));
+  }
+
+  saveQuestionAnswer(questionInput: {
+    submissionId: number;
+    questionId: number;
+    answer: string;
+  }) {
+    return this.assessmentService.saveQuestionAnswer(
+      questionInput.submissionId,
+      questionInput.questionId,
+      JSON.stringify(questionInput.answer)
+    ).pipe(
+      delay(1000),
+      tap((res) => { console.log(res) })
+    );
   }
 
   ngOnChanges() {

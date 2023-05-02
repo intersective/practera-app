@@ -1,7 +1,7 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { Question } from '@v3/services/assessment.service';
+import { AssessmentService, Question } from '@v3/services/assessment.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 
@@ -23,6 +23,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   @Input() question: Question;
   @Input() submission;
+  @Input() submissionId: number;
   @Input() review;
   // this is for review status
   @Input() reviewStatus;
@@ -46,7 +47,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   // validation errors array
   errors: Array<any> = [];
 
-  constructor() {}
+  constructor(
+    private assessmentService: AssessmentService,
+  ) {}
 
   ngOnInit() {
     this._showSavedAnswers();
@@ -60,9 +63,12 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         debounceTime(1250),
         distinctUntilChanged(),
       ).subscribe(_data => {
-        this.submitActions$.next({
-          saveInProgress: true,
-          goBack: false,
+        this.assessmentService.saveQuestionAnswer(
+          this.submissionId,
+          this.question.id,
+          JSON.stringify(this.answer),
+        ).subscribe(res => {
+          console.log('saved::text', res);
         });
       }));
     }

@@ -446,6 +446,45 @@ export class AssessmentService {
     return answer;
   }
 
+  // store the answer to the question
+  saveQuestionAnswer(submissionId: number, questionId: number, answer: string) {
+    const paramsFormat = '$submissionId: Int!, $questionId: Int!, $answer: String!';
+    const params = 'submissionId:$submissionId, questionId:$questionId, answer:$answer';
+    const variables = {
+      submissionId,
+      questionId,
+      answer,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation saveSubmissionAnswer(${paramsFormat}) {
+        saveSubmissionAnswer(${params}) {
+          success
+          message
+        }
+      }`,
+      variables
+    );
+  }
+
+  // set the status of the submission to 'done' or 'pending approval'
+  submitAssessment(submissionId: number, assessmentId: number) {
+    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!';
+    const params = 'submissionId:$submissionId, assessmentId:$assessmentId';
+    const variables = {
+      submissionId,
+      assessmentId,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation submitAssessment(${paramsFormat}) {
+        submitAssessment(${params}) {
+          success
+          message
+        }
+      }`,
+      variables
+    );
+  }
+
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);

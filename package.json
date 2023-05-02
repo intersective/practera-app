@@ -20,7 +20,7 @@
     "test": "ng test --no-watch",
     "testv3": "ng test v3 --no-watch",
     "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=src/karma.conf.sonarci.js",
-    "lint": "ng lint",
+    "lint": "ng lint v3",
     "lint-fix": "ng lint --fix",
     "lintv3": "ng lint v3",
     "lintv3-fix": "ng lint v3 --fix",
