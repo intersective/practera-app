@@ -7,7 +7,7 @@ import { ModalController } from '@ionic/angular';
 import { ApolloService } from '@v3/services/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Colors } from './storage.service';
+import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 
@@ -39,7 +39,8 @@ export class UtilsService {
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
     private apolloService: ApolloService,
-    private modalController: ModalController,
+    private readonly modalController: ModalController,
+    private readonly storageService: BrowserStorageService,
   ) {
     if (_) {
       this.lodash = _;
@@ -690,5 +691,27 @@ export class UtilsService {
       cssClass: 'support-popup'
     });
     return modal.present();
+  }
+
+  checkIsPracteraSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program)=> {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      let supportEmail = currentExperience.experience.support_email;
+      if (supportEmail.includes("@practera.com")) {
+        this.broadcastEvent('support-email-checked', true);
+        return true;
+      }
+      this.broadcastEvent('support-email-checked', false);
+      return false;
+    }
+    this.broadcastEvent('support-email-checked', false);
+    return false;
   }
 }
