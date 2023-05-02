@@ -448,7 +448,7 @@ export class AssessmentService {
 
   // store the answer to the question
   saveQuestionAnswer(submissionId: number, questionId: number, answer: string) {
-    const paramsFormat = '$submissionId: Int!, $questionId: Int!, $answer: String!';
+    const paramsFormat = '$submissionId: Int!, $questionId: Int!, $answer: Any!';
     const params = 'submissionId:$submissionId, questionId:$questionId, answer:$answer';
     const variables = {
       submissionId,
