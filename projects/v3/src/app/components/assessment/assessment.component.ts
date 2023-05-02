@@ -100,9 +100,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       }
     }): Promise<void> => {
       console.log('data', data);
-      return;
-      // return this._submit(data.saveInProgress, data.goBack);
-      // return this._submit(data.saveInProgress, data.goBack);
+      if (data.saveInProgress === false) {
+        return this._submitWithoutAnswer(data);
+      }
     }));
   }
 
@@ -307,6 +307,32 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
+  async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+    if (this.doAssessment && this.assessment.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+      const teamId = this.storage.getUser().teamId;
+      if (typeof teamId !== 'number') {
+        return this.notifications.alert({
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel',
+            }
+          ],
+        });
+      }
+    }
+
+    return this.save.emit({
+      saveInProgress,
+      goBack,
+      assessmentId: this.assessment.id,
+      contextId: this.contextId,
+      submissionId: this.submission.id,
+    });
+  }
+
   /**
    * handle submission and autosave
    * @param saveInProgress whether it is for save in progress or submit
@@ -334,6 +360,10 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         });
       }
     }
+
+    this.save.emit({
+      action: this.action
+    });
 
     /**
      * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.

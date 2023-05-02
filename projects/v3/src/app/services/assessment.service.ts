@@ -467,19 +467,17 @@ export class AssessmentService {
   }
 
   // set the status of the submission to 'done' or 'pending approval'
-  submitAssessment(submissionId: number, assessmentId: number) {
-    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!';
-    const params = 'submissionId:$submissionId, assessmentId:$assessmentId';
+  submitAssessment(submissionId: number, assessmentId: number, contextId: number) {
+    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!';
+    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId';
     const variables = {
       submissionId,
       assessmentId,
+      contextId,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitAssessment(${paramsFormat}) {
-        submitAssessment(${params}) {
-          success
-          message
-        }
+        submitAssessment(${params})
       }`,
       variables
     );

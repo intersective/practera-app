@@ -69,7 +69,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
           questionSave: {
             submissionId: this.submissionId,
             questionId: this.question.id,
-            answer: JSON.stringify(this.answer)
+            answer: this.answer,
           }
         });
       }));
