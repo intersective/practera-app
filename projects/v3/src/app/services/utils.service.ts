@@ -313,7 +313,9 @@ export class UtilsService {
       return '';
     }
     const date = new Date(this.iso8601Formatter(time));
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
+
+    const currentLocale = this.getCurrentLocale();
+    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
@@ -351,7 +353,10 @@ export class UtilsService {
       return 'Today';
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
