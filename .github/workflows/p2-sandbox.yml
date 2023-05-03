@@ -96,7 +96,7 @@ jobs:
         run:  npm install
 
 ################################################
-#  GET P2 LOAD  TEST AWS ORGANIZATION NUMBER
+#  GET P2 SANDBOX TEST AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
         id: AWS_ORG
