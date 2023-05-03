@@ -313,7 +313,11 @@ export class UtilsService {
       return '';
     }
     const date = new Date(this.iso8601Formatter(time));
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
+
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to format of "en-GB" from previous code
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    const formattedTime = new Intl.DateTimeFormat(defaultLocale, {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
