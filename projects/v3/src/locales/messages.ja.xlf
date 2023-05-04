@@ -2361,7 +2361,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">345</context>
+          <context context-type="linenumber">347</context>
         </context-group>
       </trans-unit>
       <trans-unit id="9129734193759025482" datatype="html">
@@ -2373,7 +2373,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">348</context>
+          <context context-type="linenumber">350</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2036588713578345721" datatype="html">
@@ -2385,7 +2385,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">530</context>
+          <context context-type="linenumber">535</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8405047916216508371" datatype="html">
@@ -2397,7 +2397,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">532</context>
+          <context context-type="linenumber">537</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4611677244202358193" datatype="html">
@@ -2406,7 +2406,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">584</context>
+          <context context-type="linenumber">589</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3825319751391625987" datatype="html">
@@ -2415,7 +2415,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">586</context>
+          <context context-type="linenumber">591</context>
         </context-group>
       </trans-unit>
       <trans-unit id="931773981157828593" datatype="html">
@@ -2424,7 +2424,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">590</context>
+          <context context-type="linenumber">595</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7978101932847504722" datatype="html">
@@ -2433,7 +2433,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">588</context>
+          <context context-type="linenumber">593</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4060595931040751333" datatype="html">
@@ -2442,7 +2442,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">594</context>
+          <context context-type="linenumber">599</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7294220956990424336" datatype="html">
@@ -2451,7 +2451,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">592</context>
+          <context context-type="linenumber">597</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5109712737720657574" datatype="html">
@@ -2460,7 +2460,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">598</context>
+          <context context-type="linenumber">603</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5507119337652002645" datatype="html">
@@ -2469,7 +2469,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">596</context>
+          <context context-type="linenumber">601</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5391191655981300425" datatype="html">
@@ -2514,7 +2514,7 @@
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">600</context>
+          <context context-type="linenumber">605</context>
         </context-group>
       </trans-unit>
       <trans-unit id="604332582420358826" datatype="html">
@@ -2745,164 +2745,12 @@
           <context context-type="linenumber">533</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="6970969629263334522" datatype="html">
-        <source>Review submission</source>
-        <target>提出物のレビュー</target>
-        <note priority="1" from="description">call to action btn</note>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
-          <context context-type="linenumber">37</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="9193221682721730907" datatype="html">
-        <source>Check feedback</source>
-        <target>フィードバックを確認</target>
-        <note priority="1" from="description">call to action btn</note>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
-          <context context-type="linenumber">39</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="8400886248195940333" datatype="html">
-        <source>Check task</source>
-        <target>タスクを確認</target>
-        <note priority="1" from="description">call to action btn</note>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
-          <context context-type="linenumber">41</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="2528252522806423830" datatype="html">
-        <source>Check the message</source>
-        <target>メッセージを確認</target>
-        <note priority="1" from="description">call to action btn</note>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/todo-card/todo-card.component.ts</context>
-          <context context-type="linenumber">43</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="2112946605545529759" datatype="html">
-        <source>New Feedback</source>
-        <target>新しいフィードバック</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">415</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">611</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="357281856325415601" datatype="html">
-        <source>Feedback received from <x id="PH" equiv-text="todoItem.meta.reviewer_name"/> for <x id="PH_1" equiv-text="todoItem.meta.assessment_name"/></source>
-        <target><x id="PH" equiv-text="todoItem.meta.reviewer_name"/> から <x id="PH_1" equiv-text="todoItem.meta.assessment_name"/> のフィードバックを受け取りました</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">416</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">612</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="1668535561204068186" datatype="html">
-        <source>New Submission for Review</source>
-        <target>新しい提出物</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">437</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">637</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="3189164739438799482" datatype="html">
-        <source>Submission received from <x id="PH" equiv-text="todoItem.meta.submitter_name"/> for <x id="PH_1" equiv-text="todoItem.meta.assessment_name"/></source>
-        <target><x id="PH" equiv-text="todoItem.meta.submitter_name"/> から <x id="PH_1" equiv-text="todoItem.meta.assessment_name"/> に関する提出物を受け取りました</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">438</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">638</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5605846829263485151" datatype="html">
-        <source>Submission Reminder</source>
-        <target>提出物のリマインド`</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">462</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">662</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5960469858523175652" datatype="html">
-        <source>Remember to send <x id="PH" equiv-text="todoItem.meta.assessment_name"/> task</source>
-        <target><x id="PH" equiv-text="todoItem.meta.assessment_name"/> のタスクを送信することを忘れないでください</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">463</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">663</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7098735956771535150" datatype="html">
-        <source>Remember to send <x id="PH" equiv-text="todoItem.meta.assessment_name"/> task before <x id="PH_1" equiv-text="this.utils.dueDateFormatter(todoItem.meta.due_date, true)"/></source>
-        <target><x id="PH" equiv-text="todoItem.meta.assessment_name"/> のタスクを<x id="PH_1" equiv-text="this.utils.dueDateFormatter(todoItem.meta.due_date, true)"/> までに送信することを忘れないでください</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">465</context>
-        </context-group>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">675</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="2328117836793931680" datatype="html">
-        <source>Unread Messages</source>
-        <target>未読メッセージ</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">521</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="2479093690320733693" datatype="html">
-        <source>You have <x id="PH" equiv-text="unreadMessages"/> unread messages in <x id="PH_1" equiv-text="noOfChats"/> chats</source>
-        <target><x id="PH" equiv-text="noOfChats"/> 個のチャットに <x id="PH" equiv-text="unreadMessages"/> 件の未読メッセージがあります</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">526</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="713858273452862196" datatype="html">
-        <source>Unread Message</source>
-        <target>未読メッセージ</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">532</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="7841764200833261859" datatype="html">
-        <source>You have 1 unread message in 1 chat</source>
-        <target>1 つのチャットに未読メッセージが 1 件あります</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
-          <context context-type="linenumber">533</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="6048892649018070225" datatype="html">
         <source>Today</source>
         <target>今日</target>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">351</context>
+          <context context-type="linenumber">353</context>
         </context-group>
       </trans-unit>
     </body>
