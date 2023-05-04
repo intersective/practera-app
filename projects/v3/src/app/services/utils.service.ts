@@ -569,7 +569,7 @@ export class UtilsService {
    * @returns time that formated to 12 hours
    */
   getFormatedCurrentTime() {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.getCurrentLocale(), {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
