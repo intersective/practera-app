@@ -3,6 +3,7 @@
 // `ng build --configuration=production` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 export const environment = {
+  demo: false,
   production: false,
   skipGlobalLogin: false,
   appkey: 'b11e7c189b',
@@ -13,7 +14,7 @@ export const environment = {
   chatGraphQL: 'http://localhost:3000/local/graphql/',
   globalLoginUrl: 'https://login.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
-  intercomAppId: '',
+  intercomAppId: ' ',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {

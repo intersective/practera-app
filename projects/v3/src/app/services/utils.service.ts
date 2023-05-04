@@ -313,7 +313,9 @@ export class UtilsService {
       return '';
     }
     const date = new Date(this.iso8601Formatter(time));
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
+
+    const currentLocale = this.getCurrentLocale();
+    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
@@ -351,7 +353,10 @@ export class UtilsService {
       return $localize`Today`;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -516,10 +521,14 @@ export class UtilsService {
    * - If due date is today this will return 'Due Today'.
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
+   * @param plain - (optional) if true, it will return only formatted date without 'Due' or 'Overdue' prefix.
    */
-  dueDateFormatter(dueDate: string) {
+  dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
       return '';
+    }
+    if (plain === true) {
+      return this.utcToLocal(dueDate);
     }
     const difference = this.timeComparer(dueDate);
     if (difference < 0) {

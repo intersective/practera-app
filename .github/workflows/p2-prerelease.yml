@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     # environment: p2-prerelease
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
