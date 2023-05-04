@@ -2379,6 +2379,10 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">283</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">347</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="9129734193759025482" datatype="html">
         <source>Tomorrow</source>
@@ -2387,21 +2391,33 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
           <context context-type="linenumber">286</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">350</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="2036588713578345721" datatype="html">
         <source>Overdue <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></source>
         <target>Atrasado <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/shared.service.ts</context>
+          <context context-type="linenumber">129</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">530</context>
+          <context context-type="linenumber">535</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8405047916216508371" datatype="html">
         <source>Due <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></source>
         <target>Pendiente <x id="PH" equiv-text="this.utcToLocal(dueDate)"/></target>
         <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/shared.service.ts</context>
+          <context context-type="linenumber">131</context>
+        </context-group>
+        <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">532</context>
+          <context context-type="linenumber">537</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4611677244202358193" datatype="html">
@@ -2410,7 +2426,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">584</context>
+          <context context-type="linenumber">589</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3825319751391625987" datatype="html">
@@ -2419,7 +2435,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">586</context>
+          <context context-type="linenumber">591</context>
         </context-group>
       </trans-unit>
       <trans-unit id="931773981157828593" datatype="html">
@@ -2428,7 +2444,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">590</context>
+          <context context-type="linenumber">595</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7978101932847504722" datatype="html">
@@ -2437,7 +2453,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">588</context>
+          <context context-type="linenumber">593</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4060595931040751333" datatype="html">
@@ -2446,7 +2462,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">594</context>
+          <context context-type="linenumber">599</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7294220956990424336" datatype="html">
@@ -2455,7 +2471,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">592</context>
+          <context context-type="linenumber">597</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5109712737720657574" datatype="html">
@@ -2464,7 +2480,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">598</context>
+          <context context-type="linenumber">603</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5507119337652002645" datatype="html">
@@ -2473,7 +2489,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">596</context>
+          <context context-type="linenumber">601</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1296595677360340695" datatype="html">
@@ -2494,7 +2510,7 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <note priority="1" from="description">labelling</note>
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
-          <context context-type="linenumber">600</context>
+          <context context-type="linenumber">605</context>
         </context-group>
       </trans-unit>
       <trans-unit id="604332582420358826" datatype="html">
@@ -2723,6 +2739,14 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
         <context-group purpose="location">
           <context context-type="sourcefile">projects/v3/src/app/services/notifications.service.ts</context>
           <context context-type="linenumber">533</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6048892649018070225" datatype="html">
+        <source>Today</source>
+        <target>Hoy</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">projects/v3/src/app/services/utils.service.ts</context>
+          <context context-type="linenumber">353</context>
         </context-group>
       </trans-unit>
     </body>
