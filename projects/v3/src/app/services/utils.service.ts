@@ -342,13 +342,13 @@ export class UtilsService {
     const yesterday = today.clone().subtract(1, 'day').startOf('day');
 
     if (dateToFormat.isSame(yesterday, 'd')) {
-      return 'Yesterday';
+      return $localize`Yesterday`;
     }
     if (dateToFormat.isSame(tomorrow, 'd')) {
-      return 'Tomorrow';
+      return $localize`Tomorrow`;
     }
     if (dateToFormat.isSame(today, 'd')) {
-      return 'Today';
+      return $localize`Today`;
     }
 
     return new Intl.DateTimeFormat('en-GB', {
