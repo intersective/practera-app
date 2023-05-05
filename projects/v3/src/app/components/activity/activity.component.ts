@@ -67,11 +67,11 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return 'in progress';
+      return $localize`in progress`;
     }
     if (!task.status || task.status === 'in progress') {
       if (task.isOverdue) {
-        return 'overdue';
+        return $localize`overdue`;
       }
       return '';
     }
