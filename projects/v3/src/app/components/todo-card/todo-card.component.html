@@ -1,12 +1,15 @@
 <app-list-item
   *ngIf="todoItem.type"
-  [leadingIcon]="icons[todoItem.type] || 'information-circle-outline'"
+  [notificationIcon]="icon || 'information-circle-outline'"
   [title]="todoItem.name"
+  titleColor="bolder"
   [subtitle1]="todoItem.description"
-  [endingText]="todoItem.time"
-  lines="none"
+  [subtitle2]="todoItem.time"
+  subtitle2Color="grey-50"
   tabindex="0"
   class="focusable"
+  [callToActionBtn]="{ name: todoTitle, color: 'notification' }"
+  (anyBtnClick)="gotoAction($event)"
 ></app-list-item>
 
 <app-list-item *ngIf="loading" [loading]="true" lines="none"></app-list-item>

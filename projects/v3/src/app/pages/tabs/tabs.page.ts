@@ -22,6 +22,12 @@ export class TabsPage implements OnInit, OnDestroy {
   @ViewChild('tabs', { static: false }) tabs: IonTabs;
   selectedTab: string = '';
 
+  badges = {
+    event: 0,
+    review: 0,
+    chat: 0,
+  };
+
   constructor(
     private platform: Platform,
     private reviewService: ReviewService,
@@ -71,6 +77,19 @@ export class TabsPage implements OnInit, OnDestroy {
     this.subscriptions.push(this.utils.getEvent('event-reminder').subscribe(event => {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
+
+    this.notificationsService.notification$.subscribe(notifications => {
+      // assign notification badge to each tab
+      this.badges.event = notifications.filter(noti => noti.type === 'event-reminder').length;
+      this.badges.review = notifications.filter(noti => noti.type === 'review_submission').length;
+
+      const chat = notifications.find(noti => {
+        if (noti.type === 'chat') {
+          return noti;
+        }
+      });
+      this.badges.chat = chat?.unreadMessages || 0;
+    });
   }
 
   get isMobile() {
