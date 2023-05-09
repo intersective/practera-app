@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
@@ -107,7 +107,7 @@ describe('AssessmentMobilePage', () => {
     expect(component['router'].navigate).toHaveBeenCalled();
   });
 
-  it('should call saveAssessment() with inProgress as true', async () => {
+  it('should call saveAssessment() with inProgress as true', fakeAsync(() => {
     assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
       toPromise: jasmine.createSpy()
     });
@@ -117,17 +117,20 @@ describe('AssessmentMobilePage', () => {
       action: 'save',
     };
     component.saving = false;
-    await component.saveAssessment(event);
-    expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(event.assessment, event.answers as any, event.action, undefined);
-    expect(notificationSpy.assessmentSubmittedToast).not.toHaveBeenCalled();
-    expect(activitySpy.getActivity).not.toHaveBeenCalled();
-    expect(assessmentSpy.getAssessment).not.toHaveBeenCalled();
-  });
-
-  it('should call saveAssessment() with inProgress as false', async () => {
-    assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
-      toPromise: jasmine.createSpy()
+    component.saveAssessment(event).then(() => {
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(event.assessment, event.answers as any, event.action, undefined);
+      expect(notificationSpy.assessmentSubmittedToast).not.toHaveBeenCalled();
+      expect(activitySpy.getActivity).not.toHaveBeenCalled();
+      expect(assessmentSpy.getAssessment).not.toHaveBeenCalledTimes(2); // ngOnInit x 1, saveAssessment x 0
     });
+
+    tick(10000); // SAVE_PROGRESS_TIMEOUT = 10000
+  }));
+
+  it('should call saveAssessment() with inProgress as false', fakeAsync(() => {
+    assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue(of({}));
+    activitySpy.getActivity = jasmine.createSpy();
+    assessmentSpy.getAssessment = jasmine.createSpy();
     const event = {
       assessment: { id: 1, inProgress: false },
       answers: 'test answers',
@@ -135,12 +138,15 @@ describe('AssessmentMobilePage', () => {
     };
 
     component.saving = false;
-    await component.saveAssessment(event);
+    component.saveAssessment(event);
+
+    tick();
+
     expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(event.assessment, event.answers as any, event.action, undefined);
     expect(notificationSpy.assessmentSubmittedToast).toHaveBeenCalled();
     expect(activitySpy.getActivity).toHaveBeenCalled();
     expect(assessmentSpy.getAssessment).toHaveBeenCalled();
-  });
+  }));
 
   it('should call readFeedback()', async () => {
     storageSpy.getUser.and.returnValue({ hasReviewRating: true });
