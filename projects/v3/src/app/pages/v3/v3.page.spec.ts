@@ -107,8 +107,8 @@ describe('V3Page', () => {
 
   it('should call required methods and set component properties correctly', () => {
     // Prepare data and spies
-    const getReviewsSpy = reviewSpy.getReviews.and.returnValue(of());
-    const getExperienceSpy = homeSpy.getExperience.and.returnValue(of());
+    const getReviewsSpy = reviewSpy.getReviews;
+    const getExperienceSpy = homeSpy.getExperience;
     utilsSpy.moveToNewLocale.and.stub();
     const getTodoItemsSpy = notificationsSpy.getTodoItems.and.returnValue(of());
     const getChatListSpy = chatSpy.getChatList.and.returnValue(of([]));
