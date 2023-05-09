@@ -462,7 +462,7 @@ export class NotificationsService {
     item.name = $localize`Submission Reminder`;
     item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task`;
     if (todoItem?.meta?.due_date) {
-      item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date)}`;
+      item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date, true)}`;
     }
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
@@ -517,18 +517,22 @@ export class NotificationsService {
           description: '',
           time: '',
         };
+
+        todoItem.name = $localize`Unread Messages`;
         unreadMessages += message.unreadMessageCount;
         noOfChats++;
-        todoItem.name = message.name;
-        todoItem.description = message.lastMessage === 'file received' ? $localize`:notification description:file received` : message.lastMessage;
         todoItem.time = this.utils.timeFormatter(message.lastMessageCreated);
         todoItem.unreadMessages = unreadMessages;
+        todoItem.description = $localize`You have ${unreadMessages} unread messages in ${noOfChats} chats`;
       }
     });
-    if (unreadMessages > 1) {
-      // group the chat notifiations
-      todoItem.name = $localize`You have ${unreadMessages} unread messages from ${noOfChats} of chats`;
+
+    // group the chat notifiations
+    if (unreadMessages === 1) {
+      todoItem.name = $localize`Unread Message`;
+      todoItem.description = $localize`You have 1 unread message in 1 chat`;
     }
+
     if (todoItem) {
       todoItem.meta = {};
     }
@@ -656,7 +660,7 @@ export class NotificationsService {
         result = {
           type: 'assessment_submission_reminder',
           name: $localize`Submission Reminder`,
-          description: $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date)}`,
+          description: $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task`,
           time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
@@ -666,6 +670,10 @@ export class NotificationsService {
             due_date: event.meta.AssessmentSubmissionReminder.due_date
           }
         };
+
+        if (event?.meta?.AssessmentSubmissionReminder?.due_date) {
+          result.description = $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date, true)}`;
+        }
         break;
     }
 

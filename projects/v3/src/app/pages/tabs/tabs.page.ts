@@ -82,7 +82,13 @@ export class TabsPage implements OnInit, OnDestroy {
       // assign notification badge to each tab
       this.badges.event = notifications.filter(noti => noti.type === 'event-reminder').length;
       this.badges.review = notifications.filter(noti => noti.type === 'review_submission').length;
-      this.badges.chat = notifications.filter(noti => noti.type === 'chat').length;
+
+      const chat = notifications.find(noti => {
+        if (noti.type === 'chat') {
+          return noti;
+        }
+      });
+      this.badges.chat = chat?.unreadMessages || 0;
     });
   }
 
