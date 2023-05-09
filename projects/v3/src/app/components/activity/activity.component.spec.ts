@@ -1,7 +1,8 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 
@@ -24,6 +25,8 @@ describe('ActivityComponent', () => {
   let fixture: ComponentFixture<ActivityComponent>;
   let notificationsSpy: NotificationsService;
   let utilsSpy: UtilsService;
+  let sharedSpy: SharedService;
+  let storageSpy: BrowserStorageService;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -45,6 +48,14 @@ describe('ActivityComponent', () => {
             },
           }),
         },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', {
+            'getTeamInfo': {
+              toPromise: () => Promise.resolve({})
+            },
+          }),
+        }
       ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
@@ -53,6 +64,8 @@ describe('ActivityComponent', () => {
     component = fixture.componentInstance;
     notificationsSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
   }));
 
   it('should create', () => {
@@ -308,14 +321,19 @@ describe('ActivityComponent', () => {
   });
 
   describe('goto()', () => {
-    it('should warn when user not in a team', () => {
+    it('should warn when user not in a team if "_validateTeamAssessment" return {type: "Locked"}', fakeAsync(() => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({ teamId: 1 });
+
       component.goto({
         isForTeam: true,
         type: 'Locked',
       } as any);
+      tick();
+
       expect(notificationsSpy.alert).toHaveBeenCalled();
-    });
+      expect(sharedSpy.getTeamInfo).toHaveBeenCalled();
+    }));
 
     it('should warn activity is locked', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
