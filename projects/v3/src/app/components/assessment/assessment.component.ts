@@ -124,10 +124,14 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
-      JSON.stringify(questionInput.answer)
+      questionInput.answer,
     ).pipe(
       delay(1000),
-      tap((res) => { console.log(res) })
+      tap((res) => {
+        if (res.data?.saveSubmissionAnswer?.success === true) {
+          this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(new Date())}`);
+        }
+      })
     );
   }
 
