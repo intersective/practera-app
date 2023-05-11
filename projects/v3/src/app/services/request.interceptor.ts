@@ -19,7 +19,8 @@ export class RequestInterceptor implements HttpInterceptor {
     if (
       req.url.includes('ipapi.co') ||
       req.url.includes('filestackapi.com') ||
-      req.url.includes('filestackcontent')
+      req.url.includes('filestackcontent') ||
+      req.url.includes('api.hsforms.com')
     ) {
       return next.handle(req);
     }
