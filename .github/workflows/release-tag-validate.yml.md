@@ -22,7 +22,7 @@ jobs:
   release-tag-validate-pr:
     name: release-tag-validate-pr
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################

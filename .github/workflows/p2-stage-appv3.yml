@@ -21,7 +21,7 @@ jobs:
     name: deploy-p2-stage-appv3
     runs-on: ubuntu-latest
     environment: p2-stage
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
