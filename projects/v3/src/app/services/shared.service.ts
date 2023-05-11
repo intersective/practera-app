@@ -104,7 +104,8 @@ export class SharedService {
           });
         }
         return this.storage.setUser({
-          teamId: thisUser.teams[0].id
+          teamId: thisUser.teams[0].id,
+          teamName: thisUser.teams[0].name
         });
       }
       return response;
