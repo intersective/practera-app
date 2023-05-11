@@ -126,9 +126,9 @@ export class ActivityService {
     }
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
-    ).subscribe(_res => {
+    ).subscribe(res => {
       if (callback instanceof Function) {
-        return callback(_res);
+        return callback(res);
       }
       return;
     });
