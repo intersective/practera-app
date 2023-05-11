@@ -2,6 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
+import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
 
 @Component({
   selector: 'app-support-popup',
@@ -13,9 +14,12 @@ export class SupportPopupComponent implements OnInit {
   isShowForm: boolean = false;
   questionList = supportQuestionList;
   selectedFile: any;
+  problemSubject: string;
+  problemContent: string;
 
   constructor(
     private modalController: ModalController,
+    private hubspotService: HubspotService
   ) { }
 
   ngOnInit() {}
@@ -36,6 +40,16 @@ export class SupportPopupComponent implements OnInit {
 
   removeSelectedFile() {
     this.selectedFile = undefined;
+  }
+
+  submitForm() {
+    const param: HubspotFormParams = {
+      subject: this.problemSubject,
+      content: this.problemContent,
+      file: JSON.stringify(this.selectedFile)
+    }
+    console.log(param);
+    this.hubspotService.submitDataToHubspot(param).toPromise();
   }
 
 }
