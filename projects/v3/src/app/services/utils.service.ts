@@ -678,7 +678,7 @@ export class UtilsService {
   async openSupportPopup(options?: { formOnly: boolean; }) {
     const componentProps = {
       mode: 'modal',
-      formOnly: options?.formOnly
+      isShowFormOnly: options?.formOnly
     };
 
     const modal = await this.modalController.create({
