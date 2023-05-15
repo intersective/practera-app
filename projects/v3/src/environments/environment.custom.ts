@@ -11,7 +11,6 @@ export const environment = {
   chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
   globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
   stackUuid: '<CUSTOM_STACK_UUID>',
-  liveServerRegion: '<CUSTOM_LIVE_SERVER_REGION>',
   intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {
     key: '<CUSTOM_FILESTACK_KEY>',
@@ -35,6 +34,11 @@ export const environment = {
     workflows: {
       virusDetection: '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
     },
+  },
+  hubspot: {
+    liveServerRegion: '<CUSTOM_LIVE_SERVER_REGION>',
+    supportFormPortalId: '<CUSTOM_PORTAL_ID>',
+    supportFormId: '<CUSTOM_FORM_ID>'
   },
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,

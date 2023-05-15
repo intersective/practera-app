@@ -12,6 +12,8 @@ import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service'
 export class SupportPopupComponent implements OnInit {
 
   isShowForm: boolean = false;
+  isShowSuccess: boolean = false;
+  isShowError: boolean = false;
   questionList = supportQuestionList;
   selectedFile: any;
   problemSubject: string;
@@ -54,7 +56,22 @@ export class SupportPopupComponent implements OnInit {
       file: JSON.stringify(this.selectedFile)
     }
     console.log(param);
-    this.hubspotService.submitDataToHubspot(param).toPromise();
+    this.hubspotService.submitDataToHubspot(param).subscribe(
+      (response) => {
+        this.selectedFile = undefined;
+        this.problemContent = '';
+        this.problemSubject = '';
+        this.isShowSuccess = true;
+        this.isShowError = false;
+      },
+      (error) => {
+        this.selectedFile = undefined;
+        this.problemContent = '';
+        this.problemSubject = '';
+        this.isShowSuccess = false;
+        this.isShowError = true;
+      }
+    );
   }
 
 }
