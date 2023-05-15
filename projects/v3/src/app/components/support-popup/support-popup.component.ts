@@ -18,13 +18,18 @@ export class SupportPopupComponent implements OnInit {
   selectedFile: any;
   problemSubject: string;
   problemContent: string;
+  isShowFormOnly?: boolean;
 
   constructor(
     private modalController: ModalController,
     private hubspotService: HubspotService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.isShowFormOnly == true) {
+      this.isShowForm = true;
+    }
+  }
 
   showSupportForm() {
     this.isShowForm = !this.isShowForm;

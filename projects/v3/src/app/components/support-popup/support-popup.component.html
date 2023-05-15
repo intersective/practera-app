@@ -35,7 +35,7 @@
 
 <ng-template #formTpl>
   <ng-container *ngIf="!isShowSuccess; else successTpl">
-    <ion-button class="back-button" (click)="showSupportForm()" fill="outline" color="medium">
+    <ion-button class="back-button" (click)="showSupportForm()" fill="outline" color="medium" *ngIf="!(isShowFormOnly == true)">
       Back
     </ion-button>
     <p class="headline-3 black form-titile">Contact our support team</p>
