@@ -19,7 +19,9 @@
               <ion-label class="subtitle-1 black">{{ question.question }}</ion-label>
             </ion-item>
             <div class="ion-padding body-2" slot="content">
-              {{ question.answer }}
+              <ng-container *ngFor="let answer of question.answer">
+                <p class="body-2 black">{{ answer }}</p>
+              </ng-container>
             </div>
           </ion-accordion>
         </ng-container>
@@ -32,28 +34,39 @@
 </ion-content>
 
 <ng-template #formTpl>
-  <ion-button class="back-button" (click)="showSupportForm()" fill="outline" color="medium">
-    Back
-  </ion-button>
-  <p class="headline-3 black form-titile">Contact our support team</p>
-  <p class="form-field-label subtitle-1 black">What problem are you having?</p>
-  <ion-item lines="none" class="form-field">
-    <ion-input [(ngModel)]="problemSubject"></ion-input>
-  </ion-item>
-  <p class="form-field-label subtitle-1 black">Please describe your problem</p>
-  <ion-item lines="none" class="form-field">
-    <ion-textarea rows="4" spellcheck="true" [(ngModel)]="problemContent"></ion-textarea>
-  </ion-item>
-  <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
-  <div class="file-container">
-    <input style="display: none" type="file" (change)="onFileSelect($event)" #hiddenfileinput>
-    <ion-button class="back-button" (click)="hiddenfileinput.click()" fill="outline" color="medium" size="small">
-      Choose files
+  <ng-container *ngIf="!isShowSuccess; else successTpl">
+    <ion-button class="back-button" (click)="showSupportForm()" fill="outline" color="medium">
+      Back
     </ion-button>
-    <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.name : 'No file chosen' }}</p>
-    <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon></p>
+    <p class="headline-3 black form-titile">Contact our support team</p>
+    <p class="error-message" *ngIf="isShowError">Support question submit faild. Try again.</p>
+    <p class="form-field-label subtitle-1 black">What problem are you having?</p>
+    <ion-item lines="none" class="form-field">
+      <ion-input [(ngModel)]="problemSubject"></ion-input>
+    </ion-item>
+    <p class="form-field-label subtitle-1 black">Please describe your problem</p>
+    <ion-item lines="none" class="form-field">
+      <ion-textarea rows="4" spellcheck="true" [(ngModel)]="problemContent"></ion-textarea>
+    </ion-item>
+    <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
+    <div class="file-container">
+      <input style="display: none" type="file" (change)="onFileSelect($event)" #hiddenfileinput>
+      <ion-button class="back-button" (click)="hiddenfileinput.click()" fill="outline" color="medium" size="small">
+        Choose files
+      </ion-button>
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.name : 'No file chosen' }}</p>
+      <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon></p>
+    </div>
+    <ion-button (click)="submitForm()">
+      Submit message
+    </ion-button>
+  </ng-container>
+</ng-template>
+
+<ng-template #successTpl>
+  <div class="success-container">
+    <ion-icon name="mail-outline"></ion-icon>
+    <p class="headline-3 black">Thank you for reaching out to us!</p>
+    <p class="subtitle-1 black">Your message has been received and our team will review it as soon as possible. We appreciate your patience and look forward to assisting you.</p>
   </div>
-  <ion-button (click)="submitForm()">
-    Submit message
-  </ion-button>
 </ng-template>
