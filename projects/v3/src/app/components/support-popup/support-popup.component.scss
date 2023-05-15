@@ -32,7 +32,8 @@
 }
 
 .form-titile {
-  margin-bottom: 20px;
+  margin-bottom: 5px;
+  margin-top: 10px;
 }
 
 .form-field-label,
@@ -70,4 +71,25 @@
       cursor: pointer;
     }
   }
+}
+
+.success-container {
+  height: 390px;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+
+  ion-icon {
+    font-size: 72px;
+    color: var(--practera-yellow-100);
+  }
+
+}
+
+.error-message {
+  margin: auto;
+  font-size: small;
+  color: red;
 }
