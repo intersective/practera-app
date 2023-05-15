@@ -675,12 +675,15 @@ export class UtilsService {
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 
-  async openSupportPopup() {
+  async openSupportPopup(options?: { formOnly: boolean; }) {
+    const componentProps = {
+      mode: 'modal',
+      formOnly: options?.formOnly
+    };
+
     const modal = await this.modalController.create({
+      componentProps,
       component: SupportPopupComponent,
-      componentProps: {
-        mode: 'modal',
-      },
       cssClass: 'support-popup'
     });
     return modal.present();
