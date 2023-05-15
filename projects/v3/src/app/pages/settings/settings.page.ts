@@ -41,6 +41,9 @@ export class SettingsPage implements OnInit, OnDestroy {
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
+  // hubspot form
+  hubspotActivated: boolean = false;
+
   constructor(
     public router: Router,
     private readonly route: ActivatedRoute,
@@ -83,6 +86,9 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._retrieveUserInfo();
+    this.utils.getEvent('support-email-checked').subscribe(event => {
+      this.hubspotActivated = event;
+    });
   }
 
   get isMobile() {
@@ -205,19 +211,19 @@ export class SettingsPage implements OnInit, OnDestroy {
     return this.window.history.back();
   }
 
+  /**
+   * Open hubspot support popup or activate browser default mailto function
+   * @param event click event (keyboard/mouse/touch event)
+   * @returns void
+   */
   async openSupportPopup(event): Promise<void> {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
+    if (this.hubspotActivated == true) {
+      return this.utils.openSupportPopup({ formOnly: true });
+    }
 
-    const modal = await this.modalController.create({
-      component: SupportPopupComponent,
-      componentProps: {
-        mode: 'modal',
-        isShowFormOnly: true,
-      },
-      cssClass: 'support-popup'
-    });
-    return modal.present();
+    return this.mailTo(event);
   }
 }
