@@ -1,5 +1,5 @@
 /* eslint-disable @angular-eslint/no-empty-lifecycle-method */
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
@@ -16,13 +16,18 @@ export class SupportPopupComponent implements OnInit {
   selectedFile: any;
   problemSubject: string;
   problemContent: string;
+  isShowFormOnly?: boolean;
 
   constructor(
     private modalController: ModalController,
     private hubspotService: HubspotService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.isShowFormOnly == true) {
+      this.isShowForm = true;
+    }
+  }
 
   showSupportForm() {
     this.isShowForm = !this.isShowForm;

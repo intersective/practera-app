@@ -8,6 +8,7 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { Subscription } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
+import { SupportPopupComponent } from '@v3/app/components/support-popup/support-popup.component';
 
 @Component({
   selector: 'app-settings',
@@ -202,5 +203,21 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   goBack(): void {
     return this.window.history.back();
+  }
+
+  async openSupportPopup(event): Promise<void> {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    const modal = await this.modalController.create({
+      component: SupportPopupComponent,
+      componentProps: {
+        mode: 'modal',
+        isShowFormOnly: true,
+      },
+      cssClass: 'support-popup'
+    });
+    return modal.present();
   }
 }
