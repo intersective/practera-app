@@ -98,7 +98,7 @@ jobs:
 
 
 ################################################
-#  GET P2 LOAD  TEST AWS ORGANIZATION NUMBER
+#  GET P2 SANDBOX AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
         id: AWS_ORG
