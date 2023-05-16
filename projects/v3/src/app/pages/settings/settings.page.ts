@@ -89,6 +89,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.utils.getEvent('support-email-checked').subscribe(event => {
       this.hubspotActivated = event;
     });
+    this.utils.checkIsPracteraSupportEmail();
   }
 
   get isMobile() {
