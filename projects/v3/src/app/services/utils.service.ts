@@ -3,11 +3,13 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { ApolloService } from '@v3/services/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { Colors } from './storage.service';
+import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
+import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 
 import Delta from 'quill-delta';
 
@@ -36,7 +38,9 @@ export class UtilsService {
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private platform: Platform,
-    private apolloService: ApolloService
+    private apolloService: ApolloService,
+    private readonly modalController: ModalController,
+    private readonly storageService: BrowserStorageService,
   ) {
     if (_) {
       this.lodash = _;
@@ -680,5 +684,41 @@ export class UtilsService {
     // if pathname begin with different locale
     const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
+  }
+
+  async openSupportPopup(options?: { formOnly: boolean; }) {
+    const componentProps = {
+      mode: 'modal',
+      isShowFormOnly: options?.formOnly
+    };
+
+    const modal = await this.modalController.create({
+      componentProps,
+      component: SupportPopupComponent,
+      cssClass: 'support-popup'
+    });
+    return modal.present();
+  }
+
+  checkIsPracteraSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program)=> {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      let supportEmail = currentExperience.experience.support_email;
+      if (supportEmail.includes("@practera.com")) {
+        this.broadcastEvent('support-email-checked', true);
+        return true;
+      }
+      this.broadcastEvent('support-email-checked', false);
+      return false;
+    }
+    this.broadcastEvent('support-email-checked', false);
+    return false;
   }
 }
