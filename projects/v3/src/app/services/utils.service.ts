@@ -313,7 +313,11 @@ export class UtilsService {
       return '';
     }
     const date = new Date(this.iso8601Formatter(time));
-    const formattedTime = new Intl.DateTimeFormat('en-US', {
+
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to format of "en-GB" from previous code
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    const formattedTime = new Intl.DateTimeFormat(defaultLocale, {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'
@@ -342,16 +346,19 @@ export class UtilsService {
     const yesterday = today.clone().subtract(1, 'day').startOf('day');
 
     if (dateToFormat.isSame(yesterday, 'd')) {
-      return 'Yesterday';
+      return $localize`Yesterday`;
     }
     if (dateToFormat.isSame(tomorrow, 'd')) {
-      return 'Tomorrow';
+      return $localize`Tomorrow`;
     }
     if (dateToFormat.isSame(today, 'd')) {
-      return 'Today';
+      return $localize`Today`;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -516,10 +523,14 @@ export class UtilsService {
    * - If due date is today this will return 'Due Today'.
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
+   * @param plain - (optional) if true, it will return only formatted date without 'Due' or 'Overdue' prefix.
    */
-  dueDateFormatter(dueDate: string) {
+  dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
       return '';
+    }
+    if (plain === true) {
+      return this.utcToLocal(dueDate);
     }
     const difference = this.timeComparer(dueDate);
     if (difference < 0) {
@@ -562,7 +573,7 @@ export class UtilsService {
    * @returns time that formated to 12 hours
    */
   getFormatedCurrentTime() {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(this.getCurrentLocale(), {
       hour12: true,
       hour: 'numeric',
       minute: 'numeric'

@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { RequestService } from 'request';
-import { map, mergeMap, shareReplay } from 'rxjs/operators';
+import { catchError, map, mergeMap, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 
 export interface Experience {
@@ -117,7 +116,13 @@ export class HomeService {
           leadImage
         }
       }`,
-    ).pipe(map(res => this._normaliseExperience(res))).subscribe();
+    ).pipe(
+      map(res => this._normaliseExperience(res)),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        return throwError(err);
+      }),
+    ).subscribe();
   }
 
   private _normaliseExperience(res) {
