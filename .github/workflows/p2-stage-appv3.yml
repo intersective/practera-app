@@ -25,6 +25,7 @@ jobs:
     timeout-minutes: 15
 
 
+
 ################################################
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
@@ -200,6 +201,7 @@ jobs:
           test -f projects/v3/src/environments/environment.ts && echo "environment here" || cp projects/v3/src/environments/environment.local.ts projects/v3/src/environments/environment.ts
           node_modules/.bin/ng build request --configuration=${{ env.BUILD_CONFIG }}
           node_modules/.bin/ng build v3 --configuration=${{ env.BUILD_CONFIG }}
+          npm run generate-version-v3
 
 
 ##########################################################
