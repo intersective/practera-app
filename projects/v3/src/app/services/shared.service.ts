@@ -187,6 +187,7 @@ export class SharedService {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
     this.apolloService.initiateChatClient();
+    this.utils.checkIsPracteraSupportEmail();
   }
 
 }
