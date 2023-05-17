@@ -130,7 +130,7 @@ export class HubspotService {
       submitParam.fields.push(
         {
           name: "TICKET.team",
-          value: this.storage.getUser().teamName
+          value: this.storage.getUser().teamName ? this.storage.getUser().teamName : ''
         }
       );
       submitParam.fields.push(
