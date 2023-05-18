@@ -1,42 +1,65 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, DebugElement } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 
 import { ListItemComponent } from './list-item.component';
 
-describe('ListItemComponent', () => {
-  let component: ListItemComponent;
-  let fixture: ComponentFixture<ListItemComponent>;
-  let ionItem: DebugElement;
-  let element: HTMLElement;
+@Component({
+  template: `<app-list-item
+    [title]="title"
+    [eventDayCount]="null"
+    titleColor="sample-100"
+  ></app-list-item>`
+})
+class TestHostComponent {
+  title = 'Test Title';
+}
 
-  beforeEach(async () => {
+describe('ListItemComponent', () => {
+  let testHost: TestHostComponent;
+  let fixture: ComponentFixture<TestHostComponent>;
+  let listItemComponent: ListItemComponent;
+
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ListItemComponent],
+      declarations: [ListItemComponent, TestHostComponent],
       imports: [IonicModule.forRoot()] // Add other necessary modules here
     }).compileComponents();
+  }));
 
-    fixture = TestBed.createComponent(ListItemComponent);
-    component = fixture.debugElement.componentInstance;
-    element = fixture.nativeElement.querySelector('.ion-item');
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TestHostComponent);
+    testHost = fixture.componentInstance;
+    fixture.detectChanges();
+
+    // const listItemDebugElement: DebugElement = fixture.debugElement.componentInstance.debugElement.query(By.directive(ListItemComponent));
+    const listItemDebugElement: DebugElement = fixture.debugElement.query(By.directive(ListItemComponent));
+    listItemComponent = listItemDebugElement.componentInstance as ListItemComponent;
   });
+
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(testHost).toBeTruthy();
+    expect(listItemComponent).toBeTruthy();
   });
 
-  it('statusDescriptions method should return correct value', () => {
-    let result = component.statusDescriptions('lock-closed');
-    expect(result).toEqual('locked');
+  it('should display the title', () => {
+    listItemComponent.isEventItem = true;
+    listItemComponent.loading = false;
+    fixture.detectChanges();
 
-    result = component.statusDescriptions('chevron-forward');
-    expect(result).toEqual(null);
+    const listItemDe: DebugElement = fixture.debugElement.query(By.css('.item-title'));
+    const listItemEl: HTMLElement = listItemDe.nativeElement;
+    console.log(listItemEl);
 
-    result = component.statusDescriptions('checkmark-circle');
-    expect(result).toEqual('completed');
+    expect(listItemEl.textContent).toEqual(testHost.title);
+  });
 
-    result = component.statusDescriptions('any other value');
-    expect(result).toEqual(null);
+  it('should return correct description', () => {
+    expect(listItemComponent.statusDescriptions('lock-closed')).toEqual('locked');
+    expect(listItemComponent.statusDescriptions('chevron-forward')).toEqual(null);
+    expect(listItemComponent.statusDescriptions('checkmark-circle')).toEqual('completed');
+    expect(listItemComponent.statusDescriptions('non-existing-icon')).toEqual(null);
   });
 });
