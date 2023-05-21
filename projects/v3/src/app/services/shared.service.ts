@@ -104,7 +104,8 @@ export class SharedService {
           });
         }
         return this.storage.setUser({
-          teamId: thisUser.teams[0].id
+          teamId: thisUser.teams[0].id,
+          teamName: thisUser.teams[0].name
         });
       }
       return response;
@@ -186,6 +187,7 @@ export class SharedService {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
     this.apolloService.initiateChatClient();
+    this.utils.checkIsPracteraSupportEmail();
   }
 
 }

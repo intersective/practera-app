@@ -22,6 +22,7 @@ export interface User {
   timelineId?: number;
   projectId?: number;
   teamId?: number;
+  teamName?: string;
   userHash?: string;
   colors?: Colors;
   activityCardImage?: string;

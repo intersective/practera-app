@@ -30,6 +30,7 @@ ion-avatar {
       position: absolute;
       right: -1.5px;
       border-radius: 100%;
+      padding: 2px 4px;
       /* overflow: visible; */
       font-size: 0.7em;
       display: flex;
@@ -38,5 +39,13 @@ ion-avatar {
   }
   ion-icon {
     font-size: 32px;
+  }
+  .support-btn {
+    height: 26px;
+    margin: 0px 12px 0px 0px;
+    --color: var(--practera-dark-blue-100);
+    --background: var(--practera-orange-50);
+    font-size: 12px !important;
+    --border-radius: 22px;
   }
 }
