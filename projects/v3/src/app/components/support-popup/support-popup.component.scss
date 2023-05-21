@@ -1,0 +1,95 @@
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.support-description {
+  margin-top: 16px;
+  margin-bottom: 12px;
+}
+
+.question-list {
+  max-height: 320px;
+  overflow-y: scroll;
+
+  .question-item {
+    ion-item {
+      ion-label {
+        font-weight: 700 !important;
+        text-transform: uppercase;
+      }
+    }
+  }
+}
+
+.close-button {
+  margin-top: 37px;
+  float: right;
+}
+
+.form-title {
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+.form-field-label,
+.form-field {
+  margin-bottom: 10px;
+}
+
+.form-field {
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--practera-grey-50);
+  border-radius: 5px;
+  --highlight-background: var(--ion-color-primary);
+}
+
+.file-container {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+
+  p {
+    margin: 0;
+    margin-left: 5px;
+
+    &.file-name {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width:220px;
+    }
+
+    &.remove-button {
+      cursor: pointer;
+    }
+  }
+}
+
+.success-container {
+  height: 390px;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+  text-align: center;
+
+  ion-icon {
+    font-size: 72px;
+    color: var(--practera-yellow-100);
+  }
+
+}
+
+.error-message {
+  margin: auto;
+  font-size: small;
+  color: red;
+}

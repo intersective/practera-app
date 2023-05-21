@@ -1600,4 +1600,19 @@ export class DemoService {
     ]
   }
 
+  get teamList() {
+    return [
+      {
+        id: '123',
+        uuid: 'qwqw12',
+        name: 'team 1'
+      },
+      {
+        id: '0987',
+        uuid: 'okjhg78',
+        name: 'team 2'
+      }
+    ]
+  }
+
 }
