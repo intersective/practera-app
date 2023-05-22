@@ -1,7 +1,14 @@
 <div class="buttons">
-  <ion-button *ngIf="isShowSupportBtn" (click)="openSupport()" class="support-btn" shape="round" size="small">
-    Do you need help?
-  </ion-button>
+  <ng-container *ngIf="!isMobile; else mobileBtn">
+    <ion-button *ngIf="isShowSupportBtn" (click)="openSupport()" class="support-btn" shape="round" size="small">
+      Do you need help?
+    </ion-button>
+  </ng-container>
+  <ng-template #mobileBtn>
+    <ion-button *ngIf="isShowSupportBtn" (click)="openSupport()" class="support-btn mobile" shape="round" size="small">
+      <ion-icon slot="icon-only" name="help-circle-outline"></ion-icon>
+    </ion-button>
+  </ng-template>
 
   <ion-button (click)="notifications()" class="notify-btn">
     <ion-icon name="notifications" alt="notification" color="primary"></ion-icon>
