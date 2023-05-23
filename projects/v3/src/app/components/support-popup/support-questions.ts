@@ -11,7 +11,7 @@ export const supportQuestionList = [
     questionId: "two",
     question: "I'VE SUBMITTED THE WRONG FILE!",
     answer: [
-      "If you've accidentally submitted the wrong file or have encountered any other issues while submitting an assessment, it's important to reach out to your program coordinator as soon as possible. You can do this by (insert how students can gain additional feedback through the contact form) and providing them with the program name and assessment name.",
+      "If you've accidentally submitted the wrong file or have encountered any other issues while submitting an assessment, it's important to reach out to your program coordinator as soon as possible. You can do this by (insert how students can gain additional feedback through the hubspot form) and providing them with the program name and assessment name.",
       "It's important to be proactive and take action quickly, as this will help ensure that any issues are resolved in a timely manner and that you're able to continue making progress in your learning journey. "
     ]
   },
@@ -42,8 +42,8 @@ export const supportQuestionList = [
     questionId: "six",
     question: "HOW DO I WITHDRAW FROM THE PROGRAM?",
     answer: [
-      "If you're considering withdrawing from a program, it's important to take action as soon as possible. Withdrawing from a program can be a difficult decision, but it's important to prioritise your well-being and make the choice that's best for you. To withdraw from a program, the first step is to get in touch with your program coordinator by (process that will need to be included for hubspot form). They will be able to guide you through the process and provide you with any necessary information about the steps you'll need to take.",
-      "To withdraw from a program, the first step is to get in touch with your program coordinator by (process that will need to be included for support form). They will be able to guide you through the process and provide you with any necessary information about the steps you'll need to take.",
+      "If you're considering withdrawing from a program, it's important to take action as soon as possible. Withdrawing from a program can be a difficult decision, but it's important to prioritise your well-being and make the choice that's best for you.",
+      "To withdraw from a program, the first step is to get in touch with your program coordinator by (process that will need to be included for hubspot form). They will be able to guide you through the process and provide you with any necessary information about the steps you'll need to take.",
       "Remember, there's no shame in withdrawing from a program if it's not the right fit for you. It takes courage to acknowledge when something isn't working and to take action to change it. So be kind to yourself, and don't be afraid to reach out for help and support. Your program coordinator is there to help you, and they'll do everything they can to make the withdrawal process as smooth and stress-free as possible."
     ]
   },
