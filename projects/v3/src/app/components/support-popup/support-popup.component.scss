@@ -39,6 +39,9 @@
 .form-field-label,
 .form-field {
   margin-bottom: 10px;
+  .required {
+    color: red;
+  }
 }
 
 .form-field {
