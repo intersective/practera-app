@@ -40,11 +40,11 @@
     </ion-button>
     <p class="headline-3 black form-title">Contact our support team</p>
     <p class="error-message" *ngIf="isShowError">Support question submit faild. Try again.</p>
-    <p class="form-field-label subtitle-1 black">What problem are you having?</p>
+    <p class="form-field-label subtitle-1 black">What problem are you having? <span title="required" class="required">*</span></p>
     <ion-item lines="none" class="form-field">
       <ion-input [(ngModel)]="problemSubject"></ion-input>
     </ion-item>
-    <p class="form-field-label subtitle-1 black">Please describe your problem</p>
+    <p class="form-field-label subtitle-1 black">Please describe your problem <span title="required" class="required">*</span></p>
     <ion-item lines="none" class="form-field">
       <ion-textarea rows="4" spellcheck="true" [(ngModel)]="problemContent"></ion-textarea>
     </ion-item>
