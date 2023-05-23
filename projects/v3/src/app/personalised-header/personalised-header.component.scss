@@ -47,5 +47,10 @@ ion-avatar {
     --background: var(--practera-orange-50);
     font-size: 12px !important;
     --border-radius: 22px;
+    &.mobile {
+      --background: transparent;
+      --padding-start: 0 !important;
+      --padding-end: 0 !important;
+    }
   }
 }

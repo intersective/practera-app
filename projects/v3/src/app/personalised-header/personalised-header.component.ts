@@ -36,9 +36,7 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
     }));
     this.subscriptions.push(this.utilService.getEvent('support-email-checked').subscribe(event => {
       // hide support button on mobile. because we need space in heder for other things. but we still have the settings page
-      if (!this.utilService.isMobile()) {
         this.isShowSupportBtn = event;
-      }
     }));
     this.utilService.checkIsPracteraSupportEmail();
   }
