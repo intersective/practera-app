@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-support-popup',
@@ -22,7 +23,8 @@ export class SupportPopupComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private hubspotService: HubspotService
+    private hubspotService: HubspotService,
+    private utilService: UtilsService
   ) { }
 
   ngOnInit() {
@@ -50,12 +52,15 @@ export class SupportPopupComponent implements OnInit {
   }
 
   submitForm() {
+    if (this.utilService.isEmpty(this.problemSubject) ||
+    this.utilService.isEmpty(this.problemContent)) {
+      return;
+    }
     const param: HubspotFormParams = {
       subject: this.problemSubject,
       content: this.problemContent,
       file: JSON.stringify(this.selectedFile)
     }
-    console.log(param);
     this.hubspotService.submitDataToHubspot(param).subscribe(
       (response) => {
         this.selectedFile = undefined;
