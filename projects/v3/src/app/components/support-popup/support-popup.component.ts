@@ -1,8 +1,10 @@
 /* eslint-disable @angular-eslint/no-empty-lifecycle-method */
+import * as filestack from 'filestack-js';
 import { Component, OnInit } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
+import { FilestackService } from '@v3/app/services/filestack.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
@@ -11,7 +13,7 @@ import { UtilsService } from '@v3/services/utils.service';
   styleUrls: ['./support-popup.component.scss'],
 })
 export class SupportPopupComponent implements OnInit {
-
+  protected filestack = filestack.Client;
   isShowForm: boolean = false;
   isShowSuccess: boolean = false;
   isShowError: boolean = false;
@@ -24,6 +26,7 @@ export class SupportPopupComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private hubspotService: HubspotService,
+    private filestackService: FilestackService,
     private utilService: UtilsService
   ) { }
 
@@ -37,18 +40,64 @@ export class SupportPopupComponent implements OnInit {
     this.isShowForm = !this.isShowForm;
   }
 
+  ionViewWillLeave() {
+    // if fileupload has been initiated earlier, delete the file from filestack
+    if (this.selectedFile) {
+      this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
+    }
+  }
+
   closePopup() {
     this.modalController.dismiss();
   }
 
   onFileSelect(event) {
-    if (event?.target?.files && event.target.files.length > 0) {
-      this.selectedFile = event.target.files[0];
+    const file: File = event.target.files[0];
+
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+
+      this.selectedFile = file;
     }
   }
 
-  removeSelectedFile() {
+  async removeSelectedFile() {
+    await this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
     this.selectedFile = undefined;
+  }
+
+  async uploadFile(keyboardEvent?: KeyboardEvent) {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+    } else if (keyboardEvent) {
+      return;
+    }
+
+    const pickerOptions: filestack.PickerOptions = {
+      storeTo: this.filestackService.getS3Config('any'),
+      onFileUploadFailed: data => {
+        this.selectedFile = undefined;
+      },
+      onFileUploadFinished: data => {
+        this.selectedFile = data;
+      },
+      onOpen: () => { // for accessibility
+        setTimeout(() => {
+          const eles = document.getElementsByClassName('fsp-picker__close-button');
+          if (eles.length > 0) {
+            (eles[0] as HTMLElement).focus();
+          }
+        }, 850);
+      },
+    };
+
+    try {
+      const res = await this.filestackService.open(pickerOptions);
+      return res;
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
   submitForm() {
@@ -59,7 +108,7 @@ export class SupportPopupComponent implements OnInit {
     const param: HubspotFormParams = {
       subject: this.problemSubject,
       content: this.problemContent,
-      file: JSON.stringify(this.selectedFile)
+      file: this.selectedFile?.url,
     }
     this.hubspotService.submitDataToHubspot(param).subscribe(
       (response) => {
