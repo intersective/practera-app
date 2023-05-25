@@ -102,8 +102,8 @@ export class SupportPopupComponent implements OnInit {
     }
   }
 
-  async removeSelectedFile() {
-    await this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
+  removeSelectedFile() {
+    this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
     this.selectedFile = undefined;
   }
 
