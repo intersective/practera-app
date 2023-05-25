@@ -50,13 +50,19 @@
     </ion-item>
     <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
     <div class="file-container">
-      <input style="display: none" type="file" (change)="onFileSelect($event)" #hiddenfileinput>
-      <ion-button class="back-button" (click)="hiddenfileinput.click()" fill="outline" color="medium" size="small">
-        Choose files
-      </ion-button>
-      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.name : 'No file chosen' }}</p>
-      <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon></p>
+      <ion-button mode="ios" size="small"
+        class="upload-button"
+        shape="round"
+        fill="outline"
+        (click)="uploadFile()"
+        i18n="attachment upload button"
+      >UPLOAD</ion-button>
+
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.filename : 'No file chosen' }}</p>
+      <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon>
+      </p>
     </div>
+
     <ion-button (click)="submitForm()">
       Submit message
     </ion-button>
