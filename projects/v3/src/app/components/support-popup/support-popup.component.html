@@ -1,4 +1,4 @@
-<ion-content class="ion-padding" [scrollY]="false" [ngClass]="" text-center role="dialog" aria-modal="true"
+<ion-content class="ion-padding" [scrollY]="isShowForm" text-center role="dialog" aria-modal="true"
   aria-hidden="false">
   <ng-container>
     <ng-container *ngIf="!isShowForm; else formTpl">
@@ -27,7 +27,7 @@
         </ng-container>
       </ion-accordion-group>
     </ng-container>
-    <ion-button class="close-button" (click)="closePopup()" fill="outline" color="medium">
+    <ion-button class="close-button" [ngClass]="{'qna': !isShowForm}" (click)="closePopup()" fill="outline" color="medium">
       Close
     </ion-button>
   </ng-container>
@@ -51,19 +51,29 @@
     <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
     <div class="file-container">
       <ion-button mode="ios" size="small"
-        class="upload-button"
+        class="back-button"
         shape="round"
         fill="outline"
+        color="medium"
         (click)="uploadFile()"
-        i18n="attachment upload button"
-      >UPLOAD</ion-button>
+      >Choose file</ion-button>
 
       <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.filename : 'No file chosen' }}</p>
       <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon>
       </p>
     </div>
 
-    <ion-button (click)="submitForm()">
+    <ion-item class="list-terms no-ripple">
+      <ion-label class="body-2">
+        I agree to the collection and storage of my data from this form. I understand that this information will be used to process my request and I agree to be contacted for this purpose.
+      </ion-label>
+      <ion-checkbox color="medium" slot="start" [(ngModel)]="hasConsent"
+        [ngModelOptions]="{standalone: true}" name="hasConsent"
+        [attr.aria-label]="hasConsent ? 'I agree to allow Practera to store and process my personal data.' : 'I disagree to allow Practera to store and process my personal data.'"
+      ></ion-checkbox>
+    </ion-item>
+
+    <ion-button [disabled]="!hasConsent" (click)="submitForm()">
       Submit message
     </ion-button>
   </ng-container>
