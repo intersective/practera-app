@@ -18,6 +18,7 @@ export class SupportPopupComponent implements OnInit {
   isShowForm: boolean = false;
   isShowSuccess: boolean = false;
   isShowError: boolean = false;
+  isShowRequiredError: boolean = false;
   questionList = supportQuestionList;
   selectedFile: any;
   problemSubject: string;
@@ -41,6 +42,9 @@ export class SupportPopupComponent implements OnInit {
 
   showSupportForm() {
     this.isShowForm = !this.isShowForm;
+    this.isShowRequiredError = false;
+    this.isShowSuccess = false;
+    this.isShowError = false;
   }
 
   isPristine() {
@@ -137,8 +141,12 @@ export class SupportPopupComponent implements OnInit {
   }
 
   submitForm() {
+    this.isShowRequiredError = false;
+    this.isShowSuccess = false;
+    this.isShowError = false;
     if (this.utilService.isEmpty(this.problemSubject) ||
     this.utilService.isEmpty(this.problemContent)) {
+      this.isShowRequiredError = true;
       return;
     }
     const param: HubspotFormParams = {
