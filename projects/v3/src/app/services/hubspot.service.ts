@@ -63,7 +63,7 @@ export class HubspotService {
         legalConsentOptions: {
           consent: {
             consentToProcess: params.consentToProcess,
-            text: "I agree to allow Practera to store and process my personal data.",
+            text: "I agree to the collection and storage of my data from this form. I understand that this information will be used to process my request and I agree to be contacted for this purpose.",
             communications: [
               {
                 value: true,
