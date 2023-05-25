@@ -20,6 +20,7 @@ export interface HubspotFormParams {
   subject: string;
   content: string;
   file: any;
+  consentToProcess: boolean;
 }
 
 @Injectable({
@@ -61,7 +62,7 @@ export class HubspotService {
         fields: [],
         legalConsentOptions: {
           consent: {
-            consentToProcess: true,
+            consentToProcess: params.consentToProcess,
             text: "I agree to allow Practera to store and process my personal data.",
             communications: [
               {
