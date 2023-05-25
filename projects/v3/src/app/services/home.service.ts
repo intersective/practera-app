@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, of } from 'rxjs';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { RequestService } from 'request';
-import { map, mergeMap, shareReplay } from 'rxjs/operators';
+import { catchError, map, mergeMap, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
+import { NotificationsService } from './notifications.service';
+import { AuthService } from './auth.service';
 
 export interface Experience {
   leadImage: string;
@@ -92,7 +93,9 @@ export class HomeService {
 
   constructor(
     private apolloService: ApolloService,
-    private demo: DemoService
+    private demo: DemoService,
+    private notificationsService: NotificationsService,
+    private authService: AuthService,
   ) { }
 
   clearExperience() {
@@ -117,7 +120,30 @@ export class HomeService {
           leadImage
         }
       }`,
-    ).pipe(map(res => this._normaliseExperience(res))).subscribe();
+    ).pipe(
+      tap(async res => {
+        if (res?.data?.experience === null) {
+          await this.notificationsService.alert({
+            header: 'Unable to access experience',
+            message: 'Please re-login and try again later',
+            buttons: [
+              {
+                text: 'OK',
+                role: 'cancel',
+                handler: () => {
+                  this.authService.logout();
+                },
+              },
+            ]
+          })
+        }
+      }),
+      map(res => this._normaliseExperience(res)),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        return throwError(err);
+      }),
+    ).subscribe();
   }
 
   private _normaliseExperience(res) {
