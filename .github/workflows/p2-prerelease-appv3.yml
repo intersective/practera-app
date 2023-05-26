@@ -9,9 +9,15 @@ name: Deploy to p2-prerelease-appv3 environment
 ################################################
 on:
   workflow_dispatch:
+    inputs:
+      BRANCH_TAG_NAME:
+        description: 'New tag version based on create-release-tag workflow'     
+        required: true
+        default: ''
   push:
     branches:
-     - 'golive/3*'
+      - 'golive/3*'
+      - 'release/live-v3'
 
 
 
