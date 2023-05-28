@@ -1,11 +1,12 @@
 /* eslint-disable @angular-eslint/no-empty-lifecycle-method */
 import * as filestack from 'filestack-js';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-support-popup',
@@ -17,17 +18,20 @@ export class SupportPopupComponent implements OnInit {
   isShowForm: boolean = false;
   isShowSuccess: boolean = false;
   isShowError: boolean = false;
+  isShowRequiredError: boolean = false;
   questionList = supportQuestionList;
   selectedFile: any;
   problemSubject: string;
   problemContent: string;
-  isShowFormOnly?: boolean;
+  @Input() isShowFormOnly?: boolean;
+  hasConsent: boolean = false;
 
   constructor(
     private modalController: ModalController,
     private hubspotService: HubspotService,
     private filestackService: FilestackService,
-    private utilService: UtilsService
+    private utilService: UtilsService,
+    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit() {
@@ -38,17 +42,53 @@ export class SupportPopupComponent implements OnInit {
 
   showSupportForm() {
     this.isShowForm = !this.isShowForm;
+    this.isShowRequiredError = false;
+    this.isShowSuccess = false;
+    this.isShowError = false;
   }
 
-  ionViewWillLeave() {
-    // if fileupload has been initiated earlier, delete the file from filestack
-    if (this.selectedFile) {
-      this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
+  isPristine() {
+    return !this.problemSubject && !this.problemContent && !this.selectedFile;
+  }
+
+  async canDismiss(modal) {
+    modal.canDismiss = true;
+
+    if (this.problemSubject || this.problemContent || this.selectedFile) {
+      // if fileupload has been initiated earlier, delete the file from filestack
+      if (this.selectedFile) {
+        await this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
+      }
+
+      return this.notificationsService.alert({
+        header: 'Are you sure?',
+        message: 'Your changes will be lost if you leave this page.',
+        buttons: [
+          {
+            text: 'Cancel',
+            handler: () => {
+              modal.canDismiss = false;
+            },
+          },
+          {
+            text: 'Leave',
+            handler: () => {
+              this.modalController.dismiss({
+                isPristine: this.isPristine()
+              });
+            }
+          }
+        ]
+      });
     }
+
+    return this.modalController.dismiss();
   }
 
-  closePopup() {
-    this.modalController.dismiss();
+  async closePopup() {
+    this.modalController.getTop().then(async (modal) => {
+      await this.canDismiss(modal);
+    });
   }
 
   onFileSelect(event) {
@@ -101,14 +141,19 @@ export class SupportPopupComponent implements OnInit {
   }
 
   submitForm() {
+    this.isShowRequiredError = false;
+    this.isShowSuccess = false;
+    this.isShowError = false;
     if (this.utilService.isEmpty(this.problemSubject) ||
     this.utilService.isEmpty(this.problemContent)) {
+      this.isShowRequiredError = true;
       return;
     }
     const param: HubspotFormParams = {
       subject: this.problemSubject,
       content: this.problemContent,
       file: this.selectedFile?.url,
+      consentToProcess: this.hasConsent,
     }
     this.hubspotService.submitDataToHubspot(param).subscribe(
       (response) => {
