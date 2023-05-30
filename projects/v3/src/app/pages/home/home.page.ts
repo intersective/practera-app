@@ -58,7 +58,6 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ionViewDidEnter() {
-    this.homeService.getExperience();
     this.homeService.getMilestones();
     this.homeService.getProjectProgress();
     this.achievementService.getAchievements();
