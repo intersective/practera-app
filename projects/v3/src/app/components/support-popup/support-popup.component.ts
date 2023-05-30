@@ -51,15 +51,10 @@ export class SupportPopupComponent implements OnInit {
     return !this.problemSubject && !this.problemContent && !this.selectedFile;
   }
 
-  async canDismiss(modal) {
+  canDismiss(modal) {
     modal.canDismiss = true;
 
     if (this.problemSubject || this.problemContent || this.selectedFile) {
-      // if fileupload has been initiated earlier, delete the file from filestack
-      if (this.selectedFile) {
-        await this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
-      }
-
       return this.notificationsService.alert({
         header: 'Are you sure?',
         message: 'Your changes will be lost if you leave this page.',
@@ -73,6 +68,11 @@ export class SupportPopupComponent implements OnInit {
           {
             text: 'Leave',
             handler: () => {
+              // if fileupload has been initiated earlier, delete the file from filestack
+              if (this.selectedFile) {
+                this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
+              }
+
               this.modalController.dismiss({
                 isPristine: this.isPristine()
               });
