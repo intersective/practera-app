@@ -1,9 +1,10 @@
 import { Injectable, Optional } from '@angular/core';
-import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { of, throwError } from 'rxjs';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
@@ -22,7 +23,17 @@ export class RequestInterceptor implements HttpInterceptor {
       req.url.includes('filestackcontent') ||
       req.url.includes('api.hsforms.com')
     ) {
-      return next.handle(req);
+      return next.handle(req).pipe(catchError(error => {
+        if (
+          error.url.includes('filestackapi.com') &&
+          error.status === 200 &&
+          error.statusText === 'OK' &&
+          error.name === 'HttpErrorResponse' &&
+          error?.error?.text === 'success') {
+          return of(error);
+        }
+        return throwError(error);
+      }));
     }
     const apikey = this.storage.getUser().apikey;
     const timelineId = this.storage.getUser().timelineId;
