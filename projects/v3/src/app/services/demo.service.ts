@@ -948,6 +948,8 @@ export class DemoService {
     return {
       uuid: 'uuid-1',
       name: 'test user',
+      firstName: 'test',
+      lastName: 'user',
       email: 'test@abcd.com',
       image: 'https://swapnil2597.github.io/assets/img/profile.png',
       role: 'participent',
