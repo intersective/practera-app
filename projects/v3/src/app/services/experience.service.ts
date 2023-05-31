@@ -268,6 +268,8 @@ export class ExperienceService {
       this.storage.setUser({
         uuid: this.demo.myInfo.uuid,
         name: this.demo.myInfo.name,
+        firstName: this.demo.myInfo.firstName,
+        lastName:this.demo.myInfo.lastName,
         email: this.demo.myInfo.email,
         image: this.demo.myInfo.image,
         role: this.demo.myInfo.role,
@@ -281,6 +283,8 @@ export class ExperienceService {
         user {
           uuid
           name
+          firstName
+          lastName
           email
           image
           role
@@ -298,6 +302,8 @@ export class ExperienceService {
         this.storage.setUser({
           uuid: thisUser.uuid,
           name: thisUser.name,
+          firstName: thisUser.firstName,
+          lastName: thisUser.lastName,
           email: thisUser.email,
           image: thisUser.image,
           role: thisUser.role,
