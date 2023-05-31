@@ -17,6 +17,7 @@ import { UtilsService } from '../services/utils.service';
 export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   notiCount: number = 0;
+  isShowSupportBtn: boolean = false;
 
   constructor(
     private modalController: ModalController,
@@ -33,6 +34,11 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
       const notiCount = notifications.length;
       this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
     }));
+    this.subscriptions.push(this.utilService.getEvent('support-email-checked').subscribe(event => {
+      // hide support button on mobile. because we need space in heder for other things. but we still have the settings page
+        this.isShowSupportBtn = event;
+    }));
+    this.utilService.checkIsPracteraSupportEmail();
   }
 
   ngOnDestroy() {
@@ -85,4 +91,9 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
 
     return modal.present();
   }
+
+  openSupport() {
+    this.utilService.openSupportPopup();
+  }
+
 }
