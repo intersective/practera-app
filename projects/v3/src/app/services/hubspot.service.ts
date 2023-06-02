@@ -83,7 +83,13 @@ export class HubspotService {
       submitParam.fields.push(
         {
           name: "firstname",
-          value: this.storage.getUser().name
+          value: this.storage.getUser().firstName ? this.storage.getUser().firstName : ''
+        }
+      );
+      submitParam.fields.push(
+        {
+          name: "lastname",
+          value: this.storage.getUser().lastName ? this.storage.getUser().lastName : ''
         }
       );
       submitParam.fields.push(
