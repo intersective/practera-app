@@ -91,19 +91,8 @@ export class SupportPopupComponent implements OnInit {
     });
   }
 
-  onFileSelect(event) {
-    const file: File = event.target.files[0];
-
-    if (file) {
-      const formData = new FormData();
-      formData.append('file', file, file.name);
-
-      this.selectedFile = file;
-    }
-  }
-
-  removeSelectedFile() {
-    this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
+  async removeSelectedFile() {
+    await this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
     this.selectedFile = undefined;
   }
 
@@ -133,6 +122,7 @@ export class SupportPopupComponent implements OnInit {
     };
 
     try {
+
       const res = await this.filestackService.open(pickerOptions);
       return res;
     } catch (err) {
