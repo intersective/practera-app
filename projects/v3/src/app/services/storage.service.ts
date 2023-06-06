@@ -8,6 +8,8 @@ export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
 export interface User {
   uuid?: string;
   name?: string;
+  firstName?: string;
+  lastName?: string;
   apikey?: string;
   contactNumber?: string;
   email?: string;
@@ -22,6 +24,7 @@ export interface User {
   timelineId?: number;
   projectId?: number;
   teamId?: number;
+  teamName?: string;
   userHash?: string;
   colors?: Colors;
   activityCardImage?: string;
