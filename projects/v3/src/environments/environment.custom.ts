@@ -35,6 +35,11 @@ export const environment = {
       virusDetection: '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
     },
   },
+  hubspot: {
+    liveServerRegion: '<CUSTOM_LIVE_SERVER_REGION>',
+    supportFormPortalId: '<CUSTOM_PORTAL_ID>',
+    supportFormId: '<CUSTOM_FORM_ID>'
+  },
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',

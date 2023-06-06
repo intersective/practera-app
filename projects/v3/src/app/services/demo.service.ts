@@ -948,6 +948,8 @@ export class DemoService {
     return {
       uuid: 'uuid-1',
       name: 'test user',
+      firstName: 'test',
+      lastName: 'user',
       email: 'test@abcd.com',
       image: 'https://swapnil2597.github.io/assets/img/profile.png',
       role: 'participent',
@@ -1596,6 +1598,21 @@ export class DemoService {
         "can_book": true,
         "assessment": null,
         "video_conference": null
+      }
+    ]
+  }
+
+  get teamList() {
+    return [
+      {
+        id: '123',
+        uuid: 'qwqw12',
+        name: 'team 1'
+      },
+      {
+        id: '0987',
+        uuid: 'okjhg78',
+        name: 'team 2'
       }
     ]
   }
