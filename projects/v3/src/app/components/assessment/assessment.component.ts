@@ -5,8 +5,8 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { concatMap, debounceTime, delay, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { concatMap, delay, tap } from 'rxjs/operators';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
@@ -85,26 +85,44 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private assessmentService: AssessmentService
   ) {
     this.subscriptions.push(this.submitActions.pipe(
-      concatMap(request => this.saveQuestionAnswer(request.questionSave))
+      concatMap(request => {
+        console.log('questionSave', request?.questionSave);
+        if (request?.questionSave) {
+          return this.saveQuestionAnswer(request.questionSave);
+        }
+        return of(request);
+      })
     ).subscribe((data: {
       saveInProgress: boolean;
       goBack: boolean;
-      questionSave: {
+      questionSave?: {
         submissionId: number;
         questionId: number;
         answer: string;
       }
     }): Promise<void> => {
-      return;
-      // return this._submit(data.saveInProgress, data.goBack);
+      console.log('data', data);
+      if (data.saveInProgress === false) {
+        return this._submitWithoutAnswer(data);
+      }
     }));
   }
 
+  /**
+   * Saves the answer for a given question within a submission.
+   *
+   * @param {Object} questionInput - An object containing the necessary information for saving the answer.
+   * @param {number} questionInput.submissionId - The ID of the submission in which the answer belongs.
+   * @param {number} questionInput.questionId - The ID of the question being answered.
+   * @param {string} questionInput.answer - The answer to the question.
+   *
+   * @returns {Observable} An Observable that resolves with the response from the assessment service.
+   */
   saveQuestionAnswer(questionInput: {
     submissionId: number;
     questionId: number;
     answer: string;
-  }) {
+  }): Observable<any> {
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
@@ -291,6 +309,32 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
+  async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+    if (this.doAssessment && this.assessment.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+      const teamId = this.storage.getUser().teamId;
+      if (typeof teamId !== 'number') {
+        return this.notifications.alert({
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel',
+            }
+          ],
+        });
+      }
+    }
+
+    return this.save.emit({
+      saveInProgress,
+      goBack,
+      assessmentId: this.assessment.id,
+      contextId: this.contextId,
+      submissionId: this.submission.id,
+    });
+  }
+
   /**
    * handle submission and autosave
    * @param saveInProgress whether it is for save in progress or submit
@@ -318,6 +362,10 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         });
       }
     }
+
+    this.save.emit({
+      action: this.action
+    });
 
     /**
      * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.

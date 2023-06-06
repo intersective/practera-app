@@ -63,12 +63,14 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         debounceTime(1250),
         distinctUntilChanged(),
       ).subscribe(_data => {
-        this.assessmentService.saveQuestionAnswer(
-          this.submissionId,
-          this.question.id,
-          JSON.stringify(this.answer),
-        ).subscribe(res => {
-          console.log('saved::text', res);
+        return this.submitActions$.next({
+          saveInProgress: true,
+          goBack: false,
+          questionSave: {
+            submissionId: this.submissionId,
+            questionId: this.question.id,
+            answer: this.answer,
+          }
         });
       }));
     }

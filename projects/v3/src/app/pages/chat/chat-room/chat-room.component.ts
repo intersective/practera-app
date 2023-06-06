@@ -412,13 +412,15 @@ export class ChatRoomComponent implements OnInit {
     this.chatService
       .markMessagesAsSeen(messageIds)
       .subscribe(
-        res => {
+        _res => {
           this.utils.broadcastEvent('chat-badge-update', {
             channelUuid: this.chatChannel.uuid,
             readcount: messageIds.length
           });
         },
-        err => { }
+        err => {
+          console.error(err);
+        }
       );
   }
 
