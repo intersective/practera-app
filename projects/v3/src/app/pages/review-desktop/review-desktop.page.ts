@@ -61,7 +61,7 @@ export class ReviewDesktopPage implements OnInit {
   /**
    * Go to the first review of the review list for desktop
    */
-   gotoFirstReview(reviews: Review[]) {
+  gotoFirstReview(reviews: Review[]) {
     if (!reviews) {
       return ;
     }

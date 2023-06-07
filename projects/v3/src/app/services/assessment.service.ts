@@ -466,6 +466,26 @@ export class AssessmentService {
     );
   }
 
+  // store the answer to the question
+  saveReviewAnswer(reviewId: number, questionId: number, answer: string) {
+    const paramsFormat = '$reviewId: Int!, $questionId: Int!, $answer: Any!';
+    const params = 'reviewId:$reviewId, questionId:$questionId, answer:$answer';
+    const variables = {
+      reviewId,
+      questionId,
+      answer,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation saveReviewAnswer(${paramsFormat}) {
+        saveReviewAnswer(${params}) {
+          success
+          message
+        }
+      }`,
+      variables
+    );
+  }
+
   // set the status of the submission to 'done' or 'pending approval'
   submitAssessment(submissionId: number, assessmentId: number, contextId: number) {
     const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!';
