@@ -54,7 +54,12 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       submissionId: number;
       questionId: number;
       answer: string;
-    }
+    };
+    reviewSave?: {
+      reviewId: number;
+      questionId: number;
+      answer: string;
+    };
   }>();
   subscriptions: Subscription[] = [];
 
@@ -86,6 +91,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   ) {
     this.subscriptions.push(this.submitActions.pipe(
       concatMap(request => {
+        if (request?.reviewSave) {
+          return this.saveReviewAnswer(request.reviewSave);
+        }
         console.log('questionSave', request?.questionSave);
         if (request?.questionSave) {
           return this.saveQuestionAnswer(request.questionSave);
@@ -99,7 +107,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         submissionId: number;
         questionId: number;
         answer: string;
-      }
+      };
     }): Promise<void> => {
       console.log('data', data);
       if (data.saveInProgress === false) {
@@ -126,7 +134,22 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
-      JSON.stringify(questionInput.answer)
+      questionInput.answer
+    ).pipe(
+      delay(1000),
+      tap((res) => { console.log(res) })
+    );
+  }
+
+  saveReviewAnswer(questionInput: {
+    reviewId: number;
+    questionId: number;
+    answer: string;
+  }): Observable<any> {
+    return this.assessmentService.saveReviewAnswer(
+      questionInput.reviewId,
+      questionInput.questionId,
+      questionInput.answer
     ).pipe(
       delay(1000),
       tap((res) => { console.log(res) })
