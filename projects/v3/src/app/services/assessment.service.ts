@@ -467,13 +467,15 @@ export class AssessmentService {
   }
 
   // store the answer to the question
-  saveReviewAnswer(reviewId: number, questionId: number, answer: string) {
-    const paramsFormat = '$reviewId: Int!, $questionId: Int!, $answer: Any!';
-    const params = 'reviewId:$reviewId, questionId:$questionId, answer:$answer';
+  saveReviewAnswer(reviewId: number, submissionId: number, questionId: number, answer: string, comment: string) {
+    const paramsFormat = '$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $comment: String!';
+    const params = 'reviewId:$reviewId, submissionId:$submissionId, questionId:$questionId, answer:$answer, comment:$comment';
     const variables = {
       reviewId,
+      submissionId,
       questionId,
       answer,
+      comment,
     };
     return this.apolloService.graphQLMutate(
       `mutation saveReviewAnswer(${paramsFormat}) {

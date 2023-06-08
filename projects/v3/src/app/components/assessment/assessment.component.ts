@@ -57,8 +57,10 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     };
     reviewSave?: {
       reviewId: number;
+      submissionId: number;
       questionId: number;
       answer: string;
+      comment: string;
     };
   }>();
   subscriptions: Subscription[] = [];
@@ -143,13 +145,17 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
   saveReviewAnswer(questionInput: {
     reviewId: number;
+    submissionId: number;
     questionId: number;
     answer: string;
+    comment: string;
   }): Observable<any> {
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
+      questionInput.submissionId,
       questionInput.questionId,
-      questionInput.answer
+      questionInput.answer,
+      questionInput.comment
     ).pipe(
       delay(1000),
       tap((res) => { console.log(res) })
