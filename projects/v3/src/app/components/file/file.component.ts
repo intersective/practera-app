@@ -136,8 +136,10 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     if (this.doReview === true) {
       action.reviewSave = {
         reviewId: this.reviewId,
+        submissionId: this.submissionId,
         questionId: this.question.id,
-        answer: this.innerValue,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
       };
     }
 
