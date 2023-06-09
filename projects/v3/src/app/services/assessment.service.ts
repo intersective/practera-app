@@ -505,6 +505,29 @@ export class AssessmentService {
     );
   }
 
+  /**
+   * Submit the review - set the status of the review to 'done'
+   * @param assessmentId - assessment id
+   * @param reviewId - review id
+   * @param submissionId - submission id
+   * @returns
+    */
+  submitReview(assessmentId: number, reviewId: number, submissionId: number) {
+    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!';
+    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId';
+    const variables = {
+      assessmentId,
+      reviewId,
+      submissionId,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation submitReview(${paramsFormat}) {
+        submitReview(${params})
+      }`,
+      variables
+    );
+  }
+
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
