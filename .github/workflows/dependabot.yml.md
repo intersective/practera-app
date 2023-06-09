@@ -23,7 +23,7 @@ jobs:
   dependabot:
     name: dependabot
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
