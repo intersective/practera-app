@@ -1,7 +1,7 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { Question } from '@v3/services/assessment.service';
+import { AssessmentService, Question } from '@v3/services/assessment.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 
@@ -23,7 +23,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   @Input() question: Question;
   @Input() submission;
+  @Input() submissionId: number;
   @Input() review;
+  @Input() reviewId: number;
   // this is for review status
   @Input() reviewStatus;
   // this is for assessment status
@@ -46,7 +48,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   // validation errors array
   errors: Array<any> = [];
 
-  constructor() {}
+  constructor(
+    private assessmentService: AssessmentService,
+  ) {}
 
   ngOnInit() {
     this._showSavedAnswers();
@@ -60,10 +64,35 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         debounceTime(1250),
         distinctUntilChanged(),
       ).subscribe(_data => {
-        this.submitActions$.next({
+        const action: {
+          saveInProgress?: boolean;
+          goBack?: boolean;
+          questionSave?: {};
+          reviewSave?: {};
+        } = {
           saveInProgress: true,
           goBack: false,
-        });
+        };
+
+        if (this.doReview === true) {
+          action.reviewSave = {
+            reviewId: this.reviewId,
+            submissionId: this.submissionId,
+            questionId: this.question.id,
+            answer: this.innerValue.answer,
+            comment: this.innerValue.comment,
+          };
+        }
+
+        if (this.doAssessment === true) {
+          action.questionSave = {
+            submissionId: this.submissionId,
+            questionId: this.question.id,
+            answer: this.answer,
+          };
+        }
+
+        this.submitActions$.next(action);
       }));
     }
   }

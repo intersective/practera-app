@@ -144,7 +144,7 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
-      const chat = notifications.find(noti => {
+      const chat = (notifications || []).find(noti => {
         if (noti.type === 'chat') {
           return noti;
         }
