@@ -7,10 +7,6 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
-  <ion-button fill="clear" slot="end" i18n="save assessment progress button"
-    [disabled]="!assessment || (btnDisabled$ | async)" (click)="btnSaveClicked()">
-    Save
-  </ion-button>
 </div>
 
 <ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
