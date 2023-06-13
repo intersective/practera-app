@@ -104,6 +104,14 @@ export class ReviewDesktopPage implements OnInit {
       this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
       this.reviewService.getReviews();
 
+      // fail gracefully: Review submission API may sometimes fail silently
+      if (res?.data?.submitReview === false) {
+        this.savingText$.next($localize`Save failed.`);
+        this.btnDisabled$.next(false);
+        this.loading = false;
+        return;
+      }
+
       this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
 
       this.loading = false;
