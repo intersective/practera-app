@@ -30,7 +30,6 @@ export class ReviewDesktopPage implements OnInit {
   submissionId: number;
   noReview = false;
 
-
   constructor(
     readonly utils: UtilsService,
     private route: ActivatedRoute,
@@ -104,13 +103,8 @@ export class ReviewDesktopPage implements OnInit {
 
       console.log('saveReview', res);
 
-      // AV2-1371: added to reduce API call & waiting time for API to response.
-      if (!event.saveInProgress
-        && res?.data?.submitReview?.success === true) {
-        this.submission.status = 'feedback available';
-        this.review.status = 'done';
-        this.reviewService.getReviews();
-      }
+      this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
+      this.reviewService.getReviews();
 
       this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
 
