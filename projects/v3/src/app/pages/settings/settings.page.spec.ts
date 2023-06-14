@@ -16,6 +16,7 @@ import { of } from 'rxjs';
 describe('SettingsPage', () => {
   let component: SettingsPage;
   let fixture: ComponentFixture<SettingsPage>;
+  let utilsSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -64,9 +65,21 @@ describe('SettingsPage', () => {
     fixture = TestBed.createComponent(SettingsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should not call openSupportPopup on a KeyboardEvent that is not Enter or Space', () => {
+    component.openSupportPopup(new KeyboardEvent('keydown', { key: 'a' }));
+    expect(utilsSpy.openSupportPopup).not.toHaveBeenCalled();
+  });
+
+  it('should call openSupportPopup when hubspotActivated is true', () => {
+    component.hubspotActivated = true;
+    component.openSupportPopup(new Event('click'));
+    expect(utilsSpy.openSupportPopup).toHaveBeenCalledWith({ formOnly: true });
   });
 });

@@ -88,6 +88,14 @@
   /** Pratera New branding colors **/
   /** Practera Branding colors as Ionic theme color variables **/
 
+  /** notification **/
+  --practera-notification: #F04C4F;
+  --practera-notification-rgb: 240, 76, 79;
+  --practera-notification-contrast: #ffffff;
+  --practera-notification-contrast-rgb: 255, 255, 255;
+  --practera-notification-shade: #d34346;
+  --practera-notification-tint: #f25e61;
+
   /** Arctic **/
   --practera-arctic-100: #2BC1D9;
   --practera-arctic-100-rgb: 43,193,217;
@@ -168,6 +176,13 @@
 	--practera-orange-100-contrast-rgb: 0,0,0;
 	--practera-orange-100-shade: #df7332;
 	--practera-orange-100-tint: #fd8f4d;
+
+  --practera-orange-50: #FDC19F;
+	--practera-orange-50-rgb: 253,193,159;
+	--practera-orange-50-contrast: #000000;
+	--practera-orange-50-contrast-rgb: 0,0,0;
+	--practera-orange-50-shade: #dfaa8c;
+	--practera-orange-50-tint: #fdc7a9;
 
   /** Grey **/
   --practera-grey-100: #333333;
