@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -33,7 +34,8 @@ export class HomePage implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notification: NotificationsService
+    private notification: NotificationsService,
+    private experienceService: ExperienceService,
   ) { }
 
   ngOnInit() {

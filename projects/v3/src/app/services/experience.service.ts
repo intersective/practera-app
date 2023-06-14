@@ -114,6 +114,9 @@ export class ExperienceService {
             });
           }
         );
+        this.getProjectsMsgCount(projectIds).subscribe(res => {
+          console.log('getProjectsMsgCount::', res);
+        });
         return programs;
       }
     ),
@@ -257,6 +260,22 @@ export class ExperienceService {
     } catch (err) {
       throw Error(err);
     }
+  }
+
+  getProjectsMsgCount(projectIds: number[]) {
+    return this.apolloService.graphQLFetch(`
+      query getProjectsMsgCount($ids: [Int]!) {
+        projects(ids: $ids) {
+          id
+          unreadChatMessageCount
+        }
+      }
+    `,
+    {
+      ids: projectIds
+    }).pipe(map(res => {
+      console.log(res);
+    }));
   }
 
   /**
