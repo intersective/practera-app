@@ -102,24 +102,28 @@ export class V3Page implements OnInit, OnDestroy {
         url: '/v3/home',
         icon: 'home',
         code: 'Home',
+        badges: 0,
       },
       {
         title: $localize`Events`,
         url: '/v3/events',
         icon: 'today',
         code: 'Events',
+        badges: 0,
       },
       {
         title: $localize`Reviews`,
         url: '/v3/review-desktop',
         icon: 'eye',
         code: 'Reviews',
+        badges: 0,
       },
       {
         title: $localize`Messages`,
         url: '/v3/messages',
         icon: 'mail',
         code: 'Messages',
+        badges: 0,
       }
     ];
   }
@@ -136,6 +140,19 @@ export class V3Page implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.notificationsService.notification$.subscribe(notifications => {
+      // assign notification badge to each tab
+      const chat = notifications.find(noti => {
+        if (noti.type === 'chat') {
+          return noti;
+        }
+      });
+      this.appPages[3].badges = chat?.unreadMessages || 0; // messages tab
+
+      this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length; // events tab
+      this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
+    });
 
     this.homeService.experience$.subscribe(expInfo => {
       if (expInfo?.locale && environment.production === true) {
@@ -167,7 +184,7 @@ export class V3Page implements OnInit, OnDestroy {
         }
       }));
     }
-    this.openMenu =false;
+    this.openMenu = false;
 
     // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
     this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());

@@ -314,7 +314,6 @@ export class ChatService {
   }
 
   markMessagesAsSeen(uuids: string[]): Observable<any> {
-
     if (environment.demo) {
       return of(this.demo.markAsSeen);
     }
