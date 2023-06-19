@@ -137,6 +137,9 @@ export class ActivityDesktopPage {
       event.assessmentId,
       event.contextId,
     ).toPromise();
+
+
+
     // await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
     if (!event.saveInProgress) {
