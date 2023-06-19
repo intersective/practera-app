@@ -138,9 +138,10 @@ export class ActivityDesktopPage {
       event.contextId,
     ).toPromise();
 
+    if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+      await this.assessmentService.pullFastFeedback();
+    }
 
-
-    // await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
     this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
     if (!event.saveInProgress) {
       this.notificationsService.assessmentSubmittedToast();
