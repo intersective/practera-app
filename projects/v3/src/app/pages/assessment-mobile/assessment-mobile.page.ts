@@ -111,6 +111,10 @@ export class AssessmentMobilePage implements OnInit {
         event.assessmentId,
         event.contextId
       ).toPromise();
+
+      if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
     } else if (this.action === 'review') {
       await this.assessmentService.submitReview(
         event.assessmentId,
