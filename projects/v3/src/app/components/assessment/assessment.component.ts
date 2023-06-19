@@ -148,12 +148,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     answer: string;
     comment: string;
   }): Observable<any> {
+    const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
       questionInput.submissionId,
       questionInput.questionId,
       questionInput.answer,
-      questionInput.comment
+      comment,
     ).pipe(
       delay(1000),
       tap((res) => { console.log(res) })
