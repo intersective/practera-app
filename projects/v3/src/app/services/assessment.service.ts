@@ -569,7 +569,7 @@ export class AssessmentService {
 
   private _afterSubmit(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (hasPulseCheck && !assessment.inProgress) {
-      this._pullFastFeedback();
+      this.pullFastFeedback();
     }
   }
 
@@ -577,7 +577,7 @@ export class AssessmentService {
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-   private async _pullFastFeedback() {
+  async pullFastFeedback() {
     try {
       const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
       if (modal && modal.present) {
