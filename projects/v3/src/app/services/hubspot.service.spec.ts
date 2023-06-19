@@ -50,7 +50,7 @@ describe('HubspotService', () => {
     lastName: 'user',
     email: 'test@abcd.com',
     image: 'https://swapnil2597.github.io/assets/img/profile.png',
-    role: 'participent',
+    role: 'participant',
     contactNumber: '1212121212',
     userHash: '1234#asdwdd',
     institutionName: 'Test institute',

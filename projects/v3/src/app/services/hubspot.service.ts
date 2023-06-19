@@ -174,7 +174,7 @@ export class HubspotService {
 
   private getCorrectUserRole(role) {
     switch (role) {
-      case "participent":
+      case "participant":
         return 'Learner';
       case "mentor":
         return 'Expert';
