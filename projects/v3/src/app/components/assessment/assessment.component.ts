@@ -1,14 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question } from '@v3/services/assessment.service';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { concatMap, delay, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -47,7 +45,22 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
-  submitActions = new Subject();
+  submitActions = new Subject<{
+    saveInProgress: boolean;
+    goBack: boolean;
+    questionSave?: {
+      submissionId: number;
+      questionId: number;
+      answer: string;
+    };
+    reviewSave?: {
+      reviewId: number;
+      submissionId: number;
+      questionId: number;
+      answer: string;
+      comment: string;
+    };
+  }>();
   subscriptions: Subscription[] = [];
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
@@ -74,15 +87,79 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
+    private assessmentService: AssessmentService
   ) {
     this.subscriptions.push(this.submitActions.pipe(
-      debounceTime(1500),
+      concatMap(request => {
+        if (request?.reviewSave) {
+          return this.saveReviewAnswer(request.reviewSave);
+        }
+        console.log('questionSave', request?.questionSave);
+        if (request?.questionSave) {
+          return this.saveQuestionAnswer(request.questionSave);
+        }
+        return of(request);
+      })
     ).subscribe((data: {
       saveInProgress: boolean;
       goBack: boolean;
+      questionSave?: {
+        submissionId: number;
+        questionId: number;
+        answer: string;
+      };
     }): Promise<void> => {
-      return this._submit(data.saveInProgress, data.goBack);
+      console.log('data', data);
+      if (data.saveInProgress === false) {
+        return this._submitWithoutAnswer(data);
+      }
     }));
+  }
+
+  /**
+   * Saves the answer for a given question within a submission.
+   *
+   * @param {Object} questionInput - An object containing the necessary information for saving the answer.
+   * @param {number} questionInput.submissionId - The ID of the submission in which the answer belongs.
+   * @param {number} questionInput.questionId - The ID of the question being answered.
+   * @param {string} questionInput.answer - The answer to the question.
+   *
+   * @returns {Observable} An Observable that resolves with the response from the assessment service.
+   */
+  saveQuestionAnswer(questionInput: {
+    submissionId: number;
+    questionId: number;
+    answer: string;
+  }): Observable<any> {
+    const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+    return this.assessmentService.saveQuestionAnswer(
+      questionInput.submissionId,
+      questionInput.questionId,
+      answer,
+    ).pipe(
+      delay(1000)
+    );
+  }
+
+  saveReviewAnswer(questionInput: {
+    reviewId: number;
+    submissionId: number;
+    questionId: number;
+    answer: string;
+    comment: string;
+  }): Observable<any> {
+    const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+    const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
+    return this.assessmentService.saveReviewAnswer(
+      questionInput.reviewId,
+      questionInput.submissionId,
+      questionInput.questionId,
+      answer,
+      comment,
+    ).pipe(
+      delay(1000),
+      tap((res) => { console.log(res) })
+    );
   }
 
   ngOnChanges() {
@@ -261,6 +338,119 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
+  checkCompulsory() {
+    const answers = [];
+    let questionId = 0;
+    let assessment: AssessmentSubmitParams;
+
+    assessment = {
+      id: this.assessment.id
+    };
+
+    if (this.submission && this.submission.id) {
+      assessment.submissionId = this.submission.id;
+    }
+
+    // form submission answers (submission API doesn't accept zero length array)
+    if (this.doAssessment) {
+      assessment.contextId = this.contextId;
+
+      if (this.assessment.isForTeam) {
+        assessment.unlock = true;
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        questionId = +key.replace('q-', '');
+        let answer;
+        if (value) {
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = null;
+            }
+          });
+        }
+        answers.push({
+          questionId: questionId,
+          answer: answer
+        });
+      });
+    }
+
+    // In review we also have comments for a question. and questionsForm value have both
+    // answer and comment. need to add them as separately
+    if (this.isPendingReview) {
+      assessment = Object.assign(assessment, {
+        reviewId: this.review.id
+      });
+
+      // post answers API doesn't accept empty array
+      // compulsory format: (even when no answers provided)
+      // [
+      //   { questionId: 1, answer: null, comment: null },
+      //   { questionId: 2, answer: null, comment: null },
+      //   { questionId: 3, answer: null, comment: null },
+      // ]
+      this.utils.each(this.questionsForm.value, (answer, key) => {
+        questionId = +key.replace('q-', '');
+        answers.push({
+          questionId,
+          answer: answer?.answer,
+          comment: answer?.comment,
+        });
+      });
+    }
+
+    return this._compulsoryQuestionsAnswered(answers);
+  }
+
+  async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+    // check if all required questions have answer when assessment done
+    const requiredQuestions = this.checkCompulsory();
+    if (!saveInProgress && requiredQuestions.length > 0) {
+      this.btnDisabled$.next(false);
+      // display a pop up if required question not answered
+      return this.notifications.alert({
+        message: $localize`Required question answer missing!`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel',
+          }
+        ],
+      });
+    }
+
+    if (this.doAssessment && this.assessment.isForTeam) {
+      await this.sharedService.getTeamInfo().toPromise();
+      const teamId = this.storage.getUser().teamId;
+      if (typeof teamId !== 'number') {
+        return this.notifications.alert({
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel',
+            }
+          ],
+        });
+      }
+    }
+
+    return this.save.emit({
+      saveInProgress,
+      goBack,
+      assessmentId: this.assessment.id,
+      contextId: this.contextId,
+      submissionId: this.submission.id,
+    });
+  }
+
   /**
    * handle submission and autosave
    * @param saveInProgress whether it is for save in progress or submit
@@ -278,7 +468,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       if (typeof teamId !== 'number') {
 
         return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
           buttons: [
             {
               text: $localize`OK`,
@@ -288,6 +478,10 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         });
       }
     }
+
+    this.save.emit({
+      action: this.action
+    });
 
     /**
      * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.
@@ -380,7 +574,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
-        message: 'Required question answer missing!',
+        message: $localize`Required question answer missing!`,
         // Please fill out the required fields.
         buttons: [
           {
@@ -401,11 +595,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         ],
       });
     }
-
-    /* comment for the tempery solution autosave AV2-1326
-    // allow submitting/saving after a few seconds
-    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
-    */
 
     this.save.emit({
       assessment,

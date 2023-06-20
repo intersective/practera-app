@@ -5,18 +5,12 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
 
-const SAVE_PROGRESS_TIMEOUT = 10000;
-
 @Component({
   selector: 'app-review-desktop',
   templateUrl: './review-desktop.page.html',
   styleUrls: ['./review-desktop.page.scss'],
 })
 export class ReviewDesktopPage implements OnInit {
-  review$ = this.assessmentService.review$;
-  reviews$ = this.reviewService.reviews$;
-  submission$ = this.assessmentService.submission$;
-  assessment$ = this.assessmentService.assessment$;
   loading: boolean; // loading indicator (true = loading | false = done loaded)
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -25,11 +19,11 @@ export class ReviewDesktopPage implements OnInit {
   assessment: Assessment;
   submission: Submission;
   review: AssessmentReview;
+
   // the current review in the review list
   currentReview: Review;
   submissionId: number;
   noReview = false;
-
 
   constructor(
     readonly utils: UtilsService,
@@ -39,7 +33,6 @@ export class ReviewDesktopPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.reviewService.reviews$.subscribe(res => this.reviews = res);
     this.assessmentService.assessment$.subscribe(res => this.assessment = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
@@ -49,7 +42,8 @@ export class ReviewDesktopPage implements OnInit {
     this.route.params.subscribe(params => {
       this.submissionId = +params?.submissionId;
     });
-    this.reviews$.subscribe(reviews => {
+    this.reviewService.reviews$.subscribe(reviews => {
+      this.reviews = reviews;
       if (this.utils.isEmpty(this.submissionId) || this.submissionId == 0) {
         this.gotoFirstReview(reviews);
       } else if (reviews.length > 0) { // handle directlink
@@ -61,7 +55,7 @@ export class ReviewDesktopPage implements OnInit {
   /**
    * Go to the first review of the review list for desktop
    */
-   gotoFirstReview(reviews: Review[]) {
+  gotoFirstReview(reviews: Review[]) {
     if (!reviews) {
       return ;
     }
@@ -87,27 +81,30 @@ export class ReviewDesktopPage implements OnInit {
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 
-  async saveAssessment(event) {
-    if (event.assessment.inProgress && this.loading) {
+  async saveReview(event) {
+    if (event.saveInProgress && this.loading) {
       return;
     }
+
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      const submission = await this.assessmentService.saveAnswers(
-        event.assessment,
-        event.answers,
-        event.action,
-        this.assessment.pulseCheck
+      const res = await this.assessmentService.submitReview(
+        this.assessment.id,
+        this.review.id,
+        this.submission.id,
       ).toPromise();
 
-      // AV2-1371: added to reduce API call & waiting time for API to response.
-      if (!event.assessment.inProgress
-        && submission?.data?.submitReview?.success === true) {
-        this.submission.status = 'feedback available';
-        this.review.status = 'done';
-        this.reviewService.getReviews();
+      this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
+      this.reviewService.getReviews();
+
+      // fail gracefully: Review submission API may sometimes fail silently
+      if (res?.data?.submitReview === false) {
+        this.savingText$.next($localize`Save failed.`);
+        this.btnDisabled$.next(false);
+        this.loading = false;
+        return;
       }
 
       this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
