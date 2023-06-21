@@ -54,11 +54,12 @@ resources:
               const lastPartUrl = uriParts[uriParts.length - 1];
 
               // whitelisted version.json request
-              console.log('trailingURL::', lastPartUrl);
               if (lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/) !== null) {
                 return cb(null, request);
               }
 
+              console.log('parts', uriParts);
+              console.log('locale', locale);
               if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
                 request.uri = "/en-US/index.html";
                 console.log('Go to default page and locale.');
