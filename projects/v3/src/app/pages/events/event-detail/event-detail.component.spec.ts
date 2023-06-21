@@ -147,7 +147,7 @@ describe('EventDetailComponent', () => {
     expect(component).toBeDefined();
   });
 
-  describe('when testing buttonText() and confirmed()', () => {
+  describe('when testing buttonText and confirmed()', () => {
     let tmpEvent;
     let expected;
     const confirmedExpectedArray = [];

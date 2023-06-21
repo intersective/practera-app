@@ -34,13 +34,13 @@ export class TodoCardComponent {
   get todoTitle(): string {
     switch (this.todoItem.type) {
       case 'review_submission':
-        return 'Review submission';
+        return $localize`:call to action btn:Review submission`;
       case 'feedback_available':
-        return 'Check feedback';
+        return $localize`:call to action btn:Check feedback`;
       case 'assessment_submission_reminder':
-        return 'Check task';
+        return $localize`:call to action btn:Check task`;
       case 'chat':
-        return 'Check the message';
+        return $localize`:call to action btn:Check the message`;
     }
     return this.todoItem.type;
   }

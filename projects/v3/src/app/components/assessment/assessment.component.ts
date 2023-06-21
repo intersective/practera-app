@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, debounceTime, delay, tap } from 'rxjs/operators';
+import { concatMap, delay, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -52,7 +52,14 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       submissionId: number;
       questionId: number;
       answer: string;
-    }
+    };
+    reviewSave?: {
+      reviewId: number;
+      submissionId: number;
+      questionId: number;
+      answer: string;
+      comment: string;
+    };
   }>();
   subscriptions: Subscription[] = [];
 
@@ -84,6 +91,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   ) {
     this.subscriptions.push(this.submitActions.pipe(
       concatMap(request => {
+        if (request?.reviewSave) {
+          return this.saveReviewAnswer(request.reviewSave);
+        }
         console.log('questionSave', request?.questionSave);
         if (request?.questionSave) {
           return this.saveQuestionAnswer(request.questionSave);
@@ -97,7 +107,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         submissionId: number;
         questionId: number;
         answer: string;
-      }
+      };
     }): Promise<void> => {
       console.log('data', data);
       if (data.saveInProgress === false) {
@@ -121,10 +131,31 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     questionId: number;
     answer: string;
   }): Observable<any> {
+    const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
-      JSON.stringify(questionInput.answer)
+      answer,
+    ).pipe(
+      delay(1000)
+    );
+  }
+
+  saveReviewAnswer(questionInput: {
+    reviewId: number;
+    submissionId: number;
+    questionId: number;
+    answer: string;
+    comment: string;
+  }): Observable<any> {
+    const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+    const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
+    return this.assessmentService.saveReviewAnswer(
+      questionInput.reviewId,
+      questionInput.submissionId,
+      questionInput.questionId,
+      answer,
+      comment,
     ).pipe(
       delay(1000),
       tap((res) => { console.log(res) })
@@ -307,7 +338,94 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
+  checkCompulsory() {
+    const answers = [];
+    let questionId = 0;
+    let assessment: AssessmentSubmitParams;
+
+    assessment = {
+      id: this.assessment.id
+    };
+
+    if (this.submission && this.submission.id) {
+      assessment.submissionId = this.submission.id;
+    }
+
+    // form submission answers (submission API doesn't accept zero length array)
+    if (this.doAssessment) {
+      assessment.contextId = this.contextId;
+
+      if (this.assessment.isForTeam) {
+        assessment.unlock = true;
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        questionId = +key.replace('q-', '');
+        let answer;
+        if (value) {
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = null;
+            }
+          });
+        }
+        answers.push({
+          questionId: questionId,
+          answer: answer
+        });
+      });
+    }
+
+    // In review we also have comments for a question. and questionsForm value have both
+    // answer and comment. need to add them as separately
+    if (this.isPendingReview) {
+      assessment = Object.assign(assessment, {
+        reviewId: this.review.id
+      });
+
+      // post answers API doesn't accept empty array
+      // compulsory format: (even when no answers provided)
+      // [
+      //   { questionId: 1, answer: null, comment: null },
+      //   { questionId: 2, answer: null, comment: null },
+      //   { questionId: 3, answer: null, comment: null },
+      // ]
+      this.utils.each(this.questionsForm.value, (answer, key) => {
+        questionId = +key.replace('q-', '');
+        answers.push({
+          questionId,
+          answer: answer?.answer,
+          comment: answer?.comment,
+        });
+      });
+    }
+
+    return this._compulsoryQuestionsAnswered(answers);
+  }
+
   async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+    // check if all required questions have answer when assessment done
+    const requiredQuestions = this.checkCompulsory();
+    if (!saveInProgress && requiredQuestions.length > 0) {
+      this.btnDisabled$.next(false);
+      // display a pop up if required question not answered
+      return this.notifications.alert({
+        message: $localize`Required question answer missing!`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel',
+          }
+        ],
+      });
+    }
+
     if (this.doAssessment && this.assessment.isForTeam) {
       await this.sharedService.getTeamInfo().toPromise();
       const teamId = this.storage.getUser().teamId;

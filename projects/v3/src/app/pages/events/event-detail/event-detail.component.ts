@@ -36,8 +36,7 @@ export class EventDetailComponent implements OnInit {
     }
 
     this.ctaIsActing = true;
-    const code = this.buttonText ? this.buttonText.code : false;
-    switch (code) {
+    switch (this.buttonText?.code) {
       case 'book':
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {

@@ -104,7 +104,8 @@ export class SharedService {
           });
         }
         return this.storage.setUser({
-          teamId: thisUser.teams[0].id
+          teamId: thisUser.teams[0].id,
+          teamName: thisUser.teams[0].name
         });
       }
       return response;
@@ -126,9 +127,9 @@ export class SharedService {
     }
     const difference = this.utils.timeComparer(dueDate);
     if (difference < 0) {
-      return 'Overdue ' + this.utils.utcToLocal(dueDate);
+      return $localize`Overdue ${this.utils.utcToLocal(dueDate)}`;
     }
-    return 'Due ' + this.utils.utcToLocal(dueDate);
+    return $localize`Due ${this.utils.utcToLocal(dueDate)}`;
   }
 
   /**
@@ -186,6 +187,7 @@ export class SharedService {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
     this.apolloService.initiateChatClient();
+    this.utils.checkIsPracteraSupportEmail();
   }
 
 }

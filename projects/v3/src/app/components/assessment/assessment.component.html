@@ -7,10 +7,6 @@
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
-  <ion-button fill="clear" slot="end" i18n="save assessment progress button"
-    [disabled]="!assessment || (btnDisabled$ | async)" (click)="btnSaveClicked()">
-    Save
-  </ion-button>
 </div>
 
 <ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
@@ -160,6 +156,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
@@ -173,6 +170,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
@@ -186,6 +184,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
@@ -199,6 +198,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
@@ -213,6 +213,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
@@ -226,6 +227,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
@@ -239,6 +241,7 @@
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
                 [submissionId]="submission.id"
+                [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"

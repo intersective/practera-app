@@ -1,0 +1,89 @@
+<ion-content class="ion-padding" [scrollY]="isShowForm" text-center role="dialog" aria-modal="true"
+  aria-hidden="false">
+  <ng-container>
+    <ng-container *ngIf="!isShowForm; else formTpl">
+      <div class="header-container">
+        <p class="headline-3 black ion-no-margin">How we can help?</p>
+        <ion-button (click)="showSupportForm()">
+          Contact support
+        </ion-button>
+      </div>
+      <p class="subtitle-1 black support-description">Need help with a problem? Check out our list of common solutions
+        first. If you're still stuck, don't worry! Our <a (click)="showSupportForm()">support team is here</a> to assist
+        you.</p>
+
+      <ion-accordion-group class="question-list">
+        <ng-container *ngFor="let question of questionList">
+          <ion-accordion value="{{ question.questionId}}" class="question-item">
+            <ion-item slot="header">
+              <ion-label class="subtitle-1 black">{{ question.question }}</ion-label>
+            </ion-item>
+            <div class="ion-padding body-2" slot="content">
+              <ng-container *ngFor="let answer of question.answer">
+                <p class="body-2 black">{{ answer }}</p>
+              </ng-container>
+            </div>
+          </ion-accordion>
+        </ng-container>
+      </ion-accordion-group>
+    </ng-container>
+    <ion-button class="close-button" [ngClass]="{'qna': !isShowForm}" (click)="closePopup()" fill="outline" color="medium">
+      Close
+    </ion-button>
+  </ng-container>
+</ion-content>
+
+<ng-template #formTpl>
+  <ng-container *ngIf="!isShowSuccess; else successTpl">
+    <ion-button class="back-button" (click)="showSupportForm()" fill="outline" color="medium" *ngIf="!(isShowFormOnly === true)">
+      Back
+    </ion-button>
+    <p class="headline-3 black form-title">Contact our support team</p>
+    <p class="error-message" *ngIf="isShowError">Support question submit failed. Please try again</p>
+    <p class="error-message" *ngIf="isShowRequiredError">Please fill in all the required fields before submitting</p>
+    <p class="form-field-label subtitle-1 black">What problem are you having? <span title="required" class="required">*</span></p>
+    <ion-item lines="none" class="form-field">
+      <ion-input [(ngModel)]="problemSubject"></ion-input>
+    </ion-item>
+    <p class="form-field-label subtitle-1 black">Please describe your problem <span title="required" class="required">*</span></p>
+    <ion-item lines="none" class="form-field">
+      <ion-textarea rows="4" spellcheck="true" [(ngModel)]="problemContent"></ion-textarea>
+    </ion-item>
+    <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
+    <div class="file-container">
+      <ion-button mode="ios" size="small"
+        class="back-button"
+        shape="round"
+        fill="outline"
+        color="medium"
+        (click)="uploadFile()"
+      >Choose file</ion-button>
+
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.filename : 'No file chosen' }}</p>
+      <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon>
+      </p>
+    </div>
+
+    <ion-item class="list-terms no-ripple">
+      <ion-label class="body-2">
+        I agree to the collection and storage of my data from this form. I understand that this information will be used to process my request and I agree to be contacted for this purpose.
+      </ion-label>
+      <ion-checkbox color="medium" slot="start" [(ngModel)]="hasConsent"
+        [ngModelOptions]="{standalone: true}" name="hasConsent"
+        [attr.aria-label]="hasConsent ? 'I agree to allow Practera to store and process my personal data.' : 'I disagree to allow Practera to store and process my personal data.'"
+      ></ion-checkbox>
+    </ion-item>
+
+    <ion-button [disabled]="!hasConsent" (click)="submitForm()">
+      Submit message
+    </ion-button>
+  </ng-container>
+</ng-template>
+
+<ng-template #successTpl>
+  <div class="success-container">
+    <ion-icon name="mail-outline"></ion-icon>
+    <p class="headline-3 black">Thank you for reaching out to us!</p>
+    <p class="subtitle-1 black">Your message has been received and our team will review it as soon as possible. We appreciate your patience and look forward to assisting you.</p>
+  </div>
+</ng-template>

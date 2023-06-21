@@ -40,4 +40,17 @@ ion-avatar {
   ion-icon {
     font-size: 32px;
   }
+  .support-btn {
+    height: 26px;
+    margin: 0px 12px 0px 0px;
+    --color: var(--practera-dark-blue-100);
+    --background: var(--practera-orange-50);
+    font-size: 12px !important;
+    --border-radius: 22px;
+    &.mobile {
+      --background: transparent;
+      --padding-start: 0 !important;
+      --padding-end: 0 !important;
+    }
+  }
 }

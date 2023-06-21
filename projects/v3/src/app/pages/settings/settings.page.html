@@ -78,13 +78,13 @@
       <ion-note class="ion-padding body-3" i18n>If you need to update your name or email please contact the experience administrator.</ion-note>
     </ion-item-divider>
 
-    <app-contact-number-form [page]="'settings'"></app-contact-number-form>
+    <!-- <app-contact-number-form [page]="'settings'"></app-contact-number-form> -->
 
     <ion-item-divider class="divider-title">
       <ion-label color="primary" class="headline-4" i18n>Support</ion-label>
     </ion-item-divider>
 
-    <ion-item detail="true" button (click)="mailTo($event)" class="body-2 black" (keydown)="mailTo($event)" i18n>Contact support</ion-item>
+    <ion-item detail="true" button (click)="openSupportPopup($event)" class="body-2 black" (keydown)="openSupportPopup($event)" i18n>Contact support</ion-item>
 
     <ion-item detail="true" button (click)="openLink($event)" class="body-2 black" (keydown)="openLink($event)" i18n>Terms and Conditions</ion-item>
 

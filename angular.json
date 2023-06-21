@@ -365,13 +365,11 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "5.5mb",
-                  "maximumError": "6mb"
+                  "maximumWarning": "6mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "15kb",
-                  "maximumError": "20kb"
+                  "maximumWarning": "20kb"
                 }
               ],
               "fileReplacements": [
@@ -409,7 +407,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "localize": ["ja"],
+              "localize": ["en-US"],
               "budgets": [
                 {
                   "type": "initial",

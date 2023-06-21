@@ -22,6 +22,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @Input() submission;
   @Input() submissionId: number;
   @Input() review;
+  @Input() reviewId: number;
   // this is for review status
   @Input() reviewStatus;
   // this is for assessment status
@@ -96,15 +97,36 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
         this.errors.push(this.control.errors[key]);
       }
     }
-    this.submitActions$.next({
+
+    const action: {
+      saveInProgress?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
       saveInProgress: true,
       goBack: false,
-      questionSave: {
-        questionId: this.question.id,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
         submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
         answer: this.innerValue,
-      }
-    });
+      };
+    }
+
+    this.submitActions$.next(action);
   }
 
   // From ControlValueAccessor interface

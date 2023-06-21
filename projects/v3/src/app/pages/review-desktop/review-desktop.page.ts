@@ -25,7 +25,6 @@ export class ReviewDesktopPage implements OnInit {
   submissionId: number;
   noReview = false;
 
-
   constructor(
     readonly utils: UtilsService,
     private route: ActivatedRoute,
@@ -82,28 +81,23 @@ export class ReviewDesktopPage implements OnInit {
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 
-  async saveAssessment(event) {
-    if (event.assessment.inProgress && this.loading) {
+  async saveReview(event) {
+    if (event.saveInProgress && this.loading) {
       return;
     }
+
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      const res = await this.assessmentService.saveAnswers(
-        event.assessment,
-        event.answers,
-        event.action,
-        this.assessment.pulseCheck
+      const res = await this.assessmentService.submitReview(
+        this.assessment.id,
+        this.review.id,
+        this.submission.id,
       ).toPromise();
 
-      // AV2-1371: added to reduce API call & waiting time for API to response.
-      if (!event.assessment.inProgress
-        && res?.data?.submitReview?.success === true) {
-        this.submission.status = 'feedback available';
-        this.review.status = 'done';
-        this.reviewService.getReviews();
-      }
+      this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
+      this.reviewService.getReviews();
 
       // fail gracefully: Review submission API may sometimes fail silently
       if (res?.data?.submitReview === false) {
