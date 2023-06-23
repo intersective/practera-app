@@ -6,6 +6,7 @@ import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
+import { ReviewService } from '@v3/app/services/review.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -39,6 +40,7 @@ export class AssessmentMobilePage implements OnInit {
     private readonly storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private readonly utils: UtilsService,
+    private reviewService: ReviewService,
   ) { }
 
   ngOnInit() {
@@ -95,15 +97,36 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async saveAssessment(event) {
-    if (event.assessment.inProgress && this.saving) {
+    if (event.saveInProgress && this.saving) {
       return;
     }
+
     this.saving = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+
+    if (this.action === 'assessment') {
+      await this.assessmentService.submitAssessment(
+        event.submissionId,
+        event.assessmentId,
+        event.contextId
+      ).toPromise();
+
+      if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
+    } else if (this.action === 'review') {
+      await this.assessmentService.submitReview(
+        event.assessmentId,
+        this.review.id,
+        event.submissionId
+      ).toPromise();
+
+      this.reviewService.getReviews();
+    }
+
     this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-    if (!event.assessment.inProgress) {
+    if (!event.saveInProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and refresh the assessment submission data
       this.activityService.getActivity(this.activityId);
