@@ -446,6 +446,88 @@ export class AssessmentService {
     return answer;
   }
 
+  // store the answer to the question
+  saveQuestionAnswer(submissionId: number, questionId: number, answer: string) {
+    const paramsFormat = '$submissionId: Int!, $questionId: Int!, $answer: Any!';
+    const params = 'submissionId:$submissionId, questionId:$questionId, answer:$answer';
+    const variables = {
+      submissionId,
+      questionId,
+      answer,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation saveSubmissionAnswer(${paramsFormat}) {
+        saveSubmissionAnswer(${params}) {
+          success
+          message
+        }
+      }`,
+      variables
+    );
+  }
+
+  // store the answer to the question
+  saveReviewAnswer(reviewId: number, submissionId: number, questionId: number, answer: string, comment: string) {
+    const paramsFormat = '$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $comment: String!';
+    const params = 'reviewId:$reviewId, submissionId:$submissionId, questionId:$questionId, answer:$answer, comment:$comment';
+    const variables = {
+      reviewId,
+      submissionId,
+      questionId,
+      answer,
+      comment,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation saveReviewAnswer(${paramsFormat}) {
+        saveReviewAnswer(${params}) {
+          success
+          message
+        }
+      }`,
+      variables
+    );
+  }
+
+  // set the status of the submission to 'done' or 'pending approval'
+  submitAssessment(submissionId: number, assessmentId: number, contextId: number) {
+    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!';
+    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId';
+    const variables = {
+      submissionId,
+      assessmentId,
+      contextId,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation submitAssessment(${paramsFormat}) {
+        submitAssessment(${params})
+      }`,
+      variables
+    );
+  }
+
+  /**
+   * Submit the review - set the status of the review to 'done'
+   * @param assessmentId - assessment id
+   * @param reviewId - review id
+   * @param submissionId - submission id
+   * @returns
+    */
+  submitReview(assessmentId: number, reviewId: number, submissionId: number) {
+    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!';
+    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId';
+    const variables = {
+      assessmentId,
+      reviewId,
+      submissionId,
+    };
+    return this.apolloService.graphQLMutate(
+      `mutation submitReview(${paramsFormat}) {
+        submitReview(${params})
+      }`,
+      variables
+    );
+  }
+
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
@@ -487,7 +569,7 @@ export class AssessmentService {
 
   private _afterSubmit(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
     if (hasPulseCheck && !assessment.inProgress) {
-      this._pullFastFeedback();
+      this.pullFastFeedback();
     }
   }
 
@@ -495,7 +577,7 @@ export class AssessmentService {
    * - check if fastfeedback is available
    * - show next sequence if submission successful
    */
-   private async _pullFastFeedback() {
+  async pullFastFeedback() {
     try {
       const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
       if (modal && modal.present) {
