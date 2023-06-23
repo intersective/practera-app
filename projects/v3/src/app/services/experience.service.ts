@@ -95,11 +95,13 @@ export interface ProjectProgress {
   providedIn: 'root'
 })
 export class ExperienceService {
-
   review$ = this.reviewService.reviews$;
 
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
+
+  private _allProjectsNotifications$ = new BehaviorSubject<any>(null);
+  allProjectsNotifications$ = this._allProjectsNotifications$.asObservable();
 
   programsWithProgress$ = this._programs$.asObservable().pipe(
     mergeMap(
@@ -262,7 +264,23 @@ export class ExperienceService {
     }
   }
 
-  getProjectsMsgCount(projectIds: number[]) {
+  extractProjects() {
+    let result = {};
+    const programs = this.storage.get('programs');
+    if (programs.length > 0) {
+      programs.forEach(program => {
+        result[programs.project.id] = program.project;
+      });
+    }
+    return result;
+  }
+
+  // chat notification count for each project
+  getProjectsMsgCount(projectIds: number[]): Observable<any> {
+    if (environment.demo) {
+      return of(this.demo.projectsMsgCount);
+    }
+
     return this.apolloService.graphQLFetch(`
       query getProjectsMsgCount($ids: [Int]!) {
         projects(ids: $ids) {
@@ -275,6 +293,7 @@ export class ExperienceService {
       ids: projectIds
     }).pipe(map(res => {
       console.log(res);
+      this._allProjectsNotifications$.next(res);
     }));
   }
 

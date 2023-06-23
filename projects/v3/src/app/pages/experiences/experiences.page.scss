@@ -94,12 +94,9 @@
             flex-direction: row;
 
             p {
-              &:nth-child(1) {
-                margin-right: 10px !important;
+              &:nth-child(n) {
+                margin-right: 5px !important;
                 margin-bottom: 20px !important;
-              }
-              &:nth-child(2) {
-                margin-left: 10px !important;
               }
             }
           }

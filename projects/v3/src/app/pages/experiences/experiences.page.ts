@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   programs$ = this.experienceService.programsWithProgress$;
+  notifications$ = this.experienceService.allProjectsNotifications$;
 
   constructor(
     private router: Router,
@@ -30,6 +31,9 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
       this.experienceService.getPrograms();
+    });
+    this.notifications$.subscribe(res => {
+      console.log('notifications', res);
     });
   }
 

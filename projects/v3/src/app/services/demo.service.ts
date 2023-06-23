@@ -1617,4 +1617,59 @@ export class DemoService {
     ]
   }
 
+  get projectsMsgCount() {
+    return {
+      "data": {
+        "projects": [
+          {
+            "id": 2230,
+            "unreadChatMessageCount": 0,
+            "__typename": "Project"
+          },
+          {
+            "id": 1890,
+            "unreadChatMessageCount": 33,
+            "__typename": "Project"
+          },
+          {
+            "id": 994,
+            "unreadChatMessageCount": 0,
+            "__typename": "Project"
+          },
+          {
+            "id": 1701,
+            "unreadChatMessageCount": 2,
+            "__typename": "Project"
+          },
+          {
+            "id": 1886,
+            "unreadChatMessageCount": 9,
+            "__typename": "Project"
+          },
+          {
+            "id": 1851,
+            "unreadChatMessageCount": 0,
+            "__typename": "Project"
+          },
+          {
+            "id": 1459,
+            "unreadChatMessageCount": 12,
+            "__typename": "Project"
+          },
+          {
+            "id": 1360,
+            "unreadChatMessageCount": 7,
+            "__typename": "Project"
+          },
+          {
+            "id": 1654,
+            "unreadChatMessageCount": 7,
+            "__typename": "Project"
+          }
+        ]
+      }
+    };
+  }
+
+
 }
