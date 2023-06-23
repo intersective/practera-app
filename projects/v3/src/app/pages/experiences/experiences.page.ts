@@ -17,6 +17,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   programs$ = this.experienceService.programsWithProgress$;
   notifications$ = this.experienceService.allProjectsNotifications$;
+  notifications = {};
 
   constructor(
     private router: Router,
@@ -33,6 +34,10 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       this.experienceService.getPrograms();
     });
     this.notifications$.subscribe(res => {
+      this.notifications = {};
+      res?.data?.projects?.forEach((project) => {
+        this.notifications[project.id] = project.unreadChatMessageCount;
+      });
       console.log('notifications', res);
     });
   }

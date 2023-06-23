@@ -48,7 +48,9 @@
                             <p class="m-0 subtitle-3 grey-50">&nbsp;|&nbsp;</p>
                             <p class="m-0 subtitle-3 grey-50 notification">
                               <ion-icon name="notifications" alt="notification" color="primary"></ion-icon>
-                              <ion-badge class="hint" color="danger">99</ion-badge>
+                              <ion-badge class="hint" color="danger">
+                                {{ notifications[program.project.id] }}
+                              </ion-badge>
                             </p>
                           </div>
                         </ion-card-content>
