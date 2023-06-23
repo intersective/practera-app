@@ -97,6 +97,18 @@
               &:nth-child(n) {
                 margin-right: 5px !important;
                 margin-bottom: 20px !important;
+                align-self: stretch;
+              }
+              .hint {
+                background-color: red;
+                font-size: 0.7em;
+                border-radius: 1em;
+              }
+              &.notification {
+                display: flex;
+                > * {
+                  align-self: center;
+                }
               }
             }
           }
