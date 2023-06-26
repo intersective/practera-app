@@ -126,22 +126,31 @@ export class ActivityDesktopPage {
   }
 
   async saveAssessment(event, task: Task) {
-    if (event.assessment.inProgress && this.loading) {
+    if (event.saveInProgress && this.loading) {
       return;
     }
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    await this.assessmentService.saveAnswers(event.assessment, event.answers, event.action, this.assessment.pulseCheck).toPromise();
+    await this.assessmentService.submitAssessment(
+      event.submissionId,
+      event.assessmentId,
+      event.contextId,
+    ).toPromise();
+
+    if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+      await this.assessmentService.pullFastFeedback();
+    }
+
     this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-    if (!event.assessment.inProgress) {
+    if (!event.saveInProgress) {
       this.notificationsService.assessmentSubmittedToast();
       // get the latest activity tasks and navigate to the next task
       this.activityService.getActivity(this.activity.id, false, task, () => {
         this.loading = false;
         this.btnDisabled$.next(false);
       });
-      return this.assessmentService.getAssessment(event.assessment.id, 'assessment', this.activity.id, event.assessment.contextId, event.assessment.submissionId);
+      return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
     } else {
       setTimeout(() => {
         this.btnDisabled$.next(false);
