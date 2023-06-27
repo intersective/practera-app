@@ -285,6 +285,12 @@ export class ExperienceService {
       query getProjectsMsgCount($ids: [Int]!) {
         projects(ids: $ids) {
           id
+          todoItems{
+            name
+            identifier
+            meta
+            isDone
+          }
           unreadChatMessageCount
         }
       }

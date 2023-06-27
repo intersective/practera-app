@@ -38,7 +38,11 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       res?.data?.projects?.forEach((project) => {
         this.notifications[project.id] = project.unreadChatMessageCount;
       });
-      console.log('notifications', res);
+      console.log('chat-notifications', res);
+
+      this.notificationsService.getNotificationsOfAllProjects().subscribe(res => {
+        console.log('todoItem', res);
+      })
     });
   }
 

@@ -9,10 +9,10 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { Observable, of, Subject } from 'rxjs';
+import { from, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, mergeMap, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 
@@ -325,10 +325,30 @@ export class NotificationsService {
     });
   }
 
-  getTodoItems(): Observable<any> {
+  /**
+   * Get all the notifications of all projects
+   * data is required by notification counter on experience page
+   *
+   * @return  {Observable<any>}
+   */
+  getNotificationsOfAllProjects(): Observable<any> {
+    const programs = this.storage.get('programs');
+    const projects: number[] = programs.map(program => program.project.id);
+    return from(projects).pipe(
+      mergeMap(projectId => {
+        return this.request.get(api.get.todoItem, {
+          params: {
+            project_id: projectId
+          }
+        })
+      })
+    );
+  }
+
+  getTodoItems(projectId?: number): Observable<any> {
     return this.request.get(api.get.todoItem, {
       params: {
-        project_id: this.storage.getUser().projectId
+        project_id: projectId || this.storage.getUser().projectId
       }
     }).pipe(map(response => {
       if (response.success && response.data) {
