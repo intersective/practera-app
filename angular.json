@@ -383,7 +383,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "localize": ["ja"],
+              "localize": ["en-US"],
               "budgets": [
                 {
                   "type": "initial",
