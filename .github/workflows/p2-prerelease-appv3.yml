@@ -9,9 +9,15 @@ name: Deploy to p2-prerelease-appv3 environment
 ################################################
 on:
   workflow_dispatch:
+    inputs:
+      INPUT_BRANCH:
+        description: 'Branch or tag to deploy'     
+        required: true
+        default: ''
   push:
     branches:
-     - 'golive/3*'
+      - 'golive/3*'
+      - 'release/live-v3'
 
 
 
@@ -22,6 +28,7 @@ jobs:
   deploy-p2-prerelease-appv3:
     name: deploy-p2-prerelease-appv3
     runs-on: ubuntu-latest
+    environment: p2-prerelease
     permissions: write-all
     timeout-minutes: 15
 
@@ -52,7 +59,13 @@ jobs:
 ################################################
       - name: Get branch for env BRANCH_TAG_NAME
         run: |
-          echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          if [ -z "$INPUT_BRANCH" ]; then
+            echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          else
+            echo "BRANCH_TAG_NAME="$(echo "$INPUT_BRANCH") >> $GITHUB_ENV
+          fi
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.INPUT_BRANCH }}
 
 ################################################
 #  GITHUB REPO CHECKOUT
