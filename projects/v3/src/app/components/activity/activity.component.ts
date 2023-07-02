@@ -159,9 +159,8 @@ export class ActivityComponent {
   }
 
   private async _validateTeamAssessment(task: Task, proceedCB) {
-    if (task.isForTeam) {
-      await this.sharedService.getTeamInfo().toPromise();
-    }
+    // update teamId
+    await this.sharedService.refreshTeamInfo().toPromise();
 
     const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
     const teamId = this.storageService.getUser().teamId;
