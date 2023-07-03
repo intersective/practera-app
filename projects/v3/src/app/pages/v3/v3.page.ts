@@ -5,7 +5,7 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
