@@ -430,7 +430,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
     if (this.doAssessment === true) {
       // make sure teamId is up to date
-      await this.sharedService.refreshTeamInfo().toPromise();
+      await this.sharedService.getTeamInfo().toPromise();
 
       if (this.assessment.isForTeam) {
         const teamId = this.storage.getUser().teamId;
