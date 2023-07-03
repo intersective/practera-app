@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, delay, tap } from 'rxjs/operators';
+import { concatMap, delay, takeWhile, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -90,16 +90,22 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private assessmentService: AssessmentService
   ) {
     this.subscriptions.push(this.submitActions.pipe(
+      takeWhile(() => {
+        return (this.action === 'assessment' && !this._preventSubmission());
+      }),
       concatMap(request => {
+        if (this._preventSubmission() === true) {
+          return of(request);
+        }
+
         if (request?.reviewSave) {
           return this.saveReviewAnswer(request.reviewSave);
         }
-        console.log('questionSave', request?.questionSave);
         if (request?.questionSave) {
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);
-      })
+      }),
     ).subscribe((data: {
       saveInProgress: boolean;
       goBack: boolean;
@@ -109,18 +115,20 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         answer: string;
       };
     }): Promise<void> => {
-      console.log('data', data);
       if (data.saveInProgress === false) {
         return this._submitWithoutAnswer(data);
       }
     }));
   }
 
-  private _limitRoleAccess() {
+  private _preventSubmission(): boolean {
+    let result = false;
     // prevent non participants from submitting assessment
     if (this.assessment.isForTeam === true && this.storage.getUser().role !== 'participant') {
-      this.btnDisabled$.next(true);
+      result = true;
     }
+    this.btnDisabled$.next(result);
+    return result;
   }
 
   /**
@@ -177,7 +185,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
-    this._limitRoleAccess();
+    this._preventSubmission();
   }
 
   ngOnDestroy() {
