@@ -54,12 +54,7 @@ export class ActivityDesktopPage {
       this.activityService.currentTask$.subscribe(res => this.currentTask = res)
     );
     this.subscriptions.push(
-      this.assessmentService.assessment$.subscribe(res => {
-        this.assessment = res;
-        if (this.assessment) {
-          this._roleCheck(res);
-        }
-      })
+      this.assessmentService.assessment$.subscribe(res => this.assessment = res)
     );
     this.subscriptions.push(
       this.assessmentService.submission$.subscribe(res => this.submission = res)
@@ -99,10 +94,10 @@ export class ActivityDesktopPage {
     }));
   }
 
-  _roleCheck(assessment: Assessment) {
+  ionViewDidEnter() {
     // prevent non participants from submitting assessment
-    if (assessment.isForTeam === true && this.storageService.getUser().role !== 'participant') {
-      this.btnDisabled$.next(true);
+    if (this.assessment.isForTeam === true && this.storageService.getUser().role !== 'participant') {
+      this.btnDisabled$.next(false);
     }
   }
 
