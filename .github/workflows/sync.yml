@@ -51,7 +51,7 @@ jobs:
       STAGE: ${{ steps.BRANCHES.outputs.STAGE  }}
       LIVE: ${{ steps.BRANCHES.outputs.LIVE  }}
       GOLIVE: ${{ steps.BRANCHES.outputs.GOLIVE  }}
-
+  
 ################################################
 #  RELEASE/LIVE TO GOLIVE BRANCH
 ################################################
@@ -83,6 +83,8 @@ jobs:
         env:
           LIVE: ${{ needs.target.outputs.LIVE }}
           GOLIVE: ${{ needs.target.outputs.GOLIVE }}
+    outputs:
+      JOB_STATUS: ${{ job.status }}
 
 ################################################
 #  GOLIVE TO TRUNK
@@ -117,7 +119,8 @@ jobs:
         env:
           GOLIVE: ${{ needs.target.outputs.GOLIVE }}
           STAGE: ${{ needs.target.outputs.STAGE }}
-
+    outputs:
+      JOB_STATUS: ${{ job.status }}
 
 ################################################
 #  TRUNK TO DEV
@@ -153,3 +156,87 @@ jobs:
         env:
           DEV: ${{ needs.target.outputs.DEV }}
           STAGE: ${{ needs.target.outputs.STAGE }}
+    outputs:
+      JOB_STATUS: ${{ job.status }}
+      
+
+################################################
+#  SLACK NOTIFICATION
+################################################
+  slack-notif-sync-branches:
+      name: slack-notif-sync-branches
+      runs-on: ubuntu-latest
+      if: always()
+      permissions: write-all
+      timeout-minutes: 15
+      needs:
+        - target
+        - live-to-golive
+        - golive-to-trunk
+        - trunk-to-dev
+
+      steps:
+        - name: Slack Notification
+          uses: 8398a7/action-slack@v3
+          env:
+            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+            LIVE_GOLIVE_JOB_STATUS: ${{ needs.live-to-golive.outputs.JOB_STATUS }}
+            GOLIVE_TRUNK_JOB_STATUS: ${{ needs.golive-to-trunk.outputs.JOB_STATUS }}
+            TRUNK_DEV_JOB_STATUS: ${{ needs.trunk-to-dev.outputs.JOB_STATUS }}
+          with:
+            status: custom
+            author_name: test auth name
+            mention: 'here'
+            if_mention: failure,cancelled
+            job_name: slack-notif-sync-branches
+            fields: repo,commit,eventName,ref,workflow,message,author,job,took
+            custom_payload: |
+              {
+                username: 'GitHub Action CI WorkFlow',
+                icon_emoji: ':github:',
+                attachments: [{
+                  title: ':party_mim_cat: CI Result',
+                  text: `${{ job.status }}`.toUpperCase(),
+                  actions: [{
+                  }],
+                  color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                  fields: [
+                    {
+                      title: 'Workflow',
+                      value: process.env.AS_WORKFLOW,
+                      short: true
+                    },
+                    {
+                      title: 'Job',
+                      value: process.env.AS_JOB,
+                      short: true
+                    },
+                    {
+                      title: 'Author',
+                      value: process.env.AS_AUTHOR,
+                      short: true
+                    },
+                    {
+                      title: 'Repo',
+                      value: process.env.AS_REPO,
+                      short: true
+                    },
+                    {
+                      title: 'release/live to golive Status',
+                      value: process.env.LIVE_GOLIVE_JOB_STATUS,
+                      short: true
+                    },
+                    {
+                      title: 'golive to trunk Status',
+                      value: process.env.GOLIVE_TRUNK_JOB_STATUS,
+                      short: true
+                    },
+                    {
+                      title: 'trunk to develop Status',
+                      value: process.env.TRUNK_DEV_JOB_STATUS,
+                      short: true
+                    },
+                  ],
+                }]
+              }
