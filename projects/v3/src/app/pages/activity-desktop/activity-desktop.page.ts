@@ -94,13 +94,6 @@ export class ActivityDesktopPage {
     }));
   }
 
-  ionViewDidEnter() {
-    // prevent non participants from submitting assessment
-    if (this.assessment.isForTeam === true && this.storageService.getUser().role !== 'participant') {
-      this.btnDisabled$.next(false);
-    }
-  }
-
   ionViewDidLeave() {
     this.subscriptions.forEach(sub => {
       if (sub.closed !== true) {

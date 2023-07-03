@@ -116,6 +116,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }));
   }
 
+  private _limitRoleAccess() {
+    // prevent non participants from submitting assessment
+    if (this.assessment.isForTeam === true && this.storage.getUser().role !== 'participant') {
+      this.btnDisabled$.next(true);
+    }
+  }
+
   /**
    * Saves the answer for a given question within a submission.
    *
@@ -170,6 +177,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
+    this._limitRoleAccess();
   }
 
   ngOnDestroy() {
