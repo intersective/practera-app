@@ -359,7 +359,10 @@ export class UtilsService {
       return $localize`Today`;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -524,6 +527,7 @@ export class UtilsService {
    * - If due date is today this will return 'Due Today'.
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
+   * @param plain - (optional) if true, it will return only formatted date without 'Due' or 'Overdue' prefix.
    */
   dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
@@ -718,5 +722,24 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  getSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program)=> {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      let supportEmail = currentExperience.experience.support_email;
+      if (supportEmail) {
+        return supportEmail;
+      }
+      return null;
+    }
+    return null;
   }
 }
