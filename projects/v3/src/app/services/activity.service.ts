@@ -250,9 +250,8 @@ export class ActivityService {
   }
 
   async goToTask(task: Task, getData = true): Promise<void | Subscription | boolean> {
-    if (task.isForTeam === true) {
-      await this.sharedService.getTeamInfo().toPromise();
-    }
+    // update teamId
+    await this.sharedService.getTeamInfo().toPromise();
 
     this._currentTask$.next(task);
     if (!getData) {
