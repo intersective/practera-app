@@ -204,7 +204,7 @@ jobs:
           CUSTOM_JS_ENVIRONEMENT: live #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://login-api.practera.com
           CUSTOM_NEWRELIC: true
-          CUSTOM_LIVE_SERVER_REGION: UK 
+          CUSTOM_LIVE_SERVER_REGION: UK
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
 
