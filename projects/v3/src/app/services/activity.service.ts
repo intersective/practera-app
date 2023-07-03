@@ -242,7 +242,7 @@ export class ActivityService {
 
   async goToTask(task: Task, getData = true): Promise<void | Subscription | boolean> {
     // update teamId
-    await this.sharedService.refreshTeamInfo().toPromise();
+    await this.sharedService.getTeamInfo().toPromise();
 
     this._currentTask$.next(task);
     if (!getData) {

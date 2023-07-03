@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { filter, map, publishReplay, refCount, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 const api = {
   get: {
@@ -22,22 +22,17 @@ const api = {
 export class SharedService {
   private achievementEvent;
   private memoryCache = {};
-  teamRefresh$: Observable<any>;
 
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationsService,
+    private request: RequestService,
     private http: HttpClient,
     private topicService: TopicService,
     private apolloService: ApolloService,
     private pusherService: PusherService
-  ) {
-    this.teamRefresh$ = this.getTeamInfo().pipe(
-      publishReplay(1),
-      refCount(),
-    );
-  }
+  ) { }
 
   // call this function on every page refresh and after switch program
   onPageLoad(): void {
@@ -78,17 +73,6 @@ export class SharedService {
     }
   }
 
-  refreshTeamInfo(): Observable<any> {
-    const fiveSecondsAgo = Date.now() - 5000;
-
-    return this.teamRefresh$.pipe(
-      filter(response => response.requestTime > fiveSecondsAgo),
-      tap(response => {
-        console.log('team info refreshed', response);
-      }),
-    );
-  }
-
   /**
    * @name getTeamInfo
    * @description pull team information which belongs to current user
@@ -107,29 +91,25 @@ export class SharedService {
           }
         }
       }`
-    ).pipe(
-      map(response => {
-        if (response.data && response.data.user) {
-          const thisUser = response.data.user;
+    ).pipe(map(response => {
+      if (response.data && response.data.user) {
+        const thisUser = response.data.user;
 
-          if (!this.utils.has(thisUser, 'teams') ||
-            !Array.isArray(thisUser.teams) ||
-            !this.utils.has(thisUser.teams[0], 'id')
-          ) {
-            return this.storage.setUser({
-              teamId: null
-            });
-          }
+        if (!this.utils.has(thisUser, 'teams') ||
+          !Array.isArray(thisUser.teams) ||
+          !this.utils.has(thisUser.teams[0], 'id')
+        ) {
           return this.storage.setUser({
-            teamId: thisUser.teams[0].id,
-            teamName: thisUser.teams[0].name
+            teamId: null
           });
         }
-        return response;
-      }),
-      publishReplay(1),
-      refCount(),
-    );
+        return this.storage.setUser({
+          teamId: thisUser.teams[0].id,
+          teamName: thisUser.teams[0].name
+        });
+      }
+      return response;
+    }));
   }
 
   /**
