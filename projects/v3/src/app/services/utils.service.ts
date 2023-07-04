@@ -294,13 +294,13 @@ export class UtilsService {
     let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
 
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat('en-US', {
-        hour12: true,
+      return new Intl.DateTimeFormat(currentLocale, { // support en-US
+        hour12: this.isHour12Format(currentLocale),
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat(defaultLocale, {
+    return new Intl.DateTimeFormat(defaultLocale, { // support en-GB
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -318,10 +318,8 @@ export class UtilsService {
     const date = new Date(this.iso8601Formatter(time));
 
     const currentLocale = this.getCurrentLocale();
-    // when in English, default to format of "en-GB" from previous code
-    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
-    const formattedTime = new Intl.DateTimeFormat(defaultLocale, {
-      hour12: this.isHour12Format(defaultLocale),
+    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
+      hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
     }).format(date);
