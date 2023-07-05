@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, delay, takeWhile, tap } from 'rxjs/operators';
+import { concatMap, delay, filter, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -90,14 +90,14 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private assessmentService: AssessmentService
   ) {
     this.subscriptions.push(this.submitActions.pipe(
-      takeWhile(() => {
-        return (this.action === 'assessment' && !this._preventSubmission());
-      }),
-      concatMap(request => {
-        if (this._preventSubmission() === true) {
-          return of(request);
+      filter(() => {
+        if (this.action === 'assessment' && this.assessment?.isForTeam === true) {
+          return this._preventSubmission() === false;
         }
 
+        return true;
+      }),
+      concatMap(request => {
         if (request?.reviewSave) {
           return this.saveReviewAnswer(request.reviewSave);
         }
