@@ -37,7 +37,6 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private platform: Platform,
     private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
@@ -295,13 +294,13 @@ export class UtilsService {
     let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
 
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat(defaultLocale, {
-        hour12: true,
+      return new Intl.DateTimeFormat(currentLocale, { // support en-US
+        hour12: this.isHour12Format(currentLocale),
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat(defaultLocale, {
+    return new Intl.DateTimeFormat(defaultLocale, { // support en-GB
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -319,10 +318,8 @@ export class UtilsService {
     const date = new Date(this.iso8601Formatter(time));
 
     const currentLocale = this.getCurrentLocale();
-    // when in English, default to format of "en-GB" from previous code
-    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
-    const formattedTime = new Intl.DateTimeFormat(defaultLocale, {
-      hour12: true,
+    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
+      hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
     }).format(date);
@@ -359,7 +356,10 @@ export class UtilsService {
       return $localize`Today`;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -524,6 +524,7 @@ export class UtilsService {
    * - If due date is today this will return 'Due Today'.
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
+   * @param plain - (optional) if true, it will return only formatted date without 'Due' or 'Overdue' prefix.
    */
   dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
@@ -569,12 +570,23 @@ export class UtilsService {
   }
 
   /**
+   * Intl.DateTimeFormat() take in locale but hour12 format is not consistent
+   * @param locale string - locale
+   */
+  isHour12Format(locale: string): boolean {
+    // code not suitable to cover all locales,
+    // but enough for whatever we're supporting now
+    return (locale === 'en-GB') ? false : true;  // 24 hours for en-GB
+  }
+
+  /**
    *
    * @returns time that formated to 12 hours
    */
   getFormatedCurrentTime() {
+    const currentLocale = this.getCurrentLocale();
     return new Intl.DateTimeFormat(this.getCurrentLocale(), {
-      hour12: true,
+      hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
     }).format(new Date());
@@ -718,5 +730,24 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  getSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program)=> {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      let supportEmail = currentExperience.experience.support_email;
+      if (supportEmail) {
+        return supportEmail;
+      }
+      return null;
+    }
+    return null;
   }
 }

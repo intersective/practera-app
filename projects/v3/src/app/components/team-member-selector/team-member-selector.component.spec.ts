@@ -1,16 +1,16 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TeamMemberSelectorComponent } from './team-member-selector.component';
-import { Observable, of, pipe } from 'rxjs';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
+import { Subject } from 'rxjs';
 
 describe('TeamMemberSelectorComponent', () => {
   let component: TeamMemberSelectorComponent;
   let fixture: ComponentFixture<TeamMemberSelectorComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
       declarations: [TeamMemberSelectorComponent],
@@ -84,6 +84,9 @@ describe('TeamMemberSelectorComponent', () => {
     beforeEach(() => {
       component.control = new FormControl('');
       component.control.setErrors({});
+      component.submitActions$ = new Subject();
+      component.propagateChange = jasmine.createSpy('propagateChange');
+      spyOn(component.submitActions$, 'next');
     });
     it('should return error if there are invalidations', () => {
       component.control.setErrors({
@@ -135,5 +138,73 @@ describe('TeamMemberSelectorComponent', () => {
     component.registerOnTouched(() => true);
   });
 
+  describe('_showSavedAnswers()', () => {
+    it('should set innerValue based on review data if reviewStatus is in progress and doReview is true', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = {
+        comment: 'Test comment',
+        answer: 'Test answer',
+      };
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual({
+        comment: 'Test comment',
+        answer: 'Test answer',
+      });
+    });
+
+    it('should set innerValue based on submission data if submissionStatus is in progress and doAssessment is true', () => {
+      component.reviewStatus = 'not in progress';
+      component.doReview = false;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = {
+        answer: 'Test submission answer',
+      };
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual('Test submission answer');
+    });
+
+    it('should not change innerValue if reviewStatus and submissionStatus are not in progress', () => {
+      component.reviewStatus = 'not in progress';
+      component.doReview = false;
+      component.submissionStatus = 'not in progress';
+      component.doAssessment = false;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toBeUndefined();
+    });
+  });
+
+  describe('audienceContainReviewer()', () => {
+    it('should return true if audience contains reviewer and has more than one member', () => {
+      component.question = {
+        audience: ['reviewer', 'other']
+      };
+
+      expect(component.audienceContainReviewer()).toBe(true);
+    });
+
+    it('should return false if audience does not contain reviewer', () => {
+      component.question = {
+        audience: ['other']
+      };
+
+      expect(component.audienceContainReviewer()).toBe(false);
+    });
+
+    it('should return false if audience contains reviewer but has only one member', () => {
+      component.question = {
+        audience: ['reviewer']
+      };
+
+      expect(component.audienceContainReviewer()).toBe(false);
+    });
+  });
 });
 

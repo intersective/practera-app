@@ -105,39 +105,46 @@ export class AssessmentMobilePage implements OnInit {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
 
-    if (this.action === 'assessment') {
-      await this.assessmentService.submitAssessment(
-        event.submissionId,
-        event.assessmentId,
-        event.contextId
-      ).toPromise();
+    try {
+      if (this.action === 'assessment') {
+        await this.assessmentService.submitAssessment(
+          event.submissionId,
+          event.assessmentId,
+          event.contextId,
+          event.answers
+        ).toPromise();
 
-      if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
-        await this.assessmentService.pullFastFeedback();
+        if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+          await this.assessmentService.pullFastFeedback();
+        }
+      } else if (this.action === 'review') {
+        await this.assessmentService.submitReview(
+          event.assessmentId,
+          this.review.id,
+          event.submissionId
+        ).toPromise();
+
+        this.reviewService.getReviews();
       }
-    } else if (this.action === 'review') {
-      await this.assessmentService.submitReview(
-        event.assessmentId,
-        this.review.id,
-        event.submissionId
-      ).toPromise();
 
-      this.reviewService.getReviews();
-    }
-
-    this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-    if (!event.saveInProgress) {
-      this.notificationsService.assessmentSubmittedToast();
-      // get the latest activity tasks and refresh the assessment submission data
-      this.activityService.getActivity(this.activityId);
-      this.btnDisabled$.next(false);
-      this.saving = false;
-      return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
-    } else {
-      setTimeout(() => {
+      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      if (!event.saveInProgress) {
+        this.notificationsService.assessmentSubmittedToast();
+        // get the latest activity tasks and refresh the assessment submission data
+        this.activityService.getActivity(this.activityId);
         this.btnDisabled$.next(false);
         this.saving = false;
-      }, SAVE_PROGRESS_TIMEOUT);
+        return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
+      } else {
+        setTimeout(() => {
+          this.btnDisabled$.next(false);
+          this.saving = false;
+        }, SAVE_PROGRESS_TIMEOUT);
+      }
+    } catch (err) {
+      this.btnDisabled$.next(false);
+      this.saving = false;
+      this.notificationsService.assessmentSubmittedToast(false);
     }
   }
 
