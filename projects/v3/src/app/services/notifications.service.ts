@@ -185,7 +185,20 @@ export class NotificationsService {
     return toast.present();
   }
 
-  assessmentSubmittedToast() {
+  /**
+   * show assessment submission response status toast
+   *
+   * @param   {boolean}  isFail  flag to show success or fail message
+   *
+   * @return  {Promise<void>}
+   */
+  assessmentSubmittedToast(isFail = false) {
+    if (isFail === true) {
+      return this.presentToast($localize`Submission Failed`, {
+        color: 'danger',
+        icon: 'close-circle'
+      });
+    }
     return this.presentToast($localize`Assessment Submitted`, {
       color: 'success',
       icon: 'checkmark-circle'
