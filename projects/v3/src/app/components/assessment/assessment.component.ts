@@ -124,7 +124,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   private _preventSubmission(): boolean {
     let result = false;
     // prevent non participants from submitting assessment
-    if (this.assessment.isForTeam === true && this.storage.getUser().role !== 'participant') {
+    if (this.action === 'assessment' && this.assessment?.isForTeam === true && this.storage.getUser().role !== 'participant') {
       result = true;
     }
     this.btnDisabled$.next(result);
