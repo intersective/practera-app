@@ -110,7 +110,8 @@ export class AssessmentMobilePage implements OnInit {
         await this.assessmentService.submitAssessment(
           event.submissionId,
           event.assessmentId,
-          event.contextId
+          event.contextId,
+          event.answers
         ).toPromise();
 
         if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
