@@ -9,9 +9,15 @@ name: Deploy to p2-prerelease-appv3 environment
 ################################################
 on:
   workflow_dispatch:
+    inputs:
+      INPUT_BRANCH:
+        description: 'Branch or tag to deploy'     
+        required: true
+        default: ''
   push:
     branches:
-     - 'golive/3*'
+      - 'golive/3*'
+      - 'release/live-v3'
 
 
 
@@ -22,6 +28,7 @@ jobs:
   deploy-p2-prerelease-appv3:
     name: deploy-p2-prerelease-appv3
     runs-on: ubuntu-latest
+    environment: p2-prerelease
     permissions: write-all
     timeout-minutes: 15
 
@@ -52,7 +59,13 @@ jobs:
 ################################################
       - name: Get branch for env BRANCH_TAG_NAME
         run: |
-          echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          if [ -z "$INPUT_BRANCH" ]; then
+            echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          else
+            echo "BRANCH_TAG_NAME="$(echo "$INPUT_BRANCH") >> $GITHUB_ENV
+          fi
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.INPUT_BRANCH }}
 
 ################################################
 #  GITHUB REPO CHECKOUT
@@ -68,14 +81,14 @@ jobs:
       - name: Get AWS Organization Number
         id: AWS_ORG
         run: |
-          RESULTP2PRERELEASE=$(echo $AWS_ACCOUNT_ID | jq -r .P2PRERELEASE)
-          RESULTCENTRAL=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
+          P2PRERELEASE=$(echo $AWS_ACCOUNT_ID | jq -r .P2PRERELEASE)
+          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
 
-          echo "::add-mask::$RESULTP2PRERELEASE"
-          echo "::add-mask::$RESULTCENTRAL"
+          echo "::add-mask::$P2PRERELEASE"
+          echo "::add-mask::$CENTRALIZED"
 
-          echo "P2PRERELEASE=$RESULTP2PRERELEASE" >> $GITHUB_OUTPUT
-          echo "CENTRALIZED=$RESULTCENTRAL" >> $GITHUB_OUTPUT
+          echo "P2PRERELEASE=$P2PRERELEASE" >> $GITHUB_OUTPUT
+          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
 
 ################################################
 #  NODE ENV
@@ -121,7 +134,7 @@ jobs:
       - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-role-app-v3
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 
@@ -145,7 +158,7 @@ jobs:
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-role-app-v3
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 ###############################################################
@@ -236,7 +249,7 @@ jobs:
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-role-app-v3
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: us-east-1
 
 ###############################################################
@@ -273,7 +286,7 @@ jobs:
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-role-app-v3
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 ###############################################################
