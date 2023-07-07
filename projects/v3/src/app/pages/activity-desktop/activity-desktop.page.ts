@@ -132,30 +132,38 @@ export class ActivityDesktopPage {
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    await this.assessmentService.submitAssessment(
-      event.submissionId,
-      event.assessmentId,
-      event.contextId,
-    ).toPromise();
+    try {
+      await this.assessmentService.submitAssessment(
+        event.submissionId,
+        event.assessmentId,
+        event.contextId,
+        event.answers
+      ).toPromise();
 
-    if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
-      await this.assessmentService.pullFastFeedback();
-    }
+      if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
 
-    this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-    if (!event.saveInProgress) {
-      this.notificationsService.assessmentSubmittedToast();
-      // get the latest activity tasks and navigate to the next task
-      this.activityService.getActivity(this.activity.id, false, task, () => {
-        this.loading = false;
-        this.btnDisabled$.next(false);
-      });
-      return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
-    } else {
-      setTimeout(() => {
-        this.btnDisabled$.next(false);
-        this.loading = false;
-      }, SAVE_PROGRESS_TIMEOUT);
+      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      if (!event.saveInProgress) {
+        this.notificationsService.assessmentSubmittedToast();
+        // get the latest activity tasks and navigate to the next task
+        this.activityService.getActivity(this.activity.id, false, task, () => {
+          this.loading = false;
+          this.btnDisabled$.next(false);
+        });
+        return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
+      } else {
+        setTimeout(() => {
+          this.btnDisabled$.next(false);
+          this.loading = false;
+        }, SAVE_PROGRESS_TIMEOUT);
+      }
+    } catch (error) {
+      this.loading = false;
+      this.btnDisabled$.next(false);
+      this.savingText$.next('');
+      this.notificationsService.assessmentSubmittedToast(false);
     }
   }
 

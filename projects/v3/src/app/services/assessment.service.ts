@@ -262,7 +262,7 @@ export class AssessmentService {
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info = '<h3>'+ $localize`:multiple choice question:Choice Description` + ':</h3>' + info;
             }
             question.info = info;
             question.choices = choices;
@@ -489,13 +489,14 @@ export class AssessmentService {
   }
 
   // set the status of the submission to 'done' or 'pending approval'
-  submitAssessment(submissionId: number, assessmentId: number, contextId: number) {
-    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!';
-    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId';
+  submitAssessment(submissionId: number, assessmentId: number, contextId: number, answers: Answer[]) {
+    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]';
+    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers';
     const variables = {
       submissionId,
       assessmentId,
       contextId,
+      answers,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitAssessment(${paramsFormat}) {

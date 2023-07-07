@@ -8,7 +8,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { concatMap, delay, filter, tap } from 'rxjs/operators';
 
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -278,6 +277,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
   }
 
+  // make sure video is stopped when user leave the page
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
   }
@@ -355,7 +355,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
-  checkCompulsory() {
+  /**
+   * @name filledAnswers
+   * @description to collect all latest answers from the form
+   *
+   * @return  {any[]}
+   */
+  filledAnswers(): any[] {
     const answers = [];
     let questionId = 0;
     let assessment: AssessmentSubmitParams;
@@ -423,12 +429,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    return this._compulsoryQuestionsAnswered(answers);
+    return answers;
   }
 
   async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+    const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
-    const requiredQuestions = this.checkCompulsory();
+    const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
@@ -443,25 +450,30 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    if (this.doAssessment && this.assessment.isForTeam) {
+    if (this.doAssessment === true) {
+      // make sure teamId is up to date
       await this.sharedService.getTeamInfo().toPromise();
-      const teamId = this.storage.getUser().teamId;
-      if (typeof teamId !== 'number') {
-        return this.notifications.alert({
-          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel',
-            }
-          ],
-        });
+
+      if (this.assessment.isForTeam) {
+        const teamId = this.storage.getUser().teamId;
+        if (typeof teamId !== 'number') {
+          return this.notifications.alert({
+            message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel',
+              }
+            ],
+          });
+        }
       }
     }
 
     return this.save.emit({
       saveInProgress,
       goBack,
+      answers,
       assessmentId: this.assessment.id,
       contextId: this.contextId,
       submissionId: this.submission.id,
@@ -479,20 +491,22 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // we need to make sure left opened assessment page cannot be submitted
     // (e.g. the team submission page may still visible on client side even after
     // user team status got modified)
-    if (this.doAssessment && this.assessment.isForTeam) {
+    if (this.doAssessment === true) {
       await this.sharedService.getTeamInfo().toPromise();
-      const teamId = this.storage.getUser().teamId;
-      if (typeof teamId !== 'number') {
 
-        return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel',
-            }
-          ],
-        });
+      if (this.assessment.isForTeam) {
+        const teamId = this.storage.getUser().teamId;
+        if (typeof teamId !== 'number') {
+          return this.notifications.alert({
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel',
+              }
+            ],
+          });
+        }
       }
     }
 
@@ -516,6 +530,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // this.btnDisabled$.next(true);
     */
 
+
+    // filled answer collecting below is somewhat different from this.filledAnswers(), revisit later as this._submit() is not currently in-used
     const answers = [];
     let questionId = 0;
     let assessment: AssessmentSubmitParams;
@@ -591,7 +607,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
-        message: 'Required question answer missing!',
+        message: $localize`Required question answer missing!`,
         // Please fill out the required fields.
         buttons: [
           {
@@ -612,11 +628,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         ],
       });
     }
-
-    /* comment for the tempery solution autosave AV2-1326
-    // allow submitting/saving after a few seconds
-    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
-    */
 
     this.save.emit({
       assessment,
