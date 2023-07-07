@@ -137,6 +137,7 @@ export class ActivityDesktopPage {
         event.submissionId,
         event.assessmentId,
         event.contextId,
+        event.answers
       ).toPromise();
 
       if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
