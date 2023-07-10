@@ -82,6 +82,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  // prevent non participants from submitting team assessment
+  get preventSubmission() {
+    return this._preventSubmission();
+  }
+
   constructor(
     readonly utils: UtilsService,
     private notifications: NotificationsService,
@@ -90,13 +95,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private assessmentService: AssessmentService
   ) {
     this.subscriptions.push(this.submitActions.pipe(
-      filter(() => {
-        if (this.action === 'assessment' && this.assessment?.isForTeam === true) {
-          return this._preventSubmission() === false;
-        }
-
-        return true;
-      }),
+      filter(() => !this._preventSubmission()), // skip when false
       concatMap(request => {
         if (request?.reviewSave) {
           return this.saveReviewAnswer(request.reviewSave);
@@ -121,9 +120,12 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }));
   }
 
+  /**
+   * prevent non participants from submitting assessment
+   * @returns {boolean} - true if user is not a participant and assessment is for team
+   */
   private _preventSubmission(): boolean {
     let result = false;
-    // prevent non participants from submitting assessment
     if (this.action === 'assessment' && this.assessment?.isForTeam === true && this.storage.getUser().role !== 'participant') {
       result = true;
     }
