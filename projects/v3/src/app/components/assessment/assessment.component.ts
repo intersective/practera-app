@@ -95,30 +95,39 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService
   ) {
-    this.subscriptions.push(this.submitActions.pipe(
-      filter(() => !this._preventSubmission()), // skip when false
-      concatMap(request => {
-        if (request?.reviewSave) {
-          return this.saveReviewAnswer(request.reviewSave);
+    this.subscriptions.push(
+      this.submitActions.pipe(
+        filter(() => !this._preventSubmission()), // skip when false
+        concatMap(request => {
+          if (request?.reviewSave) {
+            return this.saveReviewAnswer(request.reviewSave);
+          }
+          if (request?.questionSave) {
+            return this.saveQuestionAnswer(request.questionSave);
+          }
+          return of(request);
+        })
+      ).subscribe(
+        (data: {
+          saveInProgress: boolean;
+          goBack: boolean;
+          questionSave?: {
+            submissionId: number;
+            questionId: number;
+            answer: string;
+          };
+        }): Promise<void> => {
+          if (data.saveInProgress === false) {
+            return this._submitWithoutAnswer(data);
+          }
+        },
+        // save/submission error handling http 500
+        (error: any) => {
+          console.error('save failed::', error);
+          return this.notifications.assessmentSubmittedToast({ isFail: true });
         }
-        if (request?.questionSave) {
-          return this.saveQuestionAnswer(request.questionSave);
-        }
-        return of(request);
-      }),
-    ).subscribe((data: {
-      saveInProgress: boolean;
-      goBack: boolean;
-      questionSave?: {
-        submissionId: number;
-        questionId: number;
-        answer: string;
-      };
-    }): Promise<void> => {
-      if (data.saveInProgress === false) {
-        return this._submitWithoutAnswer(data);
-      }
-    }));
+      )
+    );
   }
 
   /**
@@ -280,6 +289,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
   }
 
+  // make sure video is stopped when user leave the page
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
   }
@@ -357,7 +367,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     });
   }
 
-  checkCompulsory() {
+  /**
+   * @name filledAnswers
+   * @description to collect all latest answers from the form
+   *
+   * @return  {any[]}
+   */
+  filledAnswers(): any[] {
     const answers = [];
     let questionId = 0;
     let assessment: AssessmentSubmitParams;
@@ -425,12 +441,13 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    return this._compulsoryQuestionsAnswered(answers);
+    return answers;
   }
 
   async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+    const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
-    const requiredQuestions = this.checkCompulsory();
+    const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
     if (!saveInProgress && requiredQuestions.length > 0) {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
@@ -464,6 +481,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return this.save.emit({
       saveInProgress,
       goBack,
+      answers,
       assessmentId: this.assessment.id,
       contextId: this.contextId,
       submissionId: this.submission.id,
@@ -518,6 +536,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // this.btnDisabled$.next(true);
     */
 
+
+    // filled answer collecting below is somewhat different from this.filledAnswers(), revisit later as this._submit() is not currently in-used
     const answers = [];
     let questionId = 0;
     let assessment: AssessmentSubmitParams;
