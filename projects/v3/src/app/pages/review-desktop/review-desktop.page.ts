@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
-
-const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
   selector: 'app-review-desktop',
@@ -35,6 +34,7 @@ export class ReviewDesktopPage implements OnInit {
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private reviewService: ReviewService,
+    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit(): void {
@@ -120,6 +120,7 @@ export class ReviewDesktopPage implements OnInit {
       this.savingText$.next($localize`Save Failed.`);
       this.loading = false;
       this.btnDisabled$.next(false);
+      this.notificationsService.assessmentSubmittedToast(false);
     }
   }
 
