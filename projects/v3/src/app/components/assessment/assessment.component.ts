@@ -5,7 +5,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, debounceTime, delay, tap } from 'rxjs/operators';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
@@ -91,30 +91,38 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService
   ) {
-    this.subscriptions.push(this.submitActions.pipe(
-      concatMap(request => {
-        if (request?.reviewSave) {
-          return this.saveReviewAnswer(request.reviewSave);
+    this.subscriptions.push(
+      this.submitActions.pipe(
+        concatMap(request => {
+          if (request?.reviewSave) {
+            return this.saveReviewAnswer(request.reviewSave);
+          }
+          if (request?.questionSave) {
+            return this.saveQuestionAnswer(request.questionSave);
+          }
+          return of(request);
+        })
+      ).subscribe(
+        (data: {
+          saveInProgress: boolean;
+          goBack: boolean;
+          questionSave?: {
+            submissionId: number;
+            questionId: number;
+            answer: string;
+          };
+        }): Promise<void> => {
+          if (data.saveInProgress === false) {
+            return this._submitWithoutAnswer(data);
+          }
+        },
+        // save/submission error handling http 500
+        (error: any) => {
+          console.error('save failed::', error);
+          return this.notifications.assessmentSubmittedToast({ isFail: true });
         }
-        if (request?.questionSave) {
-          return this.saveQuestionAnswer(request.questionSave);
-        }
-        return of(request);
-      })
-    ).subscribe((data: {
-      saveInProgress: boolean;
-      goBack: boolean;
-      questionSave?: {
-        submissionId: number;
-        questionId: number;
-        answer: string;
-      };
-    }): Promise<void> => {
-      console.log('data', data);
-      if (data.saveInProgress === false) {
-        return this._submitWithoutAnswer(data);
-      }
-    }));
+      )
+    );
   }
 
   /**
