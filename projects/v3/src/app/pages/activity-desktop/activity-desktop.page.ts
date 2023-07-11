@@ -163,7 +163,7 @@ export class ActivityDesktopPage {
       this.loading = false;
       this.btnDisabled$.next(false);
       this.savingText$.next('');
-      this.notificationsService.assessmentSubmittedToast(false);
+      this.notificationsService.assessmentSubmittedToast({ isFail: true });
     }
   }
 
