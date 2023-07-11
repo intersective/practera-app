@@ -144,7 +144,7 @@ export class AssessmentMobilePage implements OnInit {
     } catch (err) {
       this.btnDisabled$.next(false);
       this.saving = false;
-      this.notificationsService.assessmentSubmittedToast(false);
+      this.notificationsService.assessmentSubmittedToast({isFail: true});
     }
   }
 

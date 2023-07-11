@@ -120,7 +120,7 @@ export class ReviewDesktopPage implements OnInit {
       this.savingText$.next($localize`Save Failed.`);
       this.loading = false;
       this.btnDisabled$.next(false);
-      this.notificationsService.assessmentSubmittedToast(false);
+      this.notificationsService.assessmentSubmittedToast({isFail: true});
     }
   }
 
