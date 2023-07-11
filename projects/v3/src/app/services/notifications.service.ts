@@ -210,12 +210,14 @@ export class NotificationsService {
    *
    * @return  {Promise<void>}
    */
-  assessmentSubmittedToast(isFail = false) {
+  assessmentSubmittedToast(option?: {
+    isFail: boolean
+  }) {
     if (!this.connection.isOnline) {
       return alert('You are offline, please check your internet connection and try again.');
     }
 
-    if (isFail === true) {
+    if (option?.isFail === true) {
       return this.presentToast($localize`Submission Failed`, {
         color: 'danger',
         icon: 'close-circle'
