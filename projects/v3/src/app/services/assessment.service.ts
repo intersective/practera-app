@@ -498,7 +498,7 @@ export class AssessmentService {
       contextId,
       answers,
     };
-    return this.apolloService.continuousGraphQLMutate(
+    return this.apolloService.graphQLMutate(
       `mutation submitAssessment(${paramsFormat}) {
         submitAssessment(${params})
       }`,

@@ -452,18 +452,24 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
 
     if (this.doAssessment && this.assessment.isForTeam) {
-      await this.sharedService.getTeamInfo().toPromise();
-      const teamId = this.storage.getUser().teamId;
-      if (typeof teamId !== 'number') {
-        return this.notifications.alert({
-          message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel',
-            }
-          ],
-        });
+      try {
+        await this.sharedService.getTeamInfo().toPromise();
+        const teamId = this.storage.getUser().teamId;
+        if (typeof teamId !== 'number') {
+          this.btnDisabled$.next(false);
+          return this.notifications.alert({
+            message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel',
+              }
+            ],
+          });
+        }
+      } catch (error) {
+        this.btnDisabled$.next(false);
+        return this.notifications.assessmentSubmittedToast({ isFail: true });
       }
     }
 

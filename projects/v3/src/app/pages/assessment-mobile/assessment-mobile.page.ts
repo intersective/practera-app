@@ -114,7 +114,8 @@ export class AssessmentMobilePage implements OnInit {
           event.answers
         ).toPromise();
 
-        if (!this.utils.isEmpty(saved)) {
+        // http 200 but error
+        if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
           throw new Error("Error submitting assessment");
         }
 
