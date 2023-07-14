@@ -35,15 +35,16 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     }
   }
 
-  updateWorkflowStatus(file?) {
+  async updateWorkflowStatus(file?) {
     this._resetUILogic();
     // don't do virus detection on development environment
-    if (!environment.production) {
-      return ;
-    }
+    // if (!environment.production) {
+    //   return ;
+    // }
 
     const currentFile = file || this.file;
-    this.filestackService.getWorkflowStatus(currentFile.workflows).then(responds => {
+    try {
+      const responds = await this.filestackService.getWorkflowStatus(currentFile.workflows);
       this.utils.each((responds || []), res => {
         const { results, status } = res;
 
@@ -59,14 +60,17 @@ export class FileDisplayComponent implements OnInit, OnChanges {
           }
         }
       });
-    });
+    } catch (err) {
+      console.error('FILESTACK_WORKFLOW_STATUS::', err);
+      throw err;
+    }
   }
 
   private _resetUILogic() {
     this.virusDetection = {};
     this.quarantine = {};
     if (this.videoEle) {
-      this.videoEle.nativeElement.load();
+      this.videoEle.nativeElement?.load();
     }
   }
 
