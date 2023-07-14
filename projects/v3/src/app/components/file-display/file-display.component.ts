@@ -38,9 +38,9 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   async updateWorkflowStatus(file?) {
     this._resetUILogic();
     // don't do virus detection on development environment
-    // if (!environment.production) {
-    //   return ;
-    // }
+    if (!environment.production) {
+      return ;
+    }
 
     const currentFile = file || this.file;
     try {
