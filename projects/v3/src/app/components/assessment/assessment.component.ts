@@ -105,19 +105,34 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         }
         return of(request);
       }),
-    ).subscribe((data: {
-      saveInProgress: boolean;
-      goBack: boolean;
-      questionSave?: {
-        submissionId: number;
-        questionId: number;
-        answer: string;
-      };
-    }): Promise<void> => {
-      if (data.saveInProgress === false) {
-        return this._submitWithoutAnswer(data);
+    ).subscribe(
+      (data: {
+        saveInProgress: boolean;
+        goBack: boolean;
+        questionSave?: {
+          submissionId: number;
+          questionId: number;
+          answer: string;
+        };
+        error?: any;
+      }): void | Promise<void> => {
+        if (!this.utils.isEmpty(data.error)) {
+          return this.notifications.assessmentSubmittedToast({
+            isFail: true,
+            label: $localize`Save failed.`,
+          });
+        }
+
+        if (data.saveInProgress === false) {
+          return this._submitWithoutAnswer(data);
+        }
+      },
+      // save/submission error handling http 500
+      (error: any) => {
+        console.error('save failed::', error);
+        return this.notifications.assessmentSubmittedToast({ isFail: true });
       }
-    }));
+    ));
   }
 
   /**
@@ -453,22 +468,27 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
 
     if (this.doAssessment === true) {
-      // make sure teamId is up to date
-      await this.sharedService.getTeamInfo().toPromise();
+      try {
+        // make sure teamId is up to date
+        await this.sharedService.getTeamInfo().toPromise();
 
-      if (this.assessment.isForTeam) {
-        const teamId = this.storage.getUser().teamId;
-        if (typeof teamId !== 'number') {
-          return this.notifications.alert({
-            message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel',
-              }
-            ],
-          });
+        if (this.assessment.isForTeam) {
+          const teamId = this.storage.getUser().teamId;
+          if (typeof teamId !== 'number') {
+            return this.notifications.alert({
+              message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                }
+              ],
+            });
+          }
         }
+      } catch (error) {
+        this.btnDisabled$.next(false);
+        return this.notifications.assessmentSubmittedToast({ isFail: true });
       }
     }
 

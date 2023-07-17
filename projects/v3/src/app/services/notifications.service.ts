@@ -15,6 +15,7 @@ import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
+import { NetworkService } from './network.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -85,6 +86,11 @@ export class NotificationsService {
 
   private notifications: TodoItem[] = [];
 
+  private connection = {
+    informed: false,
+    isOnline: true,
+  };
+
   constructor(
     private modalController: ModalController,
     private alertController: AlertController,
@@ -96,12 +102,28 @@ export class NotificationsService {
     private storage: BrowserStorageService,
     private apolloService: ApolloService,
     private eventsService: EventService,
+    private networkService: NetworkService,
   ) {
     // after messages read need to update chat notification data on notification service
     this.utils.getEvent('chat-badge-update').subscribe(event => {
       this.getChatMessage().subscribe();
     });
-   }
+
+    this.networkService.isOnline.subscribe(isOnline => {
+      this.connection.isOnline = isOnline;
+
+      if (!isOnline) {
+        this.connection.informed = true;
+        return window.alert($localize`You've disconnected from internet, you may not be able to perform any action now.`);
+      }
+      if (this.connection.informed === true && isOnline) {
+        this.presentToast($localize`You are back online.`, {
+          color: 'success',
+          icon: 'checkmark-circle'
+        });
+      }
+    });
+  }
 
   dismiss() {
     return this.modalController.dismiss();
@@ -192,14 +214,29 @@ export class NotificationsService {
    *
    * @return  {Promise<void>}
    */
-  assessmentSubmittedToast(isFail = false) {
-    if (isFail === true) {
-      return this.presentToast($localize`Submission Failed`, {
+  assessmentSubmittedToast(option?: {
+    isFail: boolean;
+    label?: string;
+  }): void | Promise<void> {
+    if (!this.connection.isOnline) {
+      return alert('You are offline, please check your internet connection and try again.');
+    }
+
+    if (option?.isFail === true) {
+      if (option?.label) {
+        return this.presentToast(option.label, {
+          color: 'danger',
+          icon: 'close-circle'
+        });
+      }
+
+      return this.presentToast($localize`Submission failed.`, {
         color: 'danger',
         icon: 'close-circle'
       });
     }
-    return this.presentToast($localize`Assessment Submitted`, {
+
+    return this.presentToast($localize`Assessment Submitted.`, {
       color: 'success',
       icon: 'checkmark-circle'
     });
