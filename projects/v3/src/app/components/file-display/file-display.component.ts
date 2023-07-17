@@ -62,7 +62,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
       });
     } catch (err) {
       console.error('FILESTACK_WORKFLOW_STATUS::', err);
-      throw err;
+      return err;
     }
   }
 
