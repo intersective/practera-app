@@ -12,10 +12,6 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./review-desktop.page.scss'],
 })
 export class ReviewDesktopPage implements OnInit {
-  review$ = this.assessmentService.review$;
-  reviews$ = this.reviewService.reviews$;
-  submission$ = this.assessmentService.submission$;
-  assessment$ = this.assessmentService.assessment$;
   loading: boolean; // loading indicator (true = loading | false = done loaded)
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -24,6 +20,7 @@ export class ReviewDesktopPage implements OnInit {
   assessment: Assessment;
   submission: Submission;
   review: AssessmentReview;
+
   // the current review in the review list
   currentReview: Review;
   submissionId: number;
@@ -38,7 +35,6 @@ export class ReviewDesktopPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.reviewService.reviews$.subscribe(res => this.reviews = res);
     this.assessmentService.assessment$.subscribe(res => this.assessment = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
@@ -48,7 +44,8 @@ export class ReviewDesktopPage implements OnInit {
     this.route.params.subscribe(params => {
       this.submissionId = +params?.submissionId;
     });
-    this.reviews$.subscribe(reviews => {
+    this.reviewService.reviews$.subscribe(reviews => {
+      this.reviews = reviews;
       if (this.utils.isEmpty(this.submissionId) || this.submissionId == 0) {
         this.gotoFirstReview(reviews);
       } else if (reviews.length > 0) { // handle directlink
