@@ -48,7 +48,7 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return `${ task.submitter.name } is working on this`;
+      return $localize`:team assessment:${ task.submitter.name } is working on this`;
     }
     // due date
     if (!task.dueDate) {
@@ -159,9 +159,8 @@ export class ActivityComponent {
   }
 
   private async _validateTeamAssessment(task: Task, proceedCB) {
-    if (task.isForTeam) {
-      await this.sharedService.getTeamInfo().toPromise();
-    }
+    // update teamId
+    await this.sharedService.getTeamInfo().toPromise();
 
     const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
     const teamId = this.storageService.getUser().teamId;

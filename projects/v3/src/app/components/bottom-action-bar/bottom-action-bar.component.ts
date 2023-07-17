@@ -11,8 +11,8 @@ export class BottomActionBarComponent {
   @Input() color: string = 'primary';
   @Input() disabled: boolean;
   @Output() handleClick = new EventEmitter();
+  @Input() buttonType: string = '';
 
   constructor() {}
-
 }
 

@@ -5,10 +5,8 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { concatMap, delay, tap } from 'rxjs/operators';
-
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { concatMap, delay, filter, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -84,6 +82,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  // prevent non participants from submitting team assessment
+  get preventSubmission() {
+    return this._preventSubmission();
+  }
+
   constructor(
     readonly utils: UtilsService,
     private notifications: NotificationsService,
@@ -91,46 +94,58 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService
   ) {
-    this.subscriptions.push(
-      this.submitActions.pipe(
-        concatMap(request => {
-          if (request?.reviewSave) {
-            return this.saveReviewAnswer(request.reviewSave);
-          }
-          if (request?.questionSave) {
-            return this.saveQuestionAnswer(request.questionSave);
-          }
-          return of(request);
-        }),
-      ).subscribe(
-        (data: {
-          saveInProgress: boolean;
-          goBack: boolean;
-          questionSave?: {
-            submissionId: number;
-            questionId: number;
-            answer: string;
-          };
-          error?: any;
-        }): void | Promise<void> => {
-          if (!this.utils.isEmpty(data.error)) {
-            return this.notifications.assessmentSubmittedToast({
-              isFail: true,
-              label: $localize`Save failed.`,
-            });
-          }
-
-          if (data.saveInProgress === false) {
-            return this._submitWithoutAnswer(data);
-          }
-        },
-        // save/submission error handling http 500
-        (error: any) => {
-          console.error('save failed::', error);
-          return this.notifications.assessmentSubmittedToast({ isFail: true });
+    this.subscriptions.push(this.submitActions.pipe(
+      filter(() => !this._preventSubmission()), // skip when false
+      concatMap(request => {
+        if (request?.reviewSave) {
+          return this.saveReviewAnswer(request.reviewSave);
         }
-      )
-    );
+        if (request?.questionSave) {
+          return this.saveQuestionAnswer(request.questionSave);
+        }
+        return of(request);
+      }),
+    ).subscribe(
+      (data: {
+        saveInProgress: boolean;
+        goBack: boolean;
+        questionSave?: {
+          submissionId: number;
+          questionId: number;
+          answer: string;
+        };
+        error?: any;
+      }): void | Promise<void> => {
+        if (!this.utils.isEmpty(data.error)) {
+          return this.notifications.assessmentSubmittedToast({
+            isFail: true,
+            label: $localize`Save failed.`,
+          });
+        }
+
+        if (data.saveInProgress === false) {
+          return this._submitWithoutAnswer(data);
+        }
+      },
+      // save/submission error handling http 500
+      (error: any) => {
+        console.error('save failed::', error);
+        return this.notifications.assessmentSubmittedToast({ isFail: true });
+      }
+    ));
+  }
+
+  /**
+   * prevent non participants from submitting assessment
+   * @returns {boolean} - true if user is not a participant and assessment is for team
+   */
+  private _preventSubmission(): boolean {
+    let result = false;
+    if (this.action === 'assessment' && this.assessment?.isForTeam === true && this.storage.getUser().role !== 'participant') {
+      result = true;
+    }
+    this.btnDisabled$.next(result);
+    return result;
   }
 
   /**
@@ -187,6 +202,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
+    this._preventSubmission();
   }
 
   ngOnDestroy() {
@@ -451,21 +467,24 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    if (this.doAssessment && this.assessment.isForTeam) {
+    if (this.doAssessment === true) {
       try {
+        // make sure teamId is up to date
         await this.sharedService.getTeamInfo().toPromise();
-        const teamId = this.storage.getUser().teamId;
-        if (typeof teamId !== 'number') {
-          this.btnDisabled$.next(false);
-          return this.notifications.alert({
-            message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel',
-              }
-            ],
-          });
+
+        if (this.assessment.isForTeam) {
+          const teamId = this.storage.getUser().teamId;
+          if (typeof teamId !== 'number') {
+            return this.notifications.alert({
+              message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                }
+              ],
+            });
+          }
         }
       } catch (error) {
         this.btnDisabled$.next(false);
@@ -494,20 +513,22 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // we need to make sure left opened assessment page cannot be submitted
     // (e.g. the team submission page may still visible on client side even after
     // user team status got modified)
-    if (this.doAssessment && this.assessment.isForTeam) {
+    if (this.doAssessment === true) {
       await this.sharedService.getTeamInfo().toPromise();
-      const teamId = this.storage.getUser().teamId;
-      if (typeof teamId !== 'number') {
 
-        return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel',
-            }
-          ],
-        });
+      if (this.assessment.isForTeam) {
+        const teamId = this.storage.getUser().teamId;
+        if (typeof teamId !== 'number') {
+          return this.notifications.alert({
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel',
+              }
+            ],
+          });
+        }
       }
     }
 
@@ -608,7 +629,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
-        message: 'Required question answer missing!',
+        message: $localize`Required question answer missing!`,
         // Please fill out the required fields.
         buttons: [
           {
@@ -629,11 +650,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         ],
       });
     }
-
-    /* comment for the tempery solution autosave AV2-1326
-    // allow submitting/saving after a few seconds
-    // setTimeout(() => this.btnDisabled$.next(false), SAVE_PROGRESS_TIMEOUT);
-    */
 
     this.save.emit({
       assessment,
