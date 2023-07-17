@@ -26,13 +26,13 @@ export const environment = {
         video: '<CUSTOM_PATH_VIDEO>'
       },
       workflows: [
-        '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
+        '<CUSTOM_FILESTACK_VIRUS_DETECTION>badone',
       ],
     },
     policy: '<CUSTOM_FILESTACK_POLICY>',
     signature: '<CUSTOM_FILESTACK_SIGNATURE>',
     workflows: {
-      virusDetection: '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
+      virusDetection: '<CUSTOM_FILESTACK_VIRUS_DETECTION>badone',
     },
   },
   hubspot: {
