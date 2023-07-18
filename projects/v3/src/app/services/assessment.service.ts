@@ -455,7 +455,7 @@ export class AssessmentService {
       questionId,
       answer,
     };
-    return this.apolloService.graphQLMutate(
+    return this.apolloService.continuousGraphQLMutate(
       `mutation saveSubmissionAnswer(${paramsFormat}) {
         saveSubmissionAnswer(${params}) {
           success
@@ -477,7 +477,7 @@ export class AssessmentService {
       answer,
       comment,
     };
-    return this.apolloService.graphQLMutate(
+    return this.apolloService.continuousGraphQLMutate(
       `mutation saveReviewAnswer(${paramsFormat}) {
         saveReviewAnswer(${params}) {
           success
