@@ -1,5 +1,5 @@
 <h3 class="for-accessibility" [id]="'multi-team-member-selector-question-' + question.id">{{question.name}}</h3>
-<ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === '')) && (submission?.answer || review?.answer)">
+<ng-container *ngIf="isDisplayOnly">
   <ion-list class="no-bg ion-no-padding">
     <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
       <ion-item class="item-bottom-border" lines="none">
@@ -42,6 +42,18 @@
     <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
       <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
     </ion-list-header>
+
+    <ion-item lines="none" *ngFor="let teamMember of question.teamMembers;let i = index"
+      [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
+      <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled" mode="md"></ion-radio>
+      <ion-label class="white-space-normal body-2 black">
+        {{ teamMember.userName }}
+        <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
+          <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner's answer</ion-chip>
+        </p>
+      </ion-label>
+    </ion-item>
+
     <ion-item lines="none"
       *ngFor="let teamMember of question.teamMembers;let i = index"
       [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
@@ -59,6 +71,7 @@
         (ionChange)="onChange(teamMember.key, 'answer')"
         [disabled]="control.disabled"></ion-checkbox>
     </ion-item>
+
   </ion-list>
   <ion-textarea *ngIf="question.canComment"
     [attr.aria-label]="'expert\'s review feedback'"
