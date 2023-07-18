@@ -46,7 +46,6 @@ export class NotificationsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.push(this.homeService.milestones$.subscribe(async milestones => {
-      console.log('milestones', milestones);
       if (milestones === null) {
         await this.homeService.getMilestones();
       }
