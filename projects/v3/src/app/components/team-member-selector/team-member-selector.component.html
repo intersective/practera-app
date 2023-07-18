@@ -71,7 +71,7 @@
     class="textarea"
     rows="4"
     [(ngModel)]="comment"
-    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here"
+    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here" i18n-placeholder
     [disabled]="control.disabled"
   ></ion-textarea>
 </ng-container>
