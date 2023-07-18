@@ -83,6 +83,11 @@ export class ActivityDesktopPage {
           const filtered: Task = this.utils.find(this.activity.tasks, {
             id: assessmentId
           });
+
+          if (filtered === undefined) {
+            return;
+          }
+
           this.goToTask({
             id: assessmentId,
             contextId: this.urlParams.contextId,
