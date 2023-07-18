@@ -158,7 +158,8 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.milestones().pipe(map(res => this._normaliseProject(res))).subscribe();
     }
-    return this.apolloService.graphQLWatch(`
+
+    return this.apolloService.graphQLFetch(`
       {
         milestones{
           id
@@ -195,18 +196,18 @@ export class HomeService {
     }
     return this.apolloService.graphQLFetch(
       `query {
-          project {
+        project {
+          progress
+          milestones{
+            id
             progress
-            milestones{
-              id
-              progress
-              activities{
-                id progress
-              }
+            activities{
+              id progress
             }
           }
-        }`,
-      ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+        }
+      }`,
+    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
   }
 
   private _handleProjectProgress(data) {
