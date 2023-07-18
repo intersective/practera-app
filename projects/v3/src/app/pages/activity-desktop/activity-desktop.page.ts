@@ -133,12 +133,17 @@ export class ActivityDesktopPage {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      await this.assessmentService.submitAssessment(
+      const saved = await this.assessmentService.submitAssessment(
         event.submissionId,
         event.assessmentId,
         event.contextId,
         event.answers
       ).toPromise();
+
+      // http 200 but error
+      if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
+        throw new Error("Error submitting assessment");
+      }
 
       if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
         await this.assessmentService.pullFastFeedback();
