@@ -45,8 +45,12 @@ export class NotificationsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscriptions.push(this.homeService.milestones$.subscribe(milestones => {
+    this.subscriptions.push(this.homeService.milestones$.subscribe(async milestones => {
       console.log('milestones', milestones);
+      if (milestones === null) {
+        await this.homeService.getMilestones();
+      }
+
       this.milestones = milestones;
 
       (milestones || []).forEach(milestone => {
@@ -121,7 +125,9 @@ export class NotificationsPage implements OnInit, OnDestroy {
     switch (eventOrTodoItem.type) {
       case 'feedback_available':
         if (this.isLockedActivities[activity_id] === true) {
-          this.notificationsService.presentToast('This activity is locked');
+          this.notificationsService.presentToast($localize`This activity is locked. Please complete the previous activity first.`, {
+            duration: 1500,
+          });
           return;
         }
         await this.goToAssessment(activity_id, context_id, assessment_id);
