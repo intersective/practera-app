@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -38,15 +39,32 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.milestonesWithProgress$.subscribe(
-      res => this.milestones = res
+    this.subscriptions.push(this.homeService.projectProgress$.pipe(
+      distinctUntilChanged(),
+      filter(milestones => milestones !== null),
+    ).subscribe(
+      res => {
+        console.log('milestonesWithProgress', res);
+        this.milestones = res;
+      }
     ));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(
-      res => this.achievements = res
+      res => {
+        console.log('achievements', res);
+        this.achievements = res;
+      }
     ));
     this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
-      res => this.experienceProgress = res
+      res => {
+        console.log('experienceProgress', res);
+        this.experienceProgress = res;
+      }
     ));
+    // this.subscriptions.push(this.homeService.projectProgress$.subscribe(
+    //   res => {
+    //     console.log('projectProgress', res);
+    //   }
+    // ));
   }
 
   ngOnDestroy(): void {
