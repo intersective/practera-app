@@ -451,21 +451,25 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       });
     }
 
-    if (this.doAssessment && this.assessment.isForTeam) {
+    if (this.doAssessment === true) {
       try {
+        // make sure teamId is up to date
         await this.sharedService.getTeamInfo().toPromise();
-        const teamId = this.storage.getUser().teamId;
-        if (typeof teamId !== 'number') {
-          this.btnDisabled$.next(false);
-          return this.notifications.alert({
-            message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel',
-              }
-            ],
-          });
+
+        if (this.assessment.isForTeam) {
+          const teamId = this.storage.getUser().teamId;
+          if (typeof teamId !== 'number') {
+            this.btnDisabled$.next(false);
+            return this.notifications.alert({
+              message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                }
+              ],
+            });
+          }
         }
       } catch (error) {
         this.btnDisabled$.next(false);
@@ -494,20 +498,22 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     // we need to make sure left opened assessment page cannot be submitted
     // (e.g. the team submission page may still visible on client side even after
     // user team status got modified)
-    if (this.doAssessment && this.assessment.isForTeam) {
+    if (this.doAssessment === true) {
       await this.sharedService.getTeamInfo().toPromise();
-      const teamId = this.storage.getUser().teamId;
-      if (typeof teamId !== 'number') {
 
-        return this.notifications.alert({
-          message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel',
-            }
-          ],
-        });
+      if (this.assessment.isForTeam) {
+        const teamId = this.storage.getUser().teamId;
+        if (typeof teamId !== 'number') {
+          return this.notifications.alert({
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel',
+              }
+            ],
+          });
+        }
       }
     }
 
