@@ -26,6 +26,8 @@ export class HomePage implements OnInit, OnDestroy {
   experience: Experience;
 
   subscriptions: Subscription[] = [];
+  isMobile: boolean;
+  activityProgresses = {};
 
   constructor(
     private router: Router,
@@ -38,33 +40,37 @@ export class HomePage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.isMobile = this.utils.isMobile();
     this.subscriptions = [];
     this.subscriptions.push(this.homeService.projectProgress$.pipe(
       distinctUntilChanged(),
       filter(milestones => milestones !== null),
     ).subscribe(
       res => {
-        console.log('milestonesWithProgress', res);
         this.milestones = res;
       }
     ));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(
       res => {
-        console.log('achievements', res);
         this.achievements = res;
       }
     ));
     this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
       res => {
-        console.log('experienceProgress', res);
         this.experienceProgress = res;
       }
     ));
-    // this.subscriptions.push(this.homeService.projectProgress$.subscribe(
-    //   res => {
-    //     console.log('projectProgress', res);
-    //   }
-    // ));
+    /* this.subscriptions.push(this.homeService.projectProgress$.pipe(
+      filter(progress => progress !== null),
+    ).subscribe(
+      progress => {
+        console.log('projectProgress', progress);
+
+        progress?.milestones.forEach(m => {
+          m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
+        });
+      }
+    )); */
   }
 
   ngOnDestroy(): void {
@@ -89,10 +95,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.display = event.detail.value;
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   endingIcon(activity) {
     if (activity.isLocked) {
       return 'lock-closed';
@@ -114,13 +116,6 @@ export class HomePage implements OnInit, OnDestroy {
       return 'success';
     }
     return '';
-  }
-
-  endingProgress(progress) {
-    if (!progress || progress === 1) {
-      return '';
-    }
-    return progress;
   }
 
   gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
@@ -150,6 +145,13 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     this.notification.achievementPopUp('', achievement);
+  }
+
+  endingProgress(progress) {
+    if (!progress || progress === 1) {
+      return '';
+    }
+    return progress;
   }
 
   get getIsPointsConfigured() {
