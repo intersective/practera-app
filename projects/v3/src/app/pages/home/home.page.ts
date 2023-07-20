@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +26,8 @@ export class HomePage implements OnInit, OnDestroy {
   experience: Experience;
 
   subscriptions: Subscription[] = [];
+  isMobile: boolean;
+  activityProgresses = {};
 
   constructor(
     private router: Router,
@@ -37,16 +40,37 @@ export class HomePage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.isMobile = this.utils.isMobile();
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.milestonesWithProgress$.subscribe(
-      res => this.milestones = res
+    this.subscriptions.push(this.homeService.projectProgress$.pipe(
+      distinctUntilChanged(),
+      filter(milestones => milestones !== null),
+    ).subscribe(
+      res => {
+        this.milestones = res;
+      }
     ));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(
-      res => this.achievements = res
+      res => {
+        this.achievements = res;
+      }
     ));
     this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
-      res => this.experienceProgress = res
+      res => {
+        this.experienceProgress = res;
+      }
     ));
+    /* this.subscriptions.push(this.homeService.projectProgress$.pipe(
+      filter(progress => progress !== null),
+    ).subscribe(
+      progress => {
+        console.log('projectProgress', progress);
+
+        progress?.milestones.forEach(m => {
+          m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
+        });
+      }
+    )); */
   }
 
   ngOnDestroy(): void {
@@ -71,10 +95,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.display = event.detail.value;
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   endingIcon(activity) {
     if (activity.isLocked) {
       return 'lock-closed';
@@ -96,13 +116,6 @@ export class HomePage implements OnInit, OnDestroy {
       return 'success';
     }
     return '';
-  }
-
-  endingProgress(progress) {
-    if (!progress || progress === 1) {
-      return '';
-    }
-    return progress;
   }
 
   gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
@@ -132,6 +145,13 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     this.notification.achievementPopUp('', achievement);
+  }
+
+  endingProgress(progress) {
+    if (!progress || progress === 1) {
+      return '';
+    }
+    return progress;
   }
 
   get getIsPointsConfigured() {
