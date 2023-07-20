@@ -20,7 +20,7 @@ jobs:
   deploy-p2-stage-appv3:
     name: deploy-p2-stage-appv3
     runs-on: ubuntu-latest
-    # environment: p2-stage
+    environment: p2-stage
     permissions: write-all
     timeout-minutes: 15
 
