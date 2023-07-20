@@ -233,7 +233,11 @@ export class RequestService {
 
   public handleError(error: HttpErrorResponse | any) {
     if (this.devMode.isDevMode()) {
-      console.error(error); // log to console instead
+      console.error(
+        `Backend returned code ${error?.status}, ` +
+        `body was: ${error?.error}, ` +
+        `message was: ${error?.message}`
+      ); // log to console instead
     }
 
     // log the user out if jwt expired
@@ -241,7 +245,7 @@ export class RequestService {
       'Request must contain an apikey',
       'Expired apikey',
       'Invalid apikey'
-    ].includes(error.error.message) && !this.loggedOut) {
+    ].includes(error?.error?.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
       this.loggedOut = true;
       setTimeout(
@@ -252,15 +256,16 @@ export class RequestService {
       );
       this.router.navigate(['auth', 'logout']);
     }
+
     // if error.error is a html template error (when try to read remote version.txt)
-    if (typeof error.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
-      return throwError(error.message);
+    if (typeof error?.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
+      return throwError(error?.message);
     }
-    if (error.error) {
-      return throwError(error.error);
+    if (error?.status === 0) {
+      console.error('An error occurred:', error.error);
     }
-    if (error.graphQLErrors) {
-      return throwError(error.graphQLErrors[0]);
+    if (error?.graphQLErrors?.length > 0) {
+      return throwError(error?.graphQLErrors[0]);
     }
     return throwError(error);
   }
