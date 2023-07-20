@@ -475,6 +475,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         if (this.assessment.isForTeam) {
           const teamId = this.storage.getUser().teamId;
           if (typeof teamId !== 'number') {
+            this.btnDisabled$.next(false);
             return this.notifications.alert({
               message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
               buttons: [

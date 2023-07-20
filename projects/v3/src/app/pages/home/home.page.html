@@ -23,16 +23,15 @@
           <ng-container *ngIf="(experience$ | async ) as experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
             <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100" aria-hidden="true"></ion-progress-bar>
+
             <div class="exp-content">
               <h1 class="headline-2">{{ experience.name }}</h1>
               <ion-text class="subtitle-3" color="grey-75">
                 <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress" i18n>{{ count }} Activities</ng-container>
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
-                <ng-template #loadingProgress>
-                  <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
-                </ng-template>
               </ion-text>
+
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
@@ -61,6 +60,10 @@
   </main>
 </ion-content>
 
+<ng-template #loadingProgress>
+  <ion-skeleton-text animated style="width: 50px; display: inline;"></ion-skeleton-text>
+</ng-template>
+
 <ng-template #activityList>
   <h3 class="for-accessibility" i18n>Activity list</h3>
   <ng-container *ngIf="!milestones">
@@ -71,6 +74,7 @@
       <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
     </ion-item>
   </ng-container>
+
   <ng-container *ngFor="let milestone of milestones">
     <ion-item class="headline-4 milestone-name" lines="none"
       aria-describedby="milestone-description">
@@ -84,7 +88,8 @@
       color="light">
       <app-description [content]="milestone.description"></app-description>
     </ion-item>
-    <app-list-item *ngFor="let activity of milestone.activities; let i = index"
+    <app-list-item
+      *ngFor="let activity of milestone.activities; let i = index"
       [title]="activity.name"
       [leadImage]="activity.leadImage" [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
       (click)="gotoActivity(activity)"
@@ -112,6 +117,7 @@
       Total Points Earned: {{getEarnedPoints}}
     </ion-label>
   </ion-item>
+
   <app-list-item *ngFor="let achievement of achievements"
     [title]="achievement.name"
     subtitle1="{{achievement.points ? achievement.points + ' Pts' : null}}" subtitle1Color="medium"
