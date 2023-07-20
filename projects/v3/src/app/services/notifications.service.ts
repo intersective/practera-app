@@ -584,14 +584,15 @@ export class NotificationsService {
 
     return todoItem;
   }
-/**
- * Will add chat notification to the notification list.
- *  - before it add check is there any other chat notification there.
- *  - if it is, it will replace that with the new chat notification todo item.
- *  - if not will add chat notification todo item to notification list.
- * and after this will update _notifications$ subject to broadcast the new update
- * @param chatTodoItem normalized Todo item for chat
- */
+
+  /**
+   * Will add chat notification to the notification list.
+   *  - before it add check is there any other chat notification there.
+   *  - if it is, it will replace that with the new chat notification todo item.
+   *  - if not will add chat notification todo item to notification list.
+   * and after this will update _notifications$ subject to broadcast the new update
+   * @param chatTodoItem normalized Todo item for chat
+   */
   private _addChatTodoItem(chatTodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
