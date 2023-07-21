@@ -14,7 +14,7 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit {
   display = 'activities';
 
   experience$ = this.homeService.experience$;
@@ -36,13 +36,13 @@ export class HomePage implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notification: NotificationsService
+    private notification: NotificationsService,
   ) { }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.projectProgress$.pipe(
+    this.subscriptions.push(this.homeService.milestones$.pipe(
       distinctUntilChanged(),
       filter(milestones => milestones !== null),
     ).subscribe(
@@ -60,31 +60,21 @@ export class HomePage implements OnInit, OnDestroy {
         this.experienceProgress = res;
       }
     ));
-    /* this.subscriptions.push(this.homeService.projectProgress$.pipe(
+    this.subscriptions.push(this.homeService.projectProgress$.pipe(
       filter(progress => progress !== null),
     ).subscribe(
       progress => {
-        console.log('projectProgress', progress);
-
         progress?.milestones.forEach(m => {
           m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
         });
       }
-    )); */
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => {
-      if (subs.closed !== true) {
-        subs.unsubscribe();
-      }
-    });
+    ));
+    this.homeService.getMilestones();
   }
 
   ionViewDidEnter() {
-    this.homeService.getMilestones();
-    this.homeService.getProjectProgress();
     this.achievementService.getAchievements();
+    this.homeService.getProjectProgress();
   }
 
   goBack() {
@@ -99,23 +89,25 @@ export class HomePage implements OnInit, OnDestroy {
     if (activity.isLocked) {
       return 'lock-closed';
     }
-    if (!activity.progress) {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress) {
       return 'chevron-forward';
     }
-    if (activity.progress === 1) {
+    if (progress === 1) {
       return 'checkmark-circle';
     }
-    return '';
+    return null;
   }
 
   endingIconColor(activity) {
-    if (!activity.progress || activity.isLocked) {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress || activity.isLocked) {
       return 'medium';
     }
-    if (activity.progress === 1) {
+    if (progress === 1) {
       return 'success';
     }
-    return '';
+    return null;
   }
 
   gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
@@ -147,9 +139,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.notification.achievementPopUp('', achievement);
   }
 
-  endingProgress(progress) {
+  endingProgress(activity): number {
+    const progress = this.activityProgresses[activity.id];
     if (!progress || progress === 1) {
-      return '';
+      return undefined;
     }
     return progress;
   }
