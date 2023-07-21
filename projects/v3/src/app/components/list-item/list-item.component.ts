@@ -30,7 +30,7 @@ export class ListItemComponent {
   @Input() endingTextColor: string;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
-  @Input() endingProgress: number;
+  @Input() endingProgress: number = undefined;
   // whether hightlight the background or not
   @Input() active: boolean;
   @Input() isEventItem: boolean;
