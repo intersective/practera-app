@@ -17,7 +17,7 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit {
   display = 'activities';
 
-  // experience$ = this.homeService.experience$;
+  experience$ = this.homeService.experience$;
   activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
@@ -29,8 +29,6 @@ export class HomePage implements OnInit {
   isMobile: boolean;
   activityProgresses = {};
 
-  kjh;
-
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -38,19 +36,18 @@ export class HomePage implements OnInit {
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notification: NotificationsService
+    private notification: NotificationsService,
   ) { }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.projectProgress$.pipe(
+    this.subscriptions.push(this.homeService.milestones$.pipe(
       distinctUntilChanged(),
       filter(milestones => milestones !== null),
     ).subscribe(
       res => {
         this.milestones = res;
-        this.kjh = res;
       }
     ));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(
@@ -63,42 +60,21 @@ export class HomePage implements OnInit {
         this.experienceProgress = res;
       }
     ));
-    this.subscriptions.push(this.homeService.experience$.subscribe(
-      res => {
-        this.experience = res;
-      }
-    ));
-    /* this.subscriptions.push(this.homeService.projectProgress$.pipe(
+    this.subscriptions.push(this.homeService.projectProgress$.pipe(
       filter(progress => progress !== null),
     ).subscribe(
       progress => {
-        console.log('projectProgress', progress);
-
         progress?.milestones.forEach(m => {
           m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
         });
       }
-    )); */
-
+    ));
     this.homeService.getMilestones();
-    this.homeService.getProjectProgress();
+  }
+
+  ionViewDidEnter() {
     this.achievementService.getAchievements();
-  }
-
-  resetExperience() {
-    const experience = this.experience;
-    this.experience = null;
-    this.experience = experience;
-  }
-
-  resetMilestones() {
-    // if (this.milestones === null) {
-    this.milestones = [...this.milestones, ...this.kjh];
-    //   return;
-    // }
-    // this.kjh = this.milestones;
-    // this.milestones = null;
-    // this.milestones = milestones;
+    this.homeService.getProjectProgress();
   }
 
   goBack() {
@@ -113,23 +89,25 @@ export class HomePage implements OnInit {
     if (activity.isLocked) {
       return 'lock-closed';
     }
-    if (!activity.progress) {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress) {
       return 'chevron-forward';
     }
-    if (activity.progress === 1) {
+    if (progress === 1) {
       return 'checkmark-circle';
     }
-    return '';
+    return null;
   }
 
   endingIconColor(activity) {
-    if (!activity.progress || activity.isLocked) {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress || activity.isLocked) {
       return 'medium';
     }
-    if (activity.progress === 1) {
+    if (progress === 1) {
       return 'success';
     }
-    return '';
+    return null;
   }
 
   gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
@@ -161,9 +139,10 @@ export class HomePage implements OnInit {
     this.notification.achievementPopUp('', achievement);
   }
 
-  endingProgress(progress) {
+  endingProgress(activity): number {
+    const progress = this.activityProgresses[activity.id];
     if (!progress || progress === 1) {
-      return '';
+      return undefined;
     }
     return progress;
   }
