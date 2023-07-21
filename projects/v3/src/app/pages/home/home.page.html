@@ -20,9 +20,13 @@
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
-          <ng-container *ngIf="(experience$ | async ) as experience">
+          <ng-container *ngIf="(experience$ | async) as experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
-            <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100" aria-hidden="true"></ion-progress-bar>
+            <ion-progress-bar
+              *ngIf="experienceProgress >= 0"
+              color="primary"
+              [value]="experienceProgress / 100"
+              aria-hidden="true"></ion-progress-bar>
 
             <div class="exp-content">
               <h1 class="headline-2">{{ experience.name }}</h1>
@@ -88,15 +92,17 @@
       color="light">
       <app-description [content]="milestone.description"></app-description>
     </ion-item>
+
     <app-list-item
       *ngFor="let activity of milestone.activities; let i = index"
       [title]="activity.name"
-      [leadImage]="activity.leadImage" [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
+      [leadImage]="activity.leadImage"
+      [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
       (click)="gotoActivity(activity)"
       (keydown)="gotoActivity(activity, $event)"
       [endingIcon]="endingIcon(activity)"
       [endingIconColor]="endingIconColor(activity)"
-      [endingProgress]="endingProgress(activity.progress)"
+      [endingProgress]="endingProgress(activity)"
       class="focusable"
       tabindex="0"
       role="button">

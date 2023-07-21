@@ -636,17 +636,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
           {
             text: $localize`OK`,
             role: 'cancel',
-            /*
-              // doesn't work on iOS device, disable now to visit back later when it has cross-browser support
-              handler: () => {
-              return setTimeout(() => {
-                return this.document.getElementById(`${requiredQuestions[0].id}`).scrollIntoView({
-                  block: 'start',
-                  behavior: 'smooth',
-                  inline: 'nearest'
-                });
-              }, 500);
-            } */
           }
         ],
       });
