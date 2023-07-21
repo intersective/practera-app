@@ -14,10 +14,10 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
+  // experience$ = this.homeService.experience$;
   activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
@@ -28,6 +28,8 @@ export class HomePage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   isMobile: boolean;
   activityProgresses = {};
+
+  kjh;
 
   constructor(
     private router: Router,
@@ -48,6 +50,7 @@ export class HomePage implements OnInit, OnDestroy {
     ).subscribe(
       res => {
         this.milestones = res;
+        this.kjh = res;
       }
     ));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(
@@ -58,6 +61,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
       res => {
         this.experienceProgress = res;
+      }
+    ));
+    this.subscriptions.push(this.homeService.experience$.subscribe(
+      res => {
+        this.experience = res;
       }
     ));
     /* this.subscriptions.push(this.homeService.projectProgress$.pipe(
@@ -71,20 +79,26 @@ export class HomePage implements OnInit, OnDestroy {
         });
       }
     )); */
-  }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => {
-      if (subs.closed !== true) {
-        subs.unsubscribe();
-      }
-    });
-  }
-
-  ionViewDidEnter() {
     this.homeService.getMilestones();
     this.homeService.getProjectProgress();
     this.achievementService.getAchievements();
+  }
+
+  resetExperience() {
+    const experience = this.experience;
+    this.experience = null;
+    this.experience = experience;
+  }
+
+  resetMilestones() {
+    // if (this.milestones === null) {
+    this.milestones = [...this.milestones, ...this.kjh];
+    //   return;
+    // }
+    // this.kjh = this.milestones;
+    // this.milestones = null;
+    // this.milestones = milestones;
   }
 
   goBack() {
