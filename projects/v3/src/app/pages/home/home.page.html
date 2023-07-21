@@ -14,17 +14,19 @@
 </ion-header>
 
 <ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
-  <ion-button (click)="resetMilestones()">reset milestone</ion-button>
-  <ion-button (click)="resetExperience()">reset exp</ion-button>
   <main aria-labelledby="homecontent">
     <h1 id="homecontent" class="for-accessibility" i18n>Home content</h1>
     <ion-grid style="padding: inherit;">
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
-          <ng-container *ngIf="experience">
+          <ng-container *ngIf="(experience$ | async) as experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
-            <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100" aria-hidden="true"></ion-progress-bar>
+            <ion-progress-bar
+              *ngIf="experienceProgress >= 0"
+              color="primary"
+              [value]="experienceProgress / 100"
+              aria-hidden="true"></ion-progress-bar>
 
             <div class="exp-content">
               <h1 class="headline-2">{{ experience.name }}</h1>
@@ -100,7 +102,7 @@
       (keydown)="gotoActivity(activity, $event)"
       [endingIcon]="endingIcon(activity)"
       [endingIconColor]="endingIconColor(activity)"
-      [endingProgress]="endingProgress(activity.progress)"
+      [endingProgress]="endingProgress(activity)"
       class="focusable"
       tabindex="0"
       role="button">
