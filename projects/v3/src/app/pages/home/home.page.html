@@ -14,13 +14,15 @@
 </ion-header>
 
 <ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
+  <ion-button (click)="resetMilestones()">reset milestone</ion-button>
+  <ion-button (click)="resetExperience()">reset exp</ion-button>
   <main aria-labelledby="homecontent">
     <h1 id="homecontent" class="for-accessibility" i18n>Home content</h1>
     <ion-grid style="padding: inherit;">
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
-          <ng-container *ngIf="(experience$ | async ) as experience">
+          <ng-container *ngIf="experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
             <ion-progress-bar *ngIf="experienceProgress >= 0" color="primary" [value]="experienceProgress / 100" aria-hidden="true"></ion-progress-bar>
 
@@ -88,10 +90,12 @@
       color="light">
       <app-description [content]="milestone.description"></app-description>
     </ion-item>
+
     <app-list-item
       *ngFor="let activity of milestone.activities; let i = index"
       [title]="activity.name"
-      [leadImage]="activity.leadImage" [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
+      [leadImage]="activity.leadImage"
+      [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
       (click)="gotoActivity(activity)"
       (keydown)="gotoActivity(activity, $event)"
       [endingIcon]="endingIcon(activity)"
