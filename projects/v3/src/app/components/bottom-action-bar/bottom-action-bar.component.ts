@@ -15,6 +15,7 @@ export class BottomActionBarComponent {
   constructor() {}
 
   onClick(clickEvent: Event) {
+    // make sure it's the click event that triggers "handleClick"
     if (clickEvent.type === 'click' && this.disabled === false) {
       return this.handleClick.emit(clickEvent);
     }
