@@ -9,10 +9,17 @@ export class BottomActionBarComponent {
 
   @Input() text: string;
   @Input() color: string = 'primary';
-  @Input() disabled: boolean;
+  @Input() disabled: boolean = false;
   @Output() handleClick = new EventEmitter();
 
   constructor() {}
 
+  onClick(clickEvent: Event) {
+    if (clickEvent.type === 'click' && this.disabled === false) {
+      return this.handleClick.emit(clickEvent);
+    }
+
+    return;
+  }
 }
 
