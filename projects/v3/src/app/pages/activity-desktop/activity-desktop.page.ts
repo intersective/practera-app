@@ -135,10 +135,23 @@ export class ActivityDesktopPage {
     });
   }
 
+  /**
+   * Save the assessment
+   *
+   * @param   {}event  save event emitted from the assessment component
+   * @param   {Task}  task   the current task
+   *
+   * @return  {any}
+   */
   async saveAssessment(event, task: Task) {
-    if (event.saveInProgress && this.loading) {
+    // autoSave must be false to submit the assessment
+    // loading is mainly for cosmetic purpose
+    // this is made to mainly capture autoSave = true & loading = true
+    // to prevent double submission
+    if (event.autoSave && this.loading) {
       return;
     }
+
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
@@ -155,12 +168,12 @@ export class ActivityDesktopPage {
         throw new Error("Error submitting assessment");
       }
 
-      if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+      if (this.assessment.pulseCheck === true && event.autoSave === false) {
         await this.assessmentService.pullFastFeedback();
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-      if (!event.saveInProgress) {
+      if (!event.autoSave) {
         this.notificationsService.assessmentSubmittedToast();
         // get the latest activity tasks and navigate to the next task
         this.activityService.getActivity(this.activity.id, false, task, () => {
