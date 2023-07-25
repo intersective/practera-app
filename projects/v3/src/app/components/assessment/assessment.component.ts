@@ -121,7 +121,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
           }
 
           if (data.autoSave === false) {
-            return this._submitWithAnswer(data);
+            return this._submitAnswer(data);
           }
         },
         // save/submission error handling http 500
@@ -419,7 +419,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return answers;
   }
 
-  async _submitWithAnswer({autoSave = false, goBack = false}) {
+  async _submitAnswer({autoSave = false, goBack = false}) {
     const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
