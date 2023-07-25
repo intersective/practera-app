@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, tap } from 'rxjs/operators';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
@@ -14,6 +15,14 @@ import { concatMap, delay, tap } from 'rxjs/operators';
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
+  animations: [
+    trigger('tickAnimation', [
+      state('visible', style({ transform: 'scale(1)', opacity: 1 })),
+      state('hidden', style({ transform: 'scale(0)', opacity: 0 })),
+      transition('hidden => visible', animate('200ms ease-out')),
+      transition('visible => hidden', animate('100ms ease-in')),
+    ]),
+  ],
 })
 export class AssessmentComponent implements OnChanges, OnDestroy {
   /**
@@ -46,6 +55,24 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
+
+  saved: boolean = false;
+
+  onAutoSaveSuccess() {
+    this.saved = true;
+  }
+  change() {
+    this.saved = !this.saved;
+  }
+
+  onAnimationEnd(event) {
+    if (event.toState === 'visible') {
+      // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
+      setTimeout(() => {
+        this.saved = false;
+      }, 1000); // Adjust the delay as per your preference (in milliseconds)
+    }
+  }
 
   submitActions = new Subject<{
     saveInProgress: boolean;
