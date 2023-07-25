@@ -28,7 +28,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
-  @Input() assessment: Assessment;
+  @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
@@ -325,9 +325,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   /**
    * When user click the bottom button
    */
-  continueToNextTask(event) {
-    console.log('continueToNextTask::', event);
-
+  continueToNextTask() {
     switch (this._btnAction) {
       case 'submit':
         this.btnDisabled$.next(true);
@@ -336,6 +334,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
           goBack: false,
         });
       case 'readFeedback':
+        this.btnDisabled$.next(true);
         return this.readFeedback.emit(this.submission.id);
       default:
         return this.continue.emit();
@@ -423,6 +422,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
+
     if (!autoSave && requiredQuestions.length > 0) {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
