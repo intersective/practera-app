@@ -204,7 +204,7 @@ export class ActivityDesktopPage {
         // get the latest activity tasks and navigate to the next task
         // wait for a while for the server to save the "read feedback" status
         tap(() => this.activityService.getActivity(this.activity.id, true, task)),
-        delay(500)
+        delay(400)
       ).toPromise();
       await this.reviewRatingPopUp();
 

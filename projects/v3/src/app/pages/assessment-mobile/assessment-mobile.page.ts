@@ -151,10 +151,17 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async readFeedback(event) {
-    await this.assessmentService.saveFeedbackReviewed(event).toPromise();
-    await this.reviewRatingPopUp();
-    // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activityId, true, this.task);
+    try {
+      await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+      await this.reviewRatingPopUp();
+
+      this.btnDisabled$.next(false);
+      // get the latest activity tasks and navigate to the next task
+      return this.activityService.getActivity(this.activityId, true, this.task);
+    } catch(err) {
+      this.btnDisabled$.next(false);
+      console.error(err);
+    }
   }
 
   nextTask() {
