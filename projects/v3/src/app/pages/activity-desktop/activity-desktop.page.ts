@@ -8,6 +8,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { delay, tap } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -196,15 +197,25 @@ export class ActivityDesktopPage {
   }
 
   async readFeedback(submissionId, task: Task) {
-    await this.assessmentService.saveFeedbackReviewed(submissionId).toPromise();
-    setTimeout(
-      // get the latest activity tasks and navigate to the next task
-      // wait for a while for the server to save the "read feedback" status
-      () => this.activityService.getActivity(this.activity.id, true, task),
-      500
-    );
-    await this.reviewRatingPopUp();
-    return true;
+    try {
+      this.loading = true;
+      const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
+      await savedReview.pipe(
+        // get the latest activity tasks and navigate to the next task
+        // wait for a while for the server to save the "read feedback" status
+        tap(() => this.activityService.getActivity(this.activity.id, true, task)),
+        delay(500)
+      ).toPromise();
+      await this.reviewRatingPopUp();
+
+      this.loading = false;
+      this.btnDisabled$.next(false);
+      return true;
+    } catch(err) {
+      console.error(err);
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    }
   }
 
   nextTask(task: Task) {
