@@ -1,3 +1,5 @@
 <div class="wrapper">
-  <ion-button mode="ios" [disabled]="disabled" [color]="color" (click)="handleClick.emit()">{{ text }}</ion-button>
+  <ion-button mode="ios" [disabled]="disabled" [color]="color"
+    (click)="onClick($event)"
+  >{{ text }}</ion-button>
 </div>

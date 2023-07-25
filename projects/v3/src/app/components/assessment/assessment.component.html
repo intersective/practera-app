@@ -266,7 +266,7 @@
       && review.status === 'done')"
     [text]="btnText"
     [disabled]="(btnDisabled$ | async)"
-    (handleClick)="continueToNextTask()"
+    (handleClick)="continueToNextTask($event)"
   ></app-bottom-action-bar>
 
   <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
