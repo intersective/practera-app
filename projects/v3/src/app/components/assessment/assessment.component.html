@@ -4,16 +4,6 @@
   <ion-skeleton-text animated ></ion-skeleton-text>
 </div>
 
-<div class="tick-container">
-  <!-- Add your tick icon here, e.g., an SVG or an image -->
-  <ion-icon name="checkmark-circle-outline" class="tick-icon"
-    [@tickAnimation]="saved ? 'visible' : 'hidden'"
-    (@tickAnimation.done)="onAnimationEnd($event)"
-  ></ion-icon>
-</div>
-
-<ion-button (click)="change()">asdasdad</ion-button>
-
 <!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
@@ -153,6 +143,17 @@
             </ion-item>
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
+              <!-- <ion-button (click)="change(question.id)">sim-save</ion-button> -->
+
+              <div class="tick-container">
+                <!-- Add your tick icon here, e.g., an SVG or an image -->
+                <ion-icon name="checkmark-circle-outline"
+                  class="tick-icon"
+                  [@tickAnimation]="saved[question.id] ? 'visible' : 'hidden'"
+                  (@tickAnimation.done)="onAnimationEnd($event, question.id)"
+                ></ion-icon>
+              </div>
+
               <ion-item *ngIf="!doAssessment && (
                 (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)

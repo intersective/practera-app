@@ -56,20 +56,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
-  saved: boolean = false;
+  saved: {
+    [key:number]: boolean
+  } = {};
 
-  onAutoSaveSuccess() {
-    this.saved = true;
-  }
-  change() {
-    this.saved = !this.saved;
-  }
-
-  onAnimationEnd(event) {
+  onAnimationEnd(event, questionId: number) {
     if (event.toState === 'visible') {
       // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
       setTimeout(() => {
-        this.saved = false;
+        this.saved[questionId] = false;
       }, 1000); // Adjust the delay as per your preference (in milliseconds)
     }
   }
@@ -122,9 +117,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       this.submitActions.pipe(
         concatMap(request => {
           if (request?.reviewSave) {
+            // this.saved[request.reviewSave.questionId] = true;
             return this.saveReviewAnswer(request.reviewSave);
           }
           if (request?.questionSave) {
+            this.saved[request.questionSave.questionId] = true;
             return this.saveQuestionAnswer(request.questionSave);
           }
           return of(request);
@@ -181,7 +178,10 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      delay(1000)
+      delay(1000),
+      tap((_res) => {
+        this.saved[questionInput.questionId] = false;
+      })
     );
   }
 
@@ -204,6 +204,10 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       delay(1000),
       tap((res) => { console.log(res) })
     );
+  }
+
+  change(questionId) {
+    this.saved[questionId] = true;
   }
 
   ngOnChanges() {
