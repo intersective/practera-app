@@ -135,6 +135,12 @@ export class UtilsService {
       return acc;
     }, {});
 
+    // If subject doesn't exist in the object, add it
+    if (!Object.values(comparand).includes(subject)) {
+      const newKey = Object.keys(result).length + 1;
+      result[newKey] = subject;
+    }
+
     return result as T;
   }
 
