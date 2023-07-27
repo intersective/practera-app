@@ -7,13 +7,14 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit {
   display = 'activities';
 
   experience$ = this.homeService.experience$;
@@ -25,6 +26,8 @@ export class HomePage implements OnInit, OnDestroy {
   experience: Experience;
 
   subscriptions: Subscription[] = [];
+  isMobile: boolean;
+  activityProgresses = {};
 
   constructor(
     private router: Router,
@@ -33,34 +36,45 @@ export class HomePage implements OnInit, OnDestroy {
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
-    private notification: NotificationsService
+    private notification: NotificationsService,
   ) { }
 
   ngOnInit() {
+    this.isMobile = this.utils.isMobile();
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.milestonesWithProgress$.subscribe(
-      res => this.milestones = res
+    this.subscriptions.push(this.homeService.milestones$.pipe(
+      distinctUntilChanged(),
+      filter(milestones => milestones !== null),
+    ).subscribe(
+      res => {
+        this.milestones = res;
+      }
     ));
     this.subscriptions.push(this.achievementService.achievements$.subscribe(
-      res => this.achievements = res
+      res => {
+        this.achievements = res;
+      }
     ));
     this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
-      res => this.experienceProgress = res
-    ));
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => {
-      if (subs.closed !== true) {
-        subs.unsubscribe();
+      res => {
+        this.experienceProgress = res;
       }
-    });
+    ));
+    this.subscriptions.push(this.homeService.projectProgress$.pipe(
+      filter(progress => progress !== null),
+    ).subscribe(
+      progress => {
+        progress?.milestones.forEach(m => {
+          m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
+        });
+      }
+    ));
+    this.homeService.getMilestones();
   }
 
   ionViewDidEnter() {
-    this.homeService.getMilestones();
-    this.homeService.getProjectProgress();
     this.achievementService.getAchievements();
+    this.homeService.getProjectProgress();
   }
 
   goBack() {
@@ -71,38 +85,29 @@ export class HomePage implements OnInit, OnDestroy {
     this.display = event.detail.value;
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   endingIcon(activity) {
     if (activity.isLocked) {
       return 'lock-closed';
     }
-    if (!activity.progress) {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress) {
       return 'chevron-forward';
     }
-    if (activity.progress === 1) {
+    if (progress === 1) {
       return 'checkmark-circle';
     }
-    return '';
+    return null;
   }
 
   endingIconColor(activity) {
-    if (!activity.progress || activity.isLocked) {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress || activity.isLocked) {
       return 'medium';
     }
-    if (activity.progress === 1) {
+    if (progress === 1) {
       return 'success';
     }
-    return '';
-  }
-
-  endingProgress(progress) {
-    if (!progress || progress === 1) {
-      return '';
-    }
-    return progress;
+    return null;
   }
 
   gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
@@ -132,6 +137,14 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     this.notification.achievementPopUp('', achievement);
+  }
+
+  endingProgress(activity): number {
+    const progress = this.activityProgresses[activity.id];
+    if (!progress || progress === 1) {
+      return undefined;
+    }
+    return progress;
   }
 
   get getIsPointsConfigured() {

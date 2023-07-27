@@ -7,36 +7,10 @@ ion-menu.collapsed {
   }
 
   .badge-wrapper {
-    height: 34px;
-    width: 34px;
     margin: 0px 5px 0px 5px;
-    --padding-top: 1px;
-    --padding-end: 1px;
-    --padding-bottom: 1px;
-    --padding-start: 1px;
-    display: flex;
-    position: relative;
-
-    .indicator {
-      position: absolute;
-      display: flex;
-      height: 24px;
-      width: 24px;
-    }
     .hint {
-      background-color: red;
-      position: absolute;
       right: -1.5px;
-      top:10px;
-      border-radius: 100%;
-      /* overflow: visible; */
-      font-size: 0.7em;
-      display: flex;
-      align-items: center;
-
-      .icon-inner {
-        height: 36px;
-      }
+      top: -5px;
     }
   }
 
@@ -69,8 +43,46 @@ ion-menu.collapsed {
 }
 
 ion-menu {
+  .hint {
+    font-size: 10px;
+    background-color: red;
+    border-radius: 8px;
+    padding: 2px 5px;
+  }
   border-right: 1px solid;
   border-right-color: var(--practera-grey-25);
+
+  .badge-wrapper {
+    height: 34px;
+    width: 34px;
+    margin: 0px 10px 0px 0px;
+
+    --padding-top: 1px;
+    --padding-end: 1px;
+    --padding-bottom: 1px;
+    --padding-start: 1px;
+    display: flex;
+    position: relative;
+
+    .indicator {
+      position: absolute;
+      display: flex;
+      height: 24px;
+      width: 24px;
+    }
+
+    .hint {
+      position: absolute;
+      right: 1.5px;
+      /* overflow: visible; */
+      display: flex;
+      align-items: center;
+
+      .icon-inner {
+        height: 36px;
+      }
+    }
+  }
 
   &.menu-pane-visible, & > ion-item-divider {
     --max-width: 280px;
@@ -100,6 +112,7 @@ ion-item-divider {
 
 .menu-item {
   --padding-start: 20px;
+
   ion-icon {
     // margin-left: 4px;
     margin-right: 20px;
