@@ -96,12 +96,12 @@ export class UtilsService {
     return this.lodash.has(object, path);
   }
 
-  flatten(array) {
-    return this.lodash.flatten(array);
+  flatten(values: any[]) {
+    return this.lodash.flatten(values);
   }
 
-  indexOf(array, value, fromIndex = 0) {
-    return this.lodash.indexOf(array, value, fromIndex);
+  indexOf(values: any[], value, fromIndex = 0) {
+    return this.lodash.indexOf(values, value, fromIndex);
   }
 
   remove(collections, callback) {
@@ -114,16 +114,28 @@ export class UtilsService {
   }
 
   // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
-  addOrRemove(array: Array<any>, value) {
-    const position = this.indexOf(array, value);
-    if (position > -1) {
-      // find the position of this value and remove it
-      array.splice(position, 1);
-    } else {
-      // add it to the value array
-      array.push(value);
+  addOrRemove<T extends {} | any[]>(comparand: T, subject: number | string): T {
+    if (Array.isArray(comparand)) {
+      const position = this.indexOf(comparand, subject);
+      if (position > -1) {
+        // find the index position of this subject and remove it
+        comparand.splice(position, 1);
+      } else {
+        // add it to the subject comparand
+        comparand.push(subject);
+      }
+      return comparand as T;
     }
-    return array;
+
+    // treat comparand as object & remove the subject from it
+    let result = Object.entries(comparand).reduce((acc, [key, value]) => {
+      if (value !== subject) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    return result as T;
   }
 
   /**
@@ -674,6 +686,8 @@ export class UtilsService {
   moveToNewLocale(newLocale: string) {
     const currentURL = this.getCurrentLocation();
     const currentLocale = this.getCurrentLocale();
+console.log(currentURL);
+console.log(currentLocale);
 
     if (currentLocale === newLocale) {
       return;
@@ -686,6 +700,8 @@ export class UtilsService {
     }
 
     // if pathname begin with different locale
+console.log(pathname);
+
     const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
