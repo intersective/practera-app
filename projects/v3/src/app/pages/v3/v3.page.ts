@@ -12,6 +12,7 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-v3',
@@ -186,9 +187,13 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.openMenu = false;
 
-    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
-    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
+    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
+    const notifications = this.notificationsService.getTodoItems().pipe(
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
+      })
+    );
+    this.subscriptions.push(notifications.subscribe());
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
