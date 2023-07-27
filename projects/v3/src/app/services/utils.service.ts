@@ -686,8 +686,6 @@ export class UtilsService {
   moveToNewLocale(newLocale: string) {
     const currentURL = this.getCurrentLocation();
     const currentLocale = this.getCurrentLocale();
-console.log(currentURL);
-console.log(currentLocale);
 
     if (currentLocale === newLocale) {
       return;
@@ -700,8 +698,6 @@ console.log(currentLocale);
     }
 
     // if pathname begin with different locale
-console.log(pathname);
-
     const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
