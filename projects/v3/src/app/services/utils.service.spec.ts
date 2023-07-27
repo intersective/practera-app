@@ -126,18 +126,34 @@ describe('UtilsService', () => {
 
     it('should accept object and remove subject from it', () => {
       const result = service.addOrRemove<object>({
-        subject1: 'new value 1',
-        subject2: 'new value 2',
-        subject3: 'new value 3',
-        subject4: 'new value 4',
-        subject5: 'new value 5',
-      }, 'new value 3');
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject3: 'new subject 3',
+        subject4: 'new subject 4',
+        subject5: 'new subject 5',
+      }, 'new subject 3');
 
       expect(result).toEqual({
-        subject1: 'new value 1',
-        subject2: 'new value 2',
-        subject4: 'new value 4',
-        subject5: 'new value 5',
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject4: 'new subject 4',
+        subject5: 'new subject 5',
+      });
+    });
+
+
+    it('should add value if the subject is not already available in the provided object', () => {
+      const result = service.addOrRemove<object>({
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject3: 'new subject 3',
+      }, 'new subject 4');
+
+      expect(result).toEqual({
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject3: 'new subject 3',
+        4: 'new subject 4',
       });
     });
   });
