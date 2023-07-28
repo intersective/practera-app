@@ -96,6 +96,7 @@ export class ReviewDesktopPage implements OnInit {
         this.assessment.id,
         this.review.id,
         this.submission.id,
+        event.answers
       ).toPromise();
 
       this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
