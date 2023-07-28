@@ -85,12 +85,12 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
 
 
     const action: {
-      autoSave?: boolean;
+      saveInProgress?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
-      autoSave: true,
+      saveInProgress: true,
       goBack: false,
     };
 
