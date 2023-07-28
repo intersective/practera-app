@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, delay, filter, tap } from 'rxjs/operators';
+import { concatMap, delay, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
@@ -133,39 +133,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
           console.error('save failed::', error);
           return this.notifications.assessmentSubmittedToast({ isFail: true });
         }
-        if (request?.questionSave) {
-          return this.saveQuestionAnswer(request.questionSave);
-        }
-        return of(request);
-      }),
-    ).subscribe(
-      (data: {
-        saveInProgress: boolean;
-        goBack: boolean;
-        questionSave?: {
-          submissionId: number;
-          questionId: number;
-          answer: string;
-        };
-        error?: any;
-      }): void | Promise<void> => {
-        if (!this.utils.isEmpty(data.error)) {
-          return this.notifications.assessmentSubmittedToast({
-            isFail: true,
-            label: $localize`Save failed.`,
-          });
-        }
-
-        if (data.saveInProgress === false) {
-          return this._submitWithoutAnswer(data);
-        }
-      },
-      // save/submission error handling http 500
-      (error: any) => {
-        console.error('save failed::', error);
-        return this.notifications.assessmentSubmittedToast({ isFail: true });
-      }
-    ));
+      )
+    );
   }
 
   /**
@@ -223,7 +192,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       comment,
     ).pipe(
       delay(800),
-      tap((res) => { console.log(res) })
     );
   }
 

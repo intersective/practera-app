@@ -101,7 +101,6 @@ describe('AssessmentMobilePage', () => {
   });
 
   it('should call goBack()', () => {
-    component.assessmentEle = jasmine.createSpyObj(`assessmentEle`, ['btnBackClicked']);
     component.goBack();
 
     expect(component['router'].navigate).toHaveBeenCalled();
