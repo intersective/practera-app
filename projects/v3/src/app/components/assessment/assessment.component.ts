@@ -26,11 +26,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
-  @Input() assessment: Assessment = null;
+  @Input() assessment: Assessment;
   @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
-  @Input() isMobile?: boolean = false;
+  @Input() isMobile?: boolean;
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -46,7 +46,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   @Output() continue = new EventEmitter();
 
   submitActions = new Subject<{
-    autoSave: boolean;
+    saveInProgress: boolean;
     goBack: boolean;
     questionSave?: {
       submissionId: number;
@@ -94,44 +94,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService
   ) {
-    this.subscriptions.push(
-      this.submitActions.pipe(
-        filter(() => !this._preventSubmission()), // skip when false
-        concatMap(request => {
-          if (request?.reviewSave) {
-            return this.saveReviewAnswer(request.reviewSave);
-          }
-          if (request?.questionSave) {
-            return this.saveQuestionAnswer(request.questionSave);
-          }
-          return of(request);
-        }),
-      ).subscribe(
-        (data: {
-          autoSave: boolean;
-          goBack: boolean;
-          questionSave?: {
-            submissionId: number;
-            questionId: number;
-            answer: string;
-          };
-          error?: any;
-        }): void | Promise<void> => {
-          if (!this.utils.isEmpty(data.error)) {
-            return this.notifications.assessmentSubmittedToast({
-              isFail: true,
-              label: $localize`Save failed.`,
-            });
-          }
-
-          if (data.autoSave === false) {
-            return this._submitAnswer(data);
-          }
-        },
-        // save/submission error handling http 500
-        (error: any) => {
-          console.error('save failed::', error);
-          return this.notifications.assessmentSubmittedToast({ isFail: true });
+    this.subscriptions.push(this.submitActions.pipe(
+      filter(() => !this._preventSubmission()), // skip when false
+      concatMap(request => {
+        if (request?.reviewSave) {
+          return this.saveReviewAnswer(request.reviewSave);
         }
         if (request?.questionSave) {
           return this.saveQuestionAnswer(request.questionSave);
@@ -202,7 +169,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      delay(800)
+      delay(1000)
     );
   }
 
@@ -222,7 +189,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(800),
+      delay(1000),
       tap((res) => { console.log(res) })
     );
   }
@@ -379,15 +346,30 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       case 'submit':
         this.btnDisabled$.next(true);
         return this.submitActions.next({
-          autoSave: false,
+          saveInProgress: false,
           goBack: false,
         });
       case 'readFeedback':
-        this.btnDisabled$.next(true);
         return this.readFeedback.emit(this.submission.id);
       default:
         return this.continue.emit();
     }
+  }
+
+  // When user click the save button
+  btnSaveClicked() {
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: false,
+    });
+  }
+
+  // When user click the back tutton
+  btnBackClicked() {
+    return this.submitActions.next({
+      saveInProgress: true,
+      goBack: true,
+    });
   }
 
   /**
@@ -467,12 +449,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return answers;
   }
 
-  async _submitAnswer({autoSave = false, goBack = false}) {
+  async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
     const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
-
-    if (!autoSave && requiredQuestions.length > 0) {
+    if (!saveInProgress && requiredQuestions.length > 0) {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
@@ -513,12 +494,157 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
 
     return this.save.emit({
-      autoSave,
+      saveInProgress,
       goBack,
       answers,
       assessmentId: this.assessment.id,
       contextId: this.contextId,
       submissionId: this.submission.id,
+    });
+  }
+
+  /**
+   * handle submission and autosave
+   * @param saveInProgress whether it is for save in progress or submit
+   * @param goBack use to unlock team assessment when leave assessment by clicking back button
+   */
+  async _submit(saveInProgress = false, goBack = false) {
+    // @NOTE forgiveable redundancy: 2022_11_29
+    // now we allow user to retrieve latest team status without re-login, so
+    // we need to make sure left opened assessment page cannot be submitted
+    // (e.g. the team submission page may still visible on client side even after
+    // user team status got modified)
+    if (this.doAssessment === true) {
+      await this.sharedService.getTeamInfo().toPromise();
+
+      if (this.assessment.isForTeam) {
+        const teamId = this.storage.getUser().teamId;
+        if (typeof teamId !== 'number') {
+          return this.notifications.alert({
+            message: 'Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.',
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel',
+              }
+            ],
+          });
+        }
+      }
+    }
+
+    this.save.emit({
+      action: this.action
+    });
+
+    /**
+     * This if statement will prevent save API request call for each change of the assessment. to make less load to servers.
+     * Check saveInProgress
+     * If it's true. that means it's an auto save or manual save acction.
+     * Then check btnDisabled
+     * If it's true. that means save API request or submit API request already send and waitng for response.
+     * Then we are not doing anything.
+     */
+    /* comment for the tempery solution autosave AV2-1326
+    // if (saveInProgress && this.btnDisabled$.getValue()) {
+    //   return;
+    // }
+
+    // this.btnDisabled$.next(true);
+    */
+
+
+    // filled answer collecting below is somewhat different from this.filledAnswers(), revisit later as this._submit() is not currently in-used
+    const answers = [];
+    let questionId = 0;
+    let assessment: AssessmentSubmitParams;
+
+    assessment = {
+      id: this.assessment.id
+    };
+    if (saveInProgress) {
+      assessment.inProgress = true;
+    }
+    if (this.submission && this.submission.id) {
+      assessment.submissionId = this.submission.id;
+    }
+
+    // form submission answers (submission API doesn't accept zero length array)
+    if (this.doAssessment) {
+      assessment.contextId = this.contextId;
+
+      if (this.assessment.isForTeam && goBack) {
+        assessment.unlock = true;
+      }
+      this.utils.each(this.questionsForm.value, (value, key) => {
+        questionId = +key.replace('q-', '');
+        let answer;
+        if (value) {
+          answer = value;
+        } else {
+          this.assessment.groups.forEach(group => {
+            const currentQuestion = group.questions.find(question => {
+              return question.id === questionId;
+            });
+            if (currentQuestion && currentQuestion.type === 'multiple') {
+              answer = [];
+            } else {
+              answer = null;
+            }
+          });
+        }
+        answers.push({
+          questionId: questionId,
+          answer: answer
+        });
+      });
+    }
+
+    // In review we also have comments for a question. and questionsForm value have both
+    // answer and comment. need to add them as separately
+    if (this.isPendingReview) {
+      assessment = Object.assign(assessment, {
+        reviewId: this.review.id
+      });
+
+      // post answers API doesn't accept empty array
+      // compulsory format: (even when no answers provided)
+      // [
+      //   { questionId: 1, answer: null, comment: null },
+      //   { questionId: 2, answer: null, comment: null },
+      //   { questionId: 3, answer: null, comment: null },
+      // ]
+      this.utils.each(this.questionsForm.value, (answer, key) => {
+        questionId = +key.replace('q-', '');
+        answers.push({
+          questionId,
+          answer: answer?.answer,
+          comment: answer?.comment,
+        });
+      });
+    }
+
+    // check if all required questions have answer when assessment done
+    const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
+    if (!saveInProgress && requiredQuestions.length > 0) {
+      this.btnDisabled$.next(false);
+      // display a pop up if required question not answered
+      return this.notifications.alert({
+        message: $localize`Required question answer missing!`,
+        // Please fill out the required fields.
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel',
+          }
+        ],
+      });
+    }
+
+    this.save.emit({
+      assessment,
+      answers,
+      action: this.action
     });
   }
 
