@@ -10,7 +10,7 @@ interface CTABtnType {
   styleUrls: ['./list-item.component.scss']
 })
 export class ListItemComponent {
-  @Input() loading: boolean;
+  @Input() loading?: boolean = false;
   @Input() lines? = '';
   @Input() leadingIcon: string;
   @Input() notificationIcon: string;
@@ -30,7 +30,7 @@ export class ListItemComponent {
   @Input() endingTextColor: string;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
-  @Input() endingProgress: number;
+  @Input() endingProgress: number = undefined;
   // whether hightlight the background or not
   @Input() active: boolean;
   @Input() isEventItem: boolean;

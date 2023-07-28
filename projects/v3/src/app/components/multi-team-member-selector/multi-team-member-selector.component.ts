@@ -98,12 +98,12 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     }
 
     const action: {
-      saveInProgress?: boolean;
+      autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
-      saveInProgress: true,
+      autoSave: true,
       goBack: false,
     };
 
@@ -168,4 +168,12 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
+  get isDisplayOnly(): boolean {
+    // reviewer can still see the question if it is not answerable
+    if (this.doReview === true && this.question?.canAnswer === false) {
+      return true;
+    }
+
+    return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
+  }
 }

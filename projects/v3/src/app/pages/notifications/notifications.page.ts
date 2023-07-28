@@ -5,6 +5,7 @@ import { UtilsService } from '@v3/app/services/utils.service';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeIn } from '@v3/app/animations';
 import { ModalController } from '@ionic/angular';
+import { HomeService, Milestone } from '@v3/app/services/home.service';
 import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
 
@@ -29,18 +30,35 @@ export class NotificationsPage implements OnInit, OnDestroy {
   eventReminders = [];
   subscriptions: Subscription[] = [];
   window; // document view
+  milestones: Milestone[];
+  isLockedActivities = {};
 
   constructor(
     private utils: UtilsService,
     private notificationsService: NotificationsService,
     private router: Router,
     private modalController: ModalController,
+    private readonly homeService: HomeService,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.window = this.document.defaultView;
   }
 
   ngOnInit() {
+    this.subscriptions.push(this.homeService.milestones$.subscribe(async milestones => {
+      if (milestones === null) {
+        await this.homeService.getMilestones();
+      }
+
+      this.milestones = milestones;
+
+      (milestones || []).forEach(milestone => {
+        milestone.activities.forEach(activity => {
+          this.isLockedActivities[activity.id] = activity.isLocked;
+        });
+      });
+    }));
+
     this.subscriptions.push(this.notificationsService.notification$.subscribe(items => {
       this.todoItems = items;
     }));
@@ -105,6 +123,12 @@ export class NotificationsPage implements OnInit, OnDestroy {
 
     switch (eventOrTodoItem.type) {
       case 'feedback_available':
+        if (this.isLockedActivities[activity_id] === true) {
+          this.notificationsService.presentToast($localize`This activity is locked. Please complete the previous activity first.`, {
+            duration: 1500,
+          });
+          return;
+        }
         await this.goToAssessment(activity_id, context_id, assessment_id);
         break;
 

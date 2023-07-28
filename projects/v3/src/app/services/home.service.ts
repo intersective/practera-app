@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { catchError, map, mergeMap, shareReplay, tap } from 'rxjs/operators';
+import { catchError, distinctUntilChanged, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -55,41 +55,9 @@ export class HomeService {
   private _milestones$ = new BehaviorSubject<Milestone[]>(null);
   milestones$ = this._milestones$.asObservable();
 
+  // milestone list with "progress" injected in each of the activities
   private _projectProgress$ = new BehaviorSubject<ProjectProgress>(null);
-  projectProgress$ = this._projectProgress$.asObservable();
-
-  milestonesWithProgress$ = this._milestones$.asObservable().pipe(
-    mergeMap(
-      mRes => this._projectProgress$.asObservable().pipe(map(
-        progress => {
-          const milestones = JSON.parse(JSON.stringify(mRes));
-          if (!milestones || !milestones.length) {
-            return null;
-          }
-          // emit the milestones only if progress hasn't come back
-          if (!progress || !progress.milestones) {
-            return milestones;
-          }
-          // add the progress to the activities
-          const activityProgress = [];
-          progress.milestones.forEach(m => m.activities ? m.activities.forEach(a => activityProgress[a.id] = a.progress) : null);
-          milestones.forEach((milestone, mIndex) => {
-            if (!milestone.activities || !milestone.activities.length) {
-              return;
-            }
-            milestone.activities.forEach((activity, aIndex) => {
-              if (activityProgress[activity.id]) {
-                milestones[mIndex].activities[aIndex].progress = activityProgress[activity.id];
-              }
-            });
-            }
-          );
-          return milestones;
-        }
-      ))
-    ),
-    shareReplay(1)
-  );
+  public projectProgress$ = this._projectProgress$.asObservable();
 
   constructor(
     private apolloService: ApolloService,
@@ -158,7 +126,8 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.milestones().pipe(map(res => this._normaliseProject(res))).subscribe();
     }
-    return this.apolloService.graphQLWatch(`
+
+    return this.apolloService.graphQLFetch(`
       {
         milestones{
           id
@@ -193,20 +162,21 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.projectProgress().pipe(map(res => this._handleProjectProgress(res))).subscribe();
     }
+
     return this.apolloService.graphQLFetch(
       `query {
-          project {
+        project {
+          progress
+          milestones{
+            id
             progress
-            milestones{
-              id
-              progress
-              activities{
-                id progress
-              }
+            activities{
+              id progress
             }
           }
-        }`,
-      ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+        }
+      }`,
+    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
   }
 
   private _handleProjectProgress(data) {

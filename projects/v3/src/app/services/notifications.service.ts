@@ -15,6 +15,7 @@ import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
+import { NetworkService } from './network.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -85,6 +86,11 @@ export class NotificationsService {
 
   private notifications: TodoItem[] = [];
 
+  private connection = {
+    informed: false,
+    isOnline: true,
+  };
+
   constructor(
     private modalController: ModalController,
     private alertController: AlertController,
@@ -96,12 +102,28 @@ export class NotificationsService {
     private storage: BrowserStorageService,
     private apolloService: ApolloService,
     private eventsService: EventService,
+    private networkService: NetworkService,
   ) {
     // after messages read need to update chat notification data on notification service
     this.utils.getEvent('chat-badge-update').subscribe(event => {
       this.getChatMessage().subscribe();
     });
-   }
+
+    this.networkService.isOnline.subscribe(isOnline => {
+      this.connection.isOnline = isOnline;
+
+      if (!isOnline) {
+        this.connection.informed = true;
+        return window.alert($localize`You've disconnected from internet, you may not be able to perform any action now.`);
+      }
+      if (this.connection.informed === true && isOnline) {
+        this.presentToast($localize`You are back online.`, {
+          color: 'success',
+          icon: 'checkmark-circle'
+        });
+      }
+    });
+  }
 
   dismiss() {
     return this.modalController.dismiss();
@@ -185,8 +207,35 @@ export class NotificationsService {
     return toast.present();
   }
 
-  assessmentSubmittedToast() {
-    return this.presentToast($localize`Assessment Submitted`, {
+  /**
+   * show assessment submission response status toast
+   *
+   * @param   {boolean}  isFail  flag to show success or fail message
+   *
+   * @return  {Promise<void>}
+   */
+  assessmentSubmittedToast(option?: {
+    isFail: boolean;
+    label?: string;
+  }): void | Promise<void> {
+    if (!this.connection.isOnline) {
+      return alert('You are offline, please check your internet connection and try again.');
+    }
+
+    if (option?.isFail === true) {
+      if (option?.label) {
+        return this.presentToast(option.label, {
+          color: 'danger',
+          icon: 'close-circle'
+        });
+      }
+
+      return this.presentToast($localize`Submission failed.`, {
+        color: 'danger',
+        icon: 'close-circle'
+      });
+    }
+    return this.presentToast($localize`Assessment Submitted.`, {
       color: 'success',
       icon: 'checkmark-circle'
     });
@@ -539,14 +588,15 @@ export class NotificationsService {
 
     return todoItem;
   }
-/**
- * Will add chat notification to the notification list.
- *  - before it add check is there any other chat notification there.
- *  - if it is, it will replace that with the new chat notification todo item.
- *  - if not will add chat notification todo item to notification list.
- * and after this will update _notifications$ subject to broadcast the new update
- * @param chatTodoItem normalized Todo item for chat
- */
+
+  /**
+   * Will add chat notification to the notification list.
+   *  - before it add check is there any other chat notification there.
+   *  - if it is, it will replace that with the new chat notification todo item.
+   *  - if not will add chat notification todo item to notification list.
+   * and after this will update _notifications$ subject to broadcast the new update
+   * @param chatTodoItem normalized Todo item for chat
+   */
   private _addChatTodoItem(chatTodoItem: TodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {

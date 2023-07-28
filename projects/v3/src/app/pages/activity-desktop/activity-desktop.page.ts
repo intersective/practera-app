@@ -8,6 +8,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
+import { delay, tap } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -77,12 +78,22 @@ export class ActivityDesktopPage {
         action: this.route.snapshot.data.action,
       };
 
-      this.activityService.getActivity(activityId, proceedToNextTask, undefined, () => {
+      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async () => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
         if (!proceedToNextTask && assessmentId > 0) {
           const filtered: Task = this.utils.find(this.activity.tasks, {
             id: assessmentId
           });
+
+          // if API not returning any related activity, handle bad API response gracefully
+          if (filtered === undefined) {
+            await this.notificationsService.alert({
+              header: $localize`Activity not found`,
+              message: $localize`The activity you are looking for is not found or haven't been unlocked for your access yet.`,
+            });
+            return this.goBack();
+          }
+
           this.goToTask({
             id: assessmentId,
             contextId: this.urlParams.contextId,
@@ -125,50 +136,86 @@ export class ActivityDesktopPage {
     });
   }
 
+  /**
+   * Save the assessment
+   *
+   * @param   {}event  save event emitted from the assessment component
+   * @param   {Task}  task   the current task
+   *
+   * @return  {any}
+   */
   async saveAssessment(event, task: Task) {
-    if (event.saveInProgress && this.loading) {
+    // autoSave must be false to submit the assessment
+    // loading is mainly for cosmetic purpose
+    // this is made to mainly capture autoSave = true & loading = true
+    // to prevent double submission
+    if (event.autoSave && this.loading) {
       return;
     }
+
     this.loading = true;
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
-    await this.assessmentService.submitAssessment(
-      event.submissionId,
-      event.assessmentId,
-      event.contextId,
-    ).toPromise();
+    try {
+      const saved = await this.assessmentService.submitAssessment(
+        event.submissionId,
+        event.assessmentId,
+        event.contextId,
+        event.answers
+      ).toPromise();
 
-    if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
-      await this.assessmentService.pullFastFeedback();
-    }
+      // http 200 but error
+      if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
+        throw new Error("Error submitting assessment");
+      }
 
-    this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-    if (!event.saveInProgress) {
-      this.notificationsService.assessmentSubmittedToast();
-      // get the latest activity tasks and navigate to the next task
-      this.activityService.getActivity(this.activity.id, false, task, () => {
-        this.loading = false;
-        this.btnDisabled$.next(false);
-      });
-      return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
-    } else {
-      setTimeout(() => {
-        this.btnDisabled$.next(false);
-        this.loading = false;
-      }, SAVE_PROGRESS_TIMEOUT);
+      if (this.assessment.pulseCheck === true && event.autoSave === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
+
+      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      if (!event.autoSave) {
+        this.notificationsService.assessmentSubmittedToast();
+        // get the latest activity tasks and navigate to the next task
+        this.activityService.getActivity(this.activity.id, false, task, () => {
+          this.loading = false;
+          this.btnDisabled$.next(false);
+        });
+        return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
+      } else {
+        setTimeout(() => {
+          this.btnDisabled$.next(false);
+          this.loading = false;
+        }, SAVE_PROGRESS_TIMEOUT);
+      }
+    } catch (error) {
+      this.loading = false;
+      this.btnDisabled$.next(false);
+      this.savingText$.next('');
+      this.notificationsService.assessmentSubmittedToast({ isFail: true });
     }
   }
 
   async readFeedback(submissionId, task: Task) {
-    await this.assessmentService.saveFeedbackReviewed(submissionId).toPromise();
-    setTimeout(
-      // get the latest activity tasks and navigate to the next task
-      // wait for a while for the server to save the "read feedback" status
-      () => this.activityService.getActivity(this.activity.id, true, task),
-      500
-    );
-    await this.reviewRatingPopUp();
-    return true;
+    try {
+      this.loading = true;
+      const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
+      await savedReview.pipe(
+        // get the latest activity tasks and navigate to the next task
+        // wait for a while for the server to save the "read feedback" status
+        tap(() => this.activityService.getActivity(this.activity.id, true, task)),
+        delay(400)
+      ).toPromise();
+      await this.reviewRatingPopUp();
+
+      this.loading = false;
+      this.btnDisabled$.next(false);
+      return true;
+    } catch(err) {
+      console.error(err);
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    }
   }
 
   nextTask(task: Task) {

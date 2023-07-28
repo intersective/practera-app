@@ -455,7 +455,7 @@ export class AssessmentService {
       questionId,
       answer,
     };
-    return this.apolloService.graphQLMutate(
+    return this.apolloService.continuousGraphQLMutate(
       `mutation saveSubmissionAnswer(${paramsFormat}) {
         saveSubmissionAnswer(${params}) {
           success
@@ -477,7 +477,7 @@ export class AssessmentService {
       answer,
       comment,
     };
-    return this.apolloService.graphQLMutate(
+    return this.apolloService.continuousGraphQLMutate(
       `mutation saveReviewAnswer(${paramsFormat}) {
         saveReviewAnswer(${params}) {
           success
@@ -489,13 +489,14 @@ export class AssessmentService {
   }
 
   // set the status of the submission to 'done' or 'pending approval'
-  submitAssessment(submissionId: number, assessmentId: number, contextId: number) {
-    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!';
-    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId';
+  submitAssessment(submissionId: number, assessmentId: number, contextId: number, answers: Answer[]) {
+    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]';
+    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers';
     const variables = {
       submissionId,
       assessmentId,
       contextId,
+      answers,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitAssessment(${paramsFormat}) {
@@ -512,13 +513,14 @@ export class AssessmentService {
    * @param submissionId - submission id
    * @returns
     */
-  submitReview(assessmentId: number, reviewId: number, submissionId: number) {
-    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!';
-    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId';
+  submitReview(assessmentId: number, reviewId: number, submissionId: number, answers: Answer[]) {
+    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
+    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
     const variables = {
       assessmentId,
       reviewId,
       submissionId,
+      answers,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitReview(${paramsFormat}) {

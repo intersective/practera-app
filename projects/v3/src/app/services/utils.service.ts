@@ -37,7 +37,6 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private platform: Platform,
     private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
@@ -97,12 +96,12 @@ export class UtilsService {
     return this.lodash.has(object, path);
   }
 
-  flatten(array) {
-    return this.lodash.flatten(array);
+  flatten(values: any[]) {
+    return this.lodash.flatten(values);
   }
 
-  indexOf(array, value, fromIndex = 0) {
-    return this.lodash.indexOf(array, value, fromIndex);
+  indexOf(values: any[], value, fromIndex = 0) {
+    return this.lodash.indexOf(values, value, fromIndex);
   }
 
   remove(collections, callback) {
@@ -115,16 +114,34 @@ export class UtilsService {
   }
 
   // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
-  addOrRemove(array: Array<any>, value) {
-    const position = this.indexOf(array, value);
-    if (position > -1) {
-      // find the position of this value and remove it
-      array.splice(position, 1);
-    } else {
-      // add it to the value array
-      array.push(value);
+  addOrRemove<T extends {} | any[]>(comparand: T, subject: number | string): T {
+    if (Array.isArray(comparand)) {
+      const position = this.indexOf(comparand, subject);
+      if (position > -1) {
+        // find the index position of this subject and remove it
+        comparand.splice(position, 1);
+      } else {
+        // add it to the subject comparand
+        comparand.push(subject);
+      }
+      return comparand as T;
     }
-    return array;
+
+    // treat comparand as object & remove the subject from it
+    let result = Object.entries(comparand).reduce((acc, [key, value]) => {
+      if (value !== subject) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    // If subject doesn't exist in the object, add it
+    if (!Object.values(comparand).includes(subject)) {
+      const newKey = Object.keys(result).length + 1;
+      result[newKey] = subject;
+    }
+
+    return result as T;
   }
 
   /**
@@ -295,13 +312,13 @@ export class UtilsService {
     let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
 
     if (date.isSame(compareDate, 'd')) {
-      return new Intl.DateTimeFormat(defaultLocale, {
-        hour12: true,
+      return new Intl.DateTimeFormat(currentLocale, { // support en-US
+        hour12: this.isHour12Format(currentLocale),
         hour: 'numeric',
         minute: 'numeric'
       }).format(date.toDate());
     }
-    return new Intl.DateTimeFormat(defaultLocale, {
+    return new Intl.DateTimeFormat(defaultLocale, { // support en-GB
       month: 'short',
       day: 'numeric'
     }).format(date.toDate());
@@ -319,10 +336,8 @@ export class UtilsService {
     const date = new Date(this.iso8601Formatter(time));
 
     const currentLocale = this.getCurrentLocale();
-    // when in English, default to format of "en-GB" from previous code
-    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
-    const formattedTime = new Intl.DateTimeFormat(defaultLocale, {
-      hour12: true,
+    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
+      hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
     }).format(date);
@@ -573,12 +588,23 @@ export class UtilsService {
   }
 
   /**
+   * Intl.DateTimeFormat() take in locale but hour12 format is not consistent
+   * @param locale string - locale
+   */
+  isHour12Format(locale: string): boolean {
+    // code not suitable to cover all locales,
+    // but enough for whatever we're supporting now
+    return (locale === 'en-GB') ? false : true;  // 24 hours for en-GB
+  }
+
+  /**
    *
    * @returns time that formated to 12 hours
    */
   getFormatedCurrentTime() {
+    const currentLocale = this.getCurrentLocale();
     return new Intl.DateTimeFormat(this.getCurrentLocale(), {
-      hour12: true,
+      hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
     }).format(new Date());
@@ -722,5 +748,24 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  getSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program)=> {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      let supportEmail = currentExperience.experience.support_email;
+      if (supportEmail) {
+        return supportEmail;
+      }
+      return null;
+    }
+    return null;
   }
 }

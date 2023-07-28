@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject } from 'rxjs';
@@ -30,6 +31,7 @@ export class ReviewDesktopPage implements OnInit {
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
     private reviewService: ReviewService,
+    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit(): void {
@@ -82,7 +84,7 @@ export class ReviewDesktopPage implements OnInit {
   }
 
   async saveReview(event) {
-    if (event.saveInProgress && this.loading) {
+    if (event.autoSave && this.loading) {
       return;
     }
 
@@ -94,6 +96,7 @@ export class ReviewDesktopPage implements OnInit {
         this.assessment.id,
         this.review.id,
         this.submission.id,
+        event.answers
       ).toPromise();
 
       this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
@@ -115,6 +118,7 @@ export class ReviewDesktopPage implements OnInit {
       this.savingText$.next($localize`Save Failed.`);
       this.loading = false;
       this.btnDisabled$.next(false);
+      this.notificationsService.assessmentSubmittedToast({isFail: true});
     }
   }
 
