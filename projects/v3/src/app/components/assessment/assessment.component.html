@@ -56,8 +56,7 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div [ngClass]="{'ion-padding': !isMobile}"
-    class="main-content" style="min-height: 100%;">
+  <div [ngClass]="{'ion-padding': !isMobile}" class="main-content" style="min-height: 100%;">
     <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
