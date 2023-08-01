@@ -56,7 +56,8 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div [ngClass]="{'ion-padding': !isMobile}" class="main-content" style="min-height: 100%;">
+  <div [ngClass]="{'ion-padding': !isMobile}"
+    class="main-content" style="min-height: 100%;">
     <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
@@ -260,14 +261,20 @@
     </form>
   </div>
 
-  <app-bottom-action-bar
-    *ngIf="!(action === 'review'
-      && submission.status === 'feedback available'
-      && review.status === 'done')"
-    [text]="btnText"
-    [disabled]="(btnDisabled$ | async)"
-    (handleClick)="continueToNextTask()"
-  ></app-bottom-action-bar>
+  <ng-container *ngIf="preventSubmission === false; else blocked">
+    <app-bottom-action-bar
+      *ngIf="!(action === 'review'
+      && submission?.status === 'feedback available'
+      && review?.status === 'done')"
+      [text]="btnText"
+      [disabled]="(btnDisabled$ | async)"
+      (handleClick)="continueToNextTask()"
+    ></app-bottom-action-bar>
+  </ng-container>
+
+  <ng-template #blocked>
+    <app-bottom-action-bar buttonType="blocked-role"></app-bottom-action-bar>
+  </ng-template>
 
   <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
     <p class="black subtitle-1" i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
