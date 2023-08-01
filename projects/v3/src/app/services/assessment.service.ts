@@ -482,18 +482,18 @@ export class AssessmentService {
   isValidData(type: string, res: any): boolean {
     switch (type) {
       case 'saveQuestionAnswer':
-        if (!res?.saveSubmissionAnswer?.hasOwnProperty('success')) {
+        if (!res?.data?.saveSubmissionAnswer?.hasOwnProperty('success')) {
           return false;
         }
         break;
       case 'saveReviewAnswer':
-        if (!res?.saveReviewAnswer?.hasOwnProperty('success')) {
+        if (!res?.data?.saveReviewAnswer?.hasOwnProperty('success')) {
           return false;
         }
         break;
 
       case 'submitAssessment':
-        const submitAssessment = res?.submitAssessment;
+        const submitAssessment = res?.data?.submitAssessment;
         if (!submitAssessment?.hasOwnProperty('success')
           || !submitAssessment?.hasOwnProperty('data')) {
           return false;
@@ -501,7 +501,7 @@ export class AssessmentService {
         break;
 
       case 'submitReview':
-        const submitReview = res?.submitReview;
+        const submitReview = res?.data?.submitReview;
         if (!submitReview?.hasOwnProperty('success')
           || !submitReview?.hasOwnProperty('data')
         ) {
