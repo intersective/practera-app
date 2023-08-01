@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { concatMap, delay, tap } from 'rxjs/operators';
+import { concatMap, delay, takeUntil, tap } from 'rxjs/operators';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
@@ -15,7 +15,7 @@ import { concatMap, delay, tap } from 'rxjs/operators';
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent implements OnChanges, OnDestroy {
+export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * -- action --
    * Options: assessment/review
@@ -47,6 +47,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
+  // used to resubscribe to the assessment service
+  resubscribe$ = new Subject();
+  // used to save the assessment/review answers
   submitActions = new Subject<{
     saveInProgress: boolean;
     goBack: boolean;
@@ -64,6 +67,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     };
   }>();
   subscriptions: Subscription[] = [];
+  unsubscribe$ = new Subject();
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
@@ -91,45 +95,62 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService
   ) {
-    this.subscriptions.push(
-      this.submitActions.pipe(
-        concatMap(request => {
-          if (request?.reviewSave) {
-            return this.saveReviewAnswer(request.reviewSave);
-          }
-          if (request?.questionSave) {
-            return this.saveQuestionAnswer(request.questionSave);
-          }
-          return of(request);
-        }),
-      ).subscribe(
-        (data: {
-          saveInProgress: boolean;
-          goBack: boolean;
-          questionSave?: {
-            submissionId: number;
-            questionId: number;
-            answer: string;
-          };
-          error?: any;
-        }): void | Promise<void> => {
-          if (!this.utils.isEmpty(data.error)) {
-            return this.notifications.assessmentSubmittedToast({
-              isFail: true,
-              label: $localize`Save failed.`,
-            });
-          }
+    this.resubscribe$.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe(() => {
+      this.subscribeSaveSubmission();
+    });
+  }
 
-          if (data.saveInProgress === false) {
-            return this._submitWithoutAnswer(data);
-          }
-        },
-        // save/submission error handling http 500
-        (error: any) => {
-          console.error('save failed::', error);
-          return this.notifications.assessmentSubmittedToast({ isFail: true });
+  ngOnInit(): void {
+    this.subscribeSaveSubmission();
+  }
+
+  subscribeSaveSubmission() {
+    this.submitActions.pipe(
+      concatMap(request => {
+        if (request?.reviewSave) {
+          return this.saveReviewAnswer(request.reviewSave);
         }
-      )
+        if (request?.questionSave) {
+          return this.saveQuestionAnswer(request.questionSave);
+        }
+        return of(request);
+      }),
+    ).subscribe(
+      (data: {
+        saveInProgress: boolean;
+        goBack: boolean;
+        questionSave?: {
+          submissionId: number;
+          questionId: number;
+          answer: string;
+        };
+        error?: any;
+      }): void | Promise<void> => {
+        if (!this.utils.isEmpty(data.error)) {
+          return this.notifications.assessmentSubmittedToast({
+            isFail: true,
+            label: $localize`Save failed.`,
+          });
+        }
+
+        if (data.saveInProgress === false) {
+          return this._submitWithoutAnswer(data);
+        }
+      },
+      // save/submission error handling http 500
+      async (error: any) => {
+        if (error?.message === 'Invalid API data') {
+          await this.notifications.assessmentSubmittedToast({
+            isFail: true,
+            label: $localize`The API we are using has returned data that is incorrect.`,
+          });
+        } else {
+          await this.notifications.assessmentSubmittedToast({ isFail: true });
+        }
+        this.resubscribe$.next();
+      }
     );
   }
 
@@ -195,6 +216,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         subscription.unsubscribe();
       }
     });
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   private _initialise() {
