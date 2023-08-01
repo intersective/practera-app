@@ -465,7 +465,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveQuestionAnswer', res)) {
-        throw new Error('Invalid API data format');
+        throw new Error('Invalid API data');
       }
       return res;
     }));
@@ -536,7 +536,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveReviewAnswer', res)) {
-        throw new Error('Invalid API data format');
+        throw new Error('Invalid API data');
       }
       return res;
     }));
@@ -559,7 +559,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('submitAssessment', res)) {
-        throw new Error('Invalid API data format');
+        throw new Error('Invalid API data');
       }
       return res;
     }));
@@ -587,7 +587,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('submitReview', res)) {
-        throw new Error('Invalid API data format');
+        throw new Error('Invalid API data');
       }
       return res;
     }));
