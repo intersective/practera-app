@@ -262,7 +262,7 @@ export class AssessmentService {
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info = '<h3>'+ $localize`:multiple choice question:Choice Description` + ':</h3>' + info;
             }
             question.info = info;
             question.choices = choices;
@@ -463,7 +463,56 @@ export class AssessmentService {
         }
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('saveQuestionAnswer', res)) {
+        throw new Error('Invalid API data');
+      }
+      return res;
+    }));
+  }
+
+  /**
+   * Check if the data returned from the API is valid
+   *
+   * @param   {string}   type  name of the API
+   * @param   {any}      res   data returned from the API
+   *
+   * @return  {boolean}        true if the data is valid
+   */
+  isValidData(type: string, res: any): boolean {
+    switch (type) {
+      case 'saveQuestionAnswer':
+        if (!res?.data?.saveSubmissionAnswer?.hasOwnProperty('success')) {
+          return false;
+        }
+        break;
+      case 'saveReviewAnswer':
+        if (!res?.data?.saveReviewAnswer?.hasOwnProperty('success')) {
+          return false;
+        }
+        break;
+
+      case 'submitAssessment':
+        const submitAssessment = res?.data?.submitAssessment;
+        if (!submitAssessment?.hasOwnProperty('success')
+          || !submitAssessment?.hasOwnProperty('data')) {
+          return false;
+        }
+        break;
+
+      case 'submitReview':
+        const submitReview = res?.data?.submitReview;
+        if (!submitReview?.hasOwnProperty('success')
+          || !submitReview?.hasOwnProperty('data')
+        ) {
+          return false;
+        }
+        break;
+
+      default:
+        throw new Error('Must specify a valid type');
+    }
+    return true;
   }
 
   // store the answer to the question
@@ -485,7 +534,12 @@ export class AssessmentService {
         }
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('saveReviewAnswer', res)) {
+        throw new Error('Invalid API data');
+      }
+      return res;
+    }));
   }
 
   // set the status of the submission to 'done' or 'pending approval'
@@ -503,7 +557,12 @@ export class AssessmentService {
         submitAssessment(${params})
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('submitAssessment', res)) {
+        throw new Error('Invalid API data');
+      }
+      return res;
+    }));
   }
 
   /**
@@ -513,20 +572,26 @@ export class AssessmentService {
    * @param submissionId - submission id
    * @returns
     */
-  submitReview(assessmentId: number, reviewId: number, submissionId: number) {
-    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!';
-    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId';
+  submitReview(assessmentId: number, reviewId: number, submissionId: number, answers: Answer[]) {
+    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
+    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
     const variables = {
       assessmentId,
       reviewId,
       submissionId,
+      answers,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitReview(${paramsFormat}) {
         submitReview(${params})
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('submitReview', res)) {
+        throw new Error('Invalid API data');
+      }
+      return res;
+    }));
   }
 
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
