@@ -5,9 +5,9 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, delay, filter, take, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
 @Component({
@@ -62,9 +62,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   onAnimationEnd(event, questionId: number) {
     if (event.toState === 'visible') {
       // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
-      setTimeout(() => {
+      timer(1000).pipe(
+        take(1)
+      ).subscribe(() => {
         this.saved[questionId] = false;
-      }, 1000); // Adjust the delay as per your preference (in milliseconds)
+      });
     }
   }
 
@@ -137,9 +139,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       filter(() => !this._preventSubmission()), // skip when false
       concatMap(request => {
         if (request?.reviewSave) {
+          this.saved[request.reviewSave.questionId] = true;
           return this.saveReviewAnswer(request.reviewSave);
         }
         if (request?.questionSave) {
+          this.saved[request.questionSave.questionId] = true;
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);

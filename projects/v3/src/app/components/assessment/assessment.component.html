@@ -144,10 +144,7 @@
             </ion-item>
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
-              <!-- <ion-button (click)="change(question.id)">sim-save</ion-button> -->
-
               <div class="tick-container">
-                <!-- Add your tick icon here, e.g., an SVG or an image -->
                 <ion-icon name="checkmark-circle-outline"
                   class="tick-icon"
                   [@tickAnimation]="saved[question.id] ? 'visible' : 'hidden'"
@@ -275,8 +272,8 @@
   <ng-container *ngIf="preventSubmission === false; else blocked">
     <app-bottom-action-bar
       *ngIf="!(action === 'review'
-      && submission?.status === 'feedback available'
-      && review?.status === 'done')"
+        && submission.status === 'feedback available'
+        && review.status === 'done')"
       [text]="btnText"
       [disabled]="(btnDisabled$ | async)"
       (handleClick)="continueToNextTask()"
