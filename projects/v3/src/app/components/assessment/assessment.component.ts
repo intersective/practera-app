@@ -135,7 +135,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (!this.utils.isEmpty(data.error)) {
           return this.notifications.assessmentSubmittedToast({
             isFail: true,
-            label: $localize`Save failed.`,
+            label: $localize`Save failed. Please try again.`,
           });
         }
 
@@ -145,14 +145,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       },
       // save/submission error handling http 500
       async (error: any) => {
-        if (error?.message === 'Invalid API data') {
-          await this.notifications.assessmentSubmittedToast({
-            isFail: true,
-            label: $localize`The API we are using has returned data that is incorrect.`,
-          });
-        } else {
-          await this.notifications.assessmentSubmittedToast({ isFail: true });
-        }
+        await this.notifications.assessmentSubmittedToast({ isFail: true });
         this.resubscribe$.next();
       }
     );
