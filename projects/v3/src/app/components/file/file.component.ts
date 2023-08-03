@@ -124,12 +124,12 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.propagateChange(this.innerValue);
 
     const action: {
-      saveInProgress?: boolean;
+      autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
-      saveInProgress: true,
+      autoSave: true,
       goBack: false,
     };
 
