@@ -5,7 +5,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { concatMap, delay, filter, take, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, filter, take, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
@@ -222,7 +222,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       tap((_res) => {
         this.saved[questionInput.questionId] = false;
       }),
-      delay(800)
     );
   }
 
@@ -242,7 +241,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(800),
+      tap((res) => { console.log(res) })
     );
   }
 
