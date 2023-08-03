@@ -5,8 +5,8 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { concatMap, delay, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { concatMap, take, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
@@ -63,9 +63,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   onAnimationEnd(event, questionId: number) {
     if (event.toState === 'visible') {
       // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
-      setTimeout(() => {
+      timer(1000).pipe(take(1)).subscribe(() => {
         this.saved[questionId] = false;
-      }, 1000); // Adjust the delay as per your preference (in milliseconds)
+      });
     }
   }
 
@@ -178,10 +178,9 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      delay(1000),
       tap((_res) => {
         this.saved[questionInput.questionId] = false;
-      })
+      }),
     );
   }
 
@@ -201,7 +200,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(1000),
       tap((res) => { console.log(res) })
     );
   }
