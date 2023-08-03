@@ -1,7 +1,7 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { AssessmentService, Question } from '@v3/services/assessment.service';
+import { Question } from '@v3/services/assessment.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 
@@ -48,9 +48,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   // validation errors array
   errors: Array<any> = [];
 
-  constructor(
-    private assessmentService: AssessmentService,
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
@@ -60,8 +58,8 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
     if (this.answerRef?.ionInput) {
       this.subcriptions.push(this.answerRef.ionInput.pipe(
         map(e => (e.target as HTMLInputElement).value),
-        filter(text => text.length > 0),
-        debounceTime(1250),
+        filter(text => text.length >= 0),
+        debounceTime(800),
         distinctUntilChanged(),
       ).subscribe(_data => {
         const action: {
