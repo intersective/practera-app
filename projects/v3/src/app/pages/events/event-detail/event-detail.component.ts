@@ -233,6 +233,16 @@ export class EventDetailComponent implements OnInit {
       startTime = this.utils.utcToLocal( this.event.startTime, 'time');
     }
 
+    // All day events (when allDay is true)
+    if (this.event.allDay === true) {
+      const daysCount = this.getNumberOfDays(this.event.startTime, this.event.endTime);
+      if (daysCount > 1) {
+        return $localize`:event duration:${startDate}, All Day - ${endDate}, All Day`;
+      }
+
+      return $localize`:event duration:${startDate}, All Day`;
+    }
+
     /**
      * According to requirements.
      * For multi day events detils.
@@ -244,9 +254,24 @@ export class EventDetailComponent implements OnInit {
      *  - If the event is not All day we show date with start and end time.
      */
     if (startDate !== endDate) {
-      return this.event.allDay ? $localize`:event duration:${startDate}, All Day - ${endDate}, All Day` : `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
+      return `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
     }
-    return this.event.allDay ? $localize`:event duration:${startDate}, All Day` : `${startDate}, ${startTime} - ${endTime}`;
+
+    return `${startDate}, ${startTime} - ${endTime}`;
+  }
+
+  /**
+   * Obtain the number of days between two dates
+   *
+   * @param   {string}  start  UTC date string
+   * @param   {string}  end    UTC date string
+   *
+   * @return  {number}         Number of days between two dates
+   */
+  getNumberOfDays(start: string, end: string): number {
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+    return Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
   }
 
   bookButtonDisabled(event): boolean {
