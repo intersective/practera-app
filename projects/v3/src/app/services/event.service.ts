@@ -167,16 +167,12 @@ export class EventService {
         allDay: event.all_day ? event.all_day : false
       };
 
-      // check if an event is a single allday event
-      // especially needed for CORE-5951, because API is still providing all-day events with differing start and end datetime.
-      if (!this._isMultipleAllDay(eventObj)) {
-        events.push(eventObj);
-      }
-      else if (this._isMultipleAllDay(eventObj)) {
+      // check if an event is a single allday event - CORE-5951
+      if (this._isMultipleAllDay(eventObj)) {
         events = events.concat(this._getMultiDayEvent(eventObj, {isAllDay: true}));
       }
       // check if event is multi day (create more event object for each day)
-      else if (!this._checkIsSingleDay(eventObj) && this.utils.timeComparer(eventObj.startTime) >= 0 // multiday event only
+      else if (eventObj.allDay !== true && !this._checkIsSingleDay(eventObj) && this.utils.timeComparer(eventObj.startTime) >= 0 // multiday event only
       ) {
         events = events.concat(this._getMultiDayEvent(eventObj));
       }
@@ -372,10 +368,12 @@ export class EventService {
   private _getMultiDayEvent(event, options?: {
     isAllDay: boolean
   }) {
-    let dateDifference = this.utils.getDateDifference(event.startTime, event.endTime);
-    if (options?.isAllDay !== true) {
-      dateDifference += 1;
+    // if it is allDay event we need to subtract one second from end time (00:00:00 of next day)
+    if (options?.isAllDay === true) {
+      event.endTime = this.utils.subtractOneSecond(event.endTime);
     }
+
+    const dateDifference = this.utils.getDateDifference(event.startTime, event.endTime) + 1;
 
     const multiDayEvents: Array<Event> = [];
     let eventObj = null;
@@ -408,6 +406,7 @@ export class EventService {
           isMiddleDay: true
         }
       };
+
       if (index === 0) {
         eventObj.multiDayInfo.startTime = event.startTime;
         eventObj.multiDayInfo.isMiddleDay = false;
