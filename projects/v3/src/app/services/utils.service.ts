@@ -553,6 +553,21 @@ export class UtilsService {
     return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
   }
 
+  /**
+   * substract one second from the given date time string
+   * Note: this is used especially for allDay event, as the end datetime from API
+   *       is 00:00:00 of the next day
+   *
+   * @param   {string}  dateTimeString datetime string
+   *
+   * @return  {string}  datetime string with one second substracted
+   */
+  subtractOneSecond(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    date.setSeconds(date.getSeconds() - 1);
+    return date.toISOString();
+  }
+
   downloadFile(path: string) {
     // Create a new link
     const anchor = document.createElement('a');
