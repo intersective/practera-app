@@ -54,11 +54,11 @@ export interface Event {
     password: string
   };
   type?: string;
-  isMultiDay?: boolean;
+  isMultiDay?: boolean; // optional, only appear when event is multi day
   multiDayInfo?: {
     startTime: string;
     endTime: string;
-    dayCount: string;
+    dayCount: string; // eg, (Day 1/3)
     id: string;
     isMiddleDay: boolean;
   };
@@ -166,11 +166,25 @@ export class EventService {
         type: event.type,
         allDay: event.all_day ? event.all_day : false
       };
-      if (!this._checkIsSingleDay(eventObj) && (this.utils.timeComparer(eventObj.startTime) >= 0)) {
-        events = events.concat(this._getMultiDayEvent(eventObj));
-      } else {
+
+      // check if an event is a single allday event
+      // especially needed for CORE-5951, because API is still providing all-day events with differing start and end datetime.
+      if (!this._isMultipleAllDay(eventObj)) {
         events.push(eventObj);
       }
+      else if (this._isMultipleAllDay(eventObj)) {
+        events = events.concat(this._getMultiDayEvent(eventObj, {isAllDay: true}));
+      }
+      // check if event is multi day (create more event object for each day)
+      else if (!this._checkIsSingleDay(eventObj) && this.utils.timeComparer(eventObj.startTime) >= 0 // multiday event only
+      ) {
+        events = events.concat(this._getMultiDayEvent(eventObj));
+      }
+      // single day event
+      else {
+        events.push(eventObj);
+      }
+
       // set the booked event activity id if it is single booking activity and booked
       if (event.single_booking && event.is_booked) {
         this.storage.setBookedEventActivityIds(event.activity_id);
@@ -318,11 +332,35 @@ export class EventService {
   }
 
   /**
-   * method checking is event single day or multi day.
-   * @param event Formated event object
-   * @returns {boolean} is event single day or not
+   * check if an allday event is a multiday event
+   * @param event Event Object
+   * @returns {boolean} true if the allday event is multi day, false if not
    */
-  private _checkIsSingleDay(event) {
+  private _isMultipleAllDay(event: Event) {
+    if (event.allDay === false) {
+      return false;
+    }
+
+    const startDate = new Date(event.startTime);
+    const endDate = new Date(event.endTime);
+
+    // Set the time to 00:00:00 for both dates
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(0, 0, 0, 0);
+
+    const diffInMs = endDate.getTime() - startDate.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    return diffInDays > 1;
+  }
+
+  /**
+   * method checking is event single day or multi day
+   * @param event Formated event object
+   * @returns {boolean} true if event is single day, false if event is multi day
+   */
+  private _checkIsSingleDay(event: Event) {
+    // convert to local time first then compare
     return this.utils.utcToLocal(event.startTime, 'date') === this.utils.utcToLocal(event.endTime, 'date');
   }
 
@@ -331,8 +369,14 @@ export class EventService {
    * @param event Formated event object
    * @returns {Array} multi day event object array
    */
-  private _getMultiDayEvent(event) {
-    const dateDifference = (this.utils.getDateDifference(event.startTime, event.endTime) + 1);
+  private _getMultiDayEvent(event, options?: {
+    isAllDay: boolean
+  }) {
+    let dateDifference = this.utils.getDateDifference(event.startTime, event.endTime);
+    if (options?.isAllDay !== true) {
+      dateDifference += 1;
+    }
+
     const multiDayEvents: Array<Event> = [];
     let eventObj = null;
     for (let index = 0; index < dateDifference; index++) {
