@@ -262,7 +262,7 @@ export class AssessmentService {
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info = '<h3>'+ $localize`:multiple choice question:Choice Description` + ':</h3>' + info;
             }
             question.info = info;
             question.choices = choices;
@@ -572,13 +572,14 @@ export class AssessmentService {
    * @param submissionId - submission id
    * @returns
     */
-  submitReview(assessmentId: number, reviewId: number, submissionId: number) {
-    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!';
-    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId';
+  submitReview(assessmentId: number, reviewId: number, submissionId: number, answers: Answer[]) {
+    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
+    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
     const variables = {
       assessmentId,
       reviewId,
       submissionId,
+      answers,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitReview(${paramsFormat}) {

@@ -90,7 +90,7 @@ export class ReviewRatingComponent implements OnInit {
     } catch (err) {
       await this.notificationsService.alert({
         header: $localize`Error submitting rating`,
-        message: err.msg || JSON.stringify(err),
+        message: err.msg ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.msg}` : JSON.stringify(err),
       });
       this.isSubmitting = false;
 
@@ -135,7 +135,7 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   addOrRemoveTags(tag) {
-    this.ratingData.tags = this.utils.addOrRemove(this.ratingData.tags, tag);
+    this.ratingData.tags = this.utils.addOrRemove<any[]>(this.ratingData.tags, tag);
   }
 
   rateMood(mood: number): void {
