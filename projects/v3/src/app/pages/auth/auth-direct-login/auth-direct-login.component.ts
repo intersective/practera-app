@@ -160,7 +160,6 @@ export class AuthDirectLoginComponent implements OnInit {
             {
               task: 'assessment',
               contextId,
-              activityId,
               assessmentId,
             }
           ], redirectLater);
