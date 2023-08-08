@@ -465,54 +465,49 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveQuestionAnswer', res)) {
-        throw new Error('Invalid API data');
+        throw new Error('Autosave: Invalid API data');
       }
       return res;
     }));
   }
 
   /**
-   * Check if the data returned from the API is valid
+   * Validate data returned from the API.
    *
-   * @param   {string}   type  name of the API
-   * @param   {any}      res   data returned from the API
+   * check the 'success' property of a response data based on API response.
+   * true only if 'success' is strictly equal to true, false for any other condition.
    *
-   * @return  {boolean}        true if the data is valid
+   * @param   {string}   type  name of the API endpoint
+   * @param   {any}      res   API response data
+   *
+   * @return  {boolean}       true only when response data is valid, otherwise false.
    */
+
   isValidData(type: string, res: any): boolean {
+    if (this.utils.isEmpty(res?.data)) {
+      return false;
+    }
+
+    let success: boolean;
+
     switch (type) {
       case 'saveQuestionAnswer':
-        if (!res?.data?.saveSubmissionAnswer?.hasOwnProperty('success')) {
-          return false;
-        }
+        success = res?.data?.saveSubmissionAnswer?.success;
         break;
       case 'saveReviewAnswer':
-        if (!res?.data?.saveReviewAnswer?.hasOwnProperty('success')) {
-          return false;
-        }
+        success = res?.data?.saveReviewAnswer?.success;
         break;
-
       case 'submitAssessment':
-        const submitAssessment = res?.data?.submitAssessment;
-        if (!submitAssessment?.hasOwnProperty('success')
-          || !submitAssessment?.hasOwnProperty('data')) {
-          return false;
-        }
+        success = res?.data?.submitAssessment?.success;
         break;
-
       case 'submitReview':
-        const submitReview = res?.data?.submitReview;
-        if (!submitReview?.hasOwnProperty('success')
-          || !submitReview?.hasOwnProperty('data')
-        ) {
-          return false;
-        }
+        success = res?.data?.submitReview?.success;
         break;
-
       default:
         throw new Error('Must specify a valid type');
     }
-    return true;
+
+    return success === true;
   }
 
   // store the answer to the question
@@ -536,7 +531,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveReviewAnswer', res)) {
-        throw new Error('Invalid API data');
+        throw new Error('Autosave: Invalid API data');
       }
       return res;
     }));
@@ -559,7 +554,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('submitAssessment', res)) {
-        throw new Error('Invalid API data');
+        throw new Error('Submission: Invalid API data');
       }
       return res;
     }));
@@ -588,7 +583,7 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('submitReview', res)) {
-        throw new Error('Invalid API data');
+        throw new Error('Submission: Invalid API data');
       }
       return res;
     }));
