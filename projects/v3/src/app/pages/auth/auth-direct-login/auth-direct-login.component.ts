@@ -154,7 +154,15 @@ export class AuthDirectLoginComponent implements OnInit {
           }
           return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId], redirectLater);
         } else {
-          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'assessment', task_id: assessmentId, context_id: contextId }], redirectLater);
+          return this._saveOrRedirect([
+            'v3', 'activity-desktop',
+            activityId,
+            {
+              task: 'assessment',
+              contextId,
+              assessmentId,
+            }
+          ], redirectLater);
         }
       case 'topic':
         if (!activityId || !topicId) {
