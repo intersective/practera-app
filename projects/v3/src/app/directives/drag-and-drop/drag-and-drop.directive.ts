@@ -36,7 +36,7 @@ export class DragAndDropDirective {
     if (files.length < 0) {
       this.fileDropped.emit({
         success: false,
-        message: 'No file droped'
+        message: $localize`No file droped`
       });
       return;
     }
@@ -44,7 +44,7 @@ export class DragAndDropDirective {
     if (files.length > 1) {
       this.fileDropped.emit({
         success: false,
-        message: 'More than one file droped'
+        message: $localize`More than one file droped`
       });
       return;
     }
@@ -53,7 +53,7 @@ export class DragAndDropDirective {
     if (this.acceptFileType && this.acceptFileType !== 'any' && !file.type.includes(this.acceptFileType)) {
       this.fileDropped.emit({
         success: false,
-        message: 'Not a maching file type'
+        message: $localize`Not a matching file type`
       });
       return;
     }
