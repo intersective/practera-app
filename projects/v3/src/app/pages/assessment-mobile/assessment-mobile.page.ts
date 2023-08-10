@@ -132,7 +132,7 @@ export class AssessmentMobilePage implements OnInit {
         ).toPromise();
 
         // http 200 but error
-        if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
+        if (saved?.data?.submitReview?.success !== true || this.utils.isEmpty(saved)) {
           console.error('Review submission error:', saved);
           throw new Error("Error submitting review.");
         }
@@ -141,6 +141,7 @@ export class AssessmentMobilePage implements OnInit {
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      
       if (!event.saveInProgress) {
         this.notificationsService.assessmentSubmittedToast();
         // get the latest activity tasks and refresh the assessment submission data
