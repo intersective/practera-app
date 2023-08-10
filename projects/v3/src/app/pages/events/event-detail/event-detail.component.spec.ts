@@ -147,7 +147,7 @@ describe('EventDetailComponent', () => {
     expect(component).toBeDefined();
   });
 
-  describe('when testing buttonText() and confirmed()', () => {
+  describe('when testing buttonText and confirmed()', () => {
     let tmpEvent;
     let expected;
     const confirmedExpectedArray = [];
@@ -158,7 +158,7 @@ describe('EventDetailComponent', () => {
       component.event = tmpEvent;
       fixture.detectChanges();
       component.event = tmpEvent;
-      expect(component.buttonText()).toEqual(expected);
+      expect(component.buttonText.label).toEqual(expected);
       expect(page.eventName.innerHTML).toEqual(tmpEvent.name);
       expect(page.activityName.innerHTML).toEqual(tmpEvent.activityName);
       if (expected === 'Expired') {

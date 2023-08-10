@@ -48,7 +48,7 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return `${ task.submitter.name } is working on this`;
+      return $localize`:team assessment:${ task.submitter.name } is working on this`;
     }
     // due date
     if (!task.dueDate) {
