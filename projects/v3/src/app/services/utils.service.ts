@@ -364,16 +364,16 @@ export class UtilsService {
   }
 
   /**
-   * @description dates comparison (between today/provided date)
-   * @param {Date    | string} timeString [description]
-   * @param {boolean}            = {}} options [description]
+   * @description find out the event start earlier/now/later by comparing dates between today with the provided date
+   * @param {Date | string} timeString date or time to be compared with
+   * @param {boolean} = {}} options    additional options (comparedString: string, compareDate: boolean)
    * @return {number} -1: before, 0: same date, 1: after
    */
   timeComparer(
     timeString: Date | string,
     options: {
-      comparedString?: Date | string,
-      compareDate?: boolean
+      comparedString?: Date | string, // compare with date another than today
+      compareDate?: boolean, // compare date only, ignore time
     } = {}
   ): number {
     const { comparedString, compareDate } = options;
@@ -441,23 +441,28 @@ export class UtilsService {
    */
   iso8601Formatter(time: Date | string) {
     try {
+      let date: Date;
+
       if (typeof time === 'string') {
-        let tmpTime = time;
-        if (!time.includes('GMT') && !(time.toLowerCase()).includes('z')) {
-          tmpTime += ' GMT+0000';
-        }
-        return (new Date(tmpTime)).toISOString();
+        // If the string doesn't include a timezone, assume it's in UTC
+        const timeStr = time.includes('GMT') || time.toLowerCase().includes('z') ? time : time + ' GMT+0000';
+        date = new Date(timeStr);
+      } else {
+        date = time;
       }
-      return time.toISOString();
+
+      return date.toISOString();
     } catch (err) {
       // in case the above doesn't work on Safari
       if (typeof time === 'string') {
         // add "T" between date and time, so that it works on Safari
-        time = time.replace(' ', 'T');
+        const safariTime = time.replace(' ', 'T') + 'Z';
         // add "Z" to indicate that it is UTC time, it will automatically convert to local time
-        return time + 'Z';
+        return new Date(safariTime).toISOString();
       }
-      return time.toISOString();
+
+      // If the input is a Date & conversion fail, rethrow error
+      throw err;
     }
   }
 
@@ -546,6 +551,21 @@ export class UtilsService {
   getFutureDated(date: string, dayCount: number) {
     const currentDate = moment(this.iso8601Formatter(date));
     return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
+  }
+
+  /**
+   * substract one second from the given date time string
+   * Note: this is used especially for allDay event, as the end datetime from API
+   *       is 00:00:00 of the next day
+   *
+   * @param   {string}  dateTimeString datetime string
+   *
+   * @return  {string}  datetime string with one second substracted
+   */
+  subtractOneSecond(dateTimeString: string): string {
+    const date = new Date(dateTimeString);
+    date.setSeconds(date.getSeconds() - 1);
+    return date.toISOString();
   }
 
   downloadFile(path: string) {

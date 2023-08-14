@@ -116,6 +116,7 @@ export class AssessmentMobilePage implements OnInit {
 
         // http 200 but error
         if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
+          console.error('Asmt submission error:', saved);
           throw new Error("Error submitting assessment");
         }
 
@@ -123,16 +124,24 @@ export class AssessmentMobilePage implements OnInit {
           await this.assessmentService.pullFastFeedback();
         }
       } else if (this.action === 'review') {
-        await this.assessmentService.submitReview(
+        const saved = await this.assessmentService.submitReview(
           event.assessmentId,
           this.review.id,
-          event.submissionId
+          event.submissionId,
+          event.answers
         ).toPromise();
+
+        // http 200 but error
+        if (saved?.data?.submitReview?.success !== true || this.utils.isEmpty(saved)) {
+          console.error('Review submission error:', saved);
+          throw new Error("Error submitting review.");
+        }
 
         this.reviewService.getReviews();
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      
       if (!event.saveInProgress) {
         this.notificationsService.assessmentSubmittedToast();
         // get the latest activity tasks and refresh the assessment submission data
