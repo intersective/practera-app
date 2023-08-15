@@ -114,34 +114,20 @@ export class UtilsService {
   }
 
   // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
-  addOrRemove<T extends {} | any[]>(comparand: T, subject: number | string): T {
-    if (Array.isArray(comparand)) {
-      const position = this.indexOf(comparand, subject);
-      if (position > -1) {
-        // find the index position of this subject and remove it
-        comparand.splice(position, 1);
-      } else {
-        // add it to the subject comparand
-        comparand.push(subject);
-      }
-      return comparand as T;
+  addOrRemove(arrayInput: any[], subject: number | string): any[] {
+    if (typeof arrayInput === 'undefined') {
+      arrayInput = [];
     }
 
-    // treat comparand as object & remove the subject from it
-    let result = Object.entries(comparand).reduce((acc, [key, value]) => {
-      if (value !== subject) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {});
-
-    // If subject doesn't exist in the object, add it
-    if (!Object.values(comparand).includes(subject)) {
-      const newKey = Object.keys(result).length + 1;
-      result[newKey] = subject;
+    const position = this.indexOf(arrayInput, subject);
+    if (position > -1) {
+      // find the index position of this subject and remove it
+      arrayInput.splice(position, 1);
+    } else {
+      // add it to the subject arrayInput
+      arrayInput.push(subject);
     }
-
-    return result as T;
+    return arrayInput;
   }
 
   /**
