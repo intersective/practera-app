@@ -15,8 +15,11 @@ Run `npm run lint` to lint appv2 codebase
 
 Run `npm run lintv3` to lint code in project appv3
 
-### Starting a development server calling the stage environment
+Run `npm run v3` to launch AppV3 locally
 
+Run `npm run i18n` to update coverage of translateable static text
+
+### Starting a development server calling the stage environment
 
 Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
 
@@ -35,7 +38,7 @@ Run `npm run v3` to serve appv3 on localhost
   - `master` is always + 0.01 version ahead of `live`
   - `develop` is always + 0.1 version ahead of `live`
 
-### New Relics Setup
+### New Relics Setup (retired)
 
 1. Before we deploy app to live server, we'll need to create a `newrelic.js` file from project root directory's `/assets` folder
 1. Please select either `newrelic.js.dev` or `newrelic.js.prod` based on the deployment environment
@@ -45,8 +48,6 @@ Run `npm run v3` to serve appv3 on localhost
 ### Useful links
 
 1. [Ionic Components](https://ionicframework.com/docs/api/)
-1. [Protractor API](https://www.protractortest.org/#/api)
-1. [Chai API](https://www.chaijs.com/api/bdd/)
 1. [Apollo Client Devtools](https://chrome.google.com/webstore/detail/apollo-client-developer-t/jdkknkkbebbapilgoeccciglkfbmbnfm)
 
 ## Automation Test

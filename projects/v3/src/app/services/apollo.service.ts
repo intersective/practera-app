@@ -2,10 +2,11 @@ import { gql, Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { RequestService } from 'request';
 import { catchError, concatMap, map } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
 
 enum ClientType {
   core = 'CORE',
@@ -161,7 +162,7 @@ export class ApolloService {
   }
 
   /**
-   *
+   * single fetch no-cache is only option
    */
   graphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apollo.mutate({
@@ -171,11 +172,27 @@ export class ApolloService {
       concatMap(response => {
         return of(response);
       }),
-      catchError((error) => this.requestService.handleError(error))
+      catchError(error => this.requestService.handleError(error)),
     );
   }
 
   /**
+   * single fetch no-cache is only option for continuous query (autosave/submission)
+   */
+  continuousGraphQLMutate(query: string, variables = {}): Observable<any> {
+    return this.apollo.mutate({
+      mutation: gql(query),
+      variables: variables
+    }).pipe(
+      concatMap(response => {
+        return of(response);
+      }),
+      // prevent error thrown which will stop the autosave/submission
+      catchError((error: HttpErrorResponse) => of({ error }))
+    );
+  }
+
+  /*
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
