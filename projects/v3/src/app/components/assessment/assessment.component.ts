@@ -132,13 +132,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         };
         error?: any;
       }): void | Promise<void> => {
-        if (!this.utils.isEmpty(data.error)) {
-          return this.notifications.assessmentSubmittedToast({
-            isFail: true,
-            label: $localize`Save failed. Please try again.`,
-          });
-        }
-
         if (data.autoSave === false) {
           return this._submitAnswer(data);
         }
