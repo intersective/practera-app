@@ -77,12 +77,22 @@ export class ActivityDesktopPage {
         action: this.route.snapshot.data.action,
       };
 
-      this.activityService.getActivity(activityId, proceedToNextTask, undefined, () => {
+      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async () => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
         if (!proceedToNextTask && assessmentId > 0) {
           const filtered: Task = this.utils.find(this.activity.tasks, {
             id: assessmentId
           });
+
+          // if API not returning any related activity, handle bad API response gracefully
+          if (filtered === undefined) {
+            await this.notificationsService.alert({
+              header: $localize`Activity not found`,
+              message: $localize`The activity you are looking for is not found or haven't been unlocked for your access yet.`,
+            });
+            return this.goBack();
+          }
+
           this.goToTask({
             id: assessmentId,
             contextId: this.urlParams.contextId,
@@ -133,12 +143,17 @@ export class ActivityDesktopPage {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      await this.assessmentService.submitAssessment(
+      const saved = await this.assessmentService.submitAssessment(
         event.submissionId,
         event.assessmentId,
         event.contextId,
         event.answers
       ).toPromise();
+
+      // http 200 but error
+      if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
+        throw new Error("Error submitting assessment");
+      }
 
       if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
         await this.assessmentService.pullFastFeedback();
