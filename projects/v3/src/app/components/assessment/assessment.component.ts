@@ -6,10 +6,9 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { concatMap, delay, tap } from 'rxjs/operators';
+import { concatMap, delay, filter, tap } from 'rxjs/operators';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
-
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -84,6 +83,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  // prevent non participants from submitting team assessment
+  get preventSubmission() {
+    return this._preventSubmission();
+  }
+
   constructor(
     readonly utils: UtilsService,
     private notifications: NotificationsService,
@@ -93,6 +97,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   ) {
     this.subscriptions.push(
       this.submitActions.pipe(
+        filter(() => !this._preventSubmission()), // skip when false
         concatMap(request => {
           if (request?.reviewSave) {
             return this.saveReviewAnswer(request.reviewSave);
@@ -131,6 +136,19 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         }
       )
     );
+  }
+
+  /**
+   * prevent non participants from submitting assessment
+   * @returns {boolean} - true if user is not a participant and assessment is for team
+   */
+  private _preventSubmission(): boolean {
+    let result = false;
+    if (this.action === 'assessment' && this.assessment?.isForTeam === true && this.storage.getUser().role !== 'participant') {
+      result = true;
+    }
+    this.btnDisabled$.next(result);
+    return result;
   }
 
   /**
@@ -187,6 +205,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     this._populateQuestionsForm();
     this._handleSubmissionData();
     this._handleReviewData();
+    this._preventSubmission();
   }
 
   ngOnDestroy() {
