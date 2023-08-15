@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, delay, filter, tap, takeUntil } from 'rxjs/operators';
+import { concatMap, delay, filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-assessment',
