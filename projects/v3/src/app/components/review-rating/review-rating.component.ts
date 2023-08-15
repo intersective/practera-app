@@ -135,7 +135,7 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   addOrRemoveTags(tag) {
-    this.ratingData.tags = this.utils.addOrRemove<any[]>(this.ratingData.tags, tag);
+    this.ratingData.tags = this.utils.addOrRemove(this.ratingData.tags, tag);
   }
 
   rateMood(mood: number): void {
