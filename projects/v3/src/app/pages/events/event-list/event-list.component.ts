@@ -190,22 +190,26 @@ export class EventListComponent {
     if (!this.events) {
       this.events = [];
     }
-    // re-assign remainingEvents if passed in
+
+    // re-assign remainingEvents if passed in (safe clone)
     if (remainingEvents) {
       this.remainingEvents = JSON.parse(JSON.stringify(remainingEvents));
       this.events = [];
     }
+
     // don't need to do anything if no remaining events
     if (!this.remainingEvents) {
       return ;
     }
+
     let eventsCount = 0, eventGroup;
     const maxEvents = 10;
     while (eventsCount < maxEvents) {
       // stop if there's no remaining events
-      if (!this.remainingEvents.length) {
+      if (this.remainingEvents.length === 0) {
         break;
       }
+
       eventGroup = this.remainingEvents[0];
       if (eventsCount + eventGroup.events.length <= maxEvents) {
         // render the whole event group if no more than max events yet
