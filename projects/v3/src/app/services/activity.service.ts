@@ -12,6 +12,25 @@ import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
 import { SharedService } from './shared.service';
 
+export interface TaskBase {
+  id: number;
+  assessmentType: string;
+  contextId: number;
+  deadline: string;
+  isLocked: boolean;
+  isTeam: boolean;
+  name: string;
+  status: string;
+  type: string;
+}
+
+export interface ActivityBase {
+  id: number;
+  name: string;
+  description?: string;
+  tasks: Array<TaskBase>;
+}
+
 export interface Activity {
   id: number;
   name: string;
@@ -65,6 +84,27 @@ export class ActivityService {
     this._activity$.next(null);
   }
 
+  getActivityBase(activityId: number | string, options?: {}): Observable<{
+    data: {
+      activity: ActivityBase
+    }
+  }> {
+    return this.apolloService.graphQLFetch(
+      `query getActivity($id: Int!) {
+        activity(id:$id){
+          id name description tasks{
+            id name type isLocked isTeam deadline contextId assessmentType status{
+              status isLocked submitterName submitterImage
+            }
+          }
+        }
+      }`,
+      {
+        id: +activityId
+      }
+    );
+  }
+
   /**
    * make API call for activity information
    *
@@ -84,20 +124,7 @@ export class ActivityService {
         return;
       });
     }
-    return this.apolloService.graphQLFetch(
-      `query getActivity($id: Int!) {
-        activity(id:$id){
-          id name description tasks{
-            id name type isLocked isTeam deadline contextId assessmentType status{
-              status isLocked submitterName submitterImage
-            }
-          }
-        }
-      }`,
-      {
-        id: +id
-      }
-    ).pipe(
+    return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
     ).subscribe(res => {
       if (callback instanceof Function) {
