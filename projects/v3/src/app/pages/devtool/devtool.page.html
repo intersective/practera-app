@@ -11,6 +11,8 @@
   <ion-button (click)="login()">Login</ion-button>
   <ion-button (click)="pulsecheck()">Pulse check</ion-button>
   <ion-button (click)="reviewrating()">Rating</ion-button>
+  <ion-button (click)="showErrorAlert()">Alert Error Test</ion-button>
+  <ion-button (click)="showAlert()">Alert Test</ion-button>
 
   <ion-text *ngIf="doneLogin">
     <p>{{ user | json }}</p>

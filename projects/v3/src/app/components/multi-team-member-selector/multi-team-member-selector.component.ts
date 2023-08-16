@@ -98,12 +98,12 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     }
 
     const action: {
-      saveInProgress?: boolean;
+      autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
-      saveInProgress: true,
+      autoSave: true,
       goBack: false,
     };
 
