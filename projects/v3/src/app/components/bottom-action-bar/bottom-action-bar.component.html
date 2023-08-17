@@ -1,12 +1,11 @@
 <div class="wrapper">
-  disabled?: <pre>{{disabled | json}}</pre><br>
   <ng-container [ngSwitch]="buttonType">
     <ion-text *ngSwitchCase="'blocked-role'" color="grey-50">
       <p>Team assessment submissions restricted to participants only.</p>
     </ion-text>
     <ion-button *ngSwitchDefault
       mode="ios"
-      [disabled]="disabled"
+      [disabled]="disabled$ | async"
       [color]="color"
       (click)="handleClick.emit()"
     >{{ text }}</ion-button>
