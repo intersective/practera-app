@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-bottom-action-bar',
@@ -9,7 +10,7 @@ export class BottomActionBarComponent {
 
   @Input() text: string;
   @Input() color: string = 'primary';
-  @Input() disabled: boolean = false;
+  @Input() disabled$: BehaviorSubject<boolean>;
   @Output() handleClick = new EventEmitter();
   @Input() buttonType: string = '';
 
@@ -17,7 +18,7 @@ export class BottomActionBarComponent {
 
   onClick(clickEvent: Event) {
     // make sure it's the click event that triggers "handleClick"
-    if (clickEvent.type === 'click' && this.disabled === false) {
+    if (clickEvent.type === 'click' && this.disabled$.getValue() === false) {
       return this.handleClick.emit(clickEvent);
     }
 
