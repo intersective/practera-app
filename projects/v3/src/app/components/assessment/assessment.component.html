@@ -260,6 +260,7 @@
     </form>
   </div>
 
+  <pre>disbaled?: {{(btnDisabled$ | async) | json}}</pre>
   <ng-container *ngIf="preventSubmission === false; else blocked">
     <app-bottom-action-bar
       *ngIf="!(action === 'review'
