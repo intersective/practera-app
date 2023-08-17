@@ -147,7 +147,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     if (this.action === 'assessment' && this.assessment?.isForTeam === true && this.storage.getUser().role !== 'participant') {
       result = true;
     }
-    this.btnDisabled$.next(result);
     return result;
   }
 
