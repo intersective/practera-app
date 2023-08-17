@@ -10,7 +10,7 @@ export class BottomActionBarComponent {
 
   @Input() text: string;
   @Input() color: string = 'primary';
-  @Input() disabled$: BehaviorSubject<boolean>;
+  @Input() disabled$?: BehaviorSubject<boolean>; // assessment only
   @Output() handleClick = new EventEmitter();
   @Input() buttonType: string = '';
 
