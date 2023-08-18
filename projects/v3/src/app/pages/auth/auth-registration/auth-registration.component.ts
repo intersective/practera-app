@@ -232,7 +232,7 @@ export class AuthRegistrationComponent implements OnInit {
       const pass = this.registerationForm.controls.password.value;
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
-        this.errors.push($localize`Your passwords don\'t match.`);
+        this.errors.push($localize`Your passwords don't match.`);
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
