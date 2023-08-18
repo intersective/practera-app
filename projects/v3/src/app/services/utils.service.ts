@@ -114,16 +114,20 @@ export class UtilsService {
   }
 
   // given an array and a value, check if this value is in this array, if it is, remove it, if not, add it to the array
-  addOrRemove(array: Array<any>, value) {
-    const position = this.indexOf(array, value);
+  addOrRemove(arrayInput: Array<any>, value) {
+    if (typeof arrayInput == 'undefined') {
+      arrayInput = [];
+    }
+  
+    const position = this.indexOf(arrayInput, value);
     if (position > -1) {
       // find the position of this value and remove it
-      array.splice(position, 1);
+      arrayInput.splice(position, 1);
     } else {
       // add it to the value array
-      array.push(value);
+      arrayInput.push(value);
     }
-    return array;
+    return arrayInput;
   }
 
   /**
