@@ -142,9 +142,9 @@ export class ActivityComponent {
       return;
     }
 
-    return await this._validateTeamAssessment(task, async () => {
+    return this._validateTeamAssessment(task, async () => {
       if (task.type === 'Locked') {
-        return await this.notificationsService.alert({
+        return this.notificationsService.alert({
           message: $localize`This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.`,
           buttons: [
             {
@@ -168,7 +168,7 @@ export class ActivityComponent {
 
     // display pop up if it is team assessment or team 360 assessment and user is not in team
     if (doAssessment && (task.isForTeam || task.assessmentType === 'team360') && !teamId) {
-      return await this.notificationsService.alert({
+      return this.notificationsService.alert({
         message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
         buttons: [
           {
