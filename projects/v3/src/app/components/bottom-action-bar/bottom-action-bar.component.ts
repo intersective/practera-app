@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-bottom-action-bar',
@@ -9,7 +10,7 @@ export class BottomActionBarComponent {
 
   @Input() text: string;
   @Input() color: string = 'primary';
-  @Input() disabled: boolean;
+  @Input() disabled$?: BehaviorSubject<boolean>; // assessment only
   @Output() handleClick = new EventEmitter();
   @Input() buttonType: string = '';
 
