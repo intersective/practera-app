@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -110,7 +110,11 @@ export class HomeService {
           })
         }
       }),
-      map(res => this._normaliseExperience(res))
+      map(res => this._normaliseExperience(res)),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        return throwError(err);
+      }),
     ).subscribe();
   }
 
@@ -205,7 +209,6 @@ export class HomeService {
     }
 
     const activitiesBase = await this.activityService.getActivityBase(activityId).toPromise();
-    console.log(',activitiesBase ', activitiesBase);
     const nonTeamAsmt = (activitiesBase?.data?.activity?.tasks || [])
       .filter((task: TaskBase) => task.isTeam !== true);
 
