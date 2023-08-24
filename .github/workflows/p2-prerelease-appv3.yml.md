@@ -23,7 +23,7 @@ jobs:
     name: deploy-p2-prerelease-appv3
     runs-on: ubuntu-latest
     permissions: write-all
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
