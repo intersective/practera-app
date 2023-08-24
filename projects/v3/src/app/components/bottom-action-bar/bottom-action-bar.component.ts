@@ -15,5 +15,19 @@ export class BottomActionBarComponent {
   @Input() buttonType: string = '';
 
   constructor() {}
+
+  onClick(clickEvent: Event) {
+    // if disabled, do nothing
+    if (this.disabled$?.getValue() === true) {
+      return;
+    }
+
+    // make sure it's the click event that triggers "handleClick"
+    if (clickEvent.type === 'click') {
+      return this.handleClick.emit(clickEvent);
+    }
+
+    return;
+  }
 }
 

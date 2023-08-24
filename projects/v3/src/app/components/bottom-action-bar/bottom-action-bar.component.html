@@ -7,7 +7,7 @@
       mode="ios"
       [disabled]="disabled$ | async"
       [color]="color"
-      (click)="handleClick.emit()"
+      (click)="onClick($event)"
     >{{ text }}</ion-button>
   </ng-container>
 </div>
