@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { TestUtils } from '@testing/utils';
 import { ApolloService } from '@v3/services/apollo.service';
+import { ModalController } from '@ionic/angular';
 
 describe('UtilsService', () => {
   moment.updateLocale('en', {
@@ -33,6 +34,10 @@ describe('UtilsService', () => {
               };
             },
           }),
+        },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['dismiss', 'create'])
         },
       ],
     });
@@ -117,6 +122,39 @@ describe('UtilsService', () => {
       expect(result).toEqual([]);
       expect(result.length).toEqual(0);
       expect(result.length).not.toEqual(1);
+    });
+
+    it('should accept object and remove subject from it', () => {
+      const result = service.addOrRemove<object>({
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject3: 'new subject 3',
+        subject4: 'new subject 4',
+        subject5: 'new subject 5',
+      }, 'new subject 3');
+
+      expect(result).toEqual({
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject4: 'new subject 4',
+        subject5: 'new subject 5',
+      });
+    });
+
+
+    it('should add value if the subject is not already available in the provided object', () => {
+      const result = service.addOrRemove<object>({
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject3: 'new subject 3',
+      }, 'new subject 4');
+
+      expect(result).toEqual({
+        subject1: 'new subject 1',
+        subject2: 'new subject 2',
+        subject3: 'new subject 3',
+        4: 'new subject 4',
+      });
     });
   });
 
@@ -610,12 +648,12 @@ describe('UtilsService', () => {
       };
       const targetLocale = 'sample-locale';
 
-      jasmine.createSpy('service.getCurrentLocation').and.returnValue(subject);
-      jasmine.createSpy('service.getCurrentLocale').and.returnValue('en-US');
-      const redirection = jasmine.createSpy('service.redirectToUrl');
+      service.getCurrentLocation = jasmine.createSpy('service.getCurrentLocation').and.returnValue(subject);
+      service.getCurrentLocale = jasmine.createSpy('service.getCurrentLocale').and.returnValue('en-US');
+      service.redirectToUrl = jasmine.createSpy('service.redirectToUrl');
       service.moveToNewLocale(targetLocale);
 
-      expect(redirection).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+      expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
     });
   });
 });

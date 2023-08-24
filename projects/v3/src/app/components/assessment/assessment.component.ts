@@ -27,11 +27,11 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
-  @Input() assessment: Assessment;
+  @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
-  @Input() isMobile?: boolean;
+  @Input() isMobile?: boolean = false;
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -47,7 +47,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   @Output() continue = new EventEmitter();
 
   submitActions = new Subject<{
-    saveInProgress: boolean;
+    autoSave: boolean;
     goBack: boolean;
     questionSave?: {
       submissionId: number;
@@ -109,7 +109,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
         }),
       ).subscribe(
         (data: {
-          saveInProgress: boolean;
+          autoSave: boolean;
           goBack: boolean;
           questionSave?: {
             submissionId: number;
@@ -125,8 +125,8 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
             });
           }
 
-          if (data.saveInProgress === false) {
-            return this._submitWithoutAnswer(data);
+          if (data.autoSave === false) {
+            return this._submitAnswer(data);
           }
         },
         // save/submission error handling http 500
@@ -171,7 +171,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      delay(1000)
+      delay(800)
     );
   }
 
@@ -191,7 +191,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(1000),
+      delay(800),
       tap((res) => { console.log(res) })
     );
   }
@@ -348,30 +348,15 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       case 'submit':
         this.btnDisabled$.next(true);
         return this.submitActions.next({
-          saveInProgress: false,
+          autoSave: false,
           goBack: false,
         });
       case 'readFeedback':
+        this.btnDisabled$.next(true);
         return this.readFeedback.emit(this.submission.id);
       default:
         return this.continue.emit();
     }
-  }
-
-  // When user click the save button
-  btnSaveClicked() {
-    return this.submitActions.next({
-      saveInProgress: true,
-      goBack: false,
-    });
-  }
-
-  // When user click the back tutton
-  btnBackClicked() {
-    return this.submitActions.next({
-      saveInProgress: true,
-      goBack: true,
-    });
   }
 
   /**
@@ -451,11 +436,12 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     return answers;
   }
 
-  async _submitWithoutAnswer({saveInProgress = false, goBack = false}) {
+  async _submitAnswer({autoSave = false, goBack = false}) {
     const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
-    if (!saveInProgress && requiredQuestions.length > 0) {
+
+    if (!autoSave && requiredQuestions.length > 0) {
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
@@ -496,7 +482,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     }
 
     return this.save.emit({
-      saveInProgress,
+      autoSave,
       goBack,
       answers,
       assessmentId: this.assessment.id,
