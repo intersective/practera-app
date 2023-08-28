@@ -5,13 +5,14 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
+import { concat } from 'rxjs';
 
 @Component({
   selector: 'app-v3',
@@ -186,9 +187,12 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.openMenu = false;
 
-    // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-    this.subscriptions.push(this.notificationsService.getTodoItems().subscribe());
-    this.subscriptions.push(this.notificationsService.getChatMessage().subscribe());
+    this.notificationInitialise().subscribe();
+  }
+
+  // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
+  notificationInitialise(): Observable<any> {
+    return concat(this.notificationsService.getTodoItems(), this.notificationsService.getChatMessage());
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {

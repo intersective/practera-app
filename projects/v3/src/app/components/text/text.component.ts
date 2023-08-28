@@ -63,12 +63,12 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         distinctUntilChanged(),
       ).subscribe(_data => {
         const action: {
-          saveInProgress?: boolean;
+          autoSave?: boolean;
           goBack?: boolean;
           questionSave?: {};
           reviewSave?: {};
         } = {
-          saveInProgress: true,
+          autoSave: true,
           goBack: false,
         };
 

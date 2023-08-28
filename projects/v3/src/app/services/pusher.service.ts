@@ -11,7 +11,7 @@ import * as Pusher from 'pusher-js';
 import { ApolloService } from './apollo.service';
 
 const api = {
-  pusherAuth: 'api/v2/message/notify/pusher_auth.json',
+  pusherAuth: '/pusher_auth',
   channels: 'api/v2/message/notify/channels.json'
 };
 
@@ -59,7 +59,7 @@ export class PusherService {
     private apolloService: ApolloService,
   ) {
     this.pusherKey = environment.pusherKey;
-    this.apiurl = environment.APIEndpoint;
+    this.apiurl = environment.graphQL;
   }
 
   // initialise + subscribe to channels at one go

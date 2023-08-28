@@ -57,12 +57,12 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
       debounceTime(800),
     ).subscribe(() => {
       const action: {
-        saveInProgress?: boolean;
+        autoSave?: boolean;
         goBack?: boolean;
         questionSave?: {};
         reviewSave?: {};
       } = {
-        saveInProgress: true,
+        autoSave: true,
         goBack: false,
       };
 
