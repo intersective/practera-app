@@ -30,8 +30,6 @@ export class AssessmentMobilePage implements OnInit {
 
   currentTask: Task;
 
-  @ViewChild('assessmentEle') assessmentEle;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -86,7 +84,6 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   goBack() {
-    this.assessmentEle.btnBackClicked();
     if (this.fromPage === 'reviews') {
       return this.router.navigate(['v3', 'reviews']);
     }
@@ -97,7 +94,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async saveAssessment(event) {
-    if (event.saveInProgress && this.saving) {
+    if (event.autoSave && this.saving) {
       return;
     }
 
@@ -120,7 +117,7 @@ export class AssessmentMobilePage implements OnInit {
           throw new Error("Error submitting assessment");
         }
 
-        if (this.assessment.pulseCheck === true && event.saveInProgress === false) {
+        if (this.assessment.pulseCheck === true && event.autoSave === false) {
           await this.assessmentService.pullFastFeedback();
         }
       } else if (this.action === 'review') {
@@ -141,8 +138,7 @@ export class AssessmentMobilePage implements OnInit {
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
-      
-      if (!event.saveInProgress) {
+      if (!event.autoSave) {
         this.notificationsService.assessmentSubmittedToast();
         // get the latest activity tasks and refresh the assessment submission data
         this.activityService.getActivity(this.activityId);
@@ -163,10 +159,17 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   async readFeedback(event) {
-    await this.assessmentService.saveFeedbackReviewed(event).toPromise();
-    await this.reviewRatingPopUp();
-    // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activityId, true, this.task);
+    try {
+      await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+      await this.reviewRatingPopUp();
+
+      this.btnDisabled$.next(false);
+      // get the latest activity tasks and navigate to the next task
+      return this.activityService.getActivity(this.activityId, true, this.task);
+    } catch(err) {
+      this.btnDisabled$.next(false);
+      console.error(err);
+    }
   }
 
   nextTask() {

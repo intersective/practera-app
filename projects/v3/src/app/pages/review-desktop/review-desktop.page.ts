@@ -87,7 +87,7 @@ export class ReviewDesktopPage implements OnInit {
   }
 
   async saveReview(event) {
-    if (event.saveInProgress && this.loading) {
+    if (event.autoSave && this.loading) {
       return;
     }
 
