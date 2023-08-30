@@ -158,7 +158,7 @@ describe('EventDetailComponent', () => {
       component.event = tmpEvent;
       fixture.detectChanges();
       component.event = tmpEvent;
-      expect(component.buttonText()).toEqual(expected);
+      expect(component.buttonText).toEqual(expected);
       expect(page.eventName.innerHTML).toEqual(tmpEvent.name);
       expect(page.activityName.innerHTML).toEqual(tmpEvent.activityName);
       if (expected === 'Expired') {

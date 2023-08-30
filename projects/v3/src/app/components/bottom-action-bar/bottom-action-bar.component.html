@@ -5,9 +5,9 @@
     </ion-text>
     <ion-button *ngSwitchDefault
       mode="ios"
-      [disabled]="disabled"
+      [disabled]="disabled$ | async"
       [color]="color"
-      (click)="handleClick.emit()"
+      (click)="onClick($event)"
     >{{ text }}</ion-button>
   </ng-container>
 </div>

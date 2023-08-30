@@ -243,6 +243,7 @@ export class ActivityService {
         }
       }
     }
+
     // if there is no next task
     if (!nextTask) {
       if (afterTask) {
