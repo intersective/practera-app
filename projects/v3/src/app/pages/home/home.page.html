@@ -85,6 +85,7 @@
       {{ milestone.name }}
       <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
     </ion-item>
+
     <ion-item id="milestone-description"
       *ngIf="milestone?.description"
       class="body-3"

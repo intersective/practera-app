@@ -162,13 +162,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         };
         error?: any;
       }): void | Promise<void> => {
-        if (!this.utils.isEmpty(data.error)) {
-          return this.notifications.assessmentSubmittedToast({
-            isFail: true,
-            label: $localize`Save failed. Please try again.`,
-          });
-        }
-
         if (data.autoSave === false) {
           return this._submitAnswer(data);
         }
@@ -197,7 +190,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.action === 'assessment' && this.assessment?.isForTeam === true && this.storage.getUser().role !== 'participant') {
       result = true;
     }
-    this.btnDisabled$.next(result);
     return result;
   }
 
