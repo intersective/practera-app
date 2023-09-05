@@ -92,21 +92,24 @@ export class SharedService {
         }
       }`
     ).pipe(map(response => {
-      if (response.data && response.data.user) {
+      if (response?.data?.user) {
         const thisUser = response.data.user;
 
         if (!this.utils.has(thisUser, 'teams') ||
           !Array.isArray(thisUser.teams) ||
           !this.utils.has(thisUser.teams[0], 'id')
         ) {
-          return this.storage.setUser({
+          this.storage.setUser({
             teamId: null
           });
         }
-        return this.storage.setUser({
-          teamId: thisUser.teams[0].id,
-          teamName: thisUser.teams[0].name
-        });
+
+        if (thisUser.teams.length > 0) {
+          this.storage.setUser({
+            teamId: thisUser.teams[0].id,
+            teamName: thisUser.teams[0].name
+          });
+        }
       }
       return response;
     }));
