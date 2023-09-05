@@ -228,10 +228,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
     );
   }
 
-  change(questionId) {
-    this.saved[questionId] = true;
-  }
-
   ngOnChanges() {
     if (!this.assessment) {
       return;
