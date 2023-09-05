@@ -55,6 +55,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // continue to the next task
   @Output() continue = new EventEmitter();
 
+  autosaving: {
+    [key: number]: boolean
+  } = {};
   saved: {
     [key:number]: boolean
   } = {};
@@ -62,10 +65,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   onAnimationEnd(event, questionId: number) {
     if (event.toState === 'visible') {
       // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
-      timer(1000).pipe(
-        take(1)
-      ).subscribe(() => {
-        this.saved[questionId] = false;
+      timer(1000).pipe(take(1)).subscribe(() => {
+        this.autosaving[questionId] = false;
       });
     }
   }
@@ -142,8 +143,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
           this.saved[request.reviewSave.questionId] = true;
           return this.saveReviewAnswer(request.reviewSave);
         }
+
         if (request?.questionSave) {
-          this.saved[request.questionSave.questionId] = true;
+          this.autosaving[request.questionSave.questionId] = true;
+          this.saved[request.questionSave.questionId] = false;
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);
@@ -220,7 +223,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       answer,
     ).pipe(
       tap((_res) => {
-        this.saved[questionInput.questionId] = false;
+        this.autosaving[questionInput.questionId] = false;
+        this.saved[questionInput.questionId] = true;
       }),
     );
   }
