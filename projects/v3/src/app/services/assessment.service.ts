@@ -567,13 +567,14 @@ export class AssessmentService {
    * @param submissionId - submission id
    * @returns
     */
-  submitReview(assessmentId: number, reviewId: number, submissionId: number) {
-    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!';
-    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId';
+  submitReview(assessmentId: number, reviewId: number, submissionId: number, answers: Answer[]) {
+    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
+    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
     const variables = {
       assessmentId,
       reviewId,
       submissionId,
+      answers,
     };
     return this.apolloService.graphQLMutate(
       `mutation submitReview(${paramsFormat}) {

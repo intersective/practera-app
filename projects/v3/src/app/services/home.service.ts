@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, from, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { map, mergeMap, shareReplay, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
+import { SharedService } from './shared.service';
+import { ActivityService, TaskBase } from './activity.service';
 
 export interface Experience {
   leadImage: string;
@@ -55,47 +57,17 @@ export class HomeService {
   private _milestones$ = new BehaviorSubject<Milestone[]>(null);
   milestones$ = this._milestones$.asObservable();
 
+  // milestone list with "progress" injected in each of the activities
   private _projectProgress$ = new BehaviorSubject<ProjectProgress>(null);
-  projectProgress$ = this._projectProgress$.asObservable();
-
-  milestonesWithProgress$ = this._milestones$.asObservable().pipe(
-    mergeMap(
-      mRes => this._projectProgress$.asObservable().pipe(map(
-        progress => {
-          const milestones = JSON.parse(JSON.stringify(mRes));
-          if (!milestones || !milestones.length) {
-            return null;
-          }
-          // emit the milestones only if progress hasn't come back
-          if (!progress || !progress.milestones) {
-            return milestones;
-          }
-          // add the progress to the activities
-          const activityProgress = [];
-          progress.milestones.forEach(m => m.activities ? m.activities.forEach(a => activityProgress[a.id] = a.progress) : null);
-          milestones.forEach((milestone, mIndex) => {
-            if (!milestone.activities || !milestone.activities.length) {
-              return;
-            }
-            milestone.activities.forEach((activity, aIndex) => {
-              if (activityProgress[activity.id]) {
-                milestones[mIndex].activities[aIndex].progress = activityProgress[activity.id];
-              }
-            });
-            }
-          );
-          return milestones;
-        }
-      ))
-    ),
-    shareReplay(1)
-  );
+  public projectProgress$ = this._projectProgress$.asObservable();
 
   constructor(
     private apolloService: ApolloService,
     private demo: DemoService,
     private notificationsService: NotificationsService,
     private authService: AuthService,
+    private sharedServise: SharedService,
+    private activityService: ActivityService,
   ) { }
 
   clearExperience() {
@@ -190,6 +162,7 @@ export class HomeService {
     if (environment.demo) {
       return this.demo.projectProgress().pipe(map(res => this._handleProjectProgress(res))).subscribe();
     }
+
     return this.apolloService.graphQLFetch(
       `query {
         project {
@@ -214,4 +187,27 @@ export class HomeService {
     this._experienceProgress$.next(Math.round(data.data.project.progress * 100));
   }
 
+  /**
+   * @name isAccessible
+   * @description check if the activity is accessible by current
+   *    user (team or individual assessment).
+   *    When milestone contain only team assessment, only participant from a team
+   *    can access the activities.
+   *
+   * @param   {number<boolean>}   activityId
+   *
+   * @return  {Promise<boolean>}  false when inaccessible, otherwise true
+   */
+  async isAccessible(activityId: number): Promise<boolean> {
+    const teamStatus = await this.sharedServise.getTeamInfo().toPromise();
+    if (teamStatus?.data?.user?.teams.length > 0) {
+      return true;
+    }
+
+    const activitiesBase = await this.activityService.getActivityBase(activityId).toPromise();
+    const nonTeamAsmt = (activitiesBase?.data?.activity?.tasks || [])
+      .filter((task: TaskBase) => task.isTeam !== true);
+
+    return nonTeamAsmt.length > 0;
+  }
 }
