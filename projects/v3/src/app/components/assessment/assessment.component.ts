@@ -5,13 +5,23 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, delay, filter, takeUntil } from 'rxjs/operators';
+import { concatMap, filter, take, takeUntil, tap } from 'rxjs/operators';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
+// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
+  animations: [
+    trigger('tickAnimation', [
+      state('visible', style({ transform: 'scale(1)', opacity: 1 })),
+      state('hidden', style({ transform: 'scale(0)', opacity: 0 })),
+      transition('hidden => visible', animate('200ms ease-out')),
+      transition('visible => hidden', animate('100ms ease-in')),
+    ]),
+  ],
 })
 export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
@@ -44,6 +54,22 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
+
+  autosaving: {
+    [key: number]: boolean
+  } = {};
+  saved: {
+    [key:number]: boolean
+  } = {};
+
+  onAnimationEnd(event, questionId: number) {
+    if (event.toState === 'visible') {
+      // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
+      timer(1000).pipe(take(1)).subscribe(() => {
+        this.autosaving[questionId] = false;
+      });
+    }
+  }
 
   // used to resubscribe to the assessment service
   resubscribe$ = new Subject();
@@ -114,9 +140,13 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       filter(() => !this._preventSubmission()), // skip when false
       concatMap(request => {
         if (request?.reviewSave) {
+          this.saved[request.reviewSave.questionId] = true;
           return this.saveReviewAnswer(request.reviewSave);
         }
+
         if (request?.questionSave) {
+          this.autosaving[request.questionSave.questionId] = true;
+          this.saved[request.questionSave.questionId] = false;
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);
@@ -184,7 +214,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      delay(800)
+      tap((_res) => {
+        this.autosaving[questionInput.questionId] = false;
+        this.saved[questionInput.questionId] = true;
+      }),
     );
   }
 
@@ -204,8 +237,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(800),
+      tap((res) => { console.log(res) })
     );
+  }
+
+  change(questionId) {
+    this.saved[questionId] = true;
   }
 
   ngOnChanges() {

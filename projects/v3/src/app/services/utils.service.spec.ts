@@ -623,8 +623,8 @@ describe('UtilsService', () => {
       };
       const targetLocale = 'sample-locale';
 
-      service.getCurrentLocation = jasmine.createSpy('getCurrentLocation').and.returnValue(subject);
-      service.getCurrentLocale = jasmine.createSpy('getCurrentLocale').and.returnValue('en-US');
+      service.getCurrentLocation = jasmine.createSpy('service.getCurrentLocation').and.returnValue(subject);
+      service.getCurrentLocale = jasmine.createSpy('service.getCurrentLocale').and.returnValue('en-US');
       service.redirectToUrl = jasmine.createSpy('service.redirectToUrl');
       service.moveToNewLocale(targetLocale);
 
