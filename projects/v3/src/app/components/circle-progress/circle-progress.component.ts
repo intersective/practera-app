@@ -11,6 +11,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   @Input() data = {};
   @Input() type: string;
   @Input() loading = false;
+  isMobile: boolean;
   config: any;
 
   largePlaceholderCircle = {
@@ -97,6 +98,7 @@ export class CircleProgressComponent implements OnChanges, OnInit {
   ) {}
 
   ngOnInit() {
+    this.isMobile = this.utils.isMobile();
     if (this.data) {
       this.config = this.setCircleProgress(this.data);
     } else if (this.type === 'large') {
@@ -111,10 +113,6 @@ export class CircleProgressComponent implements OnChanges, OnInit {
     if (changes.data) {
       this.config = this.setCircleProgress(changes.data.currentValue);
     }
-  }
-
-  get isMobile(): boolean {
-    return this.utils.isMobile();
   }
 
   setCircleProgress(data: CircleProgressOptionsInterface) {
