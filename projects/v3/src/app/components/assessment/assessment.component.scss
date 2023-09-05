@@ -181,3 +181,10 @@ ion-footer {
   margin-left: auto;
   margin-right: auto;
 }
+
+.tick-container {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  z-index: 1;
+}
