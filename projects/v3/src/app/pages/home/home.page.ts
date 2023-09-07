@@ -72,10 +72,10 @@ export class HomePage implements OnInit {
         });
       }
     ));
-    this.homeService.getMilestones();
   }
 
   ionViewDidEnter() {
+    this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
