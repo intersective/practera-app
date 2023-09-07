@@ -2,19 +2,13 @@ import { Injectable } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
-import { RequestService } from 'request';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
-
-const api = {
-  get: {
-    teams: 'api/teams.json',
-  }
-};
+import { AchievementService } from './achievement.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,11 +21,11 @@ export class SharedService {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationsService,
-    private request: RequestService,
     private http: HttpClient,
     private topicService: TopicService,
     private apolloService: ApolloService,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private achievementService: AchievementService,
   ) { }
 
   // call this function on every page refresh and after switch program
@@ -68,6 +62,7 @@ export class SharedService {
             points,
             image: badge
           });
+          this.achievementService.getAchievements();
         }
       });
     }
