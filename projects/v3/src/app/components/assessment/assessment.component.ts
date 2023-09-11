@@ -5,9 +5,9 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
+import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, filter, take, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 
 @Component({
