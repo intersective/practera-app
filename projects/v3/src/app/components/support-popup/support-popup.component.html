@@ -47,7 +47,11 @@
     </ion-item>
     <p class="form-field-label subtitle-1 black">Please describe your problem <span title="required" class="required">*</span></p>
     <ion-item lines="none" class="form-field">
-      <ion-textarea rows="4" spellcheck="true" [(ngModel)]="problemContent"></ion-textarea>
+      <ion-textarea rows="4"
+        [autoGrow]="true"
+        spellcheck="true"
+        [(ngModel)]="problemContent"
+      ></ion-textarea>
     </ion-item>
     <p class="form-field-label subtitle-1 black">Attach support files (Optional. Screenshots or documents)</p>
     <div class="file-container">
@@ -59,7 +63,7 @@
         (click)="uploadFile()"
       >Choose file</ion-button>
 
-      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.filename : 'No file chosen' }}</p>
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.filename : 'No file chosen' }}</p>
       <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon>
       </p>
     </div>

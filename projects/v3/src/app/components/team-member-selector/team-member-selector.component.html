@@ -65,13 +65,22 @@
     </ion-radio-group>
   </ion-list>
 
-  <ion-textarea *ngIf="question.canComment"
+  <ion-list class="ion-no-padding ion-padding-bottom"
+    *ngIf="question.canComment && submission.answer">
+    <ion-list-header class="ion-no-padding" lines="none">
+      <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
+    </ion-list-header>
+    <ion-textarea *ngIf="question.canComment"
+    [autoGrow]="true"
     [attr.aria-label]="'expert\'s review feedback'"
     #commentEle
     class="textarea"
     rows="4"
     [(ngModel)]="comment"
-    (ngModelChange)="onChange(comment, 'comment')" placeholder="Please put your feedback here" i18n-placeholder
+    (ngModelChange)="onChange(comment, 'comment')"
+    placeholder="Please put your feedback here" i18n-placeholder
     [disabled]="control.disabled"
   ></ion-textarea>
+  </ion-list>
+
 </ng-container>

@@ -24,7 +24,7 @@ jobs:
     name: deploy-p1-uk-live
     runs-on: ubuntu-latest
     environment: p1-uk
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
