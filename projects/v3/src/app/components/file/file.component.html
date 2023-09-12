@@ -5,6 +5,7 @@
         <p><ion-chip class="label orange" i18n>Learner's answer</ion-chip></p>
       </ion-label>
     </ion-item>
+
     <app-file-display [file]="submission.answer"
       [fileType]="question.fileType || 'any'" [isFileComponent]="true"
       [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
@@ -17,6 +18,7 @@
         <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
       </ion-label>
     </ion-item>
+
     <app-file-display
       [file]="review.answer"
       [fileType]="question.fileType || 'any'"
@@ -30,6 +32,7 @@
       <ion-label i18n>Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin textarea white-space-pre"
+      [autoGrow]="true"
       [value]="review.comment"
       [disabled]="true"
     ></ion-textarea>
@@ -59,17 +62,22 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="doReview && question.canAnswer">
-  <ng-container *ngIf="question.canAnswer">
-    <app-file-stack *ngIf="!uploadedFile && !review.answer"
-      [accept]="fileTypes"
-      [fileType]="question.fileType || 'any'"
-      (uploadCompleted)="onFileUploadCompleted($event, 'answer')"
-      [disabled]="control.disabled"
-    ></app-file-stack>
+<ng-container *ngIf="doReview && question.canAnswer && reviewStatus !== 'done'">
+  <app-file-stack *ngIf="!uploadedFile && !review.answer"
+    [accept]="fileTypes"
+    [fileType]="question.fileType || 'any'"
+    (uploadCompleted)="onFileUploadCompleted($event, 'answer')"
+    [disabled]="control.disabled"
+  ></app-file-stack>
+
+  <ng-container *ngIf="uploadedFile || review.answer">
+    <ion-item lines="none">
+      <ion-label class="white-space-normal body-2 gray-3">
+        <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
+      </ion-label>
+    </ion-item>
 
     <app-file-display
-      *ngIf="uploadedFile || review.answer"
       [file]="uploadedFile ? uploadedFile : review.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
@@ -84,6 +92,7 @@
       <ion-label i18n>Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin textarea"
+      [autoGrow]="true"
       [attr.aria-label]="'expert\'s review feedback'"
       #commentEle
       [(ngModel)]="comment"
