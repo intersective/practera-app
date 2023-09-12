@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
@@ -72,10 +72,18 @@ export class HomePage implements OnInit {
         });
       }
     ));
-    this.homeService.getMilestones();
+
+    this.subscriptions.push(
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          this.updateDashboard();
+        }
+      })
+    )
   }
 
-  ionViewDidEnter() {
+  updateDashboard() {
+    this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
