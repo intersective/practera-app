@@ -253,8 +253,6 @@ export class ExperienceService {
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
-      this.homeService.getMilestones();
-
       return of([jwt, teamInfo, me]);
     } catch (err) {
       throw Error(err);
