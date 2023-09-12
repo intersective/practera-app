@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, QueryList, OnDestroy, ViewChildren } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
+import { IonCheckbox } from '@ionic/angular';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { Subject } from 'rxjs';
+import { from, fromEvent, merge, Subject, Subscription } from 'rxjs';
+import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-multiple',
@@ -15,7 +17,7 @@ import { Subject } from 'rxjs';
     }
   ]
 })
-export class MultipleComponent implements ControlValueAccessor, OnInit {
+export class MultipleComponent implements ControlValueAccessor, OnInit, OnDestroy {
   @Input() submitActions$: Subject<any>;
 
   @Input() question;
@@ -33,10 +35,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
-  // answer field for submitter & reviewer
-  @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+
+  autosave$ = new Subject<any>();
 
   // the value of answer
   innerValue: any;
@@ -44,12 +46,54 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
+  subscriptions: Subscription[] = [];
+
   constructor(
     private utils: UtilsService,
   ) {}
 
   ngOnInit() {
     this._showSavedAnswers();
+  }
+
+  ngAfterViewInit() {
+    this.autosave$.pipe(
+      debounceTime(800),
+    ).subscribe(() => {
+      const action: {
+        saveInProgress?: boolean;
+        goBack?: boolean;
+        questionSave?: {};
+        reviewSave?: {};
+      } = {
+        saveInProgress: true,
+        goBack: false,
+      };
+
+      if (this.doReview === true) {
+        action.reviewSave = {
+          reviewId: this.reviewId,
+          submissionId: this.submissionId,
+          questionId: this.question.id,
+          answer: this.innerValue.answer,
+          comment: this.innerValue.comment,
+        };
+      }
+
+      if (this.doAssessment === true) {
+        action.questionSave = {
+          submissionId: this.submissionId,
+          questionId: this.question.id,
+          answer: this.innerValue,
+        };
+      }
+
+      this.submitActions$.next(action);
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   // propagate changes into the form control
@@ -106,35 +150,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
       }
     }
 
-    const action: {
-      autoSave?: boolean;
-      goBack?: boolean;
-      questionSave?: {};
-      reviewSave?: {};
-    } = {
-      autoSave: true,
-      goBack: false,
-    };
-
-    if (this.doReview === true) {
-      action.reviewSave = {
-        reviewId: this.reviewId,
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue.answer,
-        comment: this.innerValue.comment,
-      };
-    }
-
-    if (this.doAssessment === true) {
-      action.questionSave = {
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue,
-      };
-    }
-
-    this.submitActions$.next(action);
+    this.autosave$.next();
   }
 
   // From ControlValueAccessor interface

@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-oneof',
@@ -43,10 +44,48 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
+  autosave$ = new Subject<any>();
+
   constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
+  }
+
+  ngAfterViewInit() {
+    this.autosave$.pipe(
+      debounceTime(800),
+    ).subscribe(() => {
+      const action: {
+        saveInProgress?: boolean;
+        goBack?: boolean;
+        questionSave?: {};
+        reviewSave?: {};
+      } = {
+        saveInProgress: true,
+        goBack: false,
+      };
+
+      if (this.doReview === true) {
+        action.reviewSave = {
+          reviewId: this.reviewId,
+          submissionId: this.submissionId,
+          questionId: this.question.id,
+          answer: this.innerValue.answer,
+          comment: this.innerValue.comment,
+        };
+      }
+
+      if (this.doAssessment === true) {
+        action.questionSave = {
+          submissionId: this.submissionId,
+          questionId: this.question.id,
+          answer: this.innerValue,
+        };
+      }
+
+      this.submitActions$.next(action);
+    });
   }
 
   // propagate changes into the form control
@@ -83,35 +122,7 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
       }
     }
 
-    const action: {
-      autoSave?: boolean;
-      goBack?: boolean;
-      questionSave?: {};
-      reviewSave?: {};
-    } = {
-      autoSave: true,
-      goBack: false,
-    };
-
-    if (this.doReview === true) {
-      action.reviewSave = {
-        reviewId: this.reviewId,
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue.answer,
-        comment: this.innerValue.comment,
-      };
-    }
-
-    if (this.doAssessment === true) {
-      action.questionSave = {
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue,
-      };
-    }
-
-    this.submitActions$.next(action);
+    this.autosave$.next();
   }
 
   // From ControlValueAccessor interface
