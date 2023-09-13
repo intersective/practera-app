@@ -15,6 +15,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { TermsConditionsPreviewComponent } from '../terms-conditions-preview/terms-conditions-preview.component';
 import { environment } from '@v3/environments/environment';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-auth-registration',
@@ -165,7 +166,7 @@ export class AuthRegistrationComponent implements OnInit {
           key: this.user.key
         })
         .subscribe(
-          response => {
+          _response => {
             this.authService
               .login({
                 email: this.user.email,
@@ -178,25 +179,26 @@ export class AuthRegistrationComponent implements OnInit {
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
                 },
                 err => {
+                  console.error(err);
                   this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
                 }
               );
           },
-          error => {
-
-            if (this.utils.has(error, 'data.type')) {
-              if (error.data.type === 'password_compromised') {
-                return this.notificationsService.alert({
-                  message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>Please try again.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
-                  buttons: [
-                    {
-                      text: $localize`OK`,
-                      role: 'cancel'
-                    }
-                  ],
-                });
-              }
+          async (error: HttpErrorResponse) => {
+            const errorData = error?.error?.data;
+            if (errorData?.type === 'password_compromised') {
+              return await this.notificationsService.alert({
+                message: $localize`We’ve checked this password against a global database of insecure passwords and your password was on it.<br>Please try again.<br>You can learn more about how we check that <a href="https://haveibeenpwned.com/Passwords">database</a>`,
+                buttons: [
+                  {
+                    text: $localize`OK`,
+                    role: 'cancel'
+                  }
+                ],
+              });
             }
+
+            console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
         );

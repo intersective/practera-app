@@ -144,6 +144,21 @@
             </ion-item>
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
+              <div class="tick-container">
+                <ion-spinner name="dots" class="tick-icon"
+                  style="max-width: 16px; max-height: 16px;"
+                  *ngIf="autosaving[question.id]"
+                  [@tickAnimation]="autosaving[question.id] ? 'visible' : 'hidden'"
+                  (@tickAnimation.done)="onAnimationEnd($event, question.id)"
+                ></ion-spinner>
+
+                <ion-icon name="checkmark-circle-outline"
+                  class="tick-icon"
+                  *ngIf="saved[question.id]"
+                  [@tickAnimation]="saved[question.id] ? 'visible' : 'hidden'"
+                ></ion-icon>
+              </div>
+
               <ion-item *ngIf="!doAssessment && (
                 (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
@@ -264,10 +279,10 @@
   <ng-container *ngIf="preventSubmission === false; else blocked">
     <app-bottom-action-bar
       *ngIf="!(action === 'review'
-      && submission?.status === 'feedback available'
-      && review?.status === 'done')"
+        && submission.status === 'feedback available'
+        && review.status === 'done')"
       [text]="btnText"
-      [disabled]="(btnDisabled$ | async)"
+      [disabled$]="btnDisabled$"
       (handleClick)="continueToNextTask()"
     ></app-bottom-action-bar>
   </ng-container>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
@@ -28,6 +28,9 @@ export class HomePage implements OnInit {
   subscriptions: Subscription[] = [];
   isMobile: boolean;
   activityProgresses = {};
+
+  getIsPointsConfigured: boolean = false;
+  getEarnedPoints: number = 0;
 
   constructor(
     private router: Router,
@@ -69,12 +72,23 @@ export class HomePage implements OnInit {
         });
       }
     ));
-    this.homeService.getMilestones();
+
+    this.subscriptions.push(
+      this.router.events.subscribe(event => {
+        if (event instanceof NavigationEnd) {
+          this.updateDashboard();
+        }
+      })
+    )
   }
 
-  ionViewDidEnter() {
+  updateDashboard() {
+    this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
+    this.getEarnedPoints = this.achievementService.getEarnedPoints();
   }
 
   goBack() {
@@ -110,7 +124,7 @@ export class HomePage implements OnInit {
     return null;
   }
 
-  gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
+  async gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
@@ -123,6 +137,20 @@ export class HomePage implements OnInit {
 
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
+
+    const isAccessible = await this.homeService.isAccessible(activity.id);
+    if (isAccessible === false) {
+      return this.notification.alert({
+        header: $localize`Team Activity`,
+        message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel',
+          }
+        ]
+      });
+    }
 
     if (!this.utils.isMobile()) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
@@ -146,13 +174,4 @@ export class HomePage implements OnInit {
     }
     return progress;
   }
-
-  get getIsPointsConfigured() {
-    return this.achievementService.getIsPointsConfigured();
-  }
-
-  get getEarnedPoints() {
-    return this.achievementService.getEarnedPoints();
-  }
-
 }
