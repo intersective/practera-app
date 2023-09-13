@@ -67,7 +67,7 @@ export class TabsPage implements OnInit, OnDestroy {
     this.subscriptions.push(this.utils.getEvent('notification').subscribe(event => {
       this.notificationsService.getTodoItemFromEvent(event);
       if (event.type === 'assessment_review_published' && event?.meta?.AssessmentReview?.activity_id) {
-        this.activityService.getActivityBase(event.meta.AssessmentReview.activity_id);
+        this.activityService.getActivity(event.meta.AssessmentReview.activity_id);
       }
     }));
 
