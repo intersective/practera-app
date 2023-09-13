@@ -378,9 +378,9 @@
                   "with": "projects/v3/src/environments/environment.custom.ts"
                 }
               ],
-              "buildOptimizer": true,
+              "buildOptimizer": false,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false
