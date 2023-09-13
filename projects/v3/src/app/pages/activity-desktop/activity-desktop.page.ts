@@ -50,7 +50,7 @@ export class ActivityDesktopPage {
   ionViewWillEnter() {
     this.subscriptions.push(
       this.activityService.activity$
-      .pipe(filter(res => res.id === +this.route.snapshot.paramMap.get('id')))
+      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
       .subscribe(res => {
         this.activity = res;
       })
