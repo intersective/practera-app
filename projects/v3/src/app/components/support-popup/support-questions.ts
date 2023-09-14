@@ -11,8 +11,8 @@ export const supportQuestionList = [
     questionId: "two",
     question: "I'VE SUBMITTED THE WRONG FILE!",
     answer: [
-      "If you've accidentally submitted the wrong file or have encountered any other issues while submitting an assessment, it's important to reach out to your program coordinator as soon as possible. You can do this by (insert how students can gain additional feedback through the hubspot form) and providing them with the program name and assessment name.",
-      "It's important to be proactive and take action quickly, as this will help ensure that any issues are resolved in a timely manner and that you're able to continue making progress in your learning journey. "
+      "If you've accidentally submitted the wrong file or have encountered any other issues while submitting an assessment, it's important to reach out to your program coordinator as soon as possible. You can do this by clicking on “Contact Support” in the top right corner and providing them with the program name and assessment name.",
+      "It's important to be proactive and take action quickly, as this will help ensure that any issues are resolved in a timely manner and that you're able to continue making progress in your learning journey."
     ]
   },
   {
@@ -43,7 +43,7 @@ export const supportQuestionList = [
     question: "HOW DO I WITHDRAW FROM THE PROGRAM?",
     answer: [
       "If you're considering withdrawing from a program, it's important to take action as soon as possible. Withdrawing from a program can be a difficult decision, but it's important to prioritise your well-being and make the choice that's best for you.",
-      "To withdraw from a program, the first step is to get in touch with your program coordinator by (process that will need to be included for hubspot form). They will be able to guide you through the process and provide you with any necessary information about the steps you'll need to take.",
+      "To withdraw from a program, the first step is to get in touch with your program coordinator by clicking on “Contact Support” in the top right corner and providing them with your program name. They will be able to guide you through the process and provide you with any necessary information about the steps you'll need to take.",
       "Remember, there's no shame in withdrawing from a program if it's not the right fit for you. It takes courage to acknowledge when something isn't working and to take action to change it. So be kind to yourself, and don't be afraid to reach out for help and support. Your program coordinator is there to help you, and they'll do everything they can to make the withdrawal process as smooth and stress-free as possible."
     ]
   },
@@ -52,16 +52,15 @@ export const supportQuestionList = [
     question: "WHY HAVEN'T I RECEIVED MY CERTIFICATE?",
     answer: [
       "Congratulations on completing your course and earning a badge! The journey of learning is often challenging, but receiving a badge is a fantastic way to acknowledge your hard work and achievements.",
-      "To access your digital certificate, the first step is to check your inbox, including your Spam folder, for an email called 'You've been awarded a badge.' Once you've located the email, simply click the link 'View your Digital Certificate' at the bottom of the email to access your certificate. This is a great way to showcase your accomplishment to potential employers and colleagues.",
-      "If you haven't received the email or access to your certificate, it's possible that you haven't yet met all the requirements explained in the final milestone. To ensure that you receive your certificate, make sure that you have submitted all assessments, including the feedback survey. Double-check the final milestone requirements to ensure that you've met all the criteria for completion.",
-      "Check your inbox, including your Spam folder, for an email called 'You've been awarded a badge.' To access your certificate click the link 'View your Digital Certificate' at the bottom of the email. Alternatively, you might not have been awarded the certificate yet. Check the requirements explained in the final milestone. Tip: remember to submit all assessments, including the feedback survey."
+      "To access your digital certificate, the first step is to check your inbox, including your Spam folder, for an email called \"You've been awarded a badge.\" Once you've located the email, simply click the link \"View your Digital Certificate\" at the bottom of the email. This is a great way to showcase your accomplishment to potential employers and colleagues.",
+      "If you haven't received the email or access to your certificate, it's possible that you haven't yet met all the requirements. To ensure that you receive your certificate, make sure that you have submitted all assessments, including the feedback survey. Double-check the final milestone requirements to ensure that you've met all the criteria for completion."
     ]
   },
   {
     questionId: "eight",
     question: "HOW DO I ADD MY CERTIFICATE TO LINKEDIN?",
     answer: [
-      "In the top right-hand corner of the certificate, click the LinkedIn share button. Paste this link under an Experience or Credential on your profile"
+      "Save your certificate as a PDF file. Then upload this file under an Experience or Credential on your LinkedIn profile."
     ]
   },
   {
@@ -75,21 +74,21 @@ export const supportQuestionList = [
     questionId: "ten",
     question: "Do I get a certificate and a Practera digital badge?",
     answer: [
-      "You will receive a Practera Digital badge upon completion of the project, providing you have met all program requirements (time commitment, active participation and completion of all activities in Practera)."
+      "This is program dependent. If you are unsure if you should receive a certificate and digital badge, please contact your program coordinator by clicking on “Contact Support” in the top right corner and providing them with your program name."
     ]
   },
   {
     questionId: "eleven",
     question: "Do I have to be in the country or city location of the client?",
     answer: [
-      "No. This program supports remote working conditions with fully virtual industry and team engagement through the Practera App, so you aren’t required to be physically in the location of the client to participate"
+      "No. This program supports remote working conditions with fully virtual industry and team engagement through the Practera Workspace, so you aren’t required to be physically in the location of the client to participate."
     ]
   },
   {
     questionId: "twelve",
     question: "What if I have a part-time job?",
     answer: [
-      "It is fine if you have a part-time job, but you must be able to commit to the required number of hours of work on the project over theduration of the program. You will coordinate with your team to ensure that you’re able to attend meetings and contribute equally to all deliverables."
+      "It is fine if you have a part-time job, but you must be able to commit to the required number of hours of work on the project over the duration of the program. You will coordinate with your team to ensure that you’re able to attend meetings and contribute equally to all deliverables."
     ]
   },
   {
@@ -124,14 +123,14 @@ export const supportQuestionList = [
     questionId: "seventeen",
     question: "Will I be paid to work on this Project?",
     answer: [
-      "No, you will not be paid to work on this project. This is first and foremost a learning experience that is part of a subject and your course."
+      "No, you will not be paid to work on this project. This is first and foremost a learning experience that is either extracurricular, part of a subject or your course."
     ]
   },
   {
     questionId: "ighteen",
-    question: "Can I skip the orientation session?",
+    question: "Can I skip the induction session?",
     answer: [
-      "The orientation session is compulsory. You will meet your team, mentor and client.  Students who do not attend will be removed from the program."
+      "The induction session is compulsory. You will meet your team, mentor and client. Learners who do not attend will be removed from the program."
     ]
   },
 ]
