@@ -123,7 +123,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
     let icons = [];
     if (this.fileType === 'any') {
       icons = ['download', 'search']
-    };
+    }
     if (this.removeFile.observers.length > 0 && !this.disabled) {
       icons.push('trash');
     }
