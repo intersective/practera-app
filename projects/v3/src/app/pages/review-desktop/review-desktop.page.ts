@@ -99,6 +99,11 @@ export class ReviewDesktopPage implements OnInit {
         event.answers
       ).toPromise();
 
+      // [CORE-5876] - Fastfeedback is now added for reviewer
+      if (this.assessment.pulseCheck === true && event.autoSave === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
+
       this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
       this.reviewService.getReviews();
 
@@ -109,8 +114,6 @@ export class ReviewDesktopPage implements OnInit {
         this.loading = false;
         return;
       }
-
-      this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
 
       this.loading = false;
       this.btnDisabled$.next(false);
