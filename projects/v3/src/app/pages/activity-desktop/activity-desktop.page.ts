@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { delay, filter, tap } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -49,7 +49,11 @@ export class ActivityDesktopPage {
 
   ionViewWillEnter() {
     this.subscriptions.push(
-      this.activityService.activity$.subscribe(res => this.activity = res)
+      this.activityService.activity$
+      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
+      .subscribe(res => {
+        this.activity = res;
+      })
     );
     this.subscriptions.push(
       this.activityService.currentTask$.subscribe(res => this.currentTask = res)
