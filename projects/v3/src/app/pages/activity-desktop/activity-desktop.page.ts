@@ -207,6 +207,7 @@ export class ActivityDesktopPage {
         delay(400)
       ).toPromise();
       await this.reviewRatingPopUp();
+      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
       this.loading = false;
       this.btnDisabled$.next(false);
