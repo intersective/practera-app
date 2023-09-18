@@ -652,17 +652,18 @@ export class NotificationsService {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
         }
+        const review = event.meta.AssessmentReview;
         result = {
           type: 'feedback_available',
           name: $localize`New Feedback`,
-          description: $localize`Feedback received from ${event.meta.AssessmentReview.reviewer_name} for ${event.meta.AssessmentReview.assessment_name}`,
-          time: this.utils.timeFormatter(event.meta.AssessmentReview.published_date),
+          description: $localize`Feedback received from ${review.reviewer_name} for ${review.assessment_name}`,
+          time: this.utils.timeFormatter(review.published_date),
           meta: {
-            activity_id: event.meta.AssessmentReview.activity_id,
-            context_id: event.meta.AssessmentReview.context_id,
-            assessment_id: event.meta.AssessmentReview.assessment_id,
-            assessment_name: event.meta.AssessmentReview.assessment_name,
-            reviewer_name: event.meta.AssessmentReview.reviewer_name,
+            activity_id: review.activity_id,
+            context_id: review.context_id,
+            assessment_id: review.assessment_id,
+            assessment_name: review.assessment_name,
+            reviewer_name: review.reviewer_name,
           }
         };
         break;
