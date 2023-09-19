@@ -56,39 +56,43 @@ export class MultipleComponent implements ControlValueAccessor, OnInit, OnDestro
     this._showSavedAnswers();
   }
 
+  triggerSave(): void {
+    const action: {
+      autoSave?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
+      autoSave: true,
+      goBack: false,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue,
+      };
+    }
+
+    this.submitActions$.next(action);
+  }
+
   ngAfterViewInit() {
     this.autosave$.pipe(
       debounceTime(800),
     ).subscribe(() => {
-      const action: {
-        autoSave?: boolean;
-        goBack?: boolean;
-        questionSave?: {};
-        reviewSave?: {};
-      } = {
-        autoSave: true,
-        goBack: false,
-      };
-
-      if (this.doReview === true) {
-        action.reviewSave = {
-          reviewId: this.reviewId,
-          submissionId: this.submissionId,
-          questionId: this.question.id,
-          answer: this.innerValue.answer,
-          comment: this.innerValue.comment,
-        };
-      }
-
-      if (this.doAssessment === true) {
-        action.questionSave = {
-          submissionId: this.submissionId,
-          questionId: this.question.id,
-          answer: this.innerValue,
-        };
-      }
-
-      this.submitActions$.next(action);
+      this.triggerSave();
     });
   }
 

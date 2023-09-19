@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -6,8 +6,14 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
-import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, take, delay, filter, takeUntil, tap, catchError } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { TextComponent } from '../text/text.component';
+import { OneofComponent } from '../oneof/oneof.component';
+import { FileComponent } from '../file/file.component';
+import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
+import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
+import { MultipleComponent } from '../multiple/multiple.component';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
@@ -54,11 +60,15 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
+  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
 
   autosaving: {
     [key: number]: boolean
   } = {};
   saved: {
+    [key:number]: boolean
+  } = {};
+  failed: {
     [key:number]: boolean
   } = {};
 
@@ -146,6 +156,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (request?.questionSave) {
           this.autosaving[request.questionSave.questionId] = true;
           this.saved[request.questionSave.questionId] = false;
+          this.failed[request.questionSave.questionId] = false;
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);
@@ -199,6 +210,15 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return result;
   }
 
+  retrySave(question): void {
+    this.autosaving[question.id] = true;
+    this.questionComponents?.forEach((questionComponent) => {
+      if (questionComponent?.question?.id === question?.id) {
+        questionComponent.triggerSave();
+      }
+    });
+  }
+
   /**
    * Saves the answer for a given question within a submission.
    *
@@ -215,6 +235,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     answer: string;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
@@ -223,8 +244,16 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       tap((_res) => {
         this.autosaving[questionInput.questionId] = false;
         this.saved[questionInput.questionId] = true;
+        console.log('_res', _res);
+      }, (error) => {
+        console.log('error', error);
+        this.autosaving[questionInput.questionId] = false;
+        this.saved[questionInput.questionId] = false;
+        this.failed[questionInput.questionId] = true;
+      }, () => {
+        console.log('completed');
       }),
-      delay(800)
+      delay(800),
     );
   }
 
