@@ -99,11 +99,13 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
 
   triggerSave(): void {
     const action: {
+      saveInProgress?: boolean; // git conflict (trunk-v3)
       autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
+      saveInProgress: true, // git conflict (trunk-v3)
       autoSave: true,
       goBack: false,
     };

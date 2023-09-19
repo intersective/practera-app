@@ -48,7 +48,7 @@ export class ActivityComponent {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return `${ task.submitter.name } is working on this`;
+      return $localize`:team assessment:${ task.submitter.name } is working on this`;
     }
     // due date
     if (!task.dueDate) {
@@ -135,14 +135,14 @@ export class ActivityComponent {
     return task.type === 'Assessment' && (!task.status || task.status === '' || task.status === 'in progress');
   }
 
-  goto(task: Task, keyboardEvent?: KeyboardEvent) {
+  async goto(task: Task, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
 
-    return this._validateTeamAssessment(task, () => {
+    return this._validateTeamAssessment(task, async () => {
       if (task.type === 'Locked') {
         return this.notificationsService.alert({
           message: $localize`This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.`,
@@ -154,6 +154,7 @@ export class ActivityComponent {
           ]
         });
       }
+
       this.navigate.emit(task);
     });
   }
@@ -162,7 +163,7 @@ export class ActivityComponent {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 
-    const doAssessment = (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress');
+    const doAssessment = (this.utils.isEmpty(this.submission) || ['in progress', 'pending review'].includes(this.submission.status));
     const teamId = this.storageService.getUser().teamId;
 
     // display pop up if it is team assessment or team 360 assessment and user is not in team
