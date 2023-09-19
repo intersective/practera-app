@@ -6,7 +6,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
-import { concatMap, take, delay, filter, takeUntil, tap, catchError } from 'rxjs/operators';
+import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
 import { OneofComponent } from '../oneof/oneof.component';
@@ -15,7 +15,7 @@ import { TeamMemberSelectorComponent } from '../team-member-selector/team-member
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
 
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
+
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -150,9 +150,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       filter(() => !this._preventSubmission()), // skip when false
       concatMap(request => {
         if (request?.reviewSave) {
-          // this.saved[request.reviewSave.questionId] = true;
+          this.saved[request.reviewSave.questionId] = true;
           return this.saveReviewAnswer(request.reviewSave);
         }
+
         if (request?.questionSave) {
           this.autosaving[request.questionSave.questionId] = true;
           this.saved[request.questionSave.questionId] = false;
@@ -172,13 +173,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         };
         error?: any;
       }): void | Promise<void> => {
-        if (!this.utils.isEmpty(data.error)) {
-          return this.notifications.assessmentSubmittedToast({
-            isFail: true,
-            label: $localize`Save failed. Please try again.`,
-          });
-        }
-
         if (data.autoSave === false) {
           return this._submitAnswer(data);
         }
@@ -273,7 +267,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       answer,
       comment,
     ).pipe(
-      delay(800),
       tap((res) => { console.log(res) })
     );
   }
