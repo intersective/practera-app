@@ -157,6 +157,9 @@
                   *ngIf="saved[question.id]"
                   [@tickAnimation]="saved[question.id] ? 'visible' : 'hidden'"
                 ></ion-icon>
+
+                <ion-icon name="reload-circle-outline" class="tick-icon" *ngIf="failed[question.id]" (click)="retrySave(question)"
+                  [@tickAnimation]="failed[question.id] ? 'visible' : 'hidden'"></ion-icon>
               </div>
 
               <ion-item *ngIf="!doAssessment && (
@@ -168,6 +171,7 @@
               </ion-item>
 
               <app-text *ngSwitchCase="'text'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -182,6 +186,7 @@
                 [submitActions$]="submitActions"></app-text>
 
               <app-oneof *ngSwitchCase="'oneof'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -196,6 +201,7 @@
                 [submitActions$]="submitActions"></app-oneof>
 
               <app-multiple *ngSwitchCase="'multiple'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -210,6 +216,7 @@
                 [submitActions$]="submitActions"></app-multiple>
 
               <app-file *ngSwitchCase="'video'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -225,6 +232,7 @@
                 [submitActions$]="submitActions"></app-file>
 
               <app-file *ngSwitchCase="'file'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -239,6 +247,7 @@
                 [submitActions$]="submitActions"></app-file>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -253,6 +262,7 @@
                 [submitActions$]="submitActions"></app-team-member-selector>
 
               <app-multi-team-member-selector *ngSwitchCase="'multi team member selector'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"

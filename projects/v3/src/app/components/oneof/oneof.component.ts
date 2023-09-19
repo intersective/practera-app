@@ -56,35 +56,7 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
     this.autosave$.pipe(
       debounceTime(800),
     ).subscribe(() => {
-      const action: {
-        saveInProgress?: boolean;
-        goBack?: boolean;
-        questionSave?: {};
-        reviewSave?: {};
-      } = {
-        saveInProgress: true,
-        goBack: false,
-      };
-
-      if (this.doReview === true) {
-        action.reviewSave = {
-          reviewId: this.reviewId,
-          submissionId: this.submissionId,
-          questionId: this.question.id,
-          answer: this.innerValue.answer,
-          comment: this.innerValue.comment,
-        };
-      }
-
-      if (this.doAssessment === true) {
-        action.questionSave = {
-          submissionId: this.submissionId,
-          questionId: this.question.id,
-          answer: this.innerValue,
-        };
-      }
-
-      this.submitActions$.next(action);
+      this.triggerSave();
     });
   }
 
@@ -123,6 +95,40 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
     }
 
     this.autosave$.next();
+  }
+
+  triggerSave(): void {
+    const action: {
+      saveInProgress?: boolean; // git conflict (trunk-v3)
+      autoSave?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
+      saveInProgress: true, // git conflict (trunk-v3)
+      autoSave: true,
+      goBack: false,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue,
+      };
+    }
+
+    this.submitActions$.next(action);
   }
 
   // From ControlValueAccessor interface

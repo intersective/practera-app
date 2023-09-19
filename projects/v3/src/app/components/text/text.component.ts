@@ -54,6 +54,38 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
     this._showSavedAnswers();
   }
 
+  triggerSave(): void {
+    const action: {
+      autoSave?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
+      autoSave: true,
+      goBack: false,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.answer,
+      };
+    }
+
+    this.submitActions$.next(action);
+  }
+
   ngAfterViewInit() {
     if (this.answerRef?.ionInput) {
       this.subcriptions.push(this.answerRef.ionInput.pipe(
@@ -62,35 +94,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         debounceTime(800),
         distinctUntilChanged(),
       ).subscribe(_data => {
-        const action: {
-          autoSave?: boolean;
-          goBack?: boolean;
-          questionSave?: {};
-          reviewSave?: {};
-        } = {
-          autoSave: true,
-          goBack: false,
-        };
-
-        if (this.doReview === true) {
-          action.reviewSave = {
-            reviewId: this.reviewId,
-            submissionId: this.submissionId,
-            questionId: this.question.id,
-            answer: this.innerValue.answer,
-            comment: this.innerValue.comment,
-          };
-        }
-
-        if (this.doAssessment === true) {
-          action.questionSave = {
-            submissionId: this.submissionId,
-            questionId: this.question.id,
-            answer: this.answer,
-          };
-        }
-
-        this.submitActions$.next(action);
+        return this.triggerSave();
       }));
     }
   }
