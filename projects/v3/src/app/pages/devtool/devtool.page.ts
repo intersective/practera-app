@@ -102,10 +102,7 @@ export class DevtoolPage implements OnInit {
   }
 
   async testAuth() {
-    this.authService.authenticate({
-      email: 'learner_008@practera.com',
-      password: 'kW96dLJHrQDaaLM'
-    }).subscribe(res => {
+    this.authService.authenticate('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlYXJuZXJfMDA4QHByYWN0ZXJhLmNvbSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjk1MTg3OTQ2ODc1LCJpYXQiOjE2OTUxODc4NjB9.pPFxN4O2nFWspYNEP88raLJzEK2M1Xe0ZxmCib9YKA4qtDkAj1Tt0LFYZ3mo-eVijkD6kDd6Y_RBzn07wNoh532ja8cRlcYRORXkuvPH9wJ43mWfFL-NO8sLnFbJVc6-GQYvoMBqKqwLbM5R2dSGhf-3Pb1P5353Dvp3KMtLRN7TGxmQjFntY0qxnMpEnF8L4pcJ-NM-q2zjRe9IRXmjwoZI9Arc8T4xBy98XPgbbiRR8MVpr-Do6yOU7r5AHsK-GzCUU9W5pMWbFc0LSmHkN0XHq53JhCGBEX_RLcruSec0rOO0AQgrg1GFbknQciH2owtyXvSy8dHKUvzYHHhJlA;apikey=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxlYXJuZXJfMDA4QHByYWN0ZXJhLmNvbSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNjk1MTg3OTQ2ODc1LCJpYXQiOjE2OTUxODc4NjB9.pPFxN4O2nFWspYNEP88raLJzEK2M1Xe0ZxmCib9YKA4qtDkAj1Tt0LFYZ3mo-eVijkD6kDd6Y_RBzn07wNoh532ja8cRlcYRORXkuvPH9wJ43mWfFL-NO8sLnFbJVc6-GQYvoMBqKqwLbM5R2dSGhf-3Pb1P5353Dvp3KMtLRN7TGxmQjFntY0qxnMpEnF8L4pcJ-NM-q2zjRe9IRXmjwoZI9Arc8T4xBy98XPgbbiRR8MVpr-Do6yOU7r5AHsK-GzCUU9W5pMWbFc0LSmHkN0XHq53JhCGBEX_RLcruSec0rOO0AQgrg1GFbknQciH2owtyXvSy8dHKUvzYHHhJlA').subscribe(res => {
       console.log(res);
     });
   }
