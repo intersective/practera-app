@@ -58,10 +58,7 @@ export class DevtoolPage implements OnInit {
   }
 
   async testAuth() {
-    this.authService.authenticate({
-      email: 'learner_008@practera.com',
-      password: 'REDACTED_TEST_PASSWORD'
-    }).subscribe(res => {
+    this.authService.authenticate('REDACTED_JWT_TOKEN;apikey=REDACTED_JWT_TOKEN').subscribe(res => {
       console.log(res);
     });
   }

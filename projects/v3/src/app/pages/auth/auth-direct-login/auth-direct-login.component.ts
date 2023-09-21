@@ -34,7 +34,7 @@ export class AuthDirectLoginComponent implements OnInit {
     try {
       // skip the authentication if the same auth token has been used before
       if (this.storage.get('authToken') !== authToken) {
-        await this.authService.directLogin({ authToken }).toPromise();
+        await this.authService.directLogin(authToken).toPromise();
         await this.experienceService.getMyInfo().toPromise();
         // save the auth token to compare with future use
         this.storage.set('authToken', authToken);
