@@ -160,6 +160,38 @@ export class AuthService {
     return this.storage.get('isLoggedIn');
   }
 
+  deprecatingLogin({ email, password }): Observable<any> {
+    const body = new HttpParams({
+      encoder: new QueryEncoder()
+    })
+      .set('data[User][email]', email)
+      .set('data[User][password]', password)
+      .set('domain', this.getDomain());
+
+
+    const headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    if (environment.demo) {
+      return of({
+        programs: []
+      });
+    }
+
+    return this.request.post({
+      endPoint: API.login,
+      data: body.toString(),
+      httpOptions: {
+        headers
+      },
+      customErrorHandler: (err: any) => {
+        return of(err);
+      }
+    }).pipe(
+      map(res => this._handleAuthResponse(res)),
+    );
+  }
+
   /**
    * Clear user's information and log the user out
    * @param navigationParams the parameters needed when redirect
