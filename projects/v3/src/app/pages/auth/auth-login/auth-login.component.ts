@@ -52,13 +52,15 @@ export class AuthLoginComponent {
     }
     this.isLoggingIn = true;
 
-    return this.authService.login({
+    return this.authService.authenticate({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
-      res => {
+      async res => {
         this.loginForm.reset();
-        return this._handleNavigation(res.programs);
+        const route = await this.experienceService.switchProgramNew(res);
+        this.isLoggingIn = false;
+        return this.router.navigate(route);
       },
       err => {
         // notify user about weak password
@@ -96,8 +98,5 @@ export class AuthLoginComponent {
   }
 
   private async _handleNavigation(programs) {
-    const route = await this.experienceService.switchProgramAndNavigate(programs);
-    this.isLoggingIn = false;
-    return this.router.navigate(route);
   }
 }

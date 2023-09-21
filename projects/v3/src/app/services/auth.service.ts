@@ -9,6 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
+import { ApolloService } from './apollo.service';
 
 /**
  * @name api
@@ -75,11 +76,48 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private demo: DemoService
+    private demo: DemoService,
+    private apolloService: ApolloService,
   ) { }
 
-  private _clearCache(): any {
-    // do clear user cache here
+  authenticate(data: {email: string, password: string}) {
+    const { email, password } = data;
+    return this.apolloService.graphQLFetch(
+      `query getAuth($email: String!, $password: String!) {
+        auth(email: $email, password: $password) {
+          apikey
+          experience {
+            id
+            uuid
+            timelineId
+            name
+            description
+            type
+            leadImage
+            status
+            setupStep
+            color
+            secondaryColor
+            todoItemCount
+            role
+            isLast
+            locale
+            supportName
+            supportEmail
+            cardUrl
+            bannerUrl
+            logoUrl
+            iconUrl
+            reviewRating
+            truncateDescription
+          }
+        }
+      }`,
+      {
+        email,
+        password
+      }
+    );
   }
 
   private _login(body: HttpParams, serviceHeader?: string) {
