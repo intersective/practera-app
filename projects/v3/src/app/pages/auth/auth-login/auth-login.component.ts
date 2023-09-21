@@ -52,7 +52,7 @@ export class AuthLoginComponent {
     }
     this.isLoggingIn = true;
 
-    return this.authService.authenticate({
+    return this.authService.deprecatingLogin({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
