@@ -33,17 +33,6 @@ export class DevtoolPage implements OnInit {
     this.experienceService.getNewJwt().subscribe();
   }
 
-  login() {
-    this.authService.login({
-      email: 'learner_008@practera.com',
-      password: 'kW96dLJHrQDaaLM'
-    }).subscribe(res => {
-      this.doneLogin = true;
-      this.user = res;
-      this.experienceService.getMyInfo();
-    });
-  }
-
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
     const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();

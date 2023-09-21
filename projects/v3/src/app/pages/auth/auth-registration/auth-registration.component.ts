@@ -166,16 +166,13 @@ export class AuthRegistrationComponent implements OnInit {
           key: this.user.key
         })
         .subscribe(
-          _response => {
+          response => {
             this.authService
-              .login({
-                email: this.user.email,
-                password: this.confirmPassword
-              })
+              .authenticate(response.apikey)
               .subscribe(
                 async res => {
                   this.storage.remove('unRegisteredDirectLink');
-                  const route = await this.experienceService.switchProgramAndNavigate(res.programs);
+                  const route = await this.experienceService.switchProgram(res.data);
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
                 },
                 err => {
