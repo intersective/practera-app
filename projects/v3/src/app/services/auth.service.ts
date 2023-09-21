@@ -82,7 +82,7 @@ export class AuthService {
     private apolloService: ApolloService,
   ) { }
 
-  authenticate(data: {email: string, password: string}) {
+  authenticate(data: {apikey: string}) {
     const { email, password } = data;
     return this.apolloService.graphQLFetch(
       `query getAuth($email: String!, $password: String!) {
@@ -116,8 +116,11 @@ export class AuthService {
         }
       }`,
       {
-        email,
-        password
+        context: {
+          headers: {
+            apikey: data.apikey
+          }
+        }
       }
     );
   }
@@ -136,8 +139,7 @@ export class AuthService {
       });
     }
 
-    return this.request.post({
-      endPoint: API.login,
+    return this.authenticate({
       data: body.toString(),
       httpOptions: {
         headers
@@ -146,7 +148,7 @@ export class AuthService {
         return of(err);
       }
     }).pipe(
-      map(res => this._handleLoginResponse(res)),
+      map(res => this._handleAuthResponse(res)),
     );
   }
 
@@ -193,7 +195,7 @@ export class AuthService {
     return this._login(body, service);
   }
 
-  private _handleLoginResponse(response): Observable<any> {
+  private _handleAuthResponse(response): Observable<any> {
     const norm = this._normaliseAuth(response);
     this.storage.setUser({ apikey: norm.apikey });
 
