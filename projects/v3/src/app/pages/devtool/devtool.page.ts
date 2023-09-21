@@ -100,4 +100,13 @@ export class DevtoolPage implements OnInit {
   async reviewrating() {
     this.notificationsService.popUpReviewRating(1, false);
   }
+
+  async testAuth() {
+    this.authService.authenticate({
+      email: 'learner_008@practera.com',
+      password: 'kW96dLJHrQDaaLM'
+    }).subscribe(res => {
+      console.log(res);
+    });
+  }
 }

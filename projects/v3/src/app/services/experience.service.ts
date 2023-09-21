@@ -192,6 +192,76 @@ export class ExperienceService {
     };
   }
 
+  extractColorsNew(experience) {
+    const experienceConfig = (programObj.experience || {}).config;
+    const programConfig = (programObj.program || {}).config;
+
+    const primary = (experienceConfig || {}).primary_color;
+    const secondary = (experienceConfig || {}).secondary_color;
+    const themeColor = (programConfig || {}).theme_color;
+
+    return {
+      primary,
+      secondary,
+      themeColor,
+    };
+  }
+
+  async switchProgramNew(authObj): Promise<Observable<any>> {
+    const colors = this.extractColorsNew(authObj.experience);
+
+    let cardBackgroundImage = '';
+    if (this.utils.has(programObj, 'program.config.card_style')) {
+      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+    }
+
+    const institution = programObj?.institution;
+    const program = programObj.program;
+    this.storage.setUser({
+      colors: {
+        theme: colors.themeColor,
+        primary: colors.primary,
+        secondary: colors.secondary,
+      },
+
+      programId: program.id,
+      programName: program.name,
+      programImage: programObj.project.lead_image,
+      hasReviewRating: program.config?.review_rating || false,
+      truncateDescription: program.config?.truncate_description || true,
+      experienceId: program.experience_id,
+      institutionLogo: institution?.logo_url || null,
+      squareLogo: institution.config?.icon_url || null,
+      app_locale: institution?.config?.application_language,
+      institutionName: institution?.name || null,
+      projectId: programObj.project.id,
+      timelineId: programObj.timeline.id,
+      contactNumber: programObj.enrolment.contact_number,
+      activityCardImage: cardBackgroundImage,
+      enrolment: programObj.enrolment,
+      activityCompleteMessage: programObj?.experience?.config?.activity_complete_message || null,
+      chatEnabled: programObj?.experience?.config?.chat_enable || true,
+      teamId: null,
+      hasEvents: false,
+      hasReviews: false,
+    });
+
+    this.sharedService.onPageLoad();
+    this.homeService.clearExperience();
+
+    // initialise Pusher
+    this.sharedService.initWebServices();
+    try {
+      const jwt = await this.getNewJwt().toPromise();
+      const teamInfo = await this.sharedService.getTeamInfo().toPromise();
+      const me = await this.getMyInfo().toPromise();
+
+      return of([jwt, teamInfo, me]);
+    } catch (err) {
+      throw Error(err);
+    }
+  }
+
   async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
     const colors = this.extractColors(programObj);
 
