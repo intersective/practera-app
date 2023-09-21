@@ -58,9 +58,22 @@ export class AuthLoginComponent {
     }).subscribe(
       async res => {
         this.loginForm.reset();
-        const route = await this.experienceService.switchProgramNew(res);
-        this.isLoggingIn = false;
-        return this.router.navigate(route);
+        try {
+          await this.experienceService.switchProgram(res);
+          this.isLoggingIn = false;
+          return this.router.navigate(['v3', 'home']);
+        } catch (err) {
+          console.error(err); // @TODO: please report issues to API
+          return this.notificationsService.alert({
+            message: $localize`We're experiencing difficulties in fetching your program data. Could you please attempt to log in again.`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel'
+              }
+            ],
+          });
+        }
       },
       err => {
         // notify user about weak password
@@ -95,8 +108,5 @@ export class AuthLoginComponent {
         });
       }
     );
-  }
-
-  private async _handleNavigation(programs) {
   }
 }
