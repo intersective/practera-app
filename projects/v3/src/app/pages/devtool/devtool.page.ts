@@ -46,12 +46,17 @@ export class DevtoolPage implements OnInit {
     this.notificationsService.popUpReviewRating(1, false);
   }
 
-  async testAuth() {
-    const key = '$2a$10$1UO3e6b8NdzCX';
-    // const key = '$2a$10$NggHX.VgJhIWi';
-    // const key = this.storageService.getUser().apikey;
-    // const key = `eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLnByYWN0ZXJhLmNvbSIsImFwaWtleSI6Ijc0MjAyN2ViNWM2YmYyZWYxZDljIiwidXNlcl9pZCI6MTQwNDIsInVzZXJfdXVpZCI6IjA0OGYzMzZjLWMxMjEtNDBmOS1hNzE5LTBmYzgwNjJjM2ZlZiIsInVzZXJuYW1lIjoibGVhcm5lcl8wMDhAcHJhY3RlcmEuY29tIiwiaWF0IjoxNjk1MDEzOTM5LCJleHAiOjE3MDI3ODk5MzksInRpbWVsaW5lX2lkIjoxNjcxLCJ0aW1lbGluZV91dWlkIjoiYTI3YjIzOWYtOGVkNC00NGQ3LWEyNDYtYWZlMWUzMWYyMDYxIiwiaW5zdGl0dXRpb25fdXVpZCI6ImQyZTk1NDNkLTk2MWItNDE3Yi05Y2ExLWNhOGY4MjcxOWE1NiIsImluc3RpdHV0aW9uX2lkIjo1MiwiZXhwZXJpZW5jZV9pZCI6OTgxLCJwcm9ncmFtX2lkIjoxMzM4LCJwcm9qZWN0X2lkIjoxNzAxLCJyb2xlIjoicGFydGljaXBhbnQiLCJlbnJvbG1lbnRfdXVpZCI6IjQ2ZGZiYmUzLWJiNWEtNGRmNy1iNWU4LTkyYjJmZGU4OThmYiJ9.SLvnftTOO_kydbYndM1wwC3vd8wwkdniWAIoF6lPWk0QYeiiabdPrO9cDdeR4xdF1yl1XiFOz3qVPP_SaPkXBukx-6VA-PUsV6vwFhIsyTwXSE9295tZbtPxJjI1FdQdj7kNt_zeODiMezmcJftf83w4XqoLMAVcXdc9y-LD-FgStNvoot-K3zUH_I1CMIMjGSzet0Yrd8TADzkPUSiPm98-MTFxohKuWUclpKxgzpHHYPxjBsyWgL702BwoHXkI5pPOtaxAE7Z2lp_LlRbW9uCyXgSFrojQtWGfd6oL3tjxSpwjyoLPCzPWnUMhYO-ad5PSv_8Y7nRJh4-yRVM5QoRAWbbVbOTJ6IUS-pRcR9bOdEuQ9jgcoGC-tg-X_hsjeFj91dNSqBYNF4ELRQhapzJwomWt7GzJThORaAsmnoIBAOaFaudWdk3KgrOhlGJ5_jLjcwmllSJ1Qk0Kwc0LWKjAys8XU_IeT_wiQRNbFYAoSNVQOIL6xH-5i52_8Rc2CAyhTBwAFKRQm1WSxDOVkq1ufpNeu4T6Y4ywMO2ZM-lwuRispkrPcpM1UJaHOlSKSRR8-NWL7yHvhgTq_PWqXi6dOmIIuuKoM-MxPpPhbk8QzQR7jihJ2WB6D3tOsZb7wsMgQM11z04gzkHUDq0bYIEvTa8CiL20WEVBg6MIgzA`
-    this.authService.authenticate(key).subscribe(res => {
+  async testAuth(withAPIkey?: boolean) {
+    let data: any = {};
+    if (withAPIkey === true) {
+      data.apikey = this.storageService.getUser().apikey || 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxNDA0MiwidXNlcm5hbWUiOiJsZWFybmVyXzAwOEBwcmFjdGVyYS5jb20iLCJ0aW1lbGluZV9pZCI6MjMzOSwicHJvZ3JhbV9pZCI6MjAzNCwiZXhwZXJpZW5jZV9pZCI6MTY3NywiaW5zdGl0dXRpb25faWQiOjUyLCJwcm9qZWN0X2lkIjoyMzk3LCJyb2xlIjoicGFydGljaXBhbnQiLCJpc3MiOiJodHRwczovL2FwaS5wcmFjdGVyYS5jb20iLCJpYXQiOjE2OTUzNzIzMDkxNjAsImV4cCI6MTY5NTM3MjM5NTU2MH0.GZqmW0LxX2AdV_SQb82y1-evsbJWLNpq-M6JMFS9B2axmLnWYo2cKUDadZQsA9NS1zx6us8r_mlXnwyWZEe4uemeKIldYDh5kuJcMaCjxGdfzXgRxTLZHvCDrP6VOBX1OcBzfb3RO0Whq_OMUQgVhokIgUKEhSirQajkztmQGohSycsu4DV6_MK3jyVqjzP1OggRPkpSddgpWgFFgM2effSoQZ_YdLXq1pfNeDakR2Xmo9nN69AwiJ744bG-lygNbhj6hOHmBsfPJbVfzKwnvdelt2k9u3rkjd-GzQn26xT15RXVpBEm8EILDDcB_ZNFpJQA9Di89JIh97f-pk6x_7mwU3ouI_Qi5rWLsXJwpPQ2XDjcb5cgLzCgd60QKaAzQtzcLFAhHlSmbwdeEj5QYIxcGOemr7QLw6Ermp7otwfNfLu-oZRfutuRkQucOD1qracoz_uZo9sOwyil9HTwn3Z_x8myFiI0l3lSDuNtcTVgHs4__LhTJWoaTUTkEZr8IGoio9KmF1CcLkVpV-cf2kMCsMy76Txe7zQx1f403g5cX4wll3bjU5Sr00pqZX5PUIK4QQr5uzaHYl4wj7l9Q6VqKUix9pQvH7d54dykML-ZiL6SKDTPCKM1YNWf7RH76_eAahOf0Pcdw1jmUhPMkp3oc3NRywrJN5uKSYXL_j8';
+    } else {
+      // data.authToken = '$2a$10$1UO3e6b8NdzCX';
+      data.authToken = '$2a$10$A8Bu9a7KJogPD';
+      // data.authToken = '$2a$10$NggHX.VgJhIWi';
+    }
+
+    this.authService.authenticate(data).subscribe(res => {
       console.log(res);
     });
   }
