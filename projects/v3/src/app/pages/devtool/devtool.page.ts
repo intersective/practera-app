@@ -91,7 +91,11 @@ export class DevtoolPage implements OnInit {
   }
 
   async testAuth() {
-    this.authService.authenticate('REDACTED_JWT_TOKEN;apikey=REDACTED_JWT_TOKEN').subscribe(res => {
+    const key = '$2a$10$1UO3e6b8NdzCX';
+    // const key = '$2a$10$NggHX.VgJhIWi';
+    // const key = this.storageService.getUser().apikey;
+    // const key = `REDACTED_JWT_TOKEN`
+    this.authService.authenticate(key).subscribe(res => {
       console.log(res);
     });
   }
