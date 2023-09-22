@@ -81,8 +81,8 @@ export class AuthService {
   ) { }
 
   authenticate(authToken: string) {
-    return this.apolloService.graphQLFetch(
-      `query getAuth($authToken: String!) {
+    return this.apolloService.graphQLFetch(`
+      query auth($authToken: String) {
         auth(authToken: $authToken) {
           apikey
           experience {
@@ -97,7 +97,6 @@ export class AuthService {
             setupStep
             color
             secondaryColor
-            todoItemCount
             role
             isLast
             locale
