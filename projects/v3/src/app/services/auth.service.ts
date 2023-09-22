@@ -82,7 +82,23 @@ export class AuthService {
     private apolloService: ApolloService,
   ) { }
 
-  authenticate(authToken: string) {
+  authenticate(data: {
+    authToken?: string;
+    apikey?: string;
+  }) {
+    const options: {
+      variables?: object;
+      context?: object;
+    } = {};
+
+    if (data.authToken) {
+      options.variables = {authToken: data.authToken};
+    }
+
+    if (data.apikey) {
+      this.storage.setUser({ apikey: data.apikey });
+    }
+
     return this.apolloService.graphQLFetch(`
       query auth($authToken: String) {
         auth(authToken: $authToken) {
@@ -113,16 +129,12 @@ export class AuthService {
           }
         }
       }`,
-      {
-        variables: {
-          authToken,
-        }
-      }
+      options
     );
   }
 
   private _login(authToken: string): Observable<any> {
-    return this.authenticate(authToken).pipe(
+    return this.authenticate({authToken}).pipe(
       map(res => this._handleAuthResponse(res)),
     );
   }
