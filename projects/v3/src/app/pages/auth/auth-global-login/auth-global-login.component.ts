@@ -36,10 +36,10 @@ export class AuthGlobalLoginComponent implements OnInit {
       }
       if (environment.demo) {
         setTimeout(() => {
-          return this.navigate(['experiences']);
+          return this.navigate(['v3', 'home']);
         }, 3000);
       } else {
-        return this.navigate(['experiences']);
+        return this.navigate(['v3', 'home']);
       }
     } catch (err) {
       this._error(err);
