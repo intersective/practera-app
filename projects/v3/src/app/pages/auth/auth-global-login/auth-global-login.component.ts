@@ -22,13 +22,13 @@ export class AuthGlobalLoginComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    const authToken = this.route.snapshot.paramMap.get('apikey');
+    const apikey = this.route.snapshot.paramMap.get('apikey');
     const multipleStacks = this.route.snapshot.paramMap.get('multiple');
-    if (!authToken) {
+    if (!apikey) {
       return this._error();
     }
     try {
-      await this.authService.globalLogin(authToken).toPromise();
+      await this.authService.globalLogin(apikey).toPromise();
       await this.experienceService.getMyInfo().toPromise();
 
       if (multipleStacks) {
