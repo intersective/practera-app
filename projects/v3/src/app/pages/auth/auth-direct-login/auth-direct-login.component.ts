@@ -94,15 +94,9 @@ export class AuthDirectLoginComponent implements OnInit {
 
     // switch program directly if user already registered
     if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
-        return value.timeline.id === timelineId;
+      await this.experienceService.switchProgram({
+        experience: this.storage.get('experience')
       });
-      if (this.utils.isEmpty(program)) {
-        // if the timeline id is not found
-        return this._saveOrRedirect(['experiences']);
-      }
-      // switch to the program
-      await this.experienceService.switchProgram(program);
     }
 
     let referrerUrl = '';
