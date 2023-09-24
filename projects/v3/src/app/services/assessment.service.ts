@@ -262,7 +262,7 @@ export class AssessmentService {
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info = '<h3>'+ $localize`:multiple choice question:Choice Description` + ':</h3>' + info;
             }
             question.info = info;
             question.choices = choices;

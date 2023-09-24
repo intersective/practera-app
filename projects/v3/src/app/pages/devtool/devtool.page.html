@@ -12,6 +12,8 @@
   <ion-button (click)="reviewrating()">Rating</ion-button>
   <ion-button (click)="testAuth()">testAuth</ion-button>
   <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
+  <ion-button (click)="showErrorAlert()">Alert Error Test</ion-button>
+  <ion-button (click)="showAlert()">Alert Test</ion-button>
 
   <ion-text *ngIf="doneLogin">
     <p>{{ user | json }}</p>

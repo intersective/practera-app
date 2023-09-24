@@ -128,9 +128,9 @@ export class ActivityService {
     }
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
-    ).subscribe(_res => {
+    ).subscribe(res => {
       if (callback instanceof Function) {
-        return callback(_res);
+        return callback(res);
       }
       return;
     });
@@ -211,6 +211,11 @@ export class ActivityService {
     if (!tasks) {
       tasks = this.activity.tasks;
     }
+
+    if (this.utils.isEmpty(tasks) || tasks.length === 0) {
+      tasks = [];
+    }
+
     // find the first task that is not done or pending review
     // and is allowed to access for this user
     let skipTask = !!afterTask;
@@ -247,13 +252,16 @@ export class ActivityService {
     }
 
     // if there is no next task
-    if (!nextTask) {
+    if (this.utils.isEmpty(nextTask)) {
       if (afterTask) {
         return this._activityCompleted(hasUnfinishedTask);
       }
       nextTask = tasks[0];
     }
-    this.goToTask(nextTask);
+
+    if (!this.utils.isEmpty(nextTask)) {
+      return this.goToTask(nextTask);
+    }
   }
 
   private _activityCompleted(showPopup: boolean) {
