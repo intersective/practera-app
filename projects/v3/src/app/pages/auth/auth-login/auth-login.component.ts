@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, isDevMode } from '@angular/core';
 import { Router } from '@angular/router';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ExperienceService } from '@v3/services/experience.service';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-auth-login',
@@ -18,6 +19,8 @@ export class AuthLoginComponent {
   });
   isLoggingIn = false;
   showPassword = false;
+  readonly developmentOnly = isDevMode();
+  readonly globalLoginLink = environment.globalLoginUrl;
 
   constructor(
     private router: Router,
