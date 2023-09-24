@@ -133,8 +133,11 @@ export class AuthService {
     );
   }
 
-  private _login(authToken: string): Observable<any> {
-    return this.authenticate({authToken}).pipe(
+  private _login(data: {
+    authToken?: string;
+    apikey?: string;
+  }): Observable<any> {
+    return this.authenticate(data).pipe(
       map(res => this._handleAuthResponse(res)),
     );
   }
@@ -147,7 +150,7 @@ export class AuthService {
    */
   directLogin(authToken: string): Observable<any> {
     this.logout({}, false);
-    return this._login(authToken);
+    return this._login({authToken});
   }
 
   /**
@@ -156,17 +159,24 @@ export class AuthService {
    *              so must convert them into compatible formdata before submission
    * @param {object} { apikey } in string
    */
-  globalLogin(authToken: string): Observable<any> {
-    const body = new HttpParams()
+  globalLogin(apikey: string): Observable<any> {
     this.logout({}, false);
-    return this._login(authToken);
+    return this._login({apikey});
   }
 
-  private _handleAuthResponse(res): Observable<any> {
-    this.storage.setUser({ apikey: res.apikey });
-    this.storage.set('experience', res.experience);
+  private _handleAuthResponse(res): Observable<{
+    apikey?: string;
+    experience?: object;
+  }> {
+    const data: {
+      apikey: string;
+      experience: object;
+    } = res.data.auth;
+
+    this.storage.setUser({ apikey: data.apikey });
+    this.storage.set('experience', data.experience);
     this.storage.set('isLoggedIn', true);
-    return res;
+    return of(data);
   }
 
   isAuthenticated(): boolean {
