@@ -31,7 +31,9 @@ export class DevtoolPage implements OnInit {
 
   refresh() {
     this.experienceService.getNewJwt().subscribe(res => {
-      console.log("refrehs JWT", res);
+      console.log(res);
+    }, err => {
+      throw err;
     });
   }
 
