@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -10,6 +10,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { NotificationsService } from './notifications.service';
 
 /**
  * @name api
@@ -78,6 +79,7 @@ export class AuthService {
     private pusherService: PusherService,
     private demo: DemoService,
     private apolloService: ApolloService,
+    private notificationsService: NotificationsService,
   ) { }
 
   authenticate(data: {
@@ -314,7 +316,29 @@ export class AuthService {
   getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
     return this.request.get(API.getConfig, {
       params: data
-    });
+    })/* comment out until BACKEND is resolved
+    .pipe(tap((response) => {
+      if (environment.production === false) {
+        return;
+      }
+
+      if (this.isAuthenticated() && response.data?.length === 0) {
+        this.notificationsService.alert({
+          header: $localize`It looks like there's a glitch!`,
+          message: $localize`We regret to inform you that there appears to be a technical issue preventing your enrollment in any programs at the moment. Please log in again and try once more.`,
+          backdropDismiss: false,
+          buttons: [
+            {
+              text: $localize`Login`,
+              handler: () => {
+                this.logout({}, true);
+              },
+            }
+          ]
+        });
+        throw new Error('Tech Error: No experience config found!');
+      }
+    })) */;
   }
 
   /**
@@ -385,7 +409,6 @@ export class AuthService {
       }
     });
   }
-
 
   updateProfileImage(data) {
     return this.request.post(
