@@ -11,17 +11,7 @@ import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
 import { RequestService } from 'request';
 import { HomeService } from './home.service';
-
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
- const api = {
-  get: {
-    jwt: 'api/v2/users/jwt/refresh.json'
-  }
-};
+import { AuthService } from './auth.service';
 
 export interface ProgramObj {
   program: Program;
@@ -126,10 +116,10 @@ export class ExperienceService {
     private apolloService: ApolloService,
     private sharedService: SharedService,
     private storage: BrowserStorageService,
-    private requestService: RequestService,
     private eventService: EventService,
     private reviewService: ReviewService,
     private homeService: HomeService,
+    private authService: AuthService,
   ) { }
 
   async getPrograms() {
@@ -385,6 +375,6 @@ export class ExperienceService {
   }
 
   getNewJwt() {
-    return this.requestService.get(api.get.jwt);
+    return this.authService.authenticate({ apikey: this.storage.get('apikey') });
   }
 }
