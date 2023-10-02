@@ -23,12 +23,13 @@ export class AuthGlobalLoginComponent implements OnInit {
 
   async ngOnInit() {
     const apikey = this.route.snapshot.paramMap.get('apikey');
+    const service = this.route.snapshot.paramMap.get('service');
     const multipleStacks = this.route.snapshot.paramMap.get('multiple');
     if (!apikey) {
       return this._error();
     }
     try {
-      await this.authService.autologin({ apikey }).toPromise();
+      await this.authService.globalLogin({ apikey, service }).toPromise();
       await this.experienceService.getMyInfo().toPromise();
 
       if (multipleStacks) {
@@ -36,10 +37,10 @@ export class AuthGlobalLoginComponent implements OnInit {
       }
       if (environment.demo) {
         setTimeout(() => {
-          return this.navigate(['v3', 'home']);
+          return this.navigate(['experiences']);
         }, 3000);
       } else {
-        return this.navigate(['v3', 'home']);
+        return this.navigate(['experiences']);
       }
     } catch (err) {
       this._error(err);

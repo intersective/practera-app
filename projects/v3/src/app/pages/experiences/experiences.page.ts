@@ -7,7 +7,6 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-experiences',
@@ -16,10 +15,7 @@ import { filter } from 'rxjs/operators';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  experiences$ = this.experienceService.experiences$;
-  progresses: {
-    [key: number]: number;
-  } = {};
+  programs$ = this.experienceService.programsWithProgress$;
 
   constructor(
     private router: Router,
@@ -33,29 +29,12 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
-      this.experienceService.getExperiences();
+      this.experienceService.getPrograms();
     });
-
-    this.subscriptions.push(this.experiences$
-      .pipe(filter(experiences => experiences !== null))
-      .subscribe(experiences => {
-        const ids = experiences.map(experience => experience.projectId);
-        this.experienceService.getProgresses(ids).subscribe(res => {
-          res.forEach(progress => {
-            progress.forEach(project => {
-              this.progresses[project.id] = Math.round(progress.progress * 100);
-            });
-          });
-        });
-      }));
   }
 
   ngOnDestroy(): void {
     this.subscriptions[0].unsubscribe();
-  }
-
-  async getProgress(projectId: number) {
-    return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
   get isMobile() {

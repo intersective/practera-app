@@ -8,8 +8,6 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
-import { DemoService } from './demo.service';
-import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 
 /**
@@ -77,113 +75,17 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private demo: DemoService,
-    private apolloService: ApolloService,
     private notificationsService: NotificationsService,
   ) { }
 
-  authenticate(data: {
-    authToken?: string;
-    apikey?: string;
-    service?: string;
-  }) {
-    const options: {
-      variables?: {
-        authToken?: string;
-      };
-      context?: {
-        service?: string;
-        apikey?: string;
-      };
-    } = {};
-
-    if (data.authToken) {
-      options.variables = {authToken: data.authToken};
-    }
-
-    if (data.apikey) {
-      this.storage.setUser({ apikey: data.apikey });
-    }
-
-    if (data.service) {
-      options.context = { service: data.service };
-    }
-
-    return this.apolloService.graphQLFetch(`
-      query auth($authToken: String) {
-        auth(authToken: $authToken) {
-          apikey
-          experience {
-            id
-            uuid
-            timelineId
-            name
-            description
-            type
-            leadImage
-            status
-            setupStep
-            color
-            secondaryColor
-            role
-            isLast
-            locale
-            supportName
-            supportEmail
-            cardUrl
-            bannerUrl
-            logoUrl
-            iconUrl
-            reviewRating
-            truncateDescription
-          }
-        }
-      }`,
-      options
-    );
-  }
-
-  autologin(data: {
-    authToken?: string;
-    apikey?: string;
-  }): Observable<any> {
-    this.logout({}, false);
-    return this.authenticate(data).pipe(
-      map(res => this._handleAuthResponse(res)),
-    );
-  }
-
-  private _handleAuthResponse(res): {
-    apikey?: string;
-    experience?: object;
-  } {
-    const data: {
-      apikey: string;
-      experience: object;
-    } = res.data.auth;
-
-    this.storage.setUser({ apikey: data.apikey });
-    this.storage.set('experience', data.experience);
-    this.storage.set('isLoggedIn', true);
-    return data;
-  }
-
-  isAuthenticated(): boolean {
-    return this.storage.get('isLoggedIn');
-  }
-
-  deprecatingLogin({ email, password }): Observable<any> {
-    const body = new HttpParams({
-      encoder: new QueryEncoder()
-    })
-      .set('data[User][email]', email)
-      .set('data[User][password]', password)
-      .set('domain', this.getDomain());
-
-
+  private _login(body: HttpParams, serviceHeader?: string) {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
+      service: serviceHeader
     };
+    if (!serviceHeader) {
+      delete headers.service;
+    }
     if (environment.demo) {
       return of({
         programs: []
@@ -200,8 +102,111 @@ export class AuthService {
         return of(err);
       }
     }).pipe(
-      map(res => this._handleAuthResponse(res)),
+      map(res => this._handleLoginResponse(res)),
     );
+  }
+
+  /**
+   * @name login
+   * @description login API specifically only accept request data in encodedUrl formdata,
+   *              so must convert them into compatible formdata before submission
+   * @param {object} { email, password } in string for each of the value
+   */
+  login({ email, password }): Observable<any> {
+    const body = new HttpParams({
+      encoder: new QueryEncoder()
+    })
+      .set('data[User][email]', email)
+      .set('data[User][password]', password)
+      .set('domain', this.getDomain());
+
+    return this._login(body);
+  }
+
+  /**
+   * @name directLogin
+   * @description login API specifically only accept request data in encodedUrl formdata,
+   *              so must convert them into compatible formdata before submission
+   * @param {object} { authToken } in string
+   */
+  directLogin({ authToken }): Observable<any> {
+    const body = new HttpParams()
+      .set('auth_token', authToken);
+    this.logout({}, false);
+    return this._login(body);
+  }
+
+  /**
+   * @name globalLogin
+   * @description login API specifically only accept request data in encodedUrl formdata,
+   *              so must convert them into compatible formdata before submission
+   * @param {object} { apikey } in string
+   */
+  globalLogin({ apikey, service }): Observable<any> {
+    const body = new HttpParams()
+      .set('apikey', apikey);
+    this.logout({}, false);
+    return this._login(body, service);
+  }
+
+  private _handleLoginResponse(response): Observable<any> {
+    const norm = this._normaliseAuth(response);
+    this.storage.setUser({ apikey: norm.apikey });
+
+    this.storage.set('programs', norm.programs);
+    this.storage.set('isLoggedIn', true);
+    return norm;
+  }
+
+  private _normaliseAuth(rawData): any {
+    const data = rawData.data;
+    return {
+      success: rawData.success,
+      tutorial: data.tutorial,
+      apikey: data.apikey,
+      programs: data.Timelines.map(
+        (timeline): {
+          enrolment: any;
+          program: any;
+          project: any;
+          timeline: any;
+          experience: any;
+          institution: any;
+          locale: string;
+        } => {
+          // make sure 'Program.config.theme_color' exist
+          if (!timeline.Program.config?.theme_color) {
+            const PRIMARY_COLOR = 'var(--ion-color-primary)';
+            if (!timeline.Program?.config) {
+              timeline.Program.config = {
+                theme_color: PRIMARY_COLOR
+              };
+            } else {
+              timeline.Program.config.theme_color = PRIMARY_COLOR;
+            }
+          }
+
+          const app_locale = timeline.Institution.config?.application_language;
+
+          return {
+            enrolment: timeline.Enrolment,
+            program: timeline.Program,
+            project: timeline.Project,
+            timeline: timeline.Timeline,
+            experience: { ...timeline.Experience, lead_image: timeline?.Experience?.lead_url || '' },
+            institution: timeline.Institution,
+            locale: app_locale || 'en',
+          };
+        },
+        this
+      ),
+      config: (data.Experience || {}).config || {},
+      _raw: rawData
+    };
+  }
+
+  isAuthenticated(): boolean {
+    return this.storage.get('isLoggedIn');
   }
 
   /**
