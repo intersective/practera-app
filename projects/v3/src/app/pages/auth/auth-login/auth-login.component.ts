@@ -1,11 +1,10 @@
-import { Component, isDevMode } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ExperienceService } from '@v3/services/experience.service';
-import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-auth-login',
@@ -19,8 +18,6 @@ export class AuthLoginComponent {
   });
   isLoggingIn = false;
   showPassword = false;
-  readonly developmentOnly = isDevMode();
-  readonly globalLoginLink = environment.globalLoginUrl;
 
   constructor(
     private router: Router,
@@ -55,28 +52,13 @@ export class AuthLoginComponent {
     }
     this.isLoggingIn = true;
 
-    return this.authService.deprecatingLogin({
+    return this.authService.login({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
-      async res => {
+      res => {
         this.loginForm.reset();
-        try {
-          await this.experienceService.switchProgram(res);
-          this.isLoggingIn = false;
-          return this.router.navigate(['v3', 'home']);
-        } catch (err) {
-          console.error(err); // @TODO: please report issues to API
-          return this.notificationsService.alert({
-            message: $localize`We're experiencing difficulties in fetching your program data. Could you please attempt to log in again.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ],
-          });
-        }
+        return this._handleNavigation(res.programs);
       },
       err => {
         // notify user about weak password
@@ -111,5 +93,11 @@ export class AuthLoginComponent {
         });
       }
     );
+  }
+
+  private async _handleNavigation(programs) {
+    const route = await this.experienceService.switchProgramAndNavigate(programs);
+    this.isLoggingIn = false;
+    return this.router.navigate(route);
   }
 }

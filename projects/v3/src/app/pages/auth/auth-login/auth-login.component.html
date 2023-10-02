@@ -5,9 +5,6 @@
     </div>
   </header>
   <main aria-label="login">
-    <div *ngIf="false && developmentOnly === true">
-      <h4 class="ion-text-center"  style="text-transform: uppercase;color: red !important;">Credentials login has been deprecated, please use <a [href]="globalLoginLink">global login</a>.</h4>
-    </div>
     <div class="div-after-logo">
       <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
         <ion-list class="ion-margin">
