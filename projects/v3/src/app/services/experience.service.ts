@@ -267,6 +267,7 @@ export class ExperienceService {
     return this.apolloService.graphQLFetch(
       `query user {
         user {
+          id
           uuid
           name
           firstName
