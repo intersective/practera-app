@@ -3,7 +3,9 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
@@ -17,7 +19,6 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
   activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
@@ -40,6 +41,8 @@ export class HomePage implements OnInit {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
+    private experienceService: ExperienceService,
+    private storageService: BrowserStorageService,
   ) { }
 
   ngOnInit() {
@@ -83,12 +86,15 @@ export class HomePage implements OnInit {
   }
 
   updateDashboard() {
+    this.experience = this.storageService.get('experience');
+
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
+
   }
 
   goBack() {
