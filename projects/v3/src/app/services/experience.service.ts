@@ -269,6 +269,7 @@ export class ExperienceService {
     return this.apolloService.graphQLFetch(
       `query user {
         user {
+          id
           uuid
           name
           firstName
@@ -375,6 +376,9 @@ export class ExperienceService {
   }
 
   getNewJwt() {
-    return this.authService.authenticate({ apikey: this.storage.get('apikey') });
+    return this.authService.authenticate({
+      apikey: this.storage.get('apikey'),
+      service: 'LOGIN'
+    });
   }
 }

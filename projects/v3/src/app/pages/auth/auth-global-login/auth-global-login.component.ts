@@ -28,7 +28,7 @@ export class AuthGlobalLoginComponent implements OnInit {
       return this._error();
     }
     try {
-      await this.authService.globalLogin(apikey).toPromise();
+      await this.authService.autologin({ apikey }).toPromise();
       await this.experienceService.getMyInfo().toPromise();
 
       if (multipleStacks) {
