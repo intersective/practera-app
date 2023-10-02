@@ -20,7 +20,7 @@
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
-          <ng-container *ngIf="experience">
+          <ng-container *ngIf="(experience$ | async) as experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
             <ion-progress-bar
               *ngIf="experienceProgress >= 0"
