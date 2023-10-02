@@ -30,7 +30,9 @@ export class DevtoolPage implements OnInit {
   }
 
   refresh() {
-    this.experienceService.getNewJwt().subscribe();
+    this.experienceService.getNewJwt().subscribe(res => {
+      console.log("refrehs JWT", res);
+    });
   }
 
   async pulsecheck() {

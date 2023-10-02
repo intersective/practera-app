@@ -83,10 +83,16 @@ export class AuthService {
   authenticate(data: {
     authToken?: string;
     apikey?: string;
+    service?: string;
   }) {
     const options: {
-      variables?: object;
-      context?: object;
+      variables?: {
+        authToken?: string;
+      };
+      context?: {
+        service?: string;
+        apikey?: string;
+      };
     } = {};
 
     if (data.authToken) {
@@ -95,6 +101,10 @@ export class AuthService {
 
     if (data.apikey) {
       this.storage.setUser({ apikey: data.apikey });
+    }
+
+    if (data.service) {
+      options.context = { service: data.service };
     }
 
     return this.apolloService.graphQLFetch(`
@@ -131,41 +141,20 @@ export class AuthService {
     );
   }
 
-  private _login(data: {
+  autologin(data: {
     authToken?: string;
     apikey?: string;
   }): Observable<any> {
+    this.logout({}, false);
     return this.authenticate(data).pipe(
       map(res => this._handleAuthResponse(res)),
     );
   }
 
-  /**
-   * @name directLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { authToken } in string
-   */
-  directLogin(authToken: string): Observable<any> {
-    this.logout({}, false);
-    return this._login({authToken});
-  }
-
-  /**
-   * @name globalLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { apikey } in string
-   */
-  globalLogin(apikey: string): Observable<any> {
-    this.logout({}, false);
-    return this._login({apikey});
-  }
-
-  private _handleAuthResponse(res): Observable<{
+  private _handleAuthResponse(res): {
     apikey?: string;
     experience?: object;
-  }> {
+  } {
     const data: {
       apikey: string;
       experience: object;
@@ -174,7 +163,7 @@ export class AuthService {
     this.storage.setUser({ apikey: data.apikey });
     this.storage.set('experience', data.experience);
     this.storage.set('isLoggedIn', true);
-    return of(data);
+    return data;
   }
 
   isAuthenticated(): boolean {
