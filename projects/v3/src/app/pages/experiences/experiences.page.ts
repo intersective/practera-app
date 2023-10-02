@@ -15,7 +15,8 @@ import { Subscription } from 'rxjs';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  programs$ = this.experienceService.programsWithProgress$;
+  // programs$ = this.experienceService.programsWithProgress$;
+  experiences$ = this.experienceService.experiences$;
 
   constructor(
     private router: Router,
@@ -29,7 +30,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
-      this.experienceService.getPrograms();
+      this.experienceService.getExperiences();
     });
   }
 
