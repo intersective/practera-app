@@ -1,5 +1,5 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
-  <ng-container *ngIf="(programs$ | async ) as programs">
+  <ng-container *ngIf="(experiences$ | async ) as programs">
     <header>
       <h1 id="experiences" class="for-accessibility" i18n>Experiences</h1>
       <ion-grid class="ion-no-padding ion-no-margin">
@@ -34,15 +34,15 @@
                   <ng-container *ngFor="let program of programs">
                     <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
                       <ion-card class="exp-card ion-no-margin"
-                        [attr.aria-label]="program.experience.name"
+                        [attr.aria-label]="program.name"
                         (click)="switchProgram(program)" (keydown)="switchProgram(program, $event)" tabindex="0">
                         <div class="exp-image-container">
                           <img
-                          [src]="program.experience.lead_image ? program.experience.lead_image : '../../../assets/default-experience-image.svg'"
-                          [attr.alt]="program.experience.name + ' experience selection'">
+                          [src]="program.leadImage ? program.leadImage : '../../../assets/default-experience-image.svg'"
+                          [attr.alt]="program.name + ' experience selection'">
                         </div>
                         <ion-card-content>
-                          <p class="m-0 headline-3 exp-title black">{{ program.experience.name }}</p>
+                          <p class="m-0 headline-3 exp-title black">{{ program.name }}</p>
                           <div class="exp-info subtitle-3 grey-50">
                             <p class="m-0 subtitle-3 grey-50" i18n>{{program.progress}}% Progress</p>
                           </div>

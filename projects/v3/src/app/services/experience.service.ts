@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap, shareReplay } from 'rxjs/operators';
@@ -9,9 +9,9 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
-import { RequestService } from 'request';
 import { HomeService } from './home.service';
 import { AuthService } from './auth.service';
+import { filter } from 'rxjs/operators';
 
 export interface ProgramObj {
   program: Program;
@@ -88,23 +88,27 @@ export class ExperienceService {
 
   review$ = this.reviewService.reviews$;
 
+  private _experiences$ = new BehaviorSubject<any>(null);
+  experiences$ = this._experiences$.asObservable();
+
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
 
-  programsWithProgress$ = this._programs$.asObservable().pipe(
+  programsWithProgress$ = this._experiences$.asObservable().pipe(
+    filter(experiences => experiences !== null),
     mergeMap(
-      async programs => {
-        const projectIds = programs.map(program => program.project.id);
+      async experiences => {
+        const projectIds = experiences.map(exp => exp.projectId);
         this.getProgresses(projectIds).subscribe(
           res => {
             res.forEach(progress => {
-              const i = programs.findIndex(program => program.project.id === progress.id);
-              programs[i].progress = Math.round(progress.progress * 100);
-              programs[i].todoItems = progress.todoItems;
+              const i = experiences.findIndex(exp => exp.projectId === progress.id);
+              experiences[i].progress = Math.round(progress.progress * 100);
+              experiences[i].todoItems = progress.todoItems;
             });
           }
         );
-        return programs;
+        return experiences;
       }
     ),
     shareReplay(1)
@@ -122,28 +126,55 @@ export class ExperienceService {
     private authService: AuthService,
   ) { }
 
-  async getPrograms() {
-    let programs = null;
-    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-    let imagewidth = 600;
-    if (environment.demo) {
-      programs = this.demo.programs;
-    } else {
-      programs = this.storage.get('programs');
-    }
-    if (programs.length > 0) {
-      programs.forEach(program => {
-        if (program.project.lead_image) {
-          const imageId = program.project.lead_image.split('/').pop();
+  getExperiences(): Subscription {
+    return this.apolloService.graphQLFetch(
+      `query experiences {
+        experiences {
+          id
+          uuid
+          timelineId
+          name
+          description
+          type
+          leadImage
+          status
+          setupStep
+          color
+          secondaryColor
+          todoItemCount
+          role
+          isLast
+          locale
+          supportName
+          supportEmail
+          cardUrl
+          bannerUrl
+          logoUrl
+          iconUrl
+          reviewRating
+          truncateDescription
+        }
+      }`
+    )
+    .pipe(map(res => {
+      const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+      let imagewidth = 600;
+
+      const { experiences } = res?.data || {};
+      experiences.forEach((experience, index) => {
+        if (experience.leadImage) {
+          const imageId = experience.leadImage.split('/').pop();
           if (!this.utils.isMobile()) {
             imagewidth = 1024;
           }
-          program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+          experiences[index].leadImage = `${cdn}${imagewidth}/${imageId}`;
         }
-        program.progress = 0;
+        experiences[index].progress = 0;
       });
-    }
-    this._programs$.next(programs);
+      return experiences;
+    })).subscribe(res => {
+      this._experiences$.next(res);
+    });
   }
 
   /**
