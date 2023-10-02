@@ -88,6 +88,9 @@ export class ExperienceService {
 
   review$ = this.reviewService.reviews$;
 
+  private _experience$ = new BehaviorSubject<any>(null);
+  experience$ = this._experience$.asObservable();
+
   private _experiences$ = new BehaviorSubject<any>(null);
   experiences$ = this._experiences$.asObservable();
 
@@ -223,7 +226,8 @@ export class ExperienceService {
   }
 
   async switchProgram(authObj): Promise<Observable<any>> {
-    const exp = authObj.experience;
+    const exp = authObj?.experience;
+    this.storage.set('experience', exp);
     const colors = {
       themeColor: exp?.color,
       primary: exp?.color,
@@ -263,11 +267,12 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const jwt = await this.getNewJwt().toPromise();
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
-      return of([jwt, teamInfo, me]);
+      this._experience$.next(exp);
+
+      return of([teamInfo, me]);
     } catch (err) {
       throw Error(err);
     }
@@ -369,36 +374,29 @@ export class ExperienceService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs): Promise<string[]> {
+  async switchProgramAndNavigate(experience): Promise<string[]> {
     if (environment.demo) {
       return ['experiences'];
     }
 
-    if (!this.utils.isEmpty(programs)) {
-      // Array with multiple program objects or one program object -> [{},{},{},{}] pr [{}]
-      if (Array.isArray(programs)) {
-        return ['experiences'];
-      } else {
-        // one program object -> {}
-        await this.switchProgram(programs);
-      }
+    await this.switchProgram({ experience });
 
-      // await this.pusherService.initialise({ unsubscribe: true });
-      // clear the cached data
-      await this.utils.clearCache();
-      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        if (this.storage.get('directLinkRoute')) {
-          const route = this.storage.get('directLinkRoute');
-          this.storage.remove('directLinkRoute');
-          return route;
-        }
-        return ['v3', 'home'];
-      } else {
-        return ['go-mobile'];
-      }
+    // await this.pusherService.initialise({ unsubscribe: true });
+    // clear the cached data
+    await this.utils.clearCache();
+
+    if (this.storage.get('directLinkRoute')) {
+      const route = this.storage.get('directLinkRoute');
+      this.storage.remove('directLinkRoute');
+      return route;
     }
-    return;
+
+    /* if (environment.goMobile === true
+      || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      return ['go-mobile'];
+    } */
+
+    return ['v3', 'home'];
   }
 
   getNewJwt() {
