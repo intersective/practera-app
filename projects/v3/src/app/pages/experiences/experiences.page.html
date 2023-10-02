@@ -1,5 +1,5 @@
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
-  <ng-container *ngIf="(experiences$ | async ) as programs">
+  <ng-container *ngIf="(experiences$ | async ) as experiences">
     <header>
       <h1 id="experiences" class="for-accessibility" i18n>Experiences</h1>
       <ion-grid class="ion-no-padding ion-no-margin">
@@ -27,11 +27,11 @@
                 <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down" i18n>Access and check the progress of your experiences below
                 </p>
               </ion-card-header>
-              <ion-card-content class="cards" [ngClass]="programs.length > 1 ? 'left' : 'center'">
+              <ion-card-content class="cards" [ngClass]="experiences.length > 1 ? 'left' : 'center'">
                 <ion-grid>
                   <ion-row>
 
-                  <ng-container *ngFor="let program of programs">
+                  <ng-container *ngFor="let program of experiences">
                     <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
                       <ion-card class="exp-card ion-no-margin"
                         [attr.aria-label]="program.name"
@@ -43,8 +43,9 @@
                         </div>
                         <ion-card-content>
                           <p class="m-0 headline-3 exp-title black">{{ program.name }}</p>
-                          <div class="exp-info subtitle-3 grey-50">
-                            <p class="m-0 subtitle-3 grey-50" i18n>{{program.progress}}% Progress</p>
+                          <div class="exp-info subtitle-3 grey-50"
+                             *ngIf="progresses[program.projectId]">
+                            <p class="m-0 subtitle-3 grey-50" i18n>{{progresses[program.projectId]}}% Progress</p>
                           </div>
                         </ion-card-content>
                       </ion-card>

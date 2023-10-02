@@ -104,7 +104,6 @@ export class ExperienceService {
             res.forEach(progress => {
               const i = experiences.findIndex(exp => exp.projectId === progress.id);
               experiences[i].progress = Math.round(progress.progress * 100);
-              experiences[i].todoItems = progress.todoItems;
             });
           }
         );
@@ -190,9 +189,6 @@ export class ExperienceService {
         projects(ids: $ids) {
           id
           progress
-          todoItems{
-            isDone
-          }
         }
       }`,
       {
@@ -202,11 +198,10 @@ export class ExperienceService {
       }
     )
     .pipe(map(res => {
-      return res.data.projects.map(v => {
+      return res.data.projects.map(project => {
         return {
-          id: +v.id,
-          progress: v.progress,
-          todoItems: v.todoItems.filter(ti => !ti.isDone).length
+          id: +project.id,
+          progress: project.progress,
         };
       });
     }));
