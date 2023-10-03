@@ -10,6 +10,7 @@
       <img alt="{{achievement.name}}"
         [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'"
         id="achievement-image"
+        [ngClass]="type === 'notification'? '' : !achievement.isEarned ? 'black-white-image': ''"
         tabindex="0"
         #badgeImage>
     </div>
