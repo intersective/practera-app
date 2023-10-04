@@ -87,16 +87,25 @@
       ></ion-checkbox>
     </ion-item>
   </ion-list>
-  <ion-textarea
-    [attr.aria-label]="'expert\'s review feedback'"
-    *ngIf="question.canComment && submission.answer"
-    class="textarea"
-    #commentEle
-    margin-top
-    rows="4"
-    [(ngModel)]="comment"
-    (ngModelChange)="onChange(comment, 'comment')"
-    placeholder="Please put your feedback here"
-    i18n-placeholder
-    [disabled]="control.disabled"></ion-textarea>
+
+  <ion-list class="ion-no-padding ion-padding-bottom"
+    *ngIf="question.canComment && submission.answer">
+    <ion-list-header class="ion-no-padding" lines="none">
+      <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
+    </ion-list-header>
+    <ion-textarea
+      [autoGrow]="true"
+      [attr.aria-label]="'expert\'s review feedback'"
+      *ngIf="question.canComment && submission.answer"
+      class="textarea"
+      #commentEle
+      margin-top
+      rows="4"
+      [(ngModel)]="comment"
+      (ngModelChange)="onChange(comment, 'comment')"
+      placeholder="Please put your feedback here"
+      i18n-placeholder
+      [disabled]="control.disabled"></ion-textarea>
+  </ion-list>
+
 </ng-container>
