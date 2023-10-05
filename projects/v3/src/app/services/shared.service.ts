@@ -9,6 +9,18 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
+import { RequestService } from 'request';
+
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  get: {
+    jwt: 'api/v2/users/jwt/refresh.json'
+  }
+};
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +34,7 @@ export class SharedService {
     private storage: BrowserStorageService,
     private notification: NotificationsService,
     private http: HttpClient,
+    private requestService: RequestService,
     private topicService: TopicService,
     private apolloService: ApolloService,
     private pusherService: PusherService,
@@ -86,9 +99,14 @@ export class SharedService {
           }
         }
       }`
-    ).pipe(map(response => {
+    ).pipe(map(async response => {
       if (response?.data?.user) {
         const thisUser = response.data.user;
+        const newTeamId = thisUser.teams.length > 0 ? thisUser.teams[0].id : null;
+
+        if (this.storage.getUser().teamId !== newTeamId) {
+          await this.getNewJwt().toPromise();
+        }
 
         if (!this.utils.has(thisUser, 'teams') ||
           !Array.isArray(thisUser.teams) ||
@@ -168,7 +186,7 @@ export class SharedService {
   markTopicStopOnNavigating() {
     if (this.storage.get('startReadTopic')) {
       this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
-        response => {
+        _response => {
           this.storage.remove('startReadTopic');
         },
         err => {
@@ -188,4 +206,7 @@ export class SharedService {
     this.utils.checkIsPracteraSupportEmail();
   }
 
+  getNewJwt() {
+    return this.requestService.get(api.get.jwt);
+  }
 }
