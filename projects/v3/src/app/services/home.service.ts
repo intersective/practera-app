@@ -205,7 +205,6 @@ export class HomeService {
     }
 
     const activitiesBase = await this.activityService.getActivityBase(activityId).toPromise();
-    console.log(',activitiesBase ', activitiesBase);
     const nonTeamAsmt = (activitiesBase?.data?.activity?.tasks || [])
       .filter((task: TaskBase) => task.isTeam !== true);
 
