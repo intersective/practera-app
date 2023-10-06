@@ -9,19 +9,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
-import { RequestService } from 'request';
 import { HomeService } from './home.service';
 
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
- const api = {
-  get: {
-    jwt: 'api/v2/users/jwt/refresh.json'
-  }
-};
 
 export interface ProgramObj {
   program: Program;
@@ -126,7 +115,6 @@ export class ExperienceService {
     private apolloService: ApolloService,
     private sharedService: SharedService,
     private storage: BrowserStorageService,
-    private requestService: RequestService,
     private eventService: EventService,
     private reviewService: ReviewService,
     private homeService: HomeService,
@@ -249,7 +237,7 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const jwt = await this.getNewJwt().toPromise();
+      const jwt = await this.sharedService.getNewJwt().toPromise();
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
@@ -389,7 +377,4 @@ export class ExperienceService {
     return;
   }
 
-  getNewJwt() {
-    return this.requestService.get(api.get.jwt);
-  }
 }
