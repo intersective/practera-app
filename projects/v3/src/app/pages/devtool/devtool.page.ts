@@ -55,6 +55,48 @@ export class DevtoolPage implements OnInit {
     }
   }
 
+  async showErrorAlert() {
+    try {
+      throw new Error('Missing parameters');
+    } catch (err) {
+      await this.notificationsService.alert({
+        header: $localize`Error submitting rating`,
+        message: err.message ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.message}` : JSON.stringify(err),
+      });
+      throw new Error(err);
+    }
+  }
+
+  async showAlert() {
+    this.notificationsService.alert({
+      header: 'header',
+      subHeader: 'subheader',
+      message: 'body message',
+      buttons: [
+        'ok',
+        'close',
+        {
+          text: 'dismiss with a message',
+          handler: () => {
+            this.notificationsService.alert({
+              message: 'a message',
+            });
+          },
+        },
+        {
+          text: 'open another alert',
+          handler: () => {
+            this.notificationsService.alert({
+              header: 'another header',
+              subHeader: 'another subheader',
+              message: 'another body message with no button',
+            });
+          }
+        }
+      ]
+    });
+  }
+
   async reviewrating() {
     this.notificationsService.popUpReviewRating(1, false);
   }
