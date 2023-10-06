@@ -145,10 +145,10 @@ export class ActivityDesktopPage {
    * @return  {any}
    */
   async saveAssessment(event, task: Task) {
-    // autoSave must be false to submit the assessment
+    // autoSave must be false to fire submit assessment API request
     // loading is mainly for cosmetic purpose
-    // this is made to mainly capture autoSave = true & loading = true
-    // to prevent double submission
+    // below if-statement is made to prevent double submission
+    // condition: autoSave = true & loading = true
     if (event.autoSave && this.loading) {
       return;
     }
