@@ -137,7 +137,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
       this.innerValue = {
         answer: '',
         comment: ''
