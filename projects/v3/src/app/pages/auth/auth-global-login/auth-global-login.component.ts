@@ -28,8 +28,11 @@ export class AuthGlobalLoginComponent implements OnInit {
       return this._error();
     }
     try {
-      await this.authService.autologin({ apikey }).toPromise();
+      const authed = await this.authService.autologin({ apikey }).toPromise();
       await this.experienceService.getMyInfo().toPromise();
+      await this.experienceService.switchProgram({
+        experience: authed.experience
+      });
 
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
