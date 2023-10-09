@@ -17,7 +17,7 @@ on:
   push:
     branches:
       - 'golive/3*'
-      - 'release/live-v3'
+      # - 'release/live-v3'
 
 
 

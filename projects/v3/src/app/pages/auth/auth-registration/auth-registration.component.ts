@@ -197,8 +197,6 @@ export class AuthRegistrationComponent implements OnInit {
                 ],
               });
             }
-
-            console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
         );
