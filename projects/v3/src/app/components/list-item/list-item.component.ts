@@ -17,6 +17,7 @@ export class ListItemComponent {
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
   @Input() leadImage: string;
+  @Input() leadImageClass?: string;
   @Input() title: string;
   @Input() titleColor?: string;
   @Input() subtitle1: string;
