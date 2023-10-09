@@ -35,17 +35,6 @@ export class DevtoolPage implements OnInit {
     this.sharedService.getNewJwt().subscribe();
   }
 
-  login() {
-    this.authService.login({
-      email: 'learner_008@practera.com',
-      password: 'REDACTED_TEST_PASSWORD'
-    }).subscribe(res => {
-      this.doneLogin = true;
-      this.user = res;
-      this.experienceService.getMyInfo();
-    });
-  }
-
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
     const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
@@ -99,5 +88,20 @@ export class DevtoolPage implements OnInit {
 
   async reviewrating() {
     this.notificationsService.popUpReviewRating(1, false);
+  }
+
+  async testAuth(withAPIkey?: boolean) {
+    let data: any = {};
+    if (withAPIkey === true) {
+      data.apikey = this.storageService.getUser().apikey || 'REDACTED_JWT_TOKEN';
+    } else {
+      // data.authToken = '$2a$10$1UO3e6b8NdzCX';
+      data.authToken = '$2a$10$A8Bu9a7KJogPD';
+      // data.authToken = '$2a$10$NggHX.VgJhIWi';
+    }
+
+    this.authService.authenticate(data).subscribe(res => {
+      console.log(res);
+    });
   }
 }
