@@ -5,7 +5,6 @@
 export const environment = {
   demo: false,
   production: false,
-  skipGlobalLogin: false,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
