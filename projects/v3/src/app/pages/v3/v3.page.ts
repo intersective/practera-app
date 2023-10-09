@@ -60,7 +60,7 @@ import { mergeMap } from 'rxjs/operators';
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = true; // collapsible submenu
+  openMenu = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   subscriptions: Subscription[];
@@ -69,6 +69,8 @@ export class V3Page implements OnInit, OnDestroy {
   showEvents: boolean = false;
   showReviews: boolean = false;
   directionIcon: string = this.direction();
+  collapsibleMenu: string = 'closed';
+  institutionLogo: string = this.getInstitutionLogo();
 
   i18nText = {
     'setting': $localize`Settings`,
@@ -163,7 +165,7 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
-      this.homeService.getExperience();
+      this.homeService.getExperience(this.storageService.getUser().apikey);
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
@@ -227,7 +229,7 @@ export class V3Page implements OnInit, OnDestroy {
     }
   }
 
-  get institutionLogo() {
+  getInstitutionLogo(): string {
     if (this.openMenu !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
@@ -245,10 +247,13 @@ export class V3Page implements OnInit, OnDestroy {
 
   toggleMenu() {
     this.openMenu = !this.openMenu;
+    this.collapsibleMenu = this.collapseMenu();
+    this.institutionLogo = this.getInstitutionLogo();
   }
 
   // only desktop version require collapsed menu
-  get collapsibleMenu() {
+  // get collapsibleMenu() {
+  collapseMenu(): string {
     if (this.isMobile) {
       return 'open';
     }
