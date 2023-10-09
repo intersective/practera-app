@@ -113,7 +113,7 @@
 
 <ng-template #badgePoints>
   <h3 class="for-accessibility" i18n>Badges awarded</h3>
-  <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
+  <div *ngIf="achievements.length === 0" class="ion-text-center no-achievement">
     <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
     <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
     <p id="nobadges" class="body-1" aria-live="polite" i18n>You have no badges yet!</p>
@@ -127,9 +127,10 @@
 
   <app-list-item *ngFor="let achievement of achievements"
     [title]="achievement.name"
-    [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''" subtitle1Color="medium"
+    subtitle1="{{achievement.points ? achievement.points + ' Pts' : null}}" subtitle1Color="medium"
     [leadImage]="achievement.image" lines="full" (click)="achievePopup(achievement)"
     (keydown)="achievePopup(achievement, $event)"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
-    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"></app-list-item>
+    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"
+    i18n-subtitle1></app-list-item>
 </ng-template>
