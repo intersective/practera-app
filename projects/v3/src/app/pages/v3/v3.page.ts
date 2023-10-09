@@ -71,6 +71,8 @@ export class V3Page implements OnInit, OnDestroy {
   directionIcon: string = this.direction();
   collapsibleMenu: string = 'closed';
   institutionLogo: string = this.getInstitutionLogo();
+  isMobile: boolean;
+  institutionName: string;
 
   i18nText = {
     'setting': $localize`Settings`,
@@ -88,7 +90,9 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
-  ) { }
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => {
@@ -129,6 +133,8 @@ export class V3Page implements OnInit, OnDestroy {
         badges: 0,
       }
     ];
+
+    this.institutionName = this.storageService.getUser().institutionName || 'Practera';
   }
 
   ngOnInit(): void {
@@ -234,14 +240,6 @@ export class V3Page implements OnInit, OnDestroy {
     }
 
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
-  }
-
-  get institutionName() {
-    return this.storageService.getUser().institutionName || 'Practera';
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
   }
 
   toggleMenu() {
