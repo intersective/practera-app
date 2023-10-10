@@ -169,7 +169,6 @@ export class HomeService {
       }`,
     ).pipe(
       map(res => this._handleProjectProgress(res)),
-      tap(res => console.log('project progress', res)),
     ).subscribe();
   }
 
