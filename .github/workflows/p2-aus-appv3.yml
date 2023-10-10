@@ -175,10 +175,10 @@ jobs:
           export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
           export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
-          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret) 
-          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster) 
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
+          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
 
           printf "Angular environment variable creation  complete\n\n"
@@ -204,8 +204,9 @@ jobs:
           CUSTOM_JS_ENVIRONEMENT: live #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://login-api.practera.com
           CUSTOM_NEWRELIC: true
-
-
+          CUSTOM_PORTAL_ID: 3404872
+          CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
+          CUSTOM_LIVE_SERVER_REGION: AU
 
 ###############################################################
 #  BUILD WEB PACKAGES
@@ -215,6 +216,7 @@ jobs:
           test -f projects/v3/src/environments/environment.ts && echo "environment here" || cp projects/v3/src/environments/environment.local.ts projects/v3/src/environments/environment.ts
           node_modules/.bin/ng build request --configuration=${{ env.BUILD_CONFIG }}
           node_modules/.bin/ng build v3 --configuration=${{ env.BUILD_CONFIG }}
+          npm run generate-version-v3
 
 
 ##########################################################
