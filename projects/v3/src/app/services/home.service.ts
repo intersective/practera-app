@@ -167,7 +167,10 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+    ).pipe(
+      map(res => this._handleProjectProgress(res)),
+      tap(res => console.log('project progress', res)),
+    ).subscribe();
   }
 
   private _handleProjectProgress(data) {
