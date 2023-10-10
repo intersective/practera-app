@@ -10,6 +10,7 @@ import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
 import { HomeService } from './home.service';
+import { AuthService } from './auth.service';
 import { filter } from 'rxjs/operators';
 
 export interface ProgramObj {
@@ -124,6 +125,7 @@ export class ExperienceService {
     private eventService: EventService,
     private reviewService: ReviewService,
     private homeService: HomeService,
+    private authService: AuthService,
   ) { }
 
   getExperiences(): Subscription {
@@ -407,4 +409,10 @@ export class ExperienceService {
     return ['v3', 'home'];
   }
 
+  getNewJwt() {
+    return this.authService.authenticate({
+      apikey: this.storage.get('apikey'),
+      service: 'LOGIN'
+    });
+  }
 }
