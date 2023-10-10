@@ -265,12 +265,22 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
+      const newAuth = await this.authService.authenticate({
+        apikey: this.storage.getUser().apikey,
+        experienceUuid: exp.uuid
+      }).toPromise();
+
+      // reset apikey
+      if (newAuth?.data?.auth?.apikey) {
+        this.storage.setUser({ apikey: newAuth?.data?.auth?.apikey });
+      }
+
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
       this._experience$.next(exp);
 
-      return of([teamInfo, me]);
+      return of([newAuth, teamInfo, me]);
     } catch (err) {
       throw Error(err);
     }

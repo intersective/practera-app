@@ -86,10 +86,13 @@ export class AuthService {
     authToken?: string;
     apikey?: string;
     service?: string;
+    // needed when switching program (inform server the latest selected experience)
+    experienceUuid?: string;
   }) {
     const options: {
       variables?: {
         authToken?: string;
+        experienceUuid?: string;
       };
       context?: {
         service?: string;
@@ -97,8 +100,17 @@ export class AuthService {
       };
     } = {};
 
+    // Initialize options.variables if either authToken or experienceUuid exist
+    if (data.authToken || data.experienceUuid) {
+      options.variables = {};
+    }
+
     if (data.authToken) {
-      options.variables = {authToken: data.authToken};
+      options.variables.authToken = data.authToken;
+    }
+
+    if (data.experienceUuid) {
+      options.variables.experienceUuid = data.experienceUuid;
     }
 
     if (data.apikey) {
@@ -110,8 +122,8 @@ export class AuthService {
     }
 
     return this.apolloService.graphQLFetch(`
-      query auth($authToken: String) {
-        auth(authToken: $authToken) {
+      query auth($authToken: String, $experienceUuid: ID) {
+        auth(authToken: $authToken, experienceUuid: $experienceUuid) {
           apikey
           experience {
             id
