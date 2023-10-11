@@ -162,6 +162,7 @@ export class AssessmentMobilePage implements OnInit {
     try {
       await this.assessmentService.saveFeedbackReviewed(event).toPromise();
       await this.reviewRatingPopUp();
+      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
       this.btnDisabled$.next(false);
       // get the latest activity tasks and navigate to the next task
