@@ -52,13 +52,28 @@ export class AuthLoginComponent {
     }
     this.isLoggingIn = true;
 
-    return this.authService.login({
+    return this.authService.deprecatingLogin({
       email: this.loginForm.value.email,
       password: this.loginForm.value.password,
     }).subscribe(
-      res => {
+      async res => {
         this.loginForm.reset();
-        return this._handleNavigation(res.programs);
+        try {
+          await this.experienceService.switchProgram(res);
+          this.isLoggingIn = false;
+          return this.router.navigate(['v3', 'home']);
+        } catch (err) {
+          console.error(err); // @TODO: please report issues to API
+          return this.notificationsService.alert({
+            message: $localize`We're experiencing difficulties in fetching your program data. Could you please attempt to log in again.`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: 'cancel'
+              }
+            ],
+          });
+        }
       },
       err => {
         // notify user about weak password
@@ -93,11 +108,5 @@ export class AuthLoginComponent {
         });
       }
     );
-  }
-
-  private async _handleNavigation(programs) {
-    const route = await this.experienceService.switchProgramAndNavigate(programs);
-    this.isLoggingIn = false;
-    return this.router.navigate(route);
   }
 }
