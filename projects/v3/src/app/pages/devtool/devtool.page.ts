@@ -60,7 +60,7 @@ export class DevtoolPage implements OnInit {
       // data.authToken = '$2a$10$NggHX.VgJhIWi';
     }
 
-    this.authService.authenticate(data).subscribe(res => {
+    this.authService.authenticate({...data, ...{service: 'LOGIN'}}).subscribe(res => {
       console.log(res);
     });
   }
