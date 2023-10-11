@@ -16,7 +16,7 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
   activityCount$ = this.homeService.activityCount$;
@@ -83,6 +83,10 @@ export class HomePage implements OnInit {
         }
       })
     )
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   updateDashboard() {
