@@ -16,8 +16,8 @@ on:
         default: ''
   push:
     branches:
-      - 'golive/3*'
-      # - 'release/live-v3'
+      - 'prerelease'
+
 
 
 
