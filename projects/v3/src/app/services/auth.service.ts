@@ -93,12 +93,14 @@ export class AuthService {
         experienceUuid?: string;
       };
       context?: {
-        service?: string;
-        apikey?: string;
+        headers?: {
+          service?: string;
+          apikey?: string;
+        };
       };
     } = {};
 
-    // Initialize options.variables if either authToken or experienceUuid exist
+    // Initialize options.variables
     if (data.authToken || data.experienceUuid) {
       options.variables = {};
     }
@@ -111,12 +113,18 @@ export class AuthService {
       options.variables.experienceUuid = data.experienceUuid;
     }
 
+    // Initialize options.headers
+    if (data.apikey || data.service) {
+      options.context = { headers: {} };
+    }
+
     if (data.apikey) {
       this.storage.setUser({ apikey: data.apikey });
+      options.context.headers.apikey = data.apikey;
     }
 
     if (data.service) {
-      options.context = { service: data.service };
+      options.context.headers.service = data.service;
     }
 
     return this.apolloService.graphQLFetch(`
@@ -156,6 +164,7 @@ export class AuthService {
   autologin(data: {
     authToken?: string;
     apikey?: string;
+    service?: string;
   }): Observable<any> {
     this.logout({}, false);
     return this.authenticate({...data, ...{service: 'LOGIN'}}).pipe(
