@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/services/activity.service';
 import { AssessmentService, Submission } from '@v3/services/assessment.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-activity-mobile',
@@ -20,7 +21,9 @@ export class ActivityMobilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.activityService.activity$.subscribe(res => this.activity = res);
+    this.activityService.activity$
+      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
+      .subscribe(res => this.activity = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, false);
