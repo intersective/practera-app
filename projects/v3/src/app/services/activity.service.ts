@@ -290,4 +290,27 @@ export class ActivityService {
     }
   }
 
+
+  /**
+   * @name nonTeamActivity
+   * @description check if the activity is accessible by current
+   *    user (team or individual assessment).
+   *    When milestone contain only team assessment, only participant from a team
+   *    can access the activities.
+   *
+   * @param   {number<boolean>}   activityId
+   *
+   * @return  {Promise<boolean>}  false when inaccessible, otherwise true
+   */
+  async nonTeamActivity(tasks?: Task[]): Promise<boolean> {
+    const teamStatus = await this.sharedService.getTeamInfo().toPromise();
+    if (teamStatus?.data?.user?.teams.length > 0) {
+      return true;
+    }
+
+    const nonTeamAsmt = (tasks || [])
+      .filter((task: Task) => task.isForTeam !== true);
+
+    return nonTeamAsmt.length > 0;
+  }
 }
