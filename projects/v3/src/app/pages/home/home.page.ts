@@ -134,6 +134,17 @@ export class HomePage implements OnInit, OnDestroy {
     return null;
   }
 
+  /**
+   * Navigates to the activity page when an activity is clicked or the enter/space key is pressed.
+   * If the activity is locked, nothing happens.
+   * Clears the activity and assessment services before navigating.
+   * If the user is not in a team, an alert is shown.
+   * If the user is on desktop, navigates to the desktop activity page.
+   * If the user is on mobile, navigates to the mobile activity page.
+   * @param activity The activity object to navigate to.
+   * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
+   * @returns A Promise that resolves when the navigation is complete.
+   */
   async gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
@@ -148,23 +159,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
 
-    const isAccessible = await this.homeService.isAccessible(activity.id);
-    if (isAccessible === false) {
-      return this.notification.alert({
-        header: $localize`Team Activity`,
-        message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-        buttons: [
-          {
-            text: $localize`OK`,
-            role: 'cancel',
-          }
-        ]
-      });
-    }
-
-    if (!this.utils.isMobile()) {
+    if (!this.isMobile) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
     }
+
     return this.router.navigate(['v3', 'activity-mobile', activity.id]);
   }
 

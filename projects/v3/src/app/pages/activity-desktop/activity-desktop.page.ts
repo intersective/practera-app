@@ -28,6 +28,7 @@ export class ActivityDesktopPage {
   loading: boolean;
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  notInATeamAndForTeamOnly: boolean = false;
 
   // grabs from URL parameter
   urlParams = {
@@ -238,5 +239,9 @@ export class ActivityDesktopPage {
 
   goBack() {
     this.router.navigate(['v3', 'home']);
+  }
+
+  allTeamTasks(forTeamOnlyWarning: boolean) {
+    this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
   }
 }

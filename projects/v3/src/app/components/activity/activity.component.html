@@ -18,30 +18,44 @@
     <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
   </div>
 
-  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
+  <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
+    <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
 
-  <ng-container *ngTemplateOutlet="noTasks"></ng-container>
+    <ng-container *ngTemplateOutlet="noTasks"></ng-container>
 
+    <app-list-item class="focusable"
+      role="button"
+      tabindex="0"
+      *ngFor="let task of (activity?.tasks || []); let i = index"
+      lines="full"
+      subtitle1Color="grey-50"
+      (click)="goto(task)"
+      (keydown)="goto(task, $event)"
+      [title]="task.name"
+      [subtitle1]="subtitle(task)"
+      [label]="label(task)"
+      [labelColor]="labelColor(task)"
+      [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
+      [leadingIcon]="leadIcon(task)"
+      [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
+      [endingIcon]="endingIcon(task)"
+      [endingIconColor]="endingIconColor(task)"
+    ></app-list-item>
+  </ng-container>
+</ng-container>
+
+<ng-template #notInATeamAndForTeamOnly>
+  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other
+    {Tasks}}</ion-item>
   <app-list-item
     class="focusable"
     role="button"
     tabindex="0"
-    *ngFor="let task of (activity?.tasks || []); let i = index"
     lines="full"
     subtitle1Color="grey-50"
-    (click)="goto(task)"
-    (keydown)="goto(task, $event)"
-    [title]="task.name"
-    [subtitle1]="subtitle(task)"
-    [label]="label(task)"
-    [labelColor]="labelColor(task)"
-    [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
-    [leadingIcon]="leadIcon(task)"
-    [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
-    [endingIcon]="endingIcon(task)"
-    [endingIconColor]="endingIconColor(task)"
-  ></app-list-item>
-</ng-container>
+    title="For team members only"></app-list-item>
+</ng-template>
+
 
 <ng-template #noActivity>
   <div *ngIf="!activity" class="ion-padding"
