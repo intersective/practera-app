@@ -166,16 +166,13 @@ export class AuthRegistrationComponent implements OnInit {
           key: this.user.key
         })
         .subscribe(
-          _response => {
+          response => {
             this.authService
-              .login({
-                email: this.user.email,
-                password: this.confirmPassword
-              })
+              .authenticate(response.apikey)
               .subscribe(
                 async res => {
                   this.storage.remove('unRegisteredDirectLink');
-                  const route = await this.experienceService.switchProgramAndNavigate(res.programs);
+                  const route = await this.experienceService.switchProgram(res.data);
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
                 },
                 err => {
@@ -198,6 +195,7 @@ export class AuthRegistrationComponent implements OnInit {
               });
             }
 
+            console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
         );
@@ -232,7 +230,7 @@ export class AuthRegistrationComponent implements OnInit {
       const pass = this.registerationForm.controls.password.value;
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
-        this.errors.push($localize`Your passwords don\'t match.`);
+        this.errors.push($localize`Your passwords don't match.`);
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {

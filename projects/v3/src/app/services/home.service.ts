@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -78,21 +78,12 @@ export class HomeService {
     ]);
   }
 
-  getExperience() {
+  getExperience(apikey: string) {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.apolloService.graphQLFetch(`
-      query experience {
-        experience{
-          locale
-          name
-          description
-          leadImage
-        }
-      }`,
-    ).pipe(
+    return this.authService.authenticate({ apikey }).pipe(
       tap(async res => {
         if (res?.data?.experience === null) {
           await this.notificationsService.alert({
@@ -110,7 +101,11 @@ export class HomeService {
           })
         }
       }),
-      map(res => this._normaliseExperience(res))
+      map(res => this._normaliseExperience(res)),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        return throwError(err);
+      }),
     ).subscribe();
   }
 
@@ -176,7 +171,9 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+    ).pipe(
+      map(res => this._handleProjectProgress(res)),
+    ).subscribe();
   }
 
   private _handleProjectProgress(data) {

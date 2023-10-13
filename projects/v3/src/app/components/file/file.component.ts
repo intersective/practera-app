@@ -98,31 +98,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     }
   }
 
-  // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
-  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type: string) {
-    // set changed value (answer or comment)
-    if (type) {
-      if (!this.innerValue) {
-        this.innerValue = {
-          answer: {},
-          comment: ''
-        };
-      }
-      if (type === 'comment') {
-        // just pass the value for comment since comment is always just text
-        this.innerValue.comment = value;
-      } else {
-        this.innerValue.answer = this.uploadedFile;
-      }
-    } else {
-      // this is for submitter, just pass the uploaded file as the answer
-      this.innerValue = this.uploadedFile;
-    }
-
-    // propagate value into form control using control value accessor interface
-    this.propagateChange(this.innerValue);
-
+  triggerSave() {
     const action: {
       autoSave?: boolean;
       goBack?: boolean;
@@ -154,6 +130,34 @@ export class FileComponent implements ControlValueAccessor, OnInit {
     this.submitActions$.next(action);
   }
 
+  // event fired when file is uploaded. propagate the change up to the form control using the custom value accessor interface
+  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
+  onChange(value, type: string) {
+    // set changed value (answer or comment)
+    if (type) {
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: {},
+          comment: ''
+        };
+      }
+      if (type === 'comment') {
+        // just pass the value for comment since comment is always just text
+        this.innerValue.comment = value;
+      } else {
+        this.innerValue.answer = this.uploadedFile;
+      }
+    } else {
+      // this is for submitter, just pass the uploaded file as the answer
+      this.innerValue = this.uploadedFile;
+    }
+
+    // propagate value into form control using control value accessor interface
+    this.propagateChange(this.innerValue);
+
+    this.triggerSave();
+  }
+
   // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
@@ -173,7 +177,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
       this.innerValue = {
         answer: {},
         comment: ''
