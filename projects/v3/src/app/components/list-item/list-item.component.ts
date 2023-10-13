@@ -20,7 +20,7 @@ export class ListItemComponent {
   @Input() leadImageClass?: string;
   @Input() title: string;
   @Input() titleColor?: string;
-  @Input() subtitle1: string;
+  @Input() subtitle1?: string;
   @Input() subtitle1Color: string;
   @Input() subtitle2: string;
   @Input() subtitle2Color: string;
