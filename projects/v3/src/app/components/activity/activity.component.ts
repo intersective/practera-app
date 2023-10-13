@@ -17,11 +17,10 @@ export class ActivityComponent implements OnChanges {
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
 
-  // when all tasks are found to be team tasks, emit this event
-  // true: all tasks are team tasks
+  // when user isn't in a team & all tasks are found to be team tasks, emit this event
+  // true: user not allowed to access
   // false: at least one non-team task
-  @Output() allTeamTasks = new EventEmitter();
-
+  @Output() cannotAccessTeamActivity = new EventEmitter();
   isForTeamOnly: boolean = false;
 
   constructor(
@@ -36,7 +35,7 @@ export class ActivityComponent implements OnChanges {
     if (changes.activity?.currentValue) {
       this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
         this.isForTeamOnly = !nonTeamActivity;
-        this.allTeamTasks.emit(this.isForTeamOnly);
+        this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
       });
     }
   }
