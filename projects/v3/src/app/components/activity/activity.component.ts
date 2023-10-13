@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
-import { Activity, Task } from '@v3/services/activity.service';
+import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -11,17 +11,36 @@ import { UtilsService } from '@v3/services/utils.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss'],
 })
-export class ActivityComponent {
+export class ActivityComponent implements OnChanges {
   @Input() activity: Activity;
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
+
+  // when all tasks are found to be team tasks, emit this event
+  // true: all tasks are team tasks
+  // false: at least one non-team task
+  @Output() allTeamTasks = new EventEmitter();
+
+  isForTeamOnly: boolean = false;
+
   constructor(
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-  ) { }
+    private activityService: ActivityService
+  ) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.activity?.currentValue) {
+      this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
+        this.isForTeamOnly = !nonTeamActivity;
+        this.allTeamTasks.emit(this.isForTeamOnly);
+      });
+    }
+  }
+
 
   /**
    * Task icon type
