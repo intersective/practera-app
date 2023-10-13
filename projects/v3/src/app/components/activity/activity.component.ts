@@ -32,7 +32,7 @@ export class ActivityComponent implements OnChanges {
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.activity?.currentValue) {
+    if (changes.activity?.currentValue?.tasks?.length > 0) {
       this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
         this.isForTeamOnly = !nonTeamActivity;
         this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
