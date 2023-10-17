@@ -129,6 +129,7 @@
     [title]="achievement.name"
     subtitle1="{{achievement.points ? achievement.points + ' Pts' : null}}" subtitle1Color="medium"
     [leadImage]="achievement.image" lines="full" (click)="achievePopup(achievement)"
+    [leadImageClass] = "!achievement.isEarned ? 'black-white-image' : ''"
     (keydown)="achievePopup(achievement, $event)"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
     [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"
