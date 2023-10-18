@@ -128,16 +128,20 @@ export class ActivityDesktopPage {
   }
 
   async topicComplete(task: Task) {
+    this.btnDisabled$.next(true);
     if (task.status === 'done') {
       // just go to the next task without any other action
+      this.btnDisabled$.next(false);
       return this.activityService.goToNextTask(this.activity.tasks, task);
     }
     // mark the topic as complete
     this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
+
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activity.id, true, task, () => {
       this.loading = false;
+      this.btnDisabled$.next(false);
     });
   }
 
