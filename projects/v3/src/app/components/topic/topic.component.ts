@@ -10,6 +10,7 @@ import { SafeHtml } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject } from 'rxjs';
+import { Activity, Task } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-topic',
@@ -18,9 +19,11 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class TopicComponent implements OnChanges {
   @Input() topic: Topic;
+  @Input() task: Task;
   continuing: boolean;
   @Output() continue = new EventEmitter();
   @Input() buttonDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  thisTask
 
   iframeHtml = '' as SafeHtml;
   btnToggleTopicIsDone = false;
