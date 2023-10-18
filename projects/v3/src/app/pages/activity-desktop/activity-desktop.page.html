@@ -59,6 +59,7 @@
 
     <app-topic *ngIf="currentTask.type === 'Topic'"
       [topic]="topic"
+      [task]="currentTask"
       (continue)="topicComplete(currentTask)"
       [buttonDisabled$]="btnDisabled$"
       tabindex="0"
