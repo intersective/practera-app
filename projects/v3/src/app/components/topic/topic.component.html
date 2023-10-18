@@ -36,6 +36,7 @@
 
 <app-bottom-action-bar
   *ngIf="topic"
+  [disabled$]="buttonDisabled$"
   text="Mark as complete and continue"
   (handleClick)="actionBarContinue(topic)"
   i18n-text
