@@ -15,6 +15,7 @@
 <ion-content>
   <app-topic
     [topic]="topic$ | async"
+    [task]="currentTask"
     (continue)="continue()"
     [buttonDisabled$]="btnDisabled$"
   ></app-topic>
