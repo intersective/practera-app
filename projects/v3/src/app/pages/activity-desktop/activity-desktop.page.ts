@@ -112,6 +112,7 @@ export class ActivityDesktopPage {
 
   ionViewWillLeave() {
     this.currentTask = null;
+    this.topicService.clearTopic();
   }
 
   ionViewDidLeave() {
@@ -248,6 +249,7 @@ export class ActivityDesktopPage {
 
   goBack() {
     this.currentTask = null;
+    this.topicService.clearTopic();
     this.router.navigate(['v3', 'home']);
   }
 
