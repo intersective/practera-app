@@ -172,10 +172,10 @@ export class AuthRegistrationComponent implements OnInit {
               .subscribe(
                 async res => {
                   this.storage.remove('unRegisteredDirectLink');
-                  const route = await this.experienceService.switchProgram({
+                  await this.experienceService.switchProgram({
                     experience: res?.data?.auth?.experience
                   });
-                  this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
+                  this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
                 err => {
                   console.error(err);
