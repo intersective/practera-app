@@ -37,7 +37,7 @@
 <app-bottom-action-bar
   *ngIf="topic"
   [disabled$]="buttonDisabled$"
-  [text]="task.status === 'done' ? 'Continue' : 'Mark as complete and continue'"
+  [text]="task?.status === 'done' ? 'Continue' : 'Mark as complete and continue'"
   (handleClick)="actionBarContinue(topic)"
   i18n-text
 ></app-bottom-action-bar>
