@@ -101,8 +101,7 @@ export class AchievementService {
         });
         this._achievements$.next(achievements);
         return achievements;
-      })
-      ).subscribe();
+      })).subscribe();
   }
 
   getEarnedPoints() {
