@@ -4,6 +4,8 @@ import { Achievement, AchievementService } from '@v3/app/services/achievement.se
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { SharedService } from '@v3/app/services/shared.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
@@ -40,6 +42,8 @@ export class HomePage implements OnInit {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
+    private sharedService: SharedService,
+    private storageService: BrowserStorageService,
   ) { }
 
   ngOnInit() {
@@ -79,10 +83,11 @@ export class HomePage implements OnInit {
           this.updateDashboard();
         }
       })
-    )
+    );
   }
 
-  updateDashboard() {
+  async updateDashboard() {
+    await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
