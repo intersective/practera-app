@@ -110,6 +110,10 @@ export class ActivityDesktopPage {
     }));
   }
 
+  ionViewWillLeave() {
+    this.currentTask = null;
+  }
+
   ionViewDidLeave() {
     this.subscriptions.forEach(sub => {
       if (sub.closed !== true) {
@@ -119,6 +123,7 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
+    this.currentTask = null;
     const taskContentElement = this.document.getElementById('task-content');
     if (taskContentElement) {
       taskContentElement.focus();
@@ -241,6 +246,7 @@ export class ActivityDesktopPage {
   }
 
   goBack() {
+    this.currentTask = null;
     this.router.navigate(['v3', 'home']);
   }
 
