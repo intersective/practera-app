@@ -147,7 +147,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((this.reviewStatus === 'in progress') && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
       this.innerValue = {
         answer: this.review.answer,
         comment: this.review.comment
