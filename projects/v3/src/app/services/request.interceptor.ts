@@ -1,5 +1,5 @@
 import { Injectable, Optional } from '@angular/core';
-import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
 import { RequestConfig } from 'request';
 import { BrowserStorageService } from './storage.service';
