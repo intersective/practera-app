@@ -3,7 +3,7 @@
     <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-name">
       {{ activity.name }}
     </h1>
-    <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
+    <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
 
     <div class="task-count">
       <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75" i18n>
@@ -20,6 +20,9 @@
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
     <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
+
+    <ng-container *ngTemplateOutlet="noTasks"></ng-container>
+
     <app-list-item class="focusable"
       role="button"
       tabindex="0"
@@ -44,7 +47,8 @@
 <ng-template #notInATeamAndForTeamOnly>
   <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other
     {Tasks}}</ion-item>
-  <app-list-item class="focusable"
+  <app-list-item
+    class="focusable"
     role="button"
     tabindex="0"
     lines="full"
@@ -63,4 +67,13 @@
   </div>
 </ng-template>
 
-
+<ng-template #noTasks>
+  <div *ngIf="activity?.tasks?.length === 0" class="ion-padding" aria-live="polite" aria-label="no tasks available">
+    <app-list-item
+      lines="none"
+      subtitle1Color="grey-50"
+      title="No tasks available."
+      i18n-title
+      ></app-list-item>
+  </div>
+</ng-template>

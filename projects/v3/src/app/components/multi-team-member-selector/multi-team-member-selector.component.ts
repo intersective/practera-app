@@ -54,6 +54,39 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
+  triggerSave() {
+    const action: {
+      autoSave?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
+      autoSave: true,
+      goBack: false,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue,
+      };
+    }
+
+    this.submitActions$.next(action);
+  }
+
+
   // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type?: string) {
@@ -97,35 +130,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       }
     }
 
-    const action: {
-      autoSave?: boolean;
-      goBack?: boolean;
-      questionSave?: {};
-      reviewSave?: {};
-    } = {
-      autoSave: true,
-      goBack: false,
-    };
-
-    if (this.doReview === true) {
-      action.reviewSave = {
-        reviewId: this.reviewId,
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue.answer,
-        comment: this.innerValue.comment,
-      };
-    }
-
-    if (this.doAssessment === true) {
-      action.questionSave = {
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue,
-      };
-    }
-
-    this.submitActions$.next(action);
+    this.triggerSave();
   }
 
   // From ControlValueAccessor interface
