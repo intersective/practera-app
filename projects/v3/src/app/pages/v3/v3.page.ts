@@ -5,14 +5,14 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
-import { concat } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-v3',
@@ -60,7 +60,7 @@ import { concat } from 'rxjs';
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = true; // collapsible submenu
+  openMenu = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   subscriptions: Subscription[];
@@ -69,6 +69,10 @@ export class V3Page implements OnInit, OnDestroy {
   showEvents: boolean = false;
   showReviews: boolean = false;
   directionIcon: string = this.direction();
+  collapsibleMenu: string = 'closed';
+  institutionLogo: string = this.getInstitutionLogo();
+  isMobile: boolean;
+  institutionName: string;
 
   i18nText = {
     'setting': $localize`Settings`,
@@ -86,7 +90,9 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
-  ) { }
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => {
@@ -127,6 +133,8 @@ export class V3Page implements OnInit, OnDestroy {
         badges: 0,
       }
     ];
+
+    this.institutionName = this.storageService.getUser().institutionName || 'Practera';
   }
 
   ngOnInit(): void {
@@ -163,7 +171,7 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
-      this.homeService.getExperience();
+      this.homeService.getExperience(this.storageService.getUser().apikey);
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
@@ -187,12 +195,13 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.openMenu = false;
 
-    this.notificationInitialise().subscribe();
-  }
-
-  // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-  notificationInitialise(): Observable<any> {
-    return concat(this.notificationsService.getTodoItems(), this.notificationsService.getChatMessage());
+    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
+    const notifications = this.notificationsService.getTodoItems().pipe(
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
+      })
+    );
+    this.subscriptions.push(notifications.subscribe());
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
@@ -226,7 +235,7 @@ export class V3Page implements OnInit, OnDestroy {
     }
   }
 
-  get institutionLogo() {
+  getInstitutionLogo(): string {
     if (this.openMenu !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
@@ -234,20 +243,15 @@ export class V3Page implements OnInit, OnDestroy {
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
   }
 
-  get institutionName() {
-    return this.storageService.getUser().institutionName || 'Practera';
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   toggleMenu() {
     this.openMenu = !this.openMenu;
+    this.collapsibleMenu = this.collapseMenu();
+    this.institutionLogo = this.getInstitutionLogo();
   }
 
   // only desktop version require collapsed menu
-  get collapsibleMenu() {
+  // get collapsibleMenu() {
+  collapseMenu(): string {
     if (this.isMobile) {
       return 'open';
     }
