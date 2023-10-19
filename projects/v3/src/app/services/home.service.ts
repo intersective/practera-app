@@ -85,7 +85,7 @@ export class HomeService {
 
     return this.authService.authenticate({ apikey }).pipe(
       tap(async res => {
-        if (res?.data?.experience === null) {
+        if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
             header: 'Unable to access experience',
             message: 'Please re-login and try again later',
