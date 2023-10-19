@@ -88,7 +88,14 @@ export class AuthService {
     service?: string;
     // needed when switching program (inform server the latest selected experience)
     experienceUuid?: string;
-  }) {
+  }): Observable<{
+    data: {
+      auth: {
+        apikey: string;
+        experience: object;
+      }
+    }
+  }> {
     const options: {
       variables?: {
         authToken?: string;

@@ -168,12 +168,14 @@ export class AuthRegistrationComponent implements OnInit {
         .subscribe(
           response => {
             this.authService
-              .authenticate(response.apikey)
+              .authenticate({apikey: response.apikey})
               .subscribe(
                 async res => {
                   this.storage.remove('unRegisteredDirectLink');
-                  const route = await this.experienceService.switchProgram(res.data);
-                  this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
+                  await this.experienceService.switchProgram({
+                    experience: res?.data?.auth?.experience
+                  });
+                  this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
                 err => {
                   console.error(err);
@@ -272,14 +274,13 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   private showPopupMessages(type: string, message: string, redirect?: any) {
-    this.notificationsService
-      .popUp(
-        type,
-        {
-          message: message
-        },
-        redirect ? redirect : false
-      );
+    this.notificationsService.popUp(
+      type,
+      {
+        message: message
+      },
+      redirect ? redirect : false
+    );
   }
 
   private _setupPassword() {
