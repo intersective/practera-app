@@ -110,6 +110,10 @@ export class ActivityDesktopPage {
     }));
   }
 
+  ionViewWillLeave() {
+    this.currentTask = null;
+  }
+
   ionViewDidLeave() {
     this.subscriptions.forEach(sub => {
       if (sub.closed !== true) {
@@ -119,6 +123,7 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
+    this.currentTask = null;
     const taskContentElement = this.document.getElementById('task-content');
     if (taskContentElement) {
       taskContentElement.focus();
@@ -128,16 +133,20 @@ export class ActivityDesktopPage {
   }
 
   async topicComplete(task: Task) {
+    this.btnDisabled$.next(true);
     if (task.status === 'done') {
       // just go to the next task without any other action
+      this.btnDisabled$.next(false);
       return this.activityService.goToNextTask(this.activity.tasks, task);
     }
     // mark the topic as complete
     this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
+
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activity.id, true, task, () => {
       this.loading = false;
+      this.btnDisabled$.next(false);
     });
   }
 
@@ -238,6 +247,7 @@ export class ActivityDesktopPage {
   }
 
   goBack() {
+    this.currentTask = null;
     this.router.navigate(['v3', 'home']);
   }
 
