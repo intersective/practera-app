@@ -10,6 +10,7 @@
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
+  <ion-progress-bar type="indeterminate" *ngIf="( btnDisabled$ | async )"></ion-progress-bar>
 </ion-header>
 
 <ion-content>
