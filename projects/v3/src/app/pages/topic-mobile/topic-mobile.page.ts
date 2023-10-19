@@ -15,7 +15,7 @@ export class TopicMobilePage implements OnInit {
 
   topic: Topic;
   activityId: number;
-  currentTask: Task
+  currentTask: Task;
 
   constructor(
     private route: ActivatedRoute,
