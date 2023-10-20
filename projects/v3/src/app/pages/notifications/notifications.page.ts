@@ -47,13 +47,14 @@ export class NotificationsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscriptions.push(this.homeService.milestones$.subscribe(async milestones => {
       if (milestones === null) {
-        await this.homeService.getMilestones();
+        this.homeService.getMilestones();
       }
 
       this.milestones = milestones;
 
       (milestones || []).forEach(milestone => {
-        milestone.activities.forEach(activity => {
+        // API won't return activities when milestone is locked
+        milestone?.activities?.forEach(activity => {
           this.isLockedActivities[activity.id] = activity.isLocked;
         });
       });

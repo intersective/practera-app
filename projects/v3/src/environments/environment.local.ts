@@ -5,7 +5,6 @@
 export const environment = {
   demo: false,
   production: false,
-  skipGlobalLogin: false,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
   env: 'sandbox',
@@ -14,7 +13,7 @@ export const environment = {
   chatGraphQL: 'http://localhost:3000/local/graphql/',
   globalLoginUrl: 'https://login.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
-  intercomAppId: '',
+  intercomAppId: ' ',
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
