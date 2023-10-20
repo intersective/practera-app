@@ -43,7 +43,7 @@ export class TopicMobilePage implements OnInit {
     if (this.currentTask.status === 'done') {
       // just go to the next task without any other action
       await this.activityService.goToNextTask(this.currentTask);
-      this.btnDisabled$.next(false);
+      // this.btnDisabled$.next(false); - conflicts from [CORE-6106]
       return;
     }
     // mark the topic as completer
