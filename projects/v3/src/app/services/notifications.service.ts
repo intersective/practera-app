@@ -309,6 +309,7 @@ export class NotificationsService {
    *
    * sample call for activity complete popup
    * NotificationsService.activityCompletePopUp(3);
+   *
    */
   async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
     let cssClass = 'practera-popup activity-complete-popup';
