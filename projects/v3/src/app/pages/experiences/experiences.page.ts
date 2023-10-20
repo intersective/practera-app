@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-experiences',
@@ -15,7 +16,10 @@ import { Subscription } from 'rxjs';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  programs$ = this.experienceService.programsWithProgress$;
+  experiences$ = this.experienceService.experiences$;
+  progresses: {
+    [key: number]: number;
+  } = {};
 
   constructor(
     private router: Router,
@@ -29,12 +33,29 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
-      this.experienceService.getPrograms();
+      this.experienceService.getExperiences();
     });
+
+    this.subscriptions.push(this.experiences$
+      .pipe(filter(experiences => experiences !== null))
+      .subscribe(experiences => {
+        const ids = experiences.map(experience => experience.projectId);
+        this.experienceService.getProgresses(ids).subscribe(res => {
+          res.forEach(progress => {
+            progress.forEach(project => {
+              this.progresses[project.id] = Math.round(progress.progress * 100);
+            });
+          });
+        });
+      }));
   }
 
   ngOnDestroy(): void {
     this.subscriptions[0].unsubscribe();
+  }
+
+  async getProgress(projectId: number) {
+    return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
   get isMobile() {
@@ -52,28 +73,29 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       return;
     }
 
+    let destination = ['v3', 'home'];
     const loading = await this.loadingController.create({
-      message: 'loading...'
+      message: $localize`loading...`
     });
     await loading.present();
-
     try {
       const route = await this.experienceService.switchProgramAndNavigate(program);
-      loading.dismiss().then(() => {
-        if (environment.demo) {
-          return this.router.navigate(['v3','home']);
-        }
-        if (route) {
-          return this.router.navigate(route);
-        }
-      });
+      await loading.dismiss();
+      if (environment.demo) {
+        destination = ['v3','home'];
+      }
+
+      if (route) {
+        destination = route;
+      }
     } catch (err) {
       await this.notificationsService.alert({
         header: $localize`Error switching program`,
         message: err.msg || JSON.stringify(err)
       });
     }
-    return this.router.navigate(['v3','home']);
+    
+    return this.router.navigate(destination);
   }
 
 }

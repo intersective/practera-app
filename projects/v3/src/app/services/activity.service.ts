@@ -100,7 +100,9 @@ export class ActivityService {
         }
       }`,
       {
-        id: +activityId
+        variables: {
+          id: +activityId
+        }
       }
     );
   }
@@ -126,9 +128,9 @@ export class ActivityService {
     }
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
-    ).subscribe(_res => {
+    ).subscribe(res => {
       if (callback instanceof Function) {
-        return callback(_res);
+        return callback(res);
       }
       return;
     });
@@ -246,19 +248,26 @@ export class ActivityService {
     }
 
     // if there is no next task
-    if (!nextTask) {
+    if (this.utils.isEmpty(nextTask)) {
       if (afterTask) {
         return this._activityCompleted(hasUnfinishedTask);
       }
       nextTask = tasks[0]; // go to the first task
     }
-    this.goToTask(nextTask);
+
+    if (!this.utils.isEmpty(nextTask)) {
+      return this.goToTask(nextTask);
+    }
   }
 
   // obtain latest activity to decide next task
   goToNextTask(afterTask?: Task) {
     return this.getActivity(this._activity$.getValue().id, false, null, (res: Activity) => {
-      return this.calculateNextTask(res.tasks, afterTask);
+      let tasks = res.tasks;
+      if (this.utils.isEmpty(tasks) || tasks.length === 0) {
+        tasks = [];
+      }
+      return this.calculateNextTask(tasks, afterTask);
     });
   }
 
@@ -305,4 +314,27 @@ export class ActivityService {
     }
   }
 
+
+  /**
+   * @name nonTeamActivity
+   * @description check if the activity is accessible by current
+   *    user (team or individual assessment).
+   *    When milestone contain only team assessment, only participant from a team
+   *    can access the activities.
+   *
+   * @param   {number<boolean>}   activityId
+   *
+   * @return  {Promise<boolean>}  false when inaccessible, otherwise true
+   */
+  async nonTeamActivity(tasks?: Task[]): Promise<boolean> {
+    const teamStatus = await this.sharedService.getTeamInfo().toPromise();
+    if (teamStatus?.data?.user?.teams.length > 0) {
+      return true;
+    }
+
+    const nonTeamAsmt = (tasks || [])
+      .filter((task: Task) => task.isForTeam !== true);
+
+    return nonTeamAsmt.length > 0;
+  }
 }

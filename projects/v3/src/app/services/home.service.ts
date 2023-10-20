@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, of, throwError } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { SharedService } from './shared.service';
-import { ActivityService, TaskBase } from './activity.service';
+import { ActivityBase, ActivityService, Task, TaskBase } from './activity.service';
 
 export interface Experience {
   leadImage: string;
@@ -78,23 +78,14 @@ export class HomeService {
     ]);
   }
 
-  getExperience() {
+  getExperience(apikey: string) {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.apolloService.graphQLFetch(`
-      query experience {
-        experience{
-          locale
-          name
-          description
-          leadImage
-        }
-      }`,
-    ).pipe(
+    return this.authService.authenticate({ apikey }).pipe(
       tap(async res => {
-        if (res?.data?.experience === null) {
+        if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
             header: 'Unable to access experience',
             message: 'Please re-login and try again later',
@@ -110,7 +101,11 @@ export class HomeService {
           })
         }
       }),
-      map(res => this._normaliseExperience(res))
+      map(res => this._normaliseExperience(res)),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        return throwError(err);
+      }),
     ).subscribe();
   }
 
@@ -176,7 +171,9 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+    ).pipe(
+      map(res => this._handleProjectProgress(res)),
+    ).subscribe();
   }
 
   private _handleProjectProgress(data) {
@@ -185,29 +182,5 @@ export class HomeService {
     }
     this._projectProgress$.next(data.data.project);
     this._experienceProgress$.next(Math.round(data.data.project.progress * 100));
-  }
-
-  /**
-   * @name isAccessible
-   * @description check if the activity is accessible by current
-   *    user (team or individual assessment).
-   *    When milestone contain only team assessment, only participant from a team
-   *    can access the activities.
-   *
-   * @param   {number<boolean>}   activityId
-   *
-   * @return  {Promise<boolean>}  false when inaccessible, otherwise true
-   */
-  async isAccessible(activityId: number): Promise<boolean> {
-    const teamStatus = await this.sharedServise.getTeamInfo().toPromise();
-    if (teamStatus?.data?.user?.teams.length > 0) {
-      return true;
-    }
-
-    const activitiesBase = await this.activityService.getActivityBase(activityId).toPromise();
-    const nonTeamAsmt = (activitiesBase?.data?.activity?.tasks || [])
-      .filter((task: TaskBase) => task.isTeam !== true);
-
-    return nonTeamAsmt.length > 0;
   }
 }

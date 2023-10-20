@@ -166,17 +166,16 @@ export class AuthRegistrationComponent implements OnInit {
           key: this.user.key
         })
         .subscribe(
-          _response => {
+          response => {
             this.authService
-              .login({
-                email: this.user.email,
-                password: this.confirmPassword
-              })
+              .authenticate({apikey: response.apikey})
               .subscribe(
                 async res => {
                   this.storage.remove('unRegisteredDirectLink');
-                  const route = await this.experienceService.switchProgramAndNavigate(res.programs);
-                  this.showPopupMessages('shortMessage', $localize`Registration success!`, route);
+                  await this.experienceService.switchProgram({
+                    experience: res?.data?.auth?.experience
+                  });
+                  this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
                 err => {
                   console.error(err);
@@ -198,6 +197,7 @@ export class AuthRegistrationComponent implements OnInit {
               });
             }
 
+            console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
         );
@@ -232,7 +232,7 @@ export class AuthRegistrationComponent implements OnInit {
       const pass = this.registerationForm.controls.password.value;
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
-        this.errors.push($localize`Your passwords don\'t match.`);
+        this.errors.push($localize`Your passwords don't match.`);
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
@@ -274,14 +274,13 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   private showPopupMessages(type: string, message: string, redirect?: any) {
-    this.notificationsService
-      .popUp(
-        type,
-        {
-          message: message
-        },
-        redirect ? redirect : false
-      );
+    this.notificationsService.popUp(
+      type,
+      {
+        message: message
+      },
+      redirect ? redirect : false
+    );
   }
 
   private _setupPassword() {
