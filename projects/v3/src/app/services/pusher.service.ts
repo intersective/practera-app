@@ -1,5 +1,4 @@
 import { Injectable, Optional, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { RequestService } from 'request';
@@ -51,7 +50,6 @@ export class PusherService {
   };
 
   constructor(
-    private http: HttpClient,
     private request: RequestService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
@@ -145,7 +143,19 @@ export class PusherService {
           },
         },
       };
-      const newPusherInstance = new Pusher(this.pusherKey, config);
+      const newPusherInstance = new Pusher(this.pusherKey, config)
+        .bind('pusher:connection_established', () => {
+          console.log('pusher:connection_established');
+        })
+        .bind('pusher:connection_disconnected', () => {
+          console.log('pusher:connection_disconnected');
+        })
+        .bind('pusher:connection_failed', () => {
+          console.log('pusher:connection_failed');
+        })
+        .bind('pusher:error', (err) => {
+          console.log('pusher:error', err);
+        });
       return newPusherInstance;
     } catch (err) {
       throw new Error(err);
@@ -235,7 +245,6 @@ export class PusherService {
    * @param channelName The name of the Pusher channel
    */
   subscribeChannel(type: string, channelName: string) {
-
     if (environment.demo) {
       return;
     }
