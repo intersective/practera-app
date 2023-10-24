@@ -168,9 +168,12 @@ export class AuthRegistrationComponent implements OnInit {
         .subscribe(
           response => {
             this.authService
-              .authenticate({apikey: response.apikey})
+              .authenticate({
+                apikey: response.apikey,
+              })
               .subscribe(
                 async res => {
+                  this.storage.set('isLoggedIn', true);
                   this.storage.remove('unRegisteredDirectLink');
                   await this.experienceService.switchProgram({
                     experience: res?.data?.auth?.experience
