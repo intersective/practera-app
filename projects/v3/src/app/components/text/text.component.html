@@ -19,6 +19,7 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding textarea-border">
     <ion-textarea
+      [autoGrow]="true"
       [attr.aria-labelledby]="'text-question-' + question.id"
       [(ngModel)]="answer"
       #answerEle
@@ -48,30 +49,44 @@
     <p id="learner-answer" class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
-  <div class="ion-padding">
-    <ion-textarea
-      [attr.aria-label]="'expert\'s answer'"
-      *ngIf="question.canAnswer"
-      class="textarea"
-      rows="4"
-      [(ngModel)]="answer"
-      #answerEle
-      (ionFocus)="onFocus($event)"
-      (ionChange)="onChange('answer')"
-      placeholder="Please put your answer here"
-      [disabled]="control.disabled"></ion-textarea>
+  <div class="ion-no-padding">
+    <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
+      <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
+        <ion-label class="subtitle-2 black" i18n>Your Answer is</ion-label>
+      </ion-list-header>
 
-    <ion-textarea
-      [attr.aria-label]="'expert\'s review feedback'"
-      *ngIf="question.canComment && submission?.answer"
-      class="textarea"
-      [(ngModel)]="comment"
-      #commentEle
-      rows="4"
-      (ionFocus)="onFocus($event)"
-      (ionChange)="onChange('comment')"
-      placeholder="Please put your feedback here"
-      i18n-placeholder
-      [disabled]="control.disabled"></ion-textarea>
+      <ion-textarea
+        [autoGrow]="true"
+        [attr.aria-label]="'expert\'s answer'"
+        *ngIf="question.canAnswer"
+        class="textarea"
+        rows="4"
+        [(ngModel)]="answer"
+        #answerEle
+        (ionFocus)="onFocus($event)"
+        (ionChange)="onChange('answer')"
+        placeholder="Please put your answer here"
+        [disabled]="control.disabled"></ion-textarea>
+    </ion-list>
+
+    <ion-list class="ion-no-padding ion-padding-bottom" *ngIf="question.canComment && submission.answer">
+      <ion-list-header class="ion-no-padding" lines="none">
+        <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
+      </ion-list-header>
+      <ion-textarea
+        [autoGrow]="true"
+        [attr.aria-label]="'expert\'s review feedback'"
+        *ngIf="question.canComment && submission?.answer"
+        class="textarea"
+        [(ngModel)]="comment"
+        #commentEle
+        rows="4"
+        (ionFocus)="onFocus($event)"
+        (ionChange)="onChange('comment')"
+        placeholder="Please put your feedback here"
+        i18n-placeholder
+        [disabled]="control.disabled"></ion-textarea>
+    </ion-list>
+
   </div>
 </ng-container>

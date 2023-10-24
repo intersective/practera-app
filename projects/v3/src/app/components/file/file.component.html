@@ -30,6 +30,7 @@
       <ion-label i18n>Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin textarea white-space-pre"
+      [autoGrow]="true"
       [value]="review.comment"
       [disabled]="true"
     ></ion-textarea>
@@ -84,6 +85,7 @@
       <ion-label i18n>Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin textarea"
+      [autoGrow]="true"
       [attr.aria-label]="'expert\'s review feedback'"
       #commentEle
       [(ngModel)]="comment"
