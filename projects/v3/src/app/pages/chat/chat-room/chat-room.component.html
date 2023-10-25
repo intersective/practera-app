@@ -22,7 +22,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true">
 
   <div *ngIf="loadingChatMessages" class="ion-text-center" aria-label="loading message">
     <ion-spinner></ion-spinner>
