@@ -200,12 +200,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.subscriptions.push(this.content.ionScrollEnd.subscribe((event) => {
+    this.subscriptions.push(this.content.ionScrollEnd.subscribe(_event => {
       this._checkScrollPosition();
     }));
   }
 
-  private async _checkScrollPosition() {
+  /**
+   * @description check scroll position and load more messages if needed
+   * @returns {void}
+   *
+   * @todo [CORE-6119] show auto-scroll to bottom button
+   */
+  private async _checkScrollPosition(): Promise<void> {
     const scrollEl = await this.content.getScrollElement();
     const scrollTop = scrollEl.scrollTop;
 
@@ -215,9 +221,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     this.scrollPosition = ScrollPosition.Middle;
 
     if (scrollTop === 0) {
-      console.log('Reached the top');
-      this._loadMessages();
       this.scrollPosition = ScrollPosition.Top;
+      this._loadMessages();
     } else if (Math.abs(remaining - height) < 1) {
       this.scrollPosition = ScrollPosition.Bottom;
       this._markAsSeen();
