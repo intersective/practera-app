@@ -125,7 +125,8 @@ export class ActivityDesktopPage {
   async topicComplete(task: Task) {
     if (task.status === 'done') {
       // just go to the next task without any other action
-      return this.activityService.goToNextTask(this.activity.tasks, task);
+      this.btnDisabled$.next(false);
+      return this.activityService.goToNextTask(task);
     }
     // mark the topic as complete
     this.loading = true;
@@ -219,7 +220,7 @@ export class ActivityDesktopPage {
   }
 
   nextTask(task: Task) {
-    this.activityService.goToNextTask(this.activity.tasks, task);
+    this.activityService.goToNextTask(task);
   }
 
   async reviewRatingPopUp(): Promise<void> {
