@@ -52,6 +52,9 @@ export class ChatRoomComponent implements OnInit {
 
   selectedAttachments: any[] = [];
 
+  // cosmetic variables
+  isMobile: boolean = false;
+
   constructor(
     private chatService: ChatService,
     private router: Router,
@@ -113,6 +116,8 @@ export class ChatRoomComponent implements OnInit {
         }
       }
     });
+
+    this.isMobile = this.isMobile;
   }
 
   ngOnInit() {
@@ -136,10 +141,10 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private _isValidPusherEvent(pusherData) {
-    if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
+    if (!this.isMobile && (this.router.url !== '/v3/messages')) {
       return false;
     }
-    if (this.utils.isMobile() && (this.router.url !== '/v3/messages/chat-room')) {
+    if (this.isMobile && (this.router.url !== '/v3/messages/chat-room')) {
       return false;
     }
     if (pusherData.channelUuid !== this.channelUuid) {
@@ -149,7 +154,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private _subscribeToTypingEvent() {
-    if (this.utils.isMobile()) {
+    if (this.isMobile) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
@@ -174,6 +179,10 @@ export class ChatRoomComponent implements OnInit {
       channelUuid: data.channelUuid,
       sentAt: data.sentAt
     };
+  }
+
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit', this.content);
   }
 
   private _loadMembers() {
@@ -577,12 +586,7 @@ export class ChatRoomComponent implements OnInit {
     }
     this.whoIsTyping = event.user + ' is typing';
     this._scrollToBottom();
-    setTimeout(
-      () => {
-        this.whoIsTyping = '';
-      },
-      3000
-    );
+    setTimeout(() => { this.whoIsTyping = ''; }, 3000);
   }
 
   private _scrollToBottom() {
@@ -760,7 +764,7 @@ export class ChatRoomComponent implements OnInit {
       info.focus();
     }
 
-    if (!this.utils.isMobile()) {
+    if (!this.isMobile) {
       this.loadInfo.emit(true);
     } else {
       const modal = await this.modalController.create({
