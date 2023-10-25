@@ -3,7 +3,7 @@
     <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-name">
       {{ activity.name }}
     </h1>
-    <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
+    <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
 
     <div class="task-count">
       <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75" i18n>
@@ -18,27 +18,44 @@
     <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
   </div>
 
-  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
+  <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
+    <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
 
-  <app-list-item class="focusable"
+    <ng-container *ngTemplateOutlet="noTasks"></ng-container>
+
+    <app-list-item class="focusable"
+      role="button"
+      tabindex="0"
+      *ngFor="let task of (activity?.tasks || []); let i = index"
+      lines="full"
+      subtitle1Color="grey-50"
+      (click)="goto(task)"
+      (keydown)="goto(task, $event)"
+      [title]="task.name"
+      [subtitle1]="subtitle(task)"
+      [label]="label(task)"
+      [labelColor]="labelColor(task)"
+      [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
+      [leadingIcon]="leadIcon(task)"
+      [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
+      [endingIcon]="endingIcon(task)"
+      [endingIconColor]="endingIconColor(task)"
+    ></app-list-item>
+  </ng-container>
+</ng-container>
+
+<ng-template #notInATeamAndForTeamOnly>
+  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other
+    {Tasks}}</ion-item>
+  <app-list-item
+    class="focusable"
     role="button"
     tabindex="0"
-    *ngFor="let task of (activity?.tasks || []); let i = index"
     lines="full"
     subtitle1Color="grey-50"
-    (click)="goto(task)"
-    (keydown)="goto(task, $event)"
-    [title]="task.name"
-    [subtitle1]="subtitle(task)"
-    [label]="label(task)"
-    [labelColor]="labelColor(task)"
-    [leadingIconPulsing]="assessmentNotSubmitted(task) && task.isDueToday"
-    [leadingIcon]="leadIcon(task)"
-    [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
-    [endingIcon]="endingIcon(task)"
-    [endingIconColor]="endingIconColor(task)"
-  ></app-list-item>
-</ng-container>
+    title="For team members only"></app-list-item>
+</ng-template>
+
 
 <ng-template #noActivity>
   <div *ngIf="!activity" class="ion-padding"
@@ -47,5 +64,16 @@
     <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
     <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
     <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+  </div>
+</ng-template>
+
+<ng-template #noTasks>
+  <div *ngIf="activity?.tasks?.length === 0" class="ion-padding" aria-live="polite" aria-label="no tasks available">
+    <app-list-item
+      lines="none"
+      subtitle1Color="grey-50"
+      title="No tasks available."
+      i18n-title
+      ></app-list-item>
   </div>
 </ng-template>

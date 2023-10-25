@@ -9,6 +9,8 @@ import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { BehaviorSubject } from 'rxjs';
+import { Activity, Task } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-topic',
@@ -17,8 +19,11 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 })
 export class TopicComponent implements OnChanges {
   @Input() topic: Topic;
+  @Input() task: Task;
   continuing: boolean;
   @Output() continue = new EventEmitter();
+  @Input() buttonDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  thisTask
 
   iframeHtml = '' as SafeHtml;
   btnToggleTopicIsDone = false;
@@ -42,14 +47,10 @@ export class TopicComponent implements OnChanges {
       }
       this._initVideoPlayer();
     }
-    // mark topic as started after topic load
-    // this._markAsStartStop('started');
   }
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
-    // mark topic as stopped when leave topic page
-    // this._markAsStartStop('stopped');
   }
 
   private _setVideoUrlElelemts() {

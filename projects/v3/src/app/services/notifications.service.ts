@@ -84,7 +84,7 @@ export class NotificationsService {
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
-  private notifications: TodoItem[];
+  private notifications: TodoItem[] = [];
 
   private connection = {
     informed: false,
@@ -184,7 +184,11 @@ export class NotificationsService {
 
     return modal;
   }
-
+  /**
+   * Displays an alert dialog with the given configuration options.
+   * @param {AlertOptions} config - The options for the alert dialog.
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
@@ -226,7 +230,7 @@ export class NotificationsService {
         });
       }
 
-      return this.presentToast($localize`Submission failed.`, {
+      return this.presentToast($localize`Submission failed. Please try again.`, {
         color: 'danger',
         icon: 'close-circle'
       });
@@ -305,6 +309,7 @@ export class NotificationsService {
    *
    * sample call for activity complete popup
    * NotificationsService.activityCompletePopUp(3);
+   *
    */
   async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
     let cssClass = 'practera-popup activity-complete-popup';
@@ -593,7 +598,7 @@ export class NotificationsService {
    * and after this will update _notifications$ subject to broadcast the new update
    * @param chatTodoItem normalized Todo item for chat
    */
-  private _addChatTodoItem(chatTodoItem) {
+  private _addChatTodoItem(chatTodoItem: TodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
       if (todoItem.type === 'chat') {
@@ -652,17 +657,18 @@ export class NotificationsService {
           this.request.apiResponseFormatError('Pusher notification event meta format error');
           return {};
         }
+        const review = event.meta.AssessmentReview;
         result = {
           type: 'feedback_available',
           name: $localize`New Feedback`,
-          description: $localize`Feedback received from ${event.meta.AssessmentReview.reviewer_name} for ${event.meta.AssessmentReview.assessment_name}`,
-          time: this.utils.timeFormatter(event.meta.AssessmentReview.published_date),
+          description: $localize`Feedback received from ${review.reviewer_name} for ${review.assessment_name}`,
+          time: this.utils.timeFormatter(review.published_date),
           meta: {
-            activity_id: event.meta.AssessmentReview.activity_id,
-            context_id: event.meta.AssessmentReview.context_id,
-            assessment_id: event.meta.AssessmentReview.assessment_id,
-            assessment_name: event.meta.AssessmentReview.assessment_name,
-            reviewer_name: event.meta.AssessmentReview.reviewer_name,
+            activity_id: review.activity_id,
+            context_id: review.context_id,
+            assessment_id: review.assessment_id,
+            assessment_name: review.assessment_name,
+            reviewer_name: review.reviewer_name,
           }
         };
         break;
