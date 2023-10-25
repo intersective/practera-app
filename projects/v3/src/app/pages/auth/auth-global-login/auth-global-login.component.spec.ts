@@ -1,120 +1,74 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
-import { AuthGlobalLoginComponent } from './auth-global-login.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of, throwError } from 'rxjs';
+import { UtilsService } from '@v3/services/utils.service';
 import { AuthService } from '@v3/services/auth.service';
-import { Observable, of, pipe } from 'rxjs';
-import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
+import { AuthRegistrationComponent } from './auth-registration.component';
 
-describe('AuthGlobalLoginComponent', () => {
-  let component: AuthGlobalLoginComponent;
-  let fixture: ComponentFixture<AuthGlobalLoginComponent>;
-  let serviceSpy: jasmine.SpyObj<AuthService>;
-  let routerSpy: jasmine.SpyObj<Router>;
-  let routeSpy: ActivatedRoute;
-  let notificationSpy: jasmine.SpyObj<NotificationsService>;
-  let switcherSpy: jasmine.SpyObj<ExperienceService>;
+describe('AuthRegistrationComponent', () => {
+  let component: AuthRegistrationComponent;
+  let fixture: ComponentFixture<AuthRegistrationComponent>;
+  let mockAuthService, mockUtilsService, mockStorageService, mockNotificationService, mockExperienceService;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [],
-      declarations: [AuthGlobalLoginComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [
-        {
-          provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['globalLogin'])
-        },
-        {
-          provide: ExperienceService,
-          useValue: jasmine.createSpyObj('ExperienceService', ['getMyInfo', 'switchProgram'])
-        },
-        {
-          provide: Router,
-          useValue: {
-            navigate: jasmine.createSpy('navigate')
-          }
-        },
-        {
-          provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({
-                apikey: 'abc'
-              })
-            }
-          }
-        },
+  beforeEach(async () => {
+    mockAuthService = jasmine.createSpyObj(['verifyRegistration', 'checkDomain', 'saveRegistration', 'authenticate']);
+    mockUtilsService = jasmine.createSpyObj(['find']);
+    mockStorageService = jasmine.createSpyObj(['get', 'set', 'remove', 'setUser']);
+    mockNotificationService = jasmine.createSpyObj(['popUp', 'alert']);
+    mockExperienceService = jasmine.createSpyObj(['switchProgram']);
+
+    await TestBed.configureTestingModule({
+      declarations: [AuthRegistrationComponent],
+      imports: [
+        ReactiveFormsModule,
+        RouterTestingModule
       ],
+      providers: [
+        { provide: AuthService, useValue: mockAuthService },
+        { provide: UtilsService, useValue: mockUtilsService },
+        { provide: BrowserStorageService, useValue: mockStorageService },
+        { provide: NotificationsService, useValue: mockNotificationService },
+        { provide: ExperienceService, useValue: mockExperienceService }
+      ]
     })
       .compileComponents();
-  }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AuthGlobalLoginComponent);
+    fixture = TestBed.createComponent(AuthRegistrationComponent);
     component = fixture.componentInstance;
-    serviceSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-    routeSpy = TestBed.inject(ActivatedRoute);
-    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
-    switcherSpy = TestBed.inject(ExperienceService) as jasmine.SpyObj<ExperienceService>;
+    fixture.detectChanges();
   });
 
-  beforeEach(() => {
-    serviceSpy.globalLogin.and.returnValue(of({}));
-    switcherSpy.getMyInfo.and.returnValue(of({}));
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
 
-  describe('when testing ngOnInit()', () => {
-    it('should pop up alert if apikey is not provided', fakeAsync(() => {
-      const params = { apikey: null };
-      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      tick(50);
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(notificationSpy.alert.calls.count()).toBe(1);
-      });
-      flushMicrotasks();
-    }));
+  it('should initialize the form', () => {
+    component.initForm();
+    expect(component.registerationForm).toBeDefined();
+    expect(component.registerationForm.get('email').value).toEqual('');
+  });
 
-    it('should pop up alert if direct login service throw error', fakeAsync(() => {
-      const params = { apikey: 'abc' };
-      routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      serviceSpy.globalLogin.and.throwError('');
-      fixture.detectChanges();
-      tick(50);
-      fixture.detectChanges();
+  it('should validate query parameters', () => {
+    mockAuthService.verifyRegistration.and.returnValue(of(true));
+    mockAuthService.checkDomain.and.returnValue(of(true));
 
-      fixture.whenStable().then(() => {
-        expect(notificationSpy.alert.calls.count()).toBe(1);
-        const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-        (typeof button == 'string') ? button : button.handler(true);
-        expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
-      });
-    }));
+    component.validateQueryParams();
 
-    describe('should navigate to', () => {
-      const params = {
-        apikey: 'abc'
-      };
-      let tmpParams;
-      beforeEach(() => {
-        tmpParams = JSON.parse(JSON.stringify(params));
-      });
-      afterEach(fakeAsync(() => {
-        routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => tmpParams[key]);
-        fixture.detectChanges();
-        tick(50);
-        fixture.detectChanges();
-        expect(serviceSpy.globalLogin.calls.count()).toBe(1);
-        expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
-      }));
-    });
+    expect(mockAuthService.verifyRegistration).toHaveBeenCalled();
+    expect(mockAuthService.checkDomain).toHaveBeenCalled();
+  });
+
+  it('should register the user', () => {
+    mockAuthService.saveRegistration.and.returnValue(of(true));
+    mockAuthService.authenticate.and.returnValue(of(true));
+
+    component.register();
+
+    expect(mockAuthService.saveRegistration).toHaveBeenCalled();
+    expect(mockAuthService.authenticate).toHaveBeenCalled();
   });
 });
-
