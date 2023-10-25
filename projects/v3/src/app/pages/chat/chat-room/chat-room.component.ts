@@ -256,6 +256,8 @@ export class ChatRoomComponent implements OnInit {
     if (this.sendingMessage) {
       return;
     }
+
+    this._scrollToBottom();
     if (this.selectedAttachments.length > 0) {
       this.postAttachment();
     } else {
@@ -565,9 +567,6 @@ export class ChatRoomComponent implements OnInit {
    * Trigger typing event when user is typing
    */
   typing() {
-    if (!this.utils.isEmpty(this.typingMessage)) {
-      this._scrollToBottom();
-    }
     this.pusherService.triggerTyping(this.chatChannel.pusherChannel);
   }
 
