@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
@@ -10,13 +10,21 @@ import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } 
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
+import { Subscription } from 'rxjs';
+
+
+enum ScrollPosition {
+  Top = 'top',
+  Bottom = 'bottom',
+  Middle = 'middle'
+}
 
 @Component({
   selector: 'app-chat-room',
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
-export class ChatRoomComponent implements OnInit {
+export class ChatRoomComponent implements OnInit, OnDestroy {
   @ViewChild(IonContent) content: IonContent;
   @Input() chatChannel?: ChatChannel = {
     uuid: '',
@@ -51,6 +59,13 @@ export class ChatRoomComponent implements OnInit {
   videoHandles = [];
 
   selectedAttachments: any[] = [];
+
+  subscriptions: Subscription[] = []; // collection of all subscriptions, made easy for unsubscribe all at once
+
+  // cosmetic variables
+  isMobile: boolean = false;
+
+  scrollPosition: ScrollPosition = ScrollPosition.Top;
 
   constructor(
     private chatService: ChatService,
@@ -87,8 +102,10 @@ export class ChatRoomComponent implements OnInit {
         }
         if (!this.utils.isEmpty(receivedMessage)) {
           this.messageList.push(receivedMessage);
-          this._markAsSeen();
-          this._scrollToBottom();
+          if (this.scrollPosition === ScrollPosition.Bottom) {
+            this._markAsSeen();
+            this._scrollToBottom();
+          }
         }
       }
     });
@@ -113,6 +130,8 @@ export class ChatRoomComponent implements OnInit {
         }
       }
     });
+
+    this.isMobile = this.isMobile;
   }
 
   ngOnInit() {
@@ -123,6 +142,10 @@ export class ChatRoomComponent implements OnInit {
       this._loadMembers();
       this._scrollToBottom();
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
 
   private _initialise() {
@@ -136,10 +159,10 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private _isValidPusherEvent(pusherData) {
-    if (!this.utils.isMobile() && (this.router.url !== '/v3/messages')) {
+    if (!this.isMobile && (this.router.url !== '/v3/messages')) {
       return false;
     }
-    if (this.utils.isMobile() && (this.router.url !== '/v3/messages/chat-room')) {
+    if (this.isMobile && (this.router.url !== '/v3/messages/chat-room')) {
       return false;
     }
     if (pusherData.channelUuid !== this.channelUuid) {
@@ -149,7 +172,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   private _subscribeToTypingEvent() {
-    if (this.utils.isMobile()) {
+    if (this.isMobile) {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
@@ -174,6 +197,40 @@ export class ChatRoomComponent implements OnInit {
       channelUuid: data.channelUuid,
       sentAt: data.sentAt
     };
+  }
+
+  ngAfterViewInit() {
+    this.subscriptions.push(this.content.ionScrollEnd.subscribe(_event => {
+      this._checkScrollPosition();
+    }));
+  }
+
+  /**
+   * @description check scroll position and load more messages if needed
+   * @returns {void}
+   *
+   * @todo [CORE-6119] show auto-scroll to bottom button
+   */
+  private async _checkScrollPosition(): Promise<void> {
+    const scrollEl = await this.content.getScrollElement();
+    const scrollTop = scrollEl.scrollTop;
+
+    const remaining = scrollEl.scrollHeight - scrollEl.scrollTop;
+    const height = scrollEl.clientHeight;
+
+    this.scrollPosition = ScrollPosition.Middle;
+
+    if (scrollTop === 0) {
+      this.scrollPosition = ScrollPosition.Top;
+      this._loadMessages();
+    } else if (Math.abs(remaining - height) < 1) {
+      this.scrollPosition = ScrollPosition.Bottom;
+      this._markAsSeen();
+    }
+
+    // @TODO: [CORE-6119] show auto-scroll to bottom button
+    // if (this.scrollPosition !== ScrollPosition.Bottom) {
+    // }
   }
 
   private _loadMembers() {
@@ -241,13 +298,6 @@ export class ChatRoomComponent implements OnInit {
     );
   }
 
-  loadMoreMessages(event) {
-    const scrollTopPosition = event.detail.scrollTop;
-    if (scrollTopPosition === 0) {
-      this._loadMessages();
-    }
-  }
-
   back() {
     return this.ngZone.run(() => this.router.navigate(['v3', 'messages']));
   }
@@ -256,6 +306,8 @@ export class ChatRoomComponent implements OnInit {
     if (this.sendingMessage) {
       return;
     }
+
+    this._scrollToBottom();
     if (this.selectedAttachments.length > 0) {
       this.postAttachment();
     } else {
@@ -408,6 +460,10 @@ export class ChatRoomComponent implements OnInit {
 
   // call chat api to mark message as seen messages
   private _markAsSeen() {
+    if (this.messageList.length === 0) {
+      return;
+    }
+
     const messageIds = this.messageList.map(m => m.uuid);
     this.chatService
       .markMessagesAsSeen(messageIds)
@@ -556,18 +612,14 @@ export class ChatRoomComponent implements OnInit {
       (currentMessageTime.getTime() - oldMessageTime.getTime()) / (60 * 1000);
     if (timeDiff > 5) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   /**
    * Trigger typing event when user is typing
    */
   typing() {
-    if (!this.utils.isEmpty(this.typingMessage)) {
-      this._scrollToBottom();
-    }
     this.pusherService.triggerTyping(this.chatChannel.pusherChannel);
   }
 
@@ -577,16 +629,11 @@ export class ChatRoomComponent implements OnInit {
       return;
     }
     this.whoIsTyping = event.user + ' is typing';
-    this._scrollToBottom();
-    setTimeout(
-      () => {
-        this.whoIsTyping = '';
-      },
-      3000
-    );
+    setTimeout(() => { this.whoIsTyping = ''; }, 3000);
   }
 
   private _scrollToBottom() {
+    this._markAsSeen();
     setTimeout(() => this.content.scrollToBottom(), 500);
   }
 
@@ -761,7 +808,7 @@ export class ChatRoomComponent implements OnInit {
       info.focus();
     }
 
-    if (!this.utils.isMobile()) {
+    if (!this.isMobile) {
       this.loadInfo.emit(true);
     } else {
       const modal = await this.modalController.create({

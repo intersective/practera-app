@@ -17,14 +17,15 @@ export class ChatViewComponent implements OnInit {
 
   @ViewChild('chatList') chatList;
   @ViewChild('chatRoom') chatRoom;
+  isMobile: boolean = false;
 
   constructor(
-    public router: Router,
     private route: ActivatedRoute,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private sharedService: SharedService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
@@ -71,7 +72,7 @@ export class ChatViewComponent implements OnInit {
     this.desktopGoto(chats[0]);
   }
 
-  loadchannelInfo(event) {
+  loadchannelInfo(_event) {
     this.loadInfo = true;
   }
 
