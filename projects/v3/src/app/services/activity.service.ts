@@ -194,7 +194,7 @@ export class ActivityService {
     this._activity$.next(result);
     this.activity = result;
     if (goToNextTask) {
-      this.goToNextTask(result.tasks, afterTask);
+      this.goToNextTask(afterTask);
     }
     return result;
   }
@@ -205,15 +205,11 @@ export class ActivityService {
    * @param tasks The list of tasks
    * @param afterTask Find the next task after this task
    */
-  goToNextTask(tasks?: Task[], afterTask?: Task) {
-    if (!tasks) {
-      tasks = this.activity.tasks;
-    }
-    // find the first task that is not done or pending review
-    // and is allowed to access for this user
-    let skipTask = !!afterTask;
+  calculateNextTask(tasks: Task[], afterTask?: Task) {
+    // find the first accessible task that is not "done" or "pending review"
+    let skipTask: boolean = !!afterTask;
     let nextTask: Task;
-    let hasUnfinishedTask = false;
+    let hasUnfinishedTask = false; // check if there is any unfinished task
     for (const task of tasks) {
       // if we need to find the first task after a specific task,
       // loop through the tasks array until we find this specific task
@@ -222,20 +218,25 @@ export class ActivityService {
           skipTask = false;
         }
         if (!['done', 'pending review'].includes(task.status)) {
+          // flag to popup ActivityCompletePopUpComponent modal whenever
+          // there is any unfinished task
           hasUnfinishedTask = true;
         }
         continue;
       }
 
-      if ( task.type !== 'Locked' &&
-        !(task.isForTeam && !this.storage.getUser().teamId) &&
-        !(task.assessmentType === 'team360' && !this.storage.getUser().teamId) &&
-        !task.isLocked ) {
+      // if the accessible task is not locked (individual assessment)
+      if (
+        task.type !== 'Locked' && !task.isLocked && // not locked
+        !(task.isForTeam && !this.storage.getUser().teamId) && // not a team assessment
+        !(task.assessmentType === 'team360' && !this.storage.getUser().teamId) // not a team 360 assessment
+      ) {
         // get the next task after a specific task
         if (afterTask) {
           nextTask = task;
           break;
         }
+
         // find the first unfinished task
         if (!['done', 'pending review'].includes(task.status)) {
           nextTask = task;
@@ -249,9 +250,16 @@ export class ActivityService {
       if (afterTask) {
         return this._activityCompleted(hasUnfinishedTask);
       }
-      nextTask = tasks[0];
+      nextTask = tasks[0]; // go to the first task
     }
     this.goToTask(nextTask);
+  }
+
+  // obtain latest activity to decide next task
+  goToNextTask(afterTask?: Task) {
+    return this.getActivity(this._activity$.getValue().id, false, null, (res: Activity) => {
+      return this.calculateNextTask(res.tasks, afterTask);
+    });
   }
 
   private _activityCompleted(showPopup: boolean) {
@@ -261,6 +269,7 @@ export class ActivityService {
       this.utils.redirectToUrl(referrer.activityTaskUrl);
       return ;
     }
+
     if (showPopup) {
       // pop up activity completed modal
       return this.notification.activityCompletePopUp(this.activity.id, false);
@@ -279,7 +288,13 @@ export class ActivityService {
     switch (task.type) {
       case 'Assessment':
         if (this.utils.isMobile()) {
-          return this.router.navigate(['assessment-mobile', 'assessment', this.activity.id, task.contextId, task.id]);
+          return this.router.navigate([
+            'assessment-mobile',
+            'assessment',
+            this.activity.id,
+            task.contextId,
+            task.id
+          ]);
         }
         return this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
       case 'Topic':
