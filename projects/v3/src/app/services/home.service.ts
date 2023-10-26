@@ -7,7 +7,7 @@ import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { SharedService } from './shared.service';
-import { ActivityService, TaskBase } from './activity.service';
+import { ActivityBase, ActivityService, Task, TaskBase } from './activity.service';
 
 export interface Experience {
   leadImage: string;
@@ -185,29 +185,5 @@ export class HomeService {
     }
     this._projectProgress$.next(data.data.project);
     this._experienceProgress$.next(Math.round(data.data.project.progress * 100));
-  }
-
-  /**
-   * @name isAccessible
-   * @description check if the activity is accessible by current
-   *    user (team or individual assessment).
-   *    When milestone contain only team assessment, only participant from a team
-   *    can access the activities.
-   *
-   * @param   {number<boolean>}   activityId
-   *
-   * @return  {Promise<boolean>}  false when inaccessible, otherwise true
-   */
-  async isAccessible(activityId: number): Promise<boolean> {
-    const teamStatus = await this.sharedServise.getTeamInfo().toPromise();
-    if (teamStatus?.data?.user?.teams.length > 0) {
-      return true;
-    }
-
-    const activitiesBase = await this.activityService.getActivityBase(activityId).toPromise();
-    const nonTeamAsmt = (activitiesBase?.data?.activity?.tasks || [])
-      .filter((task: TaskBase) => task.isTeam !== true);
-
-    return nonTeamAsmt.length > 0;
   }
 }
