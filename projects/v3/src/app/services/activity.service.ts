@@ -193,6 +193,7 @@ export class ActivityService {
           };
       }
     });
+
     this._activity$.next(result);
     this.activity = result;
     if (goToNextTask) {
@@ -250,6 +251,12 @@ export class ActivityService {
     // if there is no next task
     if (this.utils.isEmpty(nextTask)) {
       if (afterTask) {
+        this.assessment.getAssessment(
+          afterTask.id,
+          'assessment',
+          this.activity.id,
+          afterTask.contextId
+        );
         return this._activityCompleted(hasUnfinishedTask);
       }
       nextTask = tasks[0]; // go to the first task
