@@ -131,7 +131,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.isMobile = this.isMobile;
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
