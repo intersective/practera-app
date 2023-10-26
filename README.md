@@ -151,5 +151,16 @@ Other variables that need to be passed to the codebuild project are:
 * CUSTOM_FILESTACK_VIRUS_DETECTION - the filestack virus detection policy
 * CUSTOM_FILESTACK_KEY - the filestack key
 
+### Custom Headers
+
+App make API request with headers below, make sure API server has those custom headers allowed with OPTIONS method.
+
+* apikey
+* appkey
+* service
+* content-type
+* teamid
+* timelineid
+* authorization
 
 ###Read More [Documentation](./docs/docs.md)

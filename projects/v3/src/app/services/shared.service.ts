@@ -2,17 +2,23 @@ import { Injectable } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
-import { RequestService } from 'request';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
+import { AchievementService } from './achievement.service';
+import { RequestService } from 'request';
 
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
 const api = {
   get: {
-    teams: 'api/teams.json',
+    jwt: 'api/v2/users/jwt/refresh.json'
   }
 };
 
@@ -23,15 +29,19 @@ export class SharedService {
   private achievementEvent;
   private memoryCache = {};
 
+  private _team$ = new BehaviorSubject<any>(null);
+  public team$ = this._team$.asObservable();
+
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private notification: NotificationsService,
-    private request: RequestService,
     private http: HttpClient,
+    private requestService: RequestService,
     private topicService: TopicService,
     private apolloService: ApolloService,
-    private pusherService: PusherService
+    private pusherService: PusherService,
+    private achievementService: AchievementService,
   ) { }
 
   // call this function on every page refresh and after switch program
@@ -68,6 +78,7 @@ export class SharedService {
             points,
             image: badge
           });
+          this.achievementService.getAchievements();
         }
       });
     }
@@ -91,9 +102,15 @@ export class SharedService {
           }
         }
       }`
-    ).pipe(map(response => {
+    ).pipe(map(async response => {
       if (response?.data?.user) {
         const thisUser = response.data.user;
+        const newTeamId = thisUser.teams.length > 0 ? thisUser.teams[0].id : null;
+
+        // get latest JWT if teamId changed
+        if (this.storage.getUser().teamId !== newTeamId) {
+          await this.refreshJWT();
+        }
 
         if (!this.utils.has(thisUser, 'teams') ||
           !Array.isArray(thisUser.teams) ||
@@ -173,7 +190,7 @@ export class SharedService {
   markTopicStopOnNavigating() {
     if (this.storage.get('startReadTopic')) {
       this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
-        response => {
+        _response => {
           this.storage.remove('startReadTopic');
         },
         err => {
@@ -193,4 +210,35 @@ export class SharedService {
     this.utils.checkIsPracteraSupportEmail();
   }
 
+  getNewJwt() {
+    return this.requestService.get(api.get.jwt);
+  }
+
+  /**
+   * @name refreshJWT
+   * @description refresh JWT token, update teamId in storage, broadcast teamId
+   *
+   * @return  {Promise<any>} non-strict return value, we won't use
+   */
+  async refreshJWT(): Promise<any> {
+    const res: {
+      apikey: string;
+      data?: {
+        apikey: string;
+        token?: {
+          team_id?: number;
+          teams: any[];
+        };
+      }
+    } = await this.getNewJwt().toPromise();
+
+    const token = res?.data?.token;
+    const teamId = this.storage.getUser().teamId;
+    if (teamId !== token?.team_id) {
+      const team = { teamId: token.team_id };
+      this.storage.setUser(team);
+      this._team$.next(team);
+    }
+    return res;
+  }
 }
