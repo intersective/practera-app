@@ -197,14 +197,14 @@ export class ActivityDesktopPage {
     }
   }
 
-  async readFeedback(submissionId, task: Task) {
+  async readFeedback(submissionId, currentTask: Task) {
     try {
       this.loading = true;
       const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
       await savedReview.pipe(
         // get the latest activity tasks and navigate to the next task
         // wait for a while for the server to save the "read feedback" status
-        tap(() => this.activityService.getActivity(this.activity.id, true, task)),
+        tap(() => this.activityService.getActivity(this.activity.id, true, currentTask)),
         delay(400)
       ).toPromise();
       await this.reviewRatingPopUp();
