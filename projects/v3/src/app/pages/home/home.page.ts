@@ -16,7 +16,7 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
   experience$ = this.homeService.experience$;
@@ -86,6 +86,10 @@ export class HomePage implements OnInit {
     );
   }
 
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
+  
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.homeService.getMilestones();

@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - 'golive/2*'
+      - 'prerelease-legacy'
 
 
 ################################################
