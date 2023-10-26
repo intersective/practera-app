@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task } from '@v3/app/services/activity.service';
 import { TopicService, Topic } from '@v3/app/services/topic.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-topic-mobile',
@@ -10,10 +11,11 @@ import { TopicService, Topic } from '@v3/app/services/topic.service';
 })
 export class TopicMobilePage implements OnInit {
   topic$ = this.topicService.topic$;
+  btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   topic: Topic;
   activityId: number;
-  currentTask: Task
+  currentTask: Task;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,6 +34,7 @@ export class TopicMobilePage implements OnInit {
   }
 
   async continue() {
+    this.btnDisabled$.next(true);
     if (!this.currentTask) {
       this.currentTask = {
         id: this.topic.id,
@@ -40,16 +43,20 @@ export class TopicMobilePage implements OnInit {
         status: ''
       };
     }
+
     if (this.currentTask.status === 'done') {
       // just go to the next task without any other action
-      await this.activityService.goToNextTask(this.currentTask);
-      // this.btnDisabled$.next(false); - conflicts from [CORE-6106]
+      this.activityService.goToNextTask(this.currentTask);
+      this.btnDisabled$.next(false);
       return;
     }
+
     // mark the topic as completer
-    await this.topicService.updateTopicProgress(this.topic.id, 'completed').subscribe();
+    await this.topicService.updateTopicProgress(this.topic.id, 'completed').toPromise();
     // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activityId, true, this.currentTask);
+    return this.activityService.getActivity(this.activityId, true, this.currentTask, () => {
+      this.btnDisabled$.next(false);
+    });
   }
 
   goBack() {

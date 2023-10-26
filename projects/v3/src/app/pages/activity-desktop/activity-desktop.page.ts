@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { delay, filter, tap } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -28,6 +28,7 @@ export class ActivityDesktopPage {
   loading: boolean;
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  notInATeamAndForTeamOnly: boolean = false;
 
   // grabs from URL parameter
   urlParams = {
@@ -49,7 +50,11 @@ export class ActivityDesktopPage {
 
   ionViewWillEnter() {
     this.subscriptions.push(
-      this.activityService.activity$.subscribe(res => this.activity = res)
+      this.activityService.activity$
+      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
+      .subscribe(res => {
+        this.activity = res;
+      })
     );
     this.subscriptions.push(
       this.activityService.currentTask$.subscribe(res => this.currentTask = res)
@@ -105,6 +110,11 @@ export class ActivityDesktopPage {
     }));
   }
 
+  ionViewWillLeave() {
+    this.currentTask = null;
+    this.topicService.clearTopic();
+  }
+
   ionViewDidLeave() {
     this.subscriptions.forEach(sub => {
       if (sub.closed !== true) {
@@ -114,6 +124,7 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
+    this.currentTask = null;
     const taskContentElement = this.document.getElementById('task-content');
     if (taskContentElement) {
       taskContentElement.focus();
@@ -123,6 +134,7 @@ export class ActivityDesktopPage {
   }
 
   async topicComplete(task: Task) {
+    this.btnDisabled$.next(true);
     if (task.status === 'done') {
       // just go to the next task without any other action
       this.btnDisabled$.next(false);
@@ -131,9 +143,11 @@ export class ActivityDesktopPage {
     // mark the topic as complete
     this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
+
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activity.id, true, task, () => {
       this.loading = false;
+      this.btnDisabled$.next(false);
     });
   }
 
@@ -233,6 +247,12 @@ export class ActivityDesktopPage {
   }
 
   goBack() {
+    this.currentTask = null;
+    this.topicService.clearTopic();
     this.router.navigate(['v3', 'home']);
+  }
+
+  allTeamTasks(forTeamOnlyWarning: boolean) {
+    this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
   }
 }
