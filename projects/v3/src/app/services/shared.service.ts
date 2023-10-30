@@ -15,7 +15,6 @@ import { AchievementService } from './achievement.service';
 })
 export class SharedService {
   private achievementEvent;
-  private memoryCache = {};
 
   constructor(
     private utils: UtilsService,
