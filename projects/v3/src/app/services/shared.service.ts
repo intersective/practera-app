@@ -27,7 +27,6 @@ const api = {
 })
 export class SharedService {
   private achievementEvent;
-  private memoryCache = {};
 
   private _team$ = new BehaviorSubject<any>(null);
   public team$ = this._team$.asObservable();
