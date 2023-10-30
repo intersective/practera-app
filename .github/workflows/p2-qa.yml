@@ -1,7 +1,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Deploy to p2-aus live environment
+name: Deploy to p2-qa environment
 
 
 ################################################
@@ -9,20 +9,18 @@ name: Deploy to p2-aus live environment
 ################################################
 on:
   workflow_dispatch:
-    inputs:
-      BRANCH_TAG_NAME:
-        description: 'New tag version based on create-release-tag workflow'
-        required: true
-        default: ''
+  push:
+    branches: [ 'stable' ]
+
 
 ################################################
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  deploy-p2-aus-live:
-    name: deploy-p2-aus-live
+  deploy-p2-qa:
+    name: deploy-p2-qa
     runs-on: ubuntu-latest
-    environment: p2-aus
+    environment: p2-qa
     timeout-minutes: 15
 
 
@@ -30,21 +28,21 @@ jobs:
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
 ################################################
     env:
-      REGION : ap-southeast-2
-      ENV : live # Valid values are dev,test,live only
-      STACK_NAME: p2-aus # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
+      REGION : us-east-2
+      ENV : qa # Valid values are dev,test,live only
+      STACK_NAME: p2-qa # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
       ROOTSTACK: app-v2
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
-      PUBLICZONENAME: aus.practera.com
-      APPPUBLICZONENAME: aus.practera.app
+      PUBLICZONENAME: p2-qa.practera.com
+      APPPUBLICZONENAME: p2-qa.practera.app
       BUILD_CONFIG: custom
       STATUSREPORTS3Bucket: deployment-status.practera.com
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app-old.aus.practera.com
-      BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+      ENDPOINT: app.p2-qa.practera.com
+      BRANCH_TAG_NAME: stable
 
 
 
@@ -55,8 +53,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
-
+          
 
 
 ################################################
@@ -134,13 +131,13 @@ jobs:
           echo "::add-mask::$SLACK_WEBHOOK_URL"
           echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
     
-          echo "Enable P2 AUS ACCOUNT CLI Login"
-          P2_AUS_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_AUS_AWS_ACCESS_KEY_ID)
-          P2_AUS_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_AUS_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$P2_AUS_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$P2_AUS_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=P2_AUS_AWS_ACCESS_KEY_ID::$P2_AUS_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=P2_AUS_AWS_SECRET_ACCESS_KEY::$P2_AUS_AWS_SECRET_ACCESS_KEY"
+          echo "Enable P2 QA ACCOUNT CLI Login"
+          P2_QA_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_QA_AWS_ACCESS_KEY_ID)
+          P2_QA_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_QA_AWS_SECRET_ACCESS_KEY)
+          echo "::add-mask::$P2_QA_AWS_ACCESS_KEY_ID"
+          echo "::add-mask::$P2_QA_AWS_SECRET_ACCESS_KEY"
+          echo "::set-output name=P2_QA_AWS_ACCESS_KEY_ID::$P2_QA_AWS_ACCESS_KEY_ID"
+          echo "::set-output name=P2_QA_AWS_SECRET_ACCESS_KEY::$P2_QA_AWS_SECRET_ACCESS_KEY"
         
         env:  #TODO: Update once manually to new stack accordingly
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
@@ -148,17 +145,17 @@ jobs:
 
 
 ##########################################################
-#  AWS P2 AUS ACCOUNT STEPS BELOW
+#  AWS P2 QA ACCOUNT STEPS BELOW
 ##########################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_AUS_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_AUS_AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_QA_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_QA_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{env.REGION}}
         env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_AUS_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_AUS_AWS_SECRET_ACCESS_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_QA_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_QA_AWS_SECRET_ACCESS_KEY }}
 
 
 ###############################################################
@@ -188,23 +185,21 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
           
         env:
-          CUSTOM_PATH_IMAGE: /appv2/live/images/
-          CUSTOM_PATH_VIDEO: /appv2/live/videos/
+          CUSTOM_PATH_IMAGE: /appv2/test/images/
+          CUSTOM_PATH_VIDEO: /appv2/test/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_API_ENDPOINT: https://${{ env.PUBLICZONENAME }}/
+          CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://login.practera.com 
-          CUSTOM_COUNTRY: AUS #TODO CHECK
+          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com 
+          CUSTOM_COUNTRY: US #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
-          CUSTOM_PATH_ANY: /appv2/live/any/
+          CUSTOM_PATH_ANY: /appv2/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
-          CUSTOM_LOGIN_API_URL: https://login-api.practera.com
+          CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: false
-          CUSTOM_APPV3_URL: https://appv3.${{ env.PUBLICZONENAME }}
-          CUSTOM_SWITCH_APP3: true
 
 
 ###############################################################
@@ -247,7 +242,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
+          APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: false
           S3VERSIONING: true 
@@ -290,7 +285,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: deploy-p2-aus-live # Match the name above.
+          job_name: deploy-p2-qa # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
@@ -336,4 +331,3 @@ jobs:
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
           echo $REASON
           echo $REQUESTOR
-
