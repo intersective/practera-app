@@ -3,6 +3,7 @@ import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -65,6 +66,18 @@ interface ExperienceConfig {
   logo: string;
 }
 
+interface AuthEndpoint {
+  data: {
+    auth: {
+      apikey: string;
+      experience: object;
+      email?: string;
+      unregistered: boolean;
+      activationCode?: string;
+    }
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -86,14 +99,7 @@ export class AuthService {
     service?: string;
     // needed when switching program (inform server the latest selected experience)
     experienceUuid?: string;
-  }): Observable<{
-    data: {
-      auth: {
-        apikey: string;
-        experience: object;
-      }
-    }
-  }> {
+  }): Observable<AuthEndpoint> {
     const options: {
       variables?: {
         authToken?: string;
@@ -165,6 +171,19 @@ export class AuthService {
         }
       }`,
       options
+    ).pipe(
+      tap((res: AuthEndpoint)=> {
+        if (res?.data?.auth?.unregistered === true) {
+          // [CORE-6011] trusting API returns email and activationCode
+          const { email, activationCode } = res.data.auth;
+          return this.logout({}, [
+            'auth',
+            'registration',
+            email,
+            activationCode
+          ]);
+        }
+      })
     );
   }
 
@@ -235,7 +254,7 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  logout(navigationParams = {}, redirect = true) {
+  logout(navigationParams = {}, redirect: boolean | string[] = true) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().colors);
     this.pusherService.unsubscribeChannels();
@@ -246,7 +265,9 @@ export class AuthService {
     // still store config info even logout
     this.storage.setConfig(config);
 
-    if (redirect) {
+    if (typeof redirect === 'object') {
+      return this.router.navigate(redirect);
+    } else if (typeof redirect === 'boolean' && redirect === true) {
       return this.router.navigate(['/'], navigationParams);
     }
   }
