@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -168,21 +167,29 @@ export class AuthService {
             reviewRating
             truncateDescription
           }
+          email
+          unregistered
+          activationCode
         }
       }`,
       options
     ).pipe(
-      tap((res: AuthEndpoint)=> {
+      map((res: AuthEndpoint)=> {
         if (res?.data?.auth?.unregistered === true) {
           // [CORE-6011] trusting API returns email and activationCode
           const { email, activationCode } = res.data.auth;
-          return this.logout({}, [
-            'auth',
-            'registration',
-            email,
-            activationCode
-          ]);
+          throw {
+            data: {
+              user: {
+                email,
+                key: activationCode
+              },
+              message: 'User is not registered'
+            },
+            status: 'forbidden',
+          };
         }
+        return res;
       })
     );
   }
@@ -261,13 +268,13 @@ export class AuthService {
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
 
-    this.storage.clear();
-    // still store config info even logout
-    this.storage.setConfig(config);
 
+    this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
     } else if (typeof redirect === 'boolean' && redirect === true) {
+      // still store config info even logout
+      this.storage.setConfig(config);
       return this.router.navigate(['/'], navigationParams);
     }
   }
