@@ -100,7 +100,9 @@ export class ActivityService {
         }
       }`,
       {
-        id: +activityId
+        variables: {
+          id: +activityId
+        }
       }
     );
   }
