@@ -117,17 +117,6 @@
       </ion-label>
     </ion-item>
 
-    <ng-container *ngIf="whoIsTyping">
-      <ion-item color="light">
-        <ion-label class="received-messages no-avatar" color="medium">
-          <p class="message-typing">
-            <i>{{ whoIsTyping }}</i>
-            <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
-          </p>
-        </ion-label>
-      </ion-item>
-    </ng-container>
-
     <ng-container *ngIf="sendingMessage">
       <ion-item color="light">
         <div class="message-sending-loading">
@@ -136,8 +125,30 @@
       </ion-item>
     </ng-container>
   </ion-list>
+
+  <ng-container *ngIf="hasUnreadMessages">
+    <ion-fab class="scroll-to-bottom" vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="autoScrollToBottom()">
+        <ion-icon name="arrow-down"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  </ng-container>
 </ion-content>
+
 <ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}">
+  <div *ngIf="whoIsTyping" style="position: absolute;
+    z-index: 9999;
+    top: -2em;
+    margin: 0 1em;
+    width: 100%;">
+    <ion-label class="received-messages no-avatar" color="medium">
+      <p class="message-typing">
+        <i>{{ whoIsTyping }}</i>
+        <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
+      </p>
+    </ion-label>
+  </div>
+
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
       <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
