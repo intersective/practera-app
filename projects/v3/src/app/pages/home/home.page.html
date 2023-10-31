@@ -20,7 +20,7 @@
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
-          <ng-container *ngIf="(experience$ | async) as experience">
+          <ng-container *ngIf="experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
             <ion-progress-bar
               *ngIf="experienceProgress >= 0"
@@ -113,7 +113,7 @@
 
 <ng-template #badgePoints>
   <h3 class="for-accessibility" i18n>Badges awarded</h3>
-  <div *ngIf="!achievements.length" class="ion-text-center no-achievement">
+  <div *ngIf="achievements.length === 0" class="ion-text-center no-achievement">
     <h1 class="for-accessibility" [attr.aria-describedby]="'nobadges'"></h1>
     <ion-icon class="large-icon" color="primary" name="ribbon-outline" alt="empty badge indicator"></ion-icon>
     <p id="nobadges" class="body-1" aria-live="polite" i18n>You have no badges yet!</p>

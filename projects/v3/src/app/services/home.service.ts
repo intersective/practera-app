@@ -78,23 +78,14 @@ export class HomeService {
     ]);
   }
 
-  getExperience() {
+  getExperience(apikey: string) {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.apolloService.graphQLFetch(`
-      query experience {
-        experience{
-          locale
-          name
-          description
-          leadImage
-        }
-      }`,
-    ).pipe(
+    return this.authService.authenticate({ apikey }).pipe(
       tap(async res => {
-        if (res?.data?.experience === null) {
+        if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
             header: 'Unable to access experience',
             message: 'Please re-login and try again later',
@@ -176,7 +167,9 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+    ).pipe(
+      map(res => this._handleProjectProgress(res)),
+    ).subscribe();
   }
 
   private _handleProjectProgress(data) {
