@@ -10,7 +10,8 @@ import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } 
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 
 enum ScrollPosition {
@@ -64,8 +65,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   // cosmetic variables
   isMobile: boolean = false;
+  hasUnreadMessages: boolean = false;
 
+  private scrollSubject = new Subject<void>();
   scrollPosition: ScrollPosition = ScrollPosition.Top;
+
 
   constructor(
     private chatService: ChatService,
@@ -103,12 +107,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         if (!this.utils.isEmpty(receivedMessage)) {
           this.messageList.push(receivedMessage);
           if (this.scrollPosition === ScrollPosition.Bottom) {
-            this._markAsSeen();
             this._scrollToBottom();
+          } else {
+            this.hasUnreadMessages = true;
           }
         }
       }
     });
+
     this.utils.getEvent('chat:delete-message').subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const deletedMessageIndex = this.messageList.findIndex(message => {
@@ -119,6 +125,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         }
       }
     });
+
     this.utils.getEvent('chat:edit-message').subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const receivedMessage = this.getMessageFromEvent(event);
@@ -129,6 +136,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           this.messageList[editedMessageIndex] = receivedMessage;
         }
       }
+    });
+
+    this.scrollSubject.pipe(
+      debounceTime(300) // debounce, so it won't scroll if button is rapidly clicked multiple times
+    ).subscribe(() => {
+      this.content.scrollToBottom(300);
     });
 
     this.isMobile = this.utils.isMobile();
@@ -227,10 +240,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.scrollPosition = ScrollPosition.Bottom;
       this._markAsSeen();
     }
+  }
 
-    // @TODO: [CORE-6119] show auto-scroll to bottom button
-    // if (this.scrollPosition !== ScrollPosition.Bottom) {
-    // }
+  autoScrollToBottom() {
+    this._scrollToBottom();
+    this.scrollSubject.next();
   }
 
   private _loadMembers() {
@@ -473,6 +487,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
             channelUuid: this.chatChannel.uuid,
             readcount: messageIds.length
           });
+          this.hasUnreadMessages = false;
         },
         err => {
           console.error(err);
@@ -634,7 +649,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   private _scrollToBottom() {
     this._markAsSeen();
-    setTimeout(() => this.content.scrollToBottom(), 500);
+    this.scrollSubject.next();
   }
 
   private attachmentPreview(filestackRes) {
