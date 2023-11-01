@@ -26,7 +26,7 @@ jobs:
 
 
 ################################################
-#  GITHUB ACTIONS GLOBAL ENV VARIABLES  
+#  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
     env:
       REGION : ap-southeast-2
@@ -47,27 +47,27 @@ jobs:
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 ################################################
-#  GITHUB REPO CHECKOUT 
+#  GITHUB REPO CHECKOUT
 ################################################
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          
+
 
 
 
 ################################################
 #  NODE ENV
-################################################    
+################################################
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
           node-version: '14'
-      
+
 
 ################################################
-#  NODE MODULES CACHE  
+#  NODE MODULES CACHE
 ################################################
       - name: Cache node modules
         uses: actions/cache@v2
@@ -88,12 +88,12 @@ jobs:
 
 
 ################################################
-#  NODE MODULES INSTALL  
+#  NODE MODULES INSTALL
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-      
+
 ################################################
 #  GET P2 STAGE AWS ORGANIZATION NUMBER
 ################################################
@@ -124,9 +124,9 @@ jobs:
       - name: Serverless deployment variables created from shared account
         run: |
           cat >> .env <<EOF
-          FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID) 
-          P1STACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1PRODID) 
-         
+          FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID)
+          P1STACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1PRODID)
+
           EOF
         env:  #TODO: Update once manually to new stack accordingly
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
@@ -149,17 +149,17 @@ jobs:
         run: |
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
-          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
-          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature) 
-          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection) 
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
+          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature)
+          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection)
           export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
           export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
-          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret) 
-          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster) 
-          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
+          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -167,7 +167,7 @@ jobs:
 
           echo "Extracting chatbotSNStopicARN to send stack update"
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-          
+
         env:
           CUSTOM_PATH_IMAGE: /appv2/test/images/
           CUSTOM_PATH_VIDEO: /appv2/test/videos/
@@ -176,7 +176,7 @@ jobs:
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com 
+          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
           CUSTOM_PATH_ANY: /appv2/test/any/
@@ -195,7 +195,7 @@ jobs:
         run:  |
           npm run lint --if-present
 
-          
+
 ###############################################################
 #  BUILD WEB PACKAGES
 ##############################################################
@@ -220,16 +220,16 @@ jobs:
 #       - name: Performing Sonarcloud Scanner
 #         uses: SonarSource/sonarcloud-github-action@master
 #         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
 
 ##########################################################
-#  AWS S3 SYNC - SERVERLESS TEMPLATES 
+#  AWS S3 SYNC - SERVERLESS TEMPLATES
 ##########################################################
       - name: AWS S3 Sync operation
         run: |
-          
+
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -241,8 +241,8 @@ jobs:
           cat >> .env <<EOF
           CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-CDNSharedACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
           ChatBotSNSTopicARN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text)
-          
-          
+
+
           EOF
 
 ###############################################################
@@ -257,9 +257,9 @@ jobs:
           APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
-          S3VERSIONING: true 
+          S3VERSIONING: true
           NONCURRENTVERSION_EXPIREINDAYS: 30
-          
+
 
 
 ##########################################################
@@ -284,7 +284,7 @@ jobs:
 
 # #########################################################
 # # SLACK NOTIFICATION
-# #########################################################  
+# #########################################################
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -317,10 +317,10 @@ jobs:
             }]
             }
 
-          
+
 # ################################################
 # #  STATUS VARIABLE UPDATE
-# ################################################ 
+# ################################################
       - name: Deployment status variable update
         if: ${{ failure() }}
         run: |
@@ -328,7 +328,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |
