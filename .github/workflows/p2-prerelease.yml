@@ -127,7 +127,7 @@ jobs:
       - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-role-app-v2
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 ###############################################################
@@ -151,7 +151,7 @@ jobs:
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-role-app-v2
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 ###############################################################
