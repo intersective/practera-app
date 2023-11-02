@@ -159,6 +159,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         this.whoIsTyping = username + ' is typing'
       }),
       switchMap(() => timer(3000)),
+      takeUntil(this.destroy$)
     ).subscribe(() => {
       this.whoIsTyping = '';
     });
