@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'develop' ]
+    branches: [ 'develop-legacy' ]
     
 
 ################################################
@@ -40,8 +40,8 @@ jobs:
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app.p2-sandbox.practera.com
-      BRANCH_TAG_NAME: develop
+      ENDPOINT: app-old.p2-sandbox.practera.com
+      BRANCH_TAG_NAME: develop-legacy
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 ################################################
@@ -224,7 +224,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
+          APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true 
