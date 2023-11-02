@@ -244,7 +244,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   autoScrollToBottom() {
     this._scrollToBottom();
-    this.scrollSubject.next();
   }
 
   private _loadMembers() {
