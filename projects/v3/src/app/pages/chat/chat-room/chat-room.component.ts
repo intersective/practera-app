@@ -10,8 +10,9 @@ import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } 
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
-import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { Subject, timer } from 'rxjs';
+import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounce } from 'lodash';
 
 
 enum ScrollPosition {
@@ -55,8 +56,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   messagePageSize = 20;
   loadingChatMessages = false;
   sendingMessage = false;
+
   // display "someone is typing" when received a typing event
-  whoIsTyping: string;
+  typingSubject: Subject<string> = new Subject<string>();
+  whoIsTyping: string = '';
   videoHandles = [];
 
   selectedAttachments: any[] = [];
@@ -151,6 +154,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.content.scrollToBottom(300);
     });
 
+    this.typingSubject.pipe(
+      tap(username => {
+        this.whoIsTyping = username + ' is typing'
+      }),
+      switchMap(() => timer(3000)),
+    ).subscribe(() => {
+      this.whoIsTyping = '';
+    });
+
     this.isMobile = this.utils.isMobile();
   }
 
@@ -161,6 +173,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this._loadMessages();
       this._loadMembers();
       this._scrollToBottom();
+      this.whoIsTyping = '';
     });
   }
 
@@ -176,7 +189,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     this.messagePageCursor = '';
     this.messagePageSize = 20;
     this.sendingMessage = false;
-    this.whoIsTyping = '';
   }
 
   private _isValidPusherEvent(pusherData) {
@@ -198,7 +210,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
     this.channelUuid = this.chatChannel.uuid;
     // subscribe to typing event
-    this.utils.getEvent('typing-' + this.chatChannel.pusherChannel).pipe(takeUntil(this.destroy$)).subscribe(event => this._showTyping(event));
+    this.utils.getEvent('typing-' + this.chatChannel.pusherChannel)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(event => this._showTyping(event));
   }
 
   /**
@@ -221,7 +235,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.content.ionScrollEnd.pipe(takeUntil(this.destroy$)).subscribe(_event => {
+    this.content.ionScrollEnd.pipe(takeUntil(this.destroy$))
+    .subscribe(_event => {
       this._checkScrollPosition();
     });
   }
@@ -659,8 +674,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     if (event.user === this.storage.getUser().name) {
       return;
     }
-    this.whoIsTyping = event.user + ' is typing';
-    setTimeout(() => { this.whoIsTyping = ''; }, 3000);
+    this.typingSubject.next(event.user);
   }
 
   private _scrollToBottom() {
