@@ -49,7 +49,7 @@ jobs:
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: appv3.p2-prerelease.practera.com
+      ENDPOINT: app.p2-prerelease.practera.com
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
     steps:
@@ -262,7 +262,7 @@ jobs:
           rm serverless.yml
           mv serverless.yml.bak serverless.yml
         env:
-          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true
@@ -296,7 +296,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true
