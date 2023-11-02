@@ -262,8 +262,7 @@ jobs:
 ##############################################################
       - name: Serverless deployment
         run: |
-          aws s3api delete-objects --bucket app.${{ env.PUBLICZONENAME }} --delete "$(aws s3api list-object-versions --bucket app.${{ env.PUBLICZONENAME }} --output=json --query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}')" 2> /dev/null
-          aws s3 rm s3://app.${{ env.PUBLICZONENAME }} --recursive 2> /dev/null
+          aws s3 rm s3://app.${{ env.PUBLICZONENAME }} --recursive
           echo "Serverless Deploying Appv2"
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
