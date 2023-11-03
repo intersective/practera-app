@@ -22,7 +22,7 @@ jobs:
     name: deploy-p2-prerelease
     runs-on: ubuntu-latest
     permissions: write-all
-    # environment: p2-prerelease
+    environment: p2-prerelease
     timeout-minutes: 15
 
 
@@ -268,7 +268,7 @@ jobs:
         env:
           APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
+          FILESS3BUCKETEXIST: false
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 30
           
@@ -354,4 +354,3 @@ jobs:
           echo "LINK="${GITHUB_REPOSITORY##*/}.html >> $GITHUB_ENV
           echo $REASON
           echo $REQUESTOR
-           

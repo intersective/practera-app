@@ -21,6 +21,7 @@ jobs:
     name: deploy-p2-stage
     runs-on: ubuntu-latest
     environment: p2-stage
+    permissions: write-all
     timeout-minutes: 15
 
 
@@ -249,7 +250,6 @@ jobs:
 ##############################################################
       - name: Serverless deployment
         run: |
-          aws s3 rm s3://app.${{ env.PUBLICZONENAME }} --recursive
           echo "Serverless Deploying Appv2"
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
