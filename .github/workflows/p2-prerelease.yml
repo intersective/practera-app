@@ -262,14 +262,13 @@ jobs:
 ##############################################################
       - name: Serverless deployment
         run: |
-          aws s3 rm s3://app.${{ env.PUBLICZONENAME }} --recursive
           echo "Serverless Deploying Appv2"
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
           APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: false
+          FILESS3BUCKETEXIST: true
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 30
           
