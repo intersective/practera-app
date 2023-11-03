@@ -1,0 +1,203 @@
+################################################
+#  GITHUB ACTION WORKFLOW NAME
+################################################
+name: Pull Request Event Check
+
+
+################################################
+#  GITHUB ACTION EVENT TRIGGER
+################################################
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'trunk'
+      - 'release/**'
+      - 'stable'
+    types: [opened, synchronize, reopened]
+    
+
+################################################
+#  GITHUB ACTION JOBS
+################################################
+jobs:
+  pull-req-check:
+    name: pull-req-check
+    runs-on: ubuntu-latest
+    environment: pull-req
+    timeout-minutes: 15
+
+################################################
+#  GITHUB ACTIONS GLOBAL ENV VARIABLES  
+################################################
+    env:
+      REGION : NA
+      ENV : NA # Valid values are dev,test,live only
+      STACK_NAME: pull-req # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p2-stage,p2-sandbox,shared only
+      ROOTSTACK: app-v2
+      LOG_LEVEL: DEBUG # Valid values are DEBUG,INFO,WARN and ERROR only
+      SAMPLE_DEBUG_LOG_RATE: 0.01 # CAUTION with this value increase cost as well.
+      STATUSREPORTS3Bucket: deployment-status.practera.com
+      STATUS: SUBMITTED
+      REQUESTOR: ${{ github.event.inputs.REQUESTOR }} #TODO Submitter NAME here
+      REASON: ${{ github.event.inputs.REASON }} #TODO commit message here
+      ENDPOINT: NA
+      BRANCH_TAG_NAME: trunk
+
+
+################################################
+#  GITHUB REPO CHECKOUT 
+################################################
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+
+
+################################################
+#  NODE ENV
+################################################    
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      
+
+################################################
+#  NODE MODULES CACHE  
+################################################
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: cache-node-modules
+        env:
+          cache-name: cache
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: |
+            ~/.npm
+            node_modules
+            */*/node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+
+################################################
+#  NODE MODULES INSTALL  
+################################################
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run:  npm install
+
+
+
+################################################
+#  AWS CLI CONFIGURATION - DEVOPS 
+################################################ 
+      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEVOPS_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEVOPS_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-2
+
+
+
+# ################################################
+# #  PERFORM LINT TEST
+# ################################################
+      - name: Run lint test if present
+        run:  |
+          npm run lint --if-present
+
+          
+# ###############################################################
+# #  BUILD WEB PACKAGES
+# ##############################################################
+#       - name: Build Web Packages
+#         run: |
+#           test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
+#           node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
+#           npm run generate-version
+
+
+# # ###############################################################
+# # #  PERFORM UNIT TEST
+# # ##############################################################
+#       - name: Performing Unit test
+#         run: |
+#           node_modules/.bin/ng test --karmaConfig=src/karma.conf.sonarci.js --no-watch
+
+
+# # ###############################################################
+# # #  SONARCLOUD SCANNER
+# # ##############################################################
+#       - name: Performing Sonarcloud Scanner
+#         uses: SonarSource/sonarcloud-github-action@master
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+   
+# ##########################################################
+# #  SLACK NOTIFICATION
+# ##########################################################  
+      - name: Slack Notification
+        if: always() # Pick up events even if the job fails or is canceled.
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+        with:
+          status: ${{ job.status }}
+          author_name: New pull request for ${{env.ROOTSTACK}}
+          mention: 'here'
+          if_mention: failure,cancelled
+          job_name: pull-req-check # Match the name above.
+          fields: repo,commit,eventName,ref,workflow,message,author,job,took
+          custom_payload: |
+            {
+            username: 'GitHub Action CI WorkFlow',
+            icon_emoji: ':github:',
+            attachments: [{
+              color: '${{ job.status }}' === 'success' ? 'good' : ${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+              text:
+             `${process.env.AS_REPO}\n
+              ${process.env.AS_COMMIT}\n
+              ${process.env.AS_EVENT_NAME}\n
+              @${process.env.AS_REF}\n
+              @${process.env.AS_WORKFLOW}\n
+              ${process.env.AS_MESSAGE}\n
+              ${process.env.AS_AUTHOR}\n
+              ${process.env.AS_JOB}\n
+              ${process.env.AS_TOOK}`,
+            }]
+            }
+
+
+# ################################################
+# #  STATUS VARIABLE UPDATE
+# ################################################ 
+      - name: Deployment status variable update
+        if: ${{ failure() }}
+        run: |
+          echo "STATUS=FAILURE" >> $GITHUB_ENV
+
+# ################################################
+# #  DEVOPS-DEPLOYMENT REPORT
+# ################################################ 
+      - name: DevOps Deployment Reporting
+        if: always()
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade csvtotable
+          export REASON=$(git log -2 --format=%s | sed -n 2p)
+          export REQUESTOR=${{ github.actor }}
+
+          aws s3 cp s3://$STATUSREPORTS3Bucket/deploy-reporting.sh deploy-reporting.sh
+          chmod +x deploy-reporting.sh && ./deploy-reporting.sh
+          echo $REASON
+          echo $REQUESTOR
