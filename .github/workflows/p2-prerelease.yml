@@ -262,7 +262,7 @@ jobs:
 ##############################################################
       - name: Serverless deployment
         run: |
-          aws s3 rm s3://app.${{ env.PUBLICZONENAME }} --recursive
+          aws s3 rm s3://app.${{ env.PUBLICZONENAME }} --recursive 2>dev/null
           echo "Serverless Deploying Appv2"
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
