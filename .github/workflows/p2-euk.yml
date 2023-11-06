@@ -23,7 +23,7 @@ jobs:
     name: deploy-p2-euk-live
     runs-on: ubuntu-latest
     environment: p2-euk
-    timeout-minutes: 30
+    timeout-minutes: 15
 
 
 ################################################
@@ -43,10 +43,9 @@ jobs:
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app.euk.practera.com
+      ENDPOINT: app-old.euk.practera.com
       BRANCH_TAG_NAME: ${{ github.event.inputs.BRANCH_TAG_NAME }}
-
-
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 ################################################
 #  GITHUB REPO CHECKOUT 
@@ -96,17 +95,29 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
       
+################################################
+#  GET P2 P2EUK AWS ORGANIZATION NUMBER
+################################################
+      - name: Get AWS Organization Number
+        id: AWS_ORG
+        run: |
+          P2EUK=$(echo $AWS_ACCOUNT_ID | jq -r .P2EUK)
+          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
+
+          echo "::add-mask::$P2EUK"
+          echo "::add-mask::$CENTRALIZED"
+
+          echo "P2EUK=$P2EUK" >> $GITHUB_OUTPUT
+          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
 
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS 
-################################################ 
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
+################################################
+      - name: Configure AWS Credentials from P1 Centralized account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ secrets.DEVOPS_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.DEVOPS_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-southeast-2
-
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
+          region: ap-southeast-2
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
@@ -122,44 +133,14 @@ jobs:
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
           ENV: live # Valid values are sandbox,stage,live only
 
-
-##########################################################
-#  AWS DEPLOY SECRET - MASK CONSOLE DISPLAY
-##########################################################
-      - name: AWS Deploy Secret
-        id: DeploySecret
-        run: |
-          echo "Enable SLACK NOTIFY"
-          SLACK_WEBHOOK_URL=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .SLACK_WEBHOOK_URL)
-          echo "::add-mask::$SLACK_WEBHOOK_URL"
-          echo "::set-output name=SLACK_WEBHOOK_URL::$SLACK_WEBHOOK_URL"
-    
-          echo "Enable P2 EUK ACCOUNT CLI Login"
-          P2_EUK_AWS_ACCESS_KEY_ID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_EUK_AWS_ACCESS_KEY_ID)
-          P2_EUK_AWS_SECRET_ACCESS_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P2_EUK_AWS_SECRET_ACCESS_KEY)
-          echo "::add-mask::$P2_EUK_AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$P2_EUK_AWS_SECRET_ACCESS_KEY"
-          echo "::set-output name=P2_EUK_AWS_ACCESS_KEY_ID::$P2_EUK_AWS_ACCESS_KEY_ID"
-          echo "::set-output name=P2_EUK_AWS_SECRET_ACCESS_KEY::$P2_EUK_AWS_SECRET_ACCESS_KEY"
-        
-        env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-          ENV: live # Valid values are sandbox,stage,live only
-
-
-##########################################################
-#  AWS P2 EUK ACCOUNT STEPS BELOW
-##########################################################
-      - name: Configure AWS credentials from $STACK_NAME account in $REGION region
-        uses: aws-actions/configure-aws-credentials@v1
+################################################
+#  AWS CLI CONFIGURATION - DEVOPS P2 EUK
+################################################
+      - name: Configure AWS Credentials from p2 EUK account
+        uses: ./.github/actions/aws-oidc
         with:
-          aws-access-key-id: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{env.REGION}}
-        env:
-          AWS_ACCESS_KEY_ID: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ steps.DeploySecret.outputs.P2_EUK_AWS_SECRET_ACCESS_KEY }}
-
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2EUK }}:role/github-restricted-role-to-assume
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  ANGULAR ENVIRONMENT CREATION
@@ -246,9 +227,9 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: app.${{ env.PUBLICZONENAME }}
+          APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: false
+          FILESS3BUCKETEXIST: true
           S3VERSIONING: true 
           NONCURRENTVERSION_EXPIREINDAYS: 30
           
