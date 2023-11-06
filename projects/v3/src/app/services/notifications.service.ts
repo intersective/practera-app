@@ -16,6 +16,7 @@ import { map, shareReplay } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 import { NetworkService } from './network.service';
+import { ModalService } from './modal.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -92,6 +93,7 @@ export class NotificationsService {
   };
 
   constructor(
+    private modalService: ModalService,
     private modalController: ModalController,
     private alertController: AlertController,
     private toastController: ToastController,
@@ -169,20 +171,12 @@ export class NotificationsService {
   }
 
   async modal(component, componentProps, options?, event?): Promise<void> {
-    const modal = await this.modalOnly(component, componentProps, options, event);
-    return modal.present();
+    return this.modalOnly(component, componentProps, options, event);
   }
 
-  async modalOnly(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
-    const modal = await this.modalController.create(
-      this.modalConfig({ component, componentProps }, options)
-    );
-
-    if (event) {
-      modal.onDidDismiss().then(event);
-    }
-
-    return modal;
+  async modalOnly(component, componentProps, options?, event?): Promise<void> {
+    const modalConfig = this.modalConfig({ component, componentProps }, options);
+    return this.modalService.addModal(modalConfig, event);
   }
   /**
    * Displays an alert dialog with the given configuration options.
@@ -316,7 +310,7 @@ export class NotificationsService {
     if (this.utils.isMobile()) {
       cssClass += ' mobile-view';
     }
-    return await this.modal(
+    return this.modal(
       ActivityCompletePopUpComponent,
       { activityId, activityCompleted },
       {
@@ -346,14 +340,13 @@ export class NotificationsService {
    * @return  {Promise<void>}             deferred ionic modal
    */
   async popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    const reviewPopupModal = await this.modalOnly(ReviewRatingComponent, {
+    return this.modalOnly(ReviewRatingComponent, {
       reviewId,
       redirect
     }, {
       id: `review-popup-${reviewId}`,
       backdropDismiss: false,
     });
-    return reviewPopupModal.present();
   }
 
   /**
