@@ -25,7 +25,7 @@ jobs:
     name: pull-req-check
     runs-on: ubuntu-latest
     environment: pull-req
-    timeout-minutes: 30
+    timeout-minutes: 15
 
 ################################################
 #  GITHUB ACTIONS GLOBAL ENV VARIABLES  
