@@ -10,7 +10,7 @@ name: Deploy to p2-sandbox-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'develop-v3' ]
+    branches: [ 'develop' ]
 
 
 ################################################
@@ -41,8 +41,8 @@ jobs:
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: appv3.p2-sandbox.practera.com
-      BRANCH_TAG_NAME: develop-v3
+      ENDPOINT: app.p2-sandbox.practera.com
+      BRANCH_TAG_NAME: develop
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
 
@@ -290,7 +290,7 @@ jobs:
           rm serverless.yml
           mv serverless.yml.bak serverless.yml
         env:
-          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true
@@ -305,7 +305,7 @@ jobs:
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          AppV3S3Bucket: appv3.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
           S3VERSIONING: true
