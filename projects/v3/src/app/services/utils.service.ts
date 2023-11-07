@@ -360,7 +360,10 @@ export class UtilsService {
       return $localize`Today`;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -530,6 +533,7 @@ export class UtilsService {
    * - If due date is today this will return 'Due Today'.
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
+   * @param plain - (optional) if true, it will return only formatted date without 'Due' or 'Overdue' prefix.
    */
   dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
@@ -731,6 +735,21 @@ export class UtilsService {
   }
 
   checkIsPracteraSupportEmail() {
+    const currentExperience = this.storageService.get('experience');
+    if (currentExperience && currentExperience.supportEmail) {
+      let supportEmail = currentExperience.supportEmail;
+      if (supportEmail.includes("@practera.com")) {
+        this.broadcastEvent('support-email-checked', true);
+        return true;
+      }
+      this.broadcastEvent('support-email-checked', false);
+      return false;
+    }
+    this.broadcastEvent('support-email-checked', false);
+    return false;
+  }
+
+  getSupportEmail() {
     const expId = this.storageService.getUser().experienceId;
     const programList = this.storageService.get('programs');
     if (!expId || !programList || programList.length < 1) {
@@ -741,14 +760,11 @@ export class UtilsService {
     });
     if (currentExperience) {
       let supportEmail = currentExperience.experience.support_email;
-      if (supportEmail.includes("@practera.com")) {
-        this.broadcastEvent('support-email-checked', true);
-        return true;
+      if (supportEmail) {
+        return supportEmail;
       }
-      this.broadcastEvent('support-email-checked', false);
-      return false;
+      return null;
     }
-    this.broadcastEvent('support-email-checked', false);
-    return false;
+    return null;
   }
 }

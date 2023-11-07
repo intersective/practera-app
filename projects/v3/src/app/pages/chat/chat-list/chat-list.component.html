@@ -4,7 +4,7 @@
       <ion-spinner></ion-spinner>
     </div>
   </ng-container>
-  <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !utils.isMobile()}">
+  <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !isMobile}">
     <app-clickable-item
       *ngFor="let chat of chatList; let i = index"
       (click)="goToChatRoom(chat)"

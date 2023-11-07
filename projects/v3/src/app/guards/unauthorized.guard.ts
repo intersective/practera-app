@@ -21,8 +21,8 @@ export class UnauthorizedGuard implements CanActivate {
     }
     const userIsAuthenticated = this.authService.isAuthenticated();
     if (userIsAuthenticated !== true) {
-      // skip global login on local development and on registration
-      if (environment.skipGlobalLogin || state.url.includes('registration')) {
+      // skip global login on registration page
+      if (state.url.includes('registration')) {
         return true;
       }
       // redirect to global login
