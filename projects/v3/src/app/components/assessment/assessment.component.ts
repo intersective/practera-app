@@ -610,38 +610,6 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
-
-  /**
-   * When user click on the back button
-   */
-  // goBack(): Promise<boolean | void> {
-
-  //   if (this.action === 'assessment'
-  //     && this.submission
-  //     && this.submission.status === 'published'
-  //     && !this.feedbackReviewed) {
-  //     return this.notifications.alert({
-  //       header: `Mark feedback as read?`,
-  //       message: 'Would you like to mark the feedback as read?',
-  //       buttons: [
-  //         {
-  //           text: 'No',
-  //           handler: () => this.navigateBack(),
-  //         },
-  //         {
-  //           text: 'Yes',
-  //           handler: () => this.markReviewFeedbackAsRead().then(() => {
-  //             return this.navigateBack();
-  //           })
-  //         }
-  //       ]
-  //     });
-  //   } else {
-  //     // force saving progress
-  //     this.submit(true, true, true);
-  //     return this.navigateBack();
-  //   }
-  // }
 }
 
 
