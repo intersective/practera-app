@@ -1,8 +1,8 @@
 <ion-header mode="ios" aria-label="chat room">
-  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-icon *ngIf="utils.isMobile()" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
+    <ion-icon *ngIf="isMobile" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
     <ion-title class="ion-text-center"
-      [ngClass]="{ 'subtitle-2': !utils.isMobile() }"
+      [ngClass]="{ 'subtitle-2': !isMobile }"
       aria-live="polite"
       [attr.aria-label]="memberList.length + ' members'">
       {{ chatChannel.name }}
@@ -22,14 +22,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile(), 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true" (ionScroll)="loadMoreMessages($event)">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true">
 
   <div *ngIf="loadingChatMessages" class="ion-text-center" aria-label="loading message">
     <ion-spinner></ion-spinner>
   </div>
 
   <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status" aria-live="polite">
-    <img class="image" [ngClass]="{'desktop': !utils.isMobile()}"
+    <img class="image" [ngClass]="{'desktop': !isMobile}"
       src="./assets/icon-epmty-chat.svg" alt="empty chat"
       i18n-alt
       aria-hidden="true">
@@ -37,7 +37,7 @@
     <p class="sub-text subtitle-1 gray-1" i18n>It's time to start a chat</p>
   </div>
 
-  <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !utils.isMobile()}">
+  <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !isMobile}">
     <ion-item *ngFor="let message of messageList" color="light">
       <ng-container *ngIf="isLastMessage(message)">
         <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">
@@ -137,14 +137,14 @@
     </ng-container>
   </ion-list>
 </ion-content>
-<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !utils.isMobile(), 'attach-preview': (selectedAttachments.length > 0 && !utils.isMobile())}">
+<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}">
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
       <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
         <!-- quill editor -->
         <quill-editor aria-label="chat message input"
         customToolbarPosition="top"
-        [classes]="utils.isMobile() ? 'editor-class' : 'editor-class desktop'"
+        [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
         [required]="true"
         class="message-text-editor"
         [placeholder]="'Enter your message'"
@@ -177,7 +177,7 @@
         <ng-container *ngFor="let attachment of selectedAttachments; let i = index">
           <!-- Image preview -->
           <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('image')">
-            <div class="image" [ngClass]="{'mobile': utils.isMobile()}">
+            <div class="image" [ngClass]="{'mobile': isMobile}">
               <img [src]="getResizedImageUrl(attachment, 80)" (click)="preview(attachment)">
               <div class="overlay" (click)="preview(attachment)"></div>
               <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
@@ -187,7 +187,7 @@
           </ion-col>
           <!-- video preview -->
           <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('video')">
-            <div class="video" [ngClass]="{'mobile': utils.isMobile()}">
+            <div class="video" [ngClass]="{'mobile': isMobile}">
               <div class="play-icon" (click)="preview(attachment)">
                 <ion-icon name="play" color="ocean"></ion-icon>
               </div>
@@ -199,7 +199,7 @@
           </ion-col>
           <!-- File preview -->
           <ion-col size="10" size-lg="6" class="ion-no-padding ion-text-center" *ngIf="!attachment.mimetype || !attachment.mimetype.includes('image') && !attachment.mimetype.includes('video')">
-            <div class="file-preview" [ngClass]="{'mobile': utils.isMobile()}">
+            <div class="file-preview" [ngClass]="{'mobile': isMobile}">
               <ion-item lines="none" class="general-attachment" (click)="preview(attachment)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document" slot="start"></ion-icon>
