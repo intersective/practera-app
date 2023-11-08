@@ -10,7 +10,9 @@ import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } 
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
-import { Subscription } from 'rxjs';
+import { Subject, timer } from 'rxjs';
+import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounce } from 'lodash';
 
 
 enum ScrollPosition {
@@ -54,18 +56,23 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   messagePageSize = 20;
   loadingChatMessages = false;
   sendingMessage = false;
+
   // display "someone is typing" when received a typing event
-  whoIsTyping: string;
+  typingSubject: Subject<string> = new Subject<string>();
+  whoIsTyping: string = '';
   videoHandles = [];
 
   selectedAttachments: any[] = [];
 
-  subscriptions: Subscription[] = []; // collection of all subscriptions, made easy for unsubscribe all at once
+  private destroy$ = new Subject<void>();
 
   // cosmetic variables
   isMobile: boolean = false;
+  hasUnreadMessages: boolean = false;
 
+  private scrollSubject = new Subject<void>();
   scrollPosition: ScrollPosition = ScrollPosition.Top;
+
 
   constructor(
     private chatService: ChatService,
@@ -81,7 +88,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     public popoverController: PopoverController,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
-    this.utils.getEvent('chat:new-message').subscribe(event => {
+    this.utils.getEvent('chat:new-message')
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const receivedMessage = this.getMessageFromEvent(event);
 
@@ -103,13 +112,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         if (!this.utils.isEmpty(receivedMessage)) {
           this.messageList.push(receivedMessage);
           if (this.scrollPosition === ScrollPosition.Bottom) {
-            this._markAsSeen();
             this._scrollToBottom();
+          } else {
+            this.hasUnreadMessages = true;
           }
         }
       }
     });
-    this.utils.getEvent('chat:delete-message').subscribe(event => {
+
+    this.utils.getEvent('chat:delete-message')
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const deletedMessageIndex = this.messageList.findIndex(message => {
           return message.uuid === event.uuid;
@@ -119,7 +132,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
         }
       }
     });
-    this.utils.getEvent('chat:edit-message').subscribe(event => {
+
+    this.utils.getEvent('chat:edit-message')
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(event => {
       if (this._isValidPusherEvent(event)) {
         const receivedMessage = this.getMessageFromEvent(event);
         const editedMessageIndex = this.messageList.findIndex(message => {
@@ -131,21 +147,40 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.scrollSubject.pipe(
+      debounceTime(300), // debounce, so it won't scroll if button is rapidly clicked multiple times
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.content.scrollToBottom(300);
+    });
+
+    this.typingSubject.pipe(
+      tap(username => {
+        this.whoIsTyping = username + ' is typing'
+      }),
+      switchMap(() => timer(3000)),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.whoIsTyping = '';
+    });
+
     this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this._initialise();
       this._subscribeToTypingEvent();
       this._loadMessages();
       this._loadMembers();
       this._scrollToBottom();
+      this.whoIsTyping = '';
     });
   }
 
   ngOnDestroy() {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private _initialise() {
@@ -155,7 +190,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     this.messagePageCursor = '';
     this.messagePageSize = 20;
     this.sendingMessage = false;
-    this.whoIsTyping = '';
   }
 
   private _isValidPusherEvent(pusherData) {
@@ -177,7 +211,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
     this.channelUuid = this.chatChannel.uuid;
     // subscribe to typing event
-    this.utils.getEvent('typing-' + this.chatChannel.pusherChannel).subscribe(event => this._showTyping(event));
+    this.utils.getEvent('typing-' + this.chatChannel.pusherChannel)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(event => this._showTyping(event));
   }
 
   /**
@@ -200,9 +236,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.subscriptions.push(this.content.ionScrollEnd.subscribe(_event => {
+    this.content.ionScrollEnd.pipe(takeUntil(this.destroy$))
+    .subscribe(_event => {
       this._checkScrollPosition();
-    }));
+    });
   }
 
   /**
@@ -227,14 +264,16 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       this.scrollPosition = ScrollPosition.Bottom;
       this._markAsSeen();
     }
+  }
 
-    // @TODO: [CORE-6119] show auto-scroll to bottom button
-    // if (this.scrollPosition !== ScrollPosition.Bottom) {
-    // }
+  autoScrollToBottom() {
+    this._scrollToBottom();
   }
 
   private _loadMembers() {
-    this.chatService.getChatMembers(this.channelUuid).subscribe(
+    this.chatService.getChatMembers(this.channelUuid)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
       (response) => {
         if (response.length === 0) {
           return;
@@ -262,6 +301,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
       cursor: this.messagePageCursor,
       size: this.messagePageSize
     })
+    .pipe(takeUntil(this.destroy$))
     .subscribe(
       (messageListResult: MessageListResult) => {
         if (!messageListResult) {
@@ -344,18 +384,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   private postTextOnlyMessage() {
     const param = this.getPostMessageParams('text');
     this._beforeSenMessages();
-    this.chatService.postNewMessage(param).subscribe(
-      response => {
-        this.triggerPusherEvent(response);
-        this.updateListData(response);
-        this.utils.broadcastEvent('chat:info-update', true);
-        this._scrollToBottom();
-        this._afterSendMessage();
-      },
-      error => {
-        this._afterSendMessage();
-      }
-    );
+    this.chatService.postNewMessage(param)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        response => {
+          this.triggerPusherEvent(response);
+          this.updateListData(response);
+          this.utils.broadcastEvent('chat:info-update', true);
+          this._scrollToBottom();
+          this._afterSendMessage();
+        },
+        _error => {
+          this._afterSendMessage();
+        }
+      );
   }
 
   private postAttachment() {
@@ -364,7 +406,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     selectedAttachments.forEach(attachment => {
       const param = this.getPostMessageParams('file', attachment);
       this._beforeSenMessages();
-      this.chatService.postAttachmentMessage(param).subscribe(
+      this.chatService.postAttachmentMessage(param)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
         response => {
           this.triggerPusherEvent(response, attachment);
           this.updateListData(response);
@@ -447,6 +491,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
           cursor: this.messagePageCursor,
           size: this.messagePageSize
         })
+        .pipe(takeUntil(this.destroy$))
         .subscribe((messageListResult: MessageListResult) => {
           const messages = messageListResult.messages;
           if (messages.length === 0) {
@@ -467,12 +512,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     const messageIds = this.messageList.map(m => m.uuid);
     this.chatService
       .markMessagesAsSeen(messageIds)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(
         _res => {
           this.utils.broadcastEvent('chat-badge-update', {
             channelUuid: this.chatChannel.uuid,
             readcount: messageIds.length
           });
+          this.hasUnreadMessages = false;
         },
         err => {
           console.error(err);
@@ -628,13 +675,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     if (event.user === this.storage.getUser().name) {
       return;
     }
-    this.whoIsTyping = event.user + ' is typing';
-    setTimeout(() => { this.whoIsTyping = ''; }, 3000);
+    this.typingSubject.next(event.user);
   }
 
   private _scrollToBottom() {
     this._markAsSeen();
-    setTimeout(() => this.content.scrollToBottom(), 500);
+    this.scrollSubject.next();
   }
 
   private attachmentPreview(filestackRes) {
