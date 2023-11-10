@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
@@ -13,6 +13,7 @@ import { AttachmentPopoverComponent } from '../attachment-popover/attachment-pop
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { debounce } from 'lodash';
+import { DomSanitizer } from '@angular/platform-browser';
 
 
 enum ScrollPosition {
@@ -26,7 +27,7 @@ enum ScrollPosition {
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
-export class ChatRoomComponent implements OnInit, OnDestroy {
+export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
   @Input() chatChannel?: ChatChannel = {
     uuid: '',
@@ -72,7 +73,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
 
   private scrollSubject = new Subject<void>();
   scrollPosition: ScrollPosition = ScrollPosition.Top;
-
+  quillModules = {
+    magicUrl: {
+      globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
+      urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
+    },
+  };
 
   constructor(
     private chatService: ChatService,
@@ -86,6 +92,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
+    private sanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils.getEvent('chat:new-message')
@@ -901,4 +908,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     }
   }
 
+  formatMessage(msg: string) {
+    const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    const safeHtml = msg.replace(urlRegex, (url) => {
+      return `<a href="${url}" target="_blank">${url}</a>`;
+    });
+    return this.sanitizer.bypassSecurityTrustHtml(safeHtml);
+  }
 }
