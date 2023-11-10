@@ -61,7 +61,11 @@
 
           <ng-container *ngIf="message.message || !message.fileObject;">
             <!-- Quill read only view/ use to render html content -->
-            <quill-view id="message-content" [content]="message.message" tabindex="0"></quill-view>
+            <quill-view id="message-content"
+              [content]="message.message"
+              [strict]="true"
+              tabindex="0"
+            ></quill-view>
           </ng-container>
 
           <ng-container *ngIf="message.fileObject">
@@ -154,15 +158,16 @@
       <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
         <!-- quill editor -->
         <quill-editor aria-label="chat message input"
-        customToolbarPosition="top"
-        [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
-        [required]="true"
-        class="message-text-editor"
-        placeholder="Enter your message"
-        [(ngModel)]="typingMessage"
-        (ngModelChange)="typing()"
-        (onEditorCreated)="utils.formatQuillClipboard($event)"
-        i18n-placeholder>
+          customToolbarPosition="top"
+          [modules]="quillModules"
+          [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
+          [required]="true"
+          class="message-text-editor"
+          placeholder="Enter your message"
+          [(ngModel)]="typingMessage"
+          (ngModelChange)="typing()"
+          (onEditorCreated)="utils.formatQuillClipboard($event)"
+          i18n-placeholder>
           <div quill-editor-toolbar>
             <span class="ql-formats">
               <button class="ql-bold" [title]="'Bold'"></button>
