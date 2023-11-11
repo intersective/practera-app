@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -80,6 +80,7 @@ export class V3Page implements OnInit, OnDestroy {
   };
 
   constructor(
+    private menuController: MenuController,
     private modalController: ModalController,
     private animationService: AnimationsService,
     private reviewService: ReviewService,
@@ -138,6 +139,9 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (this.isMobile) {
+      this.menuController.enable(false);
+    }
     this._initMenuItems();
     this.subscriptions = [];
     this.subscriptions.push(
