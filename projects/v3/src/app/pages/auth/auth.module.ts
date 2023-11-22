@@ -36,10 +36,6 @@ import { TermsConditionsPreviewComponent } from './terms-conditions-preview/term
     AuthGlobalLoginComponent,
     TermsConditionsPreviewComponent
   ],
-  entryComponents: [
-    AuthComponent,
-    TermsConditionsPreviewComponent
-  ],
   providers: [
     AuthService,
     UnauthorizedGuard,

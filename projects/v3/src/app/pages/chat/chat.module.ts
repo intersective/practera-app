@@ -33,7 +33,6 @@ import { AttachmentPopoverComponent } from './attachment-popover/attachment-popo
     ChatInfoComponent,
     AttachmentPopoverComponent
   ],
-  entryComponents: [ChatPreviewComponent, ChatInfoComponent, AttachmentPopoverComponent],
   providers: [],
   exports: [
     ChatRoomComponent,
