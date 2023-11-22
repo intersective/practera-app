@@ -12,6 +12,8 @@
   <ion-button (click)="pulsecheck()">Pulse check</ion-button>
   <ion-button (click)="reviewrating()">Rating</ion-button>
 
+  <ion-toggle [(ngModel)]="themeToggle" (ionChange)="toggleChange($event)" justify="space-between">Dark Mode</ion-toggle>
+
   <ion-text *ngIf="doneLogin">
     <p>{{ user | json }}</p>
   </ion-text>
