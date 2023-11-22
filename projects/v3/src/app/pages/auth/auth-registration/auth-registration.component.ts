@@ -298,7 +298,7 @@ export class AuthRegistrationComponent implements OnInit {
   async termsAndConditionsPopup() {
     const modal = await this.modalController.create({
       component: TermsConditionsPreviewComponent,
-      swipeToClose: false,
+      canDismiss: false,
       backdropDismiss: false
     });
     await modal.present();

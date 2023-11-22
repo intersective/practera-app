@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
 import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { RequestConfig } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { catchError, tap } from 'rxjs/operators';
