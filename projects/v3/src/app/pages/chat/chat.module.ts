@@ -37,7 +37,6 @@ Quill.register('modules/magicUrl', MagicUrl);
     ChatInfoComponent,
     AttachmentPopoverComponent
   ],
-  entryComponents: [ChatPreviewComponent, ChatInfoComponent, AttachmentPopoverComponent],
   providers: [],
   exports: [
     ChatRoomComponent,
