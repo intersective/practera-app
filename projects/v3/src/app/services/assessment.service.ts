@@ -594,6 +594,7 @@ export class AssessmentService {
       return of(false);
     }
     if (environment.demo) {
+      // eslint-disable-next-line no-console
       console.log('save answers', assessment, answers, action);
       this._afterSubmit(assessment, answers, action, hasPulseCheck);
       return this.demo.normalResponse();
@@ -656,6 +657,7 @@ export class AssessmentService {
 
   saveFeedbackReviewed(submissionId) {
     if (environment.demo) {
+      // eslint-disable-next-line no-console
       console.log('feedback reviewed', submissionId);
       return of(true);
     }

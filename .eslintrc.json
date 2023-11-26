@@ -1,11 +1,18 @@
 {
   "root": true,
+  "plugins": [
+    "rxjs"
+  ],
   "overrides": [
     {
       "files": ["*.ts"],
       "parserOptions": {
-        "project": ["tsconfig.json", "e2e/tsconfig.json"],
-        "createDefaultProgram": true
+        "project": [
+          "./projects/request/tsconfig.lib.json",
+          "./projects/request/tsconfig.spec.json",
+          "./projects/v3/tsconfig.app.json",
+          "./projects/v3/tsconfig.spec.json"
+        ]
       },
       "extends": [
         "plugin:@angular-eslint/recommended",
@@ -33,6 +40,23 @@
             "prefix": "app",
             "style": "camelCase"
           }
+        ],
+        "rxjs/no-ignored-observable": "error",
+
+        // General TypeScript best practices
+        "prefer-const": "error",
+        "no-console": [
+          "error",
+          {
+            "allow": [
+              "warn",
+              "error"
+            ]
+          }
+        ],
+        "eqeqeq": [
+          "error",
+          "always"
         ]
       }
     },
