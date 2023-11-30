@@ -21,6 +21,7 @@ jobs:
     name: deploy-p2-stage
     runs-on: ubuntu-latest
     environment: p2-stage
+    permissions: write-all
     timeout-minutes: 15
 
 

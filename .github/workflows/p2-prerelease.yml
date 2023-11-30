@@ -22,7 +22,7 @@ jobs:
     name: deploy-p2-prerelease
     runs-on: ubuntu-latest
     permissions: write-all
-    # environment: p2-prerelease
+    environment: p2-prerelease
     timeout-minutes: 15
 
 
@@ -68,19 +68,19 @@ jobs:
 
 
 ################################################
-#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER 
+#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
         id: AWS_ORG
         run: |
-          RESULTP2PRERELEASE=$(echo $AWS_ACCOUNT_ID | jq -r .P2PRERELEASE)
-          RESULTCENTRAL=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
+          P2PRERELEASE=$(echo $AWS_ACCOUNT_ID | jq -r .P2PRERELEASE)
+          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
 
-          echo "::add-mask::$RESULTP2PRERELEASE"
-          echo "::add-mask::$RESULTCENTRAL"
+          echo "::add-mask::$P2PRERELEASE"
+          echo "::add-mask::$CENTRALIZED"
 
-          echo "P2PRERELEASE=$RESULTP2PRERELEASE" >> $GITHUB_OUTPUT
-          echo "CENTRALIZED=$RESULTCENTRAL" >> $GITHUB_OUTPUT
+          echo "P2PRERELEASE=$P2PRERELEASE" >> $GITHUB_OUTPUT
+          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
 
 ################################################
 #  NODE ENV
@@ -127,7 +127,7 @@ jobs:
       - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-role-app-v2
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 ###############################################################
@@ -151,7 +151,7 @@ jobs:
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-role-app-v2
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
 ###############################################################
