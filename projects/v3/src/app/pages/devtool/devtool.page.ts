@@ -102,7 +102,7 @@ export class DevtoolPage implements OnInit {
   }
 
   async testAuth(withAPIkey?: boolean) {
-    let data: any = {};
+    const data: any = {};
     if (withAPIkey === true) {
       data.apikey = this.storageService.getUser().apikey || 'REDACTED_JWT_TOKEN';
     } else {
