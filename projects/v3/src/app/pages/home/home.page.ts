@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -19,7 +20,6 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
   activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
@@ -43,6 +43,7 @@ export class HomePage implements OnInit, OnDestroy {
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
+    private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
   ) { }
 
@@ -89,9 +90,10 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
-  
+
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+    this.experience = this.storageService.get('experience');
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
@@ -133,6 +135,17 @@ export class HomePage implements OnInit, OnDestroy {
     return null;
   }
 
+  /**
+   * Navigates to the activity page when an activity is clicked or the enter/space key is pressed.
+   * If the activity is locked, nothing happens.
+   * Clears the activity and assessment services before navigating.
+   * If the user is not in a team, an alert is shown.
+   * If the user is on desktop, navigates to the desktop activity page.
+   * If the user is on mobile, navigates to the mobile activity page.
+   * @param activity The activity object to navigate to.
+   * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
+   * @returns A Promise that resolves when the navigation is complete.
+   */
   async gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
@@ -147,23 +160,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
 
-    const isAccessible = await this.homeService.isAccessible(activity.id);
-    if (isAccessible === false) {
-      return this.notification.alert({
-        header: $localize`Team Activity`,
-        message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-        buttons: [
-          {
-            text: $localize`OK`,
-            role: 'cancel',
-          }
-        ]
-      });
-    }
-
-    if (!this.utils.isMobile()) {
+    if (!this.isMobile) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
     }
+
     return this.router.navigate(['v3', 'activity-mobile', activity.id]);
   }
 

@@ -20,7 +20,7 @@
       <ion-row>
         <ion-col size="12" size-md="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
-          <ng-container *ngIf="(experience$ | async) as experience">
+          <ng-container *ngIf="experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
             <ion-progress-bar
               *ngIf="experienceProgress >= 0"
@@ -128,7 +128,8 @@
   <app-list-item *ngFor="let achievement of achievements"
     [title]="achievement.name"
     [subtitle1]="achievement.points ? achievement.points + ' Pts' : ''" subtitle1Color="medium"
-    [leadImage]="achievement.image" lines="full" (click)="achievePopup(achievement)"
+    [leadImage]="achievement.image" lines="full"
+    (click)="achievePopup(achievement)"
     [leadImageClass] = "!achievement.isEarned ? 'black-white-image' : ''"
     (keydown)="achievePopup(achievement, $event)"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"

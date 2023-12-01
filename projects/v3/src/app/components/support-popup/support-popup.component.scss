@@ -13,7 +13,7 @@
 }
 
 .question-list {
-  max-height: 355px;
+  max-height: 42vh;
   overflow-y: scroll;
 
   .question-item {
@@ -28,7 +28,7 @@
 
 .close-button {
   &.qna {
-    margin-top: 37px;
+    margin-top: 10px;
   }
   float: right;
 }

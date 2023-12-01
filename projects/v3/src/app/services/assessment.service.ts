@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
@@ -136,7 +136,7 @@ export class AssessmentService {
     this._assessment$.next(null);
   }
 
-  getAssessment(id, action, activityId, contextId, submissionId?) {
+  getAssessment(id, action, activityId, contextId, submissionId?): Subscription {
     if (!this.assessment || this.assessment.id !== id) {
       this.clearAssessment();
     }
