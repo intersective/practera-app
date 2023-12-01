@@ -16,33 +16,5 @@
   "include": [
     "src/**/*.d.ts",
     "src/**/*.ts"
-  ],
-  "paths": {
-    "@testingv3/*": [
-      "./src/testing/*"
-    ],
-    "@v3/app/*": [
-      "./src/app/*"
-    ],
-    "@v3/services/*": [
-      "./src/app/services/*"
-    ],
-    "@v3/components/*": [
-      "./src/app/components/*"
-    ],
-    "@v3/pages/*": [
-      "./src/app/pages/*"
-    ],
-    "@v3/environments/*": [
-      "./src/environments/*"
-    ],
-    "apollo": [
-      "../../dist/apollo/apollo",
-      "../../dist/apollo"
-    ],
-    "request": [
-      "../../dist/request/request",
-      "../../dist/request"
-    ],
-  }
+  ]
 }
