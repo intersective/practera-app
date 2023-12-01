@@ -4,6 +4,7 @@ import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
+import { SharedService } from '@v3/app/services/shared.service';
 
 @Component({
   selector: 'app-devtool',
@@ -20,6 +21,7 @@ export class DevtoolPage implements OnInit {
     private fastFeedbackService: FastFeedbackService,
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
+    private sharedService: SharedService,
   ) { }
 
   ngOnInit() {
@@ -30,11 +32,18 @@ export class DevtoolPage implements OnInit {
   }
 
   refresh() {
-    this.experienceService.getNewJwt().subscribe(res => {
-      console.log(res);
-    }, err => {
-      throw err;
-    });
+    this.sharedService.getNewJwt().subscribe();
+  }
+
+  login() {
+    /* this.authService.authenticate({
+      email: 'learner_008@practera.com',
+      password: 'kW96dLJHrQDaaLM'
+    }).subscribe(res => {
+      this.doneLogin = true;
+      this.user = res;
+      this.experienceService.getMyInfo();
+    }); */
   }
 
   async pulsecheck() {
