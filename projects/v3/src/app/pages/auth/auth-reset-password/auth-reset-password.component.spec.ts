@@ -97,7 +97,7 @@ describe('AuthResetPasswordComponent', () => {
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('Invalid');
 
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
+      (typeof button === 'string') ? button : button.handler(true);
 
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
     });
@@ -123,7 +123,7 @@ describe('AuthResetPasswordComponent', () => {
         expect(notificationSpy.alert.calls.first().args[0].message).toContain('Invalid');
 
         const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-        (typeof button == 'string') ? button : button.handler(true);
+        (typeof button === 'string') ? button : button.handler(true);
 
         expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
       });
@@ -147,7 +147,7 @@ describe('AuthResetPasswordComponent', () => {
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('successfully');
 
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
+      (typeof button === 'string') ? button : button.handler(true);
 
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['auth', 'login']);
     });
