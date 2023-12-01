@@ -36,14 +36,14 @@ export class DevtoolPage implements OnInit {
   }
 
   login() {
-    this.authService.login({
+    /* this.authService.authenticate({
       email: 'learner_008@practera.com',
       password: 'kW96dLJHrQDaaLM'
     }).subscribe(res => {
       this.doneLogin = true;
       this.user = res;
       this.experienceService.getMyInfo();
-    });
+    }); */
   }
 
   async pulsecheck() {
