@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
@@ -60,7 +60,7 @@ import { concat } from 'rxjs';
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = true; // collapsible submenu
+  openMenu = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   subscriptions: Subscription[];
@@ -69,6 +69,10 @@ export class V3Page implements OnInit, OnDestroy {
   showEvents: boolean = false;
   showReviews: boolean = false;
   directionIcon: string = this.direction();
+  collapsibleMenu: string = 'closed';
+  institutionLogo: string = this.getInstitutionLogo();
+  isMobile: boolean;
+  institutionName: string;
 
   i18nText = {
     'setting': $localize`Settings`,
@@ -76,6 +80,7 @@ export class V3Page implements OnInit, OnDestroy {
   };
 
   constructor(
+    private menuController: MenuController,
     private modalController: ModalController,
     private animationService: AnimationsService,
     private reviewService: ReviewService,
@@ -86,7 +91,9 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
-  ) { }
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(subs => {
@@ -127,9 +134,14 @@ export class V3Page implements OnInit, OnDestroy {
         badges: 0,
       }
     ];
+
+    this.institutionName = this.storageService.getUser().institutionName || 'Practera';
   }
 
   ngOnInit(): void {
+    if (this.isMobile) {
+      this.menuController.enable(false);
+    }
     this._initMenuItems();
     this.subscriptions = [];
     this.subscriptions.push(
@@ -163,7 +175,7 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
-      this.homeService.getExperience();
+      this.homeService.getExperience(this.storageService.getUser().apikey);
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
@@ -226,7 +238,7 @@ export class V3Page implements OnInit, OnDestroy {
     }
   }
 
-  get institutionLogo() {
+  getInstitutionLogo(): string {
     if (this.openMenu !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
@@ -234,20 +246,15 @@ export class V3Page implements OnInit, OnDestroy {
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
   }
 
-  get institutionName() {
-    return this.storageService.getUser().institutionName || 'Practera';
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   toggleMenu() {
     this.openMenu = !this.openMenu;
+    this.collapsibleMenu = this.collapseMenu();
+    this.institutionLogo = this.getInstitutionLogo();
   }
 
   // only desktop version require collapsed menu
-  get collapsibleMenu() {
+  // get collapsibleMenu() {
+  collapseMenu(): string {
     if (this.isMobile) {
       return 'open';
     }

@@ -28,6 +28,7 @@ export class ActivityDesktopPage {
   loading: boolean;
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  notInATeamAndForTeamOnly: boolean = false;
 
   // grabs from URL parameter
   urlParams = {
@@ -109,6 +110,11 @@ export class ActivityDesktopPage {
     }));
   }
 
+  ionViewWillLeave() {
+    this.currentTask = null;
+    this.topicService.clearTopic();
+  }
+
   ionViewDidLeave() {
     this.subscriptions.forEach(sub => {
       if (sub.closed !== true) {
@@ -118,6 +124,7 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
+    this.currentTask = null;
     const taskContentElement = this.document.getElementById('task-content');
     if (taskContentElement) {
       taskContentElement.focus();
@@ -127,16 +134,20 @@ export class ActivityDesktopPage {
   }
 
   async topicComplete(task: Task) {
+    this.btnDisabled$.next(true);
     if (task.status === 'done') {
       // just go to the next task without any other action
-      return this.activityService.goToNextTask(this.activity.tasks, task);
+      this.btnDisabled$.next(false);
+      return this.activityService.goToNextTask(task);
     }
     // mark the topic as complete
     this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
+
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activity.id, true, task, () => {
       this.loading = false;
+      this.btnDisabled$.next(false);
     });
   }
 
@@ -200,14 +211,14 @@ export class ActivityDesktopPage {
     }
   }
 
-  async readFeedback(submissionId, task: Task) {
+  async readFeedback(submissionId, currentTask: Task) {
     try {
       this.loading = true;
       const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
       await savedReview.pipe(
         // get the latest activity tasks and navigate to the next task
         // wait for a while for the server to save the "read feedback" status
-        tap(() => this.activityService.getActivity(this.activity.id, true, task)),
+        tap(() => this.activityService.getActivity(this.activity.id, true, currentTask)),
         delay(400)
       ).toPromise();
       await this.reviewRatingPopUp();
@@ -224,7 +235,7 @@ export class ActivityDesktopPage {
   }
 
   nextTask(task: Task) {
-    this.activityService.goToNextTask(this.activity.tasks, task);
+    this.activityService.goToNextTask(task);
   }
 
   async reviewRatingPopUp(): Promise<void> {
@@ -237,6 +248,12 @@ export class ActivityDesktopPage {
   }
 
   goBack() {
+    this.currentTask = null;
+    this.topicService.clearTopic();
     this.router.navigate(['v3', 'home']);
+  }
+
+  allTeamTasks(forTeamOnlyWarning: boolean) {
+    this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
   }
 }

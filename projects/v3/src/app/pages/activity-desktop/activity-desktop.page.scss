@@ -23,3 +23,11 @@ ion-content {
 .no-review {
   padding: 10px 15%;
 }
+
+.centered-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+}

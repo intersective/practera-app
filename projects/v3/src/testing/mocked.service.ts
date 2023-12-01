@@ -71,7 +71,6 @@ export class BrowserStorageServiceMock extends SpyObject {
   remove;
   clear;
   setUser;
-  memoryCache;
   storage;
   setConfig;
   getCountry;
