@@ -53,7 +53,8 @@ export class NotificationsPage implements OnInit, OnDestroy {
       this.milestones = milestones;
 
       (milestones || []).forEach(milestone => {
-        milestone.activities.forEach(activity => {
+        // API won't return activities when milestone is locked
+        milestone?.activities?.forEach(activity => {
           this.isLockedActivities[activity.id] = activity.isLocked;
         });
       });

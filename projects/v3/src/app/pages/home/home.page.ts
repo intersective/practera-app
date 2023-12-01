@@ -5,6 +5,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -41,6 +42,7 @@ export class HomePage implements OnInit, OnDestroy {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
+    private sharedService: SharedService,
     private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
   ) { }
@@ -82,23 +84,22 @@ export class HomePage implements OnInit, OnDestroy {
           this.updateDashboard();
         }
       })
-    )
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  updateDashboard() {
+  async updateDashboard() {
+    await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.experience = this.storageService.get('experience');
-
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
-
   }
 
   goBack() {
