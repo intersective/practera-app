@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs-compat';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
@@ -17,8 +18,8 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
-  activityCount$ = this.homeService.activityCount$;
+  experience$: Observable<Experience>;
+  activityCount$: Observable<number>;
   experienceProgress: number;
 
   milestones: Milestone[];
@@ -40,7 +41,10 @@ export class HomePage implements OnInit, OnDestroy {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
-  ) { }
+  ) {
+    this.experience$ = homeService.experience$;
+    this.activityCount$ = homeService.activityCount$;
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
