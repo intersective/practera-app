@@ -904,6 +904,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.selectedAttachments.splice(attachIndex, 1);
     if (isDelete) {
+      // eslint-disable-next-line no-console
       this.filestackService.deleteFile(attachment.handle).subscribe(console.log);
     }
   }

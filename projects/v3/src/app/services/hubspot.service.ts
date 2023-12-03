@@ -51,7 +51,10 @@ export class HubspotService {
       customErrorHandler: (err: any) => {
         return of(err);
       }
-    })
+    }).pipe(
+      // eslint-disable-next-line no-console
+      map(res => console.log(res)),
+    );
   }
 
   generateParams(params: HubspotFormParams) {
