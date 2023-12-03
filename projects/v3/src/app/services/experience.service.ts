@@ -8,7 +8,7 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
-import { ReviewService } from '@v3/services/review.service';
+import { Review, ReviewService } from '@v3/services/review.service';
 import { RequestService } from 'request';
 import { HomeService } from './home.service';
 
@@ -96,7 +96,7 @@ export interface ProjectProgress {
 })
 export class ExperienceService {
 
-  review$ = this.reviewService.reviews$;
+  review$: Observable<Review[]>;
 
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
@@ -130,7 +130,9 @@ export class ExperienceService {
     private eventService: EventService,
     private reviewService: ReviewService,
     private homeService: HomeService,
-  ) { }
+  ) {
+    this.review$ = this.reviewService.reviews$;
+  }
 
   async getPrograms() {
     let programs = null;
@@ -244,6 +246,7 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
+    // eslint-disable-next-line rxjs/no-ignored-observable
     this.homeService.clearExperience();
 
     // initialise Pusher

@@ -6,7 +6,7 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-experiences',
@@ -15,7 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  programs$ = this.experienceService.programsWithProgress$;
+  programs$: Observable<ProgramObj[]>;
 
   constructor(
     private router: Router,
@@ -25,7 +25,9 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private utils: UtilsService,
     private readonly storage: BrowserStorageService,
-  ) { }
+  ) {
+    this.programs$ = this.experienceService.programsWithProgress$
+  }
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
