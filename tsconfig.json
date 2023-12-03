@@ -26,30 +26,9 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "paths": {
-    "@testingv3/*": [
-      "projects/v3/src/testing/*"
-    ],
-    "@v3/app/*": [
-      "projects/v3/src/app/*"
-    ],
-    "@v3/services/*": [
-      "projects/v3/src/app/services/*"
-    ],
-    "@v3/components/*": [
-      "projects/v3/src/app/components/*"
-    ],
-    "@v3/pages/*": [
-      "projects/v3/src/app/pages/*"
-    ],
-    "@v3/environments/*": [
-      "projects/v3/src/environments/*"
-    ],
-    "apollo": [
-      "./dist/apollo"
-    ],
-    "request": [
-      "./dist/request"
-    ]
-  }
+  "exclude": [
+    "node_modules",
+    "dist",
+    "./src/**/*"
+  ]
 }
