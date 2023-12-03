@@ -207,6 +207,7 @@ export class FileComponent implements ControlValueAccessor, OnInit {
 
     // don't need to wait for deletion, just move on to
     // avoid negative effect on UX
+    // eslint-disable-next-line no-console
     this.filestackService.deleteFile(file.handle).subscribe(console.log);
   }
 
