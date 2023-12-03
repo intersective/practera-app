@@ -71,6 +71,7 @@ export class FastFeedbackService {
 
   submit(data, params) {
     if (environment.demo) {
+      // eslint-disable-next-line no-console
       console.log('data', data, 'params', params);
       return this.demo.normalResponse();
     }

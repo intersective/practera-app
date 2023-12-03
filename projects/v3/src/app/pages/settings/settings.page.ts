@@ -229,7 +229,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
-    if (this.hubspotActivated == true) {
+    if (this.hubspotActivated === true) {
       return this.utils.openSupportPopup({ formOnly: true });
     }
 

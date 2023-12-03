@@ -136,6 +136,7 @@ export class EmbedVideoService {
         };
       })
     ).toPromise()
+      // eslint-disable-next-line no-console
       .catch(error => console.log(error));
   }
 
@@ -156,6 +157,7 @@ export class EmbedVideoService {
         };
       }))
       .toPromise()
+      // eslint-disable-next-line no-console
       .catch(error => console.log(error));
   }
 

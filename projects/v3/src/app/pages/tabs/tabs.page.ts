@@ -103,7 +103,7 @@ export class TabsPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => {
-      if (sub.closed == false) {
+      if (sub.closed === false) {
         sub.unsubscribe();
       }
     });
