@@ -58,7 +58,7 @@ export class HubspotService {
   generateParams(params: HubspotFormParams) {
     if (!this.utils.isEmpty(this.storage.getUser())) {
       // legalConsentOptions is a required param for the hubspot API
-      let submitParam = {
+      const submitParam = {
         fields: [],
         legalConsentOptions: {
           consent: {
@@ -156,7 +156,7 @@ export class HubspotService {
         return program.experience.id === experienceId;
       });
       if (currentExperience) {
-        let expName = currentExperience.experience.name;
+        const expName = currentExperience.experience.name;
         if (expName) {
           submitParam.fields.push(
             {

@@ -26,7 +26,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private utils: UtilsService,
     private readonly storage: BrowserStorageService,
   ) {
-    this.programs$ = this.experienceService.programsWithProgress$
+    this.programs$ = this.experienceService.programsWithProgress$;
   }
 
   ngOnInit() {

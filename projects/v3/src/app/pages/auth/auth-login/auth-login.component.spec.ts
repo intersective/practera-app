@@ -75,7 +75,7 @@ describe('AuthLoginComponent', () => {
       expect(notificationSpy.alert.calls.count()).toBe(1);
 
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
+      (typeof button === 'string') ? button : button.handler(true);
 
       expect(component.isLoggingIn).toBe(false);
     });
@@ -113,7 +113,7 @@ describe('AuthLoginComponent', () => {
       expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
 
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
+      (typeof button === 'string') ? button : button.handler(true);
 
       expect(component.isLoggingIn).toBe(false);
     }));

@@ -203,7 +203,7 @@ describe('EventDetailComponent', () => {
         expect(serviceSpy.bookEvent.calls.count()).toBe(0);
 
         const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-        (typeof button == 'string') ? button : button.handler(true);
+        (typeof button === 'string') ? button : button.handler(true);
 
         expect(serviceSpy.bookEvent.calls.count()).toBe(1);
         // expect(modalSpy.dismiss.calls.count()).toEqual(1);

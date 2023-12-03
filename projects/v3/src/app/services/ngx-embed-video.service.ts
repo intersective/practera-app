@@ -107,9 +107,9 @@ export class EmbedVideoService {
 
     options.image = this.validYouTubeOptions.indexOf(options.image) > 0 ? options.image : 'default';
 
-    let src = 'https://img.youtube.com/vi/' + id + '/' + options.image + '.jpg';
+    const src = 'https://img.youtube.com/vi/' + id + '/' + options.image + '.jpg';
 
-    let result = {
+    const result = {
       link: src,
       html: '<img src="' + src + '"/>'
     };
@@ -168,7 +168,7 @@ export class EmbedVideoService {
     }
 
     if (options && options.hasOwnProperty('attr')) {
-      let temp = <any>[];
+      const temp = <any>[];
 
       Object.keys(options.attr).forEach(function (key) {
         temp.push(key + '="' + (options.attr[key]) + '"');
@@ -183,9 +183,9 @@ export class EmbedVideoService {
   }
 
   private serializeQuery(query: any): any {
-    let queryString: any = [];
+    const queryString: any = [];
 
-    for (let p in query) {
+    for (const p in query) {
       if (query.hasOwnProperty(p)) {
         queryString.push(encodeURIComponent(p) + '=' + encodeURIComponent(query[p]));
       }

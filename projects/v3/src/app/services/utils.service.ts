@@ -295,7 +295,7 @@ export class UtilsService {
 
     const currentLocale = this.getCurrentLocale();
     // when in English, default to format of "en-GB" from previous code
-    let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    const defaultLocale = currentLocale === 'en-US' ? 'en-GB' : currentLocale;
 
     if (date.isSame(compareDate, 'd')) {
       return new Intl.DateTimeFormat(currentLocale, { // support en-US
@@ -740,7 +740,7 @@ export class UtilsService {
       return program.experience.id === expId;
     });
     if (currentExperience) {
-      let supportEmail = currentExperience.experience.support_email;
+      const supportEmail = currentExperience.experience.support_email;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;
