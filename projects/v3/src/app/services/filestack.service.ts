@@ -83,14 +83,12 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType) {
-    let location, container, region, workflows, paths;
-    ({
+    let { container, region } = environment.filestack.s3Config;
+    const {
       location,
-      container,
-      region,
       workflows,
       paths
-    } = environment.filestack.s3Config);
+    } = environment.filestack.s3Config;
 
     let path = paths.any;
     // get s3 path based on file type
@@ -209,7 +207,7 @@ export class FilestackService {
       },
       onUploadDone: (res) => res,
       supportEmail: 'help@practera.com',
-      lang: currentLocale != 'en-US' ? currentLocale : 'en',
+      lang: currentLocale !== 'en-US' ? currentLocale : 'en',
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();

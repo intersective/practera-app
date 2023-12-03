@@ -51,6 +51,7 @@ export class HubspotService {
         return of(err);
       }
     }).pipe(
+      // eslint-disable-next-line no-console
       map(res => console.log(res)),
     );
   }

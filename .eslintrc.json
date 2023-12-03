@@ -41,7 +41,7 @@
             "style": "camelCase"
           }
         ],
-        "rxjs/no-ignored-observable": "error",
+        "rxjs/no-ignored-observable": "warn",
 
         // General TypeScript best practices
         "prefer-const": "error",

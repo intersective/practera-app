@@ -190,10 +190,7 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
       comment,
-    ).pipe(
-      delay(800),
-      tap((res) => { console.log(res) })
-    );
+    ).pipe(delay(800));
   }
 
   ngOnChanges() {
@@ -509,12 +506,12 @@ export class AssessmentComponent implements OnChanges, OnDestroy {
 
     if (this.submission) {
       // condition: Published && feedbackReview is true
-      if (this.submission.status == 'published' && !this.feedbackReviewed) {
+      if (this.submission.status === 'published' && !this.feedbackReviewed) {
         return 'readFeedback';
       }
 
       // condition: status not always = "Published", so we need to check by the submission status (completed = true means completed)
-      if (this.submission.status == 'feedback available' && this.submission.completed === false) {
+      if (this.submission.status === 'feedback available' && this.submission.completed === false) {
         return 'readFeedback';
       }
     }

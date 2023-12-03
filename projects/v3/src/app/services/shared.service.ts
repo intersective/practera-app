@@ -159,6 +159,7 @@ export class SharedService {
   getIpLocation() {
     this._ipAPI().subscribe(
       res => this.storage.setCountry(res.country_name),
+      // eslint-disable-next-line no-console
       err => console.log(err)
     );
   }

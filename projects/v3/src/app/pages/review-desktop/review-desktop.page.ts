@@ -49,7 +49,7 @@ export class ReviewDesktopPage implements OnInit {
       this.submissionId = +params?.submissionId;
     });
     this.reviews$.subscribe(reviews => {
-      if (this.utils.isEmpty(this.submissionId) || this.submissionId == 0) {
+      if (this.utils.isEmpty(this.submissionId) || this.submissionId === 0) {
         this.gotoFirstReview(reviews);
       } else if (reviews.length > 0) { // handle directlink
         this.goto(reviews.find(re => re.submissionId === this.submissionId));

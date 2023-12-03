@@ -35,7 +35,7 @@ export class SupportPopupComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.isShowFormOnly == true) {
+    if (this.isShowFormOnly === true) {
       this.isShowForm = true;
     }
   }
