@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -17,6 +18,32 @@
       "es2018",
       "dom"
     ],
+    "paths": {
+      "@testingv3/*": [
+        "projects/v3/src/testing/*"
+      ],
+      "@v3/app/*": [
+        "projects/v3/src/app/*"
+      ],
+      "@v3/services/*": [
+        "projects/v3/src/app/services/*"
+      ],
+      "@v3/components/*": [
+        "projects/v3/src/app/components/*"
+      ],
+      "@v3/pages/*": [
+        "projects/v3/src/app/pages/*"
+      ],
+      "@v3/environments/*": [
+        "projects/v3/src/environments/*"
+      ],
+      "apollo": [
+        "dist/apollo"
+      ],
+      "request": [
+        "dist/request"
+      ]
+    },
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
   },
@@ -24,11 +51,12 @@
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+    "disableTypeScriptVersionCheck": true
   },
   "exclude": [
     "node_modules",
     "dist",
-    "./src/**/*"
+    "src"
   ]
 }
