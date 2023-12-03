@@ -1,13 +1,14 @@
 /* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "../../tsconfig.json",
+  "baseUrl": "./",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
     "types": [],
     "lib": [
       "es2020",
       "dom"
-    ],
+    ]
   },
   "files": [
     "src/main.ts",
@@ -16,5 +17,10 @@
   "include": [
     "src/**/*.d.ts",
     "src/**/*.ts"
+  ],
+  "exclude": [
+    "test.ts",
+    "**/testing/**/*.ts",
+    "**/*.spec.ts"
   ]
 }

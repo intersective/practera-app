@@ -14,10 +14,6 @@
           "ja": {
             "translation": "projects/v3/src/locales/messages.ja.xlf",
             "baseHref": "ja/"
-          },
-          "ms": {
-            "translation": "projects/v3/src/locales/messages.ms.xlf",
-            "baseHref": "ms/"
           }
         }
       },
