@@ -8,10 +8,10 @@
       "files": ["*.ts"],
       "parserOptions": {
         "project": [
-          "./projects/request/tsconfig.lib.json",
-          "./projects/request/tsconfig.spec.json",
           "./projects/v3/tsconfig.app.json",
-          "./projects/v3/tsconfig.spec.json"
+          "./projects/v3/tsconfig.spec.json",
+          "./projects/request/tsconfig.lib.json",
+          "./projects/request/tsconfig.spec.json"
         ]
       },
       "extends": [
