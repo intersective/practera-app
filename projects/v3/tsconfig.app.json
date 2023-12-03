@@ -2,7 +2,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "outDir": "../../out-tsc/app",
     "types": [],
     "lib": [
@@ -11,22 +11,22 @@
     ],
     "paths": {
       "@testingv3/*": [
-        "./src/testing/*"
+        "src/testing/*"
       ],
       "@v3/app/*": [
-        "./src/app/*"
+        "src/app/*"
       ],
       "@v3/services/*": [
-        "./src/app/services/*"
+        "src/app/services/*"
       ],
       "@v3/components/*": [
-        "./src/app/components/*"
+        "src/app/components/*"
       ],
       "@v3/pages/*": [
-        "./src/app/pages/*"
+        "src/app/pages/*"
       ],
       "@v3/environments/*": [
-        "./src/environments/*"
+        "src/environments/*"
       ],
       "apollo": [
         "../../dist/apollo"
@@ -43,14 +43,15 @@
   ],
   "include": [
     "./src/**/*.d.ts",
-    "./src/**/*.ts"
+    "./**/*.ts"
   ],
   "exclude": [
-    "test.ts",
-    "**/testing/**/*.ts",
-    "**/*.spec.ts",
-    "../../node_modules",
-    "../../dist",
-    "../../src/**/*.*"
-  ]
+    "src/test.ts",
+    "src/testing/**/*.ts",
+    "**/*.spec.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "disableTypeScriptVersionCheck": true
+  }
 }
