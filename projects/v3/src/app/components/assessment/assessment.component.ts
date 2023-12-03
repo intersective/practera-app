@@ -266,7 +266,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
       comment,
-    ).pipe(delay(800));
+    );
   }
 
   ngOnChanges() {
