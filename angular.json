@@ -1,7 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "defaultProject": "app",
   "newProjectRoot": "projects",
   "projects": {
     "app": {
@@ -267,10 +266,6 @@
           "ja": {
             "translation": "projects/v3/src/locales/messages.ja.xlf",
             "baseHref": "ja/"
-          },
-          "ms": {
-            "translation": "projects/v3/src/locales/messages.ms.xlf",
-            "baseHref": "ms/"
           }
         }
       },
@@ -493,7 +488,6 @@
     }
   },
   "cli": {
-    "defaultCollection": "@ionic/angular-toolkit",
     "analytics": false
   },
   "schematics": {
