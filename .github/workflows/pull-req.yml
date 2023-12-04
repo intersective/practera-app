@@ -15,7 +15,7 @@ on:
       - 'release/**'
       - 'stable'
     types: [opened, synchronize, reopened]
-    
+
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 15
 
 ################################################
-#  GITHUB ACTIONS GLOBAL ENV VARIABLES  
+#  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
     env:
       REGION : NA
@@ -46,7 +46,7 @@ jobs:
 
 
 ################################################
-#  GITHUB REPO CHECKOUT 
+#  GITHUB REPO CHECKOUT
 ################################################
     steps:
       - uses: actions/checkout@v2
@@ -57,15 +57,15 @@ jobs:
 
 ################################################
 #  NODE ENV
-################################################    
+################################################
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
-      
+          node-version: '16'
+
 
 ################################################
-#  NODE MODULES CACHE  
+#  NODE MODULES CACHE
 ################################################
       - name: Cache node modules
         uses: actions/cache@v2
@@ -86,7 +86,7 @@ jobs:
 
 
 ################################################
-#  NODE MODULES INSTALL  
+#  NODE MODULES INSTALL
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
@@ -95,8 +95,8 @@ jobs:
 
 
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS 
-################################################ 
+#  AWS CLI CONFIGURATION - DEVOPS
+################################################
       - name: Configure AWS credentials from $STACK_NAME account in $REGION region
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -113,7 +113,7 @@ jobs:
         run:  |
           npm run lint --if-present
 
-          
+
 # ###############################################################
 # #  BUILD WEB PACKAGES
 # ##############################################################
@@ -138,13 +138,13 @@ jobs:
 #       - name: Performing Sonarcloud Scanner
 #         uses: SonarSource/sonarcloud-github-action@master
 #         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-   
+
 # ##########################################################
 # #  SLACK NOTIFICATION
-# ##########################################################  
+# ##########################################################
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -180,7 +180,7 @@ jobs:
 
 # ################################################
 # #  STATUS VARIABLE UPDATE
-# ################################################ 
+# ################################################
       - name: Deployment status variable update
         if: ${{ failure() }}
         run: |
@@ -188,7 +188,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |
