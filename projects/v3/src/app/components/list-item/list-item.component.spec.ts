@@ -51,6 +51,7 @@ describe('ListItemComponent', () => {
 
     const listItemDe: DebugElement = fixture.debugElement.query(By.css('.item-title'));
     const listItemEl: HTMLElement = listItemDe.nativeElement;
+    // eslint-disable-next-line no-console
     console.log(listItemEl);
 
     expect(listItemEl.textContent).toEqual(testHost.title);

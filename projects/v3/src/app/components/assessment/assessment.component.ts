@@ -14,6 +14,7 @@ import { FileComponent } from '../file/file.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
@@ -82,7 +83,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   // used to resubscribe to the assessment service
-  resubscribe$ = new Subject();
+  resubscribe$ = new Subject<void>();
   // used to save the assessment/review answers
   submitActions = new Subject<{
     autoSave: boolean;
@@ -101,7 +102,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     };
   }>();
   subscriptions: Subscription[] = [];
-  unsubscribe$ = new Subject();
+  unsubscribe$ = new Subject<void>();
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
@@ -162,8 +163,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         }
         return of(request);
       }),
-    ).subscribe(
-      (data: {
+    ).subscribe({
+      next: (data: {
         autoSave: boolean;
         goBack: boolean;
         questionSave?: {
@@ -178,7 +179,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         }
       },
       // save/submission error handling http 500
-      async (error) => {
+      error: async (error: any) => {
         if (error.message.includes('Autosave')) {
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
@@ -189,7 +190,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         }
         this.resubscribe$.next();
       }
-    );
+    });
   }
 
   /**
@@ -235,17 +236,16 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
     ).pipe(
-      tap((_res) => {
-        this.autosaving[questionInput.questionId] = false;
-        this.saved[questionInput.questionId] = true;
-        console.log('_res', _res);
-      }, (error) => {
-        console.log('error', error);
-        this.autosaving[questionInput.questionId] = false;
-        this.saved[questionInput.questionId] = false;
-        this.failed[questionInput.questionId] = true;
-      }, () => {
-        console.log('completed');
+      tap({
+        next: (_res) => {
+          this.autosaving[questionInput.questionId] = false;
+          this.saved[questionInput.questionId] = true;
+        },
+        error: (error: unknown) => {
+          this.autosaving[questionInput.questionId] = false;
+          this.saved[questionInput.questionId] = false;
+          this.failed[questionInput.questionId] = true;
+        }
       }),
       delay(800),
     );
@@ -266,8 +266,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       questionInput.questionId,
       answer,
       comment,
-    ).pipe(
-      tap((res) => { console.log(res) })
     );
   }
 
@@ -586,12 +584,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.submission) {
       // condition: Published && feedbackReview is true
-      if (this.submission.status == 'published' && !this.feedbackReviewed) {
+      if (this.submission.status === 'published' && !this.feedbackReviewed) {
         return 'readFeedback';
       }
 
       // condition: status not always = "Published", so we need to check by the submission status (completed = true means completed)
-      if (this.submission.status == 'feedback available' && this.submission.completed === false) {
+      if (this.submission.status === 'feedback available' && this.submission.completed === false) {
         return 'readFeedback';
       }
     }
