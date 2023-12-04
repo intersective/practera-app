@@ -44,7 +44,7 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
-  autosave$ = new Subject<any>();
+  autosave$ = new Subject<void>();
 
   constructor() {}
 

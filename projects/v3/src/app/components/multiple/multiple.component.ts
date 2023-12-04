@@ -38,7 +38,7 @@ export class MultipleComponent implements ControlValueAccessor, OnInit, OnDestro
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
-  autosave$ = new Subject<any>();
+  autosave$ = new Subject<void>();
 
   // the value of answer
   innerValue: any;

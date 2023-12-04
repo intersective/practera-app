@@ -10,6 +10,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs-compat';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
@@ -20,7 +21,8 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  activityCount$ = this.homeService.activityCount$;
+  experience$: Observable<Experience>;
+  activityCount$: Observable<number>;
   experienceProgress: number;
 
   milestones: Milestone[];
@@ -45,7 +47,10 @@ export class HomePage implements OnInit, OnDestroy {
     private experienceService: ExperienceService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
-  ) { }
+  ) {
+    this.experience$ = homeService.experience$;
+    this.activityCount$ = homeService.activityCount$;
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();

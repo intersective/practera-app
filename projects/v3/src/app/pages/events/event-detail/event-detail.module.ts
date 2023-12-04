@@ -12,7 +12,6 @@ import { EventService } from '@v3/services/event.service';
   ],
   providers: [ EventService ],
   exports: [ EventDetailComponent ],
-  entryComponents: [ EventDetailComponent ]
 })
 
 export class EventDetailModule {}

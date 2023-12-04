@@ -6,8 +6,9 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { Experience } from '../../services/experience.service';
 
 @Component({
   selector: 'app-experiences',
@@ -16,7 +17,8 @@ import { filter } from 'rxjs/operators';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  experiences$ = this.experienceService.experiences$;
+  experiences$: Observable<Experience[]>;
+  programs$: Observable<ProgramObj[]>;
   progresses: {
     [key: number]: number;
   } = {};
@@ -29,7 +31,10 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private utils: UtilsService,
     private readonly storage: BrowserStorageService,
-  ) { }
+  ) {
+    this.experiences$ = this.experienceService.experiences$;
+    this.programs$ = this.experienceService.programsWithProgress$
+  }
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
@@ -94,7 +99,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
         message: err.msg || JSON.stringify(err)
       });
     }
-    
+
     return this.router.navigate(destination);
   }
 
