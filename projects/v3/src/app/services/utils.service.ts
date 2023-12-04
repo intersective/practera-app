@@ -362,7 +362,7 @@ export class UtilsService {
 
     const currentLocale = this.getCurrentLocale();
     // when in English, default to "en-GB" format (from previous code)
-    const defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    const defaultLocale = currentLocale === 'en-US' ? 'en-GB' : currentLocale;
     return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',

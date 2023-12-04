@@ -47,7 +47,6 @@ export class HomePage implements OnInit, OnDestroy {
     private experienceService: ExperienceService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
-  ) { }
   ) {
     this.experience$ = homeService.experience$;
     this.activityCount$ = homeService.activityCount$;
