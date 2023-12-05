@@ -139,6 +139,8 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.institutionLogo = this.getInstitutionLogo();
+
     if (this.isMobile) {
       this.menuController.enable(false);
     }
@@ -240,6 +242,10 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   getInstitutionLogo(): string {
+    if (!this.storageService) {
+      return '/assets/logo.svg'; // Default logo or some fallback
+    }
+
     if (this.openMenu !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
