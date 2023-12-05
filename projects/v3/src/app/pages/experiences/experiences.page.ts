@@ -17,7 +17,7 @@ import { Experience } from '../../services/experience.service';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  experiences$: Observable<Experience[]>;
+  experiences$: Observable<any[]>;
   programs$: Observable<ProgramObj[]>;
   progresses: {
     [key: number]: number;
