@@ -43,7 +43,8 @@
               "quill-delta",
               "exif-js",
               "plyr",
-              "color-convert"
+              "color-convert",
+              "quill-magic-url"
             ],
             "localize": true,
             "i18nMissingTranslation": "warning",
