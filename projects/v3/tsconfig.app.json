@@ -49,7 +49,8 @@
   "exclude": [
     "src/test.ts",
     "src/testing/**/*.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "src/environments/environment.*.ts",
   ],
   "angularCompilerOptions": {
     "strictTemplates": true,
