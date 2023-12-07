@@ -285,6 +285,18 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "pusher-js",
+              "moment",
+              "moment-timezone",
+              "lodash-es",
+              "lodash",
+              "quill",
+              "quill-delta",
+              "exif-js",
+              "plyr",
+              "color-convert"
+            ],
             "localize": true,
             "i18nMissingTranslation": "warning",
             "i18nDuplicateTranslation": "warning",
