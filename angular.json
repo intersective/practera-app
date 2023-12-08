@@ -37,8 +37,6 @@
               "pusher-js",
               "moment",
               "moment-timezone",
-              "lodash-es",
-              "lodash",
               "quill",
               "quill-delta",
               "exif-js",

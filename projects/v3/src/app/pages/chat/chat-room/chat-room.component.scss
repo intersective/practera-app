@@ -284,6 +284,9 @@ $message-body-size: 60%;
 
   &.ion-footer-absolute {
     height: 169px;
+    position: absolute;
+    bottom: 0;
+    z-index: 30;
 
     ion-grid {
       padding: 0;
