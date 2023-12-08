@@ -2,10 +2,17 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { ApolloService } from '@v3/services/apollo.service';
-import * as _ from 'lodash';
+import isEmpty from 'lodash-es/isEmpty';
+import each from 'lodash-es/each';
+import unset from 'lodash-es/unset';
+import find from 'lodash-es/find';
+import findIndex from 'lodash-es/findIndex';
+import has from 'lodash-es/has';
+import flatten from 'lodash-es/flatten';
+import indexOf from 'lodash-es/indexOf';
+import remove from 'lodash-es/remove';
 import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
@@ -41,11 +48,18 @@ export class UtilsService {
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
   ) {
-    if (_) {
-      this.lodash = _;
-    } else {
-      throw new Error('Lodash not available');
-    }
+    // initialise lodash (reduce bundle size)
+    this.lodash = {
+      isEmpty,
+      each,
+      unset,
+      find,
+      findIndex,
+      has,
+      flatten,
+      indexOf,
+      remove,
+    };
   }
 
   /**

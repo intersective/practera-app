@@ -12,7 +12,6 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { debounce } from 'lodash';
 import { DomSanitizer } from '@angular/platform-browser';
 
 
