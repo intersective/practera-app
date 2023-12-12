@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
+import { first, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -112,7 +112,7 @@ export class AchievementService {
     return this.isPointsConfigured;
   }
 
-  markAchievementAsSeen(achievementId) {
+  markAchievementAsSeen(achievementId): Subscription {
     if (environment.demo) {
       return this.demo.normalResponse();
     }
@@ -126,6 +126,6 @@ export class AchievementService {
         endPoint: api.post.todoItem,
         data: postData
       }
-    ).subscribe();
+    ).pipe(first()).subscribe();
   }
 }
