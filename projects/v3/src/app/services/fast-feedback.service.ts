@@ -69,11 +69,11 @@ export class FastFeedbackService {
     );
   }
 
-  submit(data, params) {
+  submit(data, params): Observable<any> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
       console.log('data', data, 'params', params);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse('observable') as Observable<any>;
     }
     return this.request.post(
       {
