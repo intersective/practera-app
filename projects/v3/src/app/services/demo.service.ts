@@ -1019,7 +1019,7 @@ export class DemoService {
   }
 
   normalResponse() {
-    return of({}).pipe(delay(1000));
+    return of({}).pipe(delay(1000)).subscribe();
   }
 
   fastFeedback() {

@@ -9,7 +9,7 @@ import {
 import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap } from 'rxjs/operators';
-import { has, isEmpty, each } from 'lodash';
+import { has, isEmpty, each } from 'lodash-es';
 
 interface RequestOptions {
   headers?: any;
@@ -166,7 +166,7 @@ export class RequestService {
         return of(response);
       }),
       catchError((error) => {
-        if (typeof params.customErrorHandler == "function") {
+        if (typeof params.customErrorHandler === "function") {
           return params.customErrorHandler(error);
         }
         return this.handleError(error);
