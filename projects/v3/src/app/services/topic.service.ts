@@ -102,11 +102,11 @@ export class TopicService {
     return topic;
   }
 
-  updateTopicProgress(id, state) {
+  updateTopicProgress(id, state): Observable<any> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
       console.log('mark topic as ', state);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse('observable') as Observable<any>;
     }
     const postData = {
       model: 'topic',

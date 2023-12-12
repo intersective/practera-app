@@ -14,7 +14,6 @@ import { FileComponent } from '../file/file.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
-import { HttpErrorResponse } from '@angular/common/http';
 
 
 @Component({
