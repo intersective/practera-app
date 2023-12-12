@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, QueryList, OnDestroy, ViewChildren } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, QueryList, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { IonCheckbox } from '@ionic/angular';
 import { UtilsService } from '@v3/app/services/utils.service';
@@ -17,7 +17,7 @@ import { debounceTime, map, switchMap } from 'rxjs/operators';
     }
   ]
 })
-export class MultipleComponent implements ControlValueAccessor, OnInit, OnDestroy {
+export class MultipleComponent implements AfterViewInit, ControlValueAccessor, OnInit, OnDestroy {
   @Input() submitActions$: Subject<any>;
 
   @Input() question;
