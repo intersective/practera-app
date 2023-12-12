@@ -2,11 +2,18 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { ApolloService } from '@v3/services/apollo.service';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import isEmpty from 'lodash-es/isEmpty';
+import each from 'lodash-es/each';
+import unset from 'lodash-es/unset';
+import find from 'lodash-es/find';
+import findIndex from 'lodash-es/findIndex';
+import has from 'lodash-es/has';
+import flatten from 'lodash-es/flatten';
+import indexOf from 'lodash-es/indexOf';
+import remove from 'lodash-es/remove';
+import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
@@ -41,11 +48,18 @@ export class UtilsService {
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
   ) {
-    if (_) {
-      this.lodash = _;
-    } else {
-      throw new Error('Lodash not available');
-    }
+    // initialise lodash (reduce bundle size)
+    this.lodash = {
+      isEmpty,
+      each,
+      unset,
+      find,
+      findIndex,
+      has,
+      flatten,
+      indexOf,
+      remove,
+    };
   }
 
   /**
@@ -279,10 +293,10 @@ export class UtilsService {
     if (!time) {
       return '';
     }
-    const date = moment(new Date(this.iso8601Formatter(time)));
+    const date = dayjs(new Date(this.iso8601Formatter(time)));
     // if no compareWith provided, compare with today
     // and create tomorrow and yesterday from it.
-    const compareDate = moment((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
+    const compareDate = dayjs((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
     const tomorrow = compareDate.clone().add(1, 'day').startOf('day');
     const yesterday = compareDate.clone().subtract(1, 'day').startOf('day');
 
@@ -345,8 +359,8 @@ export class UtilsService {
    * @param {Date} date targetted date
    */
   dateFormatter(date: Date): string {
-    const dateToFormat = moment(date);
-    const today = moment(new Date());
+    const dateToFormat = dayjs(date);
+    const today = dayjs(new Date());
     const tomorrow = today.clone().add(1, 'day').startOf('day');
     const yesterday = today.clone().subtract(1, 'day').startOf('day');
 
@@ -557,7 +571,7 @@ export class UtilsService {
   }
 
   getFutureDated(date: string, dayCount: number) {
-    const currentDate = moment(this.iso8601Formatter(date));
+    const currentDate = dayjs(this.iso8601Formatter(date));
     return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
   }
 

@@ -33,6 +33,17 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+              "pusher-js",
+              "moment",
+              "moment-timezone",
+              "quill",
+              "quill-delta",
+              "exif-js",
+              "plyr",
+              "color-convert",
+              "quill-magic-url"
+            ],
             "localize": true,
             "i18nMissingTranslation": "warning",
             "i18nDuplicateTranslation": "warning",
