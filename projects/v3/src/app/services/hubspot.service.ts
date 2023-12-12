@@ -36,7 +36,7 @@ export class HubspotService {
 
   submitDataToHubspot(params: HubspotFormParams): Observable<any> {
     if (environment.demo) {
-      return this.demo.normalResponse();
+      return this.demo.normalResponse('observable') as Observable<any>;
     }
     const body = this.generateParams(params);
     if (!body) {

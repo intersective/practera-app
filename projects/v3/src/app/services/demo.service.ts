@@ -1018,7 +1018,11 @@ export class DemoService {
     return of(response).pipe(delay(1000));
   }
 
-  normalResponse() {
+  normalResponse(type?) {
+    if (type === 'observable') {
+      return of({}).pipe(delay(1000));
+    }
+
     return of({}).pipe(delay(1000)).subscribe();
   }
 

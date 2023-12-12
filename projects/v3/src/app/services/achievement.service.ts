@@ -114,8 +114,9 @@ export class AchievementService {
 
   markAchievementAsSeen(achievementId): Subscription {
     if (environment.demo) {
-      return this.demo.normalResponse();
+      return this.demo.normalResponse() as Subscription;
     }
+
     const postData = {
       project_id: this.storage.getUser().projectId,
       identifier: 'Achievement-' + achievementId,
