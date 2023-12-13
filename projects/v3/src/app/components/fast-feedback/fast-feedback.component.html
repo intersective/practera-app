@@ -28,7 +28,10 @@
             lines="none"
           >
             <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
-            <ion-radio [value]="choice.id" slot="start" mode="md"></ion-radio>
+            <ion-radio [value]="choice.id"
+              [ariaLabel]="choice.title"
+              slot="start"
+              mode="md"></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
