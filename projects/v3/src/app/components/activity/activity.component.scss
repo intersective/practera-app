@@ -2,10 +2,14 @@
   margin: 0 0 10px;
   position: relative;
   z-index: 1;
+  &.description {
+    margin: 0 10px;
+  }
 }
 
 .activity-backdrop {
   background-size: cover;
+  background-position: center;
   min-height: 200px;
   color: #fff;
   text-shadow: 1px 1px 3px black;
