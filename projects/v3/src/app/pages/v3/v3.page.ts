@@ -115,6 +115,7 @@ export class V3Page implements OnInit, OnDestroy {
         icon: 'home',
         code: 'Home',
         badges: 0,
+        hasNotification: false,
       },
       {
         title: $localize`Events`,
@@ -213,7 +214,7 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
       if (unlockedTasks?.length > 0) {
-        this.hasUnlockedTasks = true;
+        this.appPages[0].hasNotification = true;
       }
     });
   }

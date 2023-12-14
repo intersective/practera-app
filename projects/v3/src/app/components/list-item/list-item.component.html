@@ -18,8 +18,9 @@
     aria-hidden="true"
   ></ion-icon>
 
-  <ion-avatar *ngIf="leadImage" slot="start" aria-hidden="true">
+  <ion-avatar class="icon-container" *ngIf="leadImage" slot="start" aria-hidden="true">
     <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title">
+    <span class="notification-dot" [class.hidden]="!redDot"></span>
   </ion-avatar>
 
   <div class="item-content ion-padding-vertical"
