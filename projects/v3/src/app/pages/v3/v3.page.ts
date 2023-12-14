@@ -13,6 +13,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
 import { concat } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-v3',
@@ -78,6 +80,7 @@ export class V3Page implements OnInit, OnDestroy {
     'setting': $localize`Settings`,
     'myExperience': $localize`My Experiences`
   };
+  hasUnlockedTasks: boolean;
 
   constructor(
     private menuController: MenuController,
@@ -91,6 +94,7 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
+    private readonly unlockIndicatorService: UnlockIndicatorService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -199,12 +203,19 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.openMenu = false;
 
-    this.notificationInitialise().subscribe();
-  }
+    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
+    const notifications = this.notificationsService.getTodoItems().pipe(
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
+      })
+    );
+    this.subscriptions.push(notifications.subscribe());
 
-  // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-  notificationInitialise(): Observable<any> {
-    return concat(this.notificationsService.getTodoItems(), this.notificationsService.getChatMessage());
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      if (unlockedTasks?.length > 0) {
+        this.hasUnlockedTasks = true;
+      }
+    });
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {

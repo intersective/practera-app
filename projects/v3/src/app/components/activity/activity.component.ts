@@ -16,8 +16,7 @@ export class ActivityComponent implements OnInit, OnChanges {
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
-  leadImage: string = '';
-
+  leadImage: string = null;
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
@@ -30,7 +29,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
   ) {}
 
   ngOnInit() {
