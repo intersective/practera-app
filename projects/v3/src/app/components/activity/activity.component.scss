@@ -2,11 +2,14 @@
   margin: 0 0 10px;
   position: relative;
   z-index: 1;
+  &.description {
+    margin: 10px;
+  }
 }
 
 .activity-backdrop {
-  background: url(https://cdn.filestackcontent.com/wrmCKULtTleceA7vwqw5);
   background-size: cover;
+  background-position: center;
   min-height: 200px;
   color: #fff;
   text-shadow: 1px 1px 3px black;
@@ -18,7 +21,7 @@
   width: 110%;
   height: 200px;
   z-index: 0;
-  background: linear-gradient(to bottom, rgba(33, 40, 55, .5), rgba(33, 40, 55, 0)) !important;
+  background: linear-gradient(to bottom, rgba(33, 40, 55, 0.5), rgba(33, 40, 55, 0), rgba(33, 40, 55, 0)) !important;
   left: -10px;
 }
 .task-header {
