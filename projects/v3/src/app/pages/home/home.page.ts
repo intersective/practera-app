@@ -3,7 +3,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { SharedService } from '@v3/app/services/shared.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
@@ -17,7 +20,6 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
   activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
@@ -40,6 +42,9 @@ export class HomePage implements OnInit, OnDestroy {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
+    private sharedService: SharedService,
+    private experienceService: ExperienceService,
+    private storageService: BrowserStorageService,
   ) { }
 
   ngOnInit() {
@@ -79,14 +84,16 @@ export class HomePage implements OnInit, OnDestroy {
           this.updateDashboard();
         }
       })
-    )
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  updateDashboard() {
+  async updateDashboard() {
+    await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+    this.experience = this.storageService.get('experience');
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
