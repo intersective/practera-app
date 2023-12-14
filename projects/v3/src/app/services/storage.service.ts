@@ -65,8 +65,6 @@ export interface Config {
 })
 
 export class BrowserStorageService {
-  public memoryCache: any;
-
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {

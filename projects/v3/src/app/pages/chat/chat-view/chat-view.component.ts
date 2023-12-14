@@ -3,6 +3,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { ChatChannel } from '@v3/services/chat.service';
 import { DOCUMENT } from '@angular/common';
+import { SharedService } from '@v3/app/services/shared.service';
 
 @Component({
   selector: 'app-chat-view',
@@ -20,6 +21,7 @@ export class ChatViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private sharedService: SharedService,
     private utils: UtilsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
@@ -38,6 +40,7 @@ export class ChatViewComponent implements OnInit {
   private _initialise() {
     this.chatChannel = null;
     this.loadInfo = false;
+    this.sharedService.getNewJwt().subscribe();
   }
 
   // navigate to a chat-room (on desktop only)

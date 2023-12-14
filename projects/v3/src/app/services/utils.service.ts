@@ -731,16 +731,9 @@ export class UtilsService {
   }
 
   checkIsPracteraSupportEmail() {
-    const expId = this.storageService.getUser().experienceId;
-    const programList = this.storageService.get('programs');
-    if (!expId || !programList || programList.length < 1) {
-      return;
-    }
-    const currentExperience = programList.find((program)=> {
-      return program.experience.id === expId;
-    });
-    if (currentExperience) {
-      let supportEmail = currentExperience.experience.support_email;
+    const currentExperience = this.storageService.get('experience');
+    if (currentExperience && currentExperience.supportEmail) {
+      let supportEmail = currentExperience.supportEmail;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;
