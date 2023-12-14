@@ -13,7 +13,7 @@
     <div class="overlay"></div>
   </div>
 
-  <div class="activity-info description">
+  <div class="activity-info description" *ngIf="activity?.description">
     <app-description [content]="activity.description"></app-description>
   </div>
 
