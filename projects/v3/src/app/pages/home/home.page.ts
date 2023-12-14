@@ -7,6 +7,7 @@ import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subscription } from 'rxjs';
@@ -34,6 +35,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
+  hasUnlockedTasks: Object = {};
 
   constructor(
     private router: Router,
@@ -46,6 +48,7 @@ export class HomePage implements OnInit, OnDestroy {
     private experienceService: ExperienceService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
+    private unlockIndicatorService: UnlockIndicatorService
   ) {
     this.experience$ = homeService.experience$;
     this.activityCount$ = homeService.activityCount$;
@@ -89,6 +92,12 @@ export class HomePage implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      unlockedTasks.forEach(task => {
+        this.hasUnlockedTasks[task.activityId] = true;
+      });
+    });
   }
 
   ngOnDestroy(): void {

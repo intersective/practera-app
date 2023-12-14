@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
@@ -11,11 +11,12 @@ import { UtilsService } from '@v3/services/utils.service';
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss'],
 })
-export class ActivityComponent implements OnChanges {
+export class ActivityComponent implements OnInit, OnChanges {
   @Input() activity: Activity;
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
+  leadImage: string = null;
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
@@ -28,8 +29,12 @@ export class ActivityComponent implements OnChanges {
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
   ) {}
+
+  ngOnInit() {
+    this.leadImage = this.storageService.getUser().programImage;
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.activity?.currentValue?.tasks?.length > 0) {

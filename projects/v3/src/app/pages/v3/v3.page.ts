@@ -13,6 +13,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
 import { mergeMap } from 'rxjs/operators';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-v3',
@@ -78,6 +79,7 @@ export class V3Page implements OnInit, OnDestroy {
     'setting': $localize`Settings`,
     'myExperience': $localize`My Experiences`
   };
+  hasUnlockedTasks: boolean;
 
   constructor(
     private menuController: MenuController,
@@ -91,6 +93,7 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
+    private readonly unlockIndicatorService: UnlockIndicatorService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -208,6 +211,12 @@ export class V3Page implements OnInit, OnDestroy {
       })
     );
     this.subscriptions.push(notifications.subscribe());
+
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      if (unlockedTasks?.length > 0) {
+        this.hasUnlockedTasks = true;
+      }
+    });
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
