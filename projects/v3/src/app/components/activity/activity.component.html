@@ -8,12 +8,13 @@
     </h1>
     <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
 
-
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"  aria-hidden="true"></ion-skeleton-text>
 
-    <app-description *ngIf="activity.description" class="activity-info" [content]="activity.description"></app-description>
-
     <div class="overlay"></div>
+  </div>
+
+  <div class="activity-info description">
+    <app-description [content]="activity.description"></app-description>
   </div>
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
