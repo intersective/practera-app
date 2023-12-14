@@ -41,6 +41,7 @@ export class ListItemComponent {
   };
   @Input() eventFullyBooked: boolean;
   @Input() eventDayCount: string;
+  @Input() redDot: boolean = false; // red dot on the top right corner (for notifications)
 
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];
