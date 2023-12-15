@@ -17,7 +17,7 @@ import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 import { NetworkService } from './network.service';
 import { ModalService } from './modal.service';
-import { environment } from '@environments/environment';
+import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { UnlockIndicatorModel, UnlockIndicatorService, UnlockedTask } from './unlock-indicator.service';
 
@@ -285,7 +285,9 @@ export class NotificationsService {
       if (environment.demo) {
         return this.demo.normalResponse();
       }
-      this.markTodoItemAsDone('Achievement-' + achievement.id).subscribe();
+      this.markTodoItemAsDone({
+        identifier: 'Achievement-' + achievement.id
+      }).subscribe();
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
@@ -844,7 +846,7 @@ export class NotificationsService {
    * Mark the todo item as done
    * @param {Obj} todoItem
    */
-  markTodoItemAsDone(key: { identifier: string; [key:string]: any; }) {
+  markTodoItemAsDone(key: TodoItem) {
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {

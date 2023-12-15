@@ -220,7 +220,7 @@ export class ActivityService {
 
       result.tasks.forEach(task => {
         if (currentTasks[task.id] === undefined) {
-          this.unlockIndicatorService.unlockTask(null, result.id, task.id);
+          this.unlockIndicatorService.unlockTask(task.id);
         }
       });
     }

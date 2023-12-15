@@ -16,7 +16,8 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 export class DevtoolPage implements OnInit {
   doneLogin: boolean = false;
   user: any = {};
-  themeToggle = false;0
+  themeToggle = false;
+  identifier: string = '';
 
   sample: any;
 
@@ -140,7 +141,7 @@ export class DevtoolPage implements OnInit {
   newItems: { id: number; model: string; model_id: number; type: string; }[] = [];
   async triggerAchievement(identifier?: string) {
     if (identifier) {
-      this.notificationsService.markTodoItemAsDone(identifier).subscribe(res => {
+      this.notificationsService.markTodoItemAsDone({ identifier }).subscribe(res => {
         console.log('manual-marked::', res);
       })
       return;
