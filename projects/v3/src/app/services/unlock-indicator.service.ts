@@ -4,9 +4,11 @@ import { BrowserStorageService } from './storage.service';
 import { Activity } from './activity.service';
 
 export interface UnlockedTask {
+  id?: number;
   milestoneId?: number;
   activityId?: number;
   taskId?: number;
+  identifier?: string;
   meta?: {
     task_id: number;
     task_type: string;
@@ -40,7 +42,7 @@ export class UnlockIndicatorService {
     }
   }
 
-  allUnlockedTasks() {
+  allUnlockedTasks(): UnlockedTask[] {
     return this.unlockedTasksSubject.getValue();
   }
 

@@ -200,8 +200,8 @@ export class AssessmentService {
   private _normaliseAssessment(data, action): Assessment {
     if (!data.assessment) {
       return null;
-    }    
-    
+    }
+
     const assessment = {
       id: data.assessment.id,
       name: data.assessment.name,
@@ -648,7 +648,9 @@ export class AssessmentService {
       console.log('feedback reviewed', submissionId);
       return of(true);
     }
-    return this.NotificationsService.markTodoItemAsDone('AssessmentSubmission-' + submissionId);
+    return this.NotificationsService.markTodoItemAsDone({
+      identifier: 'AssessmentSubmission-' + submissionId
+    });
   }
 
   checkReviewer(reviewer): string {
