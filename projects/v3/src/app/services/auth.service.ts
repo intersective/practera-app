@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { map, tap } from 'rxjs/operators';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -72,8 +72,9 @@ interface AuthEndpoint {
       apikey: string;
       experience: object;
       email?: string;
-      unregistered: boolean;
+      unregistered?: boolean;
       activationCode?: string;
+      unauthenticated?: boolean;
     }
   }
 }
@@ -192,7 +193,11 @@ export class AuthService {
           };
         }
         return res;
-      })
+      }),
+      catchError(err => {
+        this.logout(); // clear user's information
+        throw new Error(err);
+      }),
     );
   }
 
