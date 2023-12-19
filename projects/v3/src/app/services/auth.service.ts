@@ -192,11 +192,7 @@ export class AuthService {
           };
         }
         return res;
-      }),
-      catchError(err => {
-        this.logout(); // clear user's information
-        throw new Error(err);
-      }),
+      })
     );
   }
 
