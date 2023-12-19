@@ -20,6 +20,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   progresses: {
     [key: number]: number;
   } = {};
+  isMobile: boolean = false;
 
   constructor(
     private router: Router,
@@ -48,6 +49,8 @@ export class ExperiencesPage implements OnInit, OnDestroy {
           });
         });
       }));
+
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnDestroy(): void {
@@ -56,10 +59,6 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
   async getProgress(projectId: number) {
     return this.experienceService.getProgresses([projectId]).toPromise();
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
   }
 
   get instituteLogo() {
@@ -96,5 +95,4 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     }
     return this.router.navigate(['v3','home']);
   }
-
 }
