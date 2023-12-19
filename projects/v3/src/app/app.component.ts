@@ -85,7 +85,7 @@ export class AppComponent implements OnInit {
           }
 
           // add the domain if the logo url is not a full url
-          if (!logo.includes('http') && !this.utils.isEmpty(logo)) {
+          if (!logo?.includes('http') && !this.utils.isEmpty(logo)) {
             logo = environment.APIEndpoint + logo;
           }
           const colors = {
