@@ -73,7 +73,6 @@ interface AuthEndpoint {
       email?: string;
       unregistered?: boolean;
       activationCode?: string;
-      unauthenticated?: boolean;
     }
   }
 }
