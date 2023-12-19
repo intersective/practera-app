@@ -27,7 +27,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private experienceService: ExperienceService,
-    public loadingController: LoadingController,
+    private loadingController: LoadingController,
     private notificationsService: NotificationsService,
     private utils: UtilsService,
     private readonly storage: BrowserStorageService,
