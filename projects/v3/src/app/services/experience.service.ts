@@ -175,6 +175,10 @@ export class ExperienceService {
       });
       return experiences;
     })).subscribe(res => {
+      // [CORE-6272] - accessing a deleted experience
+      if (environment.demo) {
+        res = [this.demo.deletedExperience, ...res];
+      }
       this._experiences$.next(res);
     });
   }
