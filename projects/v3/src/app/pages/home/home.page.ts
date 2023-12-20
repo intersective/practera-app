@@ -76,8 +76,8 @@ export class HomePage implements OnInit, OnDestroy {
       filter(progress => progress !== null),
     ).subscribe(
       progress => {
-        progress?.milestones.forEach(m => {
-          m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
+        progress?.milestones?.forEach(m => {
+          m.activities?.forEach(a => this.activityProgresses[a.id] = a.progress);
         });
       }
     ));

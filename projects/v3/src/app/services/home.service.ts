@@ -162,7 +162,7 @@ export class HomeService {
     const activities = {};
 
     milestones?.forEach(milestone => {
-      milestone.activities.forEach(activity => {
+      milestone.activities?.forEach(activity => {
         activities[activity.id] = activity;
       });
     });
