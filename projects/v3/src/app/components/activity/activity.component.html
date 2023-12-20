@@ -1,6 +1,6 @@
 <ng-container *ngIf="activity; else noActivity">
   <div class="ion-padding activity-backdrop"
-    [style]="{ 'background-image': 'url(' + leadImage + ')' }"
+    [appBackgroundImage]="leadImage"
     aria-live="polite"
     aria-labelledby="activity-name">
     <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info">
