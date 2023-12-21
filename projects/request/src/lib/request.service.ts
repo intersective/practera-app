@@ -236,7 +236,7 @@ export class RequestService {
   }
 
   public handleError(error: HttpErrorResponse | any) {
-    if (this.devMode.isDevMode()) {
+    if (this.devMode.isDevMode() && error) {
       console.error(
         `Backend returned code ${error?.status}, ` +
         `body was: ${error?.error}, ` +

@@ -35,6 +35,7 @@ import { TodoCardComponent } from './todo-card/todo-card.component';
 import { BottomActionBarComponent } from './bottom-action-bar/bottom-action-bar.component';
 import { VideoConversionComponent } from './video-conversion/video-conversion.component';
 import { SupportPopupComponent } from './support-popup/support-popup.component';
+import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -66,6 +67,7 @@ const largeCircleDefaultConfig = {
     ActivityComponent,
     AssessmentComponent,
     AutoresizeDirective,
+    BackgroundImageDirective,
     CircleProgressComponent,
     ClickableItemComponent,
     ContactNumberFormComponent,
@@ -100,6 +102,7 @@ const largeCircleDefaultConfig = {
     ActivityComponent,
     AssessmentComponent,
     AutoresizeDirective,
+    BackgroundImageDirective,
     CircleProgressComponent,
     ClickableItemComponent,
     CommonModule,
