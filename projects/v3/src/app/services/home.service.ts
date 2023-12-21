@@ -153,6 +153,18 @@ export class HomeService {
     return milestones;
   }
 
+  aggregateActivities(milestones) {
+    const activities = {};
+
+    milestones?.forEach(milestone => {
+      milestone.activities?.forEach(activity => {
+        activities[activity.id] = activity;
+      });
+    });
+
+    return activities;
+  }
+
   getProjectProgress() {
     if (environment.demo) {
       return this.demo.projectProgress().pipe(map(res => this._handleProjectProgress(res))).subscribe();

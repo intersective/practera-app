@@ -1,6 +1,6 @@
 <ng-container *ngIf="activity; else noActivity">
   <div class="ion-padding activity-backdrop"
-    [style]="leadImage ? 'background-image: url(' + leadImage + ');' : ''"
+    [appBackgroundImage]="leadImage"
     aria-live="polite"
     aria-labelledby="activity-name">
     <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info">
@@ -17,7 +17,11 @@
   </div>
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
-    <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
+
+    <ion-item class="headline-4 task-header" lines="none">
+      {{activity.tasks.length}}
+      <ng-container i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ng-container>
+    </ion-item>
 
     <ng-container *ngTemplateOutlet="noTasks"></ng-container>
 

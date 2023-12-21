@@ -2,6 +2,9 @@
   margin: 0 0 10px;
   position: relative;
   z-index: 1;
+  &.description {
+    margin: 1em;
+  }
 }
 
 .activity-backdrop {
