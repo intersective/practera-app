@@ -90,6 +90,7 @@ export class HomePage implements OnInit, OnDestroy {
     );
 
     this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      this.hasUnlockedTasks = {}; // reset
       unlockedTasks.forEach(task => {
         this.hasUnlockedTasks[task.activityId] = true;
       });
