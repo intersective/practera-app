@@ -220,7 +220,7 @@ export class ActivityService {
 
       result.tasks.forEach(task => {
         if (currentTasks[task.id] === undefined) {
-          this.unlockIndicatorService.unlockTask('', result.id, task.id);
+          this.unlockIndicatorService.unlockTask(null, result.id, task.id);
         }
       });
     }
@@ -315,6 +315,8 @@ export class ActivityService {
     await this.sharedService.getTeamInfo().toPromise();
 
     this._currentTask$.next(task);
+
+    this.unlockIndicatorService.removeTask(null, null, task.id);
     if (!getData) {
       return ;
     }
