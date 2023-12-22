@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -17,6 +18,7 @@ export class ActivityComponent implements OnInit, OnChanges {
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
   leadImage: string = null;
+  newTasks: { [key: number]: any } = {};
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
@@ -30,10 +32,16 @@ export class ActivityComponent implements OnInit, OnChanges {
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
     private activityService: ActivityService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
   ngOnInit() {
     this.leadImage = this.storageService.getUser().programImage;
+    this.unlockIndicatorService.unlockedTasks$.subscribe((unlockedTasks) => {
+      unlockedTasks.forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
