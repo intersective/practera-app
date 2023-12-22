@@ -1,25 +1,29 @@
 <ng-container *ngIf="activity; else noActivity">
-  <div class="ion-padding" aria-live="polite" aria-labelledby="activity-name">
-    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-name">
+  <div class="ion-padding activity-backdrop"
+    [appBackgroundImage]="leadImage"
+    aria-live="polite"
+    aria-labelledby="activity-name">
+    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info">
       {{ activity.name }}
     </h1>
     <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
 
-    <div class="task-count">
-      <ion-text *ngIf="activity.tasks" class="subtitle-3" color="grey-75" i18n>
-        {{ activity.tasks.length }}&nbsp;{activity.tasks.length, plural,
-          =1 {Task}
-          other {Tasks}
-        }
-      </ion-text>
-    </div>
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"  aria-hidden="true"></ion-skeleton-text>
 
-    <app-description *ngIf="activity.description" class="body-2" [content]="activity.description"></app-description>
+    <div class="overlay"></div>
+  </div>
+
+  <div class="activity-info description" *ngIf="activity?.description">
+    <app-description [content]="activity.description"></app-description>
   </div>
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
-    <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ion-item>
+
+    <ion-item class="headline-4 task-header" lines="none">
+      {{activity.tasks.length}}
+      <ng-container i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ng-container>
+    </ion-item>
+
     <app-list-item class="focusable"
       role="button"
       tabindex="0"
@@ -51,7 +55,6 @@
     subtitle1Color="grey-50"
     title="For team members only"></app-list-item>
 </ng-template>
-
 
 <ng-template #noActivity>
   <div *ngIf="!activity" class="ion-padding"

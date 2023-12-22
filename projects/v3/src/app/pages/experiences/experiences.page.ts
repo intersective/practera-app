@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-experiences',
@@ -15,13 +16,17 @@ import { Subscription } from 'rxjs';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  programs$ = this.experienceService.programsWithProgress$;
+  experiences$ = this.experienceService.experiences$;
+  progresses: {
+    [key: number]: number;
+  } = {};
+  isMobile: boolean = false;
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private experienceService: ExperienceService,
-    public loadingController: LoadingController,
+    private loadingController: LoadingController,
     private notificationsService: NotificationsService,
     private utils: UtilsService,
     private readonly storage: BrowserStorageService,
@@ -29,16 +34,31 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
-      this.experienceService.getPrograms();
+      this.experienceService.getExperiences();
     });
+
+    this.subscriptions.push(this.experiences$
+      .pipe(filter(experiences => experiences !== null))
+      .subscribe(experiences => {
+        const ids = experiences.map(experience => experience.projectId);
+        this.experienceService.getProgresses(ids).subscribe(res => {
+          res.forEach(progress => {
+            progress.forEach(project => {
+              this.progresses[project.id] = Math.round(progress.progress * 100);
+            });
+          });
+        });
+      }));
+
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnDestroy(): void {
     this.subscriptions[0].unsubscribe();
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
+  async getProgress(projectId: number) {
+    return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
   get instituteLogo() {
@@ -75,5 +95,4 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     }
     return this.router.navigate(['v3','home']);
   }
-
 }
