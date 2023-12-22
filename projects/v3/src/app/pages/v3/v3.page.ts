@@ -214,6 +214,7 @@ export class V3Page implements OnInit, OnDestroy {
     this.subscriptions.push(notifications.subscribe());
 
     this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      this.appPages[0].hasNotification = false; // reset
       if (unlockedTasks?.length > 0) {
         this.appPages[0].hasNotification = true;
       }

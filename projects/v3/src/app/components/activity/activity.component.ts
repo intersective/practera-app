@@ -38,6 +38,7 @@ export class ActivityComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.leadImage = this.storageService.getUser().programImage;
     this.unlockIndicatorService.unlockedTasks$.subscribe((unlockedTasks) => {
+      this.newTasks = {};
       unlockedTasks.forEach((task) => {
         this.newTasks[task.taskId] = true;
       });

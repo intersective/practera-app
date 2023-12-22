@@ -3,9 +3,9 @@ import { BehaviorSubject } from 'rxjs';
 import { BrowserStorageService } from './storage.service';
 
 interface UnlockedTask {
-  milestoneId: string;
-  activityId: string;
-  taskId: string;
+  milestoneId: number;
+  activityId: number;
+  taskId: number;
 }
 
 @Injectable({
@@ -27,7 +27,7 @@ export class UnlockIndicatorService {
   }
 
   // Method to add a new unlocked task
-  unlockTask(milestoneId: string, activityId: string, taskId: string) {
+  unlockTask(milestoneId: number, activityId: number, taskId: number) {
     const currentTasks = this.unlockedTasksSubject.getValue();
 
     const latestTasks = [...currentTasks, { milestoneId, activityId, taskId }];
@@ -36,13 +36,12 @@ export class UnlockIndicatorService {
   }
 
   // Method to remove an accessed task
-  removeTask(milestoneId?: string, activityId?: string, taskId?: string) {
+  removeTask(milestoneId?: number, activityId?: number, taskId?: number) {
     let currentTasks = this.unlockedTasksSubject.getValue();
-    currentTasks = currentTasks.filter(task =>
-      task.milestoneId !== milestoneId ||
-      task.activityId !== activityId ||
-      task.taskId !== taskId
-    );
+
+    if (currentTasks.some(task => task.taskId === taskId)) {
+      currentTasks = currentTasks.filter(task => task.taskId !== taskId);
+    }
 
     this.storageService.set('unlockedTasks', currentTasks);
     this.unlockedTasksSubject.next(currentTasks);
