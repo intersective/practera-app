@@ -5,7 +5,7 @@ import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import Pusher, { Channel } from 'pusher-js'; 
+import Pusher, { Channel } from 'pusher-js';
 import { ApolloService } from './apollo.service';
 
 const api = {
@@ -141,7 +141,23 @@ export class PusherService {
           },
         },
       };
-      const newPusherInstance = new Pusher(this.pusherKey, config);
+      const newPusherInstance = new Pusher(this.pusherKey, config)
+        .bind('pusher:connection_established', () => {
+          // eslint-disable-next-line no-console
+          console.log('pusher:connection_established');
+        })
+        .bind('pusher:connection_disconnected', () => {
+          // eslint-disable-next-line no-console
+          console.log('pusher:connection_disconnected');
+        })
+        .bind('pusher:connection_failed', () => {
+          // eslint-disable-next-line no-console
+          console.log('pusher:connection_failed');
+        })
+        .bind('pusher:error', (err) => {
+          // eslint-disable-next-line no-console
+          console.log('pusher:error', err);
+        });
       return newPusherInstance;
     } catch (err) {
       throw new Error(err);
@@ -248,7 +264,7 @@ export class PusherService {
         if (this.channels.notification) {
           this.channels.notification.subscription.unbind_all();
         }
-        
+
         this.channels.notification = {
           name: channelName,
           subscription: this.pusher.subscribe(channelName)
