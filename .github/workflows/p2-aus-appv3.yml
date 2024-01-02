@@ -16,7 +16,7 @@ on:
         default: ''
 
   push:
-    branches: [ 'feature/2.3-rollback' ]
+    branches: [ 'nodeploy' ]
 
 ################################################
 #  GITHUB ACTION JOBS
