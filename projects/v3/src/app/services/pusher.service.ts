@@ -1,13 +1,11 @@
-import { Injectable, Optional, NgZone } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { PusherStatic, Channel } from 'pusher-js';
-import * as Pusher from 'pusher-js';
+import Pusher, { Channel } from 'pusher-js'; 
 import { ApolloService } from './apollo.service';
 
 const api = {
@@ -51,11 +49,9 @@ export class PusherService {
   };
 
   constructor(
-    private http: HttpClient,
     private request: RequestService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
-    private ngZone: NgZone,
     private apolloService: ApolloService,
   ) {
     this.pusherKey = environment.pusherKey;
@@ -157,8 +153,8 @@ export class PusherService {
    * true: subscribed
    * false: haven't subscribed
    */
-  isSubscribed(channelName): boolean {
-    return !!this.pusher.allChannels().find((channel: Channel) => channel.name === channelName && channel.subscribed);
+  isSubscribed(channelName: string): boolean {
+    return this.pusher.allChannels().some((channel: Channel) => channel.name === channelName && channel.subscribed);
   }
 
   /**
@@ -235,7 +231,6 @@ export class PusherService {
    * @param channelName The name of the Pusher channel
    */
   subscribeChannel(type: string, channelName: string) {
-
     if (environment.demo) {
       return;
     }
@@ -246,8 +241,14 @@ export class PusherService {
     if (this.isSubscribed(channelName)) {
       return;
     }
+
     switch (type) {
       case 'notification':
+        // unsubscribe previous channel
+        if (this.channels.notification) {
+          this.channels.notification.subscription.unbind_all();
+        }
+        
         this.channels.notification = {
           name: channelName,
           subscription: this.pusher.subscribe(channelName)
@@ -267,9 +268,10 @@ export class PusherService {
             console.error(`fail to subscribe ${channelName}::`, data);
           });
         break;
+
       case 'chat':
         // don't need to subscribe again if already subscribed
-        if (this.channels.chat.find(c => c.name === channelName)) {
+        if (this.channels.chat.some(c => c.name === channelName)) {
           return;
         }
         const channel = {
