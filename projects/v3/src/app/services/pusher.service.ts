@@ -143,15 +143,19 @@ export class PusherService {
       };
       const newPusherInstance = new Pusher(this.pusherKey, config)
         .bind('pusher:connection_established', () => {
+          // eslint-disable-next-line no-console
           console.log('pusher:connection_established');
         })
         .bind('pusher:connection_disconnected', () => {
+          // eslint-disable-next-line no-console
           console.log('pusher:connection_disconnected');
         })
         .bind('pusher:connection_failed', () => {
+          // eslint-disable-next-line no-console
           console.log('pusher:connection_failed');
         })
         .bind('pusher:error', (err) => {
+          // eslint-disable-next-line no-console
           console.log('pusher:error', err);
         });
       return newPusherInstance;
