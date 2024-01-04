@@ -112,7 +112,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
-
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
   }
 
   goBack() {
