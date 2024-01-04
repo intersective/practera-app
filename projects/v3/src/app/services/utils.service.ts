@@ -17,6 +17,7 @@ import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
+import { Title } from '@angular/platform-browser';
 
 import Delta from 'quill-delta';
 
@@ -47,6 +48,7 @@ export class UtilsService {
     private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
+    private title: Title
   ) {
     // initialise lodash (reduce bundle size)
     this.lodash = {
@@ -780,5 +782,10 @@ export class UtilsService {
       return null;
     }
     return null;
+  }
+
+  // set page title
+  setPageTitle(title: string) {
+    this.title.setTitle(title);
   }
 }
