@@ -13,7 +13,7 @@ import { DevtoolPage } from './devtool.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    DevtoolPageRoutingModule
+    DevtoolPageRoutingModule,
   ],
   declarations: [DevtoolPage]
 })

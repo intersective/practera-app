@@ -32,6 +32,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule)
   },
   {
+    path: 'h5p',
+    loadChildren: () => import('./h5p/h5p.module').then(m => m.H5pModule)
+  },
+  {
     path: '',
     redirectTo: '/auth/login',
     pathMatch: 'full'
