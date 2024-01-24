@@ -101,11 +101,15 @@ export class HomePage implements OnInit, OnDestroy {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+<<<<<<< HEAD
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
 
     this.defaultLeadImage = this.experience.cardUrl || '';
+=======
+    // this.utils.setPageTitle(this.experience?.name || 'Practera'); // set page title [CORE-6308]
+>>>>>>> 0e85b4629 (bugfix/CORE-6334/missing-total-score)
   }
 
   goBack() {
@@ -113,6 +117,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   switchContent(event) {
+    // update points upon switching to badges tab
+    if (event.detail.value === 'badges') {
+      this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
+      this.getEarnedPoints = this.achievementService.earnedPoints;
+    }
     this.display = event.detail.value;
   }
 
