@@ -109,9 +109,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
-
-    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
-    this.getEarnedPoints = this.achievementService.getEarnedPoints();
     this.utils.setPageTitle(this.experience?.name || 'Practera');
   }
 
@@ -120,6 +117,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   switchContent(event) {
+    // update points upon switching to badges tab
+    if (event.detail.value === 'badges') {
+      this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
+      this.getEarnedPoints = this.achievementService.earnedPoints;
+    }
     this.display = event.detail.value;
   }
 
