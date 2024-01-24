@@ -119,7 +119,7 @@
     <p id="nobadges" class="body-1" aria-live="polite" i18n>You have no badges yet!</p>
     <ion-text class="subtitle-2" color="grey-75" aria-live="polite" i18n>Experience badge will show up here.</ion-text>
   </div>
-  <ion-item *ngIf="getIsPointsConfigured && achievements.length" lines="full" class="total-points">
+  <ion-item *ngIf="getIsPointsConfigured && achievements.length > 0" lines="full" class="total-points">
     <ion-label class="headline-4" i18n>
       Total Points Earned: {{getEarnedPoints}}
     </ion-label>
