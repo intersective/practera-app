@@ -92,7 +92,7 @@ export class AchievementService {
             isEarned: achievement.isEarned,
             earnedDate: achievement.earnedDate,
           });
-          if (achievement.points) {
+          if (achievement.points > 0) {
             this.isPointsConfigured = true;
             if (achievement.isEarned) {
               this.earnedPoints += +achievement.points;
@@ -102,14 +102,6 @@ export class AchievementService {
         this._achievements$.next(achievements);
         return achievements;
       })).subscribe();
-  }
-
-  getEarnedPoints() {
-    return this.earnedPoints;
-  }
-
-  getIsPointsConfigured() {
-    return this.isPointsConfigured;
   }
 
   markAchievementAsSeen(achievementId): Subscription {
