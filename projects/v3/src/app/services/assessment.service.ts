@@ -214,7 +214,8 @@ export class AssessmentService {
   private _normaliseAssessment(data, action): Assessment {
     if (!data.assessment) {
       return null;
-    }
+    }    
+    
     const assessment = {
       id: data.assessment.id,
       name: data.assessment.name,
