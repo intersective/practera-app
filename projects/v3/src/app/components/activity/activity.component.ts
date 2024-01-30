@@ -86,10 +86,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    // overdue shows the label only
-    if (task.isOverdue) {
-      return '';
-    }
+    
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
