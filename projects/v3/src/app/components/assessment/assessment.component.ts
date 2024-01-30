@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { Task } from '@v3/app/services/activity.service';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
@@ -27,6 +28,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
+  @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() submission: Submission;
