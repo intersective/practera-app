@@ -14,7 +14,7 @@ import { FileComponent } from '../file/file.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
-
+import { Task } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-assessment',
@@ -42,6 +42,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
+  @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() submission: Submission;
