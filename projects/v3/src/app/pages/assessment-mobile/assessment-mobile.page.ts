@@ -27,7 +27,6 @@ export class AssessmentMobilePage implements OnInit {
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   saving: boolean;
-
   currentTask: Task;
 
   constructor(
@@ -46,6 +45,7 @@ export class AssessmentMobilePage implements OnInit {
       this.assessment = res;
       this.utils.setPageTitle(this.assessment?.name);
     });
+    this.activityService.currentTask$.subscribe(res => this.currentTask = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
@@ -65,20 +65,8 @@ export class AssessmentMobilePage implements OnInit {
     return this.storageService.singlePageAccess;
   }
 
-  get task() {
-    return {
-      id: this.assessment.id,
-      type: 'Assessment',
-      name: this.assessment.name,
-      status: ''
-    };
-  }
-
   async continue() {
-    if (!this.currentTask) {
-      this.currentTask = this.task;
-    }
-    if (this.currentTask.status === 'done') {
+    if (this.currentTask?.status === 'done') {
       // just go to the next task without any other action
       return this.activityService.goToNextTask(this.currentTask);
     }
@@ -169,7 +157,7 @@ export class AssessmentMobilePage implements OnInit {
 
       this.btnDisabled$.next(false);
       // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activityId, true, this.task);
+      return this.activityService.getActivity(this.activityId, true, this.currentTask);
     } catch(err) {
       this.btnDisabled$.next(false);
       console.error(err);
@@ -177,7 +165,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   nextTask() {
-    this.activityService.goToNextTask(this.task);
+    this.activityService.goToNextTask(this.currentTask);
   }
 
   async reviewRatingPopUp(): Promise<void> {
