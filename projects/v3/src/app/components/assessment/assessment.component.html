@@ -68,7 +68,7 @@
       </ion-chip>
 
       <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
-        <strong i18n>Due Date</strong>: {{ assessment.dueDate | date : 'd MMMM y' }}
+        <strong i18n>Due Date</strong>: {{ utils.utcToLocal(assessment.dueDate) }}
       </p>
 
       <ion-text class="ion-text-left">
