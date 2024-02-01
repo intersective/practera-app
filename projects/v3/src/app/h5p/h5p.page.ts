@@ -1,95 +1,7 @@
 import { AfterViewInit, Component, NgZone } from '@angular/core';
 import { H5P } from "h5p-standalone";
 import { catchError } from 'rxjs/operators';
-
-const JSON_CONTENT = {
-  "embedTypes": [
-    "iframe"
-  ],
-  "language": "en",
-  "defaultLanguage": "en",
-  "license": "U",
-  "extraTitle": "Lab & Sample Collection",
-  "title": "Lab & Sample Collection",
-  "mainLibrary": "H5P.InteractiveVideo",
-  "preloadedDependencies": [
-    {
-      "machineName": "H5P.SingleChoiceSet",
-      "majorVersion": 1,
-      "minorVersion": 11
-    },
-    {
-      "machineName": "FontAwesome",
-      "majorVersion": 4,
-      "minorVersion": 5
-    },
-    {
-      "machineName": "H5P.JoubelUI",
-      "majorVersion": 1,
-      "minorVersion": 3
-    },
-    {
-      "machineName": "H5P.Transition",
-      "majorVersion": 1,
-      "minorVersion": 0
-    },
-    {
-      "machineName": "H5P.FontIcons",
-      "majorVersion": 1,
-      "minorVersion": 0
-    },
-    {
-      "machineName": "H5P.SoundJS",
-      "majorVersion": 1,
-      "minorVersion": 0
-    },
-    {
-      "machineName": "H5P.Question",
-      "majorVersion": 1,
-      "minorVersion": 5
-    },
-    {
-      "machineName": "H5P.TrueFalse",
-      "majorVersion": 1,
-      "minorVersion": 8
-    },
-    {
-      "machineName": "H5P.Summary",
-      "majorVersion": 1,
-      "minorVersion": 10
-    },
-    {
-      "machineName": "jQuery.ui",
-      "majorVersion": 1,
-      "minorVersion": 10
-    },
-    {
-      "machineName": "H5P.Video",
-      "majorVersion": 1,
-      "minorVersion": 6
-    },
-    {
-      "machineName": "H5P.DragNBar",
-      "majorVersion": 1,
-      "minorVersion": 5
-    },
-    {
-      "machineName": "H5P.DragNDrop",
-      "majorVersion": 1,
-      "minorVersion": 1
-    },
-    {
-      "machineName": "H5P.DragNResize",
-      "majorVersion": 1,
-      "minorVersion": 2
-    },
-    {
-      "machineName": "H5P.InteractiveVideo",
-      "majorVersion": 1,
-      "minorVersion": 26
-    }
-  ]
-};
+import { RequestService } from 'request';
 
 @Component({
   selector: 'app-h5p',
@@ -101,6 +13,7 @@ export class H5PPage implements AfterViewInit {
   h5p: any;
   contents: { name: string; dir: string }[];
   constructor(
+    private request: RequestService,
     private zone: NgZone,
   ) {
     this.contents = [
@@ -124,6 +37,23 @@ export class H5PPage implements AfterViewInit {
 
   ngAfterViewInit() {
     this.showH5P();
+    this.request.get('http://localhost:3000/api/h5p').pipe(
+      catchError((err) => {
+        console.error(err);
+        return err;
+      })
+    ).subscribe((res: {
+      result: any[]
+    }) => {
+      console.log('h5p', res.result);
+      const contents = res.result.map((content) => {
+        return {
+          name: content.name,
+          dir: `${this.s3url}${content.dir}`,
+        };
+      });
+      this.contents.push(...contents);
+    });
   }
 
   async loadH5P123() {
@@ -174,13 +104,13 @@ export class H5PPage implements AfterViewInit {
     el.innerHTML = '';
 
     const options: H5P.options = {
-      h5pJsonPath: content?.dir || 'https://app-sschaw.s3.ap-southeast-1.amazonaws.com/sizzling',
-      contentJsonPath: content?.dir || 'https://app-sschaw.s3.ap-southeast-1.amazonaws.com/sizzling',
+      h5pJsonPath: content?.dir || `${this.s3url}/sizzling`,
+      contentJsonPath: content?.dir || `${this.s3url}/sizzling`,
       librariesPath: "/assets/h5p/libraries",
       frameJs: '/assets/h5p/frame.bundle.js',
       frameCss: '/assets/h5p/styles/h5p.css',
       assetsRequestFetchOptions: {
-        mode: 'no-cors',
+        // mode: 'no-cors',
         cache: 'no-cache',
         credentials: 'include',
         headers: {
@@ -195,9 +125,9 @@ export class H5PPage implements AfterViewInit {
     }
 
     try {
-      const aha = await this.loadH5P123();
+      // const aha = await this.loadH5P123();
+      // console.log(aha);
       const data = new H5P(el, options);
-      console.log(aha);
       console.log(data);
     } catch (error) {
       console.error(error);
