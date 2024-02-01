@@ -1,7 +1,12 @@
 import { AfterViewInit, Component, NgZone } from '@angular/core';
-import { H5P } from "h5p-standalone";
+import { H5P as H5PStandalone } from "h5p-standalone";
+import * as H5P from 'h5p-standalone';
 import { catchError } from 'rxjs/operators';
 import { RequestService } from 'request';
+
+declare global {
+  interface Window { H5P: any; }
+}
 
 @Component({
   selector: 'app-h5p',
@@ -9,7 +14,7 @@ import { RequestService } from 'request';
 })
 
 export class H5PPage implements AfterViewInit {
-  protected s3url = '';
+  protected s3url = './assets/h5p';
   h5p: any;
   contents: { name: string; dir: string }[];
   constructor(
@@ -103,7 +108,7 @@ export class H5PPage implements AfterViewInit {
     const el = document.getElementById('h5p-container');
     el.innerHTML = '';
 
-    const options: H5P.options = {
+    const options: H5PStandalone.options = {
       h5pJsonPath: content?.dir || `${this.s3url}/sizzling`,
       contentJsonPath: content?.dir || `${this.s3url}/sizzling`,
       librariesPath: "/assets/h5p/libraries",
@@ -120,15 +125,18 @@ export class H5PPage implements AfterViewInit {
       },
     };
 
-    if (this.h5p) {
-      this.h5p.destroy();
-    }
-
     try {
-      // const aha = await this.loadH5P123();
-      // console.log(aha);
-      const data = new H5P(el, options);
-      console.log(data);
+      const data = await new H5PStandalone(el, options);
+
+      // const iframe = el.getElementsByTagName(`iframe#h5p-iframe-${data}`);
+
+
+      if (window.H5P) {
+        window.H5P.externalDispatcher.on('xAPI', (event) => {
+          console.log('xAPI event:', event);
+        });
+      }
+
     } catch (error) {
       console.error(error);
     }
