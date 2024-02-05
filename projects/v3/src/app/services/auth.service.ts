@@ -195,7 +195,11 @@ export class AuthService {
         return res;
       }),
       catchError(err => {
-        this.logout(); // clear user's information
+        // When logout get call from here user get redirect without showing any error messages.
+        // so from here need to throw the error. and handel from the components.
+        // then we can show error message and add logout as call back of notification popup.
+        // Kepping this in case some error happen. logic moved
+        //this.logout(); // clear user's information
         throw new Error(err);
       }),
     );
