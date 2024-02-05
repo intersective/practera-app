@@ -64,7 +64,8 @@ export class AuthGlobalLoginComponent implements OnInit {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            this.navigate(['auth', 'login']);
+            // calling auth service logout mentod to clear user data and redirect
+            this.authService.logout();
           }
         }
       ]
