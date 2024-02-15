@@ -59,6 +59,21 @@ jobs:
           ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
 
 ################################################
+#  Restrict workflow
+################################################
+      - name: Restrict workflow dispatch
+        run: |
+          GITHUB_USERS=${USERS//\"/}
+          if [[ ! " ${GITHUB_USERS[@]} " =~ " ${ACTOR} " ]]; then
+              echo "Actor $ACTOR is not authorized to run this workflow."
+              echo "##[error]Unauthorized user. Cancelling workflow."
+              exit 1
+          fi
+        env:
+          ACTOR: ${{ github.actor }}
+          USERS: ${{ secrets.USERS }}
+
+################################################
 #  GET P2 P2USA AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
