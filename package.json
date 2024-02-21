@@ -7,7 +7,7 @@
   "description": "AppV2",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "npm run v3",
     "v3": "ng serve --project=v3 -c development",
     "poststart": "npm run generate-version",
     "local": "ng serve -c local",

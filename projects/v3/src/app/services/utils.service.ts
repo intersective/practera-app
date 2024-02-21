@@ -10,6 +10,7 @@ import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
+import { Title } from '@angular/platform-browser';
 
 import Delta from 'quill-delta';
 
@@ -40,6 +41,7 @@ export class UtilsService {
     private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
+    private title: Title
   ) {
     if (_) {
       this.lodash = _;
@@ -743,5 +745,10 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  // set page title
+  setPageTitle(title: string) {
+    this.title.setTitle(title);
   }
 }
