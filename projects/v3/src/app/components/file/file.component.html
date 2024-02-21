@@ -78,18 +78,14 @@
       [disabled]="control.disabled"
     ></app-file-display>
   </ng-container>
-
-  <div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question?.canComment && submission?.answer">
-    <ion-item class="feedback-title ion-no-padding" lines="none">
-      <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
-      <ion-label i18n>Feedback</ion-label>
-    </ion-item>
-    <ion-textarea class="ion-no-margin textarea"
-      [autoGrow]="true"
-      [attr.aria-label]="'expert\'s review feedback'"
-      #commentEle [(ngModel)]="comment"
-      (ngModelChange)="onChange(comment, 'comment')"
-      placeholder="Please put your feedback here"
-      [disabled]="control.disabled"></ion-textarea>
-  </div>
 </ng-container>
+
+<div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question?.canComment && submission?.answer">
+  <ion-item class="feedback-title ion-no-padding" lines="none">
+    <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
+    <ion-label i18n>Feedback</ion-label>
+  </ion-item>
+  <ion-textarea class="ion-no-margin textarea" [autoGrow]="true" [attr.aria-label]="'expert\'s review feedback'"
+    #commentEle [(ngModel)]="comment" (ngModelChange)="onChange(comment, 'comment')"
+    placeholder="Please put your feedback here" [disabled]="control.disabled"></ion-textarea>
+</div>
