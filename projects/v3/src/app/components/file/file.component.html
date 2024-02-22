@@ -31,8 +31,7 @@
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
     </ion-item>
-    <ion-textarea class="ion-no-margin textarea white-space-pre"
-      [autoGrow]="true"
+    <ion-textarea class="ion-no-margin preview textarea white-space-pre"
       [value]="review.comment"
       [disabled]="true"
     ></ion-textarea>
@@ -62,31 +61,33 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="doReview && question.canAnswer && reviewStatus !== 'done'">
-  <app-file-stack *ngIf="!uploadedFile && !review.answer"
-    [accept]="fileTypes"
-    [fileType]="question.fileType || 'any'"
-    (uploadCompleted)="onFileUploadCompleted($event, 'answer')"
-    [disabled]="control.disabled"
-  ></app-file-stack>
-
-  <ng-container *ngIf="uploadedFile || review.answer">
-    <ion-item lines="none">
-      <ion-label class="white-space-normal body-2 gray-3">
-        <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
-      </ion-label>
-    </ion-item>
-
-    <app-file-display
-      [file]="uploadedFile ? uploadedFile : review.answer"
+<ng-container *ngIf="doReview">
+  <ng-container *ngIf="question.canAnswer">
+    <app-file-stack *ngIf="!uploadedFile && !review.answer"
+      [accept]="fileTypes"
       [fileType]="question.fileType || 'any'"
-      [isFileComponent]="true"
-      (removeFile)="removeSubmitFile($event)"
+      (uploadCompleted)="onFileUploadCompleted($event, 'answer')"
       [disabled]="control.disabled"
-    ></app-file-display>
+    ></app-file-stack>
+
+    <ng-container *ngIf="uploadedFile || review.answer">
+      <ion-item lines="none">
+        <ion-label class="white-space-normal body-2 gray-3">
+          <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
+        </ion-label>
+      </ion-item>
+
+      <app-file-display
+        [file]="uploadedFile ? uploadedFile : review.answer"
+        [fileType]="question.fileType || 'any'"
+        [isFileComponent]="true"
+        (removeFile)="removeSubmitFile($event)"
+        [disabled]="control.disabled"
+      ></app-file-display>
+    </ng-container>
   </ng-container>
 
-  <div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question.canComment && submission.answer">
+  <div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question?.canComment && submission?.answer">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
@@ -94,8 +95,7 @@
     <ion-textarea class="ion-no-margin textarea"
       [autoGrow]="true"
       [attr.aria-label]="'expert\'s review feedback'"
-      #commentEle
-      [(ngModel)]="comment"
+      #commentEle [(ngModel)]="comment"
       (ngModelChange)="onChange(comment, 'comment')"
       placeholder="Please put your feedback here"
       [disabled]="control.disabled"></ion-textarea>
