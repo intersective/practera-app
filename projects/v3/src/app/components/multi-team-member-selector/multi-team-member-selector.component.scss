@@ -33,6 +33,10 @@ ion-textarea {
   border: 1px solid var(--practera-grey-50);
   border-radius: var(--border-radius);
   font-size: 14px !important;
+  &.preview {
+    border: none;
+    padding-left: var(--ion-padding);
+  }
 }
 
 ion-item {
