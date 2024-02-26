@@ -11,9 +11,3 @@ RUN npm install
 COPY . .
 
 CMD ["npm", "run", "v3"]
-
-# COPY start-server /usr/local/bin
-
-# EXPOSE 4200
-
-# ENTRYPOINT [ "start-server" ]

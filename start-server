@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-npm run buildv3
-sleep 2
-npm run v3
