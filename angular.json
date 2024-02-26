@@ -171,10 +171,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
-            ]
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
           }
         },
         "e2e": {
@@ -249,9 +246,7 @@
           "builder": "@angular-devkit/build-angular:lint",
           "options": {
             "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -406,6 +401,10 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "host": "0.0.0.0",
+            "port": 4200
+          },
           "configurations": {
             "ms": {
               "browserTarget": "v3:build:development,ms"
@@ -436,13 +435,8 @@
             "tsConfig": "projects/v3/tsconfig.spec.json",
             "karmaConfig": "projects/v3/karma.conf.js",
             "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/v3/src/favicon.ico",
-              "projects/v3/src/assets"
-            ],
-            "styles": [
-              "projects/v3/src/styles.scss"
-            ],
+            "assets": ["projects/v3/src/favicon.ico", "projects/v3/src/assets"],
+            "styles": ["projects/v3/src/styles.scss"],
             "scripts": []
           }
         },
