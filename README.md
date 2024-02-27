@@ -19,6 +19,18 @@ Run `npm run v3` to launch AppV3 locally
 
 Run `npm run i18n` to update coverage of translateable static text
 
+### Localisation & Internationalisation
+This should applied only for `trunk` (development) or `release/live` separately. Both `messages.xlf` files in the both branches can never be the same because `trunk` has more untested code.
+
+1. We need generated locales script from `./locales` and `./projects/v3/src/locales`
+1. Depend on which language you need to update, select the translated script from `./projects/v3/src/locales`
+1. For example, for Japanese, use `message.ja.xlf`
+1. Go to poedit.org, create a project and upload translated locale script.
+1. In case, there are new changes in the static content, to run `npm run i18n`
+1. The above will regenerate `./locales/messages.xlf`
+1. Import this newly generated `messages.xlf` to your created project with the previously uploaded translated script.
+1. Continue translation on poeditor.org platform, export the translated script and rename and replace the one you get from `./projects/v3/src/locales`
+
 ### Starting a development server calling the stage environment
 
 Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
