@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ModalController, IonicSafeString } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { EventService, Event } from '@v3/services/event.service';
@@ -41,7 +41,7 @@ export class EventDetailComponent implements OnInit {
         // we only show the single booking pop up if user has booked an event under the same activity
         if (this.event.singleBooking && this.storage.getBookedEventActivityIds().includes(this.event.activityId)) {
           this.NotificationsService.alert({
-            message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booking this event will cancel your booking for other events within the same activity, do you still wanna book?` + '</p>'),
+            message: `<p aria-live="assertive">${$localize`Booking this event will cancel your booking for other events within the same activity, do you still wanna book?`}</p>`,
             buttons: [
               {
                 text: $localize`OK`,
@@ -67,7 +67,7 @@ export class EventDetailComponent implements OnInit {
         this.eventService.cancelEvent(this.event).subscribe(response => {
           if (response.success) {
             this.NotificationsService.alert({
-              message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booking cancelled Successfully!` + '</p>'),
+              message: `<p aria-live="assertive">${$localize`Booking cancelled Successfully!`}</p>`,
               buttons: [
                 {
                   text: $localize`OK`,
@@ -110,7 +110,7 @@ export class EventDetailComponent implements OnInit {
     this.eventService.bookEvent(this.event).subscribe(
       _response => {
         this.NotificationsService.alert({
-          message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booked Successfully!` + '</p>'),
+          message: `<p aria-live="assertive">${$localize`Booked Successfully!`}</p>`,
           buttons: [
             {
               text: $localize`OK`,
@@ -130,7 +130,7 @@ export class EventDetailComponent implements OnInit {
       },
       error => {
         this.NotificationsService.alert({
-          message: new IonicSafeString('<p aria-live="assertive">' + $localize`Booking failed, please try again later!` + '</p>'),
+          message: `<p aria-live="assertive">${$localize`Booking failed, please try again later!`}</p>`,
           buttons: [
             {
               text: $localize`OK`,
