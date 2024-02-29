@@ -3,9 +3,9 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
-import { BrowserStorageService } from '@v3/services/storage.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
+import { NotificationsService } from './notifications.service';
 
 /**
  * @name api
@@ -45,8 +45,8 @@ export class AchievementService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService,
-    private demo: DemoService
+    private demo: DemoService,
+    private notificationService: NotificationsService
   ) { }
 
   getAchievements(order?) {
@@ -110,22 +110,5 @@ export class AchievementService {
 
   getIsPointsConfigured() {
     return this.isPointsConfigured;
-  }
-
-  markAchievementAsSeen(achievementId) {
-    if (environment.demo) {
-      return this.demo.normalResponse();
-    }
-    const postData = {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'Achievement-' + achievementId,
-      is_done: true
-    };
-    return this.request.post(
-      {
-        endPoint: api.post.todoItem,
-        data: postData
-      }
-    ).subscribe();
   }
 }

@@ -22,7 +22,7 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
-  ) { }
+      ) { }
 
   ngOnInit() {
     this.doneLogin = this.authService.isAuthenticated();
@@ -72,5 +72,9 @@ export class DevtoolPage implements OnInit {
     this.authService.authenticate({...data, ...{service: 'LOGIN'}}).subscribe(res => {
       console.log(res);
     });
+  }
+
+  async triggerAchievement() {
+    this.notificationsService.markTodoItemAsDone('Achievement-'+13919);
   }
 }
