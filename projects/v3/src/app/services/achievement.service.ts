@@ -5,7 +5,6 @@ import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
-import { NotificationsService } from './notifications.service';
 
 /**
  * @name api
@@ -46,7 +45,6 @@ export class AchievementService {
     private request: RequestService,
     private utils: UtilsService,
     private demo: DemoService,
-    private notificationService: NotificationsService
   ) { }
 
   getAchievements(order?) {
