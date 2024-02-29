@@ -135,6 +135,7 @@ export class ExperienceService {
           id
           uuid
           timelineId
+          projectId
           name
           description
           type
