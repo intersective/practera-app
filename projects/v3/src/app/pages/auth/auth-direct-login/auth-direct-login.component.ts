@@ -225,7 +225,7 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
 
-    let errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({
       message: errorMessage,
