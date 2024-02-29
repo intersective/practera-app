@@ -14,6 +14,8 @@
   <ion-button (click)="testAuth()">testAuth</ion-button>
   <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
 
+  <pre *ngIf="sample">{{ sample | json }}</pre>
+
   <ion-text *ngIf="doneLogin">
     <p>{{ user | json }}</p>
   </ion-text>
