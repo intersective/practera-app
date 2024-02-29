@@ -17,6 +17,7 @@
   <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
 
   <ion-toggle [(ngModel)]="themeToggle" (ionChange)="toggleChange($event)" justify="space-between">Dark Mode</ion-toggle>
+  <pre *ngIf="sample">{{ sample | json }}</pre>
 
   <ion-text *ngIf="doneLogin">
     <p>{{ user | json }}</p>
