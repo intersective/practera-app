@@ -17,6 +17,8 @@ import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 import { NetworkService } from './network.service';
 import { ModalService } from './modal.service';
+import { environment } from '@environments/environment';
+import { DemoService } from './demo.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -93,6 +95,7 @@ export class NotificationsService {
   };
 
   constructor(
+    private readonly demo: DemoService,
     private modalService: ModalService,
     private modalController: ModalController,
     private alertController: AlertController,
@@ -253,7 +256,10 @@ export class NotificationsService {
       achievement
     };
     if (type === 'notification') {
-      this.achievementService.markAchievementAsSeen(achievement.id);
+      if (environment.demo) {
+        return this.demo.normalResponse();
+      }
+      this.markTodoItemAsDone('Achievement-' + achievement.id).subscribe();
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
@@ -756,13 +762,21 @@ export class NotificationsService {
   }
 
   postEventReminder(event) {
+    return this.markTodoItemAsDone(`EventReminder-${event.id}`).subscribe();
+  }
+
+  /**
+   * Mark the todo item as done
+   * @param {Obj} todoItem 
+   */
+  markTodoItemAsDone(identifier: string) {
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {
+        identifier,
         project_id: this.storage.getUser().projectId,
-        identifier: 'EventReminder-' + event.id,
         is_done: true
       }
-    }).subscribe();
+    });
   }
 }
