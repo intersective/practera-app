@@ -226,7 +226,7 @@ export class AuthDirectLoginComponent implements OnInit {
     }
 
     let errorMessage = $localize`Your link is invalid or expired.`;
-    if (res.message == 'User not enrolled in any experience') {
+    if (res.message === 'User not enrolled in any experience') {
       errorMessage = $localize`User not enrolled in any practera experience`;
     }
 
