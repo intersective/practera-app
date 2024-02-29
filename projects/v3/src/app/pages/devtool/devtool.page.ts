@@ -24,7 +24,7 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
-  ) { }
+      ) { }
 
   ngOnInit() {
     this.doneLogin = this.authService.isAuthenticated();
@@ -131,5 +131,9 @@ export class DevtoolPage implements OnInit {
   // Add or remove the "dark" class on the document body
   toggleDarkTheme(shouldAdd) {
     document.body.classList.toggle('dark', shouldAdd);
+  }
+
+  async triggerAchievement() {
+    this.notificationsService.markTodoItemAsDone('Achievement-'+13919);
   }
 }
