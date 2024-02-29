@@ -92,7 +92,7 @@ export class AchievementService {
             isEarned: achievement.isEarned,
             earnedDate: achievement.earnedDate,
           });
-          if (achievement.points) {
+          if (achievement.points > 0) {
             this.isPointsConfigured = true;
             if (achievement.isEarned) {
               this.earnedPoints += +achievement.points;
