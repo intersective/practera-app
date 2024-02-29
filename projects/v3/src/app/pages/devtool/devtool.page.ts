@@ -134,6 +134,8 @@ export class DevtoolPage implements OnInit {
   }
 
   async triggerAchievement() {
-    this.notificationsService.markTodoItemAsDone('Achievement-'+13919);
+    this.notificationsService.markTodoItemAsDone('Achievement-'+13919).subscribe(res => {
+      console.log(res);
+    });
   }
 }
