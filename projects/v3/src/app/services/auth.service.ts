@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -197,7 +197,7 @@ export class AuthService {
         // then we can show error message and add logout as call back of notification popup.
         // Kepping this in case some error happen. logic moved
         //this.logout(); // clear user's information
-        throw new Error(err);
+        return throwError(err);
       }),
     );
   }
