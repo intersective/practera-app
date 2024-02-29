@@ -17,6 +17,8 @@ export class DevtoolPage implements OnInit {
   user: any = {};
   themeToggle = false;0
 
+  sample: any;
+
   constructor(
     private authService: AuthService,
     private storageService: BrowserStorageService,
@@ -133,9 +135,12 @@ export class DevtoolPage implements OnInit {
     document.body.classList.toggle('dark', shouldAdd);
   }
 
+  newItems: {model:string; model_id: number; type:string; }[] = [];
   async triggerAchievement() {
     this.notificationsService.markTodoItemAsDone('Achievement-'+13919).subscribe(res => {
-      console.log(res);
+      this.newItems = res?.data?.meta?.new_items;
+      console.log(this.newItems);
+      this.sample = this.newItems;
     });
   }
 }
