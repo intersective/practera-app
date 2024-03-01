@@ -3,6 +3,8 @@ import { BehaviorSubject } from 'rxjs';
 import { BrowserStorageService } from './storage.service';
 
 export interface UnlockedTask {
+  id: number;
+  identifier: string;
   milestoneId?: number;
   activityId?: number;
   taskId?: number;
@@ -35,16 +37,21 @@ export class UnlockIndicatorService {
 
   unlockTasks(data: UnlockedTask[]) {
     const currentTasks = this.unlockedTasksSubject.getValue();
-    const latestTasks = [...currentTasks, ...data];
+    const deduped = this.dedupStored(currentTasks);
+    const latestTasks = [...deduped, ...data];
 
     this.storageService.set('unlockedTasks', latestTasks);
-    this.unlockedTasksSubject.next(latestTasks);
   }
 
   // Method to add a new unlocked task
-  unlockTask(milestoneId: number, activityId: number, taskId: number) {
+  unlockTask(identifier:string, key: {milestoneId?: number; activityId?: number; taskId?: number;}) {
     const currentTasks = this.unlockedTasksSubject.getValue();
-    const latestTasks = [...currentTasks, { milestoneId, activityId, taskId }];
+    const latestTasks = [...currentTasks, { 
+      identifier,
+      milestoneId: key.milestoneId,
+      activityId: key.activityId,
+      taskId: key.taskId
+    }];
     
     this.storageService.set('unlockedTasks', latestTasks);
     this.unlockedTasksSubject.next(latestTasks);
@@ -68,8 +75,25 @@ export class UnlockIndicatorService {
     this.unlockedTasksSubject.next([]);
   }
 
+  dedupStored(records) {
+    const uniqueRecords = new Map();
+
+    records.forEach(record => {
+      // Determine the type of identifier and create a unique key
+      const key = `milestoneId:${record.milestoneId || 'none'}-activityId:${record.activityId || 'none'}-taskId:${record.taskId || 'none'}`;
+
+      // If the key doesn't exist in the map, add the record
+      if (!uniqueRecords.has(key)) {
+        uniqueRecords.set(key, record);
+      }
+    });
+
+    // Return an array of unique records
+    return Array.from(uniqueRecords.values());
+  }
+
   // Method to transform and deduplicate the data
-  transformAndDeduplicate(data) {
+  transformAndDeduplicateTodoItem(data) {
     const uniqueEntries = new Map();
 
     data.forEach(item => {

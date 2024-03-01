@@ -20,6 +20,7 @@ import { ModalService } from './modal.service';
 import { environment } from '@environments/environment';
 import { DemoService } from './demo.service';
 import { UnlockIndicatorModel, UnlockIndicatorService, UnlockedTask } from './unlock-indicator.service';
+import { tap } from 'lodash';
 
 export interface CustomTostOptions {
   message: string;
@@ -261,7 +262,9 @@ export class NotificationsService {
       if (environment.demo) {
         return this.demo.normalResponse();
       }
-      this.markTodoItemAsDone('Achievement-' + achievement.id).subscribe();
+      this.markTodoItemAsDone({
+        identifier: 'Achievement-' + achievement.id
+      }).subscribe();
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
@@ -432,7 +435,11 @@ export class NotificationsService {
       }
 
       if (todoItem.name === 'New Item') {
-        unlockedTasks.push({ [UnlockIndicatorModel[todoItem.model]]: todoItem.foreign_key });
+        unlockedTasks.push({
+          id: todoItem.meta.id,
+          identifier: todoItem.identifier, 
+          [UnlockIndicatorModel[todoItem.model]]: todoItem.foreign_key 
+        });
       }
 
       if (todoItem.identifier.includes('EventReminder-')) {
@@ -775,18 +782,20 @@ export class NotificationsService {
   }
 
   postEventReminder(event) {
-    return this.markTodoItemAsDone(`EventReminder-${event.id}`).subscribe();
+    return this.markTodoItemAsDone({ 
+      identifier: `EventReminder-${event.id}`
+    }).subscribe();
   }
 
   /**
    * Mark the todo item as done
    * @param {Obj} todoItem 
    */
-  markTodoItemAsDone(identifier: string) {
+  markTodoItemAsDone(match: {identifier?: string, id?: number}) {
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {
-        identifier,
+        ...match,
         project_id: this.storage.getUser().projectId,
         is_done: true
       }

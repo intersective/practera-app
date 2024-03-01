@@ -196,34 +196,12 @@ export class ActivityService {
       }
     });
 
-    this.compareAndUnlockTasks(result);
-
     this._activity$.next(result);
     this.activity = result;
     if (goToNextTask) {
       this.goToNextTask(afterTask);
     }
     return result;
-  }
-
-  private compareAndUnlockTasks(result: any) {
-    const currentActivity = this._activity$.getValue();
-    if (!currentActivity?.tasks || !result?.tasks) {
-      return;
-    }
-
-    if (currentActivity.id === result.id && currentActivity.tasks.length !== result.tasks.length) {
-      const currentTasks = {};
-      currentActivity.tasks.map(task => {
-        currentTasks[task.id] = task;
-      });
-
-      result.tasks.forEach(task => {
-        if (currentTasks[task.id] === undefined) {
-          this.unlockIndicatorService.unlockTask(null, result.id, task.id);
-        }
-      });
-    }
   }
 
   /**
