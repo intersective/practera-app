@@ -15,6 +15,9 @@
   <ion-button (click)="testAuth()">testAuth</ion-button>
   <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
 
+  <input type="text" [(ngModel)]="identifier" placeholder="identifier" />
+  <ion-button (click)="triggerAchievement(identifier)"></ion-button>
+
   <pre *ngIf="sample">{{ sample | json }}</pre>
 
   <ion-text *ngIf="doneLogin">

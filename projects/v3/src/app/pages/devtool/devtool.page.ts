@@ -15,6 +15,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 export class DevtoolPage implements OnInit {
   doneLogin: boolean = false;
   user: any = {};
+  identifier: string;
 
   sample: any;
 
@@ -79,15 +80,22 @@ export class DevtoolPage implements OnInit {
   }
 
   newItems: {model:string; model_id: number; type:string; }[] = [];
-  async triggerAchievement() {
-    this.notificationsService.markTodoItemAsDone('Achievement-'+13919).subscribe(res => {
+  async triggerAchievement(identifier?: string) {
+    if (identifier) {
+      this.notificationsService.markTodoItemAsDone({identifier, id: 15629}).subscribe(res => {
+        console.log('manual-marked::', res);
+      })
+      return;
+    }
+
+    this.notificationsService.markTodoItemAsDone({identifier: 'Achievement-'+13919}).subscribe(res => {
       this.newItems = res?.data?.meta?.new_items;
       console.log(this.newItems);
       this.sample = this.newItems;
-      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems)
+      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicateTodoItem(this.newItems)/* 
         .forEach(item => {
           this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
-        });
+        }); */
         console.log(uniqueEntries);
 
       console.log('unlockedTasks::', this.storageService.get('unlockedTasks'));
