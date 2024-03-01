@@ -2,10 +2,17 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BrowserStorageService } from './storage.service';
 
-interface UnlockedTask {
-  milestoneId: number;
-  activityId: number;
-  taskId: number;
+export interface UnlockedTask {
+  milestoneId?: number;
+  activityId?: number;
+  taskId?: number;
+}
+
+export enum UnlockIndicatorModel {
+  Milestone = 'milestoneId',
+  Activity = 'activityId',
+  ActivitySequence = 'taskId',
+  Task = 'taskId',
 }
 
 @Injectable({
@@ -26,11 +33,19 @@ export class UnlockIndicatorService {
     }
   }
 
+  unlockTasks(data: UnlockedTask[]) {
+    const currentTasks = this.unlockedTasksSubject.getValue();
+    const latestTasks = [...currentTasks, ...data];
+
+    this.storageService.set('unlockedTasks', latestTasks);
+    this.unlockedTasksSubject.next(latestTasks);
+  }
+
   // Method to add a new unlocked task
   unlockTask(milestoneId: number, activityId: number, taskId: number) {
     const currentTasks = this.unlockedTasksSubject.getValue();
-
     const latestTasks = [...currentTasks, { milestoneId, activityId, taskId }];
+    
     this.storageService.set('unlockedTasks', latestTasks);
     this.unlockedTasksSubject.next(latestTasks);
   }
@@ -51,5 +66,25 @@ export class UnlockIndicatorService {
   resetTasks() {
     this.storageService.set('unlockedTasks', []);
     this.unlockedTasksSubject.next([]);
+  }
+
+  // Method to transform and deduplicate the data
+  transformAndDeduplicate(data) {
+    const uniqueEntries = new Map();
+
+    data.forEach(item => {
+      // Construct a unique key for each combination of milestoneId and activityId
+      const key = `${item.model}_${item.model_id}`;
+      if (!uniqueEntries.has(key)) {
+        uniqueEntries.set(key, {
+          milestoneId: item.model === "Milestone" ? item.model_id : undefined,
+          activityId: item.model === "Activity" ? item.model_id : undefined,
+          taskId: item.model === "Task" ? item.model_id : undefined,
+        });
+      }
+    });
+
+    // Convert the map values to an array
+    return Array.from(uniqueEntries.values());
   }
 }

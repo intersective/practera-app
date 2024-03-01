@@ -5,6 +5,7 @@ import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-devtool',
@@ -24,6 +25,7 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
+    private unlockIndicatorService: UnlockIndicatorService
       ) { }
 
   ngOnInit() {
@@ -82,6 +84,20 @@ export class DevtoolPage implements OnInit {
       this.newItems = res?.data?.meta?.new_items;
       console.log(this.newItems);
       this.sample = this.newItems;
+      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems)
+        .forEach(item => {
+          this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
+        });
+        console.log(uniqueEntries);
+
+      console.log('unlockedTasks::', this.storageService.get('unlockedTasks'));
+      // this.unlockIndicatorService.unlockTask();
+    });
+  }
+
+  getTodoList() {
+    this.notificationsService.getTodoItems().subscribe(res => {
+      console.log('todoiteams', res);
     });
   }
 }
