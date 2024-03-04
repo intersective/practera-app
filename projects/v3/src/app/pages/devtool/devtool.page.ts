@@ -137,16 +137,24 @@ export class DevtoolPage implements OnInit {
     document.body.classList.toggle('dark', shouldAdd);
   }
 
-  newItems: {model:string; model_id: number; type:string; }[] = [];
-  async triggerAchievement() {
+  newItems: { id: number; model: string; model_id: number; type: string; }[] = [];
+  async triggerAchievement(identifier?: string) {
+    if (identifier) {
+      this.notificationsService.markTodoItemAsDone(identifier).subscribe(res => {
+        console.log('manual-marked::', res);
+      })
+      return;
+    }
+
     this.notificationsService.markTodoItemAsDone('Achievement-'+13919).subscribe(res => {
       this.newItems = res?.data?.meta?.new_items;
       console.log(this.newItems);
-      this.sample = this.newItems;
-      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems)
+      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems);
+      this.sample = uniqueEntries;
+      /*
         .forEach(item => {
           this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
-        });
+        }); */
         console.log(uniqueEntries);
 
       console.log('unlockedTasks::', this.storageService.get('unlockedTasks'));
