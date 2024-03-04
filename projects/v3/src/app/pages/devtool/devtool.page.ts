@@ -79,7 +79,7 @@ export class DevtoolPage implements OnInit {
     });
   }
 
-  newItems: {model:string; model_id: number; type:string; }[] = [];
+  newItems: {id: number; model:string; model_id: number; type:string; }[] = [];
   async triggerAchievement(identifier?: string) {
     if (identifier) {
       this.notificationsService.markTodoItemAsDone({identifier, id: 15629}).subscribe(res => {
@@ -91,8 +91,9 @@ export class DevtoolPage implements OnInit {
     this.notificationsService.markTodoItemAsDone({identifier: 'Achievement-'+13919}).subscribe(res => {
       this.newItems = res?.data?.meta?.new_items;
       console.log(this.newItems);
-      this.sample = this.newItems;
-      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicateTodoItem(this.newItems)/* 
+      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicateTodoItem(this.newItems);
+      this.sample = uniqueEntries;
+      /* 
         .forEach(item => {
           this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
         }); */
