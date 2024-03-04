@@ -43,15 +43,10 @@ export class UnlockIndicatorService {
     this.storageService.set('unlockedTasks', latestTasks);
   }
 
-  // Method to add a new unlocked task
-  unlockTask(identifier:string, key: {milestoneId?: number; activityId?: number; taskId?: number;}) {
+  // Method to add a new unlocked task (through todoitem meta)
+  unlockTask(key: { id: number; identifier:string; milestoneId?: number; activityId?: number; taskId?: number;}) {
     const currentTasks = this.unlockedTasksSubject.getValue();
-    const latestTasks = [...currentTasks, { 
-      identifier,
-      milestoneId: key.milestoneId,
-      activityId: key.activityId,
-      taskId: key.taskId
-    }];
+    const latestTasks = [...currentTasks, key];
     
     this.storageService.set('unlockedTasks', latestTasks);
     this.unlockedTasksSubject.next(latestTasks);
