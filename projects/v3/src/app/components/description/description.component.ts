@@ -20,11 +20,12 @@ import { BrowserStorageService } from '@v3/services/storage.service';
     ]),
   ]*/
 })
-export class DescriptionComponent implements AfterViewInit, OnChanges {
-  heightLimit = 120;
+export class DescriptionComponent implements OnChanges {
+  heightLimit = 145; // more accurately adjusted
   isTruncating: boolean;
   heightExceeded: boolean;
   elementHeight: number;
+  hasBeenTruncated: boolean; // prevent onChange replace the collapsed content
 
   @Input() name; // unique identity of parent element
   @Input() content;
@@ -35,18 +36,18 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
 
   constructor(
     private storage: BrowserStorageService,
-  ) {}
-
-  ngOnChanges(changes: { [propKey: string]: SimpleChange}) {
-    // reset to default
-    this.isTruncating = false;
-    this.heightExceeded = false;
-
-    this.content = changes.content.currentValue;
-    this.calculateHeight();
+  ) {
+    this.hasBeenTruncated = false;
   }
 
-  ngAfterViewInit() {
+  ngOnChanges(changes: { [propKey: string]: SimpleChange}) {
+        // reset to default
+    if (this.hasBeenTruncated === false) {
+      this.isTruncating = false;
+      this.heightExceeded = false;
+    }
+
+    this.content = changes.content.currentValue;
     this.calculateHeight();
   }
 
@@ -65,8 +66,9 @@ export class DescriptionComponent implements AfterViewInit, OnChanges {
 
         if (this.heightExceeded) {
           this.isTruncating = true;
+          this.hasBeenTruncated = true;
         }
-      },
+              },
       700
     );
   }
