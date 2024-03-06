@@ -20,7 +20,6 @@ import { ModalService } from './modal.service';
 import { environment } from '@environments/environment';
 import { DemoService } from './demo.service';
 import { UnlockIndicatorModel, UnlockIndicatorService, UnlockedTask } from './unlock-indicator.service';
-import { tap } from 'lodash';
 
 export interface CustomTostOptions {
   message: string;
@@ -48,13 +47,27 @@ export interface Meta {
   assessment_name: string;
 }
 
+/**
+ * TodoItem interface
+ * @description: this object can be very dynamic. It acts as a notification object for the user.
+ */
 export interface TodoItem {
+  id?: number;
   unreadMessages?: number; // for chat
   type?: string;
   name?: string;
   description?: string;
   time?: string;
+  identifier?: string;
+  is_done?: boolean;
+  foreign_key?: number;
+  model?: string;
   meta?: {
+    id?: number;
+    name?: string;
+    description?: string;
+    points?: number;
+    badge?: string;
     activity_id?: number;
     context_id?: number;
     assessment_id?: number;
@@ -65,7 +78,11 @@ export interface TodoItem {
     team_member_id?: number;
     participants_only?: boolean;
     due_date?: string;
+    task_id?: number;
+    task_type?: string;
   };
+  project_id?: number;
+  timeline_id?: number;
 }
 
 const api = {
@@ -394,6 +411,14 @@ export class NotificationsService {
     }));
   }
 
+  /**
+   * group TodoItems into different types
+   * - AssessmentReview
+   * - Achievement
+   * - new_item,AssessmentSubmission
+   * - EventReminder
+   * - AssessmentSubmissionReminder
+   */
   private _normaliseTodoItems(data): Array<TodoItem> {
     let todoItems = [];
     let unlockedTasks: UnlockedTask[] = [];
@@ -402,12 +427,13 @@ export class NotificationsService {
       return [];
     }
 
-    data.forEach(todoItem => {
+    data.forEach((todoItem: TodoItem) => {
       if (!this.utils.has(todoItem, 'identifier') ||
         !this.utils.has(todoItem, 'is_done') ||
         !this.utils.has(todoItem, 'meta')) {
         return this.request.apiResponseFormatError('TodoItem format error');
       }
+
       // skip if the todoitem is already done
       if (todoItem.is_done) {
         return;
@@ -434,11 +460,24 @@ export class NotificationsService {
         });
       }
 
-      if (todoItem.name === 'New Item') {
+      if (todoItem.name === 'New Item' &&
+        todoItem.model !== null &&
+        todoItem.is_done === false
+      ) {
+        const key = UnlockIndicatorModel[todoItem.model];
+        if (!key) {
+          return;
+        }
+
+        const itemId: {[key:string]: any;} = {
+          [key]: todoItem.meta?.task_id || todoItem.foreign_key,
+          taskType: todoItem.meta?.task_type
+        };
+
         unlockedTasks.push({
-          id: todoItem.meta.id,
-          identifier: todoItem.identifier, 
-          [UnlockIndicatorModel[todoItem.model]]: todoItem.foreign_key 
+          id: todoItem.id,
+          identifier: todoItem.identifier,
+          ...itemId
         });
       }
 
@@ -782,14 +821,14 @@ export class NotificationsService {
   }
 
   postEventReminder(event) {
-    return this.markTodoItemAsDone({ 
+    return this.markTodoItemAsDone({
       identifier: `EventReminder-${event.id}`
     }).subscribe();
   }
 
   /**
    * Mark the todo item as done
-   * @param {Obj} todoItem 
+   * @param {Obj} todoItem
    */
   markTodoItemAsDone(match: {identifier?: string, id?: number}) {
     return this.request.post({

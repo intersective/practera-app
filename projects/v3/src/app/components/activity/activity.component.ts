@@ -56,9 +56,17 @@ export class ActivityComponent implements OnInit, OnChanges {
 
       if (currentValue.tasks?.length > 0) {
         this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
-            this.isForTeamOnly = !nonTeamActivity;
-            this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+          this.isForTeamOnly = !nonTeamActivity;
+          this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+        });
+
+        const unlockedTasks = this.unlockIndicatorService.getTasksBy(this.activity);
+        if (unlockedTasks.length === 0) {
+          const activities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          activities.forEach((activity) => {
+            this.notificationsService.markTodoItemAsDone(activity).subscribe();
           });
+        }
       }
     }
   }
@@ -95,7 +103,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 

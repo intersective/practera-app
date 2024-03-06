@@ -88,12 +88,13 @@ export class DevtoolPage implements OnInit {
       return;
     }
 
+    // mark todo with status (repeatable)
     this.notificationsService.markTodoItemAsDone({identifier: 'Achievement-'+13919}).subscribe(res => {
       this.newItems = res?.data?.meta?.new_items;
       console.log(this.newItems);
       const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicateTodoItem(this.newItems);
       this.sample = uniqueEntries;
-      /* 
+      /*
         .forEach(item => {
           this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
         }); */
@@ -104,9 +105,19 @@ export class DevtoolPage implements OnInit {
     });
   }
 
+  // called to update unlocked tasks
   getTodoList() {
     this.notificationsService.getTodoItems().subscribe(res => {
       console.log('todoiteams', res);
+    });
+  }
+
+  markAllUnlockTaskDone() {
+    this.unlockIndicatorService.allUnlockedTasks().forEach(task => {
+      this.notificationsService.markTodoItemAsDone(task).subscribe(res => {
+        console.log('res', res);
+      });
+      this.unlockIndicatorService.removeTask(task.taskId);
     });
   }
 }
