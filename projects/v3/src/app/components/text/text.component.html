@@ -5,15 +5,22 @@
     <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
-  <div class="ion-padding" *ngIf="(review?.answer || review?.comment)">
+  <div class="ion-padding" *ngIf="review?.answer">
     <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
-    <ng-container *ngIf="review?.answer">
-      <p class="body-2 gray-3 white-space-pre">{{ review.answer }}</p>
-    </ng-container>
-    <ng-container *ngIf="review?.comment">
-      <p class="body-2 gray-3 white-space-pre">{{ review.comment }}</p>
-    </ng-container>
+    <p class="body-2 gray-3 white-space-pre">{{ review.answer }}</p>
   </div>
+
+  <ng-container *ngIf="review?.comment">
+    <ion-item class="feedback-title ion-no-padding" lines="none">
+      <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
+      <ion-label i18n>Feedback</ion-label>
+    </ion-item>
+    <ion-textarea class="ion-no-margin preview textarea white-space-pre"
+      [autoGrow]="true"
+      [value]="review.comment"
+      [disabled]="true"
+    ></ion-textarea>
+  </ng-container>
 </ng-container>
 
 <ng-container *ngIf="doAssessment">
@@ -73,6 +80,7 @@
       <ion-list-header class="ion-no-padding" lines="none">
         <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
       </ion-list-header>
+      
       <ion-textarea
         [autoGrow]="true"
         [attr.aria-label]="'expert\'s review feedback'"

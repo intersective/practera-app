@@ -258,7 +258,7 @@ export class ExperienceService {
       institutionName: exp?.name || null,
       projectId: exp?.projectId,
       timelineId: exp?.timelineId,
-      activityCardImage: cardBackgroundImage,
+      activityCardImage: cardBackgroundImage, // default activity image
       activityCompleteMessage: exp?.activityCompleteMessage || null,
       chatEnabled: exp?.chatEnable || true,
       teamId: null,
