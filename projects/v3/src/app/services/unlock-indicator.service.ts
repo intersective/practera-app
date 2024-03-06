@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { BrowserStorageService } from './storage.service';
+import { Activity } from './activity.service';
 
 export interface UnlockedTask {
   milestoneId?: number;
   activityId?: number;
   taskId?: number;
+  meta?: {
+    task_id: number;
+    task_type: string;
+    [key: string]: any;
+  };
+  taskType?: string; // optional for now
 }
 
 export enum UnlockIndicatorModel {
@@ -33,6 +40,33 @@ export class UnlockIndicatorService {
     }
   }
 
+  allUnlockedTasks() {
+    return this.unlockedTasksSubject.getValue();
+  }
+
+  clearActivity(id) {
+    const currentTasks = this.unlockedTasksSubject.getValue();
+    const clearedActivity = currentTasks.filter(task => task.activityId === id);
+    const latestTasks = currentTasks.filter(task => task.activityId !== id);
+    this.storageService.set('unlockedTasks', latestTasks);
+    this.unlockedTasksSubject.next(latestTasks);
+    return clearedActivity;
+  }
+
+  getTasksBy(activity: Activity) {
+    const tasks = activity.tasks;
+    const tasksId = tasks.map(task => task.id);
+    return this.unlockedTasksSubject.getValue().filter(unlocked => tasksId.includes(unlocked.taskId));
+  }
+
+  // check if the provided activity has matching newly unlocked task id
+  hasNewTask(activity: Activity): boolean {
+    const tasks = activity.tasks;
+    const tasksId = tasks.map(task => task.id);
+    return this.unlockedTasksSubject.getValue().some(unlocked => tasksId.includes(unlocked.taskId));
+  }
+
+  // combine the stored tasks with the new data and store it
   unlockTasks(data: UnlockedTask[]) {
     const currentTasks = this.unlockedTasksSubject.getValue();
     const latestTasks = [...currentTasks, ...data];
@@ -51,21 +85,13 @@ export class UnlockIndicatorService {
   }
 
   // Method to remove an accessed task
-  removeTask(milestoneId?: number, activityId?: number, taskId?: number) {
-    let currentTasks = this.unlockedTasksSubject.getValue();
-
-    if (currentTasks.some(task => task.taskId === taskId)) {
-      currentTasks = currentTasks.filter(task => task.taskId !== taskId);
-    }
-
-    this.storageService.set('unlockedTasks', currentTasks);
-    this.unlockedTasksSubject.next(currentTasks);
-  }
-
-  // Method to reset the unlocked tasks
-  resetTasks() {
-    this.storageService.set('unlockedTasks', []);
-    this.unlockedTasksSubject.next([]);
+  removeTask(taskId?: number): UnlockedTask {
+    const currentTasks = this.unlockedTasksSubject.getValue();
+    const removedTask = currentTasks.find(task => task.taskId === taskId);
+    const latestTasks = currentTasks.filter(task => task.taskId !== taskId);
+    this.storageService.set('unlockedTasks', latestTasks);
+    this.unlockedTasksSubject.next(latestTasks);
+    return removedTask;
   }
 
   // Method to transform and deduplicate the data
