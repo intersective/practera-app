@@ -9,6 +9,7 @@
     "ng": "ng",
     "start": "ng serve",
     "v3": "ng serve --project=v3 -c development",
+    "prev3": "npm run prebuildv3",
     "poststart": "npm run generate-version",
     "local": "ng serve -c local",
     "postlocal": "npm run generate-version",
