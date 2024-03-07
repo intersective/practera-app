@@ -17,6 +17,9 @@ import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 import { NetworkService } from './network.service';
 import { ModalService } from './modal.service';
+import { environment } from '@v3/environments/environment';
+import { DemoService } from './demo.service';
+import { UnlockIndicatorModel, UnlockIndicatorService, UnlockedTask } from './unlock-indicator.service';
 
 export interface CustomTostOptions {
   message: string;
@@ -44,13 +47,27 @@ export interface Meta {
   assessment_name: string;
 }
 
+/**
+ * TodoItem interface
+ * @description: this object can be very dynamic. It acts as a notification object for the user.
+ */
 export interface TodoItem {
+  id?: number;
   unreadMessages?: number; // for chat
   type?: string;
   name?: string;
   description?: string;
   time?: string;
+  identifier?: string;
+  is_done?: boolean;
+  foreign_key?: number;
+  model?: string;
   meta?: {
+    id?: number;
+    name?: string;
+    description?: string;
+    points?: number;
+    badge?: string;
     activity_id?: number;
     context_id?: number;
     assessment_id?: number;
@@ -61,7 +78,13 @@ export interface TodoItem {
     team_member_id?: number;
     participants_only?: boolean;
     due_date?: string;
+    task_id?: number;
+    task_type?: string;
+    parent_activity?: number; // a referrence to the parent activity id for task
+    parent_milestone?: number; // a referrence to the parent activity id for task
   };
+  project_id?: number;
+  timeline_id?: number;
 }
 
 const api = {
@@ -93,6 +116,7 @@ export class NotificationsService {
   };
 
   constructor(
+    private readonly demo: DemoService,
     private modalService: ModalService,
     private modalController: ModalController,
     private alertController: AlertController,
@@ -105,6 +129,7 @@ export class NotificationsService {
     private apolloService: ApolloService,
     private eventsService: EventService,
     private networkService: NetworkService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {
     // after messages read need to update chat notification data on notification service
     this.utils.getEvent('chat-badge-update').subscribe(event => {
@@ -257,7 +282,12 @@ export class NotificationsService {
       achievement
     };
     if (type === 'notification') {
-      this.achievementService.markAchievementAsSeen(achievement.id);
+      if (environment.demo) {
+        return this.demo.normalResponse();
+      }
+      this.markTodoItemAsDone({
+        identifier: 'Achievement-' + achievement.id
+      }).subscribe();
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
@@ -387,18 +417,30 @@ export class NotificationsService {
     }));
   }
 
+  /**
+   * group TodoItems into different types
+   * - AssessmentReview
+   * - Achievement
+   * - new_item,AssessmentSubmission
+   * - EventReminder
+   * - AssessmentSubmissionReminder
+   */
   private _normaliseTodoItems(data): Array<TodoItem> {
     let todoItems = [];
+    const unlockedTasks: UnlockedTask[] = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('TodoItem array format error');
       return [];
     }
-    data.forEach(todoItem => {
+
+    data.forEach((todoItem: TodoItem) => {
       if (!this.utils.has(todoItem, 'identifier') ||
         !this.utils.has(todoItem, 'is_done') ||
         !this.utils.has(todoItem, 'meta')) {
         return this.request.apiResponseFormatError('TodoItem format error');
       }
+
+      // skip if the todoitem is already done
       if (todoItem.is_done) {
         return;
       }
@@ -424,6 +466,37 @@ export class NotificationsService {
         });
       }
 
+      if (todoItem.name === 'New Item' &&
+        todoItem.model !== null &&
+        todoItem.is_done === false
+      ) {
+        const key = UnlockIndicatorModel[todoItem.model];
+
+        // accept model code according enum UnlockIndicatorModel, we skip if it's not in the enum
+        if (!key) {
+          return;
+        }
+
+        const itemId: {[key:string]: any;} = {
+          [key]: todoItem.meta?.task_id || todoItem.foreign_key,
+          taskType: todoItem.meta?.task_type
+        };
+
+        if (todoItem.meta?.parent_activity) {
+          itemId.activityId = todoItem.meta.parent_activity;
+        }
+
+        if (todoItem.meta?.parent_milestone) {
+          itemId.milestoneId = todoItem.meta.parent_milestone;
+        }
+
+        unlockedTasks.push({
+          id: todoItem.id,
+          identifier: todoItem.identifier,
+          ...itemId
+        });
+      }
+
       if (todoItem.identifier.includes('EventReminder-')) {
         // when we get a Event Reminder todo item,
         // fire an 'event-reminder' event, same as when we get this from Pusher
@@ -437,6 +510,10 @@ export class NotificationsService {
         todoItems = this._addTodoItemSubmissionReminder(todoItem, todoItems);
       }
     });
+
+    if (unlockedTasks.length > 0) {
+      this.unlockIndicatorService.unlockTasks(unlockedTasks);
+    }
     return todoItems;
   }
 
@@ -760,13 +837,23 @@ export class NotificationsService {
   }
 
   postEventReminder(event) {
+    return this.markTodoItemAsDone({
+      identifier: `EventReminder-${event.id}`
+    }).subscribe();
+  }
+
+  /**
+   * Mark the todo item as done
+   * @param {Obj} todoItem
+   */
+  markTodoItemAsDone(key: TodoItem) {
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {
+        ...key,
         project_id: this.storage.getUser().projectId,
-        identifier: 'EventReminder-' + event.id,
         is_done: true
       }
-    }).subscribe();
+    });
   }
 }

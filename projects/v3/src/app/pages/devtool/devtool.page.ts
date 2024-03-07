@@ -6,6 +6,7 @@ import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-devtool',
@@ -15,7 +16,10 @@ import { SharedService } from '@v3/app/services/shared.service';
 export class DevtoolPage implements OnInit {
   doneLogin: boolean = false;
   user: any = {};
-  themeToggle = false;0
+  themeToggle = false;
+  identifier: string = '';
+
+  sample: any;
 
   constructor(
     private authService: AuthService,
@@ -24,7 +28,8 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
-  ) { }
+    private unlockIndicatorService: UnlockIndicatorService
+      ) { }
 
   ngOnInit() {
     this.doneLogin = this.authService.isAuthenticated();
@@ -131,5 +136,47 @@ export class DevtoolPage implements OnInit {
   // Add or remove the "dark" class on the document body
   toggleDarkTheme(shouldAdd) {
     document.body.classList.toggle('dark', shouldAdd);
+  }
+
+  newItems: { id: number; model: string; model_id: number; type: string; }[] = [];
+  async triggerAchievement(identifier?: string) {
+    if (identifier) {
+      this.notificationsService.markTodoItemAsDone({ identifier }).subscribe(res => {
+        console.log('manual-marked::', res);
+      })
+      return;
+    }
+
+    // mark todo with status (repeatable)
+    this.notificationsService.markTodoItemAsDone({identifier: 'Achievement-'+13919}).subscribe(res => {
+      this.newItems = res?.data?.meta?.new_items;
+      console.log(this.newItems);
+      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems);
+      this.sample = uniqueEntries;
+      /*
+        .forEach(item => {
+          this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
+        }); */
+        console.log(uniqueEntries);
+
+      console.log('unlockedTasks::', this.storageService.get('unlockedTasks'));
+      // this.unlockIndicatorService.unlockTask();
+    });
+  }
+
+  // called to update unlocked tasks
+  getTodoList() {
+    this.notificationsService.getTodoItems().subscribe(res => {
+      console.log('todoiteams', res);
+    });
+  }
+
+  markAllUnlockTaskDone() {
+    this.unlockIndicatorService.allUnlockedTasks().forEach(task => {
+      this.notificationsService.markTodoItemAsDone(task).subscribe(res => {
+        console.log('res', res);
+      });
+      this.unlockIndicatorService.removeTask(task.taskId);
+    });
   }
 }

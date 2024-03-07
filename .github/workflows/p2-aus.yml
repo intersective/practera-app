@@ -23,6 +23,7 @@ jobs:
     name: deploy-p2-aus-live
     runs-on: ubuntu-latest
     environment: p2-aus
+    permissions: write-all
     timeout-minutes: 15
 
 
