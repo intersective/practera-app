@@ -401,3 +401,26 @@ Used in achievement
 .black-white-image {
   filter: grayscale(100%);
 }
+
+/****************
+ * attention seeker (red dot indicator)
+ ****************/
+.icon-container {
+  position: relative;
+  display: inline-block;
+
+  .notification-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: red;
+    transform: translate(50%, -50%);
+
+    &.hidden {
+      display: none;
+    }
+  }
+}

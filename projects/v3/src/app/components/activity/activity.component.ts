@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -16,8 +17,8 @@ export class ActivityComponent implements OnInit, OnChanges {
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
-  leadImage: string = '';
-
+  leadImage: string = null;
+  newTasks: { [key: number]: any } = {};
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
@@ -30,27 +31,44 @@ export class ActivityComponent implements OnInit, OnChanges {
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.leadImage = this.storageService.getUser().programImage;
+    this.unlockIndicatorService.unlockedTasks$.subscribe((unlockedTasks) => {
+      this.newTasks = {};
+      unlockedTasks.forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.activity?.currentValue) {
       const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
-      const currentActivity = activities[this.activity.id];
-      if (currentActivity?.leadImage) {
-        this.leadImage = currentActivity?.leadImage;
+      if (activities) {
+        const currentActivity = activities[this.activity.id];
+        if (currentActivity?.leadImage) {
+          this.leadImage = currentActivity?.leadImage;
+        }
       }
 
       if (currentValue.tasks?.length > 0) {
-        this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
-            this.isForTeamOnly = !nonTeamActivity;
-            this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+        this.activityService.nonTeamActivity(changes.activity.currentValue.tasks).then((nonTeamActivity) => {
+          this.isForTeamOnly = !nonTeamActivity;
+          this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+        });
+
+        const unlockedTasks = this.unlockIndicatorService.getTasksBy(this.activity);
+        if (unlockedTasks.length === 0) {
+          const activities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          activities.forEach((activity) => {
+            this.notificationsService.markTodoItemAsDone(activity).subscribe();
           });
+        }
       }
     }
   }
@@ -87,7 +105,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 

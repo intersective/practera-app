@@ -17,6 +17,17 @@
 
   <ion-toggle [(ngModel)]="themeToggle" (ionChange)="toggleChange($event)" justify="space-between">Dark Mode</ion-toggle>
 
+  <h4>Task Unlock indicator</h4>
+  <ion-button (click)="triggerAchievement()">MarkAsDone</ion-button>
+  <ion-button (click)="getTodoList()">Todo Items</ion-button>
+  <ion-button (click)="markAllUnlockTaskDone()">Mask all done</ion-button>
+
+  <p>Mark done with identifier</p>
+  <ion-input type="text" [(ngModel)]="identifier" placeholder="identifier"></ion-input>
+  <ion-button (click)="triggerAchievement(identifier)">Submit</ion-button>
+
+  <pre *ngIf="sample">{{ sample | json }}</pre>
+
   <ion-text *ngIf="doneLogin">
     <p>{{ user | json }}</p>
   </ion-text>

@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
 import { first, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
-import { BrowserStorageService } from '@v3/services/storage.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 
@@ -45,8 +44,7 @@ export class AchievementService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService,
-    private demo: DemoService
+    private demo: DemoService,
   ) { }
 
   getAchievements(order?) {
@@ -104,21 +102,11 @@ export class AchievementService {
       })).subscribe();
   }
 
-  markAchievementAsSeen(achievementId): Subscription {
-    if (environment.demo) {
-      return this.demo.normalResponse() as Subscription;
-    }
+  getEarnedPoints() {
+    return this.earnedPoints;
+  }
 
-    const postData = {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'Achievement-' + achievementId,
-      is_done: true
-    };
-    return this.request.post(
-      {
-        endPoint: api.post.todoItem,
-        data: postData
-      }
-    ).pipe(first()).subscribe();
+  getIsPointsConfigured() {
+    return this.isPointsConfigured;
   }
 }
