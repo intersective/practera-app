@@ -80,6 +80,8 @@ export interface TodoItem {
     due_date?: string;
     task_id?: number;
     task_type?: string;
+    parent_activity?: number; // a referrence to the parent activity id for task
+    parent_milestone?: number; // a referrence to the parent activity id for task
   };
   project_id?: number;
   timeline_id?: number;
@@ -465,6 +467,8 @@ export class NotificationsService {
         todoItem.is_done === false
       ) {
         const key = UnlockIndicatorModel[todoItem.model];
+
+        // accept model code according enum UnlockIndicatorModel, we skip if it's not in the enum
         if (!key) {
           return;
         }
@@ -473,6 +477,14 @@ export class NotificationsService {
           [key]: todoItem.meta?.task_id || todoItem.foreign_key,
           taskType: todoItem.meta?.task_type
         };
+
+        if (todoItem.meta?.parent_activity) {
+          itemId.activityId = todoItem.meta.parent_activity;
+        }
+
+        if (todoItem.meta?.parent_milestone) {
+          itemId.milestoneId = todoItem.meta.parent_milestone;
+        }
 
         unlockedTasks.push({
           id: todoItem.id,
