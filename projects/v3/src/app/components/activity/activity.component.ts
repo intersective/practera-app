@@ -49,9 +49,11 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (changes.activity?.currentValue) {
       const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
-      const currentActivity = activities[this.activity.id];
-      if (currentActivity?.leadImage) {
-        this.leadImage = currentActivity?.leadImage;
+      if (activities) {
+        const currentActivity = activities[this.activity.id];
+        if (currentActivity?.leadImage) {
+          this.leadImage = currentActivity?.leadImage;
+        }
       }
 
       if (currentValue.tasks?.length > 0) {
