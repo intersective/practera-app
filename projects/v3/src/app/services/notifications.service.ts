@@ -427,7 +427,7 @@ export class NotificationsService {
    */
   private _normaliseTodoItems(data): Array<TodoItem> {
     let todoItems = [];
-    let unlockedTasks: UnlockedTask[] = [];
+    const unlockedTasks: UnlockedTask[] = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('TodoItem array format error');
       return [];
