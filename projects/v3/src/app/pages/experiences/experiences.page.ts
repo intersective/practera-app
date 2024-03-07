@@ -6,9 +6,8 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { filter } from 'rxjs/operators';
-import { Observable, Subscription } from 'rxjs';
-import { Experience } from '../../services/experience.service';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-experiences',
@@ -16,13 +15,13 @@ import { Experience } from '../../services/experience.service';
   styleUrls: ['./experiences.page.scss'],
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
   experiences$: Observable<any[]>;
   programs$: Observable<ProgramObj[]>;
   progresses: {
     [key: number]: number;
   } = {};
   isMobile: boolean = false;
+  unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -38,28 +37,39 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
+    this.activatedRoute.params
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(_params => {
       this.experienceService.getExperiences();
     });
 
-    this.subscriptions.push(this.experiences$
-      .pipe(filter(experiences => experiences !== null))
-      .subscribe(experiences => {
-        const ids = experiences.map(experience => experience.projectId);
-        this.experienceService.getProgresses(ids).subscribe(res => {
-          res.forEach(progress => {
-            progress.forEach(project => {
-              this.progresses[project.id] = Math.round(progress.progress * 100);
-            });
+    this.experiences$
+    .pipe(
+      filter(experiences => experiences !== null),
+      takeUntil(this.unsubscribe$)
+    )
+    .subscribe(experiences => {
+      const ids = experiences.map(experience => experience.projectId);
+      this.experienceService.getProgresses(ids).subscribe(res => {
+        res.forEach(progress => {
+          if (!Array.isArray(progress)) {
+            this.progresses[progress.id] = Math.round(progress.progress * 100);
+            return;
+          }
+
+          progress.forEach(project => {
+            this.progresses[project.id] = Math.round(project.progress * 100);
           });
         });
-      }));
+      });
+    });
 
     this.isMobile = this.utils.isMobile();
   }
 
   ngOnDestroy(): void {
-    this.subscriptions[0].unsubscribe();
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   async getProgress(projectId: number) {
