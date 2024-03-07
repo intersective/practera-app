@@ -6,8 +6,7 @@ import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
-import { SharedService } from './shared.service';
-import { ActivityBase, ActivityService, Task, TaskBase } from './activity.service';
+import { BrowserStorageService } from './storage.service';
 
 export interface Experience {
   leadImage: string;
@@ -66,8 +65,7 @@ export class HomeService {
     private demo: DemoService,
     private notificationsService: NotificationsService,
     private authService: AuthService,
-    private sharedServise: SharedService,
-    private activityService: ActivityService,
+    private storageService: BrowserStorageService,
   ) { }
 
   clearExperience() {
@@ -134,7 +132,9 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._normaliseProject(res))).subscribe();
+    ).pipe(
+      map(res => this._normaliseProject(res))
+    ).subscribe();
   }
 
   private _normaliseProject(data): Array<Milestone> {
@@ -148,6 +148,9 @@ export class HomeService {
         activityCount += m.activities.length;
       }
     });
+
+    this.storageService.set('activities', this.aggregateActivities(milestones));
+
     this._activityCount$.next(activityCount);
     this._milestones$.next(milestones);
     return milestones;
