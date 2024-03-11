@@ -153,14 +153,9 @@ export class DevtoolPage implements OnInit {
       console.log(this.newItems);
       const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems);
       this.sample = uniqueEntries;
-      /*
-        .forEach(item => {
-          this.unlockIndicatorService.unlockTask(item.milestoneId, item.activityId, item.taskId);
-        }); */
-        console.log(uniqueEntries);
+      console.log(uniqueEntries);
 
       console.log('unlockedTasks::', this.storageService.get('unlockedTasks'));
-      // this.unlockIndicatorService.unlockTask();
     });
   }
 
