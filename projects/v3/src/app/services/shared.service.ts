@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
 import { RequestService } from 'request';
 
@@ -68,7 +68,7 @@ export class SharedService {
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
-        if (event && event.meta && event.meta.Achievement) {
+        if (event?.meta?.Achievement) {
           const { id, name, description, points, badge } = event.meta.Achievement;
           this.notification.achievementPopUp('notification', {
             id,
@@ -78,6 +78,11 @@ export class SharedService {
             image: badge
           });
           this.achievementService.getAchievements();
+        }
+
+        // refresh todoItems
+        if (event?.event === 'achievement') {
+          this.notification.getTodoItems().pipe(first()).subscribe();
         }
       });
     }
