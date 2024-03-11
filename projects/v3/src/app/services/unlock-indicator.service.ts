@@ -42,6 +42,12 @@ export class UnlockIndicatorService {
     }
   }
 
+  // clear all tasks (for experience switching)
+  clearAllTasks() {
+    this.storageService.remove('unlockedTasks');
+    this.unlockedTasksSubject.next([]);
+  }
+
   allUnlockedTasks(): UnlockedTask[] {
     return this.unlockedTasksSubject.getValue();
   }

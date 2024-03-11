@@ -8,6 +8,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Observable, Subject } from 'rxjs';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-experiences',
@@ -30,7 +31,8 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private notificationsService: NotificationsService,
     private utils: UtilsService,
-    private readonly storage: BrowserStorageService,
+    private storage: BrowserStorageService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {
     this.experiences$ = this.experienceService.experiences$;
     this.programs$ = this.experienceService.programsWithProgress$
@@ -93,6 +95,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     });
     await loading.present();
     try {
+      this.unlockIndicatorService.clearAllTasks(); // reset indicators
       const route = await this.experienceService.switchProgramAndNavigate(program);
       await loading.dismiss();
       if (environment.demo) {
