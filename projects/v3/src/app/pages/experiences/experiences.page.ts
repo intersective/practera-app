@@ -6,8 +6,9 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-experiences',
@@ -16,7 +17,8 @@ import { filter } from 'rxjs/operators';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  experiences$ = this.experienceService.experiences$;
+  experiences$: Observable<any[]>;
+  programs$: Observable<ProgramObj[]>;
   progresses: {
     [key: number]: number;
   } = {};
@@ -29,8 +31,12 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private loadingController: LoadingController,
     private notificationsService: NotificationsService,
     private utils: UtilsService,
-    private readonly storage: BrowserStorageService,
-  ) { }
+    private storage: BrowserStorageService,
+    private unlockIndicatorService: UnlockIndicatorService,
+  ) {
+    this.experiences$ = this.experienceService.experiences$;
+    this.programs$ = this.experienceService.programsWithProgress$;
+  }
 
   ngOnInit() {
     this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
@@ -78,6 +84,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     await loading.present();
 
     try {
+      this.unlockIndicatorService.clearAllTasks(); // reset indicators
       const route = await this.experienceService.switchProgramAndNavigate(program);
       loading.dismiss().then(() => {
         if (environment.demo) {
