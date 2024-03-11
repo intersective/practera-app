@@ -26,3 +26,4 @@ www/*
 .env
 projects/v3/src/environments/environment.ts
 projects/v3/src/environments/environment.prod.ts
+.vscode/
