@@ -35,7 +35,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private unlockIndicatorService: UnlockIndicatorService,
   ) {
     this.experiences$ = this.experienceService.experiences$;
-    this.programs$ = this.experienceService.programsWithProgress$
+    this.programs$ = this.experienceService.programsWithProgress$;
   }
 
   ngOnInit() {
