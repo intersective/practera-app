@@ -15,9 +15,6 @@ const api = {
   get: {
     achievements: 'api/v2/motivations/achievement/list.json'
   },
-  post: {
-    todoItem: 'api/v2/motivations/todo_item/edit.json'
-  }
 };
 
 export interface Achievement {
