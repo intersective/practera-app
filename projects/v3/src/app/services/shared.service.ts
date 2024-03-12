@@ -68,21 +68,24 @@ export class SharedService {
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
-        if (event?.meta?.Achievement) {
-          const { id, name, description, points, badge } = event.meta.Achievement;
-          this.notification.achievementPopUp('notification', {
-            id,
-            name,
-            description,
-            points,
-            image: badge
-          });
-          this.achievementService.getAchievements();
-        }
+        if (event?.meta) {
+          const eventMeta = event.meta;
+          if (eventMeta.Achievement && event.type === 'achievement_earned') {
+            const { id, name, description, points, badge } = event.meta.Achievement;
+            this.notification.achievementPopUp('notification', {
+              id,
+              name,
+              description,
+              points,
+              image: badge
+            });
+            this.achievementService.getAchievements();
+          }
 
-        // refresh todoItems
-        if (event?.event === 'achievement') {
-          this.notification.getTodoItems().pipe(first()).subscribe();
+          // refresh todoItems
+          if (event?.event === 'achievement' && event.type === 'new_items') {
+            this.notification.getTodoItems().pipe(first()).subscribe();
+          }
         }
       });
     }
