@@ -4,6 +4,7 @@
 .sass-cache/
 .tmp/
 .sonarlint
+.vscode/
 
 assets/newrelic.js
 coverage/

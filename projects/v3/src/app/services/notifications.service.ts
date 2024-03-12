@@ -293,12 +293,11 @@ export class NotificationsService {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
       keyboardClose: false,
       backdropDismiss: false
-    },
-      () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
-        if (options && options.activeElement && options.activeElement.focus) {
-          options.activeElement.focus();
-        }
-      });
+    }, () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
+      if (options && options.activeElement && options.activeElement.focus) {
+        options.activeElement.focus();
+      }
+    });
 
     return modal;
   }
@@ -466,7 +465,9 @@ export class NotificationsService {
         });
       }
 
-      if (todoItem.name === 'New Item' &&
+      if (
+        Object.keys(todoItem.meta).length !== 0 &&
+        todoItem.name === 'New Item' &&
         todoItem.model !== null &&
         todoItem.is_done === false
       ) {
