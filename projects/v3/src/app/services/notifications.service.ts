@@ -17,7 +17,7 @@ import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 import { NetworkService } from './network.service';
 import { ModalService } from './modal.service';
-import { environment } from '@environments/environment';
+import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { UnlockIndicatorModel, UnlockIndicatorService, UnlockedTask } from './unlock-indicator.service';
 
@@ -289,12 +289,11 @@ export class NotificationsService {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
       keyboardClose: false,
       backdropDismiss: false
-    },
-      () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
-        if (options && options.activeElement && options.activeElement.focus) {
-          options.activeElement.focus();
-        }
-      });
+    }, () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
+      if (options && options.activeElement && options.activeElement.focus) {
+        options.activeElement.focus();
+      }
+    });
 
     return modal;
   }
@@ -462,7 +461,9 @@ export class NotificationsService {
         });
       }
 
-      if (todoItem.name === 'New Item' &&
+      if (
+        Object.keys(todoItem.meta).length !== 0 &&
+        todoItem.name === 'New Item' &&
         todoItem.model !== null &&
         todoItem.is_done === false
       ) {
