@@ -1,21 +1,19 @@
-# Practera-app-v3
+# Practera-app
 
 ![Build Status](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYVA3Zi9rVHlUSlNWT1VkZkY3R1FPS3pwd01EeWo4UTlFanUyQk1UanUveW1VRlgvdnhudVR3RUhsUXBhYk9kYXhmNnJTYjBramVuTkRTc3JyNkZJajZFPSIsIml2UGFyYW1ldGVyU3BlYyI6IkVabm9Va3hoUnhhSmNTSTEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
 ## Requirements
 
-- Ionic v6
-- Angular v13
+- Ionic v7
+- Angular v17
 
 ## Development Notes
 
 Run `npm install` to install necessary packages
 
-Run `npm run lint` to lint appv2 codebase
+Run `npm run lint` to lint app codebase
 
-Run `npm run lintv3` to lint code in project appv3
-
-Run `npm run v3` to launch AppV3 locally
+Run `npm start` to launch App locally
 
 Run `npm run i18n` to update coverage of translateable static text
 
@@ -33,13 +31,13 @@ This should applied only for `trunk` (development) or `release/live` separately.
 
 ### Starting a development server calling the stage environment
 
-Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
+Run `npm start` to start a development server on your local, and calling p2-stage.practera.com or core-graphql endpoint for API
 
 ### Starting a development server on the local environment
 
-Run `npm run local` to serve appv2 on localhost and calling 127.0.0.1:8080 for API
+Run `npm run local` to serve app on localhost and calling 127.0.0.1:8080 for API
 
-Run `npm run v3` to serve appv3 on localhost
+Run `npm start` to serve app on localhost
 
 ### Release Processes
 
