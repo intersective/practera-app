@@ -8,9 +8,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
-import { NotificationsService } from './notifications.service';
-import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 /**
  * @name api
@@ -89,9 +88,8 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private notificationsService: NotificationsService,
-    private demo: DemoService,
     private apolloService: ApolloService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) { }
 
   authenticate(data: {
@@ -279,7 +277,7 @@ export class AuthService {
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
 
-
+    this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
