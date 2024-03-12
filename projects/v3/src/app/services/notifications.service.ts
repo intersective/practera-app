@@ -466,10 +466,11 @@ export class NotificationsService {
       }
 
       if (
-        Object.keys(todoItem.meta).length !== 0 &&
+        todoItem.model !== 'Milestone' && // skip, due to indicator is determined by task and activity
         todoItem.name === 'New Item' &&
         todoItem.model !== null &&
-        todoItem.is_done === false
+        todoItem.is_done === false &&
+        todoItem.model
       ) {
         const key = UnlockIndicatorModel[todoItem.model];
 
