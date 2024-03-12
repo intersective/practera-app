@@ -7,7 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
@@ -16,7 +16,6 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
   styleUrls: ['./experiences.page.scss'],
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
   experiences$: Observable<any[]>;
   programs$: Observable<ProgramObj[]>;
   progresses: {
