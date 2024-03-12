@@ -303,7 +303,9 @@ export class ActivityService {
 
     // clear the task from the unlock indicator
     const cleared = this.unlockIndicatorService.removeTask(task.id);
-    this.notification.markTodoItemAsDone(cleared).subscribe();
+    if (cleared) {
+      this.notification.markTodoItemAsDone(cleared).subscribe();
+    }
 
     if (!getData) {
       return ;
