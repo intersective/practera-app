@@ -3,7 +3,6 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { ModalController } from '@ionic/angular';
-import { ApolloService } from '@v3/services/apollo.service';
 import isEmpty from 'lodash-es/isEmpty';
 import each from 'lodash-es/each';
 import unset from 'lodash-es/unset';
@@ -45,7 +44,6 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
     private title: Title
@@ -237,21 +235,6 @@ export class UtilsService {
   //   }
   //   this.activitySubjects[key].next(value);
   // }
-
-  // need to clear all Subject for cache
-  async clearCache(): Promise<void> {
-    const apolloClient = this.apolloService.getClient();
-    // clear cache before initialised
-    if (apolloClient) {
-      apolloClient.stop();
-      await apolloClient.clearStore();
-    }
-    //   // initialise the Subject for caches
-    //   this.projectSubject.next(null);
-    //   this.each(this.activitySubjects, (subject, key) => {
-    //     this.activitySubjects[key].next(null);
-    //   });
-  }
 
   getCurrentLocation(): Location {
     return this.document.location;
