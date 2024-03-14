@@ -4,7 +4,8 @@
     padding: 12px;
 
     img {
-      max-width: 100px;
+      width: 100px;
+      height: 100px; // follow admin panel max size
       border-radius: 50%;
       &.default {
         filter: invert(.5);
