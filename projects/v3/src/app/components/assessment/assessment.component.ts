@@ -685,6 +685,15 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
+
+  resubmit() {
+    if (!this.assessment?.id || !this.submission?.id) {
+      return;
+    }
+
+    this.assessmentService.resubmitAssessment({
+      assessment_id: this.assessment.id,
+      submission_id: this.submission.id
+    }).subscribe();
+  }
 }
-
-
