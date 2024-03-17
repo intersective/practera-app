@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of, Subscription } from 'rxjs';
+import { Observable as RxObsservable, BehaviorSubject, of, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
@@ -18,7 +18,8 @@ import { FastFeedbackService } from './fast-feedback.service';
  */
 const api = {
   post: {
-    todoitem: 'api/v2/motivations/todo_item/edit.json'
+    todoitem: 'api/v2/motivations/todo_item/edit.json',
+    resubmit: 'api/assessment_resubmit.json'
   }
 };
 
@@ -41,6 +42,7 @@ export interface Assessment {
   isOverdue?: boolean;
   groups: Array<Group>;
   pulseCheck: boolean;
+  allowResubmit?: boolean; // indicator to show resubmit button
 }
 
 export interface Group {
@@ -77,9 +79,11 @@ export interface TeamMember {
   userName: string;
 }
 
+export type SubmissionStatuses = 'in progress' | 'pending review' | 'published' | 'pending approval' | 'feedback available' | 'done';
+
 export interface Submission {
   id: number;
-  status: string;
+  status: SubmissionStatuses;
   answers: any;
   submitterName: string;
   modified: string;
@@ -146,7 +150,7 @@ export class AssessmentService {
     return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck
+          id name type description dueDate isTeam pulseCheck allowResubmit
           groups{
             name description
             questions{
@@ -224,6 +228,7 @@ export class AssessmentService {
       dueDate: data.assessment.dueDate,
       isOverdue: data.assessment.dueDate ? this.utils.timeComparer(data.assessment.dueDate) < 0 : false,
       pulseCheck: data.assessment.pulseCheck,
+      allowResubmit: data.assessment.allowResubmit,
       groups: []
     };
     data.assessment.groups.forEach(eachGroup => {
@@ -324,7 +329,7 @@ export class AssessmentService {
     return submission;
   }
 
-  private _submissionStatus(status: string) {
+  private _submissionStatus(status: SubmissionStatuses): SubmissionStatuses {
     switch (status) {
       case 'pending approval':
         return 'pending review';
@@ -678,4 +683,16 @@ export class AssessmentService {
     return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
+  resubmitAssessment({
+    assessment_id,
+    submission_id,
+  }): RxObsservable<any> {
+    return this.request.post({
+      endPoint: api.post.resubmit,
+      data:{
+        assessment_id,
+        submission_id,
+      }
+    });
+  }
 }
