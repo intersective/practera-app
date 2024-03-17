@@ -266,6 +266,8 @@
       *ngIf="!(action === 'review'
       && submission?.status === 'feedback available'
       && review?.status === 'done')"
+      [showResubmit]="assessment?.allowResubmit === true && submission?.status !== 'in progress'"
+      (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
       (handleClick)="continueToNextTask()"
