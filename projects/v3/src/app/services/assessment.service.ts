@@ -146,7 +146,7 @@ export class AssessmentService {
     return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck
+          id name type description dueDate isTeam pulseCheck isLocked
           groups{
             name description
             questions{
