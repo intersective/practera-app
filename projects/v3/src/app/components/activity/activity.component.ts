@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { SharedService } from '@v3/app/services/shared.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
@@ -24,33 +25,60 @@ export class ActivityComponent implements OnInit, OnChanges {
   // false: at least one non-team task
   @Output() cannotAccessTeamActivity = new EventEmitter();
   isForTeamOnly: boolean = false;
+  popupBlocked: boolean = false;
 
   constructor(
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
     this.leadImage = this.storageService.getUser().programImage;
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void | Promise<void> {
     if (changes.activity?.currentValue) {
       const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
       const currentActivity = activities[this.activity.id];
+
+      // if activity is locked, show popup and block access
+      if (currentActivity.isLocked === true && this.popupBlocked === false) {
+        this.popupBlocked = true;
+        return this.notificationsService.alert({
+          message: $localize`This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.`,
+          backdropDismiss: false,
+          keyboardClose: false,
+          buttons: [
+            {
+              text: $localize`OK`,
+              handler: () => {
+                this.popupBlocked = false;
+                this.router.navigate(['/']);
+              },
+            }
+          ],
+        });
+      }
+
+      // added to prevent multiple popups
+      if (this.popupBlocked === true) {
+        return;
+      }
+
       if (currentActivity?.leadImage) {
         this.leadImage = currentActivity?.leadImage;
       }
 
       if (currentValue.tasks?.length > 0) {
         this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
-            this.isForTeamOnly = !nonTeamActivity;
-            this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
-          });
+          this.isForTeamOnly = !nonTeamActivity;
+          this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+        });
       }
     }
   }
@@ -87,7 +115,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
