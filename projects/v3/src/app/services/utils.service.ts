@@ -322,20 +322,26 @@ export class UtilsService {
     const date = new Date(this.iso8601Formatter(time));
 
     const currentLocale = this.getCurrentLocale();
-    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
+    const timeFormat: Intl.DateTimeFormatOptions = {
       hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
-    }).format(date);
+    };
 
     switch (display) {
       case 'date':
         return this.dateFormatter(date);
 
       case 'time':
-        return formattedTime;
+        return new Intl.DateTimeFormat(currentLocale, timeFormat).format(date);
+
+      case 'timeZone':
+        const formatted = new Intl.DateTimeFormat(currentLocale, timeFormat);
+        const resolvedOptions = formatted.resolvedOptions();
+        return `${this.dateFormatter(date)} ${formatted.format(date)} (${resolvedOptions.timeZone})`;
 
       default:
+        const formattedTime = new Intl.DateTimeFormat(currentLocale, timeFormat).format(date);
         return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
@@ -731,16 +737,9 @@ export class UtilsService {
   }
 
   checkIsPracteraSupportEmail() {
-    const expId = this.storageService.getUser().experienceId;
-    const programList = this.storageService.get('programs');
-    if (!expId || !programList || programList.length < 1) {
-      return;
-    }
-    const currentExperience = programList.find((program)=> {
-      return program.experience.id === expId;
-    });
-    if (currentExperience) {
-      const supportEmail = currentExperience.experience.support_email;
+    const currentExperience = this.storageService.get('experience');
+    if (currentExperience && currentExperience.supportEmail) {
+      const supportEmail = currentExperience.supportEmail;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;

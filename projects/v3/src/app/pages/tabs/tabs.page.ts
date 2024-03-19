@@ -7,6 +7,7 @@ import { ChatService } from '@v3/services/chat.service';
 import { Subscription } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
+import { ActivityService } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-tabs',
@@ -35,7 +36,8 @@ export class TabsPage implements OnInit, OnDestroy {
     private chatService: ChatService,
     private utils: UtilsService,
     private notificationsService: NotificationsService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private activityService: ActivityService,
   ) {}
 
   ngOnInit() {
@@ -64,6 +66,9 @@ export class TabsPage implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.utils.getEvent('notification').subscribe(event => {
       this.notificationsService.getTodoItemFromEvent(event);
+      if (event.type === 'assessment_review_published' && event?.meta?.AssessmentReview?.activity_id) {
+        this.activityService.getActivity(event.meta.AssessmentReview.activity_id);
+      }
     }));
 
     this.subscriptions.push(this.utils.getEvent('chat:new-message').subscribe(() => {

@@ -27,7 +27,7 @@ export interface User {
   teamName?: string;
   userHash?: string;
   colors?: Colors;
-  activityCardImage?: string;
+  activityCardImage?: string; // default activity card image
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
@@ -65,8 +65,6 @@ export interface Config {
 })
 
 export class BrowserStorageService {
-  public memoryCache: any;
-
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {

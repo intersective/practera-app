@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core';
-import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, HttpResponse } from '@angular/common/http';
 import { RequestConfig } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { catchError, tap } from 'rxjs/operators';
@@ -32,7 +32,7 @@ export class RequestInterceptor implements HttpInterceptor {
           error?.error?.text === 'success') {
           return of(error);
         }
-        return throwError(error);
+        return throwError(() => new Error(error));
       }));
     }
     const apikey = this.storage.getUser().apikey;

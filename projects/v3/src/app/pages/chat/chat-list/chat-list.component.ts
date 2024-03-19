@@ -20,6 +20,7 @@ export class ChatListComponent {
   @Input() currentChat: ChatChannel;
   chatList: ChatChannel[];
   loadingChatList = true;
+  isMobile: boolean = false;
 
   constructor(
     private chatService: ChatService,
@@ -30,11 +31,12 @@ export class ChatListComponent {
     private ngZone: NgZone,
     public pusherService: PusherService
   ) {
+    this.isMobile = this.utils.isMobile();
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
     this.utils.getEvent('chat:delete-message').subscribe(event => this._loadChatData());
     this.utils.getEvent('chat:edit-message').subscribe(event => this._loadChatData());
     this.utils.getEvent('chat:info-update').subscribe(event => this._loadChatData());
-    if (!this.utils.isMobile()) {
+    if (!this.isMobile) {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
         const chatIndex = this.chatList.findIndex(data => data.uuid === event.channelUuid);
         if (chatIndex > -1) {
@@ -115,8 +117,8 @@ export class ChatListComponent {
   }
 
   // navigation logic depends on the platform/screen size
-  private _navigate(direction, chatChannel) {
-    if (this.utils.isMobile()) {
+  private _navigate(direction, chatChannel: ChatChannel) {
+    if (this.isMobile) {
       this.storage.setCurrentChatChannel(chatChannel);
       // redirect to chat room page for mobile
       return this.ngZone.run(() => {

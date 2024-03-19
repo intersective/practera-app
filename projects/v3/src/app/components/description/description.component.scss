@@ -78,6 +78,11 @@
 
 ion-button {
   --background-hover: transparent !important;
+  min-height: 2em;
+  &::part(native) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
 // copied from admin wysiwyg editor's post-rendering styling
