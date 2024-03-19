@@ -9,6 +9,7 @@ import { ApolloService } from './apollo.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
+import { RequestService } from 'request';
 
 /**
  * @name api
@@ -127,6 +128,7 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private demo: DemoService,
+    private request: RequestService,
   ) {
     this.assessment$.subscribe(res => this.assessment = res);
   }
@@ -145,8 +147,8 @@ export class AssessmentService {
     return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck allowResubmit isLocked
-          groups{
+          id name type description dueDate isTeam pulseCheck allowResubmit
+          groups {
             name description
             questions{
               id name description type isRequired hasComment audience fileType
