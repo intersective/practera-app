@@ -22,6 +22,17 @@ const api = {
   }
 };
 
+/**
+ * @name api
+ * @description list of api endpoint involved in this service
+ * @type {Object}
+ */
+const api = {
+  post: {
+    resubmit: 'api/assessment_resubmit.json'
+  }
+};
+
 export interface AssessmentSubmitParams {
   id: number;
   inProgress?: boolean;
