@@ -7,11 +7,12 @@ import { BehaviorSubject } from 'rxjs';
   styleUrls: ['./bottom-action-bar.component.scss'],
 })
 export class BottomActionBarComponent {
-
+  @Input() showResubmit: boolean = false;
   @Input() text: string;
   @Input() color: string = 'primary';
   @Input() disabled$?: BehaviorSubject<boolean>; // assessment only
   @Output() handleClick = new EventEmitter();
+  @Output() handleResubmit = new EventEmitter();
   @Input() buttonType: string = '';
 
   constructor() {}
@@ -28,6 +29,10 @@ export class BottomActionBarComponent {
     }
 
     return;
+  }
+
+  onResubmit(clickEvent: Event) {
+    return this.handleResubmit.emit(clickEvent);
   }
 }
 
