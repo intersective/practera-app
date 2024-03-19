@@ -63,7 +63,6 @@ export interface Config {
 @Injectable({
   providedIn: 'root'
 })
-
 export class BrowserStorageService {
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 

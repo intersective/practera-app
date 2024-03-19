@@ -154,7 +154,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
         }
-        this.resubscribe$.next();
+        this.resubscribe$.next(null);
       }
     );
   }
@@ -231,7 +231,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         subscription.unsubscribe();
       }
     });
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
 

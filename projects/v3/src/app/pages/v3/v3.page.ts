@@ -70,7 +70,7 @@ export class V3Page implements OnInit, OnDestroy {
   showReviews: boolean = false;
   directionIcon: string = this.direction();
   collapsibleMenu: string = 'closed';
-  institutionLogo: string = this.getInstitutionLogo();
+  institutionLogo: string = null;
   isMobile: boolean;
   institutionName: string;
 
@@ -93,6 +93,7 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly homeService: HomeService,
   ) {
     this.isMobile = this.utils.isMobile();
+    this.institutionLogo = this.getInstitutionLogo();
   }
 
   ngOnDestroy(): void {

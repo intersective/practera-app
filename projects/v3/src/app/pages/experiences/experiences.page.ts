@@ -17,7 +17,7 @@ import { filter } from 'rxjs/operators';
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   programs$: Observable<ProgramObj[]>;
-  experiences$: Observable<Experience[]>;
+  experiences$: Observable<any[]>;
   progresses: {
     [key: number]: number;
   } = {};
