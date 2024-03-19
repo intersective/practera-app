@@ -3,11 +3,19 @@
     <ion-text *ngSwitchCase="'blocked-role'" color="grey-50">
       <p>Team assessment submissions restricted to participants only.</p>
     </ion-text>
-    <ion-button *ngSwitchDefault
-      mode="ios"
-      [disabled]="disabled$ | async"
-      [color]="color"
-      (click)="onClick($event)"
-    >{{ text }}</ion-button>
+    <ng-container *ngSwitchDefault>
+      <ion-button
+        mode="ios"
+        [disabled]="disabled$ | async"
+        [color]="color"
+        (click)="onClick($event)"
+      >{{ text }}</ion-button>
+      <ion-button *ngIf="showResubmit === true"
+        mode="ios"
+        [color]="color"
+        (click)="onResubmit($event)"
+      >Resubmit</ion-button>
+    </ng-container>
+
   </ng-container>
 </div>
