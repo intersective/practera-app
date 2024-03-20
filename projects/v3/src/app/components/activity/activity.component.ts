@@ -55,24 +55,24 @@ export class ActivityComponent implements OnInit, OnChanges {
       if (activities) {
         const currentActivity = activities[this.activity.id];
 
-        // if activity is locked, show popup and block access
-        if (currentActivity.isLocked === true && this.popupBlocked === false) {
-          this.popupBlocked = true;
-          return this.notificationsService.alert({
-            message: $localize`This part of the app is still locked. You can unlock the features by engaging with the app and completing all tasks.`,
-            backdropDismiss: false,
-            keyboardClose: false,
-            buttons: [
-              {
-                text: $localize`OK`,
-                handler: () => {
-                  this.popupBlocked = false;
-                  this.router.navigate(['/']);
-                },
-              }
-            ],
-          });
-        }
+      // if activity is locked, show popup and block access
+      if (currentActivity.isLocked === true && this.popupBlocked === false) {
+        this.router.navigate(['/']); // force redirect to home page
+        this.popupBlocked = true;
+        return this.notificationsService.alert({
+          message: $localize`The activity you're trying to access appears to still be locked. You can unlock the features by engaging with the app and completing all tasks.`,
+          backdropDismiss: false,
+          keyboardClose: false,
+          buttons: [
+            {
+              text: $localize`OK`,
+              handler: () => {
+                this.popupBlocked = false;
+              },
+            }
+          ],
+        });
+      }
 
         // added to prevent multiple popups
         if (this.popupBlocked === true) {
@@ -106,7 +106,6 @@ export class ActivityComponent implements OnInit, OnChanges {
    * Task icon type
    *
    * @param   {Task}  task  task's type is the only required value
-   *
    * @return  {string}      ionicon's name
    */
   leadIcon(task: Task) {
@@ -235,7 +234,15 @@ export class ActivityComponent implements OnInit, OnChanges {
     });
   }
 
-  private async _validateTeamAssessment(task: Task, proceedCB) {
+  /**
+   * Validate team assessment with latest team info
+   *
+   * @param   {Task}  task
+   * @param   {Function}proceedCB  callback to proceed if team status is valid (in a valid team & ready for team/360 assessment)
+   *
+   * @return  {[type]}           [return description]
+   */
+  private async _validateTeamAssessment(task: Task, proceedCB): Promise<any> {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 
