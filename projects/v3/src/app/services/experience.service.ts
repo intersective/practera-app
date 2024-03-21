@@ -366,19 +366,6 @@ export class ExperienceService {
     }));
   }
 
-  checkIsOneProgram(programs?) {
-    let programList = programs;
-    if (environment.demo) {
-      programList = this.demo.programs;
-    } else if (this.utils.isEmpty(programs)) {
-      programList = this.storage.get('programs');
-    }
-    if (programList.length === 1) {
-      return true;
-    }
-    return false;
-  }
-
   /**
    * this method will check program data and navigate to switcher or dashboard/go-mobile
    * @param programs
