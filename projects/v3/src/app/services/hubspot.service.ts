@@ -6,13 +6,15 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
+import { HttpClient } from '@angular/common/http';
+import { Experience } from './experience.service';
 /*
 * @name api
 * @description list of api endpoint involved in this service
 * @type {Object}
 */
 const API = {
- hubspotSubmit: 'https://api.hsforms.com/submissions/v3/integration/submit/',
+  hubspotSubmit: 'https://api.hsforms.com/submissions/v3/integration/submit/',
 };
 
 export interface HubspotFormParams {
@@ -45,12 +47,6 @@ export class HubspotService {
     return this.request.post({
       endPoint: `${API.hubspotSubmit}${environment.hubspot.supportFormPortalId}/${environment.hubspot.supportFormId}`,
       data: body,
-      httpOptions: {
-
-      },
-      customErrorHandler: (err: any) => {
-        return of(err);
-      }
     }).pipe(
       // eslint-disable-next-line no-console
       map(res => console.log(res)),
@@ -149,24 +145,19 @@ export class HubspotService {
         }
       );
 
-      const experienceId = this.storage.getUser().experienceId;
-      const programList = this.storage.get('programs');
-      if (!experienceId || !programList || programList.length < 1) {
-        return null;
+      const currentExperience: Experience = this.storage.get('experience');
+      if (!currentExperience) {
+        return;
       }
-      const currentExperience = programList.find((program) => {
-        return program.experience.id === experienceId;
-      });
-      if (currentExperience) {
-        const expName = currentExperience.experience.name;
-        if (expName) {
-          submitParam.fields.push(
-            {
-              name: "TICKET.experience_or_program",
-              value: expName
-            }
-          );
-        }
+
+      const expName = currentExperience.name;
+      if (expName) {
+        submitParam.fields.push(
+          {
+            name: "TICKET.experience_or_program",
+            value: expName
+          }
+        );
       }
 
       return submitParam;

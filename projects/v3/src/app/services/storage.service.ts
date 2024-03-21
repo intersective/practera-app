@@ -83,7 +83,7 @@ export class BrowserStorageService {
    *    - fastFeedbackOpening: boolean
    *    - authToken: string
    *    - hasMultipleStacks: boolean
-   *    - programs: array
+   *    - experience: Experience
    *    - tutorial: any
    *    - unRegisteredDirectLink: boolean
    *
