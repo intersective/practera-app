@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       INPUT_BRANCH:
-        description: 'Branch or tag to deploy'     
+        description: 'Branch or tag to deploy'
         required: true
         default: ''
   push:
@@ -204,7 +204,7 @@ jobs:
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: true
           CUSTOM_PORTAL_ID: 3404872
-          CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4s
+          CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
           CUSTOM_LIVE_SERVER_REGION: AU
 
 ###############################################################
