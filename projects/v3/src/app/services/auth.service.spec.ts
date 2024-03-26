@@ -8,6 +8,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from './notifications.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ApolloService } from './apollo.service';
 
 
 describe('AuthService', () => {

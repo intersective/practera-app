@@ -7,7 +7,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
-import { AuthRegistrationComponent } from './auth-registration.component';
+import { AuthRegistrationComponent } from '../auth-registration/auth-registration.component';
 
 describe('AuthRegistrationComponent', () => {
   let component: AuthRegistrationComponent;
