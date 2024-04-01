@@ -79,7 +79,7 @@ export class SharedService {
           });
           this.achievementService.getAchievements();
         }
-
+        // { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
         // refresh todoItems
         if (event?.event === 'achievement' && event.type === 'new_items') {
           this.notification.getTodoItems().pipe(first()).subscribe();
