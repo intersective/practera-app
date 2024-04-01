@@ -34,7 +34,7 @@ interface VerifyParams {
 }
 
 interface RegisterData {
-  password: string;
+  password?: string;
   user_id: number;
   key: string;
 }

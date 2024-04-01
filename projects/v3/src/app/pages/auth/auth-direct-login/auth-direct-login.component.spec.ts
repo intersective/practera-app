@@ -95,7 +95,7 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   beforeEach(() => {
-    authServiceSpy.directLogin.and.returnValue(of({}));
+    authServiceSpy.authenticate.and.returnValue(of({} as any));
     switcherSpy.getMyInfo.and.returnValue(of({}));
     switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     storageSpy.get.and.returnValue([{ timeline: { id: 1 } }]);
@@ -118,7 +118,7 @@ describe('AuthDirectLoginComponent', () => {
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { authToken: 'abc' };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      authServiceSpy.directLogin.and.throwError('');
+      authServiceSpy.authenticate.and.throwError('');
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
@@ -166,10 +166,10 @@ describe('AuthDirectLoginComponent', () => {
         fixture.detectChanges();
 
         if (doAuthentication) {
-          expect(authServiceSpy.directLogin.calls.count()).toBe(1);
+          expect(authServiceSpy.authenticate.calls.count()).toBe(1);
           expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
         } else {
-          expect(authServiceSpy.directLogin.calls.count()).toBe(0);
+          expect(authServiceSpy.authenticate.calls.count()).toBe(0);
           expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
         }
 

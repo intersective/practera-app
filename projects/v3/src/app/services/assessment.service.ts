@@ -600,7 +600,7 @@ export class AssessmentService {
       // eslint-disable-next-line no-console
       console.log('save answers', assessment, answers, action);
       this._afterSubmit(assessment, answers, action, hasPulseCheck);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse() as any;
     }
     let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${(action === 'assessment' ? 'AssessmentSubmissionAnswerInput' : 'AssessmentReviewAnswerInput')}]`;
     let params = 'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
