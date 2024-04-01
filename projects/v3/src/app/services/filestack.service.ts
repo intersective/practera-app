@@ -214,7 +214,7 @@ export class FilestackService {
       storeTo: this.getS3Config(this.getFileTypes()),
       onFileSelected: this.onFileSelectedRename,
       onFileUploadFailed: onError,
-      onFileUploadFinished: function (res) {
+      onFileUploadFinished: (res) => {
         return onSuccess(res);
       },
       onUploadDone: (res) => res,
