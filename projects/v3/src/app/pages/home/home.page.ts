@@ -91,11 +91,14 @@ export class HomePage implements OnInit, OnDestroy {
       })
     );
 
-    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+    this.unlockIndicatorService.unlockedTasks$.pipe(
+      distinctUntilChanged(),
+    ).subscribe(unlockedTasks => {
       this.hasUnlockedTasks = {}; // reset
       unlockedTasks.forEach(task => {
         this.hasUnlockedTasks[task.activityId] = true;
       });
+      this.homeService.getMilestones();
     });
   }
 
