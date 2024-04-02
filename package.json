@@ -51,7 +51,7 @@
     "core-js": "^3.21.1",
     "dayjs": "^1.11.10",
     "exif-js": "^2.3.0",
-    "filestack-js": "^3.27.0",
+    "filestack-js": "^3.30.0",
     "graphql": "^16.8.1",
     "lodash-es": "^4.17.21",
     "moment": "^2.29.4",
