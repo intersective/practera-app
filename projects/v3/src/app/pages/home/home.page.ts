@@ -92,7 +92,9 @@ export class HomePage implements OnInit, OnDestroy {
       })
     );
 
-    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+    this.unlockIndicatorService.unlockedTasks$.pipe(
+      distinctUntilChanged(),
+    ).subscribe(unlockedTasks => {
       this.hasUnlockedTasks = {}; // reset
       this.unlockedMilestones = {}; // reset
       unlockedTasks.forEach(task => {
@@ -102,6 +104,7 @@ export class HomePage implements OnInit, OnDestroy {
 
         this.hasUnlockedTasks[task.activityId] = true;
       });
+      this.homeService.getMilestones();
     });
   }
 
