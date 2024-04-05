@@ -74,7 +74,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     // clear the cached data
-    await this.utils.clearCache();
+    await this.authService.clearCache();
 
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id

@@ -289,8 +289,10 @@
   <ng-container *ngIf="preventSubmission === false; else blocked">
     <app-bottom-action-bar
       *ngIf="!(action === 'review'
-        && submission.status === 'feedback available'
-        && review.status === 'done')"
+        && submission?.status === 'feedback available'
+        && review?.status === 'done')"
+      [showResubmit]="assessment?.allowResubmit === true && submission?.status !== 'in progress'"
+      (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
       (handleClick)="continueToNextTask()"
