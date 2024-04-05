@@ -10,7 +10,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter, takeLast } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -35,6 +35,7 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
   hasUnlockedTasks: Object = {};
+  unlockedMilestones: {[key: number]: boolean} = {};
 
   constructor(
     private router: Router,
@@ -93,7 +94,12 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
       this.hasUnlockedTasks = {}; // reset
+      this.unlockedMilestones = {}; // reset
       unlockedTasks.forEach(task => {
+        if (task.milestoneId) {
+          this.unlockedMilestones[task.milestoneId] = true;
+        }
+
         this.hasUnlockedTasks[task.activityId] = true;
       });
     });
