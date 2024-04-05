@@ -34,6 +34,7 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
   hasUnlockedTasks: Object = {};
+  unlockedMilestones: {[key: number]: boolean} = {};
 
   constructor(
     private router: Router,
@@ -91,7 +92,12 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
       this.hasUnlockedTasks = {}; // reset
+      this.unlockedMilestones = {}; // reset
       unlockedTasks.forEach(task => {
+        if (task.milestoneId) {
+          this.unlockedMilestones[task.milestoneId] = true;
+        }
+
         this.hasUnlockedTasks[task.activityId] = true;
       });
     });
