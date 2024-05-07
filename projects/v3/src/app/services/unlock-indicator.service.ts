@@ -29,76 +29,104 @@ export enum UnlockIndicatorModel {
 })
 export class UnlockIndicatorService {
   // Initialize with an empty array
-  private unlockedTasksSubject = new BehaviorSubject<UnlockedTask[]>([]);
+  private _unlockedTasksSubject = new BehaviorSubject<UnlockedTask[]>([]);
   // Expose as an observable for components to subscribe
-  public unlockedTasks$ = this.unlockedTasksSubject.asObservable();
+  public unlockedTasks$ = this._unlockedTasksSubject.asObservable();
 
   constructor(
     private storageService: BrowserStorageService,
   ) {
     const storedTasks = this.storageService.get('unlockedTasks');
     if (storedTasks) {
-      this.unlockedTasksSubject.next(storedTasks);
+      this._unlockedTasksSubject.next(storedTasks);
     }
+  }
+
+  /**
+   * a unlockedTask has format { milestoneId, activityId, taskId }
+   * so this will extract unlockedTask[] with milestoneId
+   *
+   * @param   {number}   milestoneId
+   *
+   * @return  {boolean}     false: not all unlocked tasks are viewed,
+   *                        true: all unlocked tasks are viewed (ready for clearing milestone)
+   */
+  isMilestoneClearable(milestoneId: number): boolean {
+    const milestones = this.getTasksByMilestoneId(milestoneId);
+    const hasUnlockedActivities = milestones.some(task => task.activityId !== undefined);
+    const hasUnlockedTasks = milestones.some(task => task.taskId !== undefined);
+    if (hasUnlockedActivities || hasUnlockedTasks) {
+      return false;
+    }
+    return true;
   }
 
   // clear all tasks (for experience switching)
   clearAllTasks() {
     this.storageService.remove('unlockedTasks');
-    this.unlockedTasksSubject.next([]);
+    this._unlockedTasksSubject.next([]);
   }
 
   allUnlockedTasks(): UnlockedTask[] {
-    return this.unlockedTasksSubject.getValue();
+    return this._unlockedTasksSubject.getValue();
   }
 
-  clearActivity(id) {
-    const currentTasks = this.unlockedTasksSubject.getValue();
-    const clearedActivity = currentTasks.filter(task => task.activityId === id);
-    const latestTasks = currentTasks.filter(task => task.activityId !== id);
+  /**
+   * Clear all tasks related to a particular activity
+   *
+   * @param   {number[]}        id  [id description]
+   *
+   * @return  {UnlockedTask[]}      unlocked tasks that were cleared
+   */
+  clearActivity(id: number): UnlockedTask[] {
+    const currentTasks = this._unlockedTasksSubject.getValue();
+
+    const clearedActivity = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
+    const latestTasks = currentTasks.filter(task => task.activityId !== id && task.milestoneId !== id);
+
     this.storageService.set('unlockedTasks', latestTasks);
-    this.unlockedTasksSubject.next(latestTasks);
+    this._unlockedTasksSubject.next(latestTasks);
+
     return clearedActivity;
   }
 
-  getTasksBy(activity: Activity) {
-    const tasks = activity.tasks;
-    const tasksId = tasks.map(task => task.id);
-    return this.unlockedTasksSubject.getValue().filter(unlocked => tasksId.includes(unlocked.taskId));
+  getTasksByMilestoneId(milestoneId: number): UnlockedTask[] {
+    return this._unlockedTasksSubject.getValue().filter(unlocked => unlocked.milestoneId === milestoneId);
   }
 
-  // check if the provided activity has matching newly unlocked task id
-  hasNewTask(activity: Activity): boolean {
-    const tasks = activity.tasks;
+  getTasksByActivity(activity: Activity) {
+    const tasks = activity.tasks || [];
+    if (tasks.length === 0) {
+      throw new Error('No tasks found in the activity');
+    }
     const tasksId = tasks.map(task => task.id);
-    return this.unlockedTasksSubject.getValue().some(unlocked => tasksId.includes(unlocked.taskId));
+    return this._unlockedTasksSubject.getValue().filter(unlocked => tasksId.includes(unlocked.taskId));
   }
 
-  // combine the stored tasks with the new data and store it
+  // Merge the saved tasks with the fresh data and preserve it.
   unlockTasks(data: UnlockedTask[]) {
-    const currentTasks = this.unlockedTasksSubject.getValue();
-    const deduped = this.dedupStored(currentTasks);
-    const latestTasks = [...deduped, ...data];
+    const currentTasks = this._unlockedTasksSubject.getValue();
+    const latestTasks = [...currentTasks, ...data];
+    // Deduplicate the tasks
+    const uniquelatestTasks = latestTasks.filter((task, index, self) =>
+      index === self.findIndex((t) => (
+        t.milestoneId === task.milestoneId &&
+        t.activityId === task.activityId &&
+        t.taskId === task.taskId
+      ))
+    );
 
-    this.storageService.set('unlockedTasks', latestTasks);
-  }
-
-  // Method to add a new unlocked task (through todoitem meta)
-  unlockTask(key: { id: number; identifier:string; milestoneId?: number; activityId?: number; taskId?: number;}) {
-    const currentTasks = this.unlockedTasksSubject.getValue();
-    const latestTasks = [...currentTasks, key];
-
-    this.storageService.set('unlockedTasks', latestTasks);
-    this.unlockedTasksSubject.next(latestTasks);
+    this.storageService.set('unlockedTasks', uniquelatestTasks);
+    this._unlockedTasksSubject.next(latestTasks);
   }
 
   // Method to remove an accessed task
   removeTask(taskId?: number): UnlockedTask {
-    const currentTasks = this.unlockedTasksSubject.getValue();
+    const currentTasks = this._unlockedTasksSubject.getValue();
     const removedTask = currentTasks.find(task => task.taskId === taskId);
     const latestTasks = currentTasks.filter(task => task.taskId !== taskId);
     this.storageService.set('unlockedTasks', latestTasks);
-    this.unlockedTasksSubject.next(latestTasks);
+    this._unlockedTasksSubject.next(latestTasks);
     return removedTask;
   }
 

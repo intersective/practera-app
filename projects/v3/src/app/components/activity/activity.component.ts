@@ -62,10 +62,10 @@ export class ActivityComponent implements OnInit, OnChanges {
           this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
         });
 
-        const unlockedTasks = this.unlockIndicatorService.getTasksBy(this.activity);
+        const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
         if (unlockedTasks.length === 0) {
-          const activities = this.unlockIndicatorService.clearActivity(this.activity.id);
-          activities.forEach((activity) => {
+          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          clearedActivities.forEach((activity) => {
             this.notificationsService.markTodoItemAsDone(activity).subscribe();
           });
         }

@@ -60,7 +60,7 @@ export interface TodoItem {
   time?: string;
   identifier?: string;
   is_done?: boolean;
-  foreign_key?: number;
+  foreign_key?: number; // milestoneId/activitySequenceId/activityId
   model?: string;
   meta?: {
     id?: number;
@@ -461,38 +461,9 @@ export class NotificationsService {
         });
       }
 
-      if (
-        todoItem.model !== 'Milestone' && // skip, due to indicator is determined by task and activity
-        todoItem.name === 'New Item' &&
-        todoItem.model !== null &&
-        todoItem.is_done === false &&
-        todoItem.model
-      ) {
-        const key = UnlockIndicatorModel[todoItem.model];
-
-        // accept model code according enum UnlockIndicatorModel, we skip if it's not in the enum
-        if (!key) {
-          return;
-        }
-
-        const itemId: {[key:string]: any;} = {
-          [key]: todoItem.meta?.task_id || todoItem.foreign_key,
-          taskType: todoItem.meta?.task_type
-        };
-
-        if (todoItem.meta?.parent_activity) {
-          itemId.activityId = todoItem.meta.parent_activity;
-        }
-
-        if (todoItem.meta?.parent_milestone) {
-          itemId.milestoneId = todoItem.meta.parent_milestone;
-        }
-
-        unlockedTasks.push({
-          id: todoItem.id,
-          identifier: todoItem.identifier,
-          ...itemId
-        });
+      const unlockedTask = this._normaliseUnlockedTasks(todoItem);
+      if (unlockedTask) {
+        unlockedTasks.push(unlockedTask);
       }
 
       if (todoItem.identifier.includes('EventReminder-')) {
@@ -513,6 +484,80 @@ export class NotificationsService {
       this.unlockIndicatorService.unlockTasks(unlockedTasks);
     }
     return todoItems;
+  }
+
+  // standardise unlocked item
+  private _normaliseUnlockedTasks(todoItem): UnlockedTask {
+    // when just milestone unlocked (not task or activity)
+    // with sample json format: {
+    //   "id": 15768,
+    //   "name": "New Item",
+    //   "is_done": false,
+    //   "identifier": "NewItem-14069",
+    //   "created": "2024-03-12 04:31:29",
+    //   "modified": "2024-03-12 04:31:29",
+    //   "meta": [],
+    //   "model": "Milestone",
+    //   "foreign_key": 9612,
+    //   "project_id": 2656,
+    //   "timeline_id": 2659
+    // }
+    if (
+      todoItem.model === 'Milestone' &&
+      todoItem.name === 'New Item' &&
+      todoItem.is_done === false &&
+      todoItem.model
+    ) {
+      const itemId: {
+        milestoneId?: number;
+      } = {
+        milestoneId: todoItem.foreign_key,
+      };
+      return {
+        id: todoItem.id,
+        identifier: todoItem.identifier,
+        ...itemId
+      };
+    } else if (
+      todoItem.model !== 'Milestone' && // skip, due to indicator is determined by task and activity
+      todoItem.name === 'New Item' &&
+      todoItem.model !== null &&
+      todoItem.is_done === false &&
+      todoItem.model
+    ) {
+      const key = UnlockIndicatorModel[todoItem.model];
+
+      // accept model code according enum UnlockIndicatorModel, we skip if it's not in the enum
+      if (!key) {
+        return;
+      }
+
+      const itemId: {
+        activityId?: number;
+        milestoneId?: number;
+        taskId?: number;
+        taskType?: string;
+        [key: string]: any;
+      } = {
+        [key]: todoItem.meta?.task_id || todoItem.foreign_key,
+        taskType: todoItem.meta?.task_type
+      };
+
+      if (todoItem.meta?.parent_activity) {
+        itemId.activityId = todoItem.meta.parent_activity;
+      }
+
+      if (todoItem.meta?.parent_milestone) {
+        itemId.milestoneId = todoItem.meta.parent_milestone;
+      }
+
+      return {
+        id: todoItem.id,
+        identifier: todoItem.identifier,
+        ...itemId
+      };
+    }
+    return null;
   }
 
   private _addTodoItemForFeedbackAvailable(todoItem, todoItems) {
