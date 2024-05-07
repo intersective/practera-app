@@ -10,7 +10,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter, takeLast } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -170,7 +170,7 @@ export class HomePage implements OnInit, OnDestroy {
    * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
    * @returns A Promise that resolves when the navigation is complete.
    */
-  async gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
+  async gotoActivity({activity, milestone}, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
@@ -183,6 +183,18 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
+
+    // check & update unlocked milestones
+    if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
+      const unlockedMilestones = this.unlockIndicatorService.clearActivity(milestone.id);
+      unlockedMilestones.forEach(unlockedMilestone => {
+        this.notification.markTodoItemAsDone(unlockedMilestone).pipe(first()).subscribe(() => {
+          // eslint-disable-next-line no-console
+          console.log('Marked milestone as done', unlockedMilestone);
+        });
+      });
+    }
+
 
     if (!this.isMobile) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
