@@ -84,7 +84,11 @@
       aria-describedby="milestone-description">
       <div>
         {{ milestone.name }}
-        <span class="milestone notification-dot" slot="start" *ngIf="unlockedMilestones[milestone.id]"></span>
+        <span class="milestone notification-dot"
+          [ngClass]="{'mobile': isMobile}"
+          slot="start"
+          *ngIf="unlockedMilestones[milestone.id]"
+        ></span>
       </div>
       <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
     </ion-item>

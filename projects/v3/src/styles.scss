@@ -433,6 +433,9 @@ Used in achievement
   &.milestone {
     top: 0.5em;
     right: auto;
+    &.mobile {
+      right: 0.5em;
+    }
   }
 
   &.hidden {
