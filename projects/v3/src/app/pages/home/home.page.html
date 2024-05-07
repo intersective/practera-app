@@ -84,7 +84,11 @@
       aria-describedby="milestone-description">
       <div>
         {{ milestone.name }}
-        <span class="milestone notification-dot" slot="start" *ngIf="unlockedMilestones[milestone.id]"></span>
+        <span class="milestone notification-dot"
+          [ngClass]="{'mobile': isMobile}"
+          slot="start"
+          *ngIf="unlockedMilestones[milestone.id]"
+        ></span>
       </div>
       <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
     </ion-item>
@@ -102,8 +106,8 @@
       [title]="activity.name"
       [leadImage]="activity.leadImage"
       [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-      (click)="gotoActivity(activity)"
-      (keydown)="gotoActivity(activity, $event)"
+      (click)="gotoActivity({activity, milestone})"
+      (keydown)="gotoActivity({activity, milestone}, $event)"
       [endingIcon]="endingIcon(activity)"
       [endingIconColor]="endingIconColor(activity)"
       [endingProgress]="endingProgress(activity)"
