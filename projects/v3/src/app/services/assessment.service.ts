@@ -136,6 +136,17 @@ export class AssessmentService {
     this._assessment$.next(null);
   }
 
+  /**
+   * shared among reviewing & assessment answering page
+   *
+   * @param   {number}  id            assessment id
+   * @param   {string}  action        review/assessment (reviewing or answering)
+   * @param   {number}  activityId    activity id
+   * @param   {number}  contextId     context id (activity & task related)
+   * @param   {number}  submissionId  optional submission id
+   *
+   * @return  {Subscription}          no need to unsubscribe, handled by apollo
+   */
   getAssessment(id, action, activityId, contextId, submissionId?): Subscription {
     if (!this.assessment || this.assessment.id !== id) {
       this.clearAssessment();
@@ -190,8 +201,9 @@ export class AssessmentService {
       {
         noCache: true
       }
-    )
-      .pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
+    ).pipe(
+      map(res => this._handleAssessmentResponse(res, action))
+    ).subscribe();
   }
 
   private _handleAssessmentResponse(res, action) {
@@ -654,7 +666,7 @@ export class AssessmentService {
 
   /**
    * - check if fastfeedback is available
-   * - show next sequence if submission successful
+   * - show pulsecheck/fastfeedback at next sequence if submission successful
    */
   async pullFastFeedback() {
     try {
