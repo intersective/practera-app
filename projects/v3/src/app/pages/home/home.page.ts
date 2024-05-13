@@ -34,6 +34,9 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
 
+  // default card image (gracefully show broken url)
+  defaultLeadImage: string = '';
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -45,7 +48,8 @@ export class HomePage implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
@@ -100,6 +104,8 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
+
+    this.defaultLeadImage = this.experience.cardUrl || '';
   }
 
   goBack() {
