@@ -13,6 +13,7 @@ export interface Experience {
   name: string;
   description: string;
   locale: string;
+  cardUrl?: string;
 }
 
 export interface Milestone {
