@@ -23,7 +23,7 @@
   </div>
 
   <ion-avatar class="icon-container homepage" *ngIf="leadImage" slot="start" aria-hidden="true">
-    <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title">
+    <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
     <span class="notification-dot" [class.hidden]="!redDot"></span>
   </ion-avatar>
 
