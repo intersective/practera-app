@@ -7,8 +7,10 @@
   "description": "AppV2",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --project=v3 -c development",
     "prestart": "npm run prebuildv3",
+    "start": "ng serve",
+    "v3": "ng serve --project=v3 -c development --host 0.0.0.0 --port 4200 --disable-host-check --ssl true",
+    "prev3": "npm run prebuildv3",
     "poststart": "npm run generate-version",
     "local": "ng serve -c local",
     "postlocal": "npm run generate-version",
