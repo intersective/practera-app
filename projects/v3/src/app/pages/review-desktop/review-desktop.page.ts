@@ -83,6 +83,7 @@ export class ReviewDesktopPage implements OnInit {
     }
     this.noReview = false;
     this.currentReview = review;
+    this.utils.setPageTitle(review?.name || 'Review');
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 
