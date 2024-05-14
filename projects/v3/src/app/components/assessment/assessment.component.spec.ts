@@ -5,14 +5,14 @@ import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrota
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
-import { Assessment, AssessmentService } from '@v3/services/assessment.service';
+import { Assessment, AssessmentService, Submission } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ActivityService } from '@v3/services/activity.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { FastFeedbackServiceMock } from '@testing/mocked.service';
+import { FastFeedbackServiceMock } from '@testingv3/mocked.service';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
@@ -291,7 +291,7 @@ describe('AssessmentComponent', () => {
 
     it('should not allow submission if locked', () => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.isLocked = true;
       component.ngOnChanges();
 
@@ -303,7 +303,7 @@ describe('AssessmentComponent', () => {
 
     it('should not allow submission', () => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.isLocked = true;
       component.ngOnChanges();
 
@@ -315,7 +315,7 @@ describe('AssessmentComponent', () => {
 
     it('should save & publish "saving" message', fakeAsync(() => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'in progress';
       component.savingMessage$ = new BehaviorSubject('');
@@ -333,7 +333,7 @@ describe('AssessmentComponent', () => {
       component.assessment = mockAssessment;
       component.assessment.type = 'moderated';
 
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'pending review';
 
       component.review = mockReview;
@@ -354,7 +354,7 @@ describe('AssessmentComponent', () => {
       component.assessment = mockAssessment;
       component.assessment.type = 'moderated';
 
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'done';
       component.ngOnChanges();
@@ -577,12 +577,12 @@ describe('AssessmentComponent', () => {
     });
 
     it('should mark feedback as read', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'published';
       component.feedbackReviewed = false;
       expect(component.btnText).toEqual('mark feedback as reviewed');
 
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'feedback available';
       component.submission.completed = false;
       expect(component.btnText).toEqual('mark feedback as reviewed');
@@ -593,7 +593,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should emit continue', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'done';
       expect(component.btnText).toEqual('continue');
 
@@ -605,7 +605,7 @@ describe('AssessmentComponent', () => {
 
   describe('label()', () => {
     it('should return "in progress"', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'in progress';
       component.assessment = mockAssessment;
       component.assessment.isForTeam = true;
@@ -614,7 +614,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should return "overdue"', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.assessment = mockAssessment;
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
@@ -626,7 +626,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should return empty string ("")', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.assessment = mockAssessment;
       component.submission.isLocked = false;
       component.assessment.isForTeam = false;
@@ -637,7 +637,7 @@ describe('AssessmentComponent', () => {
 
   describe('labelColor()', () => {
     beforeEach(() => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.assessment = mockAssessment;
     });
 
@@ -663,7 +663,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should be "success" at submission.status = "feedback available"', () => {
-      component.submission.status = ''; // or  'in progress'
+      component.submission.status = 'in progress';
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;
@@ -676,7 +676,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should return empty when status is unknown', () => {
-      component.submission.status = 'unknown123456'; // or  'in progress'
+      component.submission.status = 'in progress';
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;

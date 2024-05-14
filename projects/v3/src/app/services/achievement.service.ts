@@ -3,7 +3,6 @@ import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
 import { first, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
-import { BrowserStorageService } from '@v3/services/storage.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 
@@ -16,9 +15,6 @@ const api = {
   get: {
     achievements: 'api/v2/motivations/achievement/list.json'
   },
-  post: {
-    todoItem: 'api/v2/motivations/todo_item/edit.json'
-  }
 };
 
 export interface Achievement {
@@ -45,8 +41,7 @@ export class AchievementService {
   constructor(
     private request: RequestService,
     private utils: UtilsService,
-    private storage: BrowserStorageService,
-    private demo: DemoService
+    private demo: DemoService,
   ) { }
 
   getAchievements(order?) {
@@ -92,7 +87,7 @@ export class AchievementService {
             isEarned: achievement.isEarned,
             earnedDate: achievement.earnedDate,
           });
-          if (achievement.points) {
+          if (achievement.points > 0) {
             this.isPointsConfigured = true;
             if (achievement.isEarned) {
               this.earnedPoints += +achievement.points;
@@ -110,23 +105,5 @@ export class AchievementService {
 
   getIsPointsConfigured() {
     return this.isPointsConfigured;
-  }
-
-  markAchievementAsSeen(achievementId): Subscription {
-    if (environment.demo) {
-      return this.demo.normalResponse() as Subscription;
-    }
-
-    const postData = {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'Achievement-' + achievementId,
-      is_done: true
-    };
-    return this.request.post(
-      {
-        endPoint: api.post.todoItem,
-        data: postData
-      }
-    ).pipe(first()).subscribe();
   }
 }

@@ -8,6 +8,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from './notifications.service';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ApolloService } from './apollo.service';
 
 
 describe('AuthService', () => {
@@ -31,11 +32,20 @@ describe('AuthService', () => {
           useValue: jasmine.createSpyObj('RequestService', [
             'delete', 'post', 'get', 'put'
           ]),
-        },/*
+        },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch'])
-        }, */
+          useValue: jasmine.createSpyObj('ApolloService', {
+            'graphQLFetch': of(),
+            'graphQLWatch': of(),
+            'getClient': function () {
+              return {
+                clearStore: jasmine.createSpy('clearStore'),
+                stop: jasmine.createSpy('stop'),
+              };
+            },
+          }),
+        },
         {
           provide: Router,
           useValue: {
@@ -280,6 +290,36 @@ describe('AuthService', () => {
       service.updateProfileImage({}).subscribe();
       flushMicrotasks();
       expect(requestSpy.post.calls.count()).toBe(1);
+    }));
+  });
+
+  describe('clearCache()', () => {
+    // xit('should trigger cache clearing through observables', () => {
+    //   service.activitySubjects = [
+    //     { next: jasmine.createSpy('next') },
+    //     { next: jasmine.createSpy('next') },
+    //     { next: jasmine.createSpy('next') },
+    //   ];
+
+    //   spyOn(service.projectSubject, 'next');
+    //   service.clearCache();
+
+    //   expect(service.projectSubject.next).toHaveBeenCalledWith(null);
+    //   expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
+    //   expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
+    //   expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
+    // });
+
+    it('should clear caches that covered in this function', fakeAsync(() => {
+      service['apolloService'].getClient = jasmine.createSpy('getClient').and.returnValue({
+        clearStore: jasmine.createSpy('clearStore').and.returnValue(Promise.resolve(true)),
+        stop: jasmine.createSpy('clearStore'),
+      });
+
+      service.clearCache();
+      flushMicrotasks();
+      expect(service['apolloService'].getClient).toHaveBeenCalled();
+      expect(service['apolloService'].getClient().clearStore).toHaveBeenCalled();
     }));
   });
 });

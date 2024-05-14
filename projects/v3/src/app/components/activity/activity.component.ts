@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -16,41 +18,85 @@ export class ActivityComponent implements OnInit, OnChanges {
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
-  leadImage: string = '';
-
+  leadImage: string = null;
+  newTasks: { [key: number]: any } = {};
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
   // false: at least one non-team task
   @Output() cannotAccessTeamActivity = new EventEmitter();
   isForTeamOnly: boolean = false;
+  popupBlocked: boolean = false;
 
   constructor(
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private unlockIndicatorService: UnlockIndicatorService,
+    private router: Router,
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.leadImage = this.storageService.getUser().programImage;
+    this.unlockIndicatorService.unlockedTasks$.subscribe((unlockedTasks) => {
+      this.newTasks = {};
+      unlockedTasks.forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
+    });
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void | Promise<void> {
     if (changes.activity?.currentValue) {
       const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
-      const currentActivity = activities[this.activity.id];
-      if (currentActivity?.leadImage) {
-        this.leadImage = currentActivity?.leadImage;
+      if (activities) {
+        const currentActivity = activities[this.activity.id];
+
+      // if activity is locked, show popup and block access
+      if (currentActivity.isLocked === true && this.popupBlocked === false) {
+        this.router.navigate(['/']); // force redirect to home page
+        this.popupBlocked = true;
+        return this.notificationsService.alert({
+          message: $localize`The activity you're trying to access appears to still be locked. You can unlock the features by engaging with the app and completing all tasks.`,
+          backdropDismiss: false,
+          keyboardClose: false,
+          buttons: [
+            {
+              text: $localize`OK`,
+              handler: () => {
+                this.popupBlocked = false;
+              },
+            }
+          ],
+        });
+      }
+
+        // added to prevent multiple popups
+        if (this.popupBlocked === true) {
+          return;
+        }
+
+        if (currentActivity?.leadImage) {
+          this.leadImage = currentActivity?.leadImage;
+        }
       }
 
       if (currentValue.tasks?.length > 0) {
         this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
-            this.isForTeamOnly = !nonTeamActivity;
-            this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+          this.isForTeamOnly = !nonTeamActivity;
+          this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+        });
+
+        const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+        if (unlockedTasks.length === 0) {
+          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          clearedActivities.forEach((activity) => {
+            this.notificationsService.markTodoItemAsDone(activity).subscribe();
           });
+        }
       }
     }
   }
@@ -60,7 +106,6 @@ export class ActivityComponent implements OnInit, OnChanges {
    * Task icon type
    *
    * @param   {Task}  task  task's type is the only required value
-   *
    * @return  {string}      ionicon's name
    */
   leadIcon(task: Task) {
@@ -87,10 +132,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    // overdue shows the label only
-    if (task.isOverdue) {
-      return '';
-    }
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
@@ -192,7 +234,15 @@ export class ActivityComponent implements OnInit, OnChanges {
     });
   }
 
-  private async _validateTeamAssessment(task: Task, proceedCB) {
+  /**
+   * Validate team assessment with latest team info
+   *
+   * @param   {Task}  task
+   * @param   {Function}proceedCB  callback to proceed if team status is valid (in a valid team & ready for team/360 assessment)
+   *
+   * @return  {[type]}           [return description]
+   */
+  private async _validateTeamAssessment(task: Task, proceedCB): Promise<any> {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 
