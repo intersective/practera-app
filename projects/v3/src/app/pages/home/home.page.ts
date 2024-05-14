@@ -3,7 +3,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
+import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { SharedService } from '@v3/app/services/shared.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Subscription } from 'rxjs';
@@ -17,7 +20,6 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
   activityCount$ = this.homeService.activityCount$;
   experienceProgress: number;
 
@@ -32,6 +34,9 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
 
+  // default card image (gracefully show broken url)
+  defaultLeadImage: string = '';
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -40,7 +45,11 @@ export class HomePage implements OnInit, OnDestroy {
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
-  ) { }
+    private sharedService: SharedService,
+    private experienceService: ExperienceService,
+    private storageService: BrowserStorageService,
+  ) {
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
@@ -67,8 +76,8 @@ export class HomePage implements OnInit, OnDestroy {
       filter(progress => progress !== null),
     ).subscribe(
       progress => {
-        progress?.milestones.forEach(m => {
-          m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
+        progress?.milestones?.forEach(m => {
+          m.activities?.forEach(a => this.activityProgresses[a.id] = a.progress);
         });
       }
     ));
@@ -79,20 +88,22 @@ export class HomePage implements OnInit, OnDestroy {
           this.updateDashboard();
         }
       })
-    )
+    );
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  updateDashboard() {
+  async updateDashboard() {
+    await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+    this.experience = this.storageService.get('experience');
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
-    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
-    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
+    this.defaultLeadImage = this.experience.cardUrl || '';
   }
 
   goBack() {
@@ -100,6 +111,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   switchContent(event) {
+    // update points upon switching to badges tab
+    if (event.detail.value === 'badges') {
+      this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
+      this.getEarnedPoints = this.achievementService.earnedPoints;
+    }
     this.display = event.detail.value;
   }
 

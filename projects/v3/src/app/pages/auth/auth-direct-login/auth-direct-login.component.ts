@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { ExperienceService } from '@v3/services/experience.service';
+import { Experience, ExperienceService } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
@@ -32,20 +32,13 @@ export class AuthDirectLoginComponent implements OnInit {
     }
 
     try {
-      // skip the authentication if the same auth token has been used before
-      if (this.storage.get('authToken') !== authToken) {
-        await this.authService.directLogin({ authToken }).toPromise();
-        await this.experienceService.getMyInfo().toPromise();
-        // save the auth token to compare with future use
-        this.storage.set('authToken', authToken);
-      }
-      if (environment.demo) {
-        setTimeout(() => {
-          return this._redirect();
-        }, 3000);
-      } else {
-        return this._redirect();
-      }
+      const authed = await this.authService.autologin({ authToken }).toPromise();
+      await this.experienceService.getMyInfo().toPromise();
+
+      this.experienceService.switchProgram({
+        experience: authed.experience
+      });
+      return this._redirect({ experience: authed.experience });
     } catch (err) {
       console.error(err);
       this._error(err);
@@ -65,7 +58,13 @@ export class AuthDirectLoginComponent implements OnInit {
    * @param {boolean}   redirectLater
    * @returns {Promise<boolean | void>}
    */
-  private async _redirect(redirectLater?: boolean): Promise<boolean | void> {
+  private async _redirect(options?: {
+    experience?: Experience;
+    redirectLater?: boolean;
+  }): Promise<boolean | void> {
+    const experience = options?.experience;
+    const redirectLater = options?.redirectLater || false;
+
     const redirect = this.route.snapshot.paramMap.get('redirect');
     const activityId = +this.route.snapshot.paramMap.get('act');
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
@@ -75,7 +74,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     // clear the cached data
-    await this.utils.clearCache();
+    await this.authService.clearCache();
 
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
@@ -94,15 +93,9 @@ export class AuthDirectLoginComponent implements OnInit {
 
     // switch program directly if user already registered
     if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
-        return value.timeline.id === timelineId;
+      await this.experienceService.switchProgram({
+        experience: this.storage.get('experience')
       });
-      if (this.utils.isEmpty(program)) {
-        // if the timeline id is not found
-        return this._saveOrRedirect(['experiences']);
-      }
-      // switch to the program
-      await this.experienceService.switchProgram(program);
     }
 
     let referrerUrl = '';
@@ -227,18 +220,22 @@ export class AuthDirectLoginComponent implements OnInit {
     if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
       'User is not registered'
     ].includes(res.data.message)) {
-      this._redirect(true);
+      this._redirect({ redirectLater: true });
       this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
+
+    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+
     return this.notificationsService.alert({
-      message: $localize`Your link is invalid or expired.`,
+      message: errorMessage,
       buttons: [
         {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            this.navigate(['login']);
+            // calling auth service logout mentod to clear user data and redirect
+            this.authService.logout();
           }
         }
       ]

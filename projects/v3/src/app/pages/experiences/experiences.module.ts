@@ -8,12 +8,15 @@ import { ExperiencesPageRoutingModule } from './experiences-routing.module';
 
 import { ExperiencesPage } from './experiences.page';
 
+import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    ExperiencesPageRoutingModule
+    ExperiencesPageRoutingModule,
+    PersonalisedHeaderModule
   ],
   declarations: [ExperiencesPage]
 })

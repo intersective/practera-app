@@ -42,7 +42,10 @@ export class AssessmentMobilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
+    this.assessmentService.assessment$.subscribe(res => {
+      this.assessment = res;
+      this.utils.setPageTitle(this.assessment?.name);
+    });
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
@@ -116,10 +119,6 @@ export class AssessmentMobilePage implements OnInit {
           console.error('Asmt submission error:', saved);
           throw new Error("Error submitting assessment");
         }
-
-        if (this.assessment.pulseCheck === true && event.autoSave === false) {
-          await this.assessmentService.pullFastFeedback();
-        }
       } else if (this.action === 'review') {
         const saved = await this.assessmentService.submitReview(
           event.assessmentId,
@@ -135,6 +134,11 @@ export class AssessmentMobilePage implements OnInit {
         }
 
         this.reviewService.getReviews();
+      }
+
+      // [CORE-5876] - Fastfeedback is now added for reviewer
+      if (this.assessment.pulseCheck === true && event.autoSave === false) {
+        await this.assessmentService.pullFastFeedback();
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
@@ -162,6 +166,7 @@ export class AssessmentMobilePage implements OnInit {
     try {
       await this.assessmentService.saveFeedbackReviewed(event).toPromise();
       await this.reviewRatingPopUp();
+      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
       this.btnDisabled$.next(false);
       // get the latest activity tasks and navigate to the next task

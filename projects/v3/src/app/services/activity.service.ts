@@ -100,7 +100,9 @@ export class ActivityService {
         }
       }`,
       {
-        id: +activityId
+        variables: {
+          id: +activityId
+        }
       }
     );
   }
@@ -292,6 +294,8 @@ export class ActivityService {
     if (!getData) {
       return ;
     }
+
+    this.utils.setPageTitle(task.name);
     switch (task.type) {
       case 'Assessment':
         if (this.utils.isMobile()) {

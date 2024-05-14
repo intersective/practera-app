@@ -155,22 +155,20 @@ export class SupportPopupComponent implements OnInit {
       file: this.selectedFile?.url,
       consentToProcess: this.hasConsent,
     }
-    this.hubspotService.submitDataToHubspot(param).subscribe(
-      (response) => {
+    this.hubspotService.submitDataToHubspot(param).subscribe({
+      next: () => {
         this.selectedFile = undefined;
         this.problemContent = '';
         this.problemSubject = '';
         this.isShowSuccess = true;
         this.isShowError = false;
       },
-      (error) => {
-        this.selectedFile = undefined;
-        this.problemContent = '';
-        this.problemSubject = '';
+      error: (error) => {
+        console.error(error); // added for future QA references
         this.isShowSuccess = false;
         this.isShowError = true;
       }
-    );
+    });
   }
 
 }
