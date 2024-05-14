@@ -457,6 +457,21 @@ export class AuthService {
           return [];
         }
       })
-      );
+    );
+  }
+
+  // need to clear all Subject for cache
+  async clearCache(): Promise<void> {
+    const apolloClient = this.apolloService.getClient();
+    // clear cache before initialised
+    if (apolloClient) {
+      apolloClient.stop();
+      await apolloClient.clearStore();
+    }
+    //   // initialise the Subject for caches
+    //   this.projectSubject.next(null);
+    //   this.each(this.activitySubjects, (subject, key) => {
+    //     this.activitySubjects[key].next(null);
+    //   });
   }
 }
