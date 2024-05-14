@@ -129,16 +129,6 @@ describe('AchievementService', () => {
     });
   });
 
-  it('should get the correct earned points', () => {
-    service.earnedPoints = 123;
-    expect(service.getEarnedPoints()).toBe(123);
-  });
-
-  it(`should get the correct 'is point configured'`, () => {
-    service.isPointsConfigured = true;
-    expect(service.getIsPointsConfigured()).toBe(true);
-  });
-
   it(`should post the correct data when marking achievement as seen`, () => {
     requestSpy.post.and.returnValue(of({}));
     service.markAchievementAsSeen(11);

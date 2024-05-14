@@ -19,7 +19,7 @@
   ></ion-icon>
 
   <ion-avatar *ngIf="leadImage" slot="start" aria-hidden="true">
-    <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title">
+    <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
   </ion-avatar>
 
   <div class="item-content ion-padding-vertical"

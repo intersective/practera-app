@@ -10,7 +10,7 @@
     </ion-button>
   </ng-template>
 
-  <ion-button (click)="notifications()" class="notify-btn">
+  <ion-button *ngIf="!isExpPage" (click)="notifications()" class="notify-btn">
     <ion-icon name="notifications" alt="notification" color="primary"></ion-icon>
     <ion-badge class="hint" color="danger" *ngIf="notiCount > 0">{{notiCount}}</ion-badge>
   </ion-button>

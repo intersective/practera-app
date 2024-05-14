@@ -25,6 +25,7 @@ jobs:
     name: deploy-p2-aus-appv3
     runs-on: ubuntu-latest
     environment: p2-aus
+    permissions: write-all
     timeout-minutes: 15
 
 
@@ -56,6 +57,21 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+
+################################################
+#  Restrict workflow
+################################################
+      - name: Restrict workflow dispatch
+        run: |
+          GITHUB_USERS=${USERS//\"/}
+          if [[ ! " ${GITHUB_USERS[@]} " =~ " ${ACTOR} " ]]; then
+              echo "Actor $ACTOR is not authorized to run this workflow."
+              echo "##[error]Unauthorized user. Cancelling workflow."
+              exit 1
+          fi
+        env:
+          ACTOR: ${{ github.actor }}
+          USERS: ${{ secrets.USERS }}
 
 ################################################
 #  GET P2 AUS AWS ORGANIZATION NUMBER
