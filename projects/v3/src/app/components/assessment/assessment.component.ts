@@ -14,7 +14,7 @@ import { FileComponent } from '../file/file.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
-
+import { Task } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-assessment',
@@ -42,8 +42,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
+  @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
+  @Input() activityId?: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
   @Input() isMobile?: boolean = false;
@@ -684,6 +686,25 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
+
+  resubmit(): Subscription {
+    if (!this.assessment?.id || !this.submission?.id || !this.activityId) {
+      return;
+    }
+
+    return this.assessmentService.resubmitAssessment({
+      assessment_id: this.assessment.id,
+      submission_id: this.submission.id
+    }).subscribe({
+      next: () => {
+        this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
+      },
+      error: () => {
+        this.notifications.assessmentSubmittedToast({
+          isFail: true,
+          label: $localize`Resubmit request failed. Please try again.`,
+        });
+      }
+    });
+  }
 }
-
-

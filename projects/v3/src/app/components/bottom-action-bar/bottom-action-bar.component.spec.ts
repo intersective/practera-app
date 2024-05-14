@@ -26,13 +26,13 @@ describe('BottomActionBarComponent', () => {
   it('should set the input properties', () => {
     component.text = 'Click me';
     component.color = 'secondary';
-    component.disabled = true;
+    component.disabled$.next(true);
     component.buttonType = 'submit';
     fixture.detectChanges();
 
     expect(component.text).toEqual('Click me');
     expect(component.color).toEqual('secondary');
-    expect(component.disabled).toBeTruthy();
+    expect(component.disabled$.value).toBeTruthy();
     expect(component.buttonType).toEqual('submit');
   });
 

@@ -1,16 +1,15 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
-import { NotificationsService } from './notifications.service';
-import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 /**
  * @name api
@@ -35,7 +34,7 @@ interface VerifyParams {
 }
 
 interface RegisterData {
-  password: string;
+  password?: string;
   user_id: number;
   key: string;
 }
@@ -92,9 +91,8 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private notificationsService: NotificationsService,
-    private demo: DemoService,
     private apolloService: ApolloService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) { }
 
   authenticate(data: {
@@ -152,6 +150,7 @@ export class AuthService {
             id
             uuid
             timelineId
+            projectId
             name
             description
             type
@@ -195,7 +194,15 @@ export class AuthService {
           };
         }
         return res;
-      })
+      }),
+      catchError(err => {
+        // When logout get call from here user get redirect without showing any error messages.
+        // so from here need to throw the error. and handel from the components.
+        // then we can show error message and add logout as call back of notification popup.
+        // Kepping this in case some error happen. logic moved
+        //this.logout(); // clear user's information
+        return throwError(err);
+      }),
     );
   }
 
@@ -273,7 +280,7 @@ export class AuthService {
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
 
-
+    this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
@@ -471,6 +478,21 @@ export class AuthService {
           return [];
         }
       })
-      );
+    );
+  }
+
+  // need to clear all Subject for cache
+  async clearCache(): Promise<void> {
+    const apolloClient = this.apolloService.getClient();
+    // clear cache before initialised
+    if (apolloClient) {
+      apolloClient.stop();
+      await apolloClient.clearStore();
+    }
+    //   // initialise the Subject for caches
+    //   this.projectSubject.next(null);
+    //   this.each(this.activitySubjects, (subject, key) => {
+    //     this.activitySubjects[key].next(null);
+    //   });
   }
 }

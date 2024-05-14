@@ -43,10 +43,12 @@
 <ng-template #showCurrentTask>
   <ng-container *ngIf="currentTask">
     <app-assessment *ngIf="currentTask.type === 'Assessment'"
+      [task]="currentTask"
       [assessment]="assessment"
       [submission]="submission"
       [review]="review"
       [contextId]="currentTask.contextId"
+      [activityId]="activity?.id"
       [savingMessage$]="savingText$"
       [btnDisabled$]="btnDisabled$"
       action="assessment"

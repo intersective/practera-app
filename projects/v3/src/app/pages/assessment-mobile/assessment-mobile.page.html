@@ -14,10 +14,12 @@
 
 <ion-content>
   <app-assessment
+    [task]="currentTask"
     [assessment]="assessment"
     [submission]="submission"
     [review]="review"
     [contextId]="contextId"
+    [activityId]="activityId"
     [action]="action"
     [savingMessage$]="savingText$"
     [btnDisabled$]="btnDisabled$"

@@ -1,33 +1,43 @@
-# Practera-app-v3
+# Practera-app
 
 ![Build Status](https://codebuild.ap-southeast-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiYVA3Zi9rVHlUSlNWT1VkZkY3R1FPS3pwd01EeWo4UTlFanUyQk1UanUveW1VRlgvdnhudVR3RUhsUXBhYk9kYXhmNnJTYjBramVuTkRTc3JyNkZJajZFPSIsIml2UGFyYW1ldGVyU3BlYyI6IkVabm9Va3hoUnhhSmNTSTEiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
 
 ## Requirements
 
-- Ionic v6
-- Angular v13
+- Ionic v7
+- Angular v17
 
 ## Development Notes
 
 Run `npm install` to install necessary packages
 
-Run `npm run lint` to lint appv2 codebase
+Run `npm run lint` to lint app codebase
 
-Run `npm run lintv3` to lint code in project appv3
-
-Run `npm run v3` to launch AppV3 locally
+Run `npm start` to launch App locally
 
 Run `npm run i18n` to update coverage of translateable static text
 
+### Localisation & Internationalisation
+This should applied only for `trunk` (development) or `release/live` separately. Both `messages.xlf` files in the both branches can never be the same because `trunk` has more untested code.
+
+1. We need generated locales script from `./locales` and `./projects/v3/src/locales`
+1. Depend on which language you need to update, select the translated script from `./projects/v3/src/locales`
+1. For example, for Japanese, use `message.ja.xlf`
+1. Go to poedit.org, create a project and upload translated locale script.
+1. In case, there are new changes in the static content, to run `npm run i18n`
+1. The above will regenerate `./locales/messages.xlf`
+1. Import this newly generated `messages.xlf` to your created project with the previously uploaded translated script.
+1. Continue translation on poeditor.org platform, export the translated script and rename and replace the one you get from `./projects/v3/src/locales`
+
 ### Starting a development server calling the stage environment
 
-Run `npm run start` to start a development server on your local, and calling stage-test.practera.com for API
+Run `npm start` to start a development server on your local, and calling p2-stage.practera.com or core-graphql endpoint for API
 
 ### Starting a development server on the local environment
 
-Run `npm run local` to serve appv2 on localhost and calling 127.0.0.1:8080 for API
+Run `npm run local` to serve app on localhost and calling 127.0.0.1:8080 for API
 
-Run `npm run v3` to serve appv3 on localhost
+Run `npm start` to serve app on localhost
 
 ### Release Processes
 

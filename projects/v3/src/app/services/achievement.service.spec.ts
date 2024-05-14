@@ -128,26 +128,4 @@ describe('AchievementService', () => {
       expect(service.isPointsConfigured).toBe(true);
     });
   });
-
-  it('should get the correct earned points', () => {
-    service.earnedPoints = 123;
-    expect(service.getEarnedPoints()).toBe(123);
-  });
-
-  it(`should get the correct 'is point configured'`, () => {
-    service.isPointsConfigured = true;
-    expect(service.getIsPointsConfigured()).toBe(true);
-  });
-
-  it(`should post the correct data when marking achievement as seen`, () => {
-    requestSpy.post.and.returnValue(of({}));
-    service.markAchievementAsSeen(11);
-    expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[0].data).toEqual({
-      project_id: 1,
-      identifier: 'Achievement-11',
-      is_done: true
-    });
-  });
-
 });
