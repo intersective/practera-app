@@ -2,7 +2,6 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { SharedService } from '@v3/services/shared.service';
-import { Observable } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';

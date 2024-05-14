@@ -42,7 +42,10 @@ export class AssessmentMobilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
+    this.assessmentService.assessment$.subscribe(res => {
+      this.assessment = res;
+      this.utils.setPageTitle(this.assessment?.name);
+    });
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
