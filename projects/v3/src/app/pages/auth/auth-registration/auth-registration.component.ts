@@ -176,12 +176,13 @@ export class AuthRegistrationComponent implements OnInit {
               })
               .subscribe(
                 async res => {
-                  this.isLoading = false;
                   this.storage.set('isLoggedIn', true);
                   this.storage.remove('unRegisteredDirectLink');
                   await this.experienceService.switchProgram({
                     experience: res?.data?.auth?.experience
                   });
+
+                  this.isLoading = false;
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
                 err => {
