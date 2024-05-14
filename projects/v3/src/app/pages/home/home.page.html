@@ -98,6 +98,7 @@
       *ngFor="let activity of milestone.activities; let i = index"
       [title]="activity.name"
       [leadImage]="activity.leadImage"
+      [fallbackLeadImage]="defaultLeadImage"
       [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
       (click)="gotoActivity(activity)"
       (keydown)="gotoActivity(activity, $event)"

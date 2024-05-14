@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app
+    ports:
+      - "4200:4200"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    networks:
+      - core-admin
+
+volumes:
+  node_modules:
+
+networks:
+  core-admin:
+    name: core-admin
+    external: true

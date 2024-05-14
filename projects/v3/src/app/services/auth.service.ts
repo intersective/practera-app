@@ -150,6 +150,7 @@ export class AuthService {
             id
             uuid
             timelineId
+            projectId
             name
             description
             type
