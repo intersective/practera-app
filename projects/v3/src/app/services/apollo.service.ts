@@ -2,7 +2,7 @@ import { gql, Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { RequestService } from 'request';
 import { catchError, concatMap, map } from 'rxjs/operators';
