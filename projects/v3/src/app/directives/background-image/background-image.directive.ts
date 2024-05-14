@@ -22,8 +22,9 @@ export class BackgroundImageDirective implements OnInit, OnDestroy {
     };
 
     this.img.onerror = () => {
+      const activityCardImage = this.storageService.getUser().activityCardImage;
       const programImage = this.storageService.getUser().programImage;
-      this.renderer.setStyle(this.el.nativeElement, 'backgroundImage', `url(${programImage})`);
+      this.renderer.setStyle(this.el.nativeElement, 'backgroundImage', `url(${activityCardImage || programImage})`);
     };
   }
 

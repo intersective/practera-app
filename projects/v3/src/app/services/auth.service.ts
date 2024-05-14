@@ -69,7 +69,10 @@ interface AuthEndpoint {
   data: {
     auth: {
       apikey: string;
-      experience: object;
+      experience: {
+        cardUrl?: string;
+        [key: string]: any; // default card activity image
+      };
       email?: string;
       unregistered?: boolean;
       activationCode?: string;

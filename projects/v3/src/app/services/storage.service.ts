@@ -27,7 +27,7 @@ export interface User {
   teamName?: string;
   userHash?: string;
   colors?: Colors;
-  activityCardImage?: string;
+  activityCardImage?: string; // default activity card image
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
