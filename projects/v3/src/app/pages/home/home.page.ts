@@ -101,8 +101,9 @@ export class HomePage implements OnInit, OnDestroy {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
-    // this.utils.setPageTitle(this.experience?.name || 'Practera'); // set page title [CORE-6308]
   }
 
   goBack() {
