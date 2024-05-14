@@ -37,6 +37,9 @@ export class HomePage implements OnInit, OnDestroy {
   hasUnlockedTasks: Object = {};
   unlockedMilestones: {[key: number]: boolean} = {};
 
+  // default card image (gracefully show broken url)
+  defaultLeadImage: string = '';
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -119,6 +122,11 @@ export class HomePage implements OnInit, OnDestroy {
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
     this.utils.setPageTitle(this.experience?.name || 'Practera');
+
+    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
+    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+
+    this.defaultLeadImage = this.experience.cardUrl || '';
   }
 
   goBack() {
