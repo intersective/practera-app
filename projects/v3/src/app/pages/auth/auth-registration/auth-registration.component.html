@@ -64,7 +64,13 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button mode="ios" id="btn-register" shape="round" expand="full" (click)="register()" color="primary" i18n>REGISTER</ion-button>
+        <ion-button mode="ios" id="btn-register"
+          shape="round" expand="full"
+          (click)="register()" color="primary" i18n
+          [disabled]="!isAgreed || isLoading"
+        >
+          {{ isLoading ? 'Registering...' : 'REGISTER' }}
+        </ion-button>
       </form>
     </ng-container>
 
@@ -112,8 +118,10 @@
         <ion-text *ngFor="let error of errors" color="danger">
           <p class="text-error" aria-live="polite">{{error}}</p>
         </ion-text>
-        <ion-button mode="ios" class="continue-btn" id="btn-register" shape="round" expand="full" (click)="register()"
-          [disabled]="!isAgreed" color="primary" i18n>CONTINUE
+        <ion-button mode="ios" class="continue-btn" id="btn-register"
+          shape="round" expand="full"
+          (click)="register()"
+          [disabled]="!isAgreed || isLoading" color="primary" i18n>CONTINUE
         </ion-button>
       </div>
     </ng-container>
