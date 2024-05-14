@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap, shareReplay } from 'rxjs/operators';
@@ -9,19 +9,9 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
 import { ReviewService } from '@v3/services/review.service';
-import { RequestService } from 'request';
 import { HomeService } from './home.service';
-
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
- const api = {
-  get: {
-    jwt: 'api/v2/users/jwt/refresh.json'
-  }
-};
+import { AuthService } from './auth.service';
+import { filter } from 'rxjs/operators';
 
 export interface ProgramObj {
   program: Program;
@@ -95,26 +85,31 @@ export interface ProjectProgress {
   providedIn: 'root'
 })
 export class ExperienceService {
-
   review$ = this.reviewService.reviews$;
+
+  private _experience$ = new BehaviorSubject<any>(null);
+  experience$ = this._experience$.asObservable();
+
+  private _experiences$ = new BehaviorSubject<any>(null);
+  experiences$ = this._experiences$.asObservable();
 
   private _programs$ = new BehaviorSubject<ProgramObj[]>(null);
   programs$ = this._programs$.asObservable();
 
-  programsWithProgress$ = this._programs$.asObservable().pipe(
+  programsWithProgress$ = this._experiences$.asObservable().pipe(
+    filter(experiences => experiences !== null),
     mergeMap(
-      async programs => {
-        const projectIds = programs.map(program => program.project.id);
+      async experiences => {
+        const projectIds = experiences.map(exp => exp.projectId);
         this.getProgresses(projectIds).subscribe(
           res => {
             res.forEach(progress => {
-              const i = programs.findIndex(program => program.project.id === progress.id);
-              programs[i].progress = Math.round(progress.progress * 100);
-              programs[i].todoItems = progress.todoItems;
+              const i = experiences.findIndex(exp => exp.projectId === progress.id);
+              experiences[i].progress = Math.round(progress.progress * 100);
             });
           }
         );
-        return programs;
+        return experiences;
       }
     ),
     shareReplay(1)
@@ -126,34 +121,65 @@ export class ExperienceService {
     private apolloService: ApolloService,
     private sharedService: SharedService,
     private storage: BrowserStorageService,
-    private requestService: RequestService,
     private eventService: EventService,
     private reviewService: ReviewService,
     private homeService: HomeService,
+    private authService: AuthService,
   ) { }
 
-  async getPrograms() {
-    let programs = null;
-    const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-    let imagewidth = 600;
-    if (environment.demo) {
-      programs = this.demo.programs;
-    } else {
-      programs = this.storage.get('programs');
-    }
-    if (programs.length > 0) {
-      programs.forEach(program => {
-        if (program.project.lead_image) {
-          const imageId = program.project.lead_image.split('/').pop();
+  getExperiences(): Subscription {
+    return this.apolloService.graphQLFetch(
+      `query experiences {
+        experiences {
+          id
+          uuid
+          timelineId
+          name
+          description
+          type
+          leadImage
+          status
+          setupStep
+          color
+          secondaryColor
+          todoItemCount
+          role
+          isLast
+          locale
+          supportName
+          supportEmail
+          cardUrl
+          bannerUrl
+          logoUrl
+          iconUrl
+          reviewRating
+          truncateDescription
+        }
+      }`
+    )
+    .pipe(map(res => {
+      const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+      let imagewidth = 600;
+
+      const { experiences } = res?.data || {};
+      experiences.forEach((experience, index) => {
+        if (experience.leadImage) {
+          const imageId = experience.leadImage.split('/').pop();
           if (!this.utils.isMobile()) {
             imagewidth = 1024;
           }
-          program.project.lead_image = `${cdn}${imagewidth}/${imageId}`;
+          experiences[index].leadImage = `${cdn}${imagewidth}/${imageId}`;
         }
-        program.progress = 0;
+        experiences[index].progress = 0;
       });
-    }
-    this._programs$.next(programs);
+      return experiences;
+    })).subscribe(res => {
+      // [CORE-6272] - accessing a deleted experience
+      if (environment.demo) {
+        res = [this.demo.deletedExperience, ...res];
+      }
+      this._experiences$.next(res);
+    });
   }
 
   /**
@@ -169,21 +195,19 @@ export class ExperienceService {
         projects(ids: $ids) {
           id
           progress
-          todoItems{
-            isDone
-          }
         }
       }`,
       {
-        ids: projectIds
-      },
+        variables: {
+          ids: projectIds
+        },
+      }
     )
     .pipe(map(res => {
-      return res.data.projects.map(v => {
+      return res.data.projects.map(project => {
         return {
-          id: +v.id,
-          progress: v.progress,
-          todoItems: v.todoItems.filter(ti => !ti.isDone).length
+          id: +project.id,
+          progress: project.progress,
         };
       });
     }));
@@ -204,16 +228,16 @@ export class ExperienceService {
     };
   }
 
-  async switchProgram(programObj: ProgramObj): Promise<Observable<any>> {
-    const colors = this.extractColors(programObj);
-
-    let cardBackgroundImage = '';
-    if (this.utils.has(programObj, 'program.config.card_style')) {
-      cardBackgroundImage = '/assets/' + programObj.program.config.card_style;
+  async switchProgram(authObj): Promise<Observable<any>> {
+    const exp = authObj?.experience;
+    this.storage.set('experience', exp);
+    const colors = {
+      themeColor: exp?.color,
+      primary: exp?.color,
+      secondary: exp?.secondaryColor,
     }
 
-    const institution = programObj?.institution;
-    const program = programObj.program;
+    const cardBackgroundImage = (exp?.cardUrl) ? '/assets/' + exp?.cardUrl : '';
     this.storage.setUser({
       colors: {
         theme: colors.themeColor,
@@ -221,23 +245,20 @@ export class ExperienceService {
         secondary: colors.secondary,
       },
 
-      programId: program.id,
-      programName: program.name,
-      programImage: programObj.project.lead_image,
-      hasReviewRating: program.config?.review_rating || false,
-      truncateDescription: program.config?.truncate_description || true,
-      experienceId: program.experience_id,
-      institutionLogo: institution?.logo_url || null,
-      squareLogo: institution.config?.icon_url || null,
-      app_locale: institution?.config?.application_language,
-      institutionName: institution?.name || null,
-      projectId: programObj.project.id,
-      timelineId: programObj.timeline.id,
-      contactNumber: programObj.enrolment.contact_number,
-      activityCardImage: cardBackgroundImage,
-      enrolment: programObj.enrolment,
-      activityCompleteMessage: programObj?.experience?.config?.activity_complete_message || null,
-      chatEnabled: programObj?.experience?.config?.chat_enable || true,
+      programId: exp.id,
+      programName: exp.name,
+      programImage: exp.leadImage,
+      hasReviewRating: exp.reviewRating || false,
+      truncateDescription: exp.truncateDescription || true,
+      experienceId: exp.experienceId,
+      institutionLogo: exp?.logoUrl || null,
+      squareLogo: exp?.iconUrl || null,
+      institutionName: exp?.name || null,
+      projectId: exp?.projectId,
+      timelineId: exp?.timelineId,
+      activityCardImage: cardBackgroundImage, // default activity image
+      activityCompleteMessage: exp?.activityCompleteMessage || null,
+      chatEnabled: exp?.chatEnable || true,
       teamId: null,
       hasEvents: false,
       hasReviews: false,
@@ -249,11 +270,22 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const jwt = await this.getNewJwt().toPromise();
+      const newAuth = await this.authService.authenticate({
+        apikey: this.storage.getUser().apikey,
+        experienceUuid: exp.uuid
+      }).toPromise();
+
+      // reset apikey
+      if (newAuth?.data?.auth?.apikey) {
+        this.storage.setUser({ apikey: newAuth?.data?.auth?.apikey });
+      }
+
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
-      return of([jwt, teamInfo, me]);
+      this._experience$.next(exp);
+
+      return of([newAuth, teamInfo, me]);
     } catch (err) {
       throw Error(err);
     }
@@ -281,6 +313,7 @@ export class ExperienceService {
     return this.apolloService.graphQLFetch(
       `query user {
         user {
+          id
           uuid
           name
           firstName
@@ -291,10 +324,7 @@ export class ExperienceService {
           contactNumber
           userHash
         }
-      }`,
-      {
-        noCache: true
-      }
+      }`
     ).pipe(map(response => {
       if (response.data && response.data.user) {
         const thisUser = response.data.user;
@@ -331,19 +361,6 @@ export class ExperienceService {
     }));
   }
 
-  checkIsOneProgram(programs?) {
-    let programList = programs;
-    if (environment.demo) {
-      programList = this.demo.programs;
-    } else if (this.utils.isEmpty(programs)) {
-      programList = this.storage.get('programs');
-    }
-    if (programList.length === 1) {
-      return true;
-    }
-    return false;
-  }
-
   /**
    * this method will check program data and navigate to switcher or dashboard/go-mobile
    * @param programs
@@ -357,39 +374,35 @@ export class ExperienceService {
    * if method got 'one program object', switch to that program object and navigate to dashboard.
    * if method got 'empty value', do nothing.
    */
-  async switchProgramAndNavigate(programs): Promise<string[]> {
+  async switchProgramAndNavigate(experience): Promise<string[]> {
     if (environment.demo) {
       return ['experiences'];
     }
 
-    if (!this.utils.isEmpty(programs)) {
-      // Array with multiple program objects or one program object -> [{},{},{},{}] pr [{}]
-      if (Array.isArray(programs)) {
-        return ['experiences'];
-      } else {
-        // one program object -> {}
-        await this.switchProgram(programs);
-      }
+    await this.switchProgram({ experience });
 
-      // await this.pusherService.initialise({ unsubscribe: true });
-      // clear the cached data
-      await this.utils.clearCache();
-      if ((typeof environment.goMobile !== 'undefined' && environment.goMobile === false)
-        || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        if (this.storage.get('directLinkRoute')) {
-          const route = this.storage.get('directLinkRoute');
-          this.storage.remove('directLinkRoute');
-          return route;
-        }
-        return ['v3', 'home'];
-      } else {
-        return ['go-mobile'];
-      }
+    // await this.pusherService.initialise({ unsubscribe: true });
+    // clear the cached data
+    await this.authService.clearCache();
+
+    if (this.storage.get('directLinkRoute')) {
+      const route = this.storage.get('directLinkRoute');
+      this.storage.remove('directLinkRoute');
+      return route;
     }
-    return;
+
+    /* if (environment.goMobile === true
+      || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+      return ['go-mobile'];
+    } */
+
+    return ['v3', 'home'];
   }
 
   getNewJwt() {
-    return this.requestService.get(api.get.jwt);
+    return this.authService.authenticate({
+      apikey: this.storage.get('apikey'),
+      service: 'LOGIN'
+    });
   }
 }

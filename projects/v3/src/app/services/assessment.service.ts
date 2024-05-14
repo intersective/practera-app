@@ -136,6 +136,17 @@ export class AssessmentService {
     this._assessment$.next(null);
   }
 
+  /**
+   * shared among reviewing & assessment answering page
+   *
+   * @param   {number}  id            assessment id
+   * @param   {string}  action        review/assessment (reviewing or answering)
+   * @param   {number}  activityId    activity id
+   * @param   {number}  contextId     context id (activity & task related)
+   * @param   {number}  submissionId  optional submission id
+   *
+   * @return  {Subscription}          no need to unsubscribe, handled by apollo
+   */
   getAssessment(id, action, activityId, contextId, submissionId?): Subscription {
     if (!this.assessment || this.assessment.id !== id) {
       this.clearAssessment();
@@ -190,8 +201,9 @@ export class AssessmentService {
       {
         noCache: true
       }
-    )
-      .pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
+    ).pipe(
+      map(res => this._handleAssessmentResponse(res, action))
+    ).subscribe();
   }
 
   private _handleAssessmentResponse(res, action) {
@@ -463,7 +475,51 @@ export class AssessmentService {
         }
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('saveQuestionAnswer', res)) {
+        throw new Error('Autosave: Invalid API data');
+      }
+      return res;
+    }));
+  }
+
+  /**
+   * Validate data returned from the API.
+   *
+   * check the 'success' property of a response data based on API response.
+   * true only if 'success' is strictly equal to true, false for any other condition.
+   *
+   * @param   {string}   type  name of the API endpoint
+   * @param   {any}      res   API response data
+   *
+   * @return  {boolean}       true only when response data is valid, otherwise false.
+   */
+
+  isValidData(type: string, res: any): boolean {
+    if (this.utils.isEmpty(res?.data)) {
+      return false;
+    }
+
+    let success: boolean;
+
+    switch (type) {
+      case 'saveQuestionAnswer':
+        success = res?.data?.saveSubmissionAnswer?.success;
+        break;
+      case 'saveReviewAnswer':
+        success = res?.data?.saveReviewAnswer?.success;
+        break;
+      case 'submitAssessment':
+        success = res?.data?.submitAssessment?.success;
+        break;
+      case 'submitReview':
+        success = res?.data?.submitReview?.success;
+        break;
+      default:
+        throw new Error('Must specify a valid type');
+    }
+
+    return success === true;
   }
 
   // store the answer to the question
@@ -485,7 +541,12 @@ export class AssessmentService {
         }
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('saveReviewAnswer', res)) {
+        throw new Error('Autosave: Invalid API data');
+      }
+      return res;
+    }));
   }
 
   // set the status of the submission to 'done' or 'pending approval'
@@ -503,7 +564,12 @@ export class AssessmentService {
         submitAssessment(${params})
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('submitAssessment', res)) {
+        throw new Error('Submission: Invalid API data');
+      }
+      return res;
+    }));
   }
 
   /**
@@ -527,7 +593,12 @@ export class AssessmentService {
         submitReview(${params})
       }`,
       variables
-    );
+    ).pipe(map(res => {
+      if (!this.isValidData('submitReview', res)) {
+        throw new Error('Submission: Invalid API data');
+      }
+      return res;
+    }));
   }
 
   saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
@@ -577,7 +648,7 @@ export class AssessmentService {
 
   /**
    * - check if fastfeedback is available
-   * - show next sequence if submission successful
+   * - show pulsecheck/fastfeedback at next sequence if submission successful
    */
   async pullFastFeedback() {
     try {

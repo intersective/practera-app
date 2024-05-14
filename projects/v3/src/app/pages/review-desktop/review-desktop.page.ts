@@ -83,6 +83,7 @@ export class ReviewDesktopPage implements OnInit {
     }
     this.noReview = false;
     this.currentReview = review;
+    this.utils.setPageTitle(review?.name || 'Review');
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 
@@ -109,6 +110,8 @@ export class ReviewDesktopPage implements OnInit {
 
       this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
       this.reviewService.getReviews();
+
+      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
       // fail gracefully: Review submission API may sometimes fail silently
       if (res?.data?.submitReview === false) {

@@ -2,14 +2,13 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { Platform } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
-import { ApolloService } from '@v3/services/apollo.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
+import { Title } from '@angular/platform-browser';
 
 import Delta from 'quill-delta';
 
@@ -37,9 +36,9 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
+    private title: Title
   ) {
     if (_) {
       this.lodash = _;
@@ -222,21 +221,6 @@ export class UtilsService {
   //   this.activitySubjects[key].next(value);
   // }
 
-  // need to clear all Subject for cache
-  async clearCache(): Promise<void> {
-    const apolloClient = this.apolloService.getClient();
-    // clear cache before initialised
-    if (apolloClient) {
-      apolloClient.stop();
-      await apolloClient.clearStore();
-    }
-    //   // initialise the Subject for caches
-    //   this.projectSubject.next(null);
-    //   this.each(this.activitySubjects, (subject, key) => {
-    //     this.activitySubjects[key].next(null);
-    //   });
-  }
-
   getCurrentLocation(): Location {
     return this.document.location;
   }
@@ -322,20 +306,26 @@ export class UtilsService {
     const date = new Date(this.iso8601Formatter(time));
 
     const currentLocale = this.getCurrentLocale();
-    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
+    const timeFormat: Intl.DateTimeFormatOptions = {
       hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
-    }).format(date);
+    };
 
     switch (display) {
       case 'date':
         return this.dateFormatter(date);
 
       case 'time':
-        return formattedTime;
+        return new Intl.DateTimeFormat(currentLocale, timeFormat).format(date);
+
+      case 'timeZone':
+        const formatted = new Intl.DateTimeFormat(currentLocale, timeFormat);
+        const resolvedOptions = formatted.resolvedOptions();
+        return `${this.dateFormatter(date)} ${formatted.format(date)} (${resolvedOptions.timeZone})`;
 
       default:
+        const formattedTime = new Intl.DateTimeFormat(currentLocale, timeFormat).format(date);
         return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
@@ -731,16 +721,9 @@ export class UtilsService {
   }
 
   checkIsPracteraSupportEmail() {
-    const expId = this.storageService.getUser().experienceId;
-    const programList = this.storageService.get('programs');
-    if (!expId || !programList || programList.length < 1) {
-      return;
-    }
-    const currentExperience = programList.find((program)=> {
-      return program.experience.id === expId;
-    });
-    if (currentExperience) {
-      let supportEmail = currentExperience.experience.support_email;
+    const currentExperience = this.storageService.get('experience');
+    if (currentExperience && currentExperience.supportEmail) {
+      let supportEmail = currentExperience.supportEmail;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;
@@ -750,5 +733,10 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  // set page title
+  setPageTitle(title: string) {
+    this.title.setTitle(title);
   }
 }

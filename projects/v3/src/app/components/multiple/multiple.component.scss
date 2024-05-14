@@ -24,6 +24,11 @@ ion-textarea {
   border: 1px solid var(--practera-grey-50);
   border-radius: var(--border-radius);
   font-size: 14px !important;
+  
+  &.preview {
+    border: none;
+    padding-left: var(--padding-start);
+  }
 }
 
 .answer-text {
@@ -56,5 +61,31 @@ ion-textarea {
 ion-item {
   &.item-checkbox-checked::part(native) {
     --background: var(--practera-light-grey-50);
+  }
+}
+
+.feedback-field {
+  --ion-item-background: #FFF7E3;
+  --ion-background-color: #FFF7E3;
+  background-color: #FFF7E3;
+
+  .feedback-title {
+    --min-height: 1em;
+    font-size: smaller;
+
+    ion-icon,
+    ion-label {
+      background-color: #FFF7E3;
+    }
+  }
+
+  ion-textarea {
+    background: white;
+    font-size: 14px !important;
+
+    &.textarea {
+      border: 1px solid var(--practera-review-border-color);
+      border-radius: 8px;
+    }
   }
 }

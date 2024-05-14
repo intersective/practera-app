@@ -8,12 +8,14 @@ import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { SharedService } from './shared.service';
 import { ActivityBase, ActivityService, Task, TaskBase } from './activity.service';
+import { BrowserStorageService } from './storage.service';
 
 export interface Experience {
   leadImage: string;
   name: string;
   description: string;
   locale: string;
+  cardUrl?: string;
 }
 
 export interface Milestone {
@@ -66,8 +68,7 @@ export class HomeService {
     private demo: DemoService,
     private notificationsService: NotificationsService,
     private authService: AuthService,
-    private sharedServise: SharedService,
-    private activityService: ActivityService,
+    private storageService: BrowserStorageService
   ) { }
 
   clearExperience() {
@@ -78,23 +79,14 @@ export class HomeService {
     ]);
   }
 
-  getExperience() {
+  getExperience(apikey: string) {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.apolloService.graphQLFetch(`
-      query experience {
-        experience{
-          locale
-          name
-          description
-          leadImage
-        }
-      }`,
-    ).pipe(
+    return this.authService.authenticate({ apikey }).pipe(
       tap(async res => {
-        if (res?.data?.experience === null) {
+        if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
             header: 'Unable to access experience',
             message: 'Please re-login and try again later',
@@ -139,7 +131,9 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._normaliseProject(res))).subscribe();
+    ).pipe(
+      map(res => this._normaliseProject(res)),
+    ).subscribe();
   }
 
   private _normaliseProject(data): Array<Milestone> {
@@ -153,9 +147,24 @@ export class HomeService {
         activityCount += m.activities.length;
       }
     });
+
+    this.storageService.set('activities', this.aggregateActivities(milestones));
+
     this._activityCount$.next(activityCount);
     this._milestones$.next(milestones);
     return milestones;
+  }
+
+  aggregateActivities(milestones) {
+    const activities = {};
+
+    milestones?.forEach(milestone => {
+      milestone.activities?.forEach(activity => {
+        activities[activity.id] = activity;
+      });
+    });
+
+    return activities;
   }
 
   getProjectProgress() {
@@ -176,7 +185,9 @@ export class HomeService {
           }
         }
       }`,
-    ).pipe(map(res => this._handleProjectProgress(res))).subscribe();
+    ).pipe(
+      map(res => this._handleProjectProgress(res)),
+    ).subscribe();
   }
 
   private _handleProjectProgress(data) {
