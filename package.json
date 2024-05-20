@@ -54,6 +54,7 @@
     "exif-js": "^2.3.0",
     "filestack-js": "^3.27.0",
     "graphql": "^15.0.0",
+    "ics": "^3.7.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "ng-circle-progress": "^1.6.0",
