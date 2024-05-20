@@ -1,0 +1,23 @@
+<ion-content>
+  <ion-searchbar [(ngModel)]="searchText" (ionChange)="filterItems()"></ion-searchbar>
+
+  <ion-segment [(ngModel)]="statusFilter" (ionChange)="filterItems()">
+    <ion-segment-button value="all">
+      All
+    </ion-segment-button>
+    <ion-segment-button value="active">
+      Active
+    </ion-segment-button>
+    <ion-segment-button value="completed">
+      Completed
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-list>
+    <ion-item *ngFor="let item of filteredItems">
+      {{ item.name }}
+      <ion-button (click)="downloadGoogleCalendar(item)">Add to Google Calendar</ion-button>
+      <ion-button (click)="downloadiCal(item)">Download .ics</ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>
