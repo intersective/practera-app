@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { first, map, shareReplay } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -129,10 +129,11 @@ export class ActivityService {
       });
     }
     return this.getActivityBase(id).pipe(
-      map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
-    ).subscribe(res => {
+      map(res => this._normaliseActivity(res.data, goToNextTask, afterTask)),
+      first(),
+    ).subscribe(_res => {
       if (callback instanceof Function) {
-        return callback(res);
+        return callback(_res);
       }
       return;
     });
