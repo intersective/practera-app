@@ -93,7 +93,6 @@ export class ActivityDesktopPage {
 
       this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
-        console.log('show current Assessment task', data);
         if (!proceedToNextTask && (assessmentId > 0 || isTopicDirectlink === true)) {
           const filtered: Task = this.utils.find(this.activity.tasks, {
             id: assessmentId || taskId,  // assessmentId or taskId
