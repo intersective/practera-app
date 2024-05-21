@@ -50,10 +50,9 @@ export class ActivityComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void | Promise<void> {
     if (changes.activity?.currentValue) {
-      const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
       if (activities) {
-        const currentActivity = activities[this.activity.id];
+        const currentActivity = (activities || {})[this.activity.id];
 
       // if activity is locked, show popup and block access
       if (currentActivity.isLocked === true && this.popupBlocked === false) {
@@ -84,6 +83,7 @@ export class ActivityComponent implements OnInit, OnChanges {
         }
       }
 
+      const currentValue = changes.activity.currentValue;
       if (currentValue.tasks?.length > 0) {
         this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
           this.isForTeamOnly = !nonTeamActivity;
