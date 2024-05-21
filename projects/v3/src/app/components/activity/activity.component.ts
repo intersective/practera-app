@@ -60,7 +60,6 @@ export class ActivityComponent implements OnInit, OnChanges {
    * Task icon type
    *
    * @param   {Task}  task  task's type is the only required value
-   *
    * @return  {string}      ionicon's name
    */
   leadIcon(task: Task) {
@@ -87,7 +86,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
