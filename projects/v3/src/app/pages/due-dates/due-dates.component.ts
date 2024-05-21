@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NotificationService } from '@app/shared/notification/notification.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
 
@@ -28,7 +28,7 @@ export class DueDatesComponent {
 
   constructor(
     private dueDatesService: DueDatesService,
-    private notificationsService: NotificationService,
+    private notificationsService: NotificationsService,
   ) { }
 
   downloadiCal(event: any) {
