@@ -232,14 +232,22 @@ export class ExperienceService {
     };
   }
 
-  async switchProgram(authObj): Promise<Observable<any>> {
+  /**
+   * insert experience to localStorage and switch program
+   *
+   * @param   {any}  authObj  auth object return from authService:authenticate()
+   * @param   {object}  options  refreshJWT: boolean, 2nd call to auth query to refresh APIKEY
+   *
+   * @return  {Promise<any>}
+   */
+  async switchProgram(authObj): Promise<any> {
     const exp = authObj?.experience;
     this.storage.set('experience', exp);
     const colors = {
       themeColor: exp?.color,
       primary: exp?.color,
       secondary: exp?.secondaryColor,
-    }
+    };
 
     const cardBackgroundImage = (exp?.cardUrl) ? '/assets/' + exp?.cardUrl : '';
     this.storage.setUser({
@@ -275,22 +283,12 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const newAuth = await this.authService.authenticate({
-        apikey: this.storage.getUser().apikey,
-        experienceUuid: exp.uuid
-      }).toPromise();
-
-      // reset apikey
-      if (newAuth?.data?.auth?.apikey) {
-        this.storage.setUser({ apikey: newAuth?.data?.auth?.apikey });
-      }
-
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
       const me = await this.getMyInfo().toPromise();
 
       this._experience$.next(exp);
 
-      return of([newAuth, teamInfo, me]);
+      return [teamInfo, me];
     } catch (err) {
       throw Error(err);
     }

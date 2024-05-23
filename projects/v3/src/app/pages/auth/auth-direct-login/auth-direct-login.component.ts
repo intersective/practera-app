@@ -35,9 +35,6 @@ export class AuthDirectLoginComponent implements OnInit {
       const authed = await this.authService.autologin({ authToken }).toPromise();
       await this.experienceService.getMyInfo().toPromise();
 
-      this.experienceService.switchProgram({
-        experience: authed.experience
-      });
       return this._redirect({ experience: authed.experience });
     } catch (err) {
       console.error(err);
@@ -92,9 +89,9 @@ export class AuthDirectLoginComponent implements OnInit {
     const restrictedAccess = this.singlePageRestriction();
 
     // switch program directly if user already registered
-    if (!redirectLater) {
+    if (!redirectLater && experience) {
       await this.experienceService.switchProgram({
-        experience: this.storage.get('experience')
+        experience
       });
     }
 
