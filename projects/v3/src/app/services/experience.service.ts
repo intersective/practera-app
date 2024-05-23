@@ -232,7 +232,9 @@ export class ExperienceService {
     };
   }
 
-  async switchProgram(authObj): Promise<Observable<any>> {
+  async switchProgram(authObj, options?: {
+    refreshJWT?: boolean;
+  }): Promise<Observable<any>> {
     const exp = authObj?.experience;
     this.storage.set('experience', exp);
     const colors = {
@@ -275,14 +277,17 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const newAuth = await this.authService.authenticate({
-        apikey: this.storage.getUser().apikey,
-        experienceUuid: exp.uuid
-      }).toPromise();
+      let newAuth = authObj;
+      if (options.refreshJWT === true) {
+        newAuth = await this.authService.authenticate({
+          apikey: this.storage.getUser().apikey,
+          experienceUuid: exp.uuid
+        }).toPromise();
 
-      // reset apikey
-      if (newAuth?.data?.auth?.apikey) {
-        this.storage.setUser({ apikey: newAuth?.data?.auth?.apikey });
+        // reset apikey
+        if (newAuth?.data?.auth?.apikey) {
+          this.storage.setUser({ apikey: newAuth?.data?.auth?.apikey });
+        }
       }
 
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
