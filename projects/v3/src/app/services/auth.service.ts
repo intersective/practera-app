@@ -179,6 +179,8 @@ export class AuthService {
       options
     ).pipe(
       map((res: AuthEndpoint)=> {
+        console.log('auth-res::', res);
+
         if (res?.data?.auth?.unregistered === true) {
           // [CORE-6011] trusting API returns email and activationCode
           const { email, activationCode } = res.data.auth;
@@ -217,7 +219,14 @@ export class AuthService {
     );
   }
 
-  private _handleAuthResponse(res): {
+  private _handleAuthResponse(res: {
+    data: {
+      auth: {
+        apikey: string;
+        experience: object;
+      }
+    }
+  }): {
     apikey?: string;
     experience?: object;
   } {
