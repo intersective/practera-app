@@ -65,7 +65,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     return this.storage.getConfig().instituteLogo;
   }
 
-  async switchProgram(program: ProgramObj, keyEvent?: KeyboardEvent) {
+  async switchProgram(experience: ProgramObj, keyEvent?: KeyboardEvent) {
     if (keyEvent && (keyEvent.code === 'Enter' || keyEvent.code === 'Space')) {
       keyEvent.preventDefault();
     } else if (keyEvent) {
@@ -78,7 +78,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     await loading.present();
 
     try {
-      const route = await this.experienceService.switchProgramAndNavigate(program);
+      const route = await this.experienceService.switchProgramAndNavigate(experience);
       loading.dismiss().then(() => {
         if (environment.demo) {
           return this.router.navigate(['v3','home']);
