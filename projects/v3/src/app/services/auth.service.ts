@@ -95,7 +95,7 @@ export class AuthService {
     private apolloService: ApolloService,
   ) { }
 
-  authenticate(data: {
+  authenticate(data?: {
     authToken?: string;
     apikey?: string;
     service?: string;
@@ -115,31 +115,34 @@ export class AuthService {
       };
     } = {};
 
-    // Initialize options.variables
-    if (data.authToken || data.experienceUuid) {
-      options.variables = {};
-    }
+    if (data) {
 
-    if (data.authToken) {
-      options.variables.authToken = data.authToken;
-    }
+      // Initialize options.variables
+      if (data.authToken || data.experienceUuid) {
+        options.variables = {};
+      }
 
-    if (data.experienceUuid) {
-      options.variables.experienceUuid = data.experienceUuid;
-    }
+      if (data.authToken) {
+        options.variables.authToken = data.authToken;
+      }
 
-    // Initialize options.headers
-    if (data.apikey || data.service) {
-      options.context = { headers: {} };
-    }
+      if (data.experienceUuid) {
+        options.variables.experienceUuid = data.experienceUuid;
+      }
 
-    if (data.apikey) {
-      this.storage.setUser({ apikey: data.apikey });
-      options.context.headers.apikey = data.apikey;
-    }
+      // Initialize options.headers
+      if (data.apikey || data.service) {
+        options.context = { headers: {} };
+      }
 
-    if (data.service) {
-      options.context.headers.service = data.service;
+      if (data.apikey) {
+        this.storage.setUser({ apikey: data.apikey });
+        options.context.headers.apikey = data.apikey;
+      }
+
+      if (data.service) {
+        options.context.headers.service = data.service;
+      }
     }
 
     return this.apolloService.graphQLFetch(`
@@ -209,7 +212,7 @@ export class AuthService {
     service?: string;
   }): Observable<any> {
     this.logout({}, false);
-    return this.authenticate({...data, ...{service: 'LOGIN'}}).pipe(
+    return this.authenticate({...data, ...{ service: 'LOGIN' }}).pipe(
       map(res => this._handleAuthResponse(res)),
     );
   }
