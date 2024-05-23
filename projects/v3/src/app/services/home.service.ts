@@ -84,7 +84,7 @@ export class HomeService {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.authService.authenticate({ apikey }).pipe(
+    return this.authService.authenticate().pipe(
       tap(async res => {
         if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({

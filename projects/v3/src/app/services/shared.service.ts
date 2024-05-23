@@ -215,6 +215,8 @@ export class SharedService {
     this.utils.checkIsPracteraSupportEmail();
   }
 
+  // a new APIKEY will returned from API, it auto refresh key through
+  // requestInterceptor[_refreshApikey]
   getNewJwt() {
     return this.requestService.get(api.get.jwt);
   }
