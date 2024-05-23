@@ -37,6 +37,8 @@ export class AuthDirectLoginComponent implements OnInit {
 
       this.experienceService.switchProgram({
         experience: authed.experience
+      }, {
+        refreshJWT: false, // avoid 2nd call to auth query
       });
       return this._redirect({ experience: authed.experience });
     } catch (err) {
