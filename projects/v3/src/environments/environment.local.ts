@@ -3,6 +3,7 @@
 // `ng build --configuration=production` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
 export const environment = {
+  authCacheDuration: 5 * 60 * 1000, // 5 minutes
   demo: false,
   production: false,
   appkey: 'b11e7c189b',

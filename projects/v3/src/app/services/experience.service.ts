@@ -378,6 +378,9 @@ export class ExperienceService {
     }
 
     await this.switchProgram({ experience });
+    await this.authService.authenticate({
+      experienceUuid: experience.uuid,
+    });
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data
@@ -395,12 +398,5 @@ export class ExperienceService {
     } */
 
     return ['v3', 'home'];
-  }
-
-  getNewJwt() {
-    return this.authService.authenticate({
-      apikey: this.storage.get('apikey'),
-      service: 'LOGIN'
-    });
   }
 }
