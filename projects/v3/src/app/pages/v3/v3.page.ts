@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -179,7 +179,6 @@ export class V3Page implements OnInit, OnDestroy {
 
     this.subscriptions.push(this.route.params.subscribe(_params => {
       this.reviewService.getReviews();
-      this.homeService.getExperience(this.storageService.getUser().apikey);
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
@@ -188,6 +187,12 @@ export class V3Page implements OnInit, OnDestroy {
         this.showEvents = false;
       }
     }));
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
+        this.homeService.getExperience();
+      }
+    });
 
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;

@@ -79,7 +79,7 @@ export class HomeService {
     ]);
   }
 
-  getExperience(apikey: string) {
+  getExperience() {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
