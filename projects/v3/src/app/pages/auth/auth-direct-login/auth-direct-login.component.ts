@@ -31,15 +31,16 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    try {
-      const authed = await this.authService.autologin({ authToken }).toPromise();
-      await this.experienceService.getMyInfo().toPromise();
-
-      return this._redirect({ experience: authed.experience });
-    } catch (err) {
-      console.error(err);
-      this._error(err);
-    }
+    this.authService.autologin({ authToken }).subscribe({
+      next: async (authed) => {
+        await this.experienceService.getMyInfo().toPromise();
+        return this._redirect({ experience: authed.experience });
+      },
+      error: err => {
+        console.error(err);
+        this._error(err);
+      }
+    });
   }
 
   // force every navigation happen under radar of angular
