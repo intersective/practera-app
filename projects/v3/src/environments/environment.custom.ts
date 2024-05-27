@@ -1,4 +1,5 @@
 export const environment = {
+  authCacheDuration: 5 * 60 * 1000, // 5 minutes
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
   demo: false,
   appkey: '<CUSTOM_APPKEY>',
