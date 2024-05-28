@@ -112,8 +112,10 @@ export class AuthService {
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
 
-    // make sure experienceUuid is not null (required for switch experience)
-    if (!data?.experienceUuid && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
+    // 2 conditions to pull from server:
+    // when experienceUuid is not null (required for switch experience)
+    // when authToken available (directLogin)
+    if (!(data?.experienceUuid || data?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
       return of(authCache);
     } else {
       return this.fetchData(data);
