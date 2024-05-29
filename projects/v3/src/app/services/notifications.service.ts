@@ -115,6 +115,9 @@ export class NotificationsService {
     isOnline: true,
   };
 
+  // prevent 2nd UI pop up for the same achievement, check achievementPopUp() method
+  private identifierMarkedAsDone: string[] = [];
+
   constructor(
     private readonly demo: DemoService,
     private modalService: ModalService,
@@ -285,9 +288,16 @@ export class NotificationsService {
       if (environment.demo) {
         return this.demo.normalResponse();
       }
+      const identifier = 'Achievement-' + achievement.id;
       await firstValueFrom(this.markTodoItemAsDone({
-        identifier: 'Achievement-' + achievement.id
+        identifier: identifier
       }));
+
+      if (this.identifierMarkedAsDone.includes(identifier)) {
+        return;
+      }
+
+      this.identifierMarkedAsDone.push(identifier);
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',

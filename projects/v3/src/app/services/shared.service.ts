@@ -68,7 +68,7 @@ export class SharedService {
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
       this.achievementEvent = this.utils.getEvent('achievement').subscribe(async event => {
-        if (event?.meta?.Achievement && event.type === 'achievement_earned') {
+        if (event.type === 'achievement_earned' && event?.meta?.Achievement) {
           const { id, name, description, points, badge } = event.meta.Achievement;
           await this.notification.achievementPopUp('notification', {
             id,
@@ -77,11 +77,12 @@ export class SharedService {
             points,
             image: badge
           });
-          this.achievementService.getAchievements();
+          return this.achievementService.getAchievements();
         }
-        // { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
-        // refresh todoItems
-        if (event?.event === 'achievement' && event.type === 'new_items') {
+
+        // signal to pull latest get.todoItems (new_items event) from websocket
+        // Sample data: { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
+        if (event.type === 'new_items' && event?.event === 'achievement') {
           await firstValueFrom(this.notification.getTodoItems());
         }
       });
