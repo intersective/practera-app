@@ -4,7 +4,7 @@ import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-review-desktop',
@@ -108,7 +108,7 @@ export class ReviewDesktopPage implements OnInit {
       this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
       this.reviewService.getReviews();
 
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+      await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
       // fail gracefully: Review submission API may sometimes fail silently
       if (res?.data?.submitReview === false) {
