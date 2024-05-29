@@ -85,7 +85,6 @@ export interface ProjectProgress {
   providedIn: 'root'
 })
 export class ExperienceService {
-
   review$ = this.reviewService.reviews$;
 
   private _experience$ = new BehaviorSubject<any>(null);
@@ -361,19 +360,6 @@ export class ExperienceService {
       });
       return events;
     }));
-  }
-
-  checkIsOneProgram(programs?) {
-    let programList = programs;
-    if (environment.demo) {
-      programList = this.demo.programs;
-    } else if (this.utils.isEmpty(programs)) {
-      programList = this.storage.get('programs');
-    }
-    if (programList.length === 1) {
-      return true;
-    }
-    return false;
   }
 
   /**
