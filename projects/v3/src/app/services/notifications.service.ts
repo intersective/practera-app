@@ -9,7 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { Observable, of, Subject } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -114,6 +114,9 @@ export class NotificationsService {
     informed: false,
     isOnline: true,
   };
+
+  // prevent 2nd UI pop up for the same achievement, check achievementPopUp() method
+  private identifierMarkedAsDone: string[] = [];
 
   constructor(
     private readonly demo: DemoService,
@@ -285,9 +288,16 @@ export class NotificationsService {
       if (environment.demo) {
         return this.demo.normalResponse();
       }
-      this.markTodoItemAsDone({
-        identifier: 'Achievement-' + achievement.id
-      }).subscribe();
+      const identifier = 'Achievement-' + achievement.id;
+      await firstValueFrom(this.markTodoItemAsDone({
+        identifier: identifier
+      }));
+
+      if (this.identifierMarkedAsDone.includes(identifier)) {
+        return;
+      }
+
+      this.identifierMarkedAsDone.push(identifier);
     }
     const modal = await this.modal(component, componentProps, {
       cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',

@@ -3,11 +3,11 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
 import { RequestService } from 'request';
 
@@ -44,7 +44,7 @@ export class SharedService {
   ) { }
 
   // call this function on every page refresh and after switch program
-  onPageLoad(): void {
+  async onPageLoad(): Promise<void> {
     this.getIpLocation();
     const {
       timelineId,
@@ -67,22 +67,23 @@ export class SharedService {
 
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
-      this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
-        if (event?.meta?.Achievement && event.type === 'achievement_earned') {
+      this.achievementEvent = this.utils.getEvent('achievement').subscribe(async event => {
+        if (event.type === 'achievement_earned' && event?.meta?.Achievement) {
           const { id, name, description, points, badge } = event.meta.Achievement;
-          this.notification.achievementPopUp('notification', {
+          await this.notification.achievementPopUp('notification', {
             id,
             name,
             description,
             points,
             image: badge
           });
-          this.achievementService.getAchievements();
+          return this.achievementService.getAchievements();
         }
-        // { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
-        // refresh todoItems
-        if (event?.event === 'achievement' && event.type === 'new_items') {
-          this.notification.getTodoItems().pipe(first()).subscribe();
+
+        // signal to pull latest get.todoItems (new_items event) from websocket
+        // Sample data: { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
+        if (event.type === 'new_items' && event?.event === 'achievement') {
+          await firstValueFrom(this.notification.getTodoItems());
         }
       });
     }
@@ -237,7 +238,7 @@ export class SharedService {
           teams: any[];
         };
       }
-    } = await this.getNewJwt().toPromise();
+    } = await firstValueFrom(this.getNewJwt());
 
     const token = res?.data?.token;
     const teamId = this.storage.getUser().teamId;
