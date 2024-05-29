@@ -303,6 +303,8 @@ export class ActivityService {
     if (!getData) {
       return ;
     }
+
+    this.utils.setPageTitle(task.name);
     switch (task.type) {
       case 'Assessment':
         if (this.utils.isMobile()) {
