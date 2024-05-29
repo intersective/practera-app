@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, first } from 'rxjs/operators';
 
 @Component({
@@ -20,7 +20,7 @@ import { distinctUntilChanged, filter, first } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  activityCount$ = this.homeService.activityCount$;
+  activityCount$: Observable<number>;
   experienceProgress: number;
 
   milestones: Milestone[];
@@ -35,6 +35,9 @@ export class HomePage implements OnInit, OnDestroy {
   getEarnedPoints: number = 0;
   hasUnlockedTasks: Object = {};
   unlockedMilestones: {[key: number]: boolean} = {};
+
+  // default card image (gracefully show broken url)
+  defaultLeadImage: string = '';
 
   constructor(
     private router: Router,
@@ -113,7 +116,9 @@ export class HomePage implements OnInit, OnDestroy {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
-    // this.utils.setPageTitle(this.experience?.name || 'Practera'); // set page title [CORE-6308]
+
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
+    this.defaultLeadImage = this.experience.cardUrl || '';
   }
 
   goBack() {

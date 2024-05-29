@@ -384,7 +384,7 @@ export class ExperienceService {
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data
-    await this.utils.clearCache();
+    await this.authService.clearCache();
 
     if (this.storage.get('directLinkRoute')) {
       const route = this.storage.get('directLinkRoute');

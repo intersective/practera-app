@@ -36,6 +36,7 @@ import { BottomActionBarComponent } from './bottom-action-bar/bottom-action-bar.
 import { VideoConversionComponent } from './video-conversion/video-conversion.component';
 import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
+import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -94,7 +95,8 @@ const largeCircleDefaultConfig = {
     TopicComponent,
     BrandingLogoComponent,
     BottomActionBarComponent,
-    SupportPopupComponent
+    SupportPopupComponent,
+    FallbackImageDirective,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -112,6 +114,7 @@ const largeCircleDefaultConfig = {
     DescriptionComponent,
     DragAndDropDirective,
     FastFeedbackComponent,
+    FallbackImageDirective,
     FileComponent,
     FileDisplayComponent,
     VideoConversionComponent,

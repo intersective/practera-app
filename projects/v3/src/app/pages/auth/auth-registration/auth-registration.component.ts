@@ -40,6 +40,7 @@ export class AuthRegistrationComponent implements OnInit {
   showPassword = false;
   // for unregisterd users using direct link
   unRegisteredDirectLink = false;
+  isLoading = false; // loading registration trigger
 
   constructor(
     private route: ActivatedRoute,
@@ -155,6 +156,8 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   register() {
+    this.isLoading = true;
+
     if (this.validateRegistration()) {
       if (this.unRegisteredDirectLink) {
         this._setupPassword();
@@ -178,15 +181,19 @@ export class AuthRegistrationComponent implements OnInit {
                   await this.experienceService.switchProgram({
                     experience: res?.data?.auth?.experience
                   });
+
+                  this.isLoading = false;
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
                 err => {
+                  this.isLoading = false;
                   console.error(err);
                   this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
                 }
               );
           },
           async (error: HttpErrorResponse) => {
+            this.isLoading = false;
             const errorData = error?.error?.data;
             if (errorData?.type === 'password_compromised') {
               return await this.notificationsService.alert({
