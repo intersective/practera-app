@@ -34,6 +34,9 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
 
+  // default card image (gracefully show broken url)
+  defaultLeadImage: string = '';
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -45,7 +48,8 @@ export class HomePage implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
@@ -98,8 +102,8 @@ export class HomePage implements OnInit, OnDestroy {
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
-    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
-    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
+    this.defaultLeadImage = this.experience.cardUrl || '';
   }
 
   goBack() {
@@ -107,6 +111,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   switchContent(event) {
+    // update points upon switching to badges tab
+    if (event.detail.value === 'badges') {
+      this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
+      this.getEarnedPoints = this.achievementService.earnedPoints;
+    }
     this.display = event.detail.value;
   }
 

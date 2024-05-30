@@ -1,3 +1,13 @@
+<ion-header class="ion-no-border header-border" aria-label="home">
+  <h1 class="for-accessibility" i18n>Home</h1>
+  <ion-toolbar>
+    <img class="ion-padding-start" [src]="instituteLogo || './assets/logo.svg'" i18n-alt [attr.alt]="'branding logo'">
+    <ion-buttons slot="end">
+      <app-personalised-header [isExpPage]="true"></app-personalised-header>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(experiences$ | async ) as experiences">
     <header>
