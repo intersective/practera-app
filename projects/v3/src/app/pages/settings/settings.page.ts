@@ -8,6 +8,7 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { Subscription } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
+import { environment } from '@v3/environments/environment';
 
 @Component({
   selector: 'app-settings',
@@ -225,5 +226,9 @@ export class SettingsPage implements OnInit, OnDestroy {
     }
 
     return this.mailTo(event);
+  }
+
+  openBadgeApp(event) {
+    this.utils.openUrl(`${environment.badgeProjectUrl}?apikey=${this.storage.getUser().apikey}&appkey=${environment.appkey}`, {target: '_blank'});
   }
 }

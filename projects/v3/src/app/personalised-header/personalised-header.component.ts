@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
@@ -18,6 +18,7 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   notiCount: number = 0;
   isShowSupportBtn: boolean = false;
+  @Input() isExpPage: boolean = false;
 
   constructor(
     private modalController: ModalController,
