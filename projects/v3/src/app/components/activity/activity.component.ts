@@ -39,13 +39,14 @@ export class ActivityComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.activity?.currentValue) {
-      const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
-      const currentActivity = activities[this.activity.id];
+
+      const currentActivity = (activities || {})[this.activity.id];
       if (currentActivity?.leadImage) {
         this.leadImage = currentActivity?.leadImage;
       }
 
+      const currentValue = changes.activity.currentValue;
       if (currentValue.tasks?.length > 0) {
         this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
             this.isForTeamOnly = !nonTeamActivity;
@@ -87,7 +88,7 @@ export class ActivityComponent implements OnInit, OnChanges {
     if (!task.dueDate) {
       return '';
     }
-    
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
