@@ -40,6 +40,7 @@ export class AuthRegistrationComponent implements OnInit {
   showPassword = false;
   // for unregisterd users using direct link
   unRegisteredDirectLink = false;
+  isLoading = false; // loading registration trigger
 
   constructor(
     private route: ActivatedRoute,
@@ -155,6 +156,8 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   register() {
+    this.isLoading = true;
+
     if (this.validateRegistration()) {
       if (this.unRegisteredDirectLink) {
         this._setupPassword();
@@ -178,15 +181,19 @@ export class AuthRegistrationComponent implements OnInit {
                   await this.experienceService.switchProgram({
                     experience: res?.data?.auth?.experience
                   });
+
+                  this.isLoading = false;
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
                 err => {
+                  this.isLoading = false;
                   console.error(err);
                   this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
                 }
               );
           },
           async (error: HttpErrorResponse) => {
+            this.isLoading = false;
             const errorData = error?.error?.data;
             if (errorData?.type === 'password_compromised') {
               return await this.notificationsService.alert({
@@ -216,6 +223,7 @@ export class AuthRegistrationComponent implements OnInit {
     if (this.unRegisteredDirectLink) {
       if (!this.isAgreed) {
         this.errors.push($localize`You need to agree with terms and Conditions.`);
+        this.isLoading = false;
         isValid = false;
         return isValid;
       } else {
@@ -225,6 +233,7 @@ export class AuthRegistrationComponent implements OnInit {
     if (this.hide_password) {
       if (!this.isAgreed) {
         this.errors.push($localize`You need to agree with terms and Conditions.`);
+        this.isLoading = false;
         isValid = false;
         return isValid;
       } else {
@@ -234,10 +243,14 @@ export class AuthRegistrationComponent implements OnInit {
       const pass = this.registerationForm.controls.password.value;
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
+        this.isLoading = false;
+
         this.errors.push($localize`Your passwords don\'t match.`);
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
+        this.isLoading = false;
+
         this.errors.push($localize`You need to agree with terms and Conditions.`);
         isValid = false;
         return isValid;
@@ -245,29 +258,25 @@ export class AuthRegistrationComponent implements OnInit {
         return isValid;
       }
     } else {
-      for (const conrtoller in this.registerationForm.controls) {
-        if (this.registerationForm.controls[conrtoller].errors) {
+      for (const controller in this.registerationForm.controls) {
+        const control = this.registerationForm.controls[controller];
+        if (control.errors) {
+          this.isLoading = false;
           isValid = false;
-          for (const key in this.registerationForm.controls[conrtoller].errors) {
-            if (
-              this.registerationForm.controls[conrtoller].errors.hasOwnProperty(
-                key
-              )
-            ) {
-              switch (key) {
-                case 'required':
-                  this.errors.push($localize`Please fill in your password`);
-                  break;
-                case 'minlength':
-                  this.errors.push(
-                    $localize`Your password needs to be more than 8 characters.`
-                  );
-                  break;
-                default:
-                  this.errors.push(this.registerationForm.controls.errors[key]);
-              }
-              return;
+          for (const key in control.errors) {
+            switch (key) {
+              case 'required':
+                this.errors.push($localize`Please fill in your password`);
+                break;
+              case 'minlength':
+                this.errors.push(
+                  $localize`Your password needs to be more than 8 characters.`
+                );
+                break;
+              default:
+                this.errors.push(control.errors[key]);
             }
+            return;
           }
         }
       }

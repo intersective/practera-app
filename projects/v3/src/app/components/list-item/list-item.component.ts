@@ -17,6 +17,7 @@ export class ListItemComponent {
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
   @Input() leadImage: string;
+  @Input() fallbackLeadImage?: string; // fallback image URL for lead image
   @Input() leadImageClass?: string;
   @Input() title: string;
   @Input() titleColor?: string;
