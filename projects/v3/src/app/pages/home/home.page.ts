@@ -3,7 +3,6 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
-import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -46,7 +45,6 @@ export class HomePage implements OnInit, OnDestroy {
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
-    private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
   ) {
   }
