@@ -92,8 +92,6 @@ interface AuthQuery {
 })
 export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
-  private authCache: any;
-  private authObservable$: Observable<AuthEndpoint>;
 
   constructor(
     private request: RequestService,
