@@ -115,6 +115,11 @@ describe('ActivityDesktopPage', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should call getActivity with correct parameters', () => {
+    component.ionViewWillEnter();
+    expect(activitySpy.getActivity).toHaveBeenCalledWith(1, false, undefined, jasmine.any(Function));
+  });
+
   describe('ngOnInit()', () => {
     it('should get activity at init', () => {
       spyOn(component, 'goToTask');

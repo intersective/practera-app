@@ -73,34 +73,42 @@ export class ActivityDesktopPage {
     );
 
     this.subscriptions.push(this.route.paramMap.subscribe(params => {
-      const contextId = +params.get('contextId');
+      // from route
       const activityId = +params.get('id');
-      const assessmentId = +params.get('assessmentId');
+      const contextId = +params.get('contextId'); // optional
+      const assessmentId = +params.get('assessmentId');  // optional
 
-      const proceedToNextTask = assessmentId > 0 ? false : true;
+      // directlink params (optional)
+      const taskId: number = +params.get('task_id');
+      const taskType: string = params.get('task') as 'assessment' | 'topic' | null;
+      const isTopicDirectlink = taskType === 'topic' && taskId > 0;
+
+      // if assessmentId or taskId is provided, don't proceed to next task
+      const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
+
       this.urlParams = {
         contextId: contextId,
         action: this.route.snapshot.data.action,
       };
 
-      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async () => {
+      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
-        if (!proceedToNextTask && assessmentId > 0) {
+        if (!proceedToNextTask && (assessmentId > 0 || isTopicDirectlink === true)) {
           const filtered: Task = this.utils.find(this.activity.tasks, {
-            id: assessmentId
+            id: assessmentId || taskId,  // assessmentId or taskId
           });
 
           // if API not returning any related activity, handle bad API response gracefully
           if (filtered === undefined) {
             await this.notificationsService.alert({
               header: $localize`Activity not found`,
-              message: $localize`The activity you are looking for is not found or haven't been unlocked for your access yet.`,
+              message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
             });
             return this.goBack();
           }
 
           this.goToTask({
-            id: assessmentId,
+            id: assessmentId || taskId,
             contextId: this.urlParams.contextId,
             type: filtered.type,
             name: filtered.name

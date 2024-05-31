@@ -25,17 +25,6 @@ describe('UtilsService', () => {
       providers: [
         UtilsService,
         {
-          provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', {
-            'getClient': function () {
-              return {
-                clearStore: jasmine.createSpy('clearStore'),
-                stop: jasmine.createSpy('stop'),
-              };
-            },
-          }),
-        },
-        {
           provide: ModalController,
           useValue: jasmine.createSpyObj('ModalController', ['dismiss', 'create'])
         },
@@ -308,37 +297,7 @@ describe('UtilsService', () => {
   //     expect(result).toEqual('activity');
 
   //   });
-  // });
-
-  describe('clearCache()', () => {
-    // xit('should trigger cache clearing through observables', () => {
-    //   service.activitySubjects = [
-    //     { next: jasmine.createSpy('next') },
-    //     { next: jasmine.createSpy('next') },
-    //     { next: jasmine.createSpy('next') },
-    //   ];
-
-    //   spyOn(service.projectSubject, 'next');
-    //   service.clearCache();
-
-    //   expect(service.projectSubject.next).toHaveBeenCalledWith(null);
-    //   expect(service.activitySubjects[0].next).toHaveBeenCalledWith(null);
-    //   expect(service.activitySubjects[1].next).toHaveBeenCalledWith(null);
-    //   expect(service.activitySubjects[2].next).toHaveBeenCalledWith(null);
-    // });
-
-    it('should clear caches that covered in this function', fakeAsync(() => {
-      service['apolloService'].getClient = jasmine.createSpy('getClient').and.returnValue({
-        clearStore: jasmine.createSpy('clearStore').and.returnValue(Promise.resolve(true)),
-        stop: jasmine.createSpy('clearStore'),
-      });
-
-      service.clearCache();
-      flushMicrotasks();
-      expect(service['apolloService'].getClient).toHaveBeenCalled();
-      expect(service['apolloService'].getClient().clearStore).toHaveBeenCalled();
-    }));
-  });
+// });
 
   describe('urlQueryToObject()', () => {
     it('should turn url query into programmatically useable object', () => {
