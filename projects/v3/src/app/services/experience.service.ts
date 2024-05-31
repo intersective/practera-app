@@ -381,7 +381,7 @@ export class ExperienceService {
     await this.switchProgram({ experience });
     await this.authService.authenticate({
       experienceUuid: experience.uuid,
-    });
+    }).toPromise();
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data

@@ -1,3 +1,4 @@
+import { take, takeUntil } from 'rxjs/operators';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
@@ -5,7 +6,7 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
@@ -64,7 +65,6 @@ export class V3Page implements OnInit, OnDestroy {
   openMenu = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
-  subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
   showEvents: boolean = false;
@@ -80,6 +80,8 @@ export class V3Page implements OnInit, OnDestroy {
     'myExperience': $localize`My Experiences`
   };
   hasUnlockedTasks: boolean;
+
+  unsubscribe$ = new Subject();
 
   constructor(
     private menuController: MenuController,
@@ -99,11 +101,8 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => {
-      if (subs.closed !== true) {
-        subs.unsubscribe();
-      }
-    });
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   private _initMenuItems() {
@@ -147,16 +146,18 @@ export class V3Page implements OnInit, OnDestroy {
       this.menuController.enable(false);
     }
     this._initMenuItems();
-    this.subscriptions = [];
-    this.subscriptions.push(
-      this.reviewService.reviews$.subscribe(res => {
-        if (res && res.length) {
-          this.showReviews = true;
-        } else {
-          this.showReviews = false;
-        }
-      })
-    );
+
+    this.reviewService.reviews$
+    .pipe(
+      takeUntil(this.unsubscribe$),
+    )
+    .subscribe(res => {
+      if (res && res.length) {
+        this.showReviews = true;
+      } else {
+        this.showReviews = false;
+      }
+    });
 
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
@@ -177,7 +178,9 @@ export class V3Page implements OnInit, OnDestroy {
       }
     });
 
-    this.subscriptions.push(this.route.params.subscribe(_params => {
+    this.route.params
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(_params => {
       this.reviewService.getReviews();
 
       // Hide events tab to other user roles. Show only for participants
@@ -186,35 +189,45 @@ export class V3Page implements OnInit, OnDestroy {
       } else {
         this.showEvents = false;
       }
-    }));
-
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
-        this.homeService.getExperience();
-      }
     });
+
+    this.router.events
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(event => {
+        if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
+          this.homeService.getExperience();
+        }
+      });
 
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
     } else {
       // display chat tab if a user has chatroom available
-      this.subscriptions.push(this.chatService.getChatList().subscribe(chats => {
-        if (chats && chats.length > 0) {
-          this.showMessages = true;
-        } else {
-          this.showMessages = false;
-        }
-      }));
+      this.chatService.getChatList()
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(chats => {
+          if (chats && chats.length > 0) {
+            this.showMessages = true;
+          } else {
+            this.showMessages = false;
+          }
+        });
     }
     this.openMenu = false;
 
     // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
-    const notifications = this.notificationsService.getTodoItems().pipe(
+    this.notificationsService.getTodoItems().pipe(
       mergeMap(_generic => {
         return this.notificationsService.getChatMessage();
-      })
-    );
-    this.subscriptions.push(notifications.subscribe());
+      }),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
+
+    // @NOTE: keep for future conflict resolve (not sure if still needed)
+    // this.notificationInitialise()
+    // .pipe(takeUntil(this.unsubscribe$))
+    // .subscribe();
+  // }
 
     this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
       this.appPages[0].hasNotification = false; // reset
