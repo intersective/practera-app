@@ -31,18 +31,16 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    try {
-      const authed = await this.authService.autologin({ authToken }).toPromise();
-      await this.experienceService.getMyInfo().toPromise();
-
-      this.experienceService.switchProgram({
-        experience: authed.experience
-      });
-      return this._redirect({ experience: authed.experience });
-    } catch (err) {
-      console.error(err);
-      this._error(err);
-    }
+    this.authService.autologin({ authToken }).subscribe({
+      next: async (authed) => {
+        await this.experienceService.getMyInfo().toPromise();
+        return this._redirect({ experience: authed.experience });
+      },
+      error: err => {
+        console.error(err);
+        this._error(err);
+      }
+    });
   }
 
   // force every navigation happen under radar of angular
@@ -92,9 +90,9 @@ export class AuthDirectLoginComponent implements OnInit {
     const restrictedAccess = this.singlePageRestriction();
 
     // switch program directly if user already registered
-    if (!redirectLater) {
+    if (!redirectLater && experience) {
       await this.experienceService.switchProgram({
-        experience: this.storage.get('experience')
+        experience
       });
     }
 

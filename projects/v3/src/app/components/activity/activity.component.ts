@@ -49,9 +49,9 @@ export class ActivityComponent implements OnInit, OnChanges {
       const currentValue = changes.activity.currentValue;
       if (currentValue.tasks?.length > 0) {
         this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
-            this.isForTeamOnly = !nonTeamActivity;
-            this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
-          });
+          this.isForTeamOnly = !nonTeamActivity;
+          this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+        });
       }
     }
   }
