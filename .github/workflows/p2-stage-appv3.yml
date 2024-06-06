@@ -10,7 +10,7 @@ name: Deploy to p2-stage-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'trunk' ]
+    branches: [ 'fix/v3-sls' ]
 
 
 ################################################
@@ -243,7 +243,6 @@ jobs:
       - name: Cloudformation Export variables
         run: |
           cat >> .env <<EOF
-          IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
           Nonce=$GITHUB_SHA
           EOF
 
@@ -255,24 +254,6 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2STAGE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
-
-###############################################################
-#  SERVERLESS DEPLOYMENT (Lambda@Edge)
-##############################################################
-      - name: Serverless deployment Lambda Function
-        run: |
-          echo "Serverless Deploying appv3 lambda@edge fn"
-          mv serverless.yml serverless.yml.bak
-          mv serverless-appv3-lambda-edge.yml serverless.yml
-          node_modules/.bin/serverless deploy
-          rm serverless.yml
-          mv serverless.yml.bak serverless.yml
-        env:
-          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
-          S3VERSIONING: true
-          NONCURRENTVERSION_EXPIREINDAYS: 30
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
