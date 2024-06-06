@@ -10,7 +10,7 @@ name: Deploy to p2-stage-appv3 environment
 on:
   workflow_dispatch:
   push:
-    branches: [ 'fix/v3-sls' ]
+    branches: [ 'trunk' ]
 
 
 ################################################
