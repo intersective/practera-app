@@ -114,7 +114,7 @@
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "karma-sonarqube-unit-reporter": "0.0.23",
     "ng-packagr": "^16.0.0",
-    "serverless": "^2.50.0",
+    "serverless": "^3.38.0",
     "serverless-certificate-creator": "^1.6.0",
     "ts-node": "~10.9.0",
     "typescript": "~4.9.5"
