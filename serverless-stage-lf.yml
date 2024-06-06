@@ -1,3 +1,4 @@
+## deprecated
 service: ${env:STACK_NAME}-${env:SUBDOMAIN}
 
 frameworkVersion: '2'
