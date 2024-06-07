@@ -1,13 +1,11 @@
 service: ${env:STACK_NAME}-${env:ROOTSTACK}
-frameworkVersion: '2'
+frameworkVersion: '3'
 useDotenv: true
-enableLocalInstallationFallback: true
 
 
 provider:
   logRetentionInDays: 90 # Set the default RetentionInDays for a CloudWatch LogGroup
   name: aws
-  runtime: nodejs14.x
   region: ${env:REGION}
   stage: ${env:ENV}
   deploymentBucket:
