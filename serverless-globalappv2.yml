@@ -1,3 +1,4 @@
+## deprecated
 service: ${env:STACK_NAME}-globalappv2
 frameworkVersion: '2'
 useDotenv: true
