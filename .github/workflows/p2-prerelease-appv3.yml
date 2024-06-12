@@ -16,7 +16,7 @@ on:
         default: ''
   push:
     branches:
-      - 'fix/sls-v3'
+      - 'prerelease'
 
 
 
