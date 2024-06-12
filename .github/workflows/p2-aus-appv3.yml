@@ -177,7 +177,6 @@ jobs:
           export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
           export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
-          export CUSTOM_BADGE_PROJECT_URL=https://badge.aus.practera.com
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
