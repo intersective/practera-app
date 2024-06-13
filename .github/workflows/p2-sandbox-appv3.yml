@@ -274,6 +274,8 @@ jobs:
         run: |
           export $(cat .env | xargs)
           bash lambda/deploy.sh
+        env:
+          REGION: us-east-1
 
 ##########################################################
 #  CLOUDFORMATION EXPORT VARIABLES
