@@ -58,9 +58,9 @@ interface POSTParams {
   providedIn: 'root',
 })
 export class RequestService {
-  private appkey: string;
-  private prefixUrl: string;
-  private loggedOut: boolean;
+  private appkey: string = '';
+  private prefixUrl: string = '';
+  private loggedOut: boolean = false;
 
   constructor(
     private http: HttpClient,
@@ -89,7 +89,7 @@ export class RequestService {
    * @param options
    * @returns {any}
    */
-  setParams(options) {
+  setParams(options: {[key:string]: any}) {
     let params: any;
     if (!isEmpty(options)) {
       params = new HttpParams();
@@ -170,7 +170,7 @@ export class RequestService {
     );
   }
 
-  put(endPoint: string, data, httpOptions?: any): Observable<any> {
+  put(endPoint: string, data: any, httpOptions?: any): Observable<any> {
     if (!httpOptions) {
       httpOptions = {};
     }

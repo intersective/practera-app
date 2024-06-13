@@ -3,23 +3,28 @@
   [lines]="lines"
   tabindex="0">
 
-  <ion-icon *ngIf="leadingIcon"
-    [name]="leadingIcon"
-    slot="start"
-    class="leading-icon"
-    [ngClass]="{'pulsing': leadingIconPulsing}"
-    aria-hidden="true"
-  ></ion-icon>
+  <div class="icon-container activitypage" *ngIf="!leadImage">
+    <ion-icon *ngIf="leadingIcon"
+      [name]="leadingIcon"
+      slot="start"
+      class="leading-icon"
+      [ngClass]="{'pulsing': leadingIconPulsing}"
+      aria-hidden="true"
+    ></ion-icon>
 
-  <ion-icon *ngIf="notificationIcon"
-    [name]="notificationIcon"
-    slot="start"
-    class="notification-icon"
-    aria-hidden="true"
-  ></ion-icon>
+    <ion-icon *ngIf="notificationIcon"
+      [name]="notificationIcon"
+      slot="start"
+      class="notification-icon"
+      aria-hidden="true"
+    ></ion-icon>
 
-  <ion-avatar *ngIf="leadImage" slot="start" aria-hidden="true">
+    <span class="notification-dot" [class.hidden]="!redDot"></span>
+  </div>
+
+  <ion-avatar class="icon-container homepage" *ngIf="leadImage" slot="start" aria-hidden="true">
     <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
+    <span class="notification-dot" [class.hidden]="!redDot"></span>
   </ion-avatar>
 
   <div class="item-content ion-padding-vertical"

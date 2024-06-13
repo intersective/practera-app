@@ -235,9 +235,10 @@ export class UtilsService {
     const curLoc = this.getCurrentLocation();
 
     let result = null;
-    for (const check in checkings) {
+    for (const [check, value] of Object.entries(checkings)) {
       if (curLoc?.pathname.indexOf(check) === 0) {
-        result = checkings[check];
+        result = value;
+        break;
       }
     }
 
@@ -382,15 +383,8 @@ export class UtilsService {
       time.getFullYear() === compared.getFullYear())) {
       return 0;
     }
-    if (time.getTime() < compared.getTime()) {
-      return -1;
-    }
-    if (time.getTime() === compared.getTime()) {
-      return 0;
-    }
-    if (time.getTime() > compared.getTime()) {
-      return 1;
-    }
+
+    return Math.sign(time.getTime() - compared.getTime());
   }
 
   /**
@@ -411,7 +405,7 @@ export class UtilsService {
   /**
    * check if the targeted element in an array is located at the last in the last index
    */
-  checkOrderById(target: any[], currentId, options: {
+  checkOrderById(target: any[], currentId: number, options: {
     isLast: boolean;
   }): boolean {
     const length = target.length;
@@ -607,7 +601,7 @@ export class UtilsService {
    * @param role String - User role
    * @returns String - new user roles.
    */
-  getUserRolesForUI(role) {
+  getUserRolesForUI(role?: string) {
     switch (role) {
       case 'participant':
         return $localize`:labelling:learner`;
@@ -646,7 +640,7 @@ export class UtilsService {
         if (hueMatched && saturationMatched && lightnessMatched) {
           return true;
         }
-      break;
+        break;
     }
 
     return false;
@@ -678,8 +672,8 @@ export class UtilsService {
    * @param quillEditor Quill text editor instance
    * @returns quill clipboard matcher event
    */
-  formatQuillClipboard(quillEditor) {
-    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, function (node, delta) {
+  formatQuillClipboard(quillEditor: any) {
+    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, (node: any, delta: any) => {
       const plaintext = node.innerText;
       return new Delta().insert(plaintext);
     });
@@ -700,7 +694,8 @@ export class UtilsService {
     }
 
     // if pathname begin with different locale
-    const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
+    const safePathName = pathname ? pathname[0] : '';
+    const newPath = currentURL.pathname.replace(safePathName, `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 

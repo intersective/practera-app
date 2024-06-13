@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -16,8 +17,8 @@ export class ActivityComponent implements OnInit, OnChanges {
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
-  leadImage: string = '';
-
+  leadImage: string = null;
+  newTasks: { [key: number]: any } = {};
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
@@ -30,11 +31,18 @@ export class ActivityComponent implements OnInit, OnChanges {
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
   ngOnInit() {
     this.leadImage = this.storageService.getUser().programImage;
+    this.unlockIndicatorService.unlockedTasks$.subscribe((unlockedTasks) => {
+      this.newTasks = {};
+      unlockedTasks.forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -52,6 +60,14 @@ export class ActivityComponent implements OnInit, OnChanges {
           this.isForTeamOnly = !nonTeamActivity;
           this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
         });
+
+        const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+        if (unlockedTasks.length === 0) {
+          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          clearedActivities.forEach((activity) => {
+            this.notificationsService.markTodoItemAsDone(activity).subscribe();
+          });
+        }
       }
     }
   }
