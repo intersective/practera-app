@@ -339,7 +339,7 @@ export class AuthService {
       data: {
         email
       }
-    });gs
+    });
   }
 
   getDomain() {
