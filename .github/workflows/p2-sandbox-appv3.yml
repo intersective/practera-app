@@ -135,28 +135,6 @@ jobs:
           STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
           ENV: live # Valid values are sandbox,stage,live only
 
-###############################################################
-#  ANGULAR ENVIRONMENT CREATION
-##############################################################
-      - name: Angular Environment creation from common-secrets
-        id: secrets-common
-        run: |
-          printf "Creating required secret variables for angular environment variable creation\n\n"
-
-          CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id shared-common-secrets | jq --raw-output '.SecretString' | jq -r .AppKeySecret | jq -r .appkey)
-          CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id shared-common-secrets | jq --raw-output '.SecretString' | jq -r .FilestackSecret | jq -r .signature)
-          CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id shared-common-secrets | jq --raw-output '.SecretString' | jq -r .FilestackSecret | jq -r .virusdetection)
-          CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id shared-common-secrets | jq --raw-output '.SecretString' | jq -r .FilestackSecret | jq -r .apikey)
-          CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id shared-common-secrets | jq --raw-output '.SecretString' | jq -r .FilestackSecret | jq -r .policy)
-          CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id shared-common-secrets | jq --raw-output '.SecretString' | jq -r .IntercomSecret | jq -r .app_id)
-
-          echo "CUSTOM_APPKEY=$CUSTOM_APPKEY" >> "$GITHUB_OUTPUT"
-          echo "CUSTOM_FILESTACK_SIGNATURE=$CUSTOM_FILESTACK_SIGNATURE" >> "$GITHUB_OUTPUT"
-          echo "CUSTOM_FILESTACK_VIRUS_DETECTION=$CUSTOM_FILESTACK_VIRUS_DETECTION" >> "$GITHUB_OUTPUT"
-          echo "CUSTOM_FILESTACK_KEY=$CUSTOM_FILESTACK_KEY" >> "$GITHUB_OUTPUT"
-          echo "CUSTOM_FILESTACK_POLICY=$CUSTOM_FILESTACK_POLICY" >> "$GITHUB_OUTPUT"
-          echo "CUSTOM_INTERCOM=$CUSTOM_INTERCOM" >> "$GITHUB_OUTPUT"
-
 ################################################
 #  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
 ################################################
@@ -175,6 +153,13 @@ jobs:
         run: |
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
+          export CUSTOM_FILESTACK_SIGNATURE=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .signature)
+          export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection)
+          export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
+          export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
           export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
@@ -207,14 +192,6 @@ jobs:
           CUSTOM_LIVE_SERVER_REGION: AU
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
-          CUSTOM_APPKEY: ${{ steps.secrets-common.outputs.CUSTOM_APPKEY }}
-          CUSTOM_FILESTACK_SIGNATURE: ${{ steps.secrets-common.outputs.CUSTOM_FILESTACK_SIGNATURE }}
-          CUSTOM_FILESTACK_VIRUS_DETECTION: ${{ steps.secrets-common.outputs.CUSTOM_FILESTACK_VIRUS_DETECTION }}
-          CUSTOM_FILESTACK_KEY: ${{ steps.secrets-common.outputs.CUSTOM_FILESTACK_KEY }}
-          CUSTOM_FILESTACK_POLICY: ${{ steps.secrets-common.outputs.CUSTOM_FILESTACK_POLICY }}
-          CUSTOM_INTERCOM: ${{ steps.secrets-common.outputs.CUSTOM_INTERCOM }}
-
-
 
 ###############################################################
 #  BUILD WEB PACKAGES
