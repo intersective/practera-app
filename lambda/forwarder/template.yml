@@ -3,6 +3,19 @@ Transform: AWS::Serverless-2016-10-31
 
 Description: lambda@edge function for appv3 forwarder
 
+Parameters:
+  StackName:
+    Type: String
+    Default: p2-sandbox
+    Description: 'Stack name'
+  Env:
+    Type: String
+    Default: dev
+    Description: 'Environment'
+  Nonce:
+    Type: String
+    Description: 'Github commit sha'
+
 Resources:
   HandlerRole:
       Type: AWS::IAM::Role
@@ -30,50 +43,14 @@ Resources:
   HandlerVersion:
     Type: Custom::LambdaVersion
     Properties:
-      ServiceToken: !GetAtt LambdaVersionHelper.Arn
+      ServiceToken: { "Fn::ImportValue": !Sub "${StackName}-LambdaVersionerArn-${Env}" }
       FunctionName: !Ref Handler
-      Description: "New version created by CloudFormation"
-  LambdaVersionHelper:
-    Type: AWS::Lambda::Function
-    Properties:
-      Handler: index.handler
-      Runtime: nodejs18.x
-      Role: !GetAtt LambdaVersionHelperRole.Arn
-      Code:
-        ZipFile: |
-          import { LambdaClient, PublishVersionCommand } from "@aws-sdk/client-lambda";
+      Description: !Sub "New version created by CloudFormation - sha (${Nonce})"
+    DeletionPolicy: Retain
 
-          const lambda = new LambdaClient();
-
-          export const handler = async (event) => {
-            const params = {
-              FunctionName: event.ResourceProperties.FunctionName,
-              Description: event.ResourceProperties.Description
-            };
-
-            const command = new PublishVersionCommand(params);
-            await lambda.send(command);
-          };
-  LambdaVersionHelperRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-            Action:
-              - "sts:AssumeRole"
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      Policies:
-        - PolicyName: LambdaVersionPolicy
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - lambda:PublishVersion
-                Resource: !GetAtt  Handler.Arn
+Outputs:
+  HandlerVersionArn:
+    Description: "Arn Version for Lambda function to associate unto CDN"
+    Value: !GetAtt HandlerVersion.FunctionArn
+    Export:
+      Name: !Sub "${StackName}-HandlerVersion-${Env}"

@@ -241,7 +241,7 @@ jobs:
 
 
 ##########################################################
-#  AWS P2STAGE ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
+#  AWS P2SANDBOX ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
 ##########################################################
       - name: Configure AWS Credentials from p2 p2sandbox AU account
         uses: ./.github/actions/aws-oidc
@@ -258,8 +258,34 @@ jobs:
           Nonce=$GITHUB_SHA
           EOF
 
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: S3 Bucket for lambda@edge
+        run: |
+          if ! aws s3api head-bucket --bucket $STACK_NAME-lambda-edge-$ENV > /dev/null 2>&1; then
+            aws s3api create-bucket --bucket $STACK_NAME-lambda-edge-$ENV --region us-east-1
+          fi
+
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: Deploy lambda@edge
+        run: |
+          export $(cat .env | xargs)
+          bash lambda/deploy.sh
+
 ##########################################################
-#  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          HandlerVersionArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-HandlerVersion-$ENV\`].Value" --no-paginate --output text)
+          EOF
+
+##########################################################
+#  AWS P2SANDBOX ACCOUNT STEPS BELOW ap-southeast-2
 ##########################################################
       - name: Configure AWS Credentials from p2 p2sandbox AU account
         uses: ./.github/actions/aws-oidc
