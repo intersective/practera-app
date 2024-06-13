@@ -1,0 +1,100 @@
+service: ${env:STACK_NAME}-forwarder-appv3-${env:ENV}
+frameworkVersion: "3"
+provider:
+  name: aws
+  stage: ${env:ENV}
+  region: ${env:REGION}
+  deploymentBucket:
+    name: ${env:STACK_NAME}-lambdaedge-core-${env:ENV}
+  stackTags:
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+  tags:
+    StackName: ${env:STACK_NAME}
+    Env: ${env:ENV}
+    
+resources:
+  Resources:
+    LambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+                  - edgelambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        Policies:
+          - PolicyName: PublishVersion
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action: lambda:PublishVersion
+                  Resource: '*'
+          - PolicyName: CloudwatchLogs
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource: '*'
+          - PolicyName: S3Access
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:*Object*
+                  Resource:
+                    - arn:aws:s3:::${env:CORE_ADMIN_ERROR_BUCKET}
+                    - arn:aws:s3:::${env:CORE_ADMIN_ERROR_BUCKET}/*
+          - PolicyName: LambdaAdminAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:*
+                  Resource: '*'
+
+    LambdaFunction:
+      Type: 'AWS::Lambda::Function'
+      Properties:
+        FunctionName: ${env:STACK_NAME}-forwarder-appv3-${env:ENV}
+        Handler: main.handler
+        Runtime: nodejs18.x
+        Role: !GetAtt LambdaFunctionRole.Arn
+        MemorySize: 1024
+        Timeout: 10
+        Code:
+          S3Bucket: ${env:CORE_ADMIN_ERROR_BUCKET}
+          S3Key: functions/forwarder-appv3-${env:GIT_SHA}.zip
+
+    LambdaVersion:
+      Type: Custom::LatestLambdaVersion
+      Properties:
+        ServiceToken:
+          {
+            'Fn::ImportValue': '${env:STACK_NAME}-VersionEdge-${env:ENV}',
+          }
+        FunctionName: !Ref LambdaFunction
+        CloudFrontEventType: origin-request
+        CloudFrontDistributionId: ${env:AppCloudFrontDistributionId}
+        Nonce: ${env:Nonce}
+        
+  Outputs:
+    LambdaFunctionArn:
+      Description: 'Lambda Function ARN'
+      Value: !GetAtt LambdaFunction.Arn
+      Export:
+        Name: ${env:STACK_NAME}-AppFowarder-${env:ENV}
