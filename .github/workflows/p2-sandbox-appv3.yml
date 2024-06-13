@@ -9,8 +9,14 @@ name: Deploy to p2-sandbox-appv3 environment
 ################################################
 on:
   workflow_dispatch:
+    inputs:
+      INPUT_BRANCH:
+        description: 'Branch or tag to deploy'
+        required: true
+        default: ''
   push:
-    branches: [ 'develop' ]
+    branches:
+      - 'develop'
 
 
 ################################################
@@ -42,22 +48,45 @@ jobs:
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: app.p2-sandbox.practera.com
-      BRANCH_TAG_NAME: develop
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
+    steps:
 
-
+################################################
+#  Export BRANCH_TAG_NAME
+################################################
+      - name: Get branch for env BRANCH_TAG_NAME
+        run: |
+          if [ -z "$INPUT_BRANCH" ]; then
+            echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          else
+            echo "BRANCH_TAG_NAME="$(echo "$INPUT_BRANCH") >> $GITHUB_ENV
+          fi
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.INPUT_BRANCH }}
 
 ################################################
 #  GITHUB REPO CHECKOUT
 ################################################
-    steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+          ref: ${{ env.BRANCH_TAG_NAME }}
 
+################################################
+#  GET P2 P2SANDBOX AWS ORGANIZATION NUMBER
+################################################
+      - name: Get AWS Organization Number
+        id: AWS_ORG
+        run: |
+          P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
+          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
 
+          echo "::add-mask::$P2SANDBOX"
+          echo "::add-mask::$CENTRALIZED"
+
+          echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
+          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
 
 ################################################
 #  NODE ENV
@@ -65,7 +94,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
 
 
 ################################################
@@ -98,28 +127,14 @@ jobs:
 
 
 ################################################
-#  GET P2 SANDBOX AWS ORGANIZATION NUMBER
-################################################
-      - name: Get AWS Organization Number
-        id: AWS_ORG
-        run: |
-          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
-          P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
-
-          echo "::add-mask::$CENTRALIZED"
-          echo "::add-mask::$P2SANDBOX"
-
-          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
-          echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
-
-################################################
 #  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
 ################################################
-      - name: Configure AWS Credentials from CENTRALIZED Account
+      - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
+
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
@@ -136,15 +151,13 @@ jobs:
           ENV: live # Valid values are sandbox,stage,live only
 
 ################################################
-#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
+#  AWS CLI CONFIGURATION - DEVOPS P2 P2SANDBOX
 ################################################
-      - name: Configure AWS Credentials from P2SANDBOX Account
+      - name: Configure AWS Credentials from p2 sandbox AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
-
-
 
 ###############################################################
 #  ANGULAR ENVIRONMENT CREATION
@@ -158,13 +171,13 @@ jobs:
           export CUSTOM_FILESTACK_VIRUS_DETECTION=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .virusdetection)
           export CUSTOM_FILESTACK_KEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .apikey)
           export CUSTOM_FILESTACK_POLICY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-FilestackSecret-$ENV| jq --raw-output '.SecretString' | jq -r .policy)
-          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
-          
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
           export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
           export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
           export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-sandbox.practera.com
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -174,8 +187,8 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
 
         env:
-          CUSTOM_PATH_IMAGE: /appv3/dev/images/
-          CUSTOM_PATH_VIDEO: /appv3/dev/videos/
+          CUSTOM_PATH_IMAGE: /appv3/test/images/
+          CUSTOM_PATH_VIDEO: /appv3/test/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
@@ -183,15 +196,15 @@ jobs:
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
-          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
-          CUSTOM_PATH_ANY: /appv3/dev/any/
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
+          CUSTOM_PATH_ANY: /appv3/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
-          CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
+          CUSTOM_JS_ENVIRONEMENT: test #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: true
-          CUSTOM_LIVE_SERVER_REGION: AU
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
+          CUSTOM_LIVE_SERVER_REGION: AU
 
 ###############################################################
 #  BUILD WEB PACKAGES
@@ -226,10 +239,11 @@ jobs:
 
           EOF
 
-################################################
-#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT LAMBDA@EDGE
-################################################
-      - name: Configure AWS Credentials from P2SANDBOX Account
+
+##########################################################
+#  AWS P2STAGE ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
+##########################################################
+      - name: Configure AWS Credentials from p2 p2sandbox AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
@@ -244,10 +258,10 @@ jobs:
           Nonce=$GITHUB_SHA
           EOF
 
-################################################
-#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
-################################################
-      - name: Configure AWS Credentials from P2SANDBOX Account
+##########################################################
+#  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
+##########################################################
+      - name: Configure AWS Credentials from p2 p2sandbox AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
