@@ -196,7 +196,7 @@ jobs:
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
           CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
-          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
           CUSTOM_PATH_ANY: /appv3/test/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: test #TODO CHECK
