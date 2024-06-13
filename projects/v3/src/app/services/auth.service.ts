@@ -9,6 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
 import { ApolloService } from './apollo.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 /**
  * @name api
@@ -99,6 +100,7 @@ export class AuthService {
     private router: Router,
     private pusherService: PusherService,
     private apolloService: ApolloService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) { }
 
   private authCacheDuration = environment.authCacheDuration;
@@ -225,8 +227,10 @@ export class AuthService {
         // When logout get call from here user get redirect without showing any error messages.
         // so from here need to throw the error. and handle from the components.
         // then we can show error message and add logout as call back of notification popup.
-        // Keeping this in case some error happen. logic moved
-        this.logout(); // clear user's information
+        // Kepping this in case some error happen. logic moved
+        // this.logout(); // clear user's information
+        this.storage.remove('lastAuthFetchTime');
+        this.storage.remove('authCache');
         return throwError(err);
       })
     );
@@ -313,7 +317,7 @@ export class AuthService {
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
 
-
+    this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);

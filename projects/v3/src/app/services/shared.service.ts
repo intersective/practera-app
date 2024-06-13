@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
 import { RequestService } from 'request';
 
@@ -67,17 +67,23 @@ export class SharedService {
 
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
-      this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
-        if (event && event.meta && event.meta.Achievement) {
+      this.achievementEvent = this.utils.getEvent('achievement').subscribe(async event => {
+        if (event.type === 'achievement_earned' && event?.meta?.Achievement) {
           const { id, name, description, points, badge } = event.meta.Achievement;
-          this.notification.achievementPopUp('notification', {
+          await this.notification.achievementPopUp('notification', {
             id,
             name,
             description,
             points,
             image: badge
           });
-          this.achievementService.getAchievements();
+          return this.achievementService.getAchievements();
+        }
+
+        // signal to pull latest get.todoItems (new_items event) from websocket
+        // Sample data: { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
+        if (event.type === 'new_items' && event?.event === 'achievement') {
+          await this.notification.getTodoItems().toPromise();
         }
       });
     }

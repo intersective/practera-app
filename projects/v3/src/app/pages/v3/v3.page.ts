@@ -6,14 +6,15 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
-import { concat } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-v3',
@@ -78,6 +79,7 @@ export class V3Page implements OnInit, OnDestroy {
     'setting': $localize`Settings`,
     'myExperience': $localize`My Experiences`
   };
+  hasUnlockedTasks: boolean;
 
   unsubscribe$ = new Subject();
 
@@ -93,6 +95,7 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
+    private readonly unlockIndicatorService: UnlockIndicatorService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -110,6 +113,7 @@ export class V3Page implements OnInit, OnDestroy {
         icon: 'home',
         code: 'Home',
         badges: 0,
+        hasNotification: false,
       },
       {
         title: $localize`Events`,
@@ -211,14 +215,26 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.openMenu = false;
 
-    this.notificationInitialise()
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe();
-  }
+    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
+    this.notificationsService.getTodoItems().pipe(
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
+      }),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
 
-  // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-  notificationInitialise(): Observable<any> {
-    return concat(this.notificationsService.getTodoItems(), this.notificationsService.getChatMessage());
+    // @NOTE: keep for future conflict resolve (not sure if still needed)
+    // this.notificationInitialise()
+    // .pipe(takeUntil(this.unsubscribe$))
+    // .subscribe();
+  // }
+
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      this.appPages[0].hasNotification = false; // reset
+      if (unlockedTasks?.length > 0) {
+        this.appPages[0].hasNotification = true;
+      }
+    });
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {

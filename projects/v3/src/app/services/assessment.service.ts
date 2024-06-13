@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable as RxObsservable, BehaviorSubject, of, Subscription } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
-import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -10,6 +9,7 @@ import { ApolloService } from './apollo.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
+import { RequestService } from 'request';
 
 /**
  * @name api
@@ -18,7 +18,6 @@ import { FastFeedbackService } from './fast-feedback.service';
  */
 const api = {
   post: {
-    todoitem: 'api/v2/motivations/todo_item/edit.json',
     resubmit: 'api/assessment_resubmit.json'
   }
 };
@@ -112,7 +111,6 @@ export interface AssessmentReview {
 })
 
 export class AssessmentService {
-
   private _assessment$ = new BehaviorSubject<Assessment>(null);
   assessment$ = this._assessment$.pipe(shareReplay(1));
   private _submission$ = new BehaviorSubject<Submission>(null);
@@ -124,7 +122,6 @@ export class AssessmentService {
   questions = {};
 
   constructor(
-    private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private NotificationsService: NotificationsService,
@@ -132,6 +129,7 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private demo: DemoService,
+    private request: RequestService,
   ) {
     this.assessment$.subscribe(res => this.assessment = res);
   }
@@ -676,16 +674,9 @@ export class AssessmentService {
       console.log('feedback reviewed', submissionId);
       return of(true);
     }
-    const postData = {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'AssessmentSubmission-' + submissionId,
-      is_done: true
-    };
-    return this.request.post(
-      {
-        endPoint: api.post.todoitem,
-        data: postData
-      });
+    return this.NotificationsService.markTodoItemAsDone({
+      identifier: 'AssessmentSubmission-' + submissionId
+    });
   }
 
   checkReviewer(reviewer): string {

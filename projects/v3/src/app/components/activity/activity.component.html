@@ -18,7 +18,6 @@
   </div>
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
-
     <ion-item class="headline-4 task-header" lines="none">
       {{activity.tasks.length}}
       <ng-container i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ng-container>
@@ -32,7 +31,8 @@
       subtitle1Color="grey-50"
       (click)="goto(task)"
       (keydown)="goto(task, $event)"
-      [title]="task.name"
+      [redDot]="newTasks[task.id]"
+     [title]="task.name"
       [subtitle1]="subtitle(task)"
       [label]="label(task)"
       [labelColor]="labelColor(task)"

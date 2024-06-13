@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
 import { SharedService } from './shared.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 export interface TaskBase {
   id: number;
@@ -78,6 +79,7 @@ export class ActivityService {
     private topic: TopicService,
     private assessment: AssessmentService,
     private sharedService: SharedService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
   public clearActivity(): void {
@@ -292,6 +294,13 @@ export class ActivityService {
     await this.sharedService.getTeamInfo().toPromise();
 
     this._currentTask$.next(task);
+
+    // clear the task from the unlock indicator
+    const cleared = this.unlockIndicatorService.removeTask(task.id);
+    if (cleared) {
+      this.notification.markTodoItemAsDone(cleared).subscribe();
+    }
+
     if (!getData) {
       return ;
     }
