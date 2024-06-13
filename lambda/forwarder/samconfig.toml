@@ -1,0 +1,17 @@
+version = 0.1
+
+[p2-prerelease.deploy.parameters]
+stack_name = "p2-prerelease"
+s3_bucket = "app-forwarder-lambdaedge"
+s3_prefix = "p2-prerelease"
+region = "ap-southeast-2"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+
+[p2-stage.deploy.parameters]
+stack_name = "p2-stage-appv3"
+s3_bucket = "app-forwarder-lambdaedge"
+s3_prefix = "p2-stage"
+region = "ap-southeast-2"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"

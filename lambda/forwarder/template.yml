@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: lambda@edge function for appv3 forwarder
+
+Resources:
+  HandlerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+                  - edgelambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  Handler:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: ./bin/handler.zip
+      Runtime: nodejs18.x
+      Timeout: 10
+      Role: !GetAtt HandlerRole.Arn
+  HandlerVersion:
+    Type: Custom::LambdaVersion
+    Properties:
+      ServiceToken: !GetAtt LambdaVersionHelper.Arn
+      FunctionName: !Ref Handler
+      Description: "New version created by CloudFormation"
+  LambdaVersionHelper:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs18.x
+      Role: !GetAtt LambdaVersionHelperRole.Arn
+      Code:
+        ZipFile: |
+          import { LambdaClient, PublishVersionCommand } from "@aws-sdk/client-lambda";
+
+          const lambda = new LambdaClient();
+
+          export const handler = async (event) => {
+            const params = {
+              FunctionName: event.ResourceProperties.FunctionName,
+              Description: event.ResourceProperties.Description
+            };
+
+            const command = new PublishVersionCommand(params);
+            await lambda.send(command);
+          };
+  LambdaVersionHelperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LambdaVersionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:PublishVersion
+                Resource: !GetAtt  Handler.Arn
