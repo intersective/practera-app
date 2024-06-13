@@ -19,8 +19,6 @@ on:
       - 'prerelease'
 
 
-
-
 ################################################
 #  GITHUB ACTION JOBS
 ################################################
@@ -180,7 +178,7 @@ jobs:
           export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-prerelease.practera.com
-          
+
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
           chmod +x env.sh && ./env.sh
@@ -251,31 +249,12 @@ jobs:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: us-east-1
 
-###############################################################
-#  SERVERLESS DEPLOYMENT (Lambda@Edge)
-##############################################################
-      - name: Serverless deployment Lambda Function
-        run: |
-          echo "Serverless Deploying appv3 lambda@edge fn"
-          mv serverless.yml serverless.yml.bak
-          mv serverless-appv3-lambda-edge.yml serverless.yml
-          node_modules/.bin/serverless deploy
-          rm serverless.yml
-          mv serverless.yml.bak serverless.yml
-        env:
-          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
-          S3VERSIONING: true
-          NONCURRENTVERSION_EXPIREINDAYS: 30
-
 ##########################################################
 #  CLOUDFORMATION EXPORT VARIABLES
 ##########################################################
       - name: Cloudformation Export variables
         run: |
           cat >> .env <<EOF
-          IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
           Nonce=$GITHUB_SHA
           EOF
 
