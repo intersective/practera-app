@@ -16,7 +16,7 @@ on:
         default: ''
   push:
     branches:
-      - 'feat/prerelease-ci-lambdaedge'
+      - 'prerelease'
 
 
 ################################################
