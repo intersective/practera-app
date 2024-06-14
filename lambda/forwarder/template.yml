@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: lambda@edge function for appv3 forwarder
+
+Parameters:
+  StackName:
+    Type: String
+    Default: p2-sandbox
+    Description: 'Stack name'
+  Env:
+    Type: String
+    Default: dev
+    Description: 'Environment'
+  Nonce:
+    Type: String
+    Description: 'Github commit sha'
+
+Resources:
+  HandlerRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+                  - edgelambda.amazonaws.com
+              Action:
+                - sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+  Handler:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: ./bin/handler.zip
+      Runtime: nodejs18.x
+      Timeout: 10
+      Role: !GetAtt HandlerRole.Arn
+  HandlerVersion:
+    Type: Custom::LambdaVersion
+    Properties:
+      ServiceToken: { "Fn::ImportValue": !Sub "${StackName}-LambdaVersionerArn-${Env}" }
+      FunctionName: !Ref Handler
+      Description: !Sub "New version created by CloudFormation - sha (${Nonce})"
+    DeletionPolicy: Retain
+
+Outputs:
+  HandlerVersionArn:
+    Description: "Arn Version for Lambda function to associate unto CDN"
+    Value: !GetAtt HandlerVersion.FunctionArn
+    Export:
+      Name: !Sub "${StackName}-HandlerVersion-${Env}"
