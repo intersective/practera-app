@@ -74,7 +74,7 @@ jobs:
           ref: ${{ env.BRANCH_TAG_NAME }}
 
 ################################################
-#  GET P2 PRERELEASE AWS ORGANIZATION NUMBER
+#  GET P2 P2PRERELEASE AWS ORGANIZATION NUMBER
 ################################################
       - name: Get AWS Organization Number
         id: AWS_ORG
@@ -94,7 +94,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
 
 
 ################################################
@@ -151,7 +151,7 @@ jobs:
           ENV: live # Valid values are sandbox,stage,live only
 
 ################################################
-#  AWS CLI CONFIGURATION - DEVOPS P2 PRERELEASE
+#  AWS CLI CONFIGURATION - DEVOPS P2 P2PRERELEASE
 ################################################
       - name: Configure AWS Credentials from p2 prerelease AU account
         uses: ./.github/actions/aws-oidc
@@ -241,9 +241,9 @@ jobs:
 
 
 ##########################################################
-#  AWS P2STAGE ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
+#  AWS P2PRERELEASE ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
 ##########################################################
-      - name: Configure AWS Credentials from p2 prerelease AU account
+      - name: Configure AWS Credentials from p2 p2prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
@@ -258,10 +258,38 @@ jobs:
           Nonce=$GITHUB_SHA
           EOF
 
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: S3 Bucket for lambda@edge
+        run: |
+          if ! aws s3api head-bucket --bucket $STACK_NAME-lambda-edge-$ENV > /dev/null 2>&1; then
+            aws s3api create-bucket --bucket $STACK_NAME-lambda-edge-$ENV --region us-east-1
+          fi
+
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: Deploy lambda@edge
+        run: |
+          export $(cat .env | xargs)
+          bash lambda/deploy.sh
+        env:
+          REGION: us-east-1
+
 ##########################################################
-#  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
+#  CLOUDFORMATION EXPORT VARIABLES
 ##########################################################
-      - name: Configure AWS Credentials from p2 prerelease AU account
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          HandlerVersionArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-HandlerVersion-$ENV\`].Value" --no-paginate --output text)
+          EOF
+
+##########################################################
+#  AWS P2PRERELEASE ACCOUNT STEPS BELOW ap-southeast-2
+##########################################################
+      - name: Configure AWS Credentials from p2 p2prerelease AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
