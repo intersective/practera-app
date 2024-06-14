@@ -1,0 +1,12 @@
+{
+  "name": "versioner",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "Practera",
+  "license": "MIT",
+  "description": "Lambda@edge versioner",
+  "dependencies": {
+    "cfn-response-async": "^1.0.0"
+  }
+}
