@@ -46,25 +46,26 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     });
 
     this.experiences$
-    .pipe(
-      filter(experiences => experiences !== null),
-      takeUntil(this.unsubscribe$)
-    )
-    .subscribe(experiences => {
-      const ids = experiences.map(experience => experience.projectId);
-      this.experienceService.getProgresses(ids).subscribe(res => {
-        res.forEach(progress => {
-          if (!Array.isArray(progress)) {
-            this.progresses[progress.id] = Math.round(progress.progress * 100);
-            return;
-          }
+      .pipe(
+        filter(experiences => experiences !== null),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe(experiences => {
+        const ids = experiences.map(experience => experience.projectId);
+        this.experienceService.getProgresses(ids).subscribe(res => {
+          res.forEach(progress => {
+            if (Array.isArray(progress)) {
+              progress.forEach(project => {
+                this.progresses[project.id] = Math.round(project.progress * 100);
+              });
+              return;
+            }
 
-          progress.forEach(project => {
-            this.progresses[project.id] = Math.round(project.progress * 100);
+            // single progress objects
+            this.progresses[progress.id] = Math.round(progress.progress * 100);
           });
         });
       });
-    });
 
     this.isMobile = this.utils.isMobile();
   }
