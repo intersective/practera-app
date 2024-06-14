@@ -9,8 +9,14 @@ name: Deploy to p2-stage-appv3 environment
 ################################################
 on:
   workflow_dispatch:
+    inputs:
+      INPUT_BRANCH:
+        description: 'Branch or tag to deploy'
+        required: true
+        default: ''
   push:
-    branches: [ 'trunk' ]
+    branches:
+      - 'trunk'
 
 
 ################################################
@@ -23,7 +29,6 @@ jobs:
     environment: p2-stage
     permissions: write-all
     timeout-minutes: 15
-
 
 
 ################################################
@@ -43,21 +48,45 @@ jobs:
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: app.p2-stage.practera.com
-      BRANCH_TAG_NAME: trunk
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
+    steps:
 
+################################################
+#  Export BRANCH_TAG_NAME
+################################################
+      - name: Get branch for env BRANCH_TAG_NAME
+        run: |
+          if [ -z "$INPUT_BRANCH" ]; then
+            echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          else
+            echo "BRANCH_TAG_NAME="$(echo "$INPUT_BRANCH") >> $GITHUB_ENV
+          fi
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.INPUT_BRANCH }}
 
 ################################################
 #  GITHUB REPO CHECKOUT
 ################################################
-    steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-          ref: ${{ github.event.inputs.BRANCH_TAG_NAME }}
+          ref: ${{ env.BRANCH_TAG_NAME }}
 
+################################################
+#  GET P2 P2STAGE AWS ORGANIZATION NUMBER
+################################################
+      - name: Get AWS Organization Number
+        id: AWS_ORG
+        run: |
+          P2STAGE=$(echo $AWS_ACCOUNT_ID | jq -r .P2STAGE)
+          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
 
+          echo "::add-mask::$P2STAGE"
+          echo "::add-mask::$CENTRALIZED"
+
+          echo "P2STAGE=$P2STAGE" >> $GITHUB_OUTPUT
+          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
 
 ################################################
 #  NODE ENV
@@ -65,7 +94,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '18'
 
 
 ################################################
@@ -96,25 +125,11 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
 
-################################################
-#  GET P2 STAGE AWS ORGANIZATION NUMBER
-################################################
-      - name: Get AWS Organization Number
-        id: AWS_ORG
-        run: |
-          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
-          P2STAGE=$(echo $AWS_ACCOUNT_ID | jq -r .P2STAGE)
-
-          echo "::add-mask::$CENTRALIZED"
-          echo "::add-mask::$P2STAGE"
-
-          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
-          echo "P2STAGE=$P2STAGE" >> $GITHUB_OUTPUT
 
 ################################################
 #  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
 ################################################
-      - name: Configure AWS Credentials from CENTRALIZED Account
+      - name: Configure AWS Credentials from P1 Centralized account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
@@ -136,14 +151,13 @@ jobs:
           ENV: live # Valid values are sandbox,stage,live only
 
 ################################################
-#  AWS CLI CONFIGURATION - P2STAGE ACCOUNT
+#  AWS CLI CONFIGURATION - DEVOPS P2 P2STAGE
 ################################################
-      - name: Configure AWS Credentials from P2STAGE Account
+      - name: Configure AWS Credentials from p2 stage AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2STAGE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
-
 
 ###############################################################
 #  ANGULAR ENVIRONMENT CREATION
@@ -164,7 +178,7 @@ jobs:
           export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-stage.practera.com
-          
+
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
           chmod +x env.sh && ./env.sh
@@ -188,11 +202,9 @@ jobs:
           CUSTOM_JS_ENVIRONEMENT: test #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
           CUSTOM_NEWRELIC: true
-          CUSTOM_LIVE_SERVER_REGION: AU
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
-
-
+          CUSTOM_LIVE_SERVER_REGION: AU
 
 ###############################################################
 #  BUILD WEB PACKAGES
@@ -231,7 +243,7 @@ jobs:
 ##########################################################
 #  AWS P2STAGE ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
 ##########################################################
-      - name: Configure AWS Credentials from P2STAGE Account
+      - name: Configure AWS Credentials from p2 p2stage AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2STAGE }}:role/github-restricted-role-to-assume
@@ -243,36 +255,45 @@ jobs:
       - name: Cloudformation Export variables
         run: |
           cat >> .env <<EOF
-          IndexLambdaVersionArnVersion=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-IndexLambdaVersionArnVersion-$ENV\`].Value" --no-paginate --output text)
           Nonce=$GITHUB_SHA
           EOF
 
-################################################
-#  AWS CLI CONFIGURATION - P2STAGE ACCOUNT
-################################################
-      - name: Configure AWS Credentials from P2STAGE Account
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: S3 Bucket for lambda@edge
+        run: |
+          if ! aws s3api head-bucket --bucket $STACK_NAME-lambda-edge-$ENV > /dev/null 2>&1; then
+            aws s3api create-bucket --bucket $STACK_NAME-lambda-edge-$ENV --region us-east-1
+          fi
+
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: Deploy lambda@edge
+        run: |
+          export $(cat .env | xargs)
+          bash lambda/deploy.sh
+        env:
+          REGION: us-east-1
+
+##########################################################
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          HandlerVersionArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-HandlerVersion-$ENV\`].Value" --no-paginate --output text)
+          EOF
+
+##########################################################
+#  AWS P2STAGE ACCOUNT STEPS BELOW ap-southeast-2
+##########################################################
+      - name: Configure AWS Credentials from p2 p2stage AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2STAGE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
-
-###############################################################
-#  SERVERLESS DEPLOYMENT (Lambda@Edge)
-##############################################################
-      - name: Serverless deployment Lambda Function
-        run: |
-          echo "Serverless Deploying appv3 lambda@edge fn"
-          mv serverless.yml serverless.yml.bak
-          mv serverless-appv3-lambda-edge.yml serverless.yml
-          node_modules/.bin/serverless deploy
-          rm serverless.yml
-          mv serverless.yml.bak serverless.yml
-        env:
-          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
-          S3VERSIONING: true
-          NONCURRENTVERSION_EXPIREINDAYS: 30
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
