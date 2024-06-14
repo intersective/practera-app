@@ -119,10 +119,10 @@ resources:
             TargetOriginId: ${env:AppV3S3Bucket}
             ViewerProtocolPolicy: 'redirect-to-https'
             ResponseHeadersPolicyId: !Ref AppV2CloudFrontSecurityHeaderResponse
-            # LambdaFunctionAssociations:
-            # - EventType: origin-request
-            #   IncludeBody: true
-            #   LambdaFunctionARN: ${env:IndexLambdaVersionArnVersion}
+            LambdaFunctionAssociations:
+            - EventType: origin-request
+              IncludeBody: true
+              LambdaFunctionARN: ${env:HandlerVersionArn}
           # DefaultRootObject: index.html
           # CustomErrorResponses:
           #   - ErrorCode: 404
