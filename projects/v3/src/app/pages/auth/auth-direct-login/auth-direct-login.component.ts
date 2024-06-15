@@ -31,18 +31,16 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    try {
-      const authed = await this.authService.autologin({ authToken }).toPromise();
-      await this.experienceService.getMyInfo().toPromise();
-
-      this.experienceService.switchProgram({
-        experience: authed.experience
-      });
-      return this._redirect({ experience: authed.experience });
-    } catch (err) {
-      console.error(err);
-      this._error(err);
-    }
+    this.authService.autologin({ authToken }).subscribe({
+      next: async (authed) => {
+        await this.experienceService.getMyInfo().toPromise();
+        return this._redirect({ experience: authed.experience });
+      },
+      error: err => {
+        console.error(err);
+        this._error(err);
+      }
+    });
   }
 
   // force every navigation happen under radar of angular
@@ -74,7 +72,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     // clear the cached data
-    await this.utils.clearCache();
+    await this.authService.clearCache();
 
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
@@ -92,9 +90,9 @@ export class AuthDirectLoginComponent implements OnInit {
     const restrictedAccess = this.singlePageRestriction();
 
     // switch program directly if user already registered
-    if (!redirectLater) {
+    if (!redirectLater && experience) {
       await this.experienceService.switchProgram({
-        experience: this.storage.get('experience')
+        experience
       });
     }
 
@@ -225,14 +223,17 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
 
+    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+
     return this.notificationsService.alert({
-      message: $localize`Your link is invalid or expired.`,
+      message: errorMessage,
       buttons: [
         {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            this.navigate(['login']);
+            // calling auth service logout mentod to clear user data and redirect
+            this.authService.logout();
           }
         }
       ]

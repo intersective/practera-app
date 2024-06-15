@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
-import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 /**
  * @name api
@@ -80,10 +80,18 @@ interface AuthEndpoint {
   }
 }
 
+interface AuthQuery {
+  authToken?: string;
+  apikey?: string;
+  service?: string;
+  experienceUuid?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(
     private request: RequestService,
@@ -91,17 +99,28 @@ export class AuthService {
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private demo: DemoService,
     private apolloService: ApolloService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) { }
 
-  authenticate(data: {
-    authToken?: string;
-    apikey?: string;
-    service?: string;
-    // needed when switching program (inform server the latest selected experience)
-    experienceUuid?: string;
-  }): Observable<AuthEndpoint> {
+  private authCacheDuration = environment.authCacheDuration;
+
+  authenticate(data?: AuthQuery): Observable<any> {
+    const currentTime = new Date().getTime();
+    const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
+    const authCache = this.authCache$.getValue() || this.storage.get('authCache');
+
+    // 2 conditions to pull from server:
+    // when experienceUuid is not null (required for switch experience)
+    // when authToken available (directLogin)
+    if (!(data?.experienceUuid || data?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
+      return of(authCache);
+    } else {
+      return this.fetchData(data);
+    }
+  }
+
+  fetchData(data?: AuthQuery): Observable<AuthEndpoint> {
     const options: {
       variables?: {
         authToken?: string;
@@ -115,31 +134,33 @@ export class AuthService {
       };
     } = {};
 
-    // Initialize options.variables
-    if (data.authToken || data.experienceUuid) {
-      options.variables = {};
-    }
+    if (data) {
+      // Initialize options.variables
+      if (data.authToken || data.experienceUuid) {
+        options.variables = {};
+      }
 
-    if (data.authToken) {
-      options.variables.authToken = data.authToken;
-    }
+      if (data.authToken) {
+        options.variables.authToken = data.authToken;
+      }
 
-    if (data.experienceUuid) {
-      options.variables.experienceUuid = data.experienceUuid;
-    }
+      if (data.experienceUuid) {
+        options.variables.experienceUuid = data.experienceUuid;
+      }
 
-    // Initialize options.headers
-    if (data.apikey || data.service) {
-      options.context = { headers: {} };
-    }
+      // Initialize options.headers
+      if (data.apikey || data.service) {
+        options.context = { headers: {} };
+      }
 
-    if (data.apikey) {
-      this.storage.setUser({ apikey: data.apikey });
-      options.context.headers.apikey = data.apikey;
-    }
+      if (data.apikey) {
+        this.storage.setUser({ apikey: data.apikey });
+        options.context.headers.apikey = data.apikey;
+      }
 
-    if (data.service) {
-      options.context.headers.service = data.service;
+      if (data.service) {
+        options.context.headers.service = data.service;
+      }
     }
 
     return this.apolloService.graphQLFetch(`
@@ -150,6 +171,7 @@ export class AuthService {
             id
             uuid
             timelineId
+            projectId
             name
             description
             type
@@ -178,6 +200,9 @@ export class AuthService {
       options
     ).pipe(
       map((res: AuthEndpoint)=> {
+        this.storage.set('lastAuthFetchTime', new Date().getTime());
+        this.storage.set('authCache', res);
+
         if (res?.data?.auth?.unregistered === true) {
           // [CORE-6011] trusting API returns email and activationCode
           const { email, activationCode } = res.data.auth;
@@ -195,9 +220,19 @@ export class AuthService {
         return res;
       }),
       catchError(err => {
+        this.storage.remove('lastAuthFetchTime');
+        this.storage.remove('authCache');
         this.logout(); // clear user's information
-        throw new Error(err);
-      }),
+
+        // When logout get call from here user get redirect without showing any error messages.
+        // so from here need to throw the error. and handle from the components.
+        // then we can show error message and add logout as call back of notification popup.
+        // Kepping this in case some error happen. logic moved
+        // this.logout(); // clear user's information
+        this.storage.remove('lastAuthFetchTime');
+        this.storage.remove('authCache');
+        return throwError(err);
+      })
     );
   }
 
@@ -207,12 +242,19 @@ export class AuthService {
     service?: string;
   }): Observable<any> {
     this.logout({}, false);
-    return this.authenticate({...data, ...{service: 'LOGIN'}}).pipe(
+    return this.authenticate({...data, ...{ service: 'LOGIN' }}).pipe(
       map(res => this._handleAuthResponse(res)),
     );
   }
 
-  private _handleAuthResponse(res): {
+  private _handleAuthResponse(res: {
+    data: {
+      auth: {
+        apikey: string;
+        experience: object;
+      }
+    }
+  }): {
     apikey?: string;
     experience?: object;
   } {
@@ -275,7 +317,7 @@ export class AuthService {
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
 
-
+    this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
@@ -452,6 +494,21 @@ export class AuthService {
           return [];
         }
       })
-      );
+    );
+  }
+
+  // need to clear all Subject for cache
+  async clearCache(): Promise<void> {
+    const apolloClient = this.apolloService.getClient();
+    // clear cache before initialised
+    if (apolloClient) {
+      apolloClient.stop();
+      await apolloClient.clearStore();
+    }
+    //   // initialise the Subject for caches
+    //   this.projectSubject.next(null);
+    //   this.each(this.activitySubjects, (subject, key) => {
+    //     this.activitySubjects[key].next(null);
+    //   });
   }
 }
