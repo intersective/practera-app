@@ -18,7 +18,6 @@ export interface Topic {
 const api = {
   get: {
     stories: 'api/stories.json',
-    progress: 'api/v2/motivations/progress/list.json'
   },
   post: {
     updateProgress: 'api/v2/motivations/progress/create.json',
@@ -116,24 +115,6 @@ export class TopicService {
       endPoint: api.post.updateProgress,
       data: postData,
     });
-  }
-
-  getTopicProgress(activityId, topicId): Observable<any> {
-    return this.request.get(api.get.progress, {params: {
-      model: 'Activity',
-      model_id: +activityId,
-      scope: 'Task'
-    }})
-    .pipe(map((response: any) => {
-      if (response.success && !this.utils.isEmpty(response.data)) {
-        const progress = response.data.Activity.Topic.find(function (topic) {
-            return topic.id === topicId;
-        });
-        return progress.progress;
-      } else {
-        return false;
-      }
-    }));
   }
 
 }

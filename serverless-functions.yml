@@ -1,3 +1,4 @@
+## deprecated
 service: cloudfront-service
 useDotenv: false
 enableLocalInstallationFallback: true

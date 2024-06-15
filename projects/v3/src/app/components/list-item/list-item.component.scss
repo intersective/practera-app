@@ -1,3 +1,8 @@
+.icon-container {
+  margin-right: 20px;
+  font-size: 24px  !important;
+}
+
 .bolder {
   font-weight: bolder !important;
 }
@@ -21,21 +26,20 @@ ion-avatar {
 .item-subtitle-1, .item-subtitle-2 {
   margin: 4px 0 0;
 }
+
 .leading-icon {
-  margin-right: 20px;
-  font-size: 24px  !important;
   border-radius: 6px;
   padding: 8px 8px;
   color: white;
   background: var(--ion-color-primary);
 }
+
 .notification-icon {
-  margin-right: 20px;
-  font-size: 24px !important;
   border-radius: 1em;
   padding: 8px 8px;
   background: var(--practera-15-percent-gray);
 }
+
 .item-content {
   width: 100%;
   p {

@@ -17,6 +17,7 @@ export class ListItemComponent {
   @Input() leadingIconColor: string;
   @Input() leadingIconPulsing: boolean;
   @Input() leadImage: string;
+  @Input() fallbackLeadImage?: string; // fallback image URL for lead image
   @Input() leadImageClass?: string;
   @Input() title: string;
   @Input() titleColor?: string;
@@ -41,6 +42,7 @@ export class ListItemComponent {
   };
   @Input() eventFullyBooked: boolean;
   @Input() eventDayCount: string;
+  @Input() redDot: boolean = false; // red dot on the top right corner (for notifications in home page)
 
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];

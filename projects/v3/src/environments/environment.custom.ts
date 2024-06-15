@@ -1,4 +1,5 @@
 export const environment = {
+  authCacheDuration: 5 * 60 * 1000, // 5 minutes
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
   demo: false,
   appkey: '<CUSTOM_APPKEY>',
@@ -9,6 +10,7 @@ export const environment = {
   graphQL: '<CUSTOM_GRAPH_QL>',
   chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
   globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
+  badgeProjectUrl: '<CUSTOM_BADGE_PROJECT_URL>',
   stackUuid: '<CUSTOM_STACK_UUID>',
   intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {

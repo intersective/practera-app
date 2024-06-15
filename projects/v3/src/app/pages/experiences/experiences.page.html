@@ -1,3 +1,13 @@
+<ion-header class="ion-no-border header-border" aria-label="home">
+  <h1 class="for-accessibility" i18n>Home</h1>
+  <ion-toolbar>
+    <img class="ion-padding-start" [src]="instituteLogo || './assets/logo.svg'" i18n-alt [attr.alt]="'branding logo'">
+    <ion-buttons slot="end">
+      <app-personalised-header [isExpPage]="true"></app-personalised-header>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
   <ng-container *ngIf="(experiences$ | async ) as experiences">
     <header>
@@ -31,21 +41,21 @@
                 <ion-grid>
                   <ion-row>
 
-                  <ng-container *ngFor="let program of experiences">
+                  <ng-container *ngFor="let experience of experiences">
                     <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
                       <ion-card class="exp-card ion-no-margin"
-                        [attr.aria-label]="program.name"
-                        (click)="switchProgram(program)" (keydown)="switchProgram(program, $event)" tabindex="0">
+                        [attr.aria-label]="experience.name"
+                        (click)="switchProgram(experience)" (keydown)="switchProgram(experience, $event)" tabindex="0">
                         <div class="exp-image-container">
                           <img
-                          [src]="program.leadImage ? program.leadImage : '../../../assets/default-experience-image.svg'"
-                          [attr.alt]="program.name + ' experience selection'">
+                          [src]="experience.leadImage ? experience.leadImage : '../../../assets/default-experience-image.svg'"
+                          [attr.alt]="experience.name + ' experience selection'">
                         </div>
                         <ion-card-content>
-                          <p class="m-0 headline-3 exp-title black">{{ program.name }}</p>
+                          <p class="m-0 headline-3 exp-title black">{{ experience.name }}</p>
                           <div class="exp-info subtitle-3 grey-50"
-                             *ngIf="progresses[program.projectId]">
-                            <p class="m-0 subtitle-3 grey-50" i18n>{{progresses[program.projectId]}}% Progress</p>
+                             *ngIf="progresses[experience.projectId]">
+                            <p class="m-0 subtitle-3 grey-50" i18n>{{progresses[experience.projectId]}}% Progress</p>
                           </div>
                         </ion-card-content>
                       </ion-card>
