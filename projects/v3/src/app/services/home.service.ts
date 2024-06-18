@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -79,12 +79,12 @@ export class HomeService {
     ]);
   }
 
-  getExperience(apikey: string) {
+  getExperience() {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.authService.authenticate({ apikey }).pipe(
+    return this.authService.authenticate().pipe(
       tap(async res => {
         if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
@@ -102,8 +102,13 @@ export class HomeService {
           })
         }
       }),
-      map(res => this._normaliseExperience(res))
-    ).subscribe();
+      map(res => this._normaliseExperience(res)),
+      first(),
+    ).subscribe({
+      error: async (err) => {
+        console.error('Auth:query', err);
+      }
+    });
   }
 
   private _normaliseExperience(res) {

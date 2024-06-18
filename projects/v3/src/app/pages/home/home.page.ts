@@ -3,14 +3,14 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
-import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Subscription } from 'rxjs';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { distinctUntilChanged, filter, first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +20,7 @@ import { distinctUntilChanged, filter } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  activityCount$ = this.homeService.activityCount$;
+  activityCount$: Observable<number>;
   experienceProgress: number;
 
   milestones: Milestone[];
@@ -33,6 +33,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
+  hasUnlockedTasks: Object = {};
+  unlockedMilestones: {[key: number]: boolean} = {};
 
   // default card image (gracefully show broken url)
   defaultLeadImage: string = '';
@@ -46,9 +48,10 @@ export class HomePage implements OnInit, OnDestroy {
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
-    private experienceService: ExperienceService,
     private storageService: BrowserStorageService,
+    private unlockIndicatorService: UnlockIndicatorService
   ) {
+    this.activityCount$ = homeService.activityCount$;
   }
 
   ngOnInit() {
@@ -89,6 +92,18 @@ export class HomePage implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      this.hasUnlockedTasks = {}; // reset
+      this.unlockedMilestones = {}; // reset
+      unlockedTasks.forEach(task => {
+        if (task.milestoneId) {
+          this.unlockedMilestones[task.milestoneId] = true;
+        }
+
+        this.hasUnlockedTasks[task.activityId] = true;
+      });
+    });
   }
 
   ngOnDestroy(): void {
@@ -155,7 +170,7 @@ export class HomePage implements OnInit, OnDestroy {
    * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
    * @returns A Promise that resolves when the navigation is complete.
    */
-  async gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
+  async gotoActivity({activity, milestone}, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
@@ -168,6 +183,18 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
+
+    // check & update unlocked milestones
+    if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
+      const unlockedMilestones = this.unlockIndicatorService.clearActivity(milestone.id);
+      unlockedMilestones.forEach(unlockedMilestone => {
+        this.notification.markTodoItemAsDone(unlockedMilestone).pipe(first()).subscribe(() => {
+          // eslint-disable-next-line no-console
+          console.log('Marked milestone as done', unlockedMilestone);
+        });
+      });
+    }
+
 
     if (!this.isMobile) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
