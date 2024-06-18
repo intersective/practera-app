@@ -82,7 +82,14 @@
   <ng-container *ngFor="let milestone of milestones">
     <ion-item class="headline-4 milestone-name" lines="none"
       aria-describedby="milestone-description">
-      {{ milestone.name }}
+      <div>
+        {{ milestone.name }}
+        <span class="milestone notification-dot"
+          [ngClass]="{'mobile': isMobile}"
+          slot="start"
+          *ngIf="unlockedMilestones[milestone.id]"
+        ></span>
+      </div>
       <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
     </ion-item>
 
@@ -100,11 +107,12 @@
       [leadImage]="activity.leadImage"
       [fallbackLeadImage]="defaultLeadImage"
       [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-      (click)="gotoActivity(activity)"
-      (keydown)="gotoActivity(activity, $event)"
+      (click)="gotoActivity({activity, milestone})"
+      (keydown)="gotoActivity({activity, milestone}, $event)"
       [endingIcon]="endingIcon(activity)"
       [endingIconColor]="endingIconColor(activity)"
       [endingProgress]="endingProgress(activity)"
+      [redDot]="hasUnlockedTasks[activity.id] === true"
       class="focusable"
       tabindex="0"
       role="button">

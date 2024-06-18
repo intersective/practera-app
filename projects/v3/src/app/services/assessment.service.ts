@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of, Subscription } from 'rxjs';
-import { RequestService } from 'request';
+import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
 import { map, shareReplay, catchError } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -10,6 +9,7 @@ import { ApolloService } from './apollo.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
+import { RequestService } from 'request';
 
 /**
  * @name api
@@ -18,7 +18,7 @@ import { FastFeedbackService } from './fast-feedback.service';
  */
 const api = {
   post: {
-    todoitem: 'api/v2/motivations/todo_item/edit.json'
+    resubmit: 'api/assessment_resubmit.json'
   }
 };
 
@@ -41,6 +41,7 @@ export interface Assessment {
   isOverdue?: boolean;
   groups: Array<Group>;
   pulseCheck: boolean;
+  allowResubmit?: boolean; // indicator to show resubmit button
 }
 
 export interface Group {
@@ -77,9 +78,11 @@ export interface TeamMember {
   userName: string;
 }
 
+export type SubmissionStatuses = 'in progress' | 'pending review' | 'published' | 'pending approval' | 'feedback available' | 'done';
+
 export interface Submission {
   id: number;
-  status: string;
+  status: SubmissionStatuses;
   answers: any;
   submitterName: string;
   modified: string;
@@ -108,7 +111,6 @@ export interface AssessmentReview {
 })
 
 export class AssessmentService {
-
   private _assessment$ = new BehaviorSubject<Assessment>(null);
   assessment$ = this._assessment$.pipe(shareReplay(1));
   private _submission$ = new BehaviorSubject<Submission>(null);
@@ -120,7 +122,6 @@ export class AssessmentService {
   questions = {};
 
   constructor(
-    private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private NotificationsService: NotificationsService,
@@ -128,6 +129,7 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private demo: DemoService,
+    private request: RequestService,
   ) {
     this.assessment$.subscribe(res => this.assessment = res);
   }
@@ -157,7 +159,7 @@ export class AssessmentService {
     return this.apolloService.graphQLWatch(
       `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck
+          id name type description dueDate isTeam pulseCheck allowResubmit
           groups{
             name description
             questions{
@@ -236,6 +238,7 @@ export class AssessmentService {
       dueDate: data.assessment.dueDate,
       isOverdue: data.assessment.dueDate ? this.utils.timeComparer(data.assessment.dueDate) < 0 : false,
       pulseCheck: data.assessment.pulseCheck,
+      allowResubmit: data.assessment.allowResubmit,
       groups: []
     };
     data.assessment.groups.forEach(eachGroup => {
@@ -336,7 +339,7 @@ export class AssessmentService {
     return submission;
   }
 
-  private _submissionStatus(status: string) {
+  private _submissionStatus(status: SubmissionStatuses): SubmissionStatuses {
     switch (status) {
       case 'pending approval':
         return 'pending review';
@@ -689,16 +692,9 @@ export class AssessmentService {
       console.log('feedback reviewed', submissionId);
       return of(true);
     }
-    const postData = {
-      project_id: this.storage.getUser().projectId,
-      identifier: 'AssessmentSubmission-' + submissionId,
-      is_done: true
-    };
-    return this.request.post(
-      {
-        endPoint: api.post.todoitem,
-        data: postData
-      });
+    return this.NotificationsService.markTodoItemAsDone({
+      identifier: 'AssessmentSubmission-' + submissionId
+    });
   }
 
   checkReviewer(reviewer): string {
@@ -708,4 +704,16 @@ export class AssessmentService {
     return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
+  resubmitAssessment({
+    assessment_id,
+    submission_id,
+  }): Observable<any> {
+    return this.request.post({
+      endPoint: api.post.resubmit,
+      data:{
+        assessment_id,
+        submission_id,
+      }
+    });
+  }
 }
