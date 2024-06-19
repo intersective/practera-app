@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { ActivityService } from '@v3/app/services/activity.service';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
@@ -98,7 +99,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private assessmentService: AssessmentService
+    private assessmentService: AssessmentService,
+    private activityService: ActivityService,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -645,6 +647,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       submission_id: this.submission.id
     }).subscribe({
       next: () => {
+        this.activityService.getActivity(this.activityId);
         this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
       },
       error: () => {
