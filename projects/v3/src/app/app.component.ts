@@ -144,7 +144,7 @@ export class AppComponent implements OnInit {
 
         case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
+            return this.authService.logout({}, [
               'auth',
               'registration',
               searchParams.get('email'),
