@@ -21,17 +21,12 @@
             routerDirection="root"
             detail="false"
             [title]="p.title">
-            <ng-container *ngIf="!isMobile && openMenu === false; else iconOnly">
-              <div class="badge-wrapper icon-container">
-                <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
-                <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
-                <span class="notification-dot" [class.hidden]="!p.hasNotification"></span>
-              </div>
-            </ng-container>
-            <ng-template #iconOnly>
+            <div class="badge-wrapper icon-container">
               <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
-              <ion-badge color="danger" class="hint" *ngIf="p.badges > 0" slot="end">{{p.badges}}</ion-badge>
-            </ng-template>
+              <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
+              <span class="notification-dot" [class.hidden]="!p.hasNotification"></span>
+            </div>
+
             <ion-label class="body-2 black">
               {{p.title}}
             </ion-label>
