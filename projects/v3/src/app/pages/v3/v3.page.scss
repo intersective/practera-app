@@ -1,43 +1,79 @@
-ion-menu.collapsed {
-  &.menu-pane-visible {
-    --max-width: 72px;
-    --min-width: 72px;
-  }
-
+ion-menu {
   .badge-wrapper {
-    margin: 0px 5px 0px 5px;
+    height: 34px;
+    width: 34px;
+    --padding-top: 1px;
+    --padding-end: 1px;
+    --padding-bottom: 1px;
+    --padding-start: 1px;
+    display: flex;
+    position: relative;
+    margin-right: 10px;
+
+    .indicator {
+      position: absolute;
+      display: flex;
+      height: 24px;
+      width: 24px;
+    }
+
     .hint {
       right: -1.5px;
       top: -5px;
+      top: 10px;
+      border-radius: 100%;
+      /* overflow: visible; */
+      font-size: 0.7em;
+      display: flex;
+      align-items: center;
+
+      .icon-inner {
+        height: 36px;
+      }
+    }
+
+    &.icon-container.expanded {
+      display: block;
     }
   }
 
-  .menu-item {
-    --padding-start: 15px;
-
-    &.selected {
-      --padding-start: 12px;
+  &.collapsed {
+    &.menu-pane-visible {
+      --max-width: 72px;
+      --min-width: 72px;
     }
 
-    & > ion-icon {
-      margin: 5px;
+    .badge-wrapper {
+      margin: 0px 5px 0px 5px;
     }
 
-    & > ion-label {
-      display: none;
+    .menu-item {
+      --padding-start: 15px;
+
+      &.selected {
+        --padding-start: 12px;
+      }
+
+      & > ion-icon {
+        margin: 5px;
+      }
+
+      & > ion-label {
+        display: none;
+      }
+
+      .item-inner {
+        display: none;
+      }
+
+      overflow: visible;
     }
 
-    .item-inner {
-      display: none;
-    }
-
-    overflow: visible;
-  }
-
-  .institute-logo-container {
-    padding: 2em 0.3em;
-    &.hidden {
-      visibility: hidden;
+    .institute-logo-container {
+      padding: 2em 0.3em;
+      &.hidden {
+        visibility: hidden;
+      }
     }
   }
 }
@@ -53,24 +89,6 @@ ion-menu {
   border-right-color: var(--practera-grey-25);
 
   .badge-wrapper {
-    height: 34px;
-    width: 34px;
-    margin: 0px 10px 0px 0px;
-
-    --padding-top: 1px;
-    --padding-end: 1px;
-    --padding-bottom: 1px;
-    --padding-start: 1px;
-    display: flex;
-    position: relative;
-
-    .indicator {
-      position: absolute;
-      display: flex;
-      height: 24px;
-      width: 24px;
-    }
-
     .hint {
       position: absolute;
       right: 1.5px;
