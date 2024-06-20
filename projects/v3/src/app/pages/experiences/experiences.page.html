@@ -9,7 +9,7 @@
 </ion-header>
 
 <ion-content class="experience-page" [class]="{'mobile': isMobile}">
-  <ng-container *ngIf="(experiences$ | async ) as experiences">
+  <ng-container *ngIf="(experiences$ | async ) as experiences; else loading">
     <header>
       <h1 id="experiences" class="for-accessibility" i18n>Experiences</h1>
       <ion-grid class="ion-no-padding ion-no-margin">
@@ -72,3 +72,8 @@
     </main>
   </ng-container>
 </ion-content>
+<ng-template #loading>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <ion-spinner name="bubbles"></ion-spinner>
+  </div>
+</ng-template>
