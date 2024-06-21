@@ -199,7 +199,7 @@ export class ActivityDesktopPage {
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and navigate to the next task
+        // get the latest activity tasks
         this.activityService.getActivity(this.activity.id, false, task, () => {
           this.loading = false;
           this.btnDisabled$.next(false);
