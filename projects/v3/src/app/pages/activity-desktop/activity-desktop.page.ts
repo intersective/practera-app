@@ -116,6 +116,17 @@ export class ActivityDesktopPage {
         }
       });
     }));
+
+    this.subscriptions.push(
+      this.utils.getEvent('notification').subscribe(event => {
+        const review = event?.meta?.AssessmentReview;
+        if (event.type === 'assessment_review_published' && review?.assessment_id) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+          }
+        }
+      })
+    );
   }
 
   ionViewWillLeave() {
@@ -199,7 +210,7 @@ export class ActivityDesktopPage {
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and navigate to the next task
+        // get the latest activity tasks
         this.activityService.getActivity(this.activity.id, false, task, () => {
           this.loading = false;
           this.btnDisabled$.next(false);
