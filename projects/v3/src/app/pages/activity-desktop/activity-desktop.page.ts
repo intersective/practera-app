@@ -116,6 +116,17 @@ export class ActivityDesktopPage {
         }
       });
     }));
+
+    this.subscriptions.push(
+      this.utils.getEvent('notification').subscribe(event => {
+        const review = event?.meta?.AssessmentReview;
+        if (event.type === 'assessment_review_published' && review?.assessment_id) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+          }
+        }
+      })
+    );
   }
 
   ionViewWillLeave() {
