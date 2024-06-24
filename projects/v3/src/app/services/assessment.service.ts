@@ -421,18 +421,27 @@ export class AssessmentService {
             answer = +answer;
           }
           break;
+
         case 'multiple':
+          // Check if answer is empty or not an array, and attempt to parse if it's a string
           if (this.utils.isEmpty(answer)) {
             answer = [];
+          } else if (typeof answer === 'string') {
+            try {
+              answer = JSON.parse(answer);
+            } catch (e) {
+              // In case JSON.parse fails, wrap the original answer in an array
+              answer = [answer];
+            }
           }
+
+          // Ensure answer is an array (wrap non-array values in an array)
           if (!Array.isArray(answer)) {
-            // re-format json string to array
-            answer = JSON.parse(answer);
+            answer = [answer];
           }
-          // re-format answer from string to number
-          answer = answer.map(value => {
-            return +value;
-          });
+
+          // Convert all elements to numbers
+          answer = answer.map(value => +(value || NaN));
           break;
 
         case 'multi team member selector':
