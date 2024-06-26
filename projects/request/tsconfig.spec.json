@@ -7,10 +7,7 @@
       "jasmine"
     ]
   },
-  "files": [
-  ],
   "include": [
-    "**/*.spec.ts",
-    "**/*.d.ts"
+    "src/lib/*.spec.ts"
   ]
 }

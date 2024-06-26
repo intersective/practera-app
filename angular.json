@@ -153,7 +153,8 @@
               "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": true
+              "namedChunks": true,
+              "tsConfig": "projects/v3/tsconfig.app.json"
             }
           },
           "defaultConfiguration": "production"
@@ -227,16 +228,8 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "tsConfig": "projects/request/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/v3/src/favicon.ico",
-              "projects/v3/src/assets"
-            ],
-            "styles": [
-              "projects/v3/src/styles.scss"
-            ],
-            "scripts": []
+            "main": "projects/request/src/test.ts",
+            "tsConfig": "projects/request/tsconfig.spec.json"
           }
         }
       }

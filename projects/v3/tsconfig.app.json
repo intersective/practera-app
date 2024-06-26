@@ -11,7 +11,7 @@
     ],
     "paths": {
       "@testingv3/*": [
-        "src/testing/*"
+        "project/v3/src/testing/*"
       ],
       "@v3/app/*": [
         "src/app/*"
@@ -32,7 +32,6 @@
         "../../dist/apollo"
       ],
       "request": [
-        "../../dist/request/request",
         "../../dist/request"
       ]
     },

@@ -31,7 +31,6 @@ describe('AchievementPopUpComponent', async () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ IonicModule ],
       declarations: [ AchievementPopUpComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [

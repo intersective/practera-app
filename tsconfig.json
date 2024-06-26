@@ -20,6 +20,8 @@
       "ES2022",
       "dom"
     ],
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "paths": {
       "@testingv3/*": [
         "projects/v3/src/testing/*"
@@ -39,15 +41,11 @@
       "@v3/environments/*": [
         "projects/v3/src/environments/*"
       ],
-      "apollo": [
-        "dist/apollo"
-      ],
       "request": [
-        "dist/request"
+        "./dist/request/request",
+        "./dist/request"
       ]
-    },
-    "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -55,10 +53,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true,
     "disableTypeScriptVersionCheck": true
-  },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src"
-  ]
+  }
 }

@@ -21,6 +21,7 @@ e2e/protractor-dev.conf.js
 src/environments/environment.ts
 src/environments/environment.ts.*
 dist/
+out-tsc/
 
 src/environments/environment.ts
 www/*

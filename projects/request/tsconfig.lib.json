@@ -8,10 +8,15 @@
     "inlineSources": true,
     "types": []
   },
+  "files": [
+    "src/public-api.ts",
+    "src/lib/request.module.ts",
+    "src/lib/request.service.ts",
+  ],
   "include": [
     "src/lib/**/*.ts"
   ],
   "exclude": [
-    "**/*.spec.ts"
+    "src/**/*.spec.ts"
   ]
 }

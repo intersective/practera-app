@@ -71,7 +71,7 @@
   },
   "devDependencies": {
     "@angular-devkit/architect": "~0.1502.10",
-    "@angular-devkit/build-angular": "^16.2.13",
+    "@angular-devkit/build-angular": "^16.2.14",
     "@angular-eslint/builder": "~16.3.1",
     "@angular-eslint/eslint-plugin": "~16.3.1",
     "@angular-eslint/eslint-plugin-template": "~16.3.1",
@@ -112,13 +112,11 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "~2.0.1",
-    "karma-ng-html2js-preprocessor": "^1.0.0",
-    "karma-sonarqube-unit-reporter": "0.0.23",
     "ng-packagr": "^16.0.0",
     "serverless": "^3.38.0",
     "serverless-certificate-creator": "^1.6.0",
     "ts-node": "~10.9.0",
-    "typescript": "~4.9.5"
+    "typescript": "~5.1.6"
   },
   "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }
