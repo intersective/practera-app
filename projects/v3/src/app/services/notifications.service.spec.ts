@@ -10,7 +10,7 @@ import { NotificationsService, TodoItem, api } from './notifications.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
 
-describe('NotificationsService', () => {
+describe('NotificationsService', async () => {
   let service: NotificationsService;
 
   beforeEach(() => {

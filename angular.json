@@ -186,14 +186,6 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/v3/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/v3/src/favicon.ico",
-              "projects/v3/src/assets"
-            ],
-            "styles": [
-              "projects/v3/src/styles.scss"
-            ],
             "scripts": []
           }
         },

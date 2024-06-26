@@ -15,7 +15,7 @@ import { VersionCheckService } from '@v3/services/version-check.service';
 import { MockRouter } from '@testingv3/mocked.service';
 import { environment } from '@v3/environments/environment';
 
-describe('AppComponent', () => {
+describe('AppComponent', async () => {
   let sharedServiceSpy: SharedService;
   let versionCheckServiceSpy: VersionCheckService;
   let utilsSpy: UtilsService;
@@ -102,7 +102,7 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('v3');
   });
 
-  describe('initializeApp()', () => {
+  describe('initializeApp()', async () => {
     it('should check version on Production mode', fakeAsync(() => {
       environment.production = true;
       TestBed.createComponent(AppComponent);

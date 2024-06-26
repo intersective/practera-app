@@ -5,8 +5,8 @@ import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
 import { FilestackService } from '@v3/app/services/filestack.service';
-import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import isEmpty from 'lodash-es/isEmpty';
 
 @Component({
   selector: 'app-support-popup',
@@ -30,7 +30,6 @@ export class SupportPopupComponent implements OnInit {
     private modalController: ModalController,
     private hubspotService: HubspotService,
     private filestackService: FilestackService,
-    private utilService: UtilsService,
     private notificationsService: NotificationsService,
   ) { }
 
@@ -134,8 +133,8 @@ export class SupportPopupComponent implements OnInit {
     this.isShowRequiredError = false;
     this.isShowSuccess = false;
     this.isShowError = false;
-    if (this.utilService.isEmpty(this.problemSubject) ||
-    this.utilService.isEmpty(this.problemContent)) {
+    if (isEmpty(this.problemSubject) ||
+    isEmpty(this.problemContent)) {
       this.isShowRequiredError = true;
       return;
     }

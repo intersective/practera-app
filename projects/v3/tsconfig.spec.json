@@ -5,19 +5,14 @@
     "outDir": "../../out-tsc/spec",
     "types": [
       "jasmine"
-    ]
+    ],
+    "sourceMap": true
   },
+  "include": [
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts"
+  ],
   "files": [
     "src/polyfills.ts"
-  ],
-  "include": [
-    "src/testing",
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts",
-  ],
-  "exclude": [
-    "../../node_modules",
-    "../../dist",
-    "../../src"
   ]
 }

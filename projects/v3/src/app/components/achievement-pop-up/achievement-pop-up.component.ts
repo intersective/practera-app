@@ -18,13 +18,13 @@ export class AchievementPopUpComponent {
   @ViewChild('achievementName') achievementName;
   @ViewChild('dismissButton') dismissButton;
 
+  isMobile: boolean;
+
   constructor(
     private modalController: ModalController,
     private utils: UtilsService,
-  ) {}
-
-  get isMobile() {
-    return this.utils.isMobile();
+  ) {
+    this.isMobile = this.utils.isMobile();
   }
 
   ionViewDidEnter() {

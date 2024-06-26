@@ -37,6 +37,7 @@ import { VideoConversionComponent } from './video-conversion/video-conversion.co
 import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
+import { UtilsService } from '../services/utils.service';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -137,6 +138,9 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     BottomActionBarComponent,
     SupportPopupComponent
+  ],
+  providers: [
+    UtilsService,
   ],
 })
 export class ComponentsModule {}

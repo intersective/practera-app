@@ -14,11 +14,11 @@ import { ModalController, IonicModule } from '@ionic/angular';
 import * as filestack from 'filestack-js';
 import { TestUtils } from '@testingv3/utils';
 
-describe('FilestackService', () => {
+describe('FilestackService', async () => {
   let service: FilestackService;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
-  let utils: UtilsService;
+  let utils: jasmine.SpyObj<UtilsService>;
   let mockBackend: HttpTestingController;
   let modalctrlSpy: jasmine.SpyObj<ModalController>;
   const MODAL_SAMPLE = 'test';
@@ -56,7 +56,7 @@ describe('FilestackService', () => {
       ]
     });
     service = TestBed.inject(FilestackService);
-    utils = TestBed.inject(UtilsService);
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     mockBackend = TestBed.inject(HttpTestingController);

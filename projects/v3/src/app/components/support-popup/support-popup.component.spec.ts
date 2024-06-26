@@ -21,7 +21,7 @@ class NotificationsServiceMock {
   alert() { return of({}); }
 }
 
-describe('SupportPopupComponent', () => {
+describe('SupportPopupComponent', async () => {
   let component: SupportPopupComponent;
   let fixture: ComponentFixture<SupportPopupComponent>;
   let modalSpy: jasmine.SpyObj<ModalController>;

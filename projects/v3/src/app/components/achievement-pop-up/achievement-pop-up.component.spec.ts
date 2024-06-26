@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AchievementPopUpComponent } from './achievement-pop-up.component';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { UtilsService } from '@v3/services/utils.service';
@@ -23,13 +23,13 @@ class AchievementModalPage {
   }
 }
 
-describe('AchievementPopUpComponent', () => {
+describe('AchievementPopUpComponent', async () => {
   let component: AchievementPopUpComponent;
   let fixture: ComponentFixture<AchievementPopUpComponent>;
   let page: AchievementModalPage;
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
 
-  beforeEach(async(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ IonicModule ],
       declarations: [ AchievementPopUpComponent ],
@@ -50,8 +50,8 @@ describe('AchievementPopUpComponent', () => {
     fixture = TestBed.createComponent(AchievementPopUpComponent);
     component = fixture.componentInstance;
 
-    page = new AchievementModalPage(fixture);
-  }));
+    // page = new AchievementModalPage(fixture);
+  });
 
   it('should create', () => {
     expect(component).toBeDefined();

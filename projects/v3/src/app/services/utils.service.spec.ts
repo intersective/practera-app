@@ -1,41 +1,35 @@
 import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
-import * as _ from 'lodash';
-import * as moment from 'moment';
-import { ApolloService } from '@v3/services/apollo.service';
+import * as _ from 'lodash-es';
+import * as dayjs from 'dayjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ModalController } from '@ionic/angular';
+import { DOCUMENT } from '@angular/common';
 
-describe('UtilsService', () => {
-  moment.updateLocale('en', {
-    monthsShort: [
-      // customised shortened month to accommodate Intl date format
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
-    ]
-  });
-  const thisMoment = moment();
+describe('UtilsService', async () => {
+  let documentSpy: jasmine.SpyObj<Document>;
+
+  // dayjs.updateLocale('en', {
+  //   monthsShort: [
+  //     // customised shortened month to accommodate Intl date format
+  //     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  //     'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
+  //   ]
+  // });
+  // dayjs.extend(customParseFormat);
+  const thisMoment = dayjs();
   const NOW = new Date();
-  const YESTERDAY = new Date(moment(NOW).subtract(1, 'day').toString());
-  const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
+  const YESTERDAY = new Date(dayjs(NOW).subtract(1, 'day').toString());
+  const TOMORROW = new Date(dayjs(NOW).add(1, 'day').toString());
   let service: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  documentSpy = jasmine.createSpyObj('Document', ['querySelector']);
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       providers: [
         UtilsService,
-        {
-          provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', {
-            'getClient': function () {
-              return {
-                clearStore: jasmine.createSpy('clearStore'),
-                stop: jasmine.createSpy('stop'),
-              };
-            },
-          }),
-        },
+        { provide: DOCUMENT, useValue: documentSpy },
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer', 'get'])
@@ -58,6 +52,14 @@ describe('UtilsService', () => {
   });
 
   describe('lodash extensions', () => {
+    it('should correctly initialize lodash property with expected methods', () => {
+      expect(service['lodash']).toBeDefined();
+      const expectedMethods = ['isEmpty', 'each', 'unset', 'find', 'findIndex', 'has', 'flatten', 'indexOf', 'remove'];
+      expectedMethods.forEach(method => {
+        expect(typeof service['lodash'][method]).toEqual('function');
+      });
+    });
+
     it('should extend each()', () => {
       spyOn(_, 'each');
       service.each([1, 2, 3], () => true);
@@ -256,35 +258,6 @@ describe('UtilsService', () => {
     });
   });
 
-  // xdescribe('getActivityCache()', () => {
-  //   it('should update cache for activitySubjects', () => {
-  //     service.activitySubjects = {};
-  //     service.getActivityCache('newCache');
-
-  //     expect(service.activitySubjects['newCache']).toBeTruthy();
-  //     expect(service.activitySubjects['newCache'] instanceof BehaviorSubject).toBeTruthy();
-  //     expect(service.activitySubjects['notexist']).toBeFalsy();
-  //   });
-  // });
-
-  // xdescribe('updateActivityCache()', () => {
-  //   it('should update cache for activitySubjects', () => {
-  //     service.activitySubjects = {};
-  //     service.updateActivityCache('test', 'activity');
-
-  //     expect(service.activitySubjects['test']).toBeTruthy();
-  //     expect(service.activitySubjects['test'] instanceof BehaviorSubject).toBeTruthy();
-
-  //     let result;
-  //     service.activitySubjects['test'].subscribe(res => {
-  //       result = res;
-  //     });
-
-  //     expect(result).toEqual('activity');
-
-  //   });
-// });
-
   describe('urlQueryToObject()', () => {
     it('should turn url query into programmatically useable object', () => {
       const result = service.urlQueryToObject('this=is&a=test&object=value');
@@ -357,10 +330,10 @@ describe('UtilsService', () => {
 
         if (result === 'Tomorrow') {
           expect(thisMoment.utcOffset()).toBeGreaterThan(0);
-          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isAfter(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
+          expect(dayjs(new Date(`${timeString} GMT+0000`)).isAfter(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else if (result === 'Yesterday') {
           expect(thisMoment.utcOffset()).toBeLessThan(0);
-          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isBefore(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
+          expect(dayjs(new Date(`${timeString} GMT+0000`)).isBefore(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else {
           expect(result).toEqual(formatted);
         }
@@ -375,7 +348,7 @@ describe('UtilsService', () => {
     it('should ignore date/month other than today', () => {
       const NEXT_MONTH = thisMoment.add(1, 'month').toString();
       const result = service.timeFormatter(NOW, new Date(NEXT_MONTH));
-      expect(result).toEqual(moment(NOW).format('D MMM'));
+      expect(result).toEqual(dayjs(NOW).format('D MMM'));
     });
 
     it('should standardize today date into "Tomorrow"', () => {
@@ -389,7 +362,7 @@ describe('UtilsService', () => {
     });
 
     it('should standardize today date into formatted date', () => {
-      const future30days = new Date(moment('2020-01-01').add(30, 'days').toString());
+      const future30days = new Date(dayjs('2020-01-01').add(30, 'days').toString());
       const result = service.timeFormatter(future30days);
       expect(result).toEqual('31 Jan');
     });
@@ -439,7 +412,7 @@ describe('UtilsService', () => {
     });
 
     it('should standardize today date into formatted date', () => {
-      const future30days = new Date(moment('2020-01-01').add(30, 'days').toString());
+      const future30days = new Date(dayjs('2020-01-01').add(30, 'days').toString());
       const result = service.dateFormatter(future30days);
       expect(result).toEqual('31 Jan 2020');
     });
@@ -568,7 +541,7 @@ describe('UtilsService', () => {
   describe('getFutureDated()', () => {
     it('should return future date from the date it get', () => {
       const date = service.getFutureDated('2021-11-25 05:18:00', 2);
-      const momentObj = moment(service.iso8601Formatter('2021-11-25 05:18:00'));
+      const momentObj = dayjs(service.iso8601Formatter('2021-11-25 05:18:00'));
       const expected = momentObj.clone().add(2, 'day').format('YYYY-MM-DD hh:mm:ss');
       expect(date).toEqual(expected);
     });
@@ -618,7 +591,7 @@ describe('UtilsService', () => {
     });
   });
 
-  describe('checkIsPracteraSupportEmail()', () => {
+  describe('checkIsPracteraSupportEmail()', async () => {
 
     const tempUser = {
       uuid: 'uuid-1',
@@ -633,7 +606,7 @@ describe('UtilsService', () => {
       institutionName: 'Test institute',
       teamName: 'team 1',
       experienceId: 1234
-    }
+    };
 
     const tempPrograms = [
       {
@@ -653,7 +626,7 @@ describe('UtilsService', () => {
           support_email: 'help@practera.com'
         }
       }
-    ]
+    ];
 
     it('"experienceId" and email matched should broadcast event with "true"', () => {
       spyOn(service, 'broadcastEvent');
@@ -689,5 +662,6 @@ describe('UtilsService', () => {
       service.checkIsPracteraSupportEmail();
       expect(service.broadcastEvent).not.toHaveBeenCalled();
     });
+
   });
 });

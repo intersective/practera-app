@@ -1,10 +1,12 @@
-import * as moment from 'moment';
 import { UtilsService } from '@v3/services/utils.service';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import { of, Subject } from 'rxjs';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 
 export class SpyObject {
   constructor(type?: any) {
+    dayjs.extend(utc);
     if (type) {
       for (const prop in type.prototype) {
         if (prop) {
@@ -124,7 +126,7 @@ export class TestUtils extends SpyObject {
    * @return {string} UTC date string
    */
   getDateString(day: number, minute: number): string {
-    const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
+    const momentDate = `${dayjs().utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
     return momentDate;
   }
 
