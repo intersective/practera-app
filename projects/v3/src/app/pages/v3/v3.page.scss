@@ -1,19 +1,14 @@
-ion-menu.collapsed {
-  &.menu-pane-visible {
-    --max-width: 72px;
-    --min-width: 72px;
-  }
-
+ion-menu {
   .badge-wrapper {
     height: 34px;
     width: 34px;
-    margin: 0px 5px 0px 5px;
     --padding-top: 1px;
     --padding-end: 1px;
     --padding-bottom: 1px;
     --padding-start: 1px;
     display: flex;
     position: relative;
+    margin-right: 10px;
 
     .indicator {
       position: absolute;
@@ -21,11 +16,12 @@ ion-menu.collapsed {
       height: 24px;
       width: 24px;
     }
+
     .hint {
       background-color: red;
       position: absolute;
       right: -1.5px;
-      top:10px;
+      top: 10px;
       border-radius: 100%;
       /* overflow: visible; */
       font-size: 0.7em;
@@ -36,32 +32,49 @@ ion-menu.collapsed {
         height: 36px;
       }
     }
-  }
 
-  .menu-item {
-    --padding-start: 15px;
-
-    &.selected {
-      --padding-start: 12px;
-    }
-
-    & > ion-icon {
-      margin: 5px;
-    }
-
-    & > ion-label {
-      display: none;
-    }
-
-    .item-inner {
-      display: none;
+    &.icon-container.expanded {
+      display: block;
     }
   }
 
-  .institute-logo-container {
-    padding: 2em 0.3em;
-    &.hidden {
-      visibility: hidden;
+  &.collapsed {
+    &.menu-pane-visible {
+      --max-width: 72px;
+      --min-width: 72px;
+    }
+
+    .badge-wrapper {
+      margin: 0px 5px 0px 5px;
+    }
+
+    .menu-item {
+      --padding-start: 15px;
+
+      &.selected {
+        --padding-start: 12px;
+      }
+
+      & > ion-icon {
+        margin: 5px;
+      }
+
+      & > ion-label {
+        display: none;
+      }
+
+      .item-inner {
+        display: none;
+      }
+
+      overflow: visible;
+    }
+
+    .institute-logo-container {
+      padding: 2em 0.3em;
+      &.hidden {
+        visibility: hidden;
+      }
     }
   }
 }
