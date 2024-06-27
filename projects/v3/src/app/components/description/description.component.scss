@@ -36,6 +36,13 @@
   display: flex;
   flex-direction: column;
 
+  div {
+    img {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  }
+
   figure {
     margin: auto;
     width: 100% !important;
