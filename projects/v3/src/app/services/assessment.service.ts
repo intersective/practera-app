@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable as RxObsservable, BehaviorSubject, of, Subscription } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { map, shareReplay, catchError } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -475,12 +475,14 @@ export class AssessmentService {
         }
       }`,
       variables
-    ).pipe(map(res => {
-      if (!this.isValidData('saveQuestionAnswer', res)) {
-        throw new Error('Autosave: Invalid API data');
-      }
-      return res;
-    }));
+    ).pipe(
+      map(res => {
+        if (!this.isValidData('saveQuestionAnswer', res)) {
+          throw new Error('Autosave: Invalid API data');
+        }
+        return res;
+      })
+    );
   }
 
   /**
@@ -564,12 +566,28 @@ export class AssessmentService {
         submitAssessment(${params})
       }`,
       variables
-    ).pipe(map(res => {
-      if (!this.isValidData('submitAssessment', res)) {
-        throw new Error('Submission: Invalid API data');
-      }
-      return res;
-    }));
+    ).pipe(
+      map(res => {
+        if (!this.isValidData('submitAssessment', res)) {
+          throw new Error('Submission: Invalid API data');
+        }
+        return res;
+      }),
+      catchError(error => {
+        if (error.status === 429) {
+          // If the error is a 429, return a successful Observable
+          return of({
+            data: {
+              submitAssessment: {
+                success: true,
+                message: 'Rate limit exceeded, treated as success'
+              },
+            },
+          });
+        }
+        throw error;
+      })
+    );
   }
 
   /**
