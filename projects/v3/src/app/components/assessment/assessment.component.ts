@@ -166,7 +166,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       }),
     ).subscribe({
       next: (data: {
-        autoSave: boolean;
+        autoSave: boolean; // true: this request is for autosave; false: request is for submission (manual submission);
         goBack: boolean;
         questionSave?: {
           submissionId: number;
