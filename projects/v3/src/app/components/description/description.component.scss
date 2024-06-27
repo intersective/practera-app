@@ -32,6 +32,18 @@
     animation-name: expand;
     animation-duration: 0.5s;
   }
+
+  display: flex;
+  flex-direction: column;
+
+  figure {
+    margin: auto;
+    width: 100% !important;
+    img {
+      width: 100% !important;
+      height: auto !important;
+    }
+  }
 }
 
 .full-height-popup {
