@@ -578,4 +578,48 @@ describe('AssessmentService', () => {
     });
   });
 
+  describe('_normaliseAnswer', () => {
+    beforeEach(() => {
+      service.questions = {
+        1: { type: 'oneof', choices: [] },
+        2: { type: 'multiple', choices: [] },
+        3: { type: 'multi team member selector', choices: [] }
+      };
+    });
+
+    it('should convert string to number for oneof question type', () => {
+      const result = service['_normaliseAnswer'](1, '123');
+      expect(result).toEqual(123);
+    });
+
+    it('should convert empty string to null for oneof question type', () => {
+      const result = service['_normaliseAnswer'](1, '');
+      expect(result).toBeNull();
+    });
+
+    it('should convert string to array for multiple question type', () => {
+      const result = service['_normaliseAnswer'](2, '[1,2,3]');
+      expect(result).toEqual([1, 2, 3]);
+    });
+
+    it('should handle non-array string by wrapping it in an array for multiple question type', () => {
+      const result = service['_normaliseAnswer'](2, 'not an array');
+      expect(result).toEqual(['not an array']);
+    });
+
+    it('should parse string to array for multi team member selector question type', () => {
+      const result = service['_normaliseAnswer'](3, '[1,2,3]');
+      expect(result).toEqual([1, 2, 3]);
+    });
+
+    it('should return the answer as is for invalid question type', () => {
+      const result = service['_normaliseAnswer'](999, 'test');
+      expect(result).toEqual('test');
+    });
+
+    it('should return the answer as is if question not found', () => {
+      const result = service['_normaliseAnswer'](4, 'test'); // Assuming questionId 4 does not exist
+      expect(result).toEqual('test');
+    });
+  });
 });
