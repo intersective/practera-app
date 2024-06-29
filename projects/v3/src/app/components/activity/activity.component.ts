@@ -48,9 +48,11 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
   resetTaskIndicator(unlockedTasks) {
     this.newTasks = {};
-    unlockedTasks.forEach((task) => {
-      this.newTasks[task.taskId] = true;
-    });
+    unlockedTasks
+      .filter((task) => task.taskId)
+      .forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
   }
 
   ngOnInit() {
@@ -105,6 +107,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
           });
 
         const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+        this.resetTaskIndicator(unlockedTasks);
         if (unlockedTasks.length === 0) {
           const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
           clearedActivities.forEach((activity) => {
