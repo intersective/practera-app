@@ -1,3 +1,4 @@
+import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -45,7 +46,8 @@ export class ActivityDesktopPage {
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private utils: UtilsService,
-    @Inject(DOCUMENT) private readonly document: Document
+    private unlockIndicatorService: UnlockIndicatorService,
+    @Inject(DOCUMENT) private readonly document: Document,
   ) { }
 
   ionViewWillEnter() {
@@ -116,6 +118,29 @@ export class ActivityDesktopPage {
         }
       });
     }));
+
+    // refresh when review is available (AI review, peer review, etc.)
+    this.subscriptions.push(
+      this.utils.getEvent('notification').subscribe(event => {
+        const review = event?.meta?.AssessmentReview;
+        if (event.type === 'assessment_review_published' && review?.assessment_id) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+          }
+        }
+      })
+    );
+
+    // check new unlock indicator to refresh
+    this.subscriptions.push(
+      this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+        if (this.activity) {
+          if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
+            this.activityService.getActivity(this.activity.id);
+          }
+        }
+      })
+    );
   }
 
   ionViewWillLeave() {
