@@ -74,7 +74,7 @@ export class UnlockIndicatorService {
   /**
    * Clear all tasks related to a particular activity
    *
-   * @param   {number[]}        id  [id description]
+   * @param   {number[]}        id  can either be activityId or milestoneId
    *
    * @return  {UnlockedTask[]}      unlocked tasks that were cleared
    */
