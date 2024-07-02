@@ -1,6 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
+import {
+  Achievement,
+  AchievementService,
+} from '@v3/app/services/achievement.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -35,7 +38,7 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
   hasUnlockedTasks: Object = {};
-  unlockedMilestones: {[key: number]: boolean} = {};
+  unlockedMilestones: { [key: number]: boolean } = {};
 
   // default card image (gracefully show broken url)
   defaultLeadImage: string = '';
@@ -59,36 +62,40 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
     this.subscriptions = [];
-    this.subscriptions.push(this.homeService.milestones$.pipe(
-      distinctUntilChanged(),
-      filter(milestones => milestones !== null),
-    ).subscribe(
-      res => {
-        this.milestones = res;
-      }
-    ));
-    this.subscriptions.push(this.achievementService.achievements$.subscribe(
-      res => {
+    this.subscriptions.push(
+      this.homeService.milestones$
+        .pipe(
+          distinctUntilChanged(),
+          filter((milestones) => milestones !== null)
+        )
+        .subscribe((res) => {
+          this.milestones = res;
+        })
+    );
+    this.subscriptions.push(
+      this.achievementService.achievements$.subscribe((res) => {
         this.achievements = res;
-      }
-    ));
-    this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
-      res => {
+      })
+    );
+    this.subscriptions.push(
+      this.homeService.experienceProgress$.subscribe((res) => {
         this.experienceProgress = res;
-      }
-    ));
-    this.subscriptions.push(this.homeService.projectProgress$.pipe(
-      filter(progress => progress !== null),
-    ).subscribe(
-      progress => {
-        progress?.milestones?.forEach(m => {
-          m.activities?.forEach(a => this.activityProgresses[a.id] = a.progress);
-        });
-      }
-    ));
+      })
+    );
+    this.subscriptions.push(
+      this.homeService.projectProgress$
+        .pipe(filter((progress) => progress !== null))
+        .subscribe((progress) => {
+          progress?.milestones?.forEach((m) => {
+            m.activities?.forEach(
+              (a) => (this.activityProgresses[a.id] = a.progress)
+            );
+          });
+        })
+    );
 
     this.subscriptions.push(
-      this.router.events.subscribe(event => {
+      this.router.events.subscribe((event) => {
         if (event instanceof NavigationEnd) {
           this.updateDashboard();
         }
@@ -100,19 +107,25 @@ export class HomePage implements OnInit, OnDestroy {
     ).subscribe(unlockedTasks => {
       this.hasUnlockedTasks = {}; // reset
       this.unlockedMilestones = {}; // reset
-      unlockedTasks.forEach(task => {
+      unlockedTasks.forEach((task) => {
         if (task.milestoneId) {
-          this.unlockedMilestones[task.milestoneId] = true;
+          if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
+            this.verifyUnlockedMilestoneValidity(task.milestoneId);
+          } else {
+            this.unlockedMilestones[task.milestoneId] = true;
+          }
         }
 
-        this.hasUnlockedTasks[task.activityId] = true;
+        if (task.activityId) {
+          this.hasUnlockedTasks[task.activityId] = true;
+        }
       });
       this.homeService.getMilestones();
     });
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach((s) => s.unsubscribe());
   }
 
   async updateDashboard() {
@@ -178,31 +191,26 @@ export class HomePage implements OnInit, OnDestroy {
    * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
    * @returns A Promise that resolves when the navigation is complete.
    */
-  async gotoActivity({activity, milestone}, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+  async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
+    if (
+      keyboardEvent &&
+      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+    ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
 
     if (activity.isLocked) {
-      return ;
+      return;
     }
 
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
 
-    // check & update unlocked milestones
     if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
-      const unlockedMilestones = this.unlockIndicatorService.clearActivity(milestone.id);
-      unlockedMilestones.forEach(unlockedMilestone => {
-        this.notification.markTodoItemAsDone(unlockedMilestone).pipe(first()).subscribe(() => {
-          // eslint-disable-next-line no-console
-          console.log('Marked milestone as done', unlockedMilestone);
-        });
-      });
+      this.verifyUnlockedMilestoneValidity(milestone.id);
     }
-
 
     if (!this.isMobile) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
@@ -211,8 +219,26 @@ export class HomePage implements OnInit, OnDestroy {
     return this.router.navigate(['v3', 'activity-mobile', activity.id]);
   }
 
+  verifyUnlockedMilestoneValidity(milestoneId: number): void {
+    // check & update unlocked milestones
+    const unlockedMilestones =
+      this.unlockIndicatorService.clearActivity(milestoneId);
+    unlockedMilestones.forEach((unlockedMilestone) => {
+      this.notification
+        .markTodoItemAsDone(unlockedMilestone)
+        .pipe(first())
+        .subscribe(() => {
+          // eslint-disable-next-line no-console
+          console.log('Marked milestone as done', unlockedMilestone);
+        });
+    });
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+    if (
+      keyboardEvent &&
+      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+    ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
