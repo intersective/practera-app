@@ -186,16 +186,17 @@ export class AssessmentService {
           }
         }
       }`,
-      {
-        variables: {
-          assessmentId: id,
-          reviewer: action === 'review',
-          activityId: +activityId,
-          submissionId: +submissionId || null,
-          contextId: +contextId,
+        {
+          variables: {
+            assessmentId: id,
+            reviewer: action === 'review',
+            activityId: +activityId,
+            submissionId: +submissionId || null,
+            contextId: +contextId,
+          },
         },
-      },
-    ).pipe(map((res) => this._handleAssessmentResponse(res, action)));
+      )
+      .pipe(map((res) => this._handleAssessmentResponse(res, action)));
   }
 
   /**
