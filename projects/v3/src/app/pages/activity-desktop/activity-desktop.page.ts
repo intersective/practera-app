@@ -206,6 +206,7 @@ export class ActivityDesktopPage {
     this.savingText$.next('Saving...');
     try {
       // handle unexpected submission: do final status check before saving
+      let hasSubmssion = false;
       const { submission } = await this.assessmentService
         .fetchAssessment(
           event.assessmentId,
@@ -237,6 +238,8 @@ export class ActivityDesktopPage {
         if (this.assessment.pulseCheck === true && event.autoSave === false) {
           await this.assessmentService.pullFastFeedback();
         }
+      } else {
+        hasSubmssion = true;
       }
 
       this.savingText$.next(
@@ -244,8 +247,16 @@ export class ActivityDesktopPage {
       );
 
       if (!event.autoSave) {
-        this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and navigate to the next task
+        if (hasSubmssion === true) {
+          this.notificationsService.presentToast($localize`Duplicate submission detected. Your submission is already in our system.`, {
+            color: 'success',
+            icon: 'checkmark-circle'
+          });
+        } else {
+          this.notificationsService.assessmentSubmittedToast();
+        }
+
+        // get the latest activity tasks
         this.activityService.getActivity(this.activity.id, false, task, () => {
           this.loading = false;
           this.btnDisabled$.next(false);
