@@ -141,6 +141,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+
   }
 
   ngOnInit(): void {
