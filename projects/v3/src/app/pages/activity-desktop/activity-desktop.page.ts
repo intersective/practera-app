@@ -205,23 +205,44 @@ export class ActivityDesktopPage {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      const saved = await this.assessmentService.submitAssessment(
-        event.submissionId,
-        event.assessmentId,
-        event.contextId,
-        event.answers
-      ).toPromise();
+      // handle unexpected submission: do final status check before saving
+      const { submission } = await this.assessmentService
+        .fetchAssessment(
+          event.assessmentId,
+          "assessment",
+          this.activity.id,
+          event.contextId,
+          event.submissionId
+        )
+        .toPromise();
 
-      // http 200 but error
-      if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
-        throw new Error("Error submitting assessment");
+      if (submission?.status === 'in progress') {
+        const saved = await this.assessmentService
+          .submitAssessment(
+            event.submissionId,
+            event.assessmentId,
+            event.contextId,
+            event.answers
+          )
+          .toPromise();
+
+        // http 200 but error
+        if (
+          saved?.data?.submitAssessment?.success !== true ||
+          this.utils.isEmpty(saved)
+        ) {
+          throw new Error("Error submitting assessment");
+        }
+
+        if (this.assessment.pulseCheck === true && event.autoSave === false) {
+          await this.assessmentService.pullFastFeedback();
+        }
       }
 
-      if (this.assessment.pulseCheck === true && event.autoSave === false) {
-        await this.assessmentService.pullFastFeedback();
-      }
+      this.savingText$.next(
+        $localize`Last saved ${this.utils.getFormatedCurrentTime()}`
+      );
 
-      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         this.notificationsService.assessmentSubmittedToast();
         // get the latest activity tasks and navigate to the next task
@@ -229,7 +250,13 @@ export class ActivityDesktopPage {
           this.loading = false;
           this.btnDisabled$.next(false);
         });
-        return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
+        return this.assessmentService.getAssessment(
+          event.assessmentId,
+          'assessment',
+          this.activity.id,
+          event.contextId,
+          event.submissionId
+        );
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);
