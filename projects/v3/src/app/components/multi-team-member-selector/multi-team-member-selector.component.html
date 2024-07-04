@@ -11,7 +11,7 @@
       </ion-item>
     </ng-container>
   </ion-list>
-  
+
   <ng-container *ngIf="review?.comment">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
@@ -57,13 +57,13 @@
       [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
       <ion-label class="white-space-normal body-2 black">
         {{ teamMember.userName }}
-        <p *ngIf="submission.answer.includes(teamMember.key)">
+        <p *ngIf="submission?.answer?.includes(teamMember.key)">
           <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
         </p>
       </ion-label>
       <ion-checkbox color="success"
         [attr.aria-label]="teamMember.userName"
-        [checked]="review.answer ? review.answer.includes(teamMember.key) : false"
+        [checked]="review?.answer?.includes(teamMember.key)"
         [value]="teamMember.key"
         slot="start"
         (ionChange)="onChange(teamMember.key, 'answer')"

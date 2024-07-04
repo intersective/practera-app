@@ -49,15 +49,16 @@ export class AssessmentMobilePage implements OnInit {
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
+      const assessmentId = +params.id;
       this.action = this.route.snapshot.data.action;
       this.fromPage = this.route.snapshot.data.from;
       if (!this.fromPage) {
         this.fromPage = this.route.snapshot.paramMap.get('from');
       }
-      this.activityId = +params.activityId || 0;
+      this.activityId = +params.activityId || 0; // during review session, activityId is not required, set to 0
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
-      this.assessmentService.getAssessment(+params.id, this.action, this.activityId, this.contextId, this.submissionId);
+      this.assessmentService.getAssessment(assessmentId, this.action, this.activityId, this.contextId, this.submissionId);
     });
   }
 
@@ -131,8 +132,12 @@ export class AssessmentMobilePage implements OnInit {
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and refresh the assessment submission data
-        this.activityService.getActivity(this.activityId);
+
+        if (this.action === 'assessment') {
+          // get the latest activity tasks and refresh the assessment submission data
+          this.activityService.getActivity(this.activityId);
+        }
+
         this.btnDisabled$.next(false);
         this.saving = false;
         return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
