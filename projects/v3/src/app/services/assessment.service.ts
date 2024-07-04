@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable as RxObsservable, BehaviorSubject, of, Subscription } from 'rxjs';
+import { Observable as RxObsservable, BehaviorSubject, of, Subscription, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -109,7 +109,6 @@ export interface AssessmentReview {
 @Injectable({
   providedIn: 'root'
 })
-
 export class AssessmentService {
   private _assessment$ = new BehaviorSubject<Assessment>(null);
   assessment$ = this._assessment$.pipe(shareReplay(1));
@@ -131,33 +130,27 @@ export class AssessmentService {
     private demo: DemoService,
     private request: RequestService,
   ) {
-    this.assessment$.subscribe(res => this.assessment = res);
+    this.assessment$.subscribe((res) => (this.assessment = res));
   }
 
   clearAssessment() {
     this._assessment$.next(null);
   }
 
-  /**
-   * shared among reviewing & assessment answering page
-   *
-   * @param   {number}  id            assessment id
-   * @param   {string}  action        review/assessment (reviewing or answering)
-   * @param   {number}  activityId    activity id
-   * @param   {number}  contextId     context id (activity & task related)
-   * @param   {number}  submissionId  optional submission id
-   *
-   * @return  {Subscription}          no need to unsubscribe, handled by apollo
-   */
-  getAssessment(id, action, activityId, contextId, submissionId?): Subscription {
-    if (!this.assessment || this.assessment.id !== id) {
-      this.clearAssessment();
-    }
-    if (environment.demo) {
-      return this.demo.assessment(id).pipe(map(res => this._handleAssessmentResponse(res, action))).subscribe();
-    }
-    return this.apolloService.graphQLWatch(
-      `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
+  fetchAssessment(
+    id: number,
+    action: string,
+    activityId: number,
+    contextId: number,
+    submissionId?: number
+  ): Observable<{
+    assessment: Assessment;
+    submission: Submission;
+    review: AssessmentReview;
+  }> {
+    return this.apolloService
+      .graphQLFetch(
+        `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int!, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
           id name type description dueDate isTeam pulseCheck allowResubmit
           groups{
@@ -193,35 +186,78 @@ export class AssessmentService {
           }
         }
       }`,
-      {
-        assessmentId: +id,
-        reviewer: action === 'review',
-        activityId: +activityId,
-        submissionId: +submissionId || null,
-        contextId: +contextId
-      },
-      {
-        noCache: true
-      }
-    ).pipe(
-      map(res => this._handleAssessmentResponse(res, action))
+        {
+          variables: {
+            assessmentId: id,
+            reviewer: action === 'review',
+            activityId: +activityId,
+            submissionId: +submissionId || null,
+            contextId: +contextId,
+          },
+        },
+      )
+      .pipe(map((res) => this._handleAssessmentResponse(res, action)));
+  }
+
+  /**
+   * shared among reviewing & assessment answering page
+   *
+   * @param   {number}  id            assessment id
+   * @param   {string}  action        review/assessment (reviewing or answering)
+   * @param   {number}  activityId    activity id
+   * @param   {number}  contextId     context id (activity & task related)
+   * @param   {number}  submissionId  optional submission id
+   *
+   * @return  {Subscription}          no need to unsubscribe, handled by apollo
+   */
+  getAssessment(
+    id,
+    action,
+    activityId,
+    contextId,
+    submissionId?
+  ): Subscription {
+    if (!this.assessment || this.assessment.id !== id) {
+      this.clearAssessment();
+    }
+    if (environment.demo) {
+      return this.demo
+        .assessment(id)
+        .pipe(map((res) => this._handleAssessmentResponse(res, action)))
+        .subscribe();
+    }
+    return this.fetchAssessment(
+      id,
+      action,
+      activityId,
+      contextId,
+      submissionId
     ).subscribe();
   }
 
-  private _handleAssessmentResponse(res, action) {
+  private _handleAssessmentResponse(
+    res,
+    action
+  ): {
+    assessment: Assessment;
+    submission: Submission;
+    review: AssessmentReview;
+  } {
     if (!res) {
       return null;
     }
+
     const assessment = this._normaliseAssessment(res.data, action);
     const submission = this._normaliseSubmission(res.data);
     const review = this._normaliseReview(res.data, action);
     this._assessment$.next(assessment);
     this._submission$.next(submission);
     this._review$.next(review);
+
     return {
       assessment,
       submission,
-      review
+      review,
     };
   }
 
@@ -236,17 +272,19 @@ export class AssessmentService {
       description: data.assessment.description,
       isForTeam: data.assessment.isTeam,
       dueDate: data.assessment.dueDate,
-      isOverdue: data.assessment.dueDate ? this.utils.timeComparer(data.assessment.dueDate) < 0 : false,
+      isOverdue: data.assessment.dueDate
+        ? this.utils.timeComparer(data.assessment.dueDate) < 0
+        : false,
       pulseCheck: data.assessment.pulseCheck,
       allowResubmit: data.assessment.allowResubmit,
-      groups: []
+      groups: [],
     };
-    data.assessment.groups.forEach(eachGroup => {
+    data.assessment.groups.forEach((eachGroup) => {
       const questions: Question[] = [];
       if (!eachGroup.questions) {
         return;
       }
-      eachGroup.questions.forEach(eachQuestion => {
+      eachGroup.questions.forEach((eachQuestion) => {
         this.questions[eachQuestion.id] = eachQuestion;
         const question: Question = {
           id: eachQuestion.id,
@@ -255,10 +293,17 @@ export class AssessmentService {
           description: eachQuestion.description,
           isRequired: eachQuestion.isRequired,
           canComment: eachQuestion.hasComment,
-          canAnswer: action === 'review' ? eachQuestion.audience.includes('reviewer') : eachQuestion.audience.includes('submitter'),
+          canAnswer:
+            action === 'review'
+              ? eachQuestion.audience.includes('reviewer')
+              : eachQuestion.audience.includes('submitter'),
           audience: eachQuestion.audience,
-          submitterOnly: eachQuestion.audience.length === 1 && eachQuestion.audience.includes('submitter'),
-          reviewerOnly: eachQuestion.audience.length === 1 && eachQuestion.audience.includes('reviewer')
+          submitterOnly:
+            eachQuestion.audience.length === 1 &&
+            eachQuestion.audience.includes('submitter'),
+          reviewerOnly:
+            eachQuestion.audience.length === 1 &&
+            eachQuestion.audience.includes('reviewer'),
         };
         switch (eachQuestion.type) {
           case 'oneof':
@@ -269,7 +314,11 @@ export class AssessmentService {
               choices.push({
                 id: eachChoice.id,
                 name: eachChoice.name,
-                explanation: eachChoice.explanation ? this.sanitizer.bypassSecurityTrustHtml(eachChoice.explanation) : null,
+                explanation: eachChoice.explanation
+                  ? this.sanitizer.bypassSecurityTrustHtml(
+                      eachChoice.explanation
+                    )
+                  : null,
               });
               if (eachChoice.description) {
                 info += '<p>' + eachChoice.name + ' - ' + eachChoice.description + '</p>';
@@ -290,10 +339,10 @@ export class AssessmentService {
           case 'team member selector':
           case 'multi team member selector':
             question.teamMembers = [];
-            eachQuestion.teamMembers.forEach(eachTeamMember => {
+            eachQuestion.teamMembers.forEach((eachTeamMember) => {
               question.teamMembers.push({
                 key: JSON.stringify(eachTeamMember),
-                userName: eachTeamMember.userName
+                userName: eachTeamMember.userName,
               });
             });
             break;
@@ -304,7 +353,7 @@ export class AssessmentService {
         assessment.groups.push({
           name: eachGroup.name,
           description: eachGroup.description,
-          questions: questions
+          questions: questions,
         });
       }
     });
@@ -312,9 +361,13 @@ export class AssessmentService {
   }
 
   private _normaliseSubmission(data): Submission {
-    if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
+    if (
+      !this.utils.has(data, "assessment.submissions") ||
+      data.assessment.submissions.length < 1
+    ) {
       return null;
     }
+
     const firstSubmission = data.assessment.submissions[0];
     let submission: Submission = {
       id: firstSubmission.id,
@@ -324,18 +377,25 @@ export class AssessmentService {
       modified: firstSubmission.modified,
       isLocked: firstSubmission.locked,
       completed: firstSubmission.completed,
-      reviewerName: firstSubmission.review ? this.checkReviewer(firstSubmission.review.reviewer) : null,
-      answers: {}
+      reviewerName: firstSubmission.review
+        ? this.checkReviewer(firstSubmission.review.reviewer)
+        : null,
+      answers: {},
     };
-    firstSubmission.answers.forEach(eachAnswer => {
-      eachAnswer.answer = this._normaliseAnswer(eachAnswer.questionId, eachAnswer.answer);
+
+    firstSubmission.answers.forEach((eachAnswer) => {
+      eachAnswer.answer = this._normaliseAnswer(
+        eachAnswer.questionId,
+        eachAnswer.answer
+      );
       submission.answers[eachAnswer.questionId] = {
-        answer: eachAnswer.answer
+        answer: eachAnswer.answer,
       };
       if (['published', 'done'].includes(submission.status)) {
         submission = this._addChoiceExplanation(eachAnswer, submission);
       }
     });
+
     return submission;
   }
 
@@ -351,7 +411,10 @@ export class AssessmentService {
   }
 
   private _normaliseReview(data, action: string): AssessmentReview {
-    if (!this.utils.has(data, 'assessment.submissions') || data.assessment.submissions.length < 1) {
+    if (
+      !this.utils.has(data, 'assessment.submissions') ||
+      data.assessment.submissions.length < 1
+    ) {
       return null;
     }
     const firstSubmission = data.assessment.submissions[0];
@@ -364,7 +427,7 @@ export class AssessmentService {
       status: firstSubmissionReview.status,
       modified: firstSubmissionReview.modified,
       teamName: firstSubmission.submitter.team?.name,
-      answers: {}
+      answers: {},
     };
 
     // only get the review answer if the review is published, or it is for the reviewer to see the review
@@ -373,11 +436,14 @@ export class AssessmentService {
       return review;
     }
 
-    firstSubmissionReview.answers.forEach(eachAnswer => {
-      eachAnswer.answer = this._normaliseAnswer(eachAnswer.questionId, eachAnswer.answer);
+    firstSubmissionReview.answers.forEach((eachAnswer) => {
+      eachAnswer.answer = this._normaliseAnswer(
+        eachAnswer.questionId,
+        eachAnswer.answer
+      );
       review.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
-        comment: eachAnswer.comment
+        comment: eachAnswer.comment,
       };
     });
     return review;
@@ -386,7 +452,10 @@ export class AssessmentService {
   /**
    * For each question that has choice (oneof & multiple), show the choice explanation in the submission if it is not empty
    */
-  private _addChoiceExplanation(submissionAnswer, submission: Submission): Submission {
+  private _addChoiceExplanation(
+    submissionAnswer,
+    submission: Submission
+  ): Submission {
     const questionId = submissionAnswer.questionId;
     const answer = submissionAnswer.answer;
     // don't do anything if there's no choices
@@ -396,7 +465,7 @@ export class AssessmentService {
     let explanation = '';
     if (Array.isArray(answer)) {
       // multiple question
-      this.questions[questionId].choices.forEach(choice => {
+      this.questions[questionId].choices.forEach((choice) => {
         // only display the explanation if it is not empty
         if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
           explanation += choice.name + ' - ' + choice.explanation + '\n';
@@ -404,7 +473,7 @@ export class AssessmentService {
       });
     } else {
       // oneof question
-      this.questions[questionId].choices.forEach(choice => {
+      this.questions[questionId].choices.forEach((choice) => {
         // only display the explanation if it is not empty
         if (answer === choice.id && !this.utils.isEmpty(choice.explanation)) {
           explanation = choice.explanation;
@@ -415,8 +484,12 @@ export class AssessmentService {
       return submission;
     }
     // put the explanation in the submission
-    const thisExplanation = explanation.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
-    submission.answers[questionId].explanation = this.sanitizer.bypassSecurityTrustHtml(thisExplanation);
+    const thisExplanation = explanation.replace(
+      /text-align: center;/gi,
+      "text-align: center; text-align: -webkit-center;"
+    );
+    submission.answers[questionId].explanation =
+      this.sanitizer.bypassSecurityTrustHtml(thisExplanation);
 
     return submission;
   }
@@ -442,7 +515,7 @@ export class AssessmentService {
             answer = JSON.parse(answer);
           }
           // re-format answer from string to number
-          answer = answer.map(value => {
+          answer = answer.map((value) => {
             return +value;
           });
           break;
@@ -470,8 +543,9 @@ export class AssessmentService {
       questionId,
       answer,
     };
-    return this.apolloService.continuousGraphQLMutate(
-      `mutation saveSubmissionAnswer(${paramsFormat}) {
+    return this.apolloService
+      .continuousGraphQLMutate(
+        `mutation saveSubmissionAnswer(${paramsFormat}) {
         saveSubmissionAnswer(${params}) {
           success
           message
@@ -536,8 +610,9 @@ export class AssessmentService {
       answer,
       comment,
     };
-    return this.apolloService.continuousGraphQLMutate(
-      `mutation saveReviewAnswer(${paramsFormat}) {
+    return this.apolloService
+      .continuousGraphQLMutate(
+        `mutation saveReviewAnswer(${paramsFormat}) {
         saveReviewAnswer(${params}) {
           success
           message
@@ -553,26 +628,37 @@ export class AssessmentService {
   }
 
   // set the status of the submission to 'done' or 'pending approval'
-  submitAssessment(submissionId: number, assessmentId: number, contextId: number, answers: Answer[]) {
-    const paramsFormat = '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]';
-    const params = 'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers';
+  submitAssessment(
+    submissionId: number,
+    assessmentId: number,
+    contextId: number,
+    answers: Answer[]
+  ) {
+    const paramsFormat =
+      '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]';
+    const params =
+      'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers';
     const variables = {
       submissionId,
       assessmentId,
       contextId,
       answers,
     };
-    return this.apolloService.graphQLMutate(
-      `mutation submitAssessment(${paramsFormat}) {
+    return this.apolloService
+      .graphQLMutate(
+        `mutation submitAssessment(${paramsFormat}) {
         submitAssessment(${params})
       }`,
-      variables
-    ).pipe(map(res => {
-      if (!this.isValidData('submitAssessment', res)) {
-        throw new Error('Submission: Invalid API data');
-      }
-      return res;
-    }));
+        variables
+      )
+      .pipe(
+        map((res) => {
+          if (!this.isValidData('submitAssessment', res)) {
+            throw new Error('Submission: Invalid API data');
+          }
+          return res;
+        })
+      );
   }
 
   /**
@@ -581,30 +667,46 @@ export class AssessmentService {
    * @param reviewId - review id
    * @param submissionId - submission id
    * @returns
-    */
-  submitReview(assessmentId: number, reviewId: number, submissionId: number, answers: Answer[]) {
-    const paramsFormat = '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
-    const params = 'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
+   */
+  submitReview(
+    assessmentId: number,
+    reviewId: number,
+    submissionId: number,
+    answers: Answer[]
+  ) {
+    const paramsFormat =
+      '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
+    const params =
+      'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
     const variables = {
       assessmentId,
       reviewId,
       submissionId,
       answers,
     };
-    return this.apolloService.graphQLMutate(
-      `mutation submitReview(${paramsFormat}) {
+    return this.apolloService
+      .graphQLMutate(
+        `mutation submitReview(${paramsFormat}) {
         submitReview(${params})
       }`,
-      variables
-    ).pipe(map(res => {
-      if (!this.isValidData('submitReview', res)) {
-        throw new Error('Submission: Invalid API data');
-      }
-      return res;
-    }));
+        variables
+      )
+      .pipe(
+        map((res) => {
+          if (!this.isValidData('submitReview', res)) {
+            throw new Error('Submission: Invalid API data');
+          }
+          return res;
+        })
+      );
   }
 
-  saveAnswers(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
+  saveAnswers(
+    assessment: AssessmentSubmitParams,
+    answers: Answer[],
+    action: string,
+    hasPulseCheck: boolean
+  ) {
     if (!['assessment', 'review'].includes(action)) {
       return of(false);
     }
@@ -613,37 +715,53 @@ export class AssessmentService {
       this._afterSubmit(assessment, answers, action, hasPulseCheck);
       return this.demo.normalResponse();
     }
-    let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${(action === 'assessment' ? 'AssessmentSubmissionAnswerInput' : 'AssessmentReviewAnswerInput')}]`;
-    let params = 'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
+    let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${
+      action === 'assessment'
+        ? 'AssessmentSubmissionAnswerInput'
+        : 'AssessmentReviewAnswerInput'
+    }]`;
+    let params =
+      'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
     const variables = {
       assessmentId: assessment.id,
       inProgress: assessment.inProgress,
-      answers: answers
+      answers: answers,
     };
     [
       { key: 'submissionId', type: 'Int' },
       { key: 'contextId', type: 'Int!' },
       { key: 'reviewId', type: 'Int' },
-      { key: 'unlock', type: 'Boolean' }
-    ].forEach(item => {
+      { key: 'unlock', type: 'Boolean' },
+    ].forEach((item) => {
       if (assessment[item.key]) {
         paramsFormat += `, $${item.key}: ${item.type}`;
         params += `,${item.key}: $${item.key}`;
         variables[item.key] = assessment[item.key];
       }
     });
-    return this.apolloService.graphQLMutate(
-      `mutation saveAnswers(${paramsFormat}){
-        ` + (action === 'assessment' ? `submitAssessment` : `submitReview`) + `(${params})
+    return this.apolloService
+      .graphQLMutate(
+        `mutation saveAnswers(${paramsFormat}){
+        ` +
+          (action === 'assessment' ? `submitAssessment` : `submitReview`) +
+          `(${params})
       }`,
-      variables
-    ).pipe(map(res => {
-      this._afterSubmit(assessment, answers, action, hasPulseCheck);
-      return res;
-    }));
+        variables
+      )
+      .pipe(
+        map((res) => {
+          this._afterSubmit(assessment, answers, action, hasPulseCheck);
+          return res;
+        })
+      );
   }
 
-  private _afterSubmit(assessment: AssessmentSubmitParams, answers: Answer[], action: string, hasPulseCheck: boolean) {
+  private _afterSubmit(
+    assessment: AssessmentSubmitParams,
+    answers: Answer[],
+    action: string,
+    hasPulseCheck: boolean
+  ) {
     if (hasPulseCheck && !assessment.inProgress) {
       this.pullFastFeedback();
     }
@@ -655,7 +773,9 @@ export class AssessmentService {
    */
   async pullFastFeedback() {
     try {
-      const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+      const modal = await this.fastFeedbackService
+        .pullFastFeedback({ modalOnly: true })
+        .toPromise();
       if (modal && modal.present) {
         await modal.present();
         await modal.onDidDismiss();
@@ -663,7 +783,7 @@ export class AssessmentService {
     } catch (err) {
       const toasted = await this.NotificationsService.alert({
         header: $localize`Error retrieving pulse check data`,
-        message: err.msg || JSON.stringify(err)
+        message: err.msg || JSON.stringify(err),
       });
       throw new Error(err);
     }
@@ -675,7 +795,7 @@ export class AssessmentService {
       return of(true);
     }
     return this.NotificationsService.markTodoItemAsDone({
-      identifier: 'AssessmentSubmission-' + submissionId
+      identifier: 'AssessmentSubmission-' + submissionId,
     });
   }
 
@@ -686,16 +806,13 @@ export class AssessmentService {
     return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
-  resubmitAssessment({
-    assessment_id,
-    submission_id,
-  }): RxObsservable<any> {
+  resubmitAssessment({ assessment_id, submission_id }): RxObsservable<any> {
     return this.request.post({
       endPoint: api.post.resubmit,
-      data:{
+      data: {
         assessment_id,
         submission_id,
-      }
+      },
     });
   }
 }
