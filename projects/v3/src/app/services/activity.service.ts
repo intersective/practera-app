@@ -128,6 +128,7 @@ export class ActivityService {
         return;
       });
     }
+
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask)),
       first(),
