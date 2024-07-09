@@ -95,6 +95,7 @@ export class AssessmentMobilePage implements OnInit {
     this.savingText$.next('Saving...');
 
     try {
+      let hasSubmission = false;
       const { submission } = await firstValueFrom(this.assessmentService.fetchAssessment(
         event.assessmentId,
         this.action,
@@ -102,6 +103,7 @@ export class AssessmentMobilePage implements OnInit {
         event.contextId,
         event.submissionId,
       ));
+
 
       if (this.action === 'assessment' && submission.status === 'in progress') {
         const saved = await firstValueFrom(this.assessmentService.submitAssessment(
@@ -135,11 +137,18 @@ export class AssessmentMobilePage implements OnInit {
         }
 
         this.reviewService.getReviews();
+      } else {
+        hasSubmission = true;
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
-        this.notificationsService.assessmentSubmittedToast();
+        // show toast message
+        if (hasSubmission === true) {
+          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+        } else {
+          this.notificationsService.assessmentSubmittedToast();
+        }
 
         if (this.action === 'assessment') {
           // get the latest activity tasks and refresh the assessment submission data
