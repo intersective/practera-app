@@ -74,7 +74,7 @@ export class UnlockIndicatorService {
   /**
    * Clear all tasks related to a particular activity
    *
-   * @param   {number[]}        id  [id description]
+   * @param   {number[]}        id  can either be activityId or milestoneId
    *
    * @return  {UnlockedTask[]}      unlocked tasks that were cleared
    */
@@ -128,23 +128,6 @@ export class UnlockIndicatorService {
     this.storageService.set('unlockedTasks', latestTasks);
     this._unlockedTasksSubject.next(latestTasks);
     return removedTask;
-  }
-
-  dedupStored(records) {
-    const uniqueRecords = new Map();
-
-    records.forEach(record => {
-      // Determine the type of identifier and create a unique key
-      const key = `milestoneId:${record.milestoneId || 'none'}-activityId:${record.activityId || 'none'}-taskId:${record.taskId || 'none'}`;
-
-      // If the key doesn't exist in the map, add the record
-      if (!uniqueRecords.has(key)) {
-        uniqueRecords.set(key, record);
-      }
-    });
-
-    // Return an array of unique records
-    return Array.from(uniqueRecords.values());
   }
 
   // Method to transform and deduplicate the data
