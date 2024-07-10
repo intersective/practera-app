@@ -248,10 +248,7 @@ export class ActivityDesktopPage {
 
       if (!event.autoSave) {
         if (hasSubmssion === true) {
-          this.notificationsService.presentToast($localize`Duplicate submission detected. Your submission is already in our system.`, {
-            color: 'success',
-            icon: 'checkmark-circle'
-          });
+          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
         } else {
           this.notificationsService.assessmentSubmittedToast();
         }
