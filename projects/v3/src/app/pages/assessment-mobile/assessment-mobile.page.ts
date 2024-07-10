@@ -147,7 +147,7 @@ export class AssessmentMobilePage implements OnInit {
         if (hasSubmission === true) {
           this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
         } else {
-          this.notificationsService.assessmentSubmittedToast();
+          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review'});
         }
 
         if (this.action === 'assessment') {

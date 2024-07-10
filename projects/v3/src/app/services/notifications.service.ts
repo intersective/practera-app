@@ -239,6 +239,7 @@ export class NotificationsService {
   assessmentSubmittedToast(option?: {
     isDuplicated?: boolean;
     isFail?: boolean;
+    isReview?: boolean;
     label?: string;
   }): void | Promise<void> {
     if (!this.connection.isOnline) {
@@ -268,7 +269,8 @@ export class NotificationsService {
     }
 
     // success by default
-    return this.presentToast($localize`Assessment Submitted.`, {
+    const message = option?.isReview === true ? $localize`Review Submitted.` : $localize`Assessment Submitted.`;
+    return this.presentToast(message, {
       color: 'success',
       icon: 'checkmark-circle'
     });
