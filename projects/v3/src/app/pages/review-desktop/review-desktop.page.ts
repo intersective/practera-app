@@ -131,6 +131,8 @@ export class ReviewDesktopPage implements OnInit {
           this.loading = false;
           return;
         }
+
+        this.notificationsService.assessmentSubmittedToast({ isReview: true });
       } else {
         this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
       }
