@@ -233,13 +233,23 @@ export class NotificationsService {
    * @return  {Promise<void>}
    */
   assessmentSubmittedToast(option?: {
-    isFail: boolean;
+    isDuplicated?: boolean;
+    isFail?: boolean;
+    isReview?: boolean;
     label?: string;
   }): void | Promise<void> {
     if (!this.connection.isOnline) {
       return alert('You are offline, please check your internet connection and try again.');
     }
 
+    if (option?.isDuplicated === true) {
+      return this.presentToast($localize`Duplicated submission detected. Your submission is already in our system.`, {
+        color: 'success',
+        icon: 'checkmark-circle'
+      });
+    }
+
+    // fail message
     if (option?.isFail === true) {
       if (option?.label) {
         return this.presentToast(option.label, {
@@ -253,7 +263,10 @@ export class NotificationsService {
         icon: 'close-circle'
       });
     }
-    return this.presentToast($localize`Assessment Submitted.`, {
+
+    // success by default
+    const message = option?.isReview === true ? $localize`Review Submitted.` : $localize`Assessment Submitted.`;
+    return this.presentToast(message, {
       color: 'success',
       icon: 'checkmark-circle'
     });
