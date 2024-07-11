@@ -637,6 +637,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
 
+  /**
+   * Resubmit the assessment submission
+   * (mostly for regenerate AI feedback)
+   */
   resubmit(): Subscription {
     if (!this.assessment?.id || !this.submission?.id || !this.activityId) {
       return;

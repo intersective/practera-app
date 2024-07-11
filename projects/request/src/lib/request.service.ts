@@ -14,6 +14,7 @@ import { has, isEmpty, each } from 'lodash';
 interface RequestOptions {
   headers?: any;
   params?: any;
+  observe?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -126,6 +127,9 @@ export class RequestService {
     }
     if (!has(httpOptions, 'params')) {
       httpOptions.params = '';
+    }
+    if (!has(httpOptions, 'observe')) {
+      httpOptions.observe = 'body';
     }
 
     const request = this.http.get<any>(this.getEndpointUrl(endPoint), {
