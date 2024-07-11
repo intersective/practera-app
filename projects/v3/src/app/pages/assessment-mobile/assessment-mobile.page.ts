@@ -49,6 +49,7 @@ export class AssessmentMobilePage implements OnInit {
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
+      const assessmentId = +params.id;
       this.action = this.route.snapshot.data.action;
       this.fromPage = this.route.snapshot.data.from;
       if (!this.fromPage) {
@@ -57,7 +58,7 @@ export class AssessmentMobilePage implements OnInit {
       this.activityId = +params.activityId || 0;
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
-      this.assessmentService.getAssessment(+params.id, this.action, this.activityId, this.contextId, this.submissionId);
+      this.assessmentService.getAssessment(assessmentId, this.action, this.activityId, this.contextId, this.submissionId);
     });
   }
 
@@ -106,7 +107,17 @@ export class AssessmentMobilePage implements OnInit {
     this.savingText$.next('Saving...');
 
     try {
-      if (this.action === 'assessment') {
+      let hasSubmission = false;
+      const { submission } = await this.assessmentService.fetchAssessment(
+        event.assessmentId,
+        this.action,
+        this.activityId,
+        event.contextId,
+        event.submissionId,
+      ).toPromise();
+
+
+      if (this.action === 'assessment' && submission.status === 'in progress') {
         const saved = await this.assessmentService.submitAssessment(
           event.submissionId,
           event.assessmentId,
@@ -119,7 +130,7 @@ export class AssessmentMobilePage implements OnInit {
           console.error('Asmt submission error:', saved);
           throw new Error("Error submitting assessment");
         }
-      } else if (this.action === 'review') {
+      } else if (this.action === 'review' && submission.status === 'pending review') {
         const saved = await this.assessmentService.submitReview(
           event.assessmentId,
           this.review.id,
@@ -134,6 +145,8 @@ export class AssessmentMobilePage implements OnInit {
         }
 
         this.reviewService.getReviews();
+      } else {
+        hasSubmission = true;
       }
 
       // [CORE-5876] - Fastfeedback is now added for reviewer
@@ -143,9 +156,18 @@ export class AssessmentMobilePage implements OnInit {
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
-        this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and refresh the assessment submission data
-        this.activityService.getActivity(this.activityId);
+        // show toast message
+        if (hasSubmission === true) {
+          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+        } else {
+          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review'});
+        }
+
+        if (this.action === 'assessment') {
+          // get the latest activity tasks and refresh the assessment submission data
+          this.activityService.getActivity(this.activityId);
+        }
+
         this.btnDisabled$.next(false);
         this.saving = false;
         return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
