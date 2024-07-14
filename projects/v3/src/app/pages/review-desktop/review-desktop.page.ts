@@ -119,7 +119,13 @@ export class ReviewDesktopPage implements OnInit {
           await this.assessmentService.pullFastFeedback();
         }
 
-        this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
+        await this.assessmentService.fetchAssessment(
+          this.assessment.id,
+          'review',
+          0,
+          this.currentReview.contextId,
+          this.submission.id
+        ).toPromise();
         this.reviewService.getReviews();
 
         await this.notificationsService.getTodoItems().toPromise(); // update notifications list

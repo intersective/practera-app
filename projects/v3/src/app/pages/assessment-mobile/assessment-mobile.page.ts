@@ -75,17 +75,6 @@ export class AssessmentMobilePage implements OnInit {
     };
   }
 
-  async continue() {
-    if (!this.currentTask) {
-      this.currentTask = this.task;
-    }
-    if (this.currentTask.status === 'done') {
-      // just go to the next task without any other action
-      return this.activityService.goToNextTask(this.currentTask);
-    }
-    // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activityId, true, this.currentTask);
-  }
 
   goBack() {
     if (this.fromPage === 'reviews') {
@@ -115,7 +104,6 @@ export class AssessmentMobilePage implements OnInit {
         event.contextId,
         event.submissionId,
       ).toPromise();
-
 
       if (this.action === 'assessment' && submission.status === 'in progress') {
         const saved = await this.assessmentService.submitAssessment(
@@ -163,14 +151,23 @@ export class AssessmentMobilePage implements OnInit {
           this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review'});
         }
 
+        await this.assessmentService.fetchAssessment(
+          this.assessment.id,
+          this.action,
+          this.activityId,
+          this.contextId,
+          this.submissionId
+        ).toPromise();
+
         if (this.action === 'assessment') {
           // get the latest activity tasks and refresh the assessment submission data
-          this.activityService.getActivity(this.activityId);
+          this.activityService.getActivity(this.activityId, false, null, () => {
+            this.btnDisabled$.next(false);
+          });
+        } else {
+          this.btnDisabled$.next(false);
+          this.saving = false;
         }
-
-        this.btnDisabled$.next(false);
-        this.saving = false;
-        return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);
@@ -190,9 +187,10 @@ export class AssessmentMobilePage implements OnInit {
       await this.reviewRatingPopUp();
       await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
-      this.btnDisabled$.next(false);
       // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activityId, true, this.task);
+      return this.activityService.getActivity(this.activityId, true, this.task, () => {
+        this.btnDisabled$.next(false);
+      });
     } catch(err) {
       this.btnDisabled$.next(false);
       console.error(err);
@@ -200,7 +198,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   nextTask() {
-    this.activityService.goToNextTask(this.task);
+    return this.activityService.getActivity(this.activityId, true, this.task);
   }
 
   async reviewRatingPopUp(): Promise<void> {
