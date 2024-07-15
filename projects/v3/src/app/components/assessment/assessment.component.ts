@@ -141,6 +141,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+
   }
 
   ngOnInit(): void {
@@ -166,7 +167,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       }),
     ).subscribe({
       next: (data: {
-        autoSave: boolean;
+        autoSave: boolean; // true: this request is for autosave; false: request is for submission (manual submission);
         goBack: boolean;
         questionSave?: {
           submissionId: number;
@@ -347,7 +348,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
-        this.btnDisabled$.next(false);
       }
       return;
     }
@@ -687,6 +687,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
 
+  /**
+   * Resubmit the assessment submission
+   * (mostly for regenerate AI feedback)
+   */
   resubmit(): Subscription {
     if (!this.assessment?.id || !this.submission?.id || !this.activityId) {
       return;
