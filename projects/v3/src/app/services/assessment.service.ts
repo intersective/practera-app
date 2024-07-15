@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable as RxObsservable, BehaviorSubject, of, Subscription, Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
+import { map, shareReplay, catchError } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -506,18 +506,27 @@ export class AssessmentService {
             answer = +answer;
           }
           break;
+
         case 'multiple':
+          // Check if answer is empty or not an array, and attempt to parse if it's a string
           if (this.utils.isEmpty(answer)) {
             answer = [];
+          } else if (typeof answer === 'string') {
+            try {
+              answer = JSON.parse(answer);
+            } catch (e) {
+              // In case JSON.parse fails, wrap the original answer in an array
+              answer = [answer];
+            }
           }
+
+          // Ensure answer is an array (wrap non-array values in an array)
           if (!Array.isArray(answer)) {
-            // re-format json string to array
-            answer = JSON.parse(answer);
+            answer = [answer];
           }
-          // re-format answer from string to number
-          answer = answer.map((value) => {
-            return +value;
-          });
+
+          // Convert all elements to numbers
+          answer = answer.map(value => +(value || NaN));
           break;
 
         case 'multi team member selector':
@@ -552,12 +561,14 @@ export class AssessmentService {
         }
       }`,
       variables
-    ).pipe(map(res => {
-      if (!this.isValidData('saveQuestionAnswer', res)) {
-        throw new Error('Autosave: Invalid API data');
-      }
-      return res;
-    }));
+    ).pipe(
+      map(res => {
+        if (!this.isValidData('saveQuestionAnswer', res)) {
+          throw new Error('Autosave: Invalid API data');
+        }
+        return res;
+      })
+    );
   }
 
   /**
@@ -649,16 +660,29 @@ export class AssessmentService {
         `mutation submitAssessment(${paramsFormat}) {
         submitAssessment(${params})
       }`,
-        variables
-      )
-      .pipe(
-        map((res) => {
-          if (!this.isValidData('submitAssessment', res)) {
-            throw new Error('Submission: Invalid API data');
-          }
-          return res;
-        })
-      );
+      variables
+    ).pipe(
+      map((res) => {
+        if (!this.isValidData('submitAssessment', res)) {
+          throw new Error('Submission: Invalid API data');
+        }
+        return res;
+      }),
+      catchError(error => {
+        if (error.status === 429) {
+          // If the error is a 429, return a successful Observable
+          return of({
+            data: {
+              submitAssessment: {
+                success: true,
+                message: 'Rate limit exceeded, treated as success'
+              },
+            },
+          });
+        }
+        throw error;
+      })
+    );
   }
 
   /**
@@ -806,7 +830,10 @@ export class AssessmentService {
     return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
-  resubmitAssessment({ assessment_id, submission_id }): RxObsservable<any> {
+  resubmitAssessment({
+    assessment_id,
+    submission_id,
+  }): Observable<any> {
     return this.request.post({
       endPoint: api.post.resubmit,
       data: {
