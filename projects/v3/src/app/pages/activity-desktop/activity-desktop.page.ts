@@ -1,3 +1,4 @@
+import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +9,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { delay, filter, tap } from 'rxjs/operators';
+import { delay, filter, tap, distinctUntilChanged } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -45,7 +46,8 @@ export class ActivityDesktopPage {
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private utils: UtilsService,
-    @Inject(DOCUMENT) private readonly document: Document
+    private unlockIndicatorService: UnlockIndicatorService,
+    @Inject(DOCUMENT) private readonly document: Document,
   ) { }
 
   ionViewWillEnter() {
@@ -60,10 +62,14 @@ export class ActivityDesktopPage {
       this.activityService.currentTask$.subscribe(res => this.currentTask = res)
     );
     this.subscriptions.push(
-      this.assessmentService.assessment$.subscribe(res => this.assessment = res)
+      this.assessmentService.assessment$
+        .pipe(distinctUntilChanged())
+        .subscribe(res => this.assessment = res)
     );
     this.subscriptions.push(
-      this.assessmentService.submission$.subscribe(res => this.submission = res)
+      this.assessmentService.submission$
+        .pipe(distinctUntilChanged())
+        .subscribe(res => this.submission = res)
     );
     this.subscriptions.push(
       this.assessmentService.review$.subscribe(res => this.review = res)
@@ -116,6 +122,29 @@ export class ActivityDesktopPage {
         }
       });
     }));
+
+    // refresh when review is available (AI review, peer review, etc.)
+    this.subscriptions.push(
+      this.utils.getEvent('notification').subscribe(event => {
+        const review = event?.meta?.AssessmentReview;
+        if (event.type === 'assessment_review_published' && review?.assessment_id) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+          }
+        }
+      })
+    );
+
+    // check new unlock indicator to refresh
+    this.subscriptions.push(
+      this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+        if (this.activity) {
+          if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
+            this.activityService.getActivity(this.activity.id);
+          }
+        }
+      })
+    );
   }
 
   ionViewWillLeave() {
@@ -180,31 +209,67 @@ export class ActivityDesktopPage {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      const saved = await this.assessmentService.submitAssessment(
-        event.submissionId,
-        event.assessmentId,
-        event.contextId,
-        event.answers
-      ).toPromise();
+      // handle unexpected submission: do final status check before saving
+      let hasSubmssion = false;
+      const { submission } = await this.assessmentService
+        .fetchAssessment(
+          event.assessmentId,
+          "assessment",
+          this.activity.id,
+          event.contextId,
+          event.submissionId
+        )
+        .toPromise();
 
-      // http 200 but error
-      if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
-        throw new Error("Error submitting assessment");
+      if (submission?.status === 'in progress') {
+        const saved = await this.assessmentService
+          .submitAssessment(
+            event.submissionId,
+            event.assessmentId,
+            event.contextId,
+            event.answers
+          )
+          .toPromise();
+
+        // http 200 but error
+        if (
+          saved?.data?.submitAssessment?.success !== true ||
+          this.utils.isEmpty(saved)
+        ) {
+          throw new Error("Error submitting assessment");
+        }
+
+        if (this.assessment.pulseCheck === true && event.autoSave === false) {
+          await this.assessmentService.pullFastFeedback();
+        }
+      } else {
+        hasSubmssion = true;
       }
 
-      if (this.assessment.pulseCheck === true && event.autoSave === false) {
-        await this.assessmentService.pullFastFeedback();
-      }
+      this.savingText$.next(
+        $localize`Last saved ${this.utils.getFormatedCurrentTime()}`
+      );
 
-      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
-        this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and navigate to the next task
-        this.activityService.getActivity(this.activity.id, false, task, () => {
+        if (hasSubmssion === true) {
+          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+        } else {
+          this.notificationsService.assessmentSubmittedToast();
+        }
+
+        await this.assessmentService.fetchAssessment(
+          event.assessmentId,
+          'assessment',
+          this.activity.id,
+          event.contextId,
+          event.submissionId
+        ).toPromise();
+
+        // get the latest activity tasks
+        return this.activityService.getActivity(this.activity.id, false, task, () => {
           this.loading = false;
           this.btnDisabled$.next(false);
         });
-        return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);

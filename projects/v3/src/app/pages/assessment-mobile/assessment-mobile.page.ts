@@ -5,7 +5,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
@@ -49,15 +49,16 @@ export class AssessmentMobilePage implements OnInit {
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
+      const assessmentId = +params.id;
       this.action = this.route.snapshot.data.action;
       this.fromPage = this.route.snapshot.data.from;
       if (!this.fromPage) {
         this.fromPage = this.route.snapshot.paramMap.get('from');
       }
-      this.activityId = +params.activityId || 0;
+      this.activityId = +params.activityId || 0; // during review session, activityId is not required, set to 0
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
-      this.assessmentService.getAssessment(+params.id, this.action, this.activityId, this.contextId, this.submissionId);
+      this.assessmentService.getAssessment(assessmentId, this.action, this.activityId, this.contextId, this.submissionId);
     });
   }
 
@@ -65,14 +66,15 @@ export class AssessmentMobilePage implements OnInit {
     return this.storageService.singlePageAccess;
   }
 
-  async continue() {
-    if (this.currentTask?.status === 'done') {
-      // just go to the next task without any other action
-      return this.activityService.goToNextTask(this.currentTask);
-    }
-    // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activityId, true, this.currentTask);
+  get task() {
+    return {
+      id: this.assessment.id,
+      type: 'Assessment',
+      name: this.assessment.name,
+      status: ''
+    };
   }
+
 
   goBack() {
     if (this.fromPage === 'reviews') {
@@ -94,13 +96,22 @@ export class AssessmentMobilePage implements OnInit {
     this.savingText$.next('Saving...');
 
     try {
-      if (this.action === 'assessment') {
-        const saved = await this.assessmentService.submitAssessment(
+      let hasSubmission = false;
+      const { submission } = await firstValueFrom(this.assessmentService.fetchAssessment(
+        event.assessmentId,
+        this.action,
+        this.activityId,
+        event.contextId,
+        event.submissionId,
+      ));
+
+      if (this.action === 'assessment' && submission.status === 'in progress') {
+        const saved = await firstValueFrom(this.assessmentService.submitAssessment(
           event.submissionId,
           event.assessmentId,
           event.contextId,
           event.answers
-        ).toPromise();
+        ));
 
         // http 200 but error
         if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
@@ -111,13 +122,13 @@ export class AssessmentMobilePage implements OnInit {
         if (this.assessment.pulseCheck === true && event.autoSave === false) {
           await this.assessmentService.pullFastFeedback();
         }
-      } else if (this.action === 'review') {
-        const saved = await this.assessmentService.submitReview(
+      } else if (this.action === 'review' && submission.status === 'pending review') {
+        const saved = await firstValueFrom(this.assessmentService.submitReview(
           event.assessmentId,
           this.review.id,
           event.submissionId,
           event.answers
-        ).toPromise();
+        ));
 
         // http 200 but error
         if (saved?.data?.submitReview?.success !== true || this.utils.isEmpty(saved)) {
@@ -126,16 +137,36 @@ export class AssessmentMobilePage implements OnInit {
         }
 
         this.reviewService.getReviews();
+      } else {
+        hasSubmission = true;
       }
 
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
-        this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and refresh the assessment submission data
-        this.activityService.getActivity(this.activityId);
-        this.btnDisabled$.next(false);
-        this.saving = false;
-        return this.assessmentService.getAssessment(this.assessment.id, this.action, this.activityId, this.contextId, this.submissionId);
+        // show toast message
+        if (hasSubmission === true) {
+          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+        } else {
+          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review'});
+        }
+
+        await this.assessmentService.fetchAssessment(
+          this.assessment.id,
+          this.action,
+          this.activityId,
+          this.contextId,
+          this.submissionId
+        ).toPromise();
+
+        if (this.action === 'assessment') {
+          // get the latest activity tasks and refresh the assessment submission data
+          this.activityService.getActivity(this.activityId, false, null, () => {
+            this.btnDisabled$.next(false);
+          });
+        } else {
+          this.btnDisabled$.next(false);
+          this.saving = false;
+        }
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);
@@ -155,9 +186,10 @@ export class AssessmentMobilePage implements OnInit {
       await this.reviewRatingPopUp();
       await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
-      this.btnDisabled$.next(false);
       // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activityId, true, this.currentTask);
+      return this.activityService.getActivity(this.activityId, true, this.task, () => {
+        this.btnDisabled$.next(false);
+      });
     } catch(err) {
       this.btnDisabled$.next(false);
       console.error(err);
@@ -165,7 +197,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   nextTask() {
-    this.activityService.goToNextTask(this.currentTask);
+    return this.activityService.getActivity(this.activityId, true, this.task);
   }
 
   async reviewRatingPopUp(): Promise<void> {
