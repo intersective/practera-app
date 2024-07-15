@@ -297,7 +297,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
-        this.btnDisabled$.next(false);
       }
       return;
     }

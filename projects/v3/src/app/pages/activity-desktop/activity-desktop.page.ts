@@ -9,7 +9,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { delay, filter, tap } from 'rxjs/operators';
+import { delay, filter, tap, distinctUntilChanged } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -62,10 +62,14 @@ export class ActivityDesktopPage {
       this.activityService.currentTask$.subscribe(res => this.currentTask = res)
     );
     this.subscriptions.push(
-      this.assessmentService.assessment$.subscribe(res => this.assessment = res)
+      this.assessmentService.assessment$
+        .pipe(distinctUntilChanged())
+        .subscribe(res => this.assessment = res)
     );
     this.subscriptions.push(
-      this.assessmentService.submission$.subscribe(res => this.submission = res)
+      this.assessmentService.submission$
+        .pipe(distinctUntilChanged())
+        .subscribe(res => this.submission = res)
     );
     this.subscriptions.push(
       this.assessmentService.review$.subscribe(res => this.review = res)
@@ -253,18 +257,19 @@ export class ActivityDesktopPage {
           this.notificationsService.assessmentSubmittedToast();
         }
 
-        // get the latest activity tasks
-        this.activityService.getActivity(this.activity.id, false, task, () => {
-          this.loading = false;
-          this.btnDisabled$.next(false);
-        });
-        return this.assessmentService.getAssessment(
+        await this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
-        );
+        ).toPromise();
+
+        // get the latest activity tasks
+        return this.activityService.getActivity(this.activity.id, false, task, () => {
+          this.loading = false;
+          this.btnDisabled$.next(false);
+        });
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);
