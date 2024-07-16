@@ -68,24 +68,24 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       if (activities) {
         const currentActivity = (activities || {})[this.activity.id];
 
-      // if activity is locked, show popup and block access
-      if (currentActivity.isLocked === true && this.popupBlocked === false) {
-        this.router.navigate(['/']); // force redirect to home page
-        this.popupBlocked = true;
-        return this.notificationsService.alert({
-          message: $localize`The activity you're trying to access appears to still be locked. You can unlock the features by engaging with the app and completing all tasks.`,
-          backdropDismiss: false,
-          keyboardClose: false,
-          buttons: [
-            {
-              text: $localize`OK`,
-              handler: () => {
-                this.popupBlocked = false;
-              },
-            }
-          ],
-        });
-      }
+        // if activity is locked, show popup and block access
+        if (currentActivity.isLocked === true && this.popupBlocked === false) {
+          this.router.navigate(['/']); // force redirect to home page
+          this.popupBlocked = true;
+          return this.notificationsService.alert({
+            message: $localize`The activity you're trying to access appears to still be locked. You can unlock the features by engaging with the app and completing all tasks.`,
+            backdropDismiss: false,
+            keyboardClose: false,
+            buttons: [
+              {
+                text: $localize`OK`,
+                handler: () => {
+                  this.popupBlocked = false;
+                },
+              }
+            ],
+          });
+        }
 
         // added to prevent multiple popups
         if (this.popupBlocked === true) {

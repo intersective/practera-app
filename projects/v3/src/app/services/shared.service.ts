@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
 import { RequestService } from 'request';
 
