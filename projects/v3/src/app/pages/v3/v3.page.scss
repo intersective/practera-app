@@ -1,4 +1,4 @@
-ion-menu {
+ion-menu.collapsed {
   .badge-wrapper {
     height: 34px;
     width: 34px;
@@ -35,6 +35,8 @@ ion-menu {
     &.icon-container.expanded {
       display: block;
     }
+
+    overflow: visible;
   }
 
   &.collapsed {

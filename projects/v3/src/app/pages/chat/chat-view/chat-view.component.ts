@@ -21,8 +21,8 @@ export class ChatViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private utils: UtilsService,
     private sharedService: SharedService,
+    private utils: UtilsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.isMobile = this.utils.isMobile();

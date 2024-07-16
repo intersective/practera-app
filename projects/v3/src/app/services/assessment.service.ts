@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable as RxObsservable, BehaviorSubject, of, Subscription, Observable } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
 import { map, shareReplay, catchError } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -795,7 +795,7 @@ export class AssessmentService {
 
   /**
    * - check if fastfeedback is available
-   * - show next sequence if submission successful
+   * - show pulsecheck/fastfeedback at next sequence if submission successful
    */
   async pullFastFeedback() {
     try {
@@ -833,13 +833,16 @@ export class AssessmentService {
     return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
-  resubmitAssessment({ assessment_id, submission_id }): RxObsservable<any> {
+  resubmitAssessment({
+    assessment_id,
+    submission_id,
+  }): Observable<any> {
     return this.request.post({
       endPoint: api.post.resubmit,
-      data: {
+      data:{
         assessment_id,
         submission_id,
-      },
+      }
     });
   }
 }

@@ -141,6 +141,11 @@ export class AssessmentMobilePage implements OnInit {
         hasSubmission = true;
       }
 
+      // [CORE-5876] - Fastfeedback is now added for reviewer
+      if (this.assessment.pulseCheck === true && event.autoSave === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
+
       this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         // show toast message

@@ -916,11 +916,11 @@ export class NotificationsService {
    * Mark the todo item as done
    * @param {Obj} todoItem
    */
-  markTodoItemAsDone(key: TodoItem) {
+  markTodoItemAsDone(match: {identifier?: string, id?: number}) {
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {
-        ...key,
+        ...match,
         project_id: this.storage.getUser().projectId,
         is_done: true
       }
