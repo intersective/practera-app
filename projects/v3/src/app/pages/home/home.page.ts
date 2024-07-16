@@ -23,7 +23,6 @@ import { distinctUntilChanged, filter, first } from 'rxjs/operators';
 export class HomePage implements OnInit, OnDestroy {
   display = 'activities';
 
-  experience$: Observable<Experience>;
   activityCount$: Observable<number>;
   experienceProgress: number;
 
@@ -55,7 +54,6 @@ export class HomePage implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService
   ) {
-    this.experience$ = homeService.experience$;
     this.activityCount$ = homeService.activityCount$;
   }
 
@@ -139,6 +137,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
 
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
   }
 

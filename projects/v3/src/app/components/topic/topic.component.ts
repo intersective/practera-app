@@ -55,7 +55,9 @@ export class TopicComponent implements OnChanges {
 
   private _setVideoUrlElelemts() {
     this.iframeHtml = null;
-    if (this.topic.videolink.includes('vimeo') || this.topic.videolink.includes('youtube')) {
+    if (this.topic.videolink.includes('vimeo') ||
+        this.topic.videolink.includes('youtube') || 
+        this.topic.videolink.includes('youtu.be')) {
       this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' } }) || null;
     }
   }

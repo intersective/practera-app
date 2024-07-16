@@ -190,8 +190,8 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
                 apikey: response.apikey,
               })
               .pipe(first())
-              .subscribe(
-                async res => {
+              .subscribe({
+                next: async res => {
                   this.storage.set('isLoggedIn', true);
                   this.storage.remove('unRegisteredDirectLink');
                   await this.experienceService.switchProgram({
@@ -201,12 +201,12 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
                   this.isLoading = false;
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
-                err => {
+                error: err => {
                   this.isLoading = false;
                   console.error(err);
                   this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
                 }
-              );
+              });
           },
           async (error: HttpErrorResponse) => {
             this.isLoading = false;
@@ -240,6 +240,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
     if (this.unRegisteredDirectLink) {
       if (!this.isAgreed) {
         this.errors.push($localize`You need to agree with terms and Conditions.`);
+        this.isLoading = false;
         isValid = false;
         return isValid;
       } else {
@@ -249,6 +250,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
     if (this.hide_password) {
       if (!this.isAgreed) {
         this.errors.push($localize`You need to agree with terms and Conditions.`);
+        this.isLoading = false;
         isValid = false;
         return isValid;
       } else {
@@ -259,9 +261,13 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
         this.errors.push($localize`Your passwords don't match.`);
+        this.isLoading = false;
+
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
+        this.isLoading = false;
+
         this.errors.push($localize`You need to agree with terms and Conditions.`);
         isValid = false;
         return isValid;
@@ -269,29 +275,25 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
         return isValid;
       }
     } else {
-      for (const conrtoller in this.registerationForm.controls) {
-        if (this.registerationForm.controls[conrtoller].errors) {
+      for (const controller in this.registerationForm.controls) {
+        const control = this.registerationForm.controls[controller];
+        if (control.errors) {
+          this.isLoading = false;
           isValid = false;
-          for (const key in this.registerationForm.controls[conrtoller].errors) {
-            if (
-              this.registerationForm.controls[conrtoller].errors.hasOwnProperty(
-                key
-              )
-            ) {
-              switch (key) {
-                case 'required':
-                  this.errors.push($localize`Please fill in your password`);
-                  break;
-                case 'minlength':
-                  this.errors.push(
-                    $localize`Your password needs to be more than 8 characters.`
-                  );
-                  break;
-                default:
-                  this.errors.push(this.registerationForm.controls.errors[key]);
-              }
-              return;
+          for (const key in control.errors) {
+            switch (key) {
+              case 'required':
+                this.errors.push($localize`Please fill in your password`);
+                break;
+              case 'minlength':
+                this.errors.push(
+                  $localize`Your password needs to be more than 8 characters.`
+                );
+                break;
+              default:
+                this.errors.push(control.errors[key]);
             }
+            return;
           }
         }
       }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { catchError, map, shareReplay, tap } from 'rxjs/operators';
+import { first, catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -101,11 +101,16 @@ export class HomeService {
         }
       }),
       map(res => this._normaliseExperience(res)),
+      first(),
       catchError(err => {
         console.error('error getting experience info from core-graphql');
-        return throwError(err);
+        throw new Error(err);
       }),
-    ).subscribe();
+    ).subscribe({
+      error: async (err) => {
+        console.error('Auth:query', err);
+      }
+    });
   }
 
   private _normaliseExperience(res) {
@@ -134,7 +139,7 @@ export class HomeService {
         }
       }`,
     ).pipe(
-      map(res => this._normaliseProject(res))
+      map(res => this._normaliseProject(res)),
     ).subscribe();
   }
 

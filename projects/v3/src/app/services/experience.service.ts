@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription, firstValueFrom } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap, shareReplay } from 'rxjs/operators';
@@ -383,9 +383,9 @@ export class ExperienceService {
     }
 
     await this.switchProgram({ experience });
-    await this.authService.authenticate({
+    await firstValueFrom(this.authService.authenticate({
       experienceUuid: experience.uuid,
-    });
+    }));
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data

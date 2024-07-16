@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -112,8 +112,10 @@ export class AuthService {
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
 
-    // make sure experienceUuid is not null (required for switch experience)
-    if (!data?.experienceUuid && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
+    // 2 conditions to pull from server:
+    // when experienceUuid is not null (required for switch experience)
+    // when authToken available (directLogin)
+    if (!(data?.experienceUuid || data?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
       return of(authCache);
     } else {
       return this.fetchData(data);
@@ -228,7 +230,7 @@ export class AuthService {
         this.storage.remove('lastAuthFetchTime');
         this.storage.remove('authCache');
         this.logout(); // clear user's information
-        return throwError(() => new Error(err));
+        throw new Error(err);
       })
     );
   }

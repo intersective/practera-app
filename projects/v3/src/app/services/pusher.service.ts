@@ -5,7 +5,7 @@ import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import Pusher, { Channel } from 'pusher-js'; 
+import Pusher, { Channel } from 'pusher-js';
 import { ApolloService } from './apollo.service';
 
 const api = {
@@ -264,7 +264,6 @@ export class PusherService {
         if (this.channels.notification) {
           this.channels.notification.subscription.unbind_all();
         }
-        
         this.channels.notification = {
           name: channelName,
           subscription: this.pusher.subscribe(channelName)
