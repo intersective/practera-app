@@ -18,7 +18,6 @@
   </div>
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
-
     <ion-item class="headline-4 task-header" lines="none">
       {{activity.tasks.length}}
       <ng-container i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ng-container>

@@ -522,15 +522,3 @@ ion-button.ion-focused {
 ion-fab.scroll-to-bottom {
   opacity: 0.7;
 }
-
-
-.ql-editor {
-  a {
-    text-decoration: underline;
-    word-break: break-all;
-  }
-
-   a:hover {
-    color: var(--ion-color-primary);
-  }
-}

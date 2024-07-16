@@ -15,6 +15,7 @@ import { TeamMemberSelectorComponent } from '../team-member-selector/team-member
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
 import { Task } from '@v3/app/services/activity.service';
+import { ActivityService } from '@v3/app/services/activity.service';
 
 @Component({
   selector: 'app-assessment',
@@ -134,7 +135,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private assessmentService: AssessmentService
+    private assessmentService: AssessmentService,
+    private activityService: ActivityService,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -701,6 +703,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       submission_id: this.submission.id
     }).subscribe({
       next: () => {
+        this.activityService.getActivity(this.activityId);
         this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
       },
       error: () => {

@@ -325,6 +325,7 @@ export class ActivityService {
             task.id
           ]);
         }
+        this.getActivity(this.activity.id);
         return this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
       case 'Topic':
         if (this.utils.isMobile()) {

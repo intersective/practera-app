@@ -7,8 +7,8 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Subject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-experiences',

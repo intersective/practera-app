@@ -1,3 +1,4 @@
+import { take, takeUntil, mergeMap } from 'rxjs/operators';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
@@ -12,7 +13,6 @@ import { animate, group, query, state, style, transition, trigger } from '@angul
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
-import { mergeMap, takeUntil } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
@@ -64,7 +64,6 @@ export class V3Page implements OnInit, OnDestroy {
   openMenu = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
-  subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
   showEvents: boolean = false;
@@ -100,11 +99,6 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => {
-      if (subs.closed !== true) {
-        subs.unsubscribe();
-      }
-    });
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }
@@ -152,16 +146,18 @@ export class V3Page implements OnInit, OnDestroy {
       this.menuController.enable(false);
     }
     this._initMenuItems();
-    this.subscriptions = [];
-    this.subscriptions.push(
-      this.reviewService.reviews$.subscribe(res => {
-        if (res && res.length) {
-          this.showReviews = true;
-        } else {
-          this.showReviews = false;
-        }
-      })
-    );
+
+    this.reviewService.reviews$
+    .pipe(
+      takeUntil(this.unsubscribe$),
+    )
+    .subscribe(res => {
+      if (res && res.length) {
+        this.showReviews = true;
+      } else {
+        this.showReviews = false;
+      }
+    });
 
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
@@ -182,7 +178,9 @@ export class V3Page implements OnInit, OnDestroy {
       }
     });
 
-    this.subscriptions.push(this.route.params.subscribe(_params => {
+    this.route.params
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(_params => {
       this.reviewService.getReviews();
 
       // Hide events tab to other user roles. Show only for participants
@@ -191,7 +189,15 @@ export class V3Page implements OnInit, OnDestroy {
       } else {
         this.showEvents = false;
       }
-    }));
+    });
+
+    this.router.events
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(event => {
+        if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
+          this.homeService.getExperience();
+        }
+      });
 
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
@@ -203,13 +209,15 @@ export class V3Page implements OnInit, OnDestroy {
       this.showMessages = false;
     } else {
       // display chat tab if a user has chatroom available
-      this.subscriptions.push(this.chatService.getChatList().subscribe(chats => {
-        if (chats && chats.length > 0) {
-          this.showMessages = true;
-        } else {
-          this.showMessages = false;
-        }
-      }));
+      this.chatService.getChatList()
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(chats => {
+          if (chats && chats.length > 0) {
+            this.showMessages = true;
+          } else {
+            this.showMessages = false;
+          }
+        });
     }
     this.openMenu = false;
 
