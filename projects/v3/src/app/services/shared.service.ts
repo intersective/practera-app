@@ -179,7 +179,7 @@ export class SharedService {
    * Get the user's current location from IP
    */
   getIpLocation() {
-    this._ipAPI().subscribe(
+    this._ipAPI().pipe(first()).subscribe(
       res => this.storage.setCountry(res.country_name),
       // eslint-disable-next-line no-console
       err => console.log(err)
