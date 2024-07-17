@@ -194,7 +194,11 @@ export class HomeService {
       }`,
     ).pipe(
       map(res => this._handleProjectProgress(res)),
-    ).subscribe();
+    ).subscribe({
+      error: err => {
+        console.error('milestone Progress::', err);
+      }
+    });
   }
 
   private _handleProjectProgress(data) {
