@@ -7,6 +7,7 @@ import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { BrowserStorageService } from './storage.service';
+import { UtilsService } from './utils.service';
 
 export interface Experience {
   leadImage: string;
@@ -67,13 +68,14 @@ export class HomeService {
     private notificationsService: NotificationsService,
     private authService: AuthService,
     private storageService: BrowserStorageService,
+    private utilsService: UtilsService,
   ) { }
 
   clearExperience() {
     return of([
       this._experience$.next(null),
       this._activityCount$.next(null),
-      this._milestones$.next(null),
+      this._milestones$.next([]),
     ]);
   }
 
@@ -128,7 +130,7 @@ export class HomeService {
 
     return this.apolloService.graphQLFetch(`
       {
-        milestones{
+        milestones {
           id
           name
           description
@@ -158,7 +160,12 @@ export class HomeService {
     this.storageService.set('activities', this.aggregateActivities(milestones));
 
     this._activityCount$.next(activityCount);
-    this._milestones$.next(milestones);
+
+    // only update if the milestones are different
+    if (!this.utilsService.isEqual(this._milestones$.getValue(), milestones)) {
+      this._milestones$.next(milestones);
+    }
+
     return milestones;
   }
 
