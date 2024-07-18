@@ -12,6 +12,7 @@ import has from 'lodash-es/has';
 import flatten from 'lodash-es/flatten';
 import indexOf from 'lodash-es/indexOf';
 import remove from 'lodash-es/remove';
+import isEqual from 'lodash-es/isEqual';
 import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
@@ -59,6 +60,7 @@ export class UtilsService {
       flatten,
       indexOf,
       remove,
+      isEqual,
     };
   }
 
@@ -120,6 +122,10 @@ export class UtilsService {
 
   remove(collections, callback) {
     return this.lodash.remove(collections, callback);
+  }
+
+  isEqual(value, other) {
+    return this.lodash.isEqual(value, other);
   }
 
   openUrl(url, options?: { target: String }) {
