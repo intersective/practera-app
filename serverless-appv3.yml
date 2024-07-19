@@ -196,71 +196,71 @@ resources:
             - !GetAtt 'AppV2CloudFrontDistribution.DomainName'
 
 
-    HTTPCode4XXTooHighAlarm:
-      Condition: LiveServerOnly
-      Type: 'AWS::CloudWatch::Alarm'
-      Properties:
-        AlarmDescription: '${env:AppV3S3Bucket} - receives 4XX HTTP status codes from CDN'
-        Namespace: 'AWS/CloudFront'
-        MetricName: 4xxErrorRate
-        Statistic: Average
-        Period: 60
-        EvaluationPeriods: 3
-        ComparisonOperator: GreaterThanThreshold
-        Threshold: 3
-        AlarmActions:
-        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
-        Dimensions:
-        - Name: Region
-          Value: Global
-        - Name: DistributionId
-          Value: !Ref AppV2CloudFrontDistribution
-        TreatMissingData: notBreaching
-        Unit: Percent
+    # HTTPCode4XXTooHighAlarm:
+    #   Condition: LiveServerOnly
+    #   Type: 'AWS::CloudWatch::Alarm'
+    #   Properties:
+    #     AlarmDescription: '${env:AppV3S3Bucket} - receives 4XX HTTP status codes from CDN'
+    #     Namespace: 'AWS/CloudFront'
+    #     MetricName: 4xxErrorRate
+    #     Statistic: Average
+    #     Period: 60
+    #     EvaluationPeriods: 3
+    #     ComparisonOperator: GreaterThanThreshold
+    #     Threshold: 3
+    #     AlarmActions:
+    #     - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+    #     Dimensions:
+    #     - Name: Region
+    #       Value: Global
+    #     - Name: DistributionId
+    #       Value: !Ref AppV2CloudFrontDistribution
+    #     TreatMissingData: notBreaching
+    #     Unit: Percent
     
-    HTTPCode5XXTooHighAlarm:
-      Condition: LiveServerOnly
-      Type: 'AWS::CloudWatch::Alarm'
-      Properties:
-        AlarmDescription: '${env:AppV3S3Bucket} - receives 5XX HTTP status codes from CDN'
-        Namespace: 'AWS/CloudFront'
-        MetricName: 5xxErrorRate
-        Statistic: Average
-        Period: 60
-        EvaluationPeriods: 3
-        ComparisonOperator: GreaterThanThreshold
-        Threshold: 3
-        AlarmActions:
-        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
-        Dimensions:
-        - Name: Region
-          Value: Global
-        - Name: DistributionId
-          Value: !Ref AppV2CloudFrontDistribution
-        TreatMissingData: notBreaching
-        Unit: Percent
+    # HTTPCode5XXTooHighAlarm:
+    #   Condition: LiveServerOnly
+    #   Type: 'AWS::CloudWatch::Alarm'
+    #   Properties:
+    #     AlarmDescription: '${env:AppV3S3Bucket} - receives 5XX HTTP status codes from CDN'
+    #     Namespace: 'AWS/CloudFront'
+    #     MetricName: 5xxErrorRate
+    #     Statistic: Average
+    #     Period: 60
+    #     EvaluationPeriods: 3
+    #     ComparisonOperator: GreaterThanThreshold
+    #     Threshold: 3
+    #     AlarmActions:
+    #     - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+    #     Dimensions:
+    #     - Name: Region
+    #       Value: Global
+    #     - Name: DistributionId
+    #       Value: !Ref AppV2CloudFrontDistribution
+    #     TreatMissingData: notBreaching
+    #     Unit: Percent
 
-    HTTPCodeTotalErrorRateTooHighAlarm:
-      Condition: LiveServerOnly
-      Type: 'AWS::CloudWatch::Alarm'
-      Properties:
-        AlarmDescription: '${env:AppV3S3Bucket} - receives Total Error Rate HTTP status codes from CDN'
-        Namespace: 'AWS/CloudFront'
-        MetricName: TotalErrorRate
-        Statistic: Average
-        Period: 60
-        EvaluationPeriods: 3
-        ComparisonOperator: GreaterThanThreshold
-        Threshold: 3
-        AlarmActions:
-        - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
-        Dimensions:
-        - Name: Region
-          Value: Global
-        - Name: DistributionId
-          Value: !Ref AppV2CloudFrontDistribution
-        TreatMissingData: notBreaching
-        Unit: Percent
+    # HTTPCodeTotalErrorRateTooHighAlarm:
+    #   Condition: LiveServerOnly
+    #   Type: 'AWS::CloudWatch::Alarm'
+    #   Properties:
+    #     AlarmDescription: '${env:AppV3S3Bucket} - receives Total Error Rate HTTP status codes from CDN'
+    #     Namespace: 'AWS/CloudFront'
+    #     MetricName: TotalErrorRate
+    #     Statistic: Average
+    #     Period: 60
+    #     EvaluationPeriods: 3
+    #     ComparisonOperator: GreaterThanThreshold
+    #     Threshold: 3
+    #     AlarmActions:
+    #     - {'Fn::ImportValue': '${env:STACK_NAME}-ChatBotSNSTopicARN-${env:ENV}'}
+    #     Dimensions:
+    #     - Name: Region
+    #       Value: Global
+    #     - Name: DistributionId
+    #       Value: !Ref AppV2CloudFrontDistribution
+    #     TreatMissingData: notBreaching
+    #     Unit: Percent
 
 
   # FILE storage Bucket 
