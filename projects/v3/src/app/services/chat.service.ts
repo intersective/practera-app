@@ -91,7 +91,7 @@ export class ChatService {
       return of(this._normaliseChatListResponse(this.demo.channels));
     }
 
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getChannels {
         channels{
           uuid
@@ -157,7 +157,7 @@ export class ChatService {
       return of(this._normaliseMessageListResponse(this.demo.channelLogs(data.channelUuid)));
     }
 
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getChannellogs($uuid:String!, $cursor:String!, $size:Int!) {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
@@ -180,9 +180,11 @@ export class ChatService {
         }
       }`,
       {
-        uuid: data.channelUuid,
-        cursor: data.cursor,
-        size: data.size
+        variables: {
+          uuid: data.channelUuid,
+          cursor: data.cursor,
+          size: data.size
+        }
       }
     ).pipe(map(response => {
       if (response.data) {
@@ -245,7 +247,7 @@ export class ChatService {
       return of(this._normaliseChatMembersResponse(this.demo.channelMenbers));
     }
 
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getChannelmembers($uuid:String!) {
         channel(uuid:$uuid){
           members{
@@ -258,7 +260,7 @@ export class ChatService {
         }
       }`,
       {
-        uuid: channelId
+        variables: {uuid: channelId}
       }
     ).pipe(map(response => {
       if (response.data) {
@@ -288,7 +290,7 @@ export class ChatService {
       return of(this._normalisePusherChannelsResponse(this.demo.pusherChannels));
     }
 
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getPusherChannels {
         channels {
           pusherChannel
@@ -318,7 +320,7 @@ export class ChatService {
       return of(this.demo.markAsSeen);
     }
 
-    return this.apolloService.chatGraphQLMutate(
+    return this.apolloService.graphQLMutate(
       `mutation markAsSeen($uuids: [String]!) {
         readChatLogs(uuids: $uuids) {
           success
@@ -340,7 +342,7 @@ export class ChatService {
       return of(this._normalisePostMessageResponse(this.demo.createChatLog(data.message, data.file)));
     }
 
-    return this.apolloService.chatGraphQLMutate(
+    return this.apolloService.graphQLMutate(
       `mutation createChatLogs($channelUuid: String!, $message: String, $file: String) {
         createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
             uuid
