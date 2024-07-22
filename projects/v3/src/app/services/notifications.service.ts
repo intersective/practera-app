@@ -661,7 +661,7 @@ export class NotificationsService {
   }
 
   getChatMessage() {
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getChannels {
         channels{
           name unreadMessageCount lastMessage lastMessageCreated
