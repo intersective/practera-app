@@ -46,7 +46,9 @@ export class AssessmentMobilePage implements OnInit {
       this.assessment = res;
       this.utils.setPageTitle(this.assessment?.name);
     });
-    this.assessmentService.submission$.subscribe(res => this.submission = res);
+    this.assessmentService.submission$.subscribe(res => {
+      this.submission = res;
+    });
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
       const assessmentId = +params.id;
@@ -55,7 +57,7 @@ export class AssessmentMobilePage implements OnInit {
       if (!this.fromPage) {
         this.fromPage = this.route.snapshot.paramMap.get('from');
       }
-      this.activityId = +params.activityId || 0;
+      this.activityId = +params.activityId || 0; // during review session, activityId is not required, set to 0
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
       this.assessmentService.getAssessment(assessmentId, this.action, this.activityId, this.contextId, this.submissionId);
