@@ -162,16 +162,16 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "ms": {
-              "browserTarget": "v3:build:development,ms"
+              "buildTarget": "v3:build:development,ms"
             },
             "custom": {
-              "browserTarget": "v3:build:custom"
+              "buildTarget": "v3:build:custom"
             },
             "production": {
-              "browserTarget": "v3:build:production"
+              "buildTarget": "v3:build:production"
             },
             "development": {
-              "browserTarget": "v3:build:development"
+              "buildTarget": "v3:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -179,7 +179,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "v3:build:development"
+            "buildTarget": "v3:build:development"
           }
         },
         "test": {
