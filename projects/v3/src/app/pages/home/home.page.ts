@@ -12,8 +12,8 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter, first } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -30,7 +30,6 @@ export class HomePage implements OnInit, OnDestroy {
   achievements: Achievement[];
   experience: Experience;
 
-  subscriptions: Subscription[] = [];
   isMobile: boolean;
   activityProgresses = {};
 
@@ -41,6 +40,10 @@ export class HomePage implements OnInit, OnDestroy {
 
   // default card image (gracefully show broken url)
   defaultLeadImage: string = '';
+
+  unsubscribe$ = new Subject();
+
+  milestones$: Observable<Milestone[]>;
 
   constructor(
     private router: Router,
@@ -59,48 +62,50 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
-    this.subscriptions = [];
-    this.subscriptions.push(
-      this.homeService.milestones$
-        .pipe(
-          distinctUntilChanged(),
-          filter((milestones) => milestones !== null)
-        )
-        .subscribe((res) => {
-          this.milestones = res;
-        })
-    );
-    this.subscriptions.push(
-      this.achievementService.achievements$.subscribe((res) => {
-        this.achievements = res;
-      })
-    );
-    this.subscriptions.push(
-      this.homeService.experienceProgress$.subscribe((res) => {
-        this.experienceProgress = res;
-      })
-    );
-    this.subscriptions.push(
-      this.homeService.projectProgress$
-        .pipe(filter((progress) => progress !== null))
-        .subscribe((progress) => {
-          progress?.milestones?.forEach((m) => {
-            m.activities?.forEach(
-              (a) => (this.activityProgresses[a.id] = a.progress)
-            );
-          });
-        })
+    this.milestones$ = this.homeService.milestones$
+    .pipe(
+      distinctUntilChanged(),
+      filter((milestones) => milestones !== null),
+      takeUntil(this.unsubscribe$),
     );
 
-    this.subscriptions.push(
-      this.router.events.subscribe((event) => {
-        if (event instanceof NavigationEnd) {
-          this.updateDashboard();
-        }
-      })
-    );
+    this.achievementService.achievements$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe((res) => {
+      this.achievements = res;
+    });
 
-    this.unlockIndicatorService.unlockedTasks$.subscribe((unlockedTasks) => {
+    this.homeService.experienceProgress$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe((res) => {
+      this.experienceProgress = res;
+    });
+
+    this.homeService.projectProgress$
+    .pipe(
+      filter((progress) => progress !== null),
+      takeUntil(this.unsubscribe$)
+    )
+    .subscribe((progress) => {
+      progress?.milestones?.forEach((m) => {
+        m.activities?.forEach(
+          (a) => (this.activityProgresses[a.id] = a.progress)
+        );
+      });
+    });
+
+
+    this.router.events
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.updateDashboard();
+      }
+    });
+
+    this.unlockIndicatorService.unlockedTasks$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe((unlockedTasks) => {
       this.hasUnlockedTasks = {}; // reset
       this.unlockedMilestones = {}; // reset
       unlockedTasks.forEach((task) => {
@@ -120,7 +125,8 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach((s) => s.unsubscribe());
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   async updateDashboard() {
