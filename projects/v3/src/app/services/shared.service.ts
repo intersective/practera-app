@@ -1,3 +1,4 @@
+import { AuthEndpoint, AuthService } from '@v3/services/auth.service';
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -7,20 +8,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { first, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
-import { RequestService } from 'request';
-
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-  get: {
-    jwt: 'api/v2/users/jwt/refresh.json'
-  }
-};
 
 @Injectable({
   providedIn: 'root'
@@ -36,11 +25,11 @@ export class SharedService {
     private storage: BrowserStorageService,
     private notification: NotificationsService,
     private http: HttpClient,
-    private requestService: RequestService,
     private topicService: TopicService,
     private apolloService: ApolloService,
     private pusherService: PusherService,
     private achievementService: AchievementService,
+    private authService: AuthService,
   ) { }
 
   // call this function on every page refresh and after switch program
@@ -215,12 +204,6 @@ export class SharedService {
     this.utils.checkIsPracteraSupportEmail();
   }
 
-  // a new APIKEY will returned from API, it auto refresh key through
-  // requestInterceptor[_refreshApikey]
-  getNewJwt() {
-    return this.requestService.get(api.get.jwt);
-  }
-
   /**
    * @name refreshJWT
    * @description refresh JWT token, update teamId in storage, broadcast teamId
@@ -228,21 +211,13 @@ export class SharedService {
    * @return  {Promise<any>} non-strict return value, we won't use
    */
   async refreshJWT(): Promise<any> {
-    const res: {
-      apikey: string;
-      data?: {
-        apikey: string;
-        token?: {
-          team_id?: number;
-          teams: any[];
-        };
-      }
-    } = await this.getNewJwt().toPromise();
+    const res: AuthEndpoint = await this.authService.authenticate().toPromise();
 
-    const token = res?.data?.token;
+    const auth = res?.data?.auth;
+    const latestTeamId = auth?.experience?.team?.id;
     const teamId = this.storage.getUser().teamId;
-    if (teamId !== token?.team_id) {
-      const team = { teamId: token.team_id };
+    if (teamId !== latestTeamId) {
+      const team = { teamId: latestTeamId };
       this.storage.setUser(team);
       this._team$.next(team);
     }
