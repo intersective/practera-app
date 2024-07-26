@@ -839,10 +839,10 @@ export class AssessmentService {
   }): Observable<any> {
     return this.request.post({
       endPoint: api.post.resubmit,
-      data:{
+      data: {
         assessment_id,
         submission_id,
-      }
+      },
     });
   }
 }
