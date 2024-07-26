@@ -56,7 +56,7 @@ describe('NotificationsService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['chatGraphQLQuery']),
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch']),
         },
         {
           provide: EventService,

@@ -34,7 +34,7 @@ describe('ChatService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['chatGraphQLQuery', 'chatGraphQLMutate'])
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLMutate'])
         }
       ]
     });
@@ -118,7 +118,7 @@ describe('ChatService', () => {
     it('should throw Chat format error, if data format not match', () => {
       const tmpRes = JSON.parse(JSON.stringify(requestResponse));
       tmpRes.data.channels = {};
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(tmpRes));
+      apolloSpy.graphQLFetch.and.returnValue(of(tmpRes));
       service.getChatList().subscribe();
       expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
     });
@@ -129,7 +129,7 @@ describe('ChatService', () => {
       sortedList.push(requestResponse.data.channels[1]);
       sortedList.push(requestResponse.data.channels[0]);
       sortedList.push(requestResponse.data.channels[2]);
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
       service.getChatList().subscribe(
         chatList => {
           chatList.forEach((chat, i) => {
@@ -148,7 +148,7 @@ describe('ChatService', () => {
           });
         }
       );
-      expect(apolloSpy.chatGraphQLQuery.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
     });
   });
 
@@ -217,7 +217,7 @@ describe('ChatService', () => {
         cursor: '1',
         size: 15,
       };
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(messageListRequestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(messageListRequestResponse));
       const fileJson = {
         filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
         url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
@@ -240,7 +240,7 @@ describe('ChatService', () => {
           });
         }
       );
-      expect(apolloSpy.chatGraphQLQuery.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
     });
 
   });
@@ -271,7 +271,7 @@ describe('ChatService', () => {
     });
 
     it('should get correct member list data of chat channel', () => {
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
       service.getChatMembers('1').subscribe(
         members => {
           members.forEach((member, i) => {
@@ -282,7 +282,7 @@ describe('ChatService', () => {
           });
         }
       );
-      expect(apolloSpy.chatGraphQLQuery.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
     });
 
   });
@@ -305,7 +305,7 @@ describe('ChatService', () => {
     });
 
     it('should get correct pusher channels', () => {
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
       service.getPusherChannels().subscribe(
         members => {
           members.forEach((member, i) => {
@@ -313,7 +313,7 @@ describe('ChatService', () => {
           });
         }
       );
-      expect(apolloSpy.chatGraphQLQuery.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
     });
 
   });
@@ -328,23 +328,23 @@ describe('ChatService', () => {
 
     it('should call with correct data', () => {
       const pram = ['1', '2'];
-      apolloSpy.chatGraphQLMutate.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLMutate.and.returnValue(of(requestResponse));
       service.markMessagesAsSeen(pram).subscribe();
-      expect(apolloSpy.chatGraphQLMutate.calls.count()).toBe(1);
-      expect(apolloSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(expectedBody);
+      expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual(expectedBody);
     });
 
   });
 
   describe('when testing postNewMessage(), postAttachmentMessage()', () => {
     it('should call with correct data', () => {
-      apolloSpy.chatGraphQLMutate.and.returnValue(of({}));
+      apolloSpy.graphQLMutate.and.returnValue(of({}));
       service.postNewMessage({
         message: 'test message',
         channelUuid: '10'
       }).subscribe();
-      expect(apolloSpy.chatGraphQLMutate.calls.count()).toBe(1);
-      expect(apolloSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
+      expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
           message: 'test message',
           channelUuid: '10',
@@ -392,7 +392,7 @@ describe('ChatService', () => {
         url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
-      apolloSpy.chatGraphQLMutate.and.returnValue(of(newMessageRes));
+      apolloSpy.graphQLMutate.and.returnValue(of(newMessageRes));
       service.postAttachmentMessage(attachmentMessageParam).subscribe(
         message => {
           expect(message.uuid).toEqual(newMessageRes.data.createChatLog.uuid);
@@ -408,8 +408,8 @@ describe('ChatService', () => {
           }
         }
       );
-      expect(apolloSpy.chatGraphQLMutate.calls.count()).toBe(1);
-      expect(apolloSpy.chatGraphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
+      expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
         {
           message: 'test message',
           channelUuid: '10',
