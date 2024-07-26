@@ -171,14 +171,16 @@ export class ActivityDesktopPage {
   }
 
   async topicComplete(task: Task) {
+    this.loading = true;
     this.btnDisabled$.next(true);
     if (task.status === 'done') {
-      // just go to the next task without any other action
-      this.btnDisabled$.next(false);
-      return this.activityService.goToNextTask(task);
+      // just go to the next task without any other action (from topic)
+      return this.activityService.goToNextTask(task, () => {
+        this.loading = false;
+        this.btnDisabled$.next(false);
+      });
     }
     // mark the topic as complete
-    this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
 
     // get the latest activity tasks and navigate to the next task
@@ -307,8 +309,14 @@ export class ActivityDesktopPage {
     }
   }
 
+  // Navigate to next task from the assessment component
   nextTask(task: Task) {
-    this.activityService.goToNextTask(task);
+    this.loading = true;
+    this.btnDisabled$.next(true);
+    return this.activityService.goToNextTask(task, () => {
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    });
   }
 
   async reviewRatingPopUp(): Promise<void> {
