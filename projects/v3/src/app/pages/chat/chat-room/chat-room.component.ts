@@ -675,6 +675,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
     if (event.user === this.storage.getUser().name) {
       return;
     }
+    // if the channel names not matching no need to show typing
+    if (event.channel !== this.chatChannel.pusherChannel) {
+      return;
+    }
     this.typingSubject.next(event.user);
   }
 

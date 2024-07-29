@@ -53,29 +53,31 @@ export class ActivityDesktopPage {
   ionViewWillEnter() {
     this.subscriptions.push(
       this.activityService.activity$
-      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
-      .subscribe(res => {
-        this.activity = res;
-      })
+        .pipe(
+          filter((res) => res?.id === +this.route.snapshot.paramMap.get("id"))
+        )
+        .subscribe(this._setActivity.bind(this))
     );
     this.subscriptions.push(
-      this.activityService.currentTask$.subscribe(res => this.currentTask = res)
+      this.activityService.currentTask$.subscribe(
+        (res) => (this.currentTask = res)
+      )
     );
     this.subscriptions.push(
       this.assessmentService.assessment$
         .pipe(distinctUntilChanged())
-        .subscribe(res => this.assessment = res)
+        .subscribe((res) => (this.assessment = res))
     );
     this.subscriptions.push(
       this.assessmentService.submission$
         .pipe(distinctUntilChanged())
-        .subscribe(res => this.submission = res)
+        .subscribe((res) => (this.submission = res))
     );
     this.subscriptions.push(
-      this.assessmentService.review$.subscribe(res => this.review = res)
+      this.assessmentService.review$.subscribe((res) => (this.review = res))
     );
     this.subscriptions.push(
-      this.topicService.topic$.subscribe(res => this.topic = res)
+      this.topicService.topic$.subscribe((res) => (this.topic = res))
     );
 
     this.subscriptions.push(this.route.paramMap.subscribe(params => {
@@ -158,6 +160,27 @@ export class ActivityDesktopPage {
         sub.unsubscribe();
       }
     });
+  }
+
+  // set activity data (avoid jumpy UI task list - CORE-6693)
+  private _setActivity(res: Activity) {
+    if (this.activity !== undefined) {
+      // check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
+      if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
+        // collect res.tasks with id as key
+        const newTasks = {};
+        res.tasks.map(task => newTasks[task.id] = task);
+
+        this.activity.tasks.forEach((task, index) => {
+          if (task.status !== newTasks[task.id].status) {
+            this.activity.tasks[index].status = newTasks[task.id].status;
+          }
+        });
+      }
+      return;
+    }
+
+    this.activity = res;
   }
 
   async goToTask(task: Task): Promise<any> {
