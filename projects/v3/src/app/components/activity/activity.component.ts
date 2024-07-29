@@ -56,7 +56,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     this.leadImage = this.storageService.getUser().programImage;
     this.unlockIndicatorService.unlockedTasks$
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(this.resetTaskIndicator);
+      .subscribe(this.resetTaskIndicator.bind(this));
   }
 
   ngOnChanges(changes: SimpleChanges): void {

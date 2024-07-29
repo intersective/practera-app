@@ -165,15 +165,34 @@ export class ActivityDesktopPage {
   // set activity data (avoid jumpy UI task list - CORE-6693)
   private _setActivity(res: Activity) {
     if (this.activity !== undefined) {
-      // check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
+      // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
       if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
-        // collect res.tasks with id as key
-        const newTasks = {};
-        res.tasks.map(task => newTasks[task.id] = task);
+        // Collect new tasks with id as key
+        const newTasks = res.tasks.reduce((acc, task) => {
+          if (task.id !== 0) {
+            acc[task.id] = task;
+          }
+          return acc;
+        }, {});
+
+        const tasksToRemove = [];
 
         this.activity.tasks.forEach((task, index) => {
-          if (task.status !== newTasks[task.id].status) {
+          if (task.id === 0) {  // Locked/hidden task
+            const newTask = res.tasks[index];
+            if (newTask.id !== 0) {
+              this.activity.tasks[index] = { ...task, ...newTask };
+              tasksToRemove.push(index); // Mark this task for removal
+            }
+          } else if (newTasks[task.id] && task.status !== newTasks[task.id]?.status) {
             this.activity.tasks[index].status = newTasks[task.id].status;
+          }
+        });
+
+        // Remove the locked tasks (id = 0) that were updated
+        tasksToRemove.reverse().forEach(index => {
+          if (this.activity.tasks[index].id === 0) {
+            this.activity.tasks.splice(index, 1);
           }
         });
       }
