@@ -65,19 +65,45 @@ interface ExperienceConfig {
   logo: string;
 }
 
-interface AuthEndpoint {
+export interface AuthEndpoint {
   data: {
     auth: {
       apikey: string;
-      experience: {
-        cardUrl?: string;
-        [key: string]: any; // default card activity image
-      };
+      experience: AuthEndpointExperience;
       email?: string;
       unregistered?: boolean;
       activationCode?: string;
     }
   }
+}
+
+interface AuthEndpointExperience {
+  id: number;
+  uuid: string;
+  timelineId: number;
+  projectId: number;
+  name: string;
+  description: string;
+  type: string;
+  leadImage: string;
+  status: null | string;
+  setupStep: null | string;
+  color: string;
+  secondaryColor: string;
+  role: string;
+  isLast: null | boolean;
+  locale: string;
+  supportName: string;
+  supportEmail: string;
+  cardUrl: string;
+  bannerUrl: string;
+  logoUrl: string;
+  iconUrl: string;
+  reviewRating: boolean;
+  truncateDescription: boolean;
+  team: {
+    id: number;
+  };
 }
 
 interface AuthQuery {
@@ -193,6 +219,9 @@ export class AuthService {
             iconUrl
             reviewRating
             truncateDescription
+            team {
+              id
+            }
           }
           email
           unregistered
