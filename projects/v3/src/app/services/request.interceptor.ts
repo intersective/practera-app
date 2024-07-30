@@ -79,8 +79,9 @@ export class RequestInterceptor implements HttpInterceptor {
    * Refresh the apikey (JWT token) if API returns it
    */
   private _refreshApikey(response: HttpResponse<any>) {
-    if (response && response?.body?.data?.apikey) {
-      this.storage.setUser({ apikey: response.body.data.apikey });
+    const newApikeyFromAPI = response?.body?.data?.auth?.apikey;
+    if (newApikeyFromAPI) {
+      this.storage.setUser({ apikey: newApikeyFromAPI });
     }
   }
 }
