@@ -19,8 +19,8 @@
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
     <ion-item class="headline-4 task-header" lines="none">
-      {{activity.tasks.length}}
-      <ng-container i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ng-container>
+      {{activity?.tasks?.length}}
+      <ng-container i18n>{activity?.tasks?.length, plural, =1 {Task} other {Tasks}}</ng-container>
     </ion-item>
 
     <ng-container *ngTemplateOutlet="noTasks"></ng-container>
@@ -48,7 +48,7 @@
 </ng-container>
 
 <ng-template #notInATeamAndForTeamOnly>
-  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other
+  <ion-item class="headline-4 task-header" lines="none" i18n>{activity?.tasks?.length, plural, =1 {Task} other
     {Tasks}}</ion-item>
   <app-list-item
     class="focusable"
