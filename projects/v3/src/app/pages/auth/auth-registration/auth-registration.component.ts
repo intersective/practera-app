@@ -172,7 +172,7 @@ export class AuthRegistrationComponent implements OnInit {
           response => {
             this.authService
               .authenticate({
-                apikey: response.apikey,
+                apikey: response.data.apikey,
               })
               .subscribe(
                 async res => {
