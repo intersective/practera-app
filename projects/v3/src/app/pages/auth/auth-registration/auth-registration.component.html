@@ -19,7 +19,10 @@
         <p class="body-1">{{user.contact}}</p>
       </ng-container>
       <form [formGroup]="registerationForm">
-        <ion-input name="email" formControlName="email" type="hidden" value="{{user.email}}" aria-hidden="true" aria-label="email address">
+        <ion-input name="email"
+          formControlName="email"
+          type="hidden" value="{{user.email}}"
+          aria-hidden="true" aria-label="email address">
         </ion-input>
         <ion-list margin>
           <ion-item *ngIf="!hide_password">

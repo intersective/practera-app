@@ -187,7 +187,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
           response => {
             this.authService
               .authenticate({
-                apikey: response.apikey,
+                apikey: response.data.apikey,
               })
               .pipe(first())
               .subscribe({
