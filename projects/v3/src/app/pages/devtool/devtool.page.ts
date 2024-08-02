@@ -37,7 +37,7 @@ export class DevtoolPage implements OnInit {
   }
 
   refresh() {
-    this.sharedService.getNewJwt().subscribe();
+    this.authService.authenticate().subscribe();
   }
 
   login() {
