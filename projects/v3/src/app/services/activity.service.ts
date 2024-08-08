@@ -297,10 +297,10 @@ export class ActivityService {
     this._currentTask$.next(task);
 
     // clear the task from the unlock indicator
-    const cleared = this.unlockIndicatorService.removeTask(task.id);
-    if (cleared) {
-      this.notification.markTodoItemAsDone(cleared).subscribe();
-    }
+    const cleared = this.unlockIndicatorService.removeTasks(task.id);
+    cleared.forEach(clearedTask => {
+      this.notification.markTodoItemAsDone(clearedTask).pipe(first()).subscribe();
+    });
 
     if (!getData) {
       return ;
