@@ -49,6 +49,7 @@
             [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
             <ion-label class="ion-text-wrap body-2 black">{{ choice.name }}</ion-label>
             <ion-radio color="success"
+              [ariaLabel]="choice.name"
               [value]="choice.id"
               [disabled]="control.disabled"
               slot="start"
@@ -85,6 +86,7 @@
             </p>
           </ion-label>
           <ion-radio color="success"
+            [ariaLabel]="choice.name"
             [value]="choice.id"
             [disabled]="control.disabled"
             slot="start"

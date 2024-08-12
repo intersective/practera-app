@@ -148,7 +148,15 @@ export class SettingsPage implements OnInit, OnDestroy {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
-    const mailto = 'mailto:' + this.helpline + '?subject=' + this.currentProgramName;
+
+    let mailto = `mailto:${this.helpline}?subject=${this.currentProgramName}`;
+    const supportEmail = this.utils.getSupportEmail();
+
+    // check if support email is not practera one and have support email
+    // then send message to that email
+    if (!this.utils.checkIsPracteraSupportEmail() && !this.utils.isEmpty(supportEmail)) {
+      mailto = `mailto:${supportEmail}?subject=${this.currentProgramName}`;
+    }
     window.open(mailto, '_self');
   }
 
@@ -221,7 +229,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
       return;
     }
-    if (this.hubspotActivated == true) {
+    if (this.hubspotActivated === true) {
       return this.utils.openSupportPopup({ formOnly: true });
     }
 

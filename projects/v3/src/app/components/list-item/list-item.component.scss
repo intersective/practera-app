@@ -42,6 +42,7 @@ ion-avatar {
 
 .item-content {
   width: 100%;
+  overflow-wrap: anywhere;
   p {
     white-space: normal;
     overflow: hidden;

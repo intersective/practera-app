@@ -2,18 +2,58 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "../../out-tsc/app",
     "types": [],
     "lib": [
       "es2020",
       "dom"
     ],
+    "paths": {
+      "@testingv3/*": [
+        "src/testing/*"
+      ],
+      "@v3/app/*": [
+        "src/app/*"
+      ],
+      "@v3/services/*": [
+        "src/app/services/*"
+      ],
+      "@v3/components/*": [
+        "src/app/components/*"
+      ],
+      "@v3/pages/*": [
+        "src/app/pages/*"
+      ],
+      "@v3/environments/*": [
+        "src/environments/*"
+      ],
+      "apollo": [
+        "../../dist/apollo"
+      ],
+      "request": [
+        "../../dist/request/request",
+        "../../dist/request"
+      ]
+    },
   },
   "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
+    "./src/main.ts",
+    "./src/polyfills.ts",
+    "./src/zone-flags.ts"
   ],
   "include": [
-    "src/**/*.d.ts"
-  ]
+    "./src/**/*.d.ts",
+    "./src/**/*.ts"
+  ],
+  "exclude": [
+    "src/test.ts",
+    "src/testing/**/*.ts",
+    "**/*.spec.ts",
+    "src/environments/environment.*.ts",
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "disableTypeScriptVersionCheck": true
+  }
 }

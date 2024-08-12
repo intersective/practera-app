@@ -168,7 +168,7 @@ describe('ActivityDesktopPage', () => {
     }));
 
     it('should go to next task when task is done', () => {
-      let task = NormalisedTaskFixture;
+      const task = NormalisedTaskFixture;
       task.status = 'done';2
       component.topicComplete(task);
       expect(topicSpy.updateTopicProgress).not.toHaveBeenCalled();

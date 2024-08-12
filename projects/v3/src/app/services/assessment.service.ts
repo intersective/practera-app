@@ -153,7 +153,7 @@ export class AssessmentService {
         `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
           id name type description dueDate isTeam pulseCheck allowResubmit
-          groups{
+          groups {
             name description
             questions{
               id name description type isRequired hasComment audience fileType
@@ -265,6 +265,7 @@ export class AssessmentService {
     if (!data.assessment) {
       return null;
     }
+
     const assessment = {
       id: data.assessment.id,
       name: data.assessment.name,
@@ -326,7 +327,7 @@ export class AssessmentService {
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info = '<h3>'+ $localize`:multiple choice question:Choice Description` + ':</h3>' + info;
             }
             question.info = info;
             question.choices = choices;
@@ -526,7 +527,7 @@ export class AssessmentService {
           }
 
           // Convert all elements to numbers
-          answer = answer.map(value => +(value || NaN));
+          answer = answer.map((value: string) => +(value || NaN));
           break;
 
         case 'multi team member selector':
@@ -668,7 +669,7 @@ export class AssessmentService {
         }
         return res;
       }),
-      catchError(error => {
+      catchError((error) => {
         if (error.status === 429) {
           // If the error is a 429, return a successful Observable
           return of({
@@ -735,9 +736,10 @@ export class AssessmentService {
       return of(false);
     }
     if (environment.demo) {
+      // eslint-disable-next-line no-console
       console.log('save answers', assessment, answers, action);
       this._afterSubmit(assessment, answers, action, hasPulseCheck);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse() as any;
     }
     let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${
       action === 'assessment'
@@ -815,6 +817,7 @@ export class AssessmentService {
 
   saveFeedbackReviewed(submissionId) {
     if (environment.demo) {
+      // eslint-disable-next-line no-console
       console.log('feedback reviewed', submissionId);
       return of(true);
     }

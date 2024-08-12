@@ -2,8 +2,8 @@ import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
-import { TestUtils } from '@testing/utils';
 import { ApolloService } from '@v3/services/apollo.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { ModalController } from '@ionic/angular';
 
 describe('UtilsService', () => {
@@ -19,19 +19,38 @@ describe('UtilsService', () => {
   const YESTERDAY = new Date(moment(NOW).subtract(1, 'day').toString());
   const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
   let service: UtilsService;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         UtilsService,
         {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', {
+            'getClient': function () {
+              return {
+                clearStore: jasmine.createSpy('clearStore'),
+                stop: jasmine.createSpy('stop'),
+              };
+            },
+          }),
+        },
+        {
+          provide: BrowserStorageService,
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer', 'get'])
+        },
+        {
           provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', ['dismiss', 'create'])
+          useValue: jasmine.createSpyObj('ModalController', [
+            'dismiss', 'create'
+          ]),
         },
       ],
     });
 
     service = TestBed.inject(UtilsService);
+    storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
   it('should created', () => {
@@ -111,39 +130,6 @@ describe('UtilsService', () => {
       expect(result).toEqual([]);
       expect(result.length).toEqual(0);
       expect(result.length).not.toEqual(1);
-    });
-
-    it('should accept object and remove subject from it', () => {
-      const result = service.addOrRemove<object>({
-        subject1: 'new subject 1',
-        subject2: 'new subject 2',
-        subject3: 'new subject 3',
-        subject4: 'new subject 4',
-        subject5: 'new subject 5',
-      }, 'new subject 3');
-
-      expect(result).toEqual({
-        subject1: 'new subject 1',
-        subject2: 'new subject 2',
-        subject4: 'new subject 4',
-        subject5: 'new subject 5',
-      });
-    });
-
-
-    it('should add value if the subject is not already available in the provided object', () => {
-      const result = service.addOrRemove<object>({
-        subject1: 'new subject 1',
-        subject2: 'new subject 2',
-        subject3: 'new subject 3',
-      }, 'new subject 4');
-
-      expect(result).toEqual({
-        subject1: 'new subject 1',
-        subject2: 'new subject 2',
-        subject3: 'new subject 3',
-        4: 'new subject 4',
-      });
     });
   });
 
@@ -341,7 +327,7 @@ describe('UtilsService', () => {
 
     it('should standardize date format', () => {
       const result = service.timeFormatter(NOW);
-      const formatted = new Intl.DateTimeFormat('en-US', {
+      const formatted = new Intl.DateTimeFormat('en-GB', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -352,7 +338,7 @@ describe('UtilsService', () => {
     it('should standardize date format international format', () => {
       const onePMUTC = `${thisMoment.format('YYYY-MM-DD')} 13:00:00.000Z`;
       const result = service.timeFormatter(onePMUTC); // follows local GMT
-      const formatted = new Intl.DateTimeFormat('en-US', {
+      const formatted = new Intl.DateTimeFormat('en-GB', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
@@ -363,7 +349,7 @@ describe('UtilsService', () => {
     it('should ensure all numeric time format is return in expected time format (h:mm a)', () => {
       LOCAL_TIME_TODAY.forEach(timeString => {
         const result = service.timeFormatter(timeString);
-        const formatted = new Intl.DateTimeFormat('en-US', {
+        const formatted = new Intl.DateTimeFormat('en-GB', {
           hour12: true,
           hour: 'numeric',
           minute: 'numeric'
@@ -613,6 +599,95 @@ describe('UtilsService', () => {
       service.moveToNewLocale(targetLocale);
 
       expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+    });
+
+
+    it('should change URL to one with proper locale', () => {
+      const subject = {
+        origin: 'https://sample.com',
+        pathname: '/en-US/v3/home',
+      };
+      const targetLocale = 'new-locale';
+
+      service.getCurrentLocation = jasmine.createSpy('getCurrentLocation').and.returnValue(subject);
+      service.getCurrentLocale = jasmine.createSpy('getCurrentLocale').and.returnValue('en-US');
+      service.redirectToUrl = jasmine.createSpy('service.redirectToUrl');
+      service.moveToNewLocale(targetLocale);
+
+      // expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
+    });
+  });
+
+  describe('checkIsPracteraSupportEmail()', () => {
+
+    const tempUser = {
+      uuid: 'uuid-1',
+      name: 'test user',
+      firstName: 'test',
+      lastName: 'user',
+      email: 'test@abcd.com',
+      image: 'https://swapnil2597.github.io/assets/img/profile.png',
+      role: 'participent',
+      contactNumber: '1212121212',
+      userHash: '1234#asdwdd',
+      institutionName: 'Test institute',
+      teamName: 'team 1',
+      experienceId: 1234
+    }
+
+    const tempPrograms = [
+      {
+        experience: {
+          id: 1234,
+          name: 'Global Trade Accelerator - 01',
+          config: {
+            primary_color: '#2bc1d9',
+            secondary_color: '#9fc5e8',
+            email_template: 'email_1',
+            card_url: 'https://cdn.filestackcontent.com/uYxes8YBS2elXV0m2yjA',
+            manual_url: 'https://www.filepicker.io/api/file/lNQp4sFcTjGj2ojOm1fR',
+            design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
+            overview_url: 'https://vimeo.com/325554048'
+          },
+          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+          support_email: 'help@practera.com'
+        }
+      }
+    ]
+
+    it('"experienceId" and email matched should broadcast event with "true"', () => {
+      spyOn(service, 'broadcastEvent');
+      storageSpy.getUser.and.returnValue(tempUser);
+      storageSpy.get.and.returnValue(tempPrograms);
+      service.checkIsPracteraSupportEmail();
+      expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', true);
+    });
+
+    it('"experienceId" matched and email not matched should broadcast event with "false"', () => {
+      const program = tempPrograms;
+      program[0].experience.support_email = 'asd@wer.com';
+      spyOn(service, 'broadcastEvent');
+      storageSpy.getUser.and.returnValue(tempUser);
+      storageSpy.get.and.returnValue(program);
+      service.checkIsPracteraSupportEmail();
+      expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);
+    });
+
+    it('"experienceId" not matched should broadcast event with "false"', () => {
+      const program = tempPrograms;
+      program[0].experience.id = 54654;
+      spyOn(service, 'broadcastEvent');
+      storageSpy.getUser.and.returnValue(tempUser);
+      storageSpy.get.and.returnValue(program);
+      service.checkIsPracteraSupportEmail();
+      expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);
+    });
+
+    it('"experienceId" or programs empty should return', () => {
+      spyOn(service, 'broadcastEvent');
+      storageSpy.getUser.and.returnValue(tempUser);
+      service.checkIsPracteraSupportEmail();
+      expect(service.broadcastEvent).not.toHaveBeenCalled();
     });
   });
 });

@@ -4,11 +4,11 @@ import { BrowserStorageService } from './storage.service';
 import { Activity } from './activity.service';
 
 export interface UnlockedTask {
-  id: number;
-  identifier: string;
+  id?: number;
   milestoneId?: number;
   activityId?: number;
   taskId?: number;
+  identifier?: string;
   meta?: {
     task_id: number;
     task_type: string;
@@ -103,7 +103,7 @@ export class UnlockIndicatorService {
     return this._unlockedTasksSubject.getValue().filter(unlocked => tasksId.includes(unlocked.taskId));
   }
 
-  // Merge the saved tasks with the fresh data and preserve it.
+  // combine the stored tasks with the new data and store it
   unlockTasks(data: UnlockedTask[]) {
     const currentTasks = this._unlockedTasksSubject.getValue();
     const latestTasks = [...currentTasks, ...data];
@@ -131,7 +131,7 @@ export class UnlockIndicatorService {
   }
 
   // Method to transform and deduplicate the data
-  transformAndDeduplicateTodoItem(data) {
+  transformAndDeduplicate(data) {
     const uniqueEntries = new Map();
 
     data.forEach(item => {

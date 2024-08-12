@@ -1,5 +1,6 @@
 import { Subject } from 'rxjs';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
@@ -27,6 +28,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   // false: at least one non-team task
   @Output() cannotAccessTeamActivity = new EventEmitter();
   isForTeamOnly: boolean = false;
+  popupBlocked: boolean = false;
   private unsubscribe$: Subject<any> = new Subject();
 
   constructor(
@@ -35,11 +37,12 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
     private activityService: ActivityService,
-    private unlockIndicatorService: UnlockIndicatorService
+    private unlockIndicatorService: UnlockIndicatorService,
+    private router: Router,
   ) {}
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
 
@@ -59,13 +62,39 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe(this.resetTaskIndicator.bind(this));
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void | Promise<void> {
     if (changes.activity?.currentValue) {
       const activities = this.storageService.get('activities');
+      if (activities) {
+        const currentActivity = (activities || {})[this.activity.id];
 
-      const currentActivity = (activities || {})[this.activity.id];
-      if (currentActivity?.leadImage) {
-        this.leadImage = currentActivity?.leadImage;
+        // if activity is locked, show popup and block access
+        if (currentActivity.isLocked === true && this.popupBlocked === false) {
+          this.router.navigate(['/']); // force redirect to home page
+          this.popupBlocked = true;
+          return this.notificationsService.alert({
+            message: $localize`The activity you're trying to access appears to still be locked. You can unlock the features by engaging with the app and completing all tasks.`,
+            backdropDismiss: false,
+            keyboardClose: false,
+            buttons: [
+              {
+                text: $localize`OK`,
+                handler: () => {
+                  this.popupBlocked = false;
+                },
+              }
+            ],
+          });
+        }
+
+        // added to prevent multiple popups
+        if (this.popupBlocked === true) {
+          return;
+        }
+
+        if (currentActivity?.leadImage) {
+          this.leadImage = currentActivity?.leadImage;
+        }
       }
 
       const currentValue = changes.activity.currentValue;
@@ -96,7 +125,6 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
    * Task icon type
    *
    * @param   {Task}  task  task's type is the only required value
-   *
    * @return  {string}      ionicon's name
    */
   leadIcon(task: Task) {
@@ -117,7 +145,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     }
     // for locked team assessment
     if (task.isForTeam && task.isLocked) {
-      return `${ task.submitter.name } is working on this`;
+      return $localize`:team assessment:${ task.submitter.name } is working on this`;
     }
     // due date
     if (!task.dueDate) {
@@ -225,7 +253,15 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private async _validateTeamAssessment(task: Task, proceedCB) {
+  /**
+   * Validate team assessment with latest team info
+   *
+   * @param   {Task}  task
+   * @param   {Function}proceedCB  callback to proceed if team status is valid (in a valid team & ready for team/360 assessment)
+   *
+   * @return  {[type]}           [return description]
+   */
+  private async _validateTeamAssessment(task: Task, proceedCB): Promise<any> {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 

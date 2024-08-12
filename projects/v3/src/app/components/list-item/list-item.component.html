@@ -30,7 +30,7 @@
   <div class="item-content ion-padding-vertical"
     [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
     <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
-      <div class="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
+      <div [class]="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
       &nbsp; <!-- this is to add some space between two elements -->
       <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
     </div>
@@ -100,7 +100,6 @@
     <!-- Show video conference label if event is not expired and not fully booked -->
     <div id="event-status" *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked" class="video-conference-batch ion-text-capitalize">{{ eventVideoConference.provider }}</div>
   </div>
-
   <ng-container *ngFor="let actionBtnIcon of endingActionBtnIcons; let i = index">
     <ion-button mode="ios" fill="clear"
       (click)="actionBtnClick.emit(i)"

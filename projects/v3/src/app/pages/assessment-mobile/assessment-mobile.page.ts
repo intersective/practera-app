@@ -5,7 +5,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
@@ -27,7 +27,6 @@ export class AssessmentMobilePage implements OnInit {
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   saving: boolean;
-
   currentTask: Task;
 
   constructor(
@@ -46,9 +45,8 @@ export class AssessmentMobilePage implements OnInit {
       this.assessment = res;
       this.utils.setPageTitle(this.assessment?.name);
     });
-    this.assessmentService.submission$.subscribe(res => {
-      this.submission = res;
-    });
+    this.activityService.currentTask$.subscribe(res => this.currentTask = res);
+    this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
     this.route.params.subscribe(params => {
       const assessmentId = +params.id;
@@ -99,34 +97,38 @@ export class AssessmentMobilePage implements OnInit {
 
     try {
       let hasSubmission = false;
-      const { submission } = await this.assessmentService.fetchAssessment(
+      const { submission } = await firstValueFrom(this.assessmentService.fetchAssessment(
         event.assessmentId,
         this.action,
         this.activityId,
         event.contextId,
         event.submissionId,
-      ).toPromise();
+      ));
 
       if (this.action === 'assessment' && submission.status === 'in progress') {
-        const saved = await this.assessmentService.submitAssessment(
+        const saved = await firstValueFrom(this.assessmentService.submitAssessment(
           event.submissionId,
           event.assessmentId,
           event.contextId,
           event.answers
-        ).toPromise();
+        ));
 
         // http 200 but error
         if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
           console.error('Asmt submission error:', saved);
           throw new Error("Error submitting assessment");
         }
+
+        if (this.assessment.pulseCheck === true && event.autoSave === false) {
+          await this.assessmentService.pullFastFeedback();
+        }
       } else if (this.action === 'review' && submission.status === 'pending review') {
-        const saved = await this.assessmentService.submitReview(
+        const saved = await firstValueFrom(this.assessmentService.submitReview(
           event.assessmentId,
           this.review.id,
           event.submissionId,
           event.answers
-        ).toPromise();
+        ));
 
         // http 200 but error
         if (saved?.data?.submitReview?.success !== true || this.utils.isEmpty(saved)) {

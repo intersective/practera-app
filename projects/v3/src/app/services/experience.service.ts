@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription, firstValueFrom } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { map, mergeMap, shareReplay } from 'rxjs/operators';
@@ -8,7 +8,7 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { EventService } from '@v3/services/event.service';
-import { ReviewService } from '@v3/services/review.service';
+import { Review, ReviewService } from '@v3/services/review.service';
 import { HomeService } from './home.service';
 import { AuthService } from './auth.service';
 import { filter } from 'rxjs/operators';
@@ -85,7 +85,8 @@ export interface ProjectProgress {
   providedIn: 'root'
 })
 export class ExperienceService {
-  review$ = this.reviewService.reviews$;
+
+  review$: Observable<Review[]>;
 
   private _experience$ = new BehaviorSubject<any>(null);
   experience$ = this._experience$.asObservable();
@@ -125,7 +126,9 @@ export class ExperienceService {
     private reviewService: ReviewService,
     private homeService: HomeService,
     private authService: AuthService,
-  ) { }
+  ) {
+    this.review$ = this.reviewService.reviews$;
+  }
 
   getExperiences(): Subscription {
     return this.apolloService.graphQLFetch(
@@ -274,6 +277,7 @@ export class ExperienceService {
     });
 
     this.sharedService.onPageLoad();
+    // eslint-disable-next-line rxjs/no-ignored-observable
     this.homeService.clearExperience();
 
     // initialise Pusher
@@ -379,9 +383,9 @@ export class ExperienceService {
     }
 
     await this.switchProgram({ experience });
-    await this.authService.authenticate({
+    await firstValueFrom(this.authService.authenticate({
       experienceUuid: experience.uuid,
-    }).toPromise();
+    }));
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data

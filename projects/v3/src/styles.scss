@@ -131,12 +131,6 @@ ion-button {
   z-index: 20;
   height: calc(100% - 120px);
 }
-.ion-footer-absolute {
-  position: absolute;
-  height: 60px;
-  bottom: 0;
-  z-index: 30;
-}
 
 ion-chip.label {
   border-radius: 8px;
@@ -390,17 +384,27 @@ quill-view {
       .ngx-quill-view {
         .ql-editor {
           color: white !important;
-            p {
+          p {
+            color: white !important;
+            a {
+              text-decoration: underline;
               color: white !important;
-              a {
-                text-decoration: underline;
-                color: white !important;
+
+              &:hover {
+                color: initial !important;
               }
             }
+          }
         }
+
       }
     }
   }
+}
+
+// textarea input
+ion-textarea {
+  overflow: visible;
 }
 
 /****************
@@ -417,7 +421,6 @@ Used in achievement
   position: relative;
   display: inline-block;
 }
-
 
 .notification-dot {
   position: absolute;
