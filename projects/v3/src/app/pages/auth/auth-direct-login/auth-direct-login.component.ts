@@ -221,7 +221,7 @@ export class AuthDirectLoginComponent implements OnInit {
       });
     }
 
-    if (options?.save) {
+    if (options?.save === true) {
       return this.storage.set('directLinkRoute', route);
     }
     /**
