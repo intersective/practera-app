@@ -215,6 +215,7 @@ export class AuthDirectLoginComponent implements OnInit {
       route = [`/${locale}`, ...route];
       this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else { // Info: This block is only for development purpose
+      /* eslint-disable no-console */
       console.info('URL redirection::', {
         dev: route,
         prod: [`/${locale || null}`, ...route]
