@@ -131,7 +131,7 @@ export class AuthService {
 
   private authCacheDuration = environment.authCacheDuration;
 
-  authenticate(data?: AuthQuery): Observable<any> {
+  authenticate(data?: AuthQuery): Observable<AuthEndpoint> {
     const currentTime = new Date().getTime();
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
@@ -276,20 +276,13 @@ export class AuthService {
     );
   }
 
-  private _handleAuthResponse(res: {
-    data: {
-      auth: {
-        apikey: string;
-        experience: object;
-      }
-    }
-  }): {
+  private _handleAuthResponse(res: AuthEndpoint): {
     apikey?: string;
     experience?: object;
   } {
     const data: {
-      apikey: string;
-      experience: object;
+      apikey,
+      experience,
     } = res.data.auth;
 
     this.storage.setUser({ apikey: data.apikey });
@@ -314,11 +307,6 @@ export class AuthService {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
     };
-    if (environment.demo) {
-      return of({
-        programs: []
-      });
-    }
 
     return this.request.post({
       endPoint: API.login,
