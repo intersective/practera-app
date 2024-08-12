@@ -147,7 +147,7 @@ describe('EventDetailComponent', () => {
     expect(component).toBeDefined();
   });
 
-  describe('when testing buttonText() and confirmed()', () => {
+  describe('when testing buttonText and confirmed()', () => {
     let tmpEvent;
     let expected;
     const confirmedExpectedArray = [];
@@ -158,7 +158,7 @@ describe('EventDetailComponent', () => {
       component.event = tmpEvent;
       fixture.detectChanges();
       component.event = tmpEvent;
-      expect(component.buttonText).toEqual(expected);
+      expect(component.buttonText.label).toEqual(expected);
       expect(page.eventName.innerHTML).toEqual(tmpEvent.name);
       expect(page.activityName.innerHTML).toEqual(tmpEvent.activityName);
       if (expected === 'Expired') {
@@ -203,7 +203,7 @@ describe('EventDetailComponent', () => {
         expect(serviceSpy.bookEvent.calls.count()).toBe(0);
 
         const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-        (typeof button == 'string') ? button : button.handler(true);
+        (typeof button === 'string') ? button : button.handler(true);
 
         expect(serviceSpy.bookEvent.calls.count()).toBe(1);
         // expect(modalSpy.dismiss.calls.count()).toEqual(1);

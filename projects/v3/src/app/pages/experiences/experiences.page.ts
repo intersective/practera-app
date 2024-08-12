@@ -6,9 +6,9 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Subject, Observable, Subscription } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Subject, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-experiences',
@@ -16,14 +16,13 @@ import { filter, takeUntil } from 'rxjs/operators';
   styleUrls: ['./experiences.page.scss'],
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
   experiences$: Observable<any[]>;
   programs$: Observable<ProgramObj[]>;
   progresses: {
     [key: number]: number;
   } = {};
   isMobile: boolean = false;
-  unsubscribe$ = new Subject();
+  unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
     private router: Router,
@@ -40,9 +39,9 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.activatedRoute.params.pipe(
-      takeUntil(this.unsubscribe$),
-    ).subscribe(_params => {
+    this.activatedRoute.params
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(_params => {
       this.experienceService.getExperiences();
     });
 
@@ -91,28 +90,29 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       return;
     }
 
+    let destination = ['v3', 'home'];
     const loading = await this.loadingController.create({
-      message: 'loading...'
+      message: $localize`loading...`
     });
     await loading.present();
-
     try {
       this.unlockIndicatorService.clearAllTasks(); // reset indicators
       const route = await this.experienceService.switchProgramAndNavigate(experience);
-      loading.dismiss().then(() => {
-        if (environment.demo) {
-          return this.router.navigate(['v3','home']);
-        }
-        if (route) {
-          return this.router.navigate(route);
-        }
-      });
+      await loading.dismiss();
+      if (environment.demo) {
+        destination = ['v3','home'];
+      }
+
+      if (route) {
+        destination = route;
+      }
     } catch (err) {
       await this.notificationsService.alert({
         header: $localize`Error switching program`,
         message: err.msg || JSON.stringify(err)
       });
     }
-    return this.router.navigate(['v3','home']);
+
+    return this.router.navigate(destination);
   }
 }

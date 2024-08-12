@@ -34,18 +34,21 @@ export class HubspotService {
     private utils: UtilsService,
     private demo: DemoService,
     private storage: BrowserStorageService,
-    private http: HttpClient,
   ) { }
 
   submitDataToHubspot(params: HubspotFormParams): Observable<any> {
     if (environment.demo) {
-      return this.demo.normalResponse();
+      return this.demo.normalResponse('observable') as Observable<any>;
     }
     const body = this.generateParams(params);
+    if (!body) {
+      return;
+    }
     return this.request.post({
       endPoint: `${API.hubspotSubmit}${environment.hubspot.supportFormPortalId}/${environment.hubspot.supportFormId}`,
       data: body,
     }).pipe(
+      // eslint-disable-next-line no-console
       map(res => console.log(res)),
     );
   }
@@ -53,7 +56,7 @@ export class HubspotService {
   generateParams(params: HubspotFormParams) {
     if (!this.utils.isEmpty(this.storage.getUser())) {
       // legalConsentOptions is a required param for the hubspot API
-      let submitParam = {
+      const submitParam = {
         fields: [],
         legalConsentOptions: {
           consent: {
@@ -147,7 +150,7 @@ export class HubspotService {
         return;
       }
 
-      let expName = currentExperience.name;
+      const expName = currentExperience.name;
       if (expName) {
         submitParam.fields.push(
           {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -34,7 +34,7 @@ interface VerifyParams {
 }
 
 interface RegisterData {
-  password: string;
+  password?: string;
   user_id: number;
   key: string;
 }
@@ -118,6 +118,8 @@ interface AuthQuery {
 })
 export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
+  private authCache: any;
+  private authObservable$: Observable<AuthEndpoint>;
 
   constructor(
     private request: RequestService,
@@ -249,18 +251,15 @@ export class AuthService {
         return res;
       }),
       catchError(err => {
+        // When logout get call from here user get redirect without showing any error messages.
+        // so from here need to throw the error. and handel from the components.
+        // then we can show error message and add logout as call back of notification popup.
+        // Kepping this in case some error happen. logic moved
+        //this.logout(); // clear user's information
         this.storage.remove('lastAuthFetchTime');
         this.storage.remove('authCache');
         this.logout(); // clear user's information
-
-        // When logout get call from here user get redirect without showing any error messages.
-        // so from here need to throw the error. and handle from the components.
-        // then we can show error message and add logout as call back of notification popup.
-        // Kepping this in case some error happen. logic moved
-        // this.logout(); // clear user's information
-        this.storage.remove('lastAuthFetchTime');
-        this.storage.remove('authCache');
-        return throwError(err);
+        throw new Error(err);
       })
     );
   }
@@ -430,7 +429,29 @@ export class AuthService {
   getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
     return this.request.get(API.getConfig, {
       params: data
-    });
+    })/* comment out until BACKEND is resolved
+    .pipe(tap((response) => {
+      if (environment.production === false) {
+        return;
+      }
+
+      if (this.isAuthenticated() && response.data?.length === 0) {
+        this.notificationsService.alert({
+          header: $localize`It looks like there's a glitch!`,
+          message: $localize`We regret to inform you that there appears to be a technical issue preventing your enrollment in any programs at the moment. Please log in again and try once more.`,
+          backdropDismiss: false,
+          buttons: [
+            {
+              text: $localize`Login`,
+              handler: () => {
+                this.logout({}, true);
+              },
+            }
+          ]
+        });
+        throw new Error('Tech Error: No experience config found!');
+      }
+    })) */;
   }
 
   /**
@@ -501,7 +522,6 @@ export class AuthService {
       }
     });
   }
-
 
   updateProfileImage(data) {
     return this.request.post(

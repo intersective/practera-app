@@ -135,7 +135,17 @@
     [leadImageClass] = "!achievement.isEarned ? 'black-white-image' : ''"
     (keydown)="achievePopup(achievement, $event)"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
-    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"></app-list-item>
+    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"
+    i18n-subtitle1></app-list-item>
+</ng-template>
+
+<ng-template #loadingMilestones>
+  <ion-item>
+    <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+  </ion-item>
+  <ion-item>
+    <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+  </ion-item>
 </ng-template>
 
 <ng-template #loadingMilestones>

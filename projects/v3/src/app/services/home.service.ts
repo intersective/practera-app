@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { first, map, shareReplay, tap } from 'rxjs/operators';
+import { first, catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -104,6 +104,10 @@ export class HomeService {
       }),
       map(res => this._normaliseExperience(res)),
       first(),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        throw new Error(err);
+      }),
     ).subscribe({
       error: async (err) => {
         console.error('Auth:query', err);
@@ -197,7 +201,11 @@ export class HomeService {
       }`,
     ).pipe(
       map(res => this._handleProjectProgress(res)),
-    ).subscribe();
+    ).subscribe({
+      error: err => {
+        console.error('milestone Progress::', err);
+      }
+    });
   }
 
   private _handleProjectProgress(data) {

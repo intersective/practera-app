@@ -124,7 +124,7 @@ describe('ActivityComponent', () => {
 
   describe('label()', () => {
     it('should return "in progress"', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'in progress';
       component.submission.isLocked = true;
       expect(component.label({
@@ -135,7 +135,7 @@ describe('ActivityComponent', () => {
     });
 
     it('should return "overdue"', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'in progress';
 
       expect(component.label({
@@ -146,7 +146,7 @@ describe('ActivityComponent', () => {
     });
 
     it('should return ""', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.status = 'in progress';
 
       expect(component.label({
@@ -157,7 +157,7 @@ describe('ActivityComponent', () => {
     });
 
     it('should return empty string ("")', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'published';
       expect(component.label({
@@ -167,7 +167,7 @@ describe('ActivityComponent', () => {
     });
 
     it('should return any status', () => {
-      component.submission = mockSubmission;
+      component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'published';
       expect(component.label({

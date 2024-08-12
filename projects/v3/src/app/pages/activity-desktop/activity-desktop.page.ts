@@ -8,7 +8,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, firstValueFrom } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
@@ -164,7 +164,7 @@ export class ActivityDesktopPage {
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
   private _setActivity(res: Activity) {
-    if (this.activity !== undefined) {
+    if (this.activity !== undefined && this.activity?.tasks.length === res.tasks.length) {
       // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
       if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
         // Collect new tasks with id as key
@@ -213,14 +213,16 @@ export class ActivityDesktopPage {
   }
 
   async topicComplete(task: Task) {
+    this.loading = true;
     this.btnDisabled$.next(true);
     if (task.status === 'done') {
-      // just go to the next task without any other action
-      this.btnDisabled$.next(false);
-      return this.activityService.goToNextTask(task);
+      // just go to the next task without any other action (from topic)
+      return this.activityService.goToNextTask(task, () => {
+        this.loading = false;
+        this.btnDisabled$.next(false);
+      });
     }
     // mark the topic as complete
-    this.loading = true;
     await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
 
     // get the latest activity tasks and navigate to the next task
@@ -299,13 +301,13 @@ export class ActivityDesktopPage {
           this.notificationsService.assessmentSubmittedToast();
         }
 
-        await this.assessmentService.fetchAssessment(
+        await firstValueFrom(this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
-        ).toPromise();
+        ));
 
         // get the latest activity tasks
         return this.activityService.getActivity(this.activity.id, false, task, () => {
@@ -349,8 +351,14 @@ export class ActivityDesktopPage {
     }
   }
 
+  // Navigate to next task from the assessment component
   nextTask(task: Task) {
-    this.activityService.goToNextTask(task);
+    this.loading = true;
+    this.btnDisabled$.next(true);
+    return this.activityService.goToNextTask(task, () => {
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    });
   }
 
   async reviewRatingPopUp(): Promise<void> {

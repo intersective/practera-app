@@ -6,7 +6,7 @@ import { AchievementService } from './achievement.service';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 
-import { NotificationsService } from './notifications.service';
+import { NotificationsService, TodoItem, api } from './notifications.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
 
@@ -56,7 +56,7 @@ describe('NotificationsService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['chatGraphQLQuery']),
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch']),
         },
         {
           provide: EventService,
@@ -78,6 +78,49 @@ describe('NotificationsService', () => {
       expect(service.modal).toHaveBeenCalledWith({} as any, {
         reviewId: 1,
         redirect: ['home']
+      });
+    });
+  });
+});
+describe('NotificationsService', () => {
+  let service: NotificationsService;
+  let requestService: RequestService;
+  let storageService: BrowserStorageService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        // ... existing providers
+      ]
+    });
+    service = TestBed.inject(NotificationsService);
+    requestService = TestBed.inject(RequestService);
+    storageService = TestBed.inject(BrowserStorageService);
+  });
+
+  // ... existing tests
+
+  describe('markTodoItemAsDone', () => {
+    it('should call requestService.post with correct parameters', () => {
+      // Arrange
+      const todoItem: TodoItem = {
+        // ... define your todo item properties here
+      };
+      const expectedData = {
+        ...todoItem,
+        project_id: storageService.getUser().projectId,
+        is_done: true
+      };
+
+      spyOn(requestService, 'post').and.returnValue(Promise.resolve() as any);
+
+      // Act
+      service.markTodoItemAsDone(todoItem);
+
+      // Assert
+      expect(requestService.post).toHaveBeenCalledWith({
+        endPoint: api.post.todoItem,
+        data: expectedData
       });
     });
   });

@@ -41,6 +41,7 @@
         *ngFor="let teamMember of question.teamMembers;let i = index"
         [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
         <ion-radio
+          [ariaLabel]="teamMember.userName"
           color="success"
           slot="start"
           [value]="teamMember.key"

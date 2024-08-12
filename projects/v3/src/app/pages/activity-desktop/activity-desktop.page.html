@@ -43,6 +43,7 @@
 <ng-template #showCurrentTask>
   <ng-container *ngIf="currentTask">
     <app-assessment *ngIf="currentTask.type === 'Assessment'"
+      [task]="currentTask"
       [assessment]="assessment"
       [submission]="submission"
       [review]="review"

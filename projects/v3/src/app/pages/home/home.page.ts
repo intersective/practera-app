@@ -104,7 +104,10 @@ export class HomePage implements OnInit, OnDestroy {
     });
 
     this.unlockIndicatorService.unlockedTasks$
-    .pipe(takeUntil(this.unsubscribe$))
+    .pipe(
+      distinctUntilChanged(),
+      takeUntil(this.unsubscribe$)
+    )
     .subscribe((unlockedTasks) => {
       this.hasUnlockedTasks = {}; // reset
       this.unlockedMilestones = {}; // reset
@@ -121,11 +124,12 @@ export class HomePage implements OnInit, OnDestroy {
           this.hasUnlockedTasks[task.activityId] = true;
         }
       });
+      this.homeService.getMilestones();
     });
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
 
@@ -135,6 +139,10 @@ export class HomePage implements OnInit, OnDestroy {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
+
+    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
+    this.getEarnedPoints = this.achievementService.getEarnedPoints();
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';

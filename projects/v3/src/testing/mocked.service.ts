@@ -24,7 +24,7 @@ export class MockRouter extends SpyObject {
 
   constructor() {
     super(Router);
-    const TEST_EVENT: NavigationEnd = {
+    const TEST_EVENT: Partial<NavigationEnd> = {
       id: 1,
       url: '/test',
       urlAfterRedirects: 'test/test',

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import * as exif from 'exif-js';
+import { getData, getAllTags } from 'exif-js';
 
 const getImageClassToFixOrientation = (orientation) => {
   switch (orientation) {
@@ -43,8 +43,8 @@ export class ImgComponent {
   }
 
   imageLoaded(e) {
-    exif.getData(e.target, function () {
-      const allMetaData = exif.getAllTags(this);
+    getData(e.target, function () {
+      const allMetaData = getAllTags(this);
       const orientationClassFix = getImageClassToFixOrientation(allMetaData.Orientation);
       this.classList.add(orientationClassFix);
       if (allMetaData.Orientation >= 5) {

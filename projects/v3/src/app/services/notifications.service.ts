@@ -9,7 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { Observable, of, Subject } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -87,7 +87,7 @@ export interface TodoItem {
   timeline_id?: number;
 }
 
-const api = {
+export const api = {
   get: {
     todoItem: 'api/v2/motivations/todo_item/list.json',
     events: 'api/v2/act/event/list.json',
@@ -108,7 +108,7 @@ export class NotificationsService {
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
-  private notifications: TodoItem[];
+  private notifications: TodoItem[] = [];
 
   private connection = {
     informed: false,
@@ -206,7 +206,11 @@ export class NotificationsService {
     const modalConfig = this.modalConfig({ component, componentProps }, options);
     return this.modalService.addModal(modalConfig, event);
   }
-
+  /**
+   * Displays an alert dialog with the given configuration options.
+   * @param {AlertOptions} config - The options for the alert dialog.
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
@@ -228,7 +232,7 @@ export class NotificationsService {
   /**
    * show assessment submission response status toast
    *
-   * @param   {boolean}  isFail  flag to show success or fail message
+   * @param   {boolean}  option isFail/isDuplicated, default/empty is success
    *
    * @return  {Promise<void>}
    */
@@ -298,9 +302,9 @@ export class NotificationsService {
         return this.demo.normalResponse();
       }
       const identifier = 'Achievement-' + achievement.id;
-      await this.markTodoItemAsDone({
-        identifier,
-      }).toPromise();
+      await firstValueFrom(this.markTodoItemAsDone({
+        identifier: identifier
+      }));
 
       if (this.identifierMarkedAsDone.includes(identifier)) {
         return;
@@ -445,7 +449,7 @@ export class NotificationsService {
    */
   private _normaliseTodoItems(data): Array<TodoItem> {
     let todoItems = [];
-    let unlockedTasks: UnlockedTask[] = [];
+    const unlockedTasks: UnlockedTask[] = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError('TodoItem array format error');
       return [];
@@ -657,7 +661,7 @@ export class NotificationsService {
   }
 
   getChatMessage() {
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getChannels {
         channels{
           name unreadMessageCount lastMessage lastMessageCreated
@@ -734,7 +738,7 @@ export class NotificationsService {
    * and after this will update _notifications$ subject to broadcast the new update
    * @param chatTodoItem normalized Todo item for chat
    */
-  private _addChatTodoItem(chatTodoItem) {
+  private _addChatTodoItem(chatTodoItem: TodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
       if (todoItem.type === 'chat') {

@@ -5,6 +5,7 @@
         <p><ion-chip class="label orange" i18n>Learner's answer</ion-chip></p>
       </ion-label>
     </ion-item>
+
     <app-file-display [file]="submission.answer"
       [fileType]="question.fileType || 'any'" [isFileComponent]="true"
       [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
@@ -17,6 +18,7 @@
         <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
       </ion-label>
     </ion-item>
+
     <app-file-display
       [file]="review.answer"
       [fileType]="question.fileType || 'any'"
@@ -69,14 +71,21 @@
       [disabled]="control.disabled"
     ></app-file-stack>
 
-    <app-file-display
-      *ngIf="uploadedFile || review.answer"
-      [file]="uploadedFile ? uploadedFile : review.answer"
-      [fileType]="question.fileType || 'any'"
-      [isFileComponent]="true"
-      (removeFile)="removeSubmitFile($event)"
-      [disabled]="control.disabled"
-    ></app-file-display>
+    <ng-container *ngIf="uploadedFile || review.answer">
+      <ion-item lines="none">
+        <ion-label class="white-space-normal body-2 gray-3">
+          <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
+        </ion-label>
+      </ion-item>
+
+      <app-file-display
+        [file]="uploadedFile ? uploadedFile : review.answer"
+        [fileType]="question.fileType || 'any'"
+        [isFileComponent]="true"
+        (removeFile)="removeSubmitFile($event)"
+        [disabled]="control.disabled"
+      ></app-file-display>
+    </ng-container>
   </ng-container>
 
   <div class="feedback-field ion-padding-horizontal ion-padding-bottom" *ngIf="question?.canComment && submission?.answer">

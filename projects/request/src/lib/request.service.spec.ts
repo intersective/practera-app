@@ -11,10 +11,10 @@ import {
 
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
-import { BrowserStorageService } from '@services/storage.service';
-import { TestUtils } from '@testing/utils';
-import { BrowserStorageServiceMock } from '@testing/mocked.service';
-import { UtilsService } from '@app/services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
+import { TestUtils } from '@testingv3/utils';
+import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 describe('QueryEncoder', () => {
   const encodedTest = 'https://test.com?test=true';

@@ -29,8 +29,21 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private versionCheckService: VersionCheckService,
   ) {
+    this.redirectIfNeeded(); // redirect to "app" if the url has "appv3 in it
+
     this.customHeader = null;
     this.initializeApp();
+  }
+
+  private redirectIfNeeded() {
+    // Check if the current URL matches the condition
+    if (window.location.href.startsWith('https://appv3.')) {
+      // Replace 'appv3.practera.com' with 'app.practera.com'
+      const newUrl = window.location.href.replace('https://appv3.', 'https://app.');
+
+      // Redirect to the new URL
+      window.location.href = newUrl;
+    }
   }
 
   // force every navigation happen under radar of angular
@@ -131,7 +144,7 @@ export class AppComponent implements OnInit {
 
         case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
+            return this.authService.logout({}, [
               'auth',
               'registration',
               searchParams.get('email'),
