@@ -5,6 +5,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
+import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
   selector: 'app-auth-global-login',
@@ -18,6 +19,7 @@ export class AuthGlobalLoginComponent implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private ngZone: NgZone,
+    private utils: UtilsService,
     private readonly storage: BrowserStorageService,
   ) {}
 
@@ -34,15 +36,35 @@ export class AuthGlobalLoginComponent implements OnInit {
         experience: authed.experience
       });
 
+      const homePath = ['v3', 'home'];
       if (multipleStacks) {
         this.storage.set('hasMultipleStacks', true);
       }
       if (environment.demo) {
         setTimeout(() => {
-          return this.navigate(['v3', 'home']);
+          return this.navigate(homePath);
         }, 3000);
       } else {
-        return this.navigate(['v3', 'home']);
+        const currentLocation = window.location.href;
+        // check if the current location is localhost
+        if (currentLocation.indexOf('localhost') === -1) {
+          const locale = authed.experience.locale;
+          // if current locale is not in the current location, redirect to the locale
+          if (currentLocation.indexOf(locale) === -1) {
+            const routeArray = [`/${locale}`, ...homePath];
+            const newUrl = `${window.location.origin}${routeArray.join('/')}`;
+            this.utils.redirectToUrl(newUrl);
+          }
+        } else { // Info: This block is only for development purpose
+          const locale = authed.experience.locale;
+          /* eslint-disable no-console */
+          console.info('URL redirections::', {
+            dev: homePath,
+            prod: [`/${locale}`, ...homePath],
+          });
+        }
+
+        return this.navigate(homePath);
       }
     } catch (err) {
       this._error(err);
