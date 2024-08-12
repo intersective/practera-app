@@ -307,6 +307,11 @@ export class AuthService {
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
     };
+    if (environment.demo) {
+      return of({
+        programs: []
+      });
+    }
 
     return this.request.post({
       endPoint: API.login,
