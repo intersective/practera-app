@@ -74,9 +74,14 @@ export class AuthDirectLoginComponent implements OnInit {
     // clear the cached data
     await this.authService.clearCache();
 
+    const redirectConfig = {
+      experience,
+      save: redirectLater
+    };
+
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
-      return this._saveOrRedirect(['experiences'], redirectLater);
+      return this._saveOrRedirect(['experiences'], redirectConfig);
     }
 
     // purpose of return_url
@@ -99,19 +104,19 @@ export class AuthDirectLoginComponent implements OnInit {
     let referrerUrl = '';
     switch (redirect) {
       case 'home':
-        return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectConfig);
       case 'project':
-        return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectConfig);
       case 'activity':
         if (!activityId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         } else if (this.utils.isMobile()){
-          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectConfig);
         }
-        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectLater);
+        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectConfig);
       case 'activity_task':
         if (!activityId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
         referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
@@ -122,12 +127,12 @@ export class AuthDirectLoginComponent implements OnInit {
           });
         }
         if (this.utils.isMobile()){
-          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectConfig);
         }
-        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectLater);
+        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectConfig);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
 
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
@@ -141,9 +146,9 @@ export class AuthDirectLoginComponent implements OnInit {
 
         if (this.utils.isMobile() || restrictedAccess) {
           if (submissionId) {
-            return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId, submissionId], redirectLater);
+            return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId, submissionId], redirectConfig);
           }
-          return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId], redirectLater);
+          return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId], redirectConfig);
         } else {
           return this._saveOrRedirect([
             'v3', 'activity-desktop',
@@ -153,22 +158,22 @@ export class AuthDirectLoginComponent implements OnInit {
               contextId,
               assessmentId,
             }
-          ], redirectLater);
+          ], redirectConfig);
         }
       case 'topic':
         if (!activityId || !topicId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
         if (this.utils.isMobile() || restrictedAccess) {
-          return this._saveOrRedirect(['topic-mobile', activityId, topicId], redirectLater);
+          return this._saveOrRedirect(['topic-mobile', activityId, topicId], redirectConfig);
         } else {
-          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'topic', task_id: topicId }], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'topic', task_id: topicId }], redirectConfig);
         }
       case 'reviews':
-        return this._saveOrRedirect(['v3', 'reviews'], redirectLater);
+        return this._saveOrRedirect(['v3', 'reviews'], redirectConfig);
       case 'review':
         if (!contextId || !assessmentId || !submissionId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
 
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
@@ -188,20 +193,36 @@ export class AuthDirectLoginComponent implements OnInit {
             assessmentId,
             submissionId,
             { from: 'reviews' }
-          ], redirectLater);
+          ], redirectConfig);
         }
-        return this._saveOrRedirect(['v3', 'review-desktop', submissionId], redirectLater);
+        return this._saveOrRedirect(['v3', 'review-desktop', submissionId], redirectConfig);
       case 'chat':
-        return this._saveOrRedirect(['v3', 'messages'], redirectLater);
+        return this._saveOrRedirect(['v3', 'messages'], redirectConfig);
       case 'settings':
-        return this._saveOrRedirect(['v3', 'settings'], redirectLater);
+        return this._saveOrRedirect(['v3', 'settings'], redirectConfig);
       default:
-        return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectConfig);
     }
   }
 
-  private _saveOrRedirect(route: Array<String | number | object>, save = false) {
-    if (save) {
+  private _saveOrRedirect(route: Array<String | number | object>, options?: {
+    save?: boolean;
+    experience?: any;
+  }): void | Promise<boolean> {
+    const currentLocation = window.location.href;
+    const locale = options?.experience?.locale;
+    if (currentLocation.indexOf('localhost') === -1 && currentLocation.indexOf(locale) === -1) {
+      route = [`/${locale}`, ...route];
+      this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
+    } else { // Info: This block is only for development purpose
+      /* eslint-disable no-console */
+      console.info('URL redirection::', {
+        dev: route,
+        prod: [`/${locale || null}`, ...route]
+      });
+    }
+
+    if (options?.save === true) {
       return this.storage.set('directLinkRoute', route);
     }
     /**
@@ -251,4 +272,6 @@ export class AuthDirectLoginComponent implements OnInit {
 
     return this.storage.singlePageAccess;
   }
+
+
 }
