@@ -180,7 +180,7 @@ export class ActivityService {
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
             isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, { compareDate: true }) === 0 : false,
-            status: task.status.status === 'pending approval' ? 'pending review' : task.status.status,
+            status: task?.status?.status === 'pending approval' ? 'pending review' : task.status.status,
             isLocked: task.status.isLocked,
             submitter: {
               name: task.status.submitterName,

@@ -36,7 +36,6 @@ export class HomePage implements OnInit, OnDestroy {
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
   hasUnlockedTasks: Object = {};
-  unlockedMilestones: { [key: number]: boolean } = {};
 
   // default card image (gracefully show broken url)
   defaultLeadImage: string = '';
@@ -110,13 +109,10 @@ export class HomePage implements OnInit, OnDestroy {
     )
     .subscribe((unlockedTasks) => {
       this.hasUnlockedTasks = {}; // reset
-      this.unlockedMilestones = {}; // reset
       unlockedTasks.forEach((task) => {
         if (task.milestoneId) {
           if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
             this.verifyUnlockedMilestoneValidity(task.milestoneId);
-          } else {
-            this.unlockedMilestones[task.milestoneId] = true;
           }
         }
 
@@ -225,6 +221,11 @@ export class HomePage implements OnInit, OnDestroy {
     return this.router.navigate(['v3', 'activity-mobile', activity.id]);
   }
 
+  /**
+   * clear visited milestone unlock indicators
+   * @param   {number}  milestoneId
+   * @return  {void}
+   */
   verifyUnlockedMilestoneValidity(milestoneId: number): void {
     // check & update unlocked milestones
     const unlockedMilestones =

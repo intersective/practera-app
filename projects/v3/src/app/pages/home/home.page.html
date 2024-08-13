@@ -74,14 +74,7 @@
     <ng-container *ngFor="let milestone of milestones">
       <ion-item class="headline-4 milestone-name" lines="none"
         aria-describedby="milestone-description">
-        <div>
-          {{ milestone.name }}
-          <span class="milestone notification-dot"
-            [ngClass]="{'mobile': isMobile}"
-            slot="start"
-            *ngIf="unlockedMilestones[milestone.id]"
-          ></span>
-        </div>
+        <div>{{ milestone.name }}</div>
         <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
       </ion-item>
 
