@@ -206,6 +206,19 @@ export class HomePage implements OnInit, OnDestroy {
     this.activityService.clearActivity();
     this.assessmentService.clearAssessment();
 
+    if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
+      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(activity.id);
+      clearedActivityTodo?.forEach((todo) => {
+        this.notification
+          .markTodoItemAsDone(todo)
+          .pipe(first())
+          .subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.log('Marked activity as done', todo);
+          });
+        });
+    }
+
     if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
       this.verifyUnlockedMilestoneValidity(milestone.id);
     }
