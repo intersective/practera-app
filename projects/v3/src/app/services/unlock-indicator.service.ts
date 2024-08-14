@@ -42,6 +42,21 @@ export class UnlockIndicatorService {
     }
   }
 
+  getTasksByActivityId(activityId: number): UnlockedTask[] {
+    return this._unlockedTasksSubject.getValue().filter(unlocked => unlocked.activityId === activityId);
+  }
+
+  isActivityClearable(activityId: number): boolean {
+    const activities = this.getTasksByActivityId(activityId);
+    const hasUnlockedTasks = activities.some(task => task.taskId !== undefined);
+    if (hasUnlockedTasks === true) {
+      return false;
+    }
+
+    return true;
+  }
+
+
   /**
    * a unlockedTask has format { milestoneId, activityId, taskId }
    * so this will extract unlockedTask[] with milestoneId
@@ -81,13 +96,13 @@ export class UnlockIndicatorService {
   clearActivity(id: number): UnlockedTask[] {
     const currentTasks = this._unlockedTasksSubject.getValue();
 
-    const clearedActivity = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
+    const clearedActivities = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
     const latestTasks = currentTasks.filter(task => task.activityId !== id && task.milestoneId !== id);
 
     this.storageService.set('unlockedTasks', latestTasks);
     this._unlockedTasksSubject.next(latestTasks);
 
-    return clearedActivity;
+    return clearedActivities;
   }
 
   getTasksByMilestoneId(milestoneId: number): UnlockedTask[] {
