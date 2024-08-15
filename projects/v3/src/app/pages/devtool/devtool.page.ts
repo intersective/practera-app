@@ -112,7 +112,7 @@ export class DevtoolPage implements OnInit {
       this.notificationsService.markTodoItemAsDone(task).subscribe(res => {
         console.log('res', res);
       });
-      this.unlockIndicatorService.removeTask(task.taskId);
+      this.unlockIndicatorService.removeTasks(task.taskId);
     });
   }
 }
