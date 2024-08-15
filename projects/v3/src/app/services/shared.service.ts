@@ -200,7 +200,6 @@ export class SharedService {
   async initWebServices(): Promise<void> {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
-    this.apolloService.initiateChatClient();
     this.utils.checkIsPracteraSupportEmail();
   }
 

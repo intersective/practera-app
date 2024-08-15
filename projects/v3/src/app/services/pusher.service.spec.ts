@@ -124,8 +124,7 @@ describe('PusherService', async () => {
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
-            graphQLFetch: of(),
-            chatGraphQLQuery: of({
+            graphQLFetch: of({
               pipe: of({ data: [] })
             })
           }),
@@ -187,10 +186,10 @@ describe('PusherService', async () => {
     });
 
     it('should call getChatChannels() and make API request to chat GraphQL Server', () => {
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
+      apolloSpy.graphQLFetch.and.returnValue(of(pusherChatChannelRes));
       spyOn(service, 'isSubscribed').and.returnValue(true);
       service.getChatChannels().subscribe();
-      expect(apolloSpy.chatGraphQLQuery.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
     });
   });
 
@@ -291,7 +290,7 @@ describe('PusherService', async () => {
       }));
       service['pusher'] = undefined;
       requestSpy.get.and.returnValue(of(notificationRes));
-      apolloSpy.chatGraphQLQuery.and.returnValue(of(pusherChatChannelRes));
+      apolloSpy.graphQLFetch.and.returnValue(of(pusherChatChannelRes));
     });
 
     it('should initialise pusher', fakeAsync(() => {
