@@ -29,7 +29,7 @@ export class AuthGlobalLoginComponent implements OnInit {
     }
     try {
       const authed = await this.authService.autologin({ apikey }).toPromise();
-      await this.experienceService.getMyInfo().toPromise();
+      await this.authService.getMyInfo().toPromise();
       await this.experienceService.switchProgram({
         experience: authed.experience
       });
