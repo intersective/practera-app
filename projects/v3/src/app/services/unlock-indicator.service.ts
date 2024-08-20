@@ -42,6 +42,21 @@ export class UnlockIndicatorService {
     }
   }
 
+  getTasksByActivityId(activityId: number): UnlockedTask[] {
+    return this._unlockedTasksSubject.getValue().filter(unlocked => unlocked.activityId === activityId);
+  }
+
+  isActivityClearable(activityId: number): boolean {
+    const activities = this.getTasksByActivityId(activityId);
+    const hasUnlockedTasks = activities.some(task => task.taskId !== undefined);
+    if (hasUnlockedTasks === true) {
+      return false;
+    }
+
+    return true;
+  }
+
+
   /**
    * a unlockedTask has format { milestoneId, activityId, taskId }
    * so this will extract unlockedTask[] with milestoneId
@@ -81,13 +96,13 @@ export class UnlockIndicatorService {
   clearActivity(id: number): UnlockedTask[] {
     const currentTasks = this._unlockedTasksSubject.getValue();
 
-    const clearedActivity = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
+    const clearedActivities = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
     const latestTasks = currentTasks.filter(task => task.activityId !== id && task.milestoneId !== id);
 
     this.storageService.set('unlockedTasks', latestTasks);
     this._unlockedTasksSubject.next(latestTasks);
 
-    return clearedActivity;
+    return clearedActivities;
   }
 
   getTasksByMilestoneId(milestoneId: number): UnlockedTask[] {
@@ -120,10 +135,11 @@ export class UnlockIndicatorService {
     this._unlockedTasksSubject.next(latestTasks);
   }
 
-  // Method to remove an accessed task
-  removeTask(taskId?: number): UnlockedTask {
+  // Method to remove an accessed tasks
+  // (some tasks are repeatable due to unlock from different level of trigger eg. by milestone, activity, task)
+  removeTasks(taskId?: number): UnlockedTask[] {
     const currentTasks = this._unlockedTasksSubject.getValue();
-    const removedTask = currentTasks.find(task => task.taskId === taskId);
+    const removedTask = currentTasks.filter(task => task.taskId === taskId);
     const latestTasks = currentTasks.filter(task => task.taskId !== taskId);
     this.storageService.set('unlockedTasks', latestTasks);
     this._unlockedTasksSubject.next(latestTasks);

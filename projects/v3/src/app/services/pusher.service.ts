@@ -201,7 +201,7 @@ export class PusherService {
   }
 
   getChatChannels(): Observable<any> {
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getPusherChannels {
         channels {
           pusherChannel

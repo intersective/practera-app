@@ -164,7 +164,7 @@ export class ActivityDesktopPage {
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
   private _setActivity(res: Activity) {
-    if (this.activity !== undefined) {
+    if (this.activity !== undefined && this.activity?.tasks.length === res.tasks.length) {
       // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
       if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
         // Collect new tasks with id as key
