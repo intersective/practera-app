@@ -20,6 +20,8 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   isShowSupportBtn: boolean = false;
   @Input() isExpPage: boolean = false;
 
+  isLoadingSetting = false;
+
   constructor(
     private modalController: ModalController,
     private readonly animationService: AnimationsService,
@@ -76,6 +78,7 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   }
 
   async settings(): Promise<void | boolean> {
+    this.isLoadingSetting = true;
     if (this.isMobile) {
       return this.router.navigate(['v3', 'settings']);
     }
@@ -90,7 +93,9 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
       cssClass: 'right-affixed',
     });
 
-    return modal.present();
+    return modal.present().finally(() => {
+      this.isLoadingSetting = false;
+    });
   }
 
   openSupport() {
