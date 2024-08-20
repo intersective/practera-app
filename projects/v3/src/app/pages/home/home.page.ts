@@ -199,8 +199,7 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
 
-    this.activityService.clearActivity();
-    this.assessmentService.clearAssessment();
+    // this.assessmentService.clearAssessment();
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
       const clearedActivityTodo = this.unlockIndicatorService.clearActivity(activity.id);

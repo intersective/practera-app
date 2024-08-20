@@ -27,6 +27,7 @@
       role="button"
       tabindex="0"
       *ngFor="let task of (activity?.tasks || []); let i = index"
+      [task]="task"
       lines="full"
       subtitle1Color="grey-50"
       (click)="goto(task)"
@@ -41,6 +42,7 @@
       [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
       [endingIcon]="endingIcon(task)"
       [endingIconColor]="endingIconColor(task)"
+      [loading]="false"
     ></app-list-item>
   </ng-container>
 </ng-container>
