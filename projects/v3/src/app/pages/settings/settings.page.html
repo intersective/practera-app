@@ -1,13 +1,6 @@
 <ion-header class="settings-header" aria-label="settings">
   <h1 class="for-accessibility" i18n>Settings</h1>
   <ion-toolbar>
-    <!-- @TODO need to check with rodrigo/sanjaya do we need it. according to funcanality we no need it. can navigate from tabs-->
-    <!-- If needed enable it back -->
-    <!-- <ion-buttons slot="start">
-      <ion-button (click)="goBack()" *ngIf="!mode">
-        <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons> -->
     <ion-title class="headline-4" i18n>Settings</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -22,7 +15,7 @@
     <ng-container *ngIf="!isMobile; else mobileProfile">
       <div class="avatar-and-profile">
         <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile.image" alt="user profile" i18n-alt>
+          <img *ngIf="!imageUpdating" [src]="profile?.image" alt="user profile" i18n-alt [appFallbackImage]="'/assets/loading.gif'">
           <p *ngIf="imageUpdating" class="loading-icon">
             <ion-spinner name="bubbles"></ion-spinner>
           </p>
@@ -40,7 +33,7 @@
     <ng-template #mobileProfile>
       <ion-item>
         <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile.image" alt="user profile">
+          <img *ngIf="!imageUpdating" [src]="profile?.image || '/assets/loading.gif'" alt="user profile">
           <p *ngIf="imageUpdating" class="loading-icon">
             <ion-spinner name="bubbles"></ion-spinner>
           </p>
