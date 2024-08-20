@@ -284,7 +284,7 @@ export class ExperienceService {
     this.sharedService.initWebServices();
     try {
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
-      const me = await this.getMyInfo().toPromise();
+      const me = await this.authService.getMyInfo().toPromise();
 
       this._experience$.next(exp);
 
@@ -292,60 +292,6 @@ export class ExperienceService {
     } catch (err) {
       throw Error(err);
     }
-  }
-
-  /**
-   * @name getMyInfo
-   * @description get user info
-   */
-  getMyInfo(): Observable<any> {
-    if (environment.demo) {
-      this.storage.setUser({
-        uuid: this.demo.myInfo.uuid,
-        name: this.demo.myInfo.name,
-        firstName: this.demo.myInfo.firstName,
-        lastName:this.demo.myInfo.lastName,
-        email: this.demo.myInfo.email,
-        image: this.demo.myInfo.image,
-        role: this.demo.myInfo.role,
-        contactNumber: this.demo.myInfo.contactNumber,
-        userHash: this.demo.myInfo.userHash
-      });
-      return of(this.demo.myInfo);
-    }
-    return this.apolloService.graphQLFetch(
-      `query user {
-        user {
-          id
-          uuid
-          name
-          firstName
-          lastName
-          email
-          image
-          role
-          contactNumber
-          userHash
-        }
-      }`
-    ).pipe(map(response => {
-      if (response.data && response.data.user) {
-        const thisUser = response.data.user;
-
-        this.storage.setUser({
-          uuid: thisUser.uuid,
-          name: thisUser.name,
-          firstName: thisUser.firstName,
-          lastName: thisUser.lastName,
-          email: thisUser.email,
-          image: thisUser.image,
-          role: thisUser.role,
-          contactNumber: thisUser.contactNumber,
-          userHash: thisUser.userHash
-        });
-      }
-      return response;
-    }));
   }
 
   getEvents() {
