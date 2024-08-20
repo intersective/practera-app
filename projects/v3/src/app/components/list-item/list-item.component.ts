@@ -23,13 +23,13 @@ export class ListItemComponent {
   @Input() titleColor?: string;
   @Input() subtitle1: string;
   @Input() subtitle1Color: string;
-  @Input() subtitle2: string;
-  @Input() subtitle2Color: string;
-  @Input() callToActionBtn: CTABtnType;
+  @Input() subtitle2?: string;
+  @Input() subtitle2Color?: string;
+  @Input() callToActionBtn?: CTABtnType;
   @Input() label: string;
   @Input() labelColor: string;
-  @Input() endingText: string | number;
-  @Input() endingTextColor: string;
+  @Input() endingText?: string | number;
+  @Input() endingTextColor?: string;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
   @Input() endingProgress: number = undefined;
@@ -43,6 +43,8 @@ export class ListItemComponent {
   @Input() eventFullyBooked: boolean;
   @Input() eventDayCount: string;
   @Input() redDot: boolean = false; // red dot on the top right corner (for notifications in home page)
+
+  @Input() task?: any;
 
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];

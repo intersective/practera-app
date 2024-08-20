@@ -29,7 +29,7 @@
         ></app-activity>
       </ion-col>
 
-      <ion-col size="12" size-md="8" class="border-left">
+      <ion-col size="12" size-md="8" class="border-left" [ngClass]="{'loading-overlay': isLoadingAssessment}">
         <ng-container *ngIf="notInATeamAndForTeamOnly === true; else showCurrentTask">
           <div class="centered-text">
             This assessment can only be accessed when you are in a team.
@@ -41,30 +41,31 @@
 </ion-content>
 
 <ng-template #showCurrentTask>
-  <ng-container *ngIf="currentTask">
-    <app-assessment *ngIf="currentTask.type === 'Assessment'"
-      [assessment]="assessment"
-      [submission]="submission"
-      [review]="review"
-      [contextId]="currentTask.contextId"
-      [activityId]="activity?.id"
-      [savingMessage$]="savingText$"
-      [btnDisabled$]="btnDisabled$"
-      action="assessment"
-      (save)="saveAssessment($event, currentTask)"
-      (readFeedback)="readFeedback($event, currentTask)"
-      (continue)="nextTask(currentTask)"
-      tabindex="0"
-      id="task-content"
-    ></app-assessment>
+  <ion-button (click)="addTask()">add task</ion-button>
+  <ion-button (click)="resetTask()">reset task</ion-button>
+  <ion-button (click)="resetWithAdditionalTask()">add & reset task</ion-button>
+  <app-assessment *ngIf="currentTask?.type === 'Assessment'"
+    [assessment]="assessment | async"
+    [submission]="submission"
+    [review]="review"
+    [contextId]="currentTask.contextId"
+    [activityId]="activity?.id"
+    [savingMessage$]="savingText$"
+    [btnDisabled$]="btnDisabled$"
+    action="assessment"
+    (save)="saveAssessment($event, currentTask)"
+    (readFeedback)="readFeedback($event, currentTask)"
+    (continue)="nextTask(currentTask)"
+    tabindex="0"
+    id="task-content"
+  ></app-assessment>
 
-    <app-topic *ngIf="currentTask.type === 'Topic'"
-      [topic]="topic"
-      [task]="currentTask"
-      (continue)="topicComplete(currentTask)"
-      [buttonDisabled$]="btnDisabled$"
-      tabindex="0"
-      id="task-content"
-    ></app-topic>
-  </ng-container>
+  <app-topic *ngIf="currentTask?.type === 'Topic'"
+    [topic]="topic"
+    [task]="currentTask"
+    (continue)="topicComplete(currentTask)"
+    [buttonDisabled$]="btnDisabled$"
+    tabindex="0"
+    id="task-content"
+  ></app-topic>
 </ng-template>
