@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
-import { map, shareReplay, catchError } from 'rxjs/operators';
+import { map, shareReplay, catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -117,7 +117,6 @@ export class AssessmentService {
   private _review$ = new BehaviorSubject<AssessmentReview>(null);
   review$ = this._review$.pipe(shareReplay(1));
 
-  private assessment: Assessment;
   questions = {};
 
   constructor(
@@ -130,7 +129,11 @@ export class AssessmentService {
     private demo: DemoService,
     private request: RequestService,
   ) {
-    this.assessment$.subscribe((res) => (this.assessment = res));
+    // this.assessment$.subscribe((res) => (this.assessment = res));
+  }
+
+  get assessment() {
+    return this._assessment$.getValue();
   }
 
   clearAssessment() {
@@ -196,7 +199,9 @@ export class AssessmentService {
           },
         },
       )
-      .pipe(map((res) => this._handleAssessmentResponse(res, action)));
+      .pipe(
+        map((res) => this._handleAssessmentResponse(res, action)),
+      );
   }
 
   /**
@@ -217,9 +222,6 @@ export class AssessmentService {
     contextId,
     submissionId?
   ): Subscription {
-    if (!this.assessment || this.assessment.id !== id) {
-      this.clearAssessment();
-    }
     if (environment.demo) {
       return this.demo
         .assessment(id)
