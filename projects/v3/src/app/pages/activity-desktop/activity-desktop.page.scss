@@ -15,6 +15,11 @@ ion-content {
       }
     }
   }
+
+  .loading-overlay {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .large-icon {
