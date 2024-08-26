@@ -230,7 +230,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private async _validateTeamAssessment(task: Task, proceedCB) {
+  private async _validateTeamAssessment(task: Task, proceedCB): Promise<void> {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 
