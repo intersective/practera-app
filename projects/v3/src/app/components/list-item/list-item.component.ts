@@ -44,8 +44,6 @@ export class ListItemComponent {
   @Input() eventDayCount: string;
   @Input() redDot: boolean = false; // red dot on the top right corner (for notifications in home page)
 
-  @Input() task?: any;
-
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];
   // named as "any" to support any callback parameter format
