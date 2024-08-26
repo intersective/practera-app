@@ -16,7 +16,7 @@ import { takeUntil } from 'rxjs/operators';
   styleUrls: ['./activity.component.scss'],
 })
 export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() activity: Activity;
+  @Input() activity!: Activity;
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
@@ -59,11 +59,14 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     this.leadImage = this.storageService.getUser().programImage;
     this.unlockIndicatorService.unlockedTasks$
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(this.resetTaskIndicator.bind(this));
+      .subscribe(this.resetTaskIndicator);
   }
 
   ngOnChanges(changes: SimpleChanges): void | Promise<void> {
     if (changes.activity?.currentValue) {
+      if (this.utils.isEqual(changes.activity.currentValue, changes.activity.previousValue)) {
+        return;
+      }
       const activities = this.storageService.get('activities');
       if (activities) {
         const currentActivity = (activities || {})[this.activity.id];
@@ -99,6 +102,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
 
       const currentValue = changes.activity.currentValue;
       if (currentValue.tasks?.length > 0) {
+        // verify team status & restrict access
         this.activityService
           .nonTeamActivity(changes.activity.currentValue?.tasks)
           .then((nonTeamActivity) => {
@@ -106,6 +110,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
             this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
           });
 
+        // clear viewed unlocked indicator
         const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
         this.resetTaskIndicator(unlockedTasks);
         if (unlockedTasks.length === 0) {
@@ -261,7 +266,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
    *
    * @return  {[type]}           [return description]
    */
-  private async _validateTeamAssessment(task: Task, proceedCB): Promise<any> {
+  private async _validateTeamAssessment(task: Task, proceedCB): Promise<void> {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 
