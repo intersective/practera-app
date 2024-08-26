@@ -1,6 +1,6 @@
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -8,8 +8,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, Subscription, firstValueFrom } from 'rxjs';
-import { delay, filter, tap, distinctUntilChanged } from 'rxjs/operators';
+import { BehaviorSubject, Subject, firstValueFrom } from 'rxjs';
+import { delay, filter, tap, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -19,10 +19,9 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   styleUrls: ['./activity-desktop.page.scss'],
 })
 export class ActivityDesktopPage {
-  subscriptions: Subscription[] = [];
   activity: Activity;
   currentTask: Task;
-  assessment: Assessment;
+  assessment = this.assessmentService.assessment$;
   submission: Submission;
   review: AssessmentReview;
   topic: Topic;
@@ -30,12 +29,16 @@ export class ActivityDesktopPage {
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   notInATeamAndForTeamOnly: boolean = false;
+  // loading overlay for assessment
+  isLoadingAssessment: boolean = false;
 
   // grabs from URL parameter
   urlParams = {
     action: null,
     contextId: null,
   };
+
+  unsubscribe$ = new Subject();
 
   constructor(
     private route: ActivatedRoute,
@@ -50,37 +53,45 @@ export class ActivityDesktopPage {
     @Inject(DOCUMENT) private readonly document: Document,
   ) { }
 
-  ionViewWillEnter() {
-    this.subscriptions.push(
-      this.activityService.activity$
-        .pipe(
-          filter((res) => res?.id === +this.route.snapshot.paramMap.get("id"))
-        )
-        .subscribe(this._setActivity.bind(this))
-    );
-    this.subscriptions.push(
-      this.activityService.currentTask$.subscribe(
-        (res) => (this.currentTask = res)
-      )
-    );
-    this.subscriptions.push(
-      this.assessmentService.assessment$
-        .pipe(distinctUntilChanged())
-        .subscribe((res) => (this.assessment = res))
-    );
-    this.subscriptions.push(
-      this.assessmentService.submission$
-        .pipe(distinctUntilChanged())
-        .subscribe((res) => (this.submission = res))
-    );
-    this.subscriptions.push(
-      this.assessmentService.review$.subscribe((res) => (this.review = res))
-    );
-    this.subscriptions.push(
-      this.topicService.topic$.subscribe((res) => (this.topic = res))
-    );
+  ionViewDidEnter() {
+    this.activityService.activity$
+      .pipe(
+        filter((res) => res?.id === +this.route.snapshot.paramMap.get("id")),
+        takeUntil(this.unsubscribe$),
+      ).subscribe(res => this._setActivity(res));
 
-    this.subscriptions.push(this.route.paramMap.subscribe(params => {
+    this.activityService.currentTask$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(res => this.currentTask = res);
+
+      /* this.assessmentService.assessment$
+        .pipe(
+          distinctUntilChanged(),
+          takeUntil(this.unsubscribe$),
+        ).subscribe((res) => (this.assessment = res)); */
+
+      this.assessmentService.submission$
+        .pipe(
+          distinctUntilChanged(),
+          takeUntil(this.unsubscribe$),
+        )
+        .subscribe((res) => (this.submission = res));
+
+      this.assessmentService.review$
+        .pipe(
+          distinctUntilChanged(),
+          takeUntil(this.unsubscribe$),
+        ).subscribe((res) => (this.review = res));
+
+      this.topicService.topic$
+        .pipe(
+          distinctUntilChanged(),
+          takeUntil(this.unsubscribe$),
+        ).subscribe((res) => (this.topic = res));
+
+    this.route.paramMap.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(params => {
       // from route
       const activityId = +params.get('id');
       const contextId = +params.get('contextId'); // optional
@@ -123,43 +134,40 @@ export class ActivityDesktopPage {
           });
         }
       });
-    }));
+    });
 
     // refresh when review is available (AI review, peer review, etc.)
-    this.subscriptions.push(
-      this.utils.getEvent('notification').subscribe(event => {
-        const review = event?.meta?.AssessmentReview;
-        if (event.type === 'assessment_review_published' && review?.assessment_id) {
-          if (this.currentTask.id === review.assessment_id) {
-            this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
-          }
+    this.utils.getEvent('notification')
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(event => {
+      const review = event?.meta?.AssessmentReview;
+      if (event.type === 'assessment_review_published' && review?.assessment_id) {
+        if (this.currentTask.id === review.assessment_id) {
+          this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
         }
-      })
-    );
+      }
+    });
 
     // check new unlock indicator to refresh
-    this.subscriptions.push(
-      this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
-        if (this.activity) {
-          if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
-            this.activityService.getActivity(this.activity.id);
-          }
+    this.unlockIndicatorService.unlockedTasks$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(unlockedTasks => {
+      if (this.activity) {
+        if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
+          this.activityService.getActivity(this.activity.id);
         }
-      })
-    );
+      }
+    });
   }
 
   ionViewWillLeave() {
-    this.currentTask = null;
     this.topicService.clearTopic();
   }
 
   ionViewDidLeave() {
-    this.subscriptions.forEach(sub => {
-      if (sub.closed !== true) {
-        sub.unsubscribe();
-      }
-    });
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
+    this.assessmentService.clearAssessment();
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
@@ -203,13 +211,19 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
-    this.currentTask = null;
-    const taskContentElement = this.document.getElementById('task-content');
-    if (taskContentElement) {
-      taskContentElement.focus();
-    }
+    this.isLoadingAssessment = true;
+    try {
+      const taskContentElement = this.document.getElementById('task-content');
+      if (taskContentElement) {
+        taskContentElement.focus();
+      }
 
-    return this.activityService.goToTask(task);
+      await this.activityService.goToTask(task);
+      this.isLoadingAssessment = false;
+    } catch (error) {
+      this.isLoadingAssessment = false;
+      console.error(error);
+    }
   }
 
   async topicComplete(task: Task) {
@@ -283,7 +297,7 @@ export class ActivityDesktopPage {
           throw new Error("Error submitting assessment");
         }
 
-        if (this.assessment.pulseCheck === true && event.autoSave === false) {
+        if (this.assessmentService.assessment?.pulseCheck === true && event.autoSave === false) {
           await this.assessmentService.pullFastFeedback();
         }
       } else {
