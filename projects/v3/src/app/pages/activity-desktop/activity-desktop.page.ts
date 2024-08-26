@@ -1,6 +1,6 @@
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -18,7 +18,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   templateUrl: './activity-desktop.page.html',
   styleUrls: ['./activity-desktop.page.scss'],
 })
-export class ActivityDesktopPage {
+export class ActivityDesktopPage implements OnDestroy {
   activity: Activity;
   currentTask: Task;
   assessment = this.assessmentService.assessment$;
@@ -52,6 +52,12 @@ export class ActivityDesktopPage {
     private unlockIndicatorService: UnlockIndicatorService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) { }
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    console.log('ActivityDesktopPage destroyed');
+  }
 
   ionViewDidEnter() {
     this.activityService.activity$
@@ -167,6 +173,7 @@ export class ActivityDesktopPage {
   ionViewDidLeave() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.assessmentService.clearAssessment();
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
@@ -294,7 +301,7 @@ export class ActivityDesktopPage {
           throw new Error("Error submitting assessment");
         }
 
-        if (this.assessmentService.assessment.pulseCheck === true && event.autoSave === false) {
+        if (this.assessmentService.assessment?.pulseCheck === true && event.autoSave === false) {
           await this.assessmentService.pullFastFeedback();
         }
       } else {
@@ -383,42 +390,5 @@ export class ActivityDesktopPage {
 
   allTeamTasks(forTeamOnlyWarning: boolean) {
     this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
-  }
-
-  resetWithAdditionalTask() {
-    const tasks = this.activity.tasks;
-    const activity = this.activity;
-    const newAct = {
-      ...activity,
-      ...{
-        tasks: [...tasks, ...[{
-          id: this.activity.tasks.length + 1,
-          name: 'New Task',
-          status: 'in progress',
-          type: 'assessment',
-        }]]
-      }
-    }
-    // this.activityService.refreshActivity(newAct);
-    this.activityService.getActivity(this.activity.id);
-  }
-
-  resetTask() {
-    const activity = this.activity;
-    // const tasks = this.activity.tasks;
-    // this.activity.tasks = [];
-    // this.activity.tasks = tasks;
-    // this.activity = activity;
-    // this.activity = activity;
-    this.activityService.refreshActivity(activity);
-  }
-
-  addTask() {
-    this.activity.tasks.push({
-      id: this.activity.tasks.length + 1,
-      name: 'New Task',
-      status: 'in progress',
-      type: 'assessment',
-    });
   }
 }
