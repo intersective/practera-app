@@ -41,9 +41,6 @@
 </ion-content>
 
 <ng-template #showCurrentTask>
-  <ion-button (click)="addTask()">add task</ion-button>
-  <ion-button (click)="resetTask()">reset task</ion-button>
-  <ion-button (click)="resetWithAdditionalTask()">add & reset task</ion-button>
   <app-assessment *ngIf="currentTask?.type === 'Assessment'"
     [assessment]="assessment | async"
     [submission]="submission"

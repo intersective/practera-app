@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
@@ -167,6 +167,7 @@ export class ActivityDesktopPage {
   ionViewDidLeave() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+    this.assessmentService.clearAssessment();
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
@@ -294,7 +295,7 @@ export class ActivityDesktopPage {
           throw new Error("Error submitting assessment");
         }
 
-        if (this.assessmentService.assessment.pulseCheck === true && event.autoSave === false) {
+        if (this.assessmentService.assessment?.pulseCheck === true && event.autoSave === false) {
           await this.assessmentService.pullFastFeedback();
         }
       } else {
@@ -383,42 +384,5 @@ export class ActivityDesktopPage {
 
   allTeamTasks(forTeamOnlyWarning: boolean) {
     this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
-  }
-
-  resetWithAdditionalTask() {
-    const tasks = this.activity.tasks;
-    const activity = this.activity;
-    const newAct = {
-      ...activity,
-      ...{
-        tasks: [...tasks, ...[{
-          id: this.activity.tasks.length + 1,
-          name: 'New Task',
-          status: 'in progress',
-          type: 'assessment',
-        }]]
-      }
-    }
-    // this.activityService.refreshActivity(newAct);
-    this.activityService.getActivity(this.activity.id);
-  }
-
-  resetTask() {
-    const activity = this.activity;
-    // const tasks = this.activity.tasks;
-    // this.activity.tasks = [];
-    // this.activity.tasks = tasks;
-    // this.activity = activity;
-    // this.activity = activity;
-    this.activityService.refreshActivity(activity);
-  }
-
-  addTask() {
-    this.activity.tasks.push({
-      id: this.activity.tasks.length + 1,
-      name: 'New Task',
-      status: 'in progress',
-      type: 'assessment',
-    });
   }
 }

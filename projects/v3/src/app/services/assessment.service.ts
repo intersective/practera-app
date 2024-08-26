@@ -201,7 +201,6 @@ export class AssessmentService {
       )
       .pipe(
         map((res) => this._handleAssessmentResponse(res, action)),
-        tap(res => console.log('fa-actual:', res))
       );
   }
 
@@ -223,10 +222,6 @@ export class AssessmentService {
     contextId,
     submissionId?
   ): Subscription {
-    // if (!this.assessment || this.assessment.id !== id) {
-    //   this.clearAssessment();
-    // }
-
     if (environment.demo) {
       return this.demo
         .assessment(id)
@@ -239,7 +234,7 @@ export class AssessmentService {
       activityId,
       contextId,
       submissionId
-    ).pipe(tap(res => console.log('fa:', res))).subscribe();
+    ).subscribe();
   }
 
   private _handleAssessmentResponse(

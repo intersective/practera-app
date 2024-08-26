@@ -155,7 +155,8 @@ export class ActivityService {
 
     // clone the return data, instead of modifying it
     const result = { ...data.activity };
-    const tasks = result?.tasks?.map(task => {
+    const tasks = result?.tasks?.filter(task => task.id !== null) // filter out null task
+    .map(task => {
       if (task.isLocked) {
         return {
           id: 0,
@@ -173,6 +174,7 @@ export class ActivityService {
           };
 
         case 'assessment':
+          const taskStatus = task.status;
           return {
             id: task.id,
             name: task.name,
@@ -182,11 +184,11 @@ export class ActivityService {
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
             isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, { compareDate: true }) === 0 : false,
-            status: task?.status?.status === 'pending approval' ? 'pending review' : task.status.status,
-            isLocked: task.status.isLocked,
+            status: taskStatus?.status === 'pending approval' ? 'pending review' : taskStatus?.status,
+            isLocked: taskStatus?.isLocked,
             submitter: {
-              name: task.status.submitterName,
-              image: task.status.submitterImage
+              name: taskStatus?.submitterName,
+              image: taskStatus?.submitterImage
             },
             assessmentType: task.assessmentType
           };

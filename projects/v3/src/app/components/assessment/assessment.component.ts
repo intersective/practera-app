@@ -221,8 +221,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes', changes);
-
     if (!this.assessment) {
       return;
     }
