@@ -27,7 +27,6 @@
       role="button"
       tabindex="0"
       *ngFor="let task of (activity?.tasks || []); let i = index"
-      [task]="task"
       lines="full"
       subtitle1Color="grey-50"
       (click)="goto(task)"
