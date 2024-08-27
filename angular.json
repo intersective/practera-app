@@ -115,6 +115,30 @@
               "extractLicenses": true,
               "vendorChunk": false
             },
+            "stage": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "6mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.custom.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "production": {
               "budgets": [
                 {
