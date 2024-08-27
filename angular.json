@@ -249,6 +249,9 @@
             },
             "development": {
               "tsConfig": "projects/request/tsconfig.lib.json"
+            },
+            "stage": {
+              "tsConfig": "projects/request/tsconfig.lib.prod.json"
             }
           },
           "defaultConfiguration": "production"
