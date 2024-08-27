@@ -41,7 +41,7 @@ export class AuthGlobalLoginComponent implements OnInit {
         this.storage.set('hasMultipleStacks', true);
       }
       if (environment.demo) {
-        setTimeout(() => {
+        return setTimeout(() => {
           return this.navigate(homePath);
         }, 3000);
       } else {
@@ -53,7 +53,7 @@ export class AuthGlobalLoginComponent implements OnInit {
           if (currentLocation.indexOf(locale) === -1) {
             const routeArray = [`/${locale}`, ...homePath];
             const newUrl = `${window.location.origin}${routeArray.join('/')}`;
-            this.utils.redirectToUrl(newUrl);
+            return this.utils.redirectToUrl(newUrl);
           }
         } else { // Info: This block is only for development purpose
           const locale = authed.experience.locale;
