@@ -213,7 +213,7 @@ export class AuthDirectLoginComponent implements OnInit {
     const locale = options?.experience?.locale;
     if (currentLocation.indexOf('localhost') === -1 && currentLocation.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
-      this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
+      return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else { // Info: This block is only for development purpose
       /* eslint-disable no-console */
       console.info('URL redirection::', {
