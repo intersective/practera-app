@@ -33,7 +33,7 @@ export class AuthDirectLoginComponent implements OnInit {
 
     this.authService.autologin({ authToken }).subscribe({
       next: async (authed) => {
-        await this.experienceService.getMyInfo().toPromise();
+        await this.authService.getMyInfo().toPromise();
         return this._redirect({ experience: authed.experience });
       },
       error: err => {

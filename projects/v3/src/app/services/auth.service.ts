@@ -10,6 +10,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
 import { ApolloService } from './apollo.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
+import { DemoService } from './demo.service';
 
 /**
  * @name api
@@ -120,6 +121,7 @@ export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(
+    private demo: DemoService,
     private request: RequestService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
@@ -532,5 +534,75 @@ export class AuthService {
     //   this.each(this.activitySubjects, (subject, key) => {
     //     this.activitySubjects[key].next(null);
     //   });
+  }
+
+
+  /**
+   * @name getMyInfo
+   * @description get user info
+   */
+  getMyInfo(): Observable<{
+    data: {
+      user: {
+        id: number;
+        uuid: string;
+        name: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        image: string;
+        role: string;
+        contactNumber: string;
+        userHash: string;
+      }
+    }
+  }> {
+    if (environment.demo) {
+      this.storage.setUser({
+        uuid: this.demo.myInfo.uuid,
+        name: this.demo.myInfo.name,
+        firstName: this.demo.myInfo.firstName,
+        lastName: this.demo.myInfo.lastName,
+        email: this.demo.myInfo.email,
+        image: this.demo.myInfo.image,
+        role: this.demo.myInfo.role,
+        contactNumber: this.demo.myInfo.contactNumber,
+        userHash: this.demo.myInfo.userHash
+      });
+      return of(this.demo.myInfo as any);
+    }
+    return this.apolloService.graphQLFetch(
+      `query user {
+        user {
+          id
+          uuid
+          name
+          firstName
+          lastName
+          email
+          image
+          role
+          contactNumber
+          userHash
+        }
+      }`
+    ).pipe(map(response => {
+      if (response?.data?.user) {
+        const thisUser = response.data.user;
+
+        this.storage.setUser({
+          uuid: thisUser.uuid,
+          name: thisUser.name,
+          firstName: thisUser.firstName,
+          lastName: thisUser.lastName,
+          email: thisUser.email,
+          image: thisUser.image,
+          role: thisUser.role,
+          contactNumber: thisUser.contactNumber,
+          userHash: thisUser.userHash
+        });
+      }
+      return response;
+    }));
   }
 }
