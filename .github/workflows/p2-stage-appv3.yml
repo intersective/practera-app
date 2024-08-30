@@ -68,7 +68,7 @@ jobs:
 ################################################
 #  GITHUB REPO CHECKOUT
 ################################################
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: ${{ env.BRANCH_TAG_NAME }}
@@ -92,16 +92,16 @@ jobs:
 #  NODE ENV
 ################################################
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
 
 
 ################################################
 #  NODE MODULES CACHE
 ################################################
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         id: cache-node-modules
         env:
           cache-name: cache
