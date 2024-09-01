@@ -201,7 +201,7 @@ export class PusherService {
   }
 
   getChatChannels(): Observable<any> {
-    return this.apolloService.chatGraphQLQuery(
+    return this.apolloService.graphQLFetch(
       `query getPusherChannels {
         channels {
           pusherChannel
@@ -333,7 +333,8 @@ export class PusherService {
       return;
     }
     channel.subscription.trigger('client-typing-event', {
-      user: this.storage.getUser().name
+      user: this.storage.getUser().name,
+      channel: channelName
     });
   }
 

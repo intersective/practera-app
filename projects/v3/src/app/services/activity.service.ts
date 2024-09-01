@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { first, map, shareReplay } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
 import { SharedService } from './shared.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 export interface TaskBase {
   id: number;
@@ -78,6 +79,7 @@ export class ActivityService {
     private topic: TopicService,
     private assessment: AssessmentService,
     private sharedService: SharedService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
   public clearActivity(): void {
@@ -126,8 +128,10 @@ export class ActivityService {
         return;
       });
     }
+
     return this.getActivityBase(id).pipe(
-      map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))
+      map(res => this._normaliseActivity(res.data, goToNextTask, afterTask)),
+      first(),
     ).subscribe(_res => {
       if (callback instanceof Function) {
         return callback(_res);
@@ -176,7 +180,7 @@ export class ActivityService {
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
             isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, { compareDate: true }) === 0 : false,
-            status: task.status.status === 'pending approval' ? 'pending review' : task.status.status,
+            status: task?.status?.status === 'pending approval' ? 'pending review' : task.status.status,
             isLocked: task.status.isLocked,
             submitter: {
               name: task.status.submitterName,
@@ -291,6 +295,13 @@ export class ActivityService {
     await this.sharedService.getTeamInfo().toPromise();
 
     this._currentTask$.next(task);
+
+    // clear the task from the unlock indicator
+    const cleared = this.unlockIndicatorService.removeTasks(task.id);
+    cleared.forEach(clearedTask => {
+      this.notification.markTodoItemAsDone(clearedTask).pipe(first()).subscribe();
+    });
+
     if (!getData) {
       return ;
     }
@@ -307,6 +318,7 @@ export class ActivityService {
             task.id
           ]);
         }
+        this.getActivity(this.activity.id);
         return this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
       case 'Topic':
         if (this.utils.isMobile()) {

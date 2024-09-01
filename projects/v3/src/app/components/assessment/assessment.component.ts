@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { ActivityService } from '@v3/app/services/activity.service';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
@@ -29,6 +30,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() action: string;
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
+  @Input() activityId?: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
   @Input() isMobile?: boolean = false;
@@ -97,7 +99,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private assessmentService: AssessmentService
+    private assessmentService: AssessmentService,
+    private activityService: ActivityService,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -124,7 +127,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       }),
     ).subscribe(
       (data: {
-        autoSave: boolean;
+        autoSave: boolean; // true: this request is for autosave; false: request is for submission (manual submission);
         goBack: boolean;
         questionSave?: {
           submissionId: number;
@@ -294,7 +297,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
-        this.btnDisabled$.next(false);
       }
       return;
     }
@@ -633,6 +635,30 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
+
+  /**
+   * Resubmit the assessment submission
+   * (mostly for regenerate AI feedback)
+   */
+  resubmit(): Subscription {
+    if (!this.assessment?.id || !this.submission?.id || !this.activityId) {
+      return;
+    }
+
+    return this.assessmentService.resubmitAssessment({
+      assessment_id: this.assessment.id,
+      submission_id: this.submission.id
+    }).subscribe({
+      next: () => {
+        this.activityService.getActivity(this.activityId);
+        this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
+      },
+      error: () => {
+        this.notifications.assessmentSubmittedToast({
+          isFail: true,
+          label: $localize`Resubmit request failed. Please try again.`,
+        });
+      }
+    });
+  }
 }
-
-
