@@ -1,3 +1,4 @@
+import { AuthEndpoint, AuthService } from '@v3/services/auth.service';
 import { Injectable } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -9,18 +10,6 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
-import { RequestService } from 'request';
-
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-  get: {
-    jwt: 'api/v2/users/jwt/refresh.json'
-  }
-};
 
 @Injectable({
   providedIn: 'root'
@@ -36,11 +25,11 @@ export class SharedService {
     private storage: BrowserStorageService,
     private notification: NotificationsService,
     private http: HttpClient,
-    private requestService: RequestService,
     private topicService: TopicService,
     private apolloService: ApolloService,
     private pusherService: PusherService,
     private achievementService: AchievementService,
+    private authService: AuthService,
   ) { }
 
   // call this function on every page refresh and after switch program
@@ -67,17 +56,23 @@ export class SharedService {
 
     // subscribe to the achievement event if it is not subscribed
     if (!this.achievementEvent) {
-      this.achievementEvent = this.utils.getEvent('achievement').subscribe(event => {
-        if (event && event.meta && event.meta.Achievement) {
+      this.achievementEvent = this.utils.getEvent('achievement').subscribe(async event => {
+        if (event.type === 'achievement_earned' && event?.meta?.Achievement) {
           const { id, name, description, points, badge } = event.meta.Achievement;
-          this.notification.achievementPopUp('notification', {
+          await this.notification.achievementPopUp('notification', {
             id,
             name,
             description,
             points,
             image: badge
           });
-          this.achievementService.getAchievements();
+          return this.achievementService.getAchievements();
+        }
+
+        // signal to pull latest get.todoItems (new_items event) from websocket
+        // Sample data: { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
+        if (event.type === 'new_items' && event?.event === 'achievement') {
+          await this.notification.getTodoItems().toPromise();
         }
       });
     }
@@ -205,12 +200,7 @@ export class SharedService {
   async initWebServices(): Promise<void> {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
-    this.apolloService.initiateChatClient();
     this.utils.checkIsPracteraSupportEmail();
-  }
-
-  getNewJwt() {
-    return this.requestService.get(api.get.jwt);
   }
 
   /**
@@ -220,21 +210,13 @@ export class SharedService {
    * @return  {Promise<any>} non-strict return value, we won't use
    */
   async refreshJWT(): Promise<any> {
-    const res: {
-      apikey: string;
-      data?: {
-        apikey: string;
-        token?: {
-          team_id?: number;
-          teams: any[];
-        };
-      }
-    } = await this.getNewJwt().toPromise();
+    const res: AuthEndpoint = await this.authService.authenticate().toPromise();
 
-    const token = res?.data?.token;
+    const auth = res?.data?.auth;
+    const latestTeamId = auth?.experience?.team?.id;
     const teamId = this.storage.getUser().teamId;
-    if (teamId !== token?.team_id) {
-      const team = { teamId: token.team_id };
+    if (teamId !== latestTeamId) {
+      const team = { teamId: latestTeamId };
       this.storage.setUser(team);
       this._team$.next(team);
     }

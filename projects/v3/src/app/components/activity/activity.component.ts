@@ -1,60 +1,96 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss'],
 })
-export class ActivityComponent implements OnInit, OnChanges {
+export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   @Input() activity: Activity;
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
-  leadImage: string = '';
-
+  leadImage: string = null;
+  newTasks: { [key: number]: any } = {};
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
   // true: user not allowed to access
   // false: at least one non-team task
   @Output() cannotAccessTeamActivity = new EventEmitter();
   isForTeamOnly: boolean = false;
+  private unsubscribe$: Subject<any> = new Subject();
 
   constructor(
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private unlockIndicatorService: UnlockIndicatorService
   ) {}
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  resetTaskIndicator(unlockedTasks) {
+    this.newTasks = {};
+    unlockedTasks
+      .filter((task) => task.taskId)
+      .forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
+  }
 
   ngOnInit() {
     this.leadImage = this.storageService.getUser().programImage;
+    this.unlockIndicatorService.unlockedTasks$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(this.resetTaskIndicator.bind(this));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.activity?.currentValue) {
-      const currentValue = changes.activity.currentValue;
       const activities = this.storageService.get('activities');
-      const currentActivity = activities[this.activity.id];
+
+      const currentActivity = (activities || {})[this.activity.id];
       if (currentActivity?.leadImage) {
         this.leadImage = currentActivity?.leadImage;
       }
 
+      const currentValue = changes.activity.currentValue;
       if (currentValue.tasks?.length > 0) {
-        this.activityService.nonTeamActivity(changes.activity.currentValue?.tasks).then((nonTeamActivity) => {
+        this.activityService
+          .nonTeamActivity(changes.activity.currentValue?.tasks)
+          .then((nonTeamActivity) => {
             this.isForTeamOnly = !nonTeamActivity;
             this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
           });
+
+        const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+        this.resetTaskIndicator(unlockedTasks);
+        if (unlockedTasks.length === 0) {
+          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          clearedActivities.forEach((activity) => {
+            this.notificationsService
+              .markTodoItemAsDone(activity)
+              .pipe(takeUntil(this.unsubscribe$))
+              .subscribe();
+          });
+        }
       }
     }
   }
-
 
   /**
    * Task icon type

@@ -1,3 +1,4 @@
+import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +9,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { delay, filter, tap } from 'rxjs/operators';
+import { delay, filter, tap, distinctUntilChanged } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -45,62 +46,77 @@ export class ActivityDesktopPage {
     private notificationsService: NotificationsService,
     private storageService: BrowserStorageService,
     private utils: UtilsService,
-    @Inject(DOCUMENT) private readonly document: Document
+    private unlockIndicatorService: UnlockIndicatorService,
+    @Inject(DOCUMENT) private readonly document: Document,
   ) { }
 
   ionViewWillEnter() {
     this.subscriptions.push(
       this.activityService.activity$
-      .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
-      .subscribe(res => {
-        this.activity = res;
-      })
+        .pipe(
+          filter((res) => res?.id === +this.route.snapshot.paramMap.get("id"))
+        )
+        .subscribe(this._setActivity.bind(this))
     );
     this.subscriptions.push(
-      this.activityService.currentTask$.subscribe(res => this.currentTask = res)
+      this.activityService.currentTask$.subscribe(
+        (res) => (this.currentTask = res)
+      )
     );
     this.subscriptions.push(
-      this.assessmentService.assessment$.subscribe(res => this.assessment = res)
+      this.assessmentService.assessment$
+        .pipe(distinctUntilChanged())
+        .subscribe((res) => (this.assessment = res))
     );
     this.subscriptions.push(
-      this.assessmentService.submission$.subscribe(res => this.submission = res)
+      this.assessmentService.submission$
+        .pipe(distinctUntilChanged())
+        .subscribe((res) => (this.submission = res))
     );
     this.subscriptions.push(
-      this.assessmentService.review$.subscribe(res => this.review = res)
+      this.assessmentService.review$.subscribe((res) => (this.review = res))
     );
     this.subscriptions.push(
-      this.topicService.topic$.subscribe(res => this.topic = res)
+      this.topicService.topic$.subscribe((res) => (this.topic = res))
     );
 
     this.subscriptions.push(this.route.paramMap.subscribe(params => {
-      const contextId = +params.get('contextId');
+      // from route
       const activityId = +params.get('id');
-      const assessmentId = +params.get('assessmentId');
+      const contextId = +params.get('contextId'); // optional
+      const assessmentId = +params.get('assessmentId');  // optional
 
-      const proceedToNextTask = assessmentId > 0 ? false : true;
+      // directlink params (optional)
+      const taskId: number = +params.get('task_id');
+      const taskType: string = params.get('task') as 'assessment' | 'topic' | null;
+      const isTopicDirectlink = taskType === 'topic' && taskId > 0;
+
+      // if assessmentId or taskId is provided, don't proceed to next task
+      const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
+
       this.urlParams = {
         contextId: contextId,
         action: this.route.snapshot.data.action,
       };
 
-      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async () => {
+      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
-        if (!proceedToNextTask && assessmentId > 0) {
+        if (!proceedToNextTask && (assessmentId > 0 || isTopicDirectlink === true)) {
           const filtered: Task = this.utils.find(this.activity.tasks, {
-            id: assessmentId
+            id: assessmentId || taskId,  // assessmentId or taskId
           });
 
           // if API not returning any related activity, handle bad API response gracefully
           if (filtered === undefined) {
             await this.notificationsService.alert({
               header: $localize`Activity not found`,
-              message: $localize`The activity you are looking for is not found or haven't been unlocked for your access yet.`,
+              message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
             });
             return this.goBack();
           }
 
           this.goToTask({
-            id: assessmentId,
+            id: assessmentId || taskId,
             contextId: this.urlParams.contextId,
             type: filtered.type,
             name: filtered.name
@@ -108,6 +124,29 @@ export class ActivityDesktopPage {
         }
       });
     }));
+
+    // refresh when review is available (AI review, peer review, etc.)
+    this.subscriptions.push(
+      this.utils.getEvent('notification').subscribe(event => {
+        const review = event?.meta?.AssessmentReview;
+        if (event.type === 'assessment_review_published' && review?.assessment_id) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+          }
+        }
+      })
+    );
+
+    // check new unlock indicator to refresh
+    this.subscriptions.push(
+      this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+        if (this.activity) {
+          if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
+            this.activityService.getActivity(this.activity.id);
+          }
+        }
+      })
+    );
   }
 
   ionViewWillLeave() {
@@ -121,6 +160,46 @@ export class ActivityDesktopPage {
         sub.unsubscribe();
       }
     });
+  }
+
+  // set activity data (avoid jumpy UI task list - CORE-6693)
+  private _setActivity(res: Activity) {
+    if (this.activity !== undefined && this.activity?.tasks.length === res.tasks.length) {
+      // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
+      if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
+        // Collect new tasks with id as key
+        const newTasks = res.tasks.reduce((acc, task) => {
+          if (task.id !== 0) {
+            acc[task.id] = task;
+          }
+          return acc;
+        }, {});
+
+        const tasksToRemove = [];
+
+        this.activity.tasks.forEach((task, index) => {
+          if (task.id === 0) {  // Locked/hidden task
+            const newTask = res.tasks[index];
+            if (newTask.id !== 0) {
+              this.activity.tasks[index] = { ...task, ...newTask };
+              tasksToRemove.push(index); // Mark this task for removal
+            }
+          } else if (newTasks[task.id] && task.status !== newTasks[task.id]?.status) {
+            this.activity.tasks[index].status = newTasks[task.id].status;
+          }
+        });
+
+        // Remove the locked tasks (id = 0) that were updated
+        tasksToRemove.reverse().forEach(index => {
+          if (this.activity.tasks[index].id === 0) {
+            this.activity.tasks.splice(index, 1);
+          }
+        });
+      }
+      return;
+    }
+
+    this.activity = res;
   }
 
   async goToTask(task: Task): Promise<any> {
@@ -172,31 +251,67 @@ export class ActivityDesktopPage {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      const saved = await this.assessmentService.submitAssessment(
-        event.submissionId,
-        event.assessmentId,
-        event.contextId,
-        event.answers
-      ).toPromise();
+      // handle unexpected submission: do final status check before saving
+      let hasSubmssion = false;
+      const { submission } = await this.assessmentService
+        .fetchAssessment(
+          event.assessmentId,
+          "assessment",
+          this.activity.id,
+          event.contextId,
+          event.submissionId
+        )
+        .toPromise();
 
-      // http 200 but error
-      if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
-        throw new Error("Error submitting assessment");
+      if (submission?.status === 'in progress') {
+        const saved = await this.assessmentService
+          .submitAssessment(
+            event.submissionId,
+            event.assessmentId,
+            event.contextId,
+            event.answers
+          )
+          .toPromise();
+
+        // http 200 but error
+        if (
+          saved?.data?.submitAssessment?.success !== true ||
+          this.utils.isEmpty(saved)
+        ) {
+          throw new Error("Error submitting assessment");
+        }
+
+        if (this.assessment.pulseCheck === true && event.autoSave === false) {
+          await this.assessmentService.pullFastFeedback();
+        }
+      } else {
+        hasSubmssion = true;
       }
 
-      if (this.assessment.pulseCheck === true && event.autoSave === false) {
-        await this.assessmentService.pullFastFeedback();
-      }
+      this.savingText$.next(
+        $localize`Last saved ${this.utils.getFormatedCurrentTime()}`
+      );
 
-      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
-        this.notificationsService.assessmentSubmittedToast();
-        // get the latest activity tasks and navigate to the next task
-        this.activityService.getActivity(this.activity.id, false, task, () => {
+        if (hasSubmssion === true) {
+          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+        } else {
+          this.notificationsService.assessmentSubmittedToast();
+        }
+
+        await this.assessmentService.fetchAssessment(
+          event.assessmentId,
+          'assessment',
+          this.activity.id,
+          event.contextId,
+          event.submissionId
+        ).toPromise();
+
+        // get the latest activity tasks
+        return this.activityService.getActivity(this.activity.id, false, task, () => {
           this.loading = false;
           this.btnDisabled$.next(false);
         });
-        return this.assessmentService.getAssessment(event.assessmentId, 'assessment', this.activity.id, event.contextId, event.submissionId);
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);

@@ -1,4 +1,4 @@
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
@@ -26,7 +26,7 @@ enum ScrollPosition {
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
-export class ChatRoomComponent implements OnInit, OnDestroy {
+export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
   @Input() chatChannel?: ChatChannel = {
     uuid: '',
@@ -673,6 +673,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy {
   private _showTyping(event) {
     // don't need to show typing message if the current user is the one who is typing
     if (event.user === this.storage.getUser().name) {
+      return;
+    }
+    // if the channel names not matching no need to show typing
+    if (event.channel !== this.chatChannel.pusherChannel) {
       return;
     }
     this.typingSubject.next(event.user);

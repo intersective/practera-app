@@ -32,7 +32,7 @@ export class VersionCheckService {
     });
   }
 
-  trackVersion(frequency): Observable<any> {
+  trackVersion(frequency: number): Observable<any> {
     return interval(frequency).pipe(
       switchMap(() => this.requestService.get(`${window.location.origin}/version.json?t=${new Date().getTime()}`, {
         headers: {
@@ -48,7 +48,7 @@ export class VersionCheckService {
     );
   }
 
-  private hasHashChanged(currentHash, newHash) {
+  private hasHashChanged(currentHash: string, newHash: string) {
     if (!currentHash || currentHash === '{{POST_BUILD_ENTERS_HASH_HERE}}') {
       return false;
     }
