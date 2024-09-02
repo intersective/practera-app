@@ -69,6 +69,7 @@ export class V3Page implements OnInit, OnDestroy {
   showMessages: boolean = false;
   showEvents: boolean = false;
   showReviews: boolean = false;
+  showDueDates: boolean = true;
   directionIcon: string = this.direction();
   collapsibleMenu: string = 'closed';
   institutionLogo: string = this.getInstitutionLogo();
@@ -106,6 +107,8 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   private _initMenuItems() {
+    // be careful with the order of the menu items
+    // the order index will be used to display tab status as in ngOnInit()
     this.appPages = [
       {
         title: $localize`Home`,
@@ -135,7 +138,14 @@ export class V3Page implements OnInit, OnDestroy {
         icon: 'mail',
         code: 'Messages',
         badges: 0,
-      }
+      },
+      {
+        title: $localize`Due Status`,
+        url: '/v3/due-dates',
+        icon: 'calendar_today',
+        code: 'DueDates',
+        badges: 0,
+      },
     ];
 
     this.institutionName = this.storageService.getUser().institutionName || 'Practera';
@@ -306,6 +316,8 @@ export class V3Page implements OnInit, OnDestroy {
         return this.showEvents;
       case 'Reviews':
         return this.showReviews;
+      case 'DueDates':
+        return this.showDueDates;
       default:
         return true;
     }
