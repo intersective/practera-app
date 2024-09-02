@@ -1,23 +1,44 @@
-<ion-content>
-  <ion-searchbar [(ngModel)]="searchText" (ionChange)="filterItems()"></ion-searchbar>
+<ion-header class="ion-no-border header-border" aria-label="Due Status">
+  <h1 class="for-accessibility">Due Status</h1>
+  <ion-toolbar>
+    <ion-title class="headline-4 grey-75" i18n>Due Status</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-segment [(ngModel)]="statusFilter" (ionChange)="filterItems()">
+<ion-content>
+  <ion-searchbar [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)"></ion-searchbar>
+
+  <ion-segment [(ngModel)]="statusFilter" (ionChange)="searchText$.next(statusFilter)">
     <ion-segment-button value="all">
       All
     </ion-segment-button>
     <ion-segment-button value="active">
-      Active
+      Due Soon
     </ion-segment-button>
     <ion-segment-button value="completed">
       Completed
     </ion-segment-button>
   </ion-segment>
 
-  <ion-list>
-    <ion-item *ngFor="let item of filteredItems">
-      {{ item.name }}
-      <ion-button (click)="downloadGoogleCalendar(item)">Add to Google Calendar</ion-button>
-      <ion-button (click)="downloadiCal(item)">Download .ics</ion-button>
+  <ion-list *ngIf="(assessments$ | async) as assessments; else loading">
+    <ion-item *ngFor="let item of filteredItems || assessments">
+      <ion-label>
+        <h3>{{ item.name }}</h3>
+        <p>{{ item.dueDate | date: 'short' }}</p>
+      </ion-label>
+      <ion-button slot="end" size="default" (click)="downloadGoogleCalendar(item)">Google Calendar</ion-button>
+      <ion-button slot="end" size="default" (click)="downloadiCal(item)">iCalendar</ion-button>
     </ion-item>
   </ion-list>
 </ion-content>
+
+<ng-template #loading>
+  <ion-list>
+    <ion-item>
+      <div style="display: flex; justify-content: center; align-items: center;">
+        <ion-spinner name="bubbles"></ion-spinner>
+      </div>
+    </ion-item>
+  </ion-list>
+</ng-template>
+

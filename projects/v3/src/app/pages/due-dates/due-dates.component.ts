@@ -1,7 +1,12 @@
-import { Component } from '@angular/core';
+import { debounce } from 'lodash';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { Assessment, AssessmentService } from './../../services/assessment.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
+import { debounceTime, first, takeUntil } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 interface CalendarEvent {
   dueDate: Date;
@@ -15,21 +20,47 @@ interface CalendarEvent {
   templateUrl: './due-dates.component.html',
   styleUrls: ['./due-dates.component.scss'],
 })
-export class DueDatesComponent {
-  assessmentDueDates: { name: string, status: string, dueDate: string }[] = [
-    { name: 'Assessment 1', status: 'In Progress', dueDate: '2022-01-01' },
-    { name: 'Assessment 2', status: 'Pending Review', dueDate: '2022-02-01' },
-    { name: 'Assessment 3', status: 'Not Started', dueDate: '2022-03-01' }
-  ];
-
+export class DueDatesComponent implements OnInit, OnDestroy {
   searchText: string;
   statusFilter: string;
-  filteredItems: { name: string, status: string, dueDate: string }[];
+  filteredItems: Assessment[];
+  assessments$: BehaviorSubject<Assessment[]>;
+  unsubscribe$: Subject<void> = new Subject<void>();
+
+  searchText$: Subject<string> = new Subject<string>();
 
   constructor(
     private dueDatesService: DueDatesService,
     private notificationsService: NotificationsService,
-  ) { }
+    private assessmentService: AssessmentService,
+    private router: Router,
+  ) {
+  }
+
+  ngOnInit(): void {
+    this.assessments$ = new BehaviorSubject<Assessment[]>([]);
+    this.searchText$.pipe(
+      takeUntil(this.unsubscribe$),
+      debounceTime(300),
+    ).subscribe(() => {
+      this.filterItems();
+    });
+  }
+
+  ionViewDidEnter() {
+    this.statusFilter = '';
+    this.assessmentService.dueStatusAssessments()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((assessments) => {
+        console.log('assessments', assessments);
+        this.assessments$.next(assessments || []);
+      });
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
 
   downloadiCal(event: any) {
     const eventData: EventAttributes = {
@@ -71,17 +102,27 @@ export class DueDatesComponent {
       });
     }
   }
+
   filterItems() {
-    this.filteredItems = this.assessmentDueDates.filter(item => {
+    this.filteredItems = this.assessments$.getValue().filter(item => {
       if (this.searchText && !item.name.toLowerCase().includes(this.searchText.toLowerCase())) {
         return false;
       }
 
-      if (this.statusFilter && item.status !== this.statusFilter) {
+      if (this.statusFilter && item.name !== this.statusFilter) {
         return false;
       }
 
       return true;
+    });
+  }
+
+  // @TODO: implement goTo method
+  // current API data is not sufficient to implement this method
+  goTo(assessment) {
+    this.assessmentService.fetchAssessment(assessment.id, 'assessment', null, null).subscribe((res) => {
+      console.log('assessment', res);
+      this.router.navigate(['v3', 'activity-desktop', assessment.id]);
     });
   }
 }

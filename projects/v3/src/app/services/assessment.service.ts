@@ -842,4 +842,26 @@ export class AssessmentService {
       },
     });
   }
+
+  dueStatusAssessments(): Observable<Assessment[]> {
+    return this.apolloService.graphQLFetch(
+      `query assessments {
+        assessments {
+          id
+          name
+          type
+          dueDate
+          contextId
+        }
+      }`,
+      {
+        variables: {
+          dueDateFilter: 'has_due_date',
+        },
+      },
+    )
+    .pipe(map((res) => {
+      return res.data?.assessments || [];
+    }));
+  }
 }
