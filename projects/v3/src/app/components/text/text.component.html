@@ -5,9 +5,9 @@
     <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
   </div>
 
-  <div class="ion-padding" *ngIf="review?.answer">
+  <div class="ion-padding"  *ngIf="reviewStatus === 'done'">
     <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
-    <p class="body-2 gray-3 white-space-pre">{{ review.answer }}</p>
+    <p class="body-2 gray-3 white-space-pre" [class]="{'noanswer': !review?.answer}">{{ review?.answer || 'No answer given to this optional question.'}}</p>
   </div>
 
   <ng-container *ngIf="review?.comment">
@@ -80,7 +80,7 @@
       <ion-list-header class="ion-no-padding" lines="none">
         <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
       </ion-list-header>
-      
+
       <ion-textarea
         [autoGrow]="true"
         [attr.aria-label]="'expert\'s review feedback'"
