@@ -1,0 +1,16 @@
+.traffic-light-group {
+    display: flex;
+    align-items: center;
+}
+.traffic-light-group span {
+    margin-right: 5px;
+}
+.traffic-light-labels {
+    display: flex;
+    justify-content: space-around;
+    margin-left: 30px; /* adjust based on the label width */
+}
+.traffic-light-labels span {
+    text-align: center;
+    width: 40px; /* adjust based on the size of the dots */
+}
