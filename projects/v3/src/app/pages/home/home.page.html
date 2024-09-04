@@ -35,7 +35,9 @@
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
               </ion-text>
-
+              <!-- put traffic light group here -->
+              <app-traffic-light-group *ngIf="pulseCheck" [lights]="pulseCheck"></app-traffic-light-group>
+              <!-- end traffic lights -->
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
