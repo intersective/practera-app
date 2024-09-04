@@ -9,13 +9,8 @@
 }
 
 ion-item {
-  &.no-answers {
-    --background: #FDE0CE;
-    color: var(--ion-text-color);
-
-    ion-label {
-      font-size: smaller;
-    }
+  .noanswer {
+    font-style: italic !important;
   }
 
   &.item-bottom-border {
