@@ -52,6 +52,9 @@ export class HomeService {
   private _experienceProgress$ = new BehaviorSubject<number>(null);
   experienceProgress$ = this._experienceProgress$.pipe(shareReplay(1));
 
+  private _pulseCheck$ = new BehaviorSubject<number>(null);
+  pulseCheck$ = this._pulseCheck$.pipe(shareReplay(1));
+
   private _activityCount$ = new BehaviorSubject<number>(null);
   activityCount$ = this._activityCount$.asObservable();
 
@@ -206,5 +209,32 @@ export class HomeService {
     }
     this._projectProgress$.next(data.data.project);
     this._experienceProgress$.next(Math.round(data.data.project.progress * 100));
+  }
+
+  getPulseCheck() {
+    if (environment.demo) {
+      return this.demo.pulseCheck().pipe(map(res => this._handlePulseCheck(res))).subscribe();
+    }
+
+    // we only want the "confidence" pulse check so pass the arg: question: "confidence"
+    return this.apolloService.graphQLFetch(
+      `query {
+        pulseCheck(question: "confidence")
+      }`,
+    ).pipe(
+      map(res => this._handlePulseCheck(res)),
+    ).subscribe();
+  }
+
+  private _handlePulseCheck(data) {
+    if (!data) {
+      return ;
+    }
+    // need to transform the result (data.data): { confidence: { self: 0.5, team: 0.6, expert: 0.7 } } to:
+    // { groupLabel: 'On Track', group: [{ value: 0.5, label: 'Self' }, { value: 0.6, label: 'Team' }, { value: 0.7, label: 'Expert' }] }
+    const pulseCheck = data.data;
+    const groupLabel = 'On Track';
+    const group = Object.keys(pulseCheck).map(key => ({ value: pulseCheck[key], label: key }));
+    this._pulseCheck$.next({ groupLabel, group });
   }
 }
