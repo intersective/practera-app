@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group';
 import {
   Achievement,
   AchievementService,
@@ -25,7 +26,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   activityCount$: Observable<number>;
   experienceProgress: number;
-
+  pulseCheck: TrafficLightGroupComponent['lights'];
   milestones: Milestone[];
   achievements: Achievement[];
   experience: Experience;
@@ -78,6 +79,12 @@ export class HomePage implements OnInit, OnDestroy {
     .pipe(takeUntil(this.unsubscribe$))
     .subscribe((res) => {
       this.experienceProgress = res;
+    });
+
+    this.homeService.pulseCheck$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe((res) => {
+      this.pulseCheck = res;
     });
 
     this.homeService.projectProgress$
