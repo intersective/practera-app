@@ -28,7 +28,7 @@ jobs:
 #########################################################
 #  GITHUB REPO CHECKOUT TO FETCH ALL BRANCHES
 ##########################################################
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: release/live-v3
@@ -66,7 +66,7 @@ jobs:
 #########################################################
 #  GITHUB REPO CHECKOUT TO FETCH ALL BRANCHES
 ##########################################################
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: ${{ needs.target.outputs.GOLIVE }}
@@ -102,7 +102,7 @@ jobs:
 #########################################################
 #  GITHUB REPO CHECKOUT TO FETCH ALL BRANCHES
 ##########################################################
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: ${{ needs.target.outputs.STAGE }}
@@ -139,7 +139,7 @@ jobs:
 #########################################################
 #  GITHUB REPO CHECKOUT TO FETCH ALL BRANCHES
 ##########################################################
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: ${{ needs.target.outputs.DEV }}
