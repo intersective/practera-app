@@ -11,7 +11,7 @@
     </app-file-display>
   </ng-container>
 
-  <ng-container *ngIf="reviewStatus === 'done'">
+  <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
