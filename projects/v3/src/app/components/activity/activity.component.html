@@ -41,6 +41,7 @@
       [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
       [endingIcon]="endingIcon(task)"
       [endingIconColor]="endingIconColor(task)"
+      [loading]="false"
     ></app-list-item>
   </ng-container>
 </ng-container>
