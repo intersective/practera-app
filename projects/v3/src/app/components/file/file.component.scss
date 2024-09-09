@@ -22,6 +22,10 @@ ion-item {
   }
 }
 
+.feedback-title {
+  --min-height: 1em;
+}
+
 .feedback-field {
   --ion-item-background: #FFF7E3;
   --ion-background-color: #FFF7E3;
