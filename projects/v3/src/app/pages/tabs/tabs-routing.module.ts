@@ -29,6 +29,10 @@ const routes: Routes = [
         loadChildren: () => import('../events/events.module').then(m => m.EventsPageModule)
       },
       {
+        path: 'due-dates',
+        loadChildren: () => import('../due-dates/due-dates.module').then(m => m.DueDatesModule)
+      },
+      {
         path: 'activity-desktop',
         loadChildren: () => import('../activity-desktop/activity-desktop.module').then(m => m.ActivityDesktopPageModule)
       },
