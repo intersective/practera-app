@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { Assessment, AssessmentService } from './../../services/assessment.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
@@ -25,7 +25,7 @@ interface GroupedAssessments {
   templateUrl: './due-dates.component.html',
   styleUrls: ['./due-dates.component.scss'],
 })
-export class DueDatesComponent implements OnInit, OnDestroy {
+export class DueDatesComponent implements OnDestroy {
   searchText: string;
   statusFilter: string;
   filteredItems: Assessment[];
@@ -40,9 +40,6 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     private assessmentService: AssessmentService,
     private router: Router,
   ) {}
-
-  ngOnInit(): void {
-  }
 
   ionViewDidEnter() {
     this.statusFilter = '';
