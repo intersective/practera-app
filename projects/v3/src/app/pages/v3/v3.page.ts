@@ -142,7 +142,7 @@ export class V3Page implements OnInit, OnDestroy {
       {
         title: $localize`Due Status`,
         url: '/v3/due-dates',
-        icon: 'calendar_today',
+        icon: 'alarm',
         code: 'DueDates',
         badges: 0,
       },

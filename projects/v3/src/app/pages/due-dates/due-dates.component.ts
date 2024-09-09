@@ -15,6 +15,11 @@ interface CalendarEvent {
   location?: string;
 }
 
+interface GroupedAssessments {
+  month: string;
+  assessments: Assessment[];
+}
+
 @Component({
   selector: 'app-due-dates',
   templateUrl: './due-dates.component.html',
@@ -24,7 +29,7 @@ export class DueDatesComponent implements OnInit, OnDestroy {
   searchText: string;
   statusFilter: string;
   filteredItems: Assessment[];
-  assessments$: BehaviorSubject<Assessment[]>;
+  assessments$: BehaviorSubject<GroupedAssessments[]> = new BehaviorSubject<GroupedAssessments[]>([]);
   unsubscribe$: Subject<void> = new Subject<void>();
 
   searchText$: Subject<string> = new Subject<string>();
@@ -34,17 +39,15 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private assessmentService: AssessmentService,
     private router: Router,
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.assessments$ = new BehaviorSubject<Assessment[]>([]);
-    this.searchText$.pipe(
-      takeUntil(this.unsubscribe$),
-      debounceTime(300),
-    ).subscribe(() => {
-      this.filterItems();
-    });
+    // this.searchText$.pipe(
+    //   takeUntil(this.unsubscribe$),
+    //   debounceTime(300),
+    // ).subscribe(() => {
+    //   this.filterItems();
+    // });
   }
 
   ionViewDidEnter() {
@@ -53,13 +56,46 @@ export class DueDatesComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((assessments) => {
         console.log('assessments', assessments);
-        this.assessments$.next(assessments || []);
+        // this.assessments$.next(assessments || []);
+
+        if (assessments && assessments.length) {
+          const sortedAssessments = assessments.sort((a, b) => {
+            return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+          });
+
+          const groupedAssessments = this.groupByDate(sortedAssessments);
+          this.assessments$.next(groupedAssessments);
+        } else {
+          this.assessments$.next([]);
+        }
       });
   }
 
   ngOnDestroy() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  groupByDate(assessments: Assessment[]): GroupedAssessments[] {
+    const grouped = assessments.reduce((groups, assessment) => {
+      const date = new Date(assessment.dueDate);
+      const month = date.toLocaleString('default', { month: 'long' });
+      const year = date.getFullYear();
+      const monthYear = assessment.dueDate ? `${month} ${year}` : 'No due date';  // Group by Month Year (e.g., "September 2024")
+
+      if (!groups[monthYear]) {
+        groups[monthYear] = [];
+      }
+
+      groups[monthYear].push(assessment);
+      return groups;
+    }, {});
+
+    // Convert grouped object to an array of { month, assessments }
+    return Object.keys(grouped).map(month => ({
+      month,
+      assessments: grouped[month]
+    }));
   }
 
   downloadiCal(event: any) {
@@ -103,7 +139,7 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  filterItems() {
+  /* filterItems() {
     this.filteredItems = this.assessments$.getValue().filter(item => {
       if (this.searchText && !item.name.toLowerCase().includes(this.searchText.toLowerCase())) {
         return false;
@@ -115,7 +151,7 @@ export class DueDatesComponent implements OnInit, OnDestroy {
 
       return true;
     });
-  }
+  } */
 
   // @TODO: implement goTo method
   // current API data is not sufficient to implement this method

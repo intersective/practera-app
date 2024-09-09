@@ -6,29 +6,33 @@
 </ion-header>
 
 <ion-content>
-  <ion-searchbar [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)"></ion-searchbar>
-
-  <ion-segment [(ngModel)]="statusFilter" (ionChange)="searchText$.next(statusFilter)">
-    <ion-segment-button value="all">
-      All
-    </ion-segment-button>
-    <ion-segment-button value="active">
-      Due Soon
-    </ion-segment-button>
-    <ion-segment-button value="completed">
-      Completed
-    </ion-segment-button>
-  </ion-segment>
+  <ion-searchbar *ngIf="false" [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)"></ion-searchbar>
 
   <ion-list *ngIf="(assessments$ | async) as assessments; else loading">
-    <ion-item *ngFor="let item of filteredItems || assessments">
+    <ng-container *ngFor="let group of assessments">
+      <!-- Date divider (Group title) -->
+      <ion-item-divider>
+        <ion-label>{{ group.month }}</ion-label>
+      </ion-item-divider>
+
+      <!-- Assessment items -->
+      <ion-item *ngFor="let assessment of group.assessments">
+        <ion-label>
+          <h3>{{ assessment.name }}</h3>
+          <p>{{ assessment.dueDate | date }}</p>
+        </ion-label>
+        <ion-button *ngIf="false" fill="clear" (click)="goTo(assessment)">Details</ion-button>
+      </ion-item>
+    </ng-container>
+
+    <!-- <ion-item *ngFor="let item of filteredItems || assessments">
       <ion-label>
         <h3>{{ item.name }}</h3>
         <p>{{ item.dueDate | date: 'short' }}</p>
       </ion-label>
       <ion-button slot="end" size="default" (click)="downloadGoogleCalendar(item)">Google Calendar</ion-button>
       <ion-button slot="end" size="default" (click)="downloadiCal(item)">iCalendar</ion-button>
-    </ion-item>
+    </ion-item> -->
   </ion-list>
 </ion-content>
 
