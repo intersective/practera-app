@@ -42,12 +42,6 @@ export class DueDatesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // this.searchText$.pipe(
-    //   takeUntil(this.unsubscribe$),
-    //   debounceTime(300),
-    // ).subscribe(() => {
-    //   this.filterItems();
-    // });
   }
 
   ionViewDidEnter() {
@@ -55,9 +49,6 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     this.assessmentService.dueStatusAssessments()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((assessments) => {
-        console.log('assessments', assessments);
-        // this.assessments$.next(assessments || []);
-
         if (assessments && assessments.length) {
           const sortedAssessments = assessments.sort((a, b) => {
             return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
@@ -157,7 +148,6 @@ export class DueDatesComponent implements OnInit, OnDestroy {
   // current API data is not sufficient to implement this method
   goTo(assessment) {
     this.assessmentService.fetchAssessment(assessment.id, 'assessment', null, null).subscribe((res) => {
-      console.log('assessment', res);
       this.router.navigate(['v3', 'activity-desktop', assessment.id]);
     });
   }
