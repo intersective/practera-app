@@ -92,10 +92,19 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     }, {});
 
     // Convert grouped object to an array of { month, assessments }
-    return Object.keys(grouped).map(month => ({
+    const groupedArray = Object.keys(grouped).map(month => ({
       month,
       assessments: grouped[month]
     }));
+
+    // Sort the array to ensure "No due date" is always the last group
+    groupedArray.sort((a, b) => {
+      if (a.month === 'No due date') return 1;
+      if (b.month === 'No due date') return -1;
+      return 0;
+    });
+
+    return groupedArray;
   }
 
   downloadiCal(event: any) {
