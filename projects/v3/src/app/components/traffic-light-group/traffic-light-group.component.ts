@@ -7,5 +7,5 @@ import { Component, Input } from '@angular/core';
 })
 
 export class TrafficLightGroupComponent {
-    @Input() lights: { groupLabel: string, group: { value: number | null, label: string}[] };
+  @Input() lights: { groupLabel: string, group: { value: number | null, label: string}[] };
 }
