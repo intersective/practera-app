@@ -52,7 +52,12 @@ export class HomeService {
   private _experienceProgress$ = new BehaviorSubject<number>(null);
   experienceProgress$ = this._experienceProgress$.pipe(shareReplay(1));
 
-  private _pulseCheck$ = new BehaviorSubject<number>(null);
+  private _pulseCheck$ = new BehaviorSubject<{
+    groupLabel: string; group: {
+      value: number;
+      label: string;
+    }[];
+  }>(null);
   pulseCheck$ = this._pulseCheck$.pipe(shareReplay(1));
 
   private _activityCount$ = new BehaviorSubject<number>(null);
