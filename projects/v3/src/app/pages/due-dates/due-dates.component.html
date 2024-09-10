@@ -22,6 +22,20 @@
           <p>{{ assessment.dueDate | date }}</p>
         </ion-label>
         <ion-button *ngIf="false" fill="clear" (click)="goTo(assessment)">Details</ion-button>
+        <ion-button aria-label="export icalendar" [id]="'popover-button' + assessment.id" color="primary">
+          <ion-icon slot="start" name="calendar"></ion-icon>
+          Add to Calendar
+        </ion-button>
+        <ion-popover [trigger]="'popover-button' + assessment.id" [dismissOnSelect]="true">
+          <ng-template>
+            <ion-content>
+              <ion-list>
+                <ion-item [button]="true" [detail]="false" (click)="downloadiCal(assessment)">iCalendar</ion-item>
+                <ion-item [button]="true" [detail]="false" (click)="downloadGoogleCalendar(assessment)">Google Calendar</ion-item>
+              </ion-list>
+            </ion-content>
+          </ng-template>
+        </ion-popover>
       </ion-item>
     </ng-container>
 
@@ -37,12 +51,8 @@
 </ion-content>
 
 <ng-template #loading>
-  <ion-list>
-    <ion-item>
-      <div style="display: flex; justify-content: center; align-items: center;">
-        <ion-spinner name="bubbles"></ion-spinner>
-      </div>
-    </ion-item>
-  </ion-list>
+  <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <ion-spinner name="bubbles"></ion-spinner>
+  </div>
 </ng-template>
 

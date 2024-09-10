@@ -3,7 +3,7 @@ import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { Assessment, AssessmentService } from './../../services/assessment.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { EventAttributes } from 'ics';
+import { EventAttributes, convertTimestampToArray } from 'ics';
 import { DueDatesService } from './due-dates.service';
 import { debounceTime, first, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -29,10 +29,11 @@ export class DueDatesComponent implements OnInit, OnDestroy {
   searchText: string;
   statusFilter: string;
   filteredItems: Assessment[];
-  assessments$: BehaviorSubject<GroupedAssessments[]> = new BehaviorSubject<GroupedAssessments[]>([]);
+  assessments$: BehaviorSubject<GroupedAssessments[]> = new BehaviorSubject<GroupedAssessments[]>(null);
   unsubscribe$: Subject<void> = new Subject<void>();
 
   searchText$: Subject<string> = new Subject<string>();
+  isLoading = false;
 
   constructor(
     private dueDatesService: DueDatesService,
@@ -51,14 +52,12 @@ export class DueDatesComponent implements OnInit, OnDestroy {
   }
 
   ionViewDidEnter() {
+    this.isLoading = true;
     this.statusFilter = '';
     this.assessmentService.dueStatusAssessments()
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((assessments) => {
-        console.log('assessments', assessments);
-        // this.assessments$.next(assessments || []);
-
-        if (assessments && assessments.length) {
+        if (assessments?.length) {
           const sortedAssessments = assessments.sort((a, b) => {
             return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
           });
@@ -68,6 +67,10 @@ export class DueDatesComponent implements OnInit, OnDestroy {
         } else {
           this.assessments$.next([]);
         }
+
+        this.isLoading = false;
+      }, () => {
+        this.isLoading = false;
       });
   }
 
@@ -107,31 +110,48 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     return groupedArray;
   }
 
-  downloadiCal(event: any) {
-    const eventData: EventAttributes = {
-      start: event.dueDate,
-      duration: { hours: 1, minutes: 30 },
-      title: event.name,
-      description: event.description,
-      location: event.location || 'Sydney',
-      url: event.url,
-      geo: { lat: -33.8688, lon: 151.2093 },
-      status: event.status,
-      busyStatus: 'BUSY',
-      organizer: { name: 'Practera', email: 'contact@practera.com' },
-    };
-
-    this.dueDatesService.createCalendarEvent(eventData);
+  convertDateTimeString(dateTimeString: string): number[] {
+    const [datePart, timePart] = dateTimeString.split(' ');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hours, minutes, _seconds] = timePart.split(':').map(Number);
+    return [year, month, day, hours, minutes];
   }
 
-  downloadGoogleCalendar(event: CalendarEvent | any) {
+  downloadiCal(event: Assessment) {
     try {
-      const googleCalendarUrl = this.dueDatesService.generateGoogleCalendarUrl({
-        start: event.dueDate,
-        duration: 90,
+      const [year, month, day, hour, minutes] = this.convertDateTimeString(event.dueDate);
+      const eventData: EventAttributes = {
+        start: [year, month, day, hour, minutes],
+        // start: dateArray,
+        duration: { hours: 1, minutes: 30 },
         title: event.name,
         description: event.description,
-        location: event.location || 'Sydney',
+        // location: event.location || 'Sydney',
+        location: '',
+        // url: /* event.url || */ '',
+        // status: event.status,
+        busyStatus: 'BUSY',
+        organizer: { name: 'Practera', email: 'contact@practera.com' },
+      };
+
+      this.dueDatesService.createCalendarEvent(eventData);
+    } catch (error) {
+      console.error('Failed to create calendar event', error);
+      this.notificationsService.alert({
+        message: 'Failed to create calendar event',
+      });
+    }
+  }
+
+  downloadGoogleCalendar(assessment: Assessment) {
+    try {
+      const googleCalendarUrl = this.dueDatesService.generateGoogleCalendarUrl({
+        start: new Date(assessment.dueDate),
+        // duration: 90,
+        title: assessment.name,
+        description: assessment.description,
+        // location: assessment?.location || 'Sydney',
+        organizer: { name: 'Practera', email: 'contact@practera.com' },
       });
 
       const newWindow = window.open(googleCalendarUrl, '_blank');
@@ -169,5 +189,16 @@ export class DueDatesComponent implements OnInit, OnDestroy {
       console.log('assessment', res);
       this.router.navigate(['v3', 'activity-desktop', assessment.id]);
     });
+  }
+
+  addToCalendar() {
+    // this.modalCtrl.create({
+    //   component: AddToCalendarComponent,
+    //   componentProps: {
+    //     assessments: this.assessments$.getValue(),
+    //   },
+    // }).then(modal => {
+    //   modal.present();
+    // });
   }
 }
