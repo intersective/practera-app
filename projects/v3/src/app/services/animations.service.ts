@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { createAnimation } from '@ionic/angular';
+import { createAnimation } from '@ionic/core';
 
 @Injectable({
   providedIn: 'root'
