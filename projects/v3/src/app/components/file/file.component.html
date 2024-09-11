@@ -11,14 +11,16 @@
     </app-file-display>
   </ng-container>
 
-  <ng-container *ngIf="review?.answer && reviewStatus === 'done'">
+  <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
+        <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">No answer given to this optional question.</p>
       </ion-label>
     </ion-item>
     <app-file-display
-      [file]="review.answer"
+      *ngIf="review?.answer"
+      [file]="review?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
     ></app-file-display>
