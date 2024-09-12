@@ -1,9 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationsService } from '@v3/services/notifications.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 
 @Component({
@@ -62,8 +61,8 @@ export class ReviewRatingComponent implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private utils: UtilsService,
-    private notificationsService: NotificationsService,
     readonly fastFeedbackService: FastFeedbackService,
+    private alertController: AlertController,
   ) {}
 
   ngOnInit(): void {
@@ -88,10 +87,11 @@ export class ReviewRatingComponent implements OnInit {
       this.isSubmitting = false;
       this.ratingSessionEnd = true;
     } catch (err) {
-      await this.notificationsService.alert({
+      const alert = await this.alertController.create({
         header: $localize`Error submitting rating`,
         message: err.msg ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.msg}` : JSON.stringify(err),
       });
+      await alert.present();
       this.isSubmitting = false;
 
       throw new Error(err);

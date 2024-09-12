@@ -2,7 +2,6 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ModalController } from '@ionic/angular';
 import isEmpty from 'lodash-es/isEmpty';
 import each from 'lodash-es/each';
 import unset from 'lodash-es/unset';
@@ -16,7 +15,6 @@ import isEqual from 'lodash-es/isEqual';
 import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
-import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 import { Title } from '@angular/platform-browser';
 
 import Delta from 'quill-delta';
@@ -45,7 +43,6 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
     private title: Title
   ) {
@@ -722,22 +719,6 @@ export class UtilsService {
     const safePathName = pathname ? pathname[0] : '';
     const newPath = currentURL.pathname.replace(safePathName, `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
-  }
-
-  async openSupportPopup(options?: { formOnly: boolean; }) {
-    const componentProps = {
-      mode: 'modal',
-      isShowFormOnly: options?.formOnly,
-    };
-
-    const modal = await this.modalController.create({
-      componentProps,
-      component: SupportPopupComponent,
-      cssClass: 'support-popup',
-      backdropDismiss: false,
-    });
-
-    return modal.present();
   }
 
   checkIsPracteraSupportEmail() {

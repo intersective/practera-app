@@ -8,6 +8,7 @@ import { NotificationsPage } from '../pages/notifications/notifications.page';
 import { NotificationsService } from '../services/notifications.service';
 import { BrowserStorageService, User } from '../services/storage.service';
 import { UtilsService } from '../services/utils.service';
+import { SupportPopupComponent } from '../components/support-popup/support-popup.component';
 
 @Component({
   selector: 'app-personalised-header',
@@ -98,8 +99,16 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
     });
   }
 
-  openSupport() {
-    this.utilService.openSupportPopup();
-  }
+  async openSupport() {
+    const modal = await this.modalController.create({
+      componentProps: {
+        mode: 'modal',
+      },
+      component: SupportPopupComponent,
+      cssClass: 'support-popup',
+      backdropDismiss: false,
+    });
 
+    return modal.present();
+  }
 }

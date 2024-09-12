@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, forwardRef } from '@angular/core';
 import { RequestService } from 'request';
-import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
 import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
+import { ModalService } from './modal.service';
+import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 
 const api = {
   fastFeedback: 'api/v2/observation/slider/list.json',
-  submit: 'api/v2/observation/slider/create.json',
+  // submit: 'api/v2/observation/slider/create.json',
 };
 
 @Injectable({
@@ -19,10 +20,10 @@ const api = {
 export class FastFeedbackService {
   constructor(
     private request: RequestService,
-    private notificationsService: NotificationsService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
-    private demo: DemoService
+    private demo: DemoService,
+    private modalService: ModalService,
   ) {}
 
   private _getFastFeedback() {
@@ -52,13 +53,15 @@ export class FastFeedbackService {
           // add a flag to indicate that a fast feedback pop up is opening
           this.storage.set('fastFeedbackOpening', true);
 
-          return from(this.notificationsService.fastFeedbackModal(
+          const modal = this.modalService.addModal(
             {
+              component: FastFeedbackComponent,
               questions: res.data.slider,
               meta: res.data.meta
             },
-            options.modalOnly,
-          ));
+          );
+
+          return from(modal);
         }
         return of(res);
       }),
@@ -67,19 +70,5 @@ export class FastFeedbackService {
         return errors.pipe(delay(1000), take(3));
       })
     );
-  }
-
-  submit(data, params): Observable<any> {
-    if (environment.demo) {
-      // eslint-disable-next-line no-console
-      console.log('data', data, 'params', params);
-      return this.demo.normalResponse('observable') as Observable<any>;
-    }
-    return this.request.post(
-      {
-        endPoint: api.submit,
-        data,
-        httpOptions: { params }
-      });
   }
 }

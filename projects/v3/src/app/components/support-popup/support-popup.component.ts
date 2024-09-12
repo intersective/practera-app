@@ -1,6 +1,5 @@
-/* eslint-disable @angular-eslint/no-empty-lifecycle-method */
 import * as filestack from 'filestack-js';
-import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit, forwardRef } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
@@ -28,7 +27,7 @@ export class SupportPopupComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private hubspotService: HubspotService,
+    @Inject(forwardRef(() => HubspotService)) private hubspotService: HubspotService,
     private filestackService: FilestackService,
     private utilService: UtilsService,
     private notificationsService: NotificationsService,
@@ -139,12 +138,14 @@ export class SupportPopupComponent implements OnInit {
       this.isShowRequiredError = true;
       return;
     }
+
     const param: HubspotFormParams = {
       subject: this.problemSubject,
       content: this.problemContent,
       file: this.selectedFile?.url,
       consentToProcess: this.hasConsent,
-    }
+    };
+
     this.hubspotService.submitDataToHubspot(param).subscribe({
       next: () => {
         this.selectedFile = undefined;
@@ -160,5 +161,4 @@ export class SupportPopupComponent implements OnInit {
       }
     });
   }
-
 }
