@@ -43,7 +43,7 @@ export class EventListComponent {
     private route: ActivatedRoute,
     private notificationsService: NotificationsService,
     public eventService: EventService,
-    public utils: UtilsService,
+    private utils: UtilsService,
   ) {
     // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {

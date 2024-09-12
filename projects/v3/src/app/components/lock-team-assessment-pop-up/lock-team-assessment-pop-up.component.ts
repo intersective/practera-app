@@ -10,11 +10,13 @@ import { UtilsService } from '@v3/services/utils.service';
 export class LockTeamAssessmentPopUpComponent {
   name = '';
   image = '';
+  isMobile: boolean;
 
   constructor(
     public modalController: ModalController,
-    public utils: UtilsService
+    private utils: UtilsService
   ) {
+    this.isMobile = this.utils.isMobile();
   }
 
   confirmed() {

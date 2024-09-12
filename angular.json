@@ -213,7 +213,7 @@
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["projects/v3/src/favicon.ico", "projects/v3/src/assets"],
+            "assets": ["./projects/v3/src/assets/icon/favicon.ico", "projects/v3/src/assets"],
             "styles": ["projects/v3/src/styles.scss"],
             "scripts": []
           }
@@ -262,14 +262,6 @@
             "main": "projects/request/src/test.ts",
             "karmaConfig": "projects/request/karma.conf.js",
             "tsConfig": "projects/request/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/v3/src/favicon.ico",
-              "projects/v3/src/assets"
-            ],
-            "styles": [
-              "projects/v3/src/styles.scss"
-            ],
             "scripts": []
           }
         }

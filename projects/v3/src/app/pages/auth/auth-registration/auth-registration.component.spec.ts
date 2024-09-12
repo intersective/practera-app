@@ -33,7 +33,7 @@ describe('AuthRegistrationComponent', () => {
   });
 
   it('should authenticate user and switch program on successful registration', async () => {
-    spyOn(authService, 'authenticate').and.returnValue(of({ data: { auth: { apikey: 'test-api-key', experience: {} } } }));
+    spyOn(authService, 'authenticate').and.returnValue(of({ data: { auth: { apikey: 'test-api-key', experience: {} } } } as any));
     spyOn(storageService, 'set');
     spyOn(storageService, 'remove');
     spyOn(experienceService, 'switchProgram').and.returnValue(Promise.resolve(of()));

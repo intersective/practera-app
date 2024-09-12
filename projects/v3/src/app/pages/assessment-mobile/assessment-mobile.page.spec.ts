@@ -96,7 +96,7 @@ describe('AssessmentMobilePage', () => {
 
   it('should call continue()', () => {
     component.currentTask = { id: 1, type: 'Assessment', name: 'Test', status: 'done' };
-    component.continue();
+    component.nextTask();
     expect(activitySpy.goToNextTask).toHaveBeenCalled();
   });
 
