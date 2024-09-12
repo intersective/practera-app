@@ -141,10 +141,4 @@ describe('FastFeedbackService', () => {
   });
 
 
-  it('should submit fastfeedback', () => {
-    requestSpy.post.and.returnValue(of({}));
-    service.submit({}, {}).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-  });
-
 });

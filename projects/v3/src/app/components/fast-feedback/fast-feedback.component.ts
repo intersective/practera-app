@@ -1,10 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
-import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { RequestService } from 'request';
+import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+import { DemoService } from '../../services/demo.service';
+
+export interface Meta {
+  context_id: number;
+  team_id: number;
+  target_user_id: number;
+  team_name: string;
+  assessment_name: string;
+}
 
 @Component({
   selector: 'app-fast-feedback',
@@ -21,8 +31,9 @@ export class FastFeedbackComponent implements OnInit {
   constructor(
     public modalController: ModalController,
     private utils: UtilsService,
-    private fastFeedbackService: FastFeedbackService,
     public storage: BrowserStorageService,
+    private request: RequestService,
+    private demo: DemoService
   ) {}
 
   get isMobile() {
@@ -71,7 +82,7 @@ export class FastFeedbackComponent implements OnInit {
 
     let submissionResult;
     try {
-      submissionResult = await this.fastFeedbackService.submit(data, params).toPromise();
+      submissionResult = await this.submitData(data, params).toPromise();
 
       this.submissionCompleted = true;
       return setTimeout(
@@ -91,5 +102,19 @@ export class FastFeedbackComponent implements OnInit {
 
   get isRedColor(): boolean {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
+  }
+
+  submitData(data, params): Observable<any> {
+    if (environment.demo) {
+      // eslint-disable-next-line no-console
+      console.log('data', data, 'params', params);
+      return this.demo.normalResponse('observable') as Observable<any>;
+    }
+    return this.request.post(
+      {
+        endPoint: 'api/v2/observation/slider/create.json',
+        data,
+        httpOptions: { params }
+      });
   }
 }
