@@ -4,7 +4,6 @@ import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
-import { ActivityService } from '@v3/app/services/activity.service';
 import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
@@ -48,7 +47,6 @@ export class HomePage implements OnInit, OnDestroy {
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
