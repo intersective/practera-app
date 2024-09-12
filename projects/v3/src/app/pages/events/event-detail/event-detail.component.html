@@ -1,7 +1,7 @@
-<ion-header mode="ios" *ngIf="utils.isMobile()" aria-label="event details">
+<ion-header mode="ios" *ngIf="isMobile" aria-label="event details">
   <ion-toolbar>
-    <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
-    <ion-title *ngIf="utils.isMobile()" class="ion-text-center" aria-label="event" i18n>Event</ion-title>
+    <ion-icon *ngIf="isMobile" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+    <ion-title *ngIf="isMobile" class="ion-text-center" aria-label="event" i18n>Event</ion-title>
   </ion-toolbar>
 </ion-header>
 

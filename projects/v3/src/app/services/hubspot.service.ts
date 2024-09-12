@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from 'request';
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { HttpClient } from '@angular/common/http';
 import { Experience } from './experience.service';
 /*
 * @name api
@@ -31,9 +29,9 @@ export class HubspotService {
 
   constructor(
     private request: RequestService,
-    private utils: UtilsService,
     private demo: DemoService,
     private storage: BrowserStorageService,
+    private utils: UtilsService,
   ) { }
 
   submitDataToHubspot(params: HubspotFormParams): Observable<any> {
@@ -52,9 +50,12 @@ export class HubspotService {
       map(res => console.log(res)),
     );
   }
+  isNotEmptyObject(value) {
+    return value !== null && typeof value === 'object' && Object.keys(value).length > 0;
+  }
 
   generateParams(params: HubspotFormParams) {
-    if (!this.utils.isEmpty(this.storage.getUser())) {
+    if (this.isNotEmptyObject(this.storage.getUser())) {
       // legalConsentOptions is a required param for the hubspot API
       const submitParam = {
         fields: [],

@@ -27,7 +27,7 @@ export enum ThemeColor {
 }
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
-declare var window: any;
+declare const window: Window & typeof globalThis;
 
 @Injectable({
   providedIn: 'root'
@@ -128,7 +128,7 @@ export class UtilsService {
     return this.lodash.isEqual(value, other);
   }
 
-  openUrl(url, options?: { target: String }) {
+  openUrl(url, options?: { target: string }) {
     options = options || { target: '_self' };
     return window.open(url, options.target);
   }

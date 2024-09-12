@@ -5,7 +5,7 @@
     <video
       *ngIf="!iframeHtml"
       class="video-embed topic-video"
-      [ngClass]="{'desktop-view': !utils.isMobile()}"
+      [ngClass]="{'desktop-view': !isMobile}"
       width="100%"
       controls
       preload="metadata"

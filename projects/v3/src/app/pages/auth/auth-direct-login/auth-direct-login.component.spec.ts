@@ -96,7 +96,7 @@ describe('AuthDirectLoginComponent', () => {
 
   beforeEach(() => {
     authServiceSpy.authenticate.and.returnValue(of({} as any));
-    switcherSpy.getMyInfo.and.returnValue(of({}));
+    authServiceSpy.getMyInfo.and.returnValue(of({} as any));
     switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     storageSpy.get.and.returnValue([{ timeline: { id: 1 } }]);
     storageSpy.getConfig.and.returnValue({ logo: null });
@@ -167,10 +167,10 @@ describe('AuthDirectLoginComponent', () => {
 
         if (doAuthentication) {
           expect(authServiceSpy.authenticate.calls.count()).toBe(1);
-          expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+          expect(authServiceSpy.getMyInfo.calls.count()).toBe(1);
         } else {
           expect(authServiceSpy.authenticate.calls.count()).toBe(0);
-          expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
+          expect(authServiceSpy.getMyInfo.calls.count()).toBe(0);
         }
 
         if (switchProgram) {

@@ -24,6 +24,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./auth-registration.component.scss']
 })
 export class AuthRegistrationComponent implements OnInit, OnDestroy {
+  isMobile: boolean;
   password: string;
   confirmPassword: string;
   isAgreed = false;
@@ -47,13 +48,14 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private storage: BrowserStorageService,
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private modalController: ModalController,
   ) {
     this.initForm();
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {

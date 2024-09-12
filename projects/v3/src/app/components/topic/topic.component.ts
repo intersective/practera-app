@@ -28,17 +28,19 @@ export class TopicComponent implements OnChanges {
   iframeHtml = '' as SafeHtml;
   btnToggleTopicIsDone = false;
   isLoadingPreview = false;
+  isMobile: boolean;
 
   constructor(
     private embedService: EmbedVideoService,
     private notification: NotificationsService,
-    public storage: BrowserStorageService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private sharedService: SharedService,
     private filestack: FilestackService,
     private topicService: TopicService,
     @Inject(DOCUMENT) private readonly document: Document
-  ) { }
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnChanges(): void {
     this.continuing = false;
