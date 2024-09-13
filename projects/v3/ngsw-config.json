@@ -26,5 +26,19 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "core-api-data",
+      "urls": [
+        "https://admin.p2-stage.practera.com/api/*"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 50,
+        "maxAge": "12h",
+        "timeout": "10s"
+      }
+    }
   ]
 }
