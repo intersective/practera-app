@@ -63,7 +63,8 @@
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
-              }
+              },
+              "projects/v3/src/manifest.webmanifest"
             ],
             "styles": [
               {
@@ -85,7 +86,9 @@
             "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "serviceWorker": true,
+            "ngswConfigPath": "projects/v3/ngsw-config.json"
           },
           "configurations": {
             "ms": {
@@ -213,7 +216,7 @@
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["projects/v3/src/favicon.ico", "projects/v3/src/assets"],
+            "assets": ["projects/v3/src/favicon.ico", "projects/v3/src/assets", "projects/v3/src/manifest.webmanifest"],
             "styles": ["projects/v3/src/styles.scss"],
             "scripts": []
           }
