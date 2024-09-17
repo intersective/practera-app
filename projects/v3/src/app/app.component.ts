@@ -8,6 +8,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { AuthService } from '@v3/services/auth.service';
 import { VersionCheckService } from '@v3/services/version-check.service';
+import { MessagingService } from '@v3/services/messaging.service';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +29,7 @@ export class AppComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private authService: AuthService,
     private versionCheckService: VersionCheckService,
+    private messagingService: MessagingService,
   ) {
     this.redirectIfNeeded(); // redirect to "app" if the url has "appv3 in it
 
@@ -59,7 +61,12 @@ export class AppComponent implements OnInit {
     }
   }
 
+  enableNotifications() {
+    this.messagingService.requestPermission();
+  }
+
   ngOnInit() {
+    this.messagingService.listenForMessages();
     this.configVerification();
     this.sharedService.onPageLoad();
 

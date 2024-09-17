@@ -4,8 +4,6 @@ import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
-import { ActivityService } from '@v3/app/services/activity.service';
-import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -14,6 +12,7 @@ import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { MessagingService } from '../../services/messaging.service';
 
 @Component({
   selector: 'app-home',
@@ -48,18 +47,18 @@ export class HomePage implements OnInit, OnDestroy {
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
-    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
-    private unlockIndicatorService: UnlockIndicatorService
+    private unlockIndicatorService: UnlockIndicatorService,
+    private messagingService: MessagingService
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
 
   ngOnInit() {
+    this.messagingService.requestPermission();
     this.isMobile = this.utils.isMobile();
     this.milestones$ = this.homeService.milestones$
     .pipe(

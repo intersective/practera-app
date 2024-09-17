@@ -64,7 +64,8 @@
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
               },
-              "projects/v3/src/manifest.webmanifest"
+              "projects/v3/src/manifest.webmanifest",
+              "projects/v3/src/firebase-messaging-sw.js"
             ],
             "styles": [
               {

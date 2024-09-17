@@ -45,4 +45,11 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  firebase: {
+    apiKey: '',
+    authDomain: '',
+    projectId: '',
+    messagingSenderId: '',
+    appId: '',
+  },
 };

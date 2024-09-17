@@ -12,6 +12,8 @@ import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
     AppRoutingModule,
     IonicModule.forRoot({
       innerHTMLTemplatesEnabled: true,
