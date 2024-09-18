@@ -217,7 +217,7 @@ export class ActivityService {
    * @param tasks The list of tasks
    * @param afterTask Find the next task after this task
    */
-  calculateNextTask(tasks: Task[], afterTask?: Task) {
+  calculateNextTask(tasks: Task[], afterTask?: Task, callback?: Function) {
     // find the first accessible task that is not "done" or "pending review"
     let skipTask: boolean = !!afterTask;
     let nextTask: Task;
@@ -260,23 +260,39 @@ export class ActivityService {
     // if there is no next task
     if (!nextTask) {
       if (afterTask) {
-        this.assessment.getAssessment(
+        return this.assessment.fetchAssessment(
           afterTask.id,
           'assessment',
           this.activity.id,
           afterTask.contextId
-        );
-        return this._activityCompleted(hasUnfinishedTask);
+        ).subscribe({
+          next: () => {
+            return this._activityCompleted(hasUnfinishedTask);
+          },
+          error: (err) => {
+            console.error('Error fetching assessment::', err);
+            return this._activityCompleted(hasUnfinishedTask);
+          },
+          complete: () => {
+            if (callback instanceof Function) {
+              return callback();
+            }
+          }
+        });
       }
       nextTask = tasks[0]; // go to the first task
     }
     this.goToTask(nextTask);
+
+    if (callback instanceof Function) {
+      return callback();
+    }
   }
 
   // obtain latest activity to decide next task
-  goToNextTask(afterTask?: Task) {
+  goToNextTask(afterTask?: Task, callback?: Function) {
     return this.getActivity(this._activity$.getValue().id, false, null, (res: Activity) => {
-      return this.calculateNextTask(res.tasks, afterTask);
+      return this.calculateNextTask(res.tasks, afterTask, callback);
     });
   }
 
