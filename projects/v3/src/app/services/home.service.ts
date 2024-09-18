@@ -223,8 +223,21 @@ export class HomeService {
 
     // we only want the "confidence" pulse check so pass the arg: question: "confidence"
     return this.apolloService.graphQLFetch(
+      // query {
+      //   pulseCheck {
+      //     questions ($confidence: String) {
       `query {
-        pulseCheck(question: "confidence")
+        pulseCheck {
+          questions {
+            id
+            name
+            description
+            choices {
+              id
+              name
+            }
+          }
+        }
       }`,
     ).pipe(
       map(res => this._handlePulseCheck(res)),
