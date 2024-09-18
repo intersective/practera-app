@@ -645,19 +645,23 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
+    this.btnDisabled$.next(true);
     return this.assessmentService.resubmitAssessment({
       assessment_id: this.assessment.id,
       submission_id: this.submission.id
     }).subscribe({
-      next: () => {
+      next: async () => {
         this.activityService.getActivity(this.activityId);
-        this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
+        await this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id).toPromise();
+        this.btnDisabled$.next(false);
       },
-      error: () => {
-        this.notifications.assessmentSubmittedToast({
+      error: async () => {
+        await this.notifications.assessmentSubmittedToast({
           isFail: true,
           label: $localize`Resubmit request failed. Please try again.`,
         });
+
+        this.btnDisabled$.next(false);
       }
     });
   }
