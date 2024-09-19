@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -47,6 +47,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
+
+  @ViewChild('element') element;
 
   // used to resubscribe to the assessment service
   resubscribe$ = new Subject();
@@ -220,7 +222,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     if (!this.assessment) {
       return;
     }
@@ -473,6 +475,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         message: $localize`Required question answer missing!`,
         buttons: [
           {
+            text: $localize`Show me`,
+            handler: () => {
+              this.scrollToRequiredQuestion(`#q-${requiredQuestions[0].id}`);
+            },
+          },
+          {
             text: $localize`OK`,
             role: 'cancel',
           }
@@ -664,5 +672,19 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         this.btnDisabled$.next(false);
       }
     });
+  }
+
+  scrollToRequiredQuestion(elementId): void {
+    const element = document.querySelector(elementId);
+    if (element) {
+      this.utils.scrollToElement(element);
+      // Add blink class
+      element.classList.add('blink');
+
+      // Remove the class after a short delay
+      setTimeout(() => {
+        element.classList.remove('blink');
+      }, 2000); // Adjust the timeout as needed for blinking duration
+    }
   }
 }
