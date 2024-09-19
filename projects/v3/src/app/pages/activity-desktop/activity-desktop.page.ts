@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
