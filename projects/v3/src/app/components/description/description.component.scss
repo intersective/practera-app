@@ -51,6 +51,17 @@
       height: auto !important;
     }
   }
+
+  table {
+    border: inherit ;
+    height: auto !important;
+    colgroup {
+      width: 100vw !important;
+      col {
+        width: auto !important;
+      }
+    }
+  }
 }
 
 .full-height-popup {

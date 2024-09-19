@@ -1,4 +1,4 @@
-import { Topic } from '@v3/services/topic.service';
+import { Topic, TopicService } from '@v3/services/topic.service';
 import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange, OnChanges } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
@@ -36,6 +36,7 @@ export class TopicComponent implements OnChanges {
     public utils: UtilsService,
     private sharedService: SharedService,
     private filestack: FilestackService,
+    private topicService: TopicService,
     @Inject(DOCUMENT) private readonly document: Document
   ) { }
 
@@ -53,10 +54,14 @@ export class TopicComponent implements OnChanges {
     this.sharedService.stopPlayingVideos();
   }
 
+  ionViewDidLeave() {
+    this.topicService.clearTopic();
+  }
+
   private _setVideoUrlElelemts() {
     this.iframeHtml = null;
     if (this.topic.videolink.includes('vimeo') ||
-        this.topic.videolink.includes('youtube') || 
+        this.topic.videolink.includes('youtube') ||
         this.topic.videolink.includes('youtu.be')) {
       this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' } }) || null;
     }
