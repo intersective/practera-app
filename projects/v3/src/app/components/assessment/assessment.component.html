@@ -96,7 +96,7 @@
 
     <form [formGroup]="questionsForm" id="formgroup">
       <ng-container *ngFor="let group of assessment.groups">
-        <div [ngClass]="{'ion-padding': isMobile}">
+        <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
           <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
           <ion-text color="dark" class="ion-text-left">
             <div

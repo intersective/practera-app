@@ -47,7 +47,7 @@ export class DevtoolPage implements OnInit {
     }).subscribe(res => {
       this.doneLogin = true;
       this.user = res;
-      this.experienceService.getMyInfo();
+      this.authService.getMyInfo();
     }); */
   }
 
