@@ -109,7 +109,7 @@
         </div>
 
         <ng-container *ngFor="let question of group.questions">
-          <ion-list class="ion-no-padding">
+          <ion-list class="ion-no-padding" [id]="'q-' + question.id">
             <ion-list-header
               class="question-title headline-4"
               [attr.aria-label]="question.name"
