@@ -778,4 +778,8 @@ export class UtilsService {
   setPageTitle(title: string) {
     this.title.setTitle(title);
   }
+
+  scrollToElement(element: HTMLElement) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 }
