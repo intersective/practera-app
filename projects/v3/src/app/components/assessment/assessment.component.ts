@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChild, ElementRef, QueryList, ViewChildren, AfterViewInit } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -15,7 +15,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
 })
-export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
+export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
   /**
    * -- action --
    * Options: assessment/review
@@ -47,8 +47,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
-
-  @ViewChild('element') element;
 
   // used to resubscribe to the assessment service
   resubscribe$ = new Subject();
@@ -91,6 +89,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  private observer: IntersectionObserver;
+  @ViewChildren('questionBox') questionBoxes!: QueryList<ElementRef>;
+
   // prevent non participants from submitting team assessment
   get preventSubmission() {
     return this._preventSubmission();
@@ -109,10 +110,34 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+
+    // Initialize the IntersectionObserver with a callback function
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id.split('-')[1]; // Extract the question ID from the element's id
+          console.log('Question', id, 'is visible');
+          console.log('QuestionEle', entry.target);
+
+          // this.flashQuestion(+id);
+          this.observer.unobserve(entry.target); // Stop observing the element after flashing
+        }
+      });
+    }, {
+      threshold: 0.1 // Trigger the callback when 10% of the element is visible
+    });
   }
 
   ngOnInit(): void {
     this.subscribeSaveSubmission();
+  }
+
+  getQuestionBoxes() {
+    return this.questionBoxes;
+  }
+
+  onScroll(event) {
+    console.log(event);
   }
 
   subscribeSaveSubmission() {
@@ -241,7 +266,31 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
+
+  ngAfterViewInit(): void {
+    // Observe each question element after the view has been initialized
+    this.questionBoxes.forEach((questionBox) => {
+      this.observer.observe(questionBox.nativeElement);
+    });
+  }
+
+  // flashQuestion(id: number) {
+  //   // Find the question by its ID and trigger the flash effect
+  //   const questionIndex = this.questions.findIndex(q => q.id === id);
+  //   if (questionIndex !== -1) {
+  //     this.questions[questionIndex].flash = true;
+
+  //     // Remove the flash effect after 1.5 seconds (matching the animation duration)
+  //     setTimeout(() => {
+  //       this.questions[questionIndex].flash = false;
+  //     }, 1500);
+  //   }
+  // }
 
   private _initialise() {
     this.doAssessment = false;
