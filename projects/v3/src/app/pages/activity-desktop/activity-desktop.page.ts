@@ -1,6 +1,7 @@
+import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -38,6 +39,9 @@ export class ActivityDesktopPage {
     contextId: null,
   };
 
+  @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
+  @ViewChild('scrollableIonCol', { static: true }) scrollableIonCol!: ElementRef;
+
   unsubscribe$ = new Subject();
 
   constructor(
@@ -51,7 +55,19 @@ export class ActivityDesktopPage {
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
     @Inject(DOCUMENT) private readonly document: Document,
-  ) { }
+  ) {
+  }
+
+  onScroll(event) {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxes();
+    questionBoxes.forEach((questionBox: any) => {
+      const rect = questionBox.el.getBoundingClientRect();
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        // The element is visible in the viewport
+        console.log('Question is in view:', questionBox.el.id);
+      }
+    });
+  }
 
   ionViewDidEnter() {
     this.activityService.activity$
