@@ -132,7 +132,7 @@ export class UnlockIndicatorService {
     );
 
     this.storageService.set('unlockedTasks', uniquelatestTasks);
-    this._unlockedTasksSubject.next(latestTasks);
+    this._unlockedTasksSubject.next(uniquelatestTasks);
   }
 
   // Method to remove an accessed tasks
