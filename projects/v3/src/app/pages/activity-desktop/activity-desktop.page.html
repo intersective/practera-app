@@ -31,7 +31,7 @@
 
       <ion-col #scrollableTaskContent
         size="12" size-md="8" class="border-left"
-        (scroll)="onScroll($event)"
+        (scroll)="onScroll()"
         [ngClass]="{'loading-overlay': isLoadingAssessment}">
         <ng-container *ngIf="notInATeamAndForTeamOnly === true; else showCurrentTask">
           <div class="centered-text">

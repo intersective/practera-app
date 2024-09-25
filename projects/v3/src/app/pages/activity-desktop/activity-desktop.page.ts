@@ -38,11 +38,13 @@ export class ActivityDesktopPage {
     action: null,
     contextId: null,
   };
+  unsubscribe$ = new Subject();
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
 
-  unsubscribe$ = new Subject();
+  // UI-purpose only variables
+  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
 
   constructor(
     private route: ActivatedRoute,
@@ -58,13 +60,15 @@ export class ActivityDesktopPage {
   ) {
   }
 
-  onScroll(event) {
+  onScroll() {
     const questionBoxes = this.assessmentComponent.getQuestionBoxes();
-    questionBoxes.forEach((questionBox: any) => {
+    questionBoxes.filter(questionBox => {
+      return questionBox.el.classList.contains('required');
+    }).forEach((questionBox: any) => {
       const rect = questionBox.el.getBoundingClientRect();
-      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
-        // The element is visible in the viewport
-        console.log('Question is in view:', questionBox.el.id);
+      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        this.flahesIndicated[questionBox.el.id] = true;
+        this.assessmentComponent.flashBlink(questionBox.el);
       }
     });
   }
