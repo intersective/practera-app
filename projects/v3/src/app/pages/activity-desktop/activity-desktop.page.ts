@@ -40,7 +40,7 @@ export class ActivityDesktopPage {
   };
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
-  @ViewChild('scrollableIonCol', { static: true }) scrollableIonCol!: ElementRef;
+  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
 
   unsubscribe$ = new Subject();
 

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChild, ElementRef, QueryList, ViewChildren, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChild, ElementRef, QueryList, ViewChildren, AfterViewInit, AfterContentChecked, ChangeDetectionStrategy, SimpleChanges } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -8,14 +8,16 @@ import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { ActivityService } from '@v3/app/services/activity.service';
+import { IonList } from '@ionic/angular';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterViewInit {
+export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterContentChecked {
   /**
    * -- action --
    * Options: assessment/review
@@ -90,7 +92,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterV
   questionsForm: FormGroup;
 
   private observer: IntersectionObserver;
-  @ViewChildren('questionBox') questionBoxes!: QueryList<ElementRef>;
+  @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+
+  observerInitialized = false; // Prevent multiple observers from being initialized
 
   // prevent non participants from submitting team assessment
   get preventSubmission() {
@@ -110,22 +114,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterV
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
-
-    // Initialize the IntersectionObserver with a callback function
-    this.observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id.split('-')[1]; // Extract the question ID from the element's id
-          console.log('Question', id, 'is visible');
-          console.log('QuestionEle', entry.target);
-
-          // this.flashQuestion(+id);
-          this.observer.unobserve(entry.target); // Stop observing the element after flashing
-        }
-      });
-    }, {
-      threshold: 0.1 // Trigger the callback when 10% of the element is visible
-    });
   }
 
   ngOnInit(): void {
@@ -134,10 +122,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterV
 
   getQuestionBoxes() {
     return this.questionBoxes;
-  }
-
-  onScroll(event) {
-    console.log(event);
   }
 
   subscribeSaveSubmission() {
@@ -247,7 +231,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterV
     );
   }
 
-  ngOnChanges() {
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    console.log('simpleChanges::', simpleChanges);
+
     if (!this.assessment) {
       return;
     }
@@ -256,6 +242,20 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterV
     this._handleSubmissionData();
     this._handleReviewData();
     this._preventSubmission();
+
+    if (simpleChanges?.contextId) {
+      const { currentValue, previousValue } = simpleChanges.contextId;
+      if (previousValue !== this.contextId && this.observer) {
+        this.questionBoxes.forEach((questionBox) => {
+          const targetElement = questionBox.el;
+          if (targetElement) {
+            this.observer.unobserve(targetElement);
+          }
+        });
+        this.observerInitialized = false;
+        this.initializeObserver();
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -272,10 +272,35 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy, AfterV
     }
   }
 
-  ngAfterViewInit(): void {
-    // Observe each question element after the view has been initialized
+  ngAfterContentChecked() {
+    if (this.questionBoxes?.length > 0 && !this.observerInitialized) {
+      this.initializeObserver();
+      this.observerInitialized = true; // Prevent multiple observers from being initialized
+    }
+  }
+
+  initializeObserver() {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            console.log(entry.target);
+            console.log('is in!');
+          } else {
+            console.log(entry.target);
+            console.log('is out!');
+          }
+        });
+      }, {
+        threshold: 0.8 // Trigger the callback when element is entirely visible
+      }
+    );
+
     this.questionBoxes.forEach((questionBox) => {
-      this.observer.observe(questionBox.nativeElement);
+      const targetElement = questionBox.el;
+      if (targetElement) {
+        this.observer.observe(targetElement);
+      }
     });
   }
 
