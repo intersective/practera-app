@@ -107,20 +107,21 @@ export class HomePage implements OnInit, OnDestroy {
       distinctUntilChanged(),
       takeUntil(this.unsubscribe$)
     )
-    .subscribe((unlockedTasks) => {
-      this.hasUnlockedTasks = {}; // reset
-      unlockedTasks.forEach((task) => {
-        if (task.milestoneId) {
-          if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
-            this.verifyUnlockedMilestoneValidity(task.milestoneId);
+    .subscribe({
+      next: (unlockedTasks) => {
+        this.hasUnlockedTasks = {}; // reset
+        unlockedTasks.forEach((task) => {
+          if (task.milestoneId) {
+            if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
+              this.verifyUnlockedMilestoneValidity(task.milestoneId);
+            }
           }
-        }
 
-        if (task.activityId) {
-          this.hasUnlockedTasks[task.activityId] = true;
-        }
-      });
-      this.homeService.getMilestones();
+          if (task.activityId) {
+            this.hasUnlockedTasks[task.activityId] = true;
+          }
+        });
+      },
     });
   }
 
