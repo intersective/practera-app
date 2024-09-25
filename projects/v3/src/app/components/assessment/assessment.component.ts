@@ -249,19 +249,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     this.unsubscribe$.complete();
   }
 
-  // flashQuestion(id: number) {
-  //   // Find the question by its ID and trigger the flash effect
-  //   const questionIndex = this.questions.findIndex(q => q.id === id);
-  //   if (questionIndex !== -1) {
-  //     this.questions[questionIndex].flash = true;
-
-  //     // Remove the flash effect after 1.5 seconds (matching the animation duration)
-  //     setTimeout(() => {
-  //       this.questions[questionIndex].flash = false;
-  //     }, 1500);
-  //   }
-  // }
-
   private _initialise() {
     this.doAssessment = false;
     this.feedbackReviewed = false;
