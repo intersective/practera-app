@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -29,6 +29,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
       transition('visible => hidden', animate('100ms ease-in')),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
@@ -125,6 +126,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+
   // prevent non participants from submitting team assessment
   get preventSubmission() {
     return this._preventSubmission();
@@ -148,6 +151,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.subscribeSaveSubmission();
+  }
+
+  getQuestionBoxes() {
+    return this.questionBoxes;
   }
 
   subscribeSaveSubmission() {
@@ -273,10 +280,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (!this.assessment) {
       return;
     }
+
     this._initialise();
     this._populateQuestionsForm();
     this._handleSubmissionData();
@@ -725,17 +733,21 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  flashBlink(element: HTMLElement) {
+    // Add blink class
+    element.classList.add('blink');
+
+    // Remove the class after a short delay
+    setTimeout(() => {
+      element.classList.remove('blink');
+    }, 2000); // Adjust the timeout as needed for blinking duration
+  }
+
   scrollToRequiredQuestion(elementId): void {
     const element = document.querySelector(elementId);
     if (element) {
       this.utils.scrollToElement(element);
-      // Add blink class
-      element.classList.add('blink');
-
-      // Remove the class after a short delay
-      setTimeout(() => {
-        element.classList.remove('blink');
-      }, 2000); // Adjust the timeout as needed for blinking duration
+      this.flashBlink(element);
     }
   }
 }
