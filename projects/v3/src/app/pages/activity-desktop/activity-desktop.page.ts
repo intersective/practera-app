@@ -1,6 +1,7 @@
+import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -37,8 +38,13 @@ export class ActivityDesktopPage {
     action: null,
     contextId: null,
   };
-
   unsubscribe$ = new Subject();
+
+  @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
+  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
+
+  // UI-purpose only variables
+  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
 
   constructor(
     private route: ActivatedRoute,
@@ -51,7 +57,21 @@ export class ActivityDesktopPage {
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
     @Inject(DOCUMENT) private readonly document: Document,
-  ) { }
+  ) {
+  }
+
+  onScroll() {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxes();
+    questionBoxes.filter(questionBox => {
+      return questionBox.el.classList.contains('required');
+    }).forEach((questionBox: any) => {
+      const rect = questionBox.el.getBoundingClientRect();
+      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        this.flahesIndicated[questionBox.el.id] = true;
+        this.assessmentComponent.flashBlink(questionBox.el);
+      }
+    });
+  }
 
   ionViewDidEnter() {
     this.activityService.activity$
