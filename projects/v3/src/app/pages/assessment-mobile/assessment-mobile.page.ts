@@ -100,7 +100,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   onScroll() {
-    this.scrollSubject.next();
+    this.scrollSubject.next(null);
   }
 
   goBack() {
