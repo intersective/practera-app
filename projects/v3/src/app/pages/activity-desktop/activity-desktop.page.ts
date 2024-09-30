@@ -9,8 +9,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { delay, filter, tap, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
+import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -39,6 +39,7 @@ export class ActivityDesktopPage {
     contextId: null,
   };
   unsubscribe$ = new Subject();
+  scrolSubject = new Subject();
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
@@ -58,13 +59,18 @@ export class ActivityDesktopPage {
     private unlockIndicatorService: UnlockIndicatorService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
+    // slow down the scroll event trigger
+    this.scrolSubject
+      .pipe(debounceTime(300))
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => this.flashHighlight());
   }
 
   /**
    * Flash highlight on the question box when it's in the viewport (task content ion-col)
    * @return  {void}  void
    */
-  onScroll() {
+  flashHighlight(): void {
     const questionBoxes = this.assessmentComponent.getQuestionBoxes();
     questionBoxes.filter(questionBox => {
       return questionBox.el.classList.contains('flash-highlight');
@@ -75,6 +81,10 @@ export class ActivityDesktopPage {
         this.assessmentComponent.flashBlink(questionBox.el);
       }
     });
+  }
+
+  onScroll(): void {
+    this.scrolSubject.next();
   }
 
   ionViewDidEnter() {
