@@ -7,6 +7,7 @@ import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
+import { AssessmentComponent } from '@v3/app/components/assessment/assessment.component';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -28,6 +29,9 @@ export class AssessmentMobilePage implements OnInit {
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   saving: boolean;
   currentTask: Task;
+
+  @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
+  flahesIndicated: { [key: string]: boolean } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -75,6 +79,18 @@ export class AssessmentMobilePage implements OnInit {
     };
   }
 
+  onScroll() {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxes();
+    questionBoxes.filter(questionBox => {
+      return questionBox.el.classList.contains('flash-highlight');
+    }).forEach((questionBox: any) => {
+      const rect = questionBox.el.getBoundingClientRect();
+      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        this.flahesIndicated[questionBox.el.id] = true;
+        this.assessmentComponent.flashBlink(questionBox.el);
+      }
+    });
+  }
 
   goBack() {
     if (this.fromPage === 'reviews') {

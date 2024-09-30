@@ -60,10 +60,14 @@ export class ActivityDesktopPage {
   ) {
   }
 
+  /**
+   * Flash highlight on the question box when it's in the viewport (task content ion-col)
+   * @return  {void}  void
+   */
   onScroll() {
     const questionBoxes = this.assessmentComponent.getQuestionBoxes();
     questionBoxes.filter(questionBox => {
-      return questionBox.el.classList.contains('required');
+      return questionBox.el.classList.contains('flash-highlight');
     }).forEach((questionBox: any) => {
       const rect = questionBox.el.getBoundingClientRect();
       if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
