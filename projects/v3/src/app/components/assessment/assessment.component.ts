@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -126,6 +126,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  @ViewChild('form') form: HTMLFormElement;
   @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
 
   // prevent non participants from submitting team assessment
@@ -407,7 +408,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
   private _compulsoryQuestionsAnswered(answers): Question[] {
-    const missing = [];
+    const missing: Question[] = [];
     const answered = {};
     this.utils.each(answers, answer => {
       answered[answer.questionId] = answer;
@@ -418,6 +419,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (this._isRequired(question)) {
           if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
             missing.push(question);
+
+            // add highlight effect to the question
+            const questionElement = this.form.nativeElement.querySelector(`#q-${question.id}`);
+            if (questionElement) {
+              questionElement.classList.add('flash-highlight');
+            }
           }
         }
       });
