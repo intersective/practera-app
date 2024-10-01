@@ -19,12 +19,12 @@
         aria-hidden="true"
       ></ion-icon>
 
-      <span class="notification-dot" [class.hidden]="!redDot"></span>
+      <span class="notification-dot" *ngIf="redDot === true"></span>
     </div>
 
     <ion-avatar class="icon-container homepage" *ngIf="leadImage" slot="start" aria-hidden="true">
       <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
-      <span class="notification-dot" [class.hidden]="!redDot"></span>
+      <span class="notification-dot" *ngIf="redDot === true"></span>
     </ion-avatar>
 
     <div class="item-content ion-padding-vertical"
