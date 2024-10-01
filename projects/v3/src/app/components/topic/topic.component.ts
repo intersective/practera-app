@@ -23,7 +23,8 @@ export class TopicComponent implements OnChanges {
   continuing: boolean;
   @Output() continue = new EventEmitter();
   @Input() buttonDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  thisTask
+
+  isMobile: boolean;
 
   iframeHtml = '' as SafeHtml;
   btnToggleTopicIsDone = false;
@@ -33,12 +34,14 @@ export class TopicComponent implements OnChanges {
     private embedService: EmbedVideoService,
     private notification: NotificationsService,
     public storage: BrowserStorageService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private sharedService: SharedService,
     private filestack: FilestackService,
     private topicService: TopicService,
     @Inject(DOCUMENT) private readonly document: Document
-  ) { }
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnChanges(): void {
     this.continuing = false;

@@ -57,7 +57,7 @@
 
 <ng-container *ngIf="assessment">
   <div [ngClass]="{'ion-padding': !isMobile}"
-    class="main-content">
+    class="main-content" style="min-height: 100%;">
     <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
@@ -94,7 +94,7 @@
       </ion-list>
     </div>
 
-    <form [formGroup]="questionsForm" id="formgroup">
+    <form [formGroup]="questionsForm" id="formgroup" #form>
       <ng-container *ngFor="let group of assessment.groups">
         <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
           <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
@@ -109,7 +109,7 @@
         </div>
 
         <ng-container *ngFor="let question of group.questions">
-          <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox [class]="{'required': question.isRequired}">
+          <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox>
             <ion-list-header
               class="question-title headline-4"
               [attr.aria-label]="question.name"
