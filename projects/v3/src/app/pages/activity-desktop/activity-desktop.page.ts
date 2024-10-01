@@ -1,6 +1,7 @@
+import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -8,8 +9,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { delay, filter, tap, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
+import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -37,8 +38,14 @@ export class ActivityDesktopPage {
     action: null,
     contextId: null,
   };
-
   unsubscribe$ = new Subject();
+  scrolSubject = new Subject();
+
+  @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
+  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
+
+  // UI-purpose only variables
+  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
 
   constructor(
     private route: ActivatedRoute,
@@ -51,7 +58,34 @@ export class ActivityDesktopPage {
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
     @Inject(DOCUMENT) private readonly document: Document,
-  ) { }
+  ) {
+    // slow down the scroll event trigger
+    this.scrolSubject
+      .pipe(debounceTime(300))
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => this.flashHighlight());
+  }
+
+  /**
+   * Flash highlight on the question box when it's in the viewport (task content ion-col)
+   * @return  {void}  void
+   */
+  flashHighlight(): void {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxes();
+    questionBoxes.filter(questionBox => {
+      return questionBox.el.classList.contains('flash-highlight');
+    }).forEach((questionBox: any) => {
+      const rect = questionBox.el.getBoundingClientRect();
+      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        this.flahesIndicated[questionBox.el.id] = true;
+        this.assessmentComponent.flashBlink(questionBox.el);
+      }
+    });
+  }
+
+  onScroll(): void {
+    this.scrolSubject.next();
+  }
 
   ionViewDidEnter() {
     this.activityService.activity$
