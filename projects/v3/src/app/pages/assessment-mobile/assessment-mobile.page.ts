@@ -1,3 +1,4 @@
+import { debounce } from 'lodash';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -5,8 +6,10 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Subject } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
+import { AssessmentComponent } from '@v3/app/components/assessment/assessment.component';
+import { debounceTime } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -29,6 +32,10 @@ export class AssessmentMobilePage implements OnInit {
   saving: boolean;
   currentTask: Task;
 
+  @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
+  flashIndicators: { [key: string]: boolean } = {};
+  scrollSubject: Subject<null> = new Subject();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -38,7 +45,24 @@ export class AssessmentMobilePage implements OnInit {
     private notificationsService: NotificationsService,
     private readonly utils: UtilsService,
     private reviewService: ReviewService,
-  ) { }
+  ) {
+    this.scrollSubject
+    .pipe(debounceTime(300))
+    .subscribe(() => this.flashHighlight());
+  }
+
+  flashHighlight(): void {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxes();
+    questionBoxes.filter(questionBox => {
+      return questionBox.el.classList.contains('flash-highlight');
+    }).forEach((questionBox: any) => {
+      const rect = questionBox.el.getBoundingClientRect();
+      if (!this.flashIndicators[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        this.flashIndicators[questionBox.el.id] = true;
+        this.assessmentComponent.flashBlink(questionBox.el);
+      }
+    });
+  }
 
   ngOnInit() {
     this.assessmentService.assessment$.subscribe(res => {
@@ -75,6 +99,9 @@ export class AssessmentMobilePage implements OnInit {
     };
   }
 
+  onScroll() {
+    this.scrollSubject.next(null);
+  }
 
   goBack() {
     if (this.fromPage === 'reviews') {

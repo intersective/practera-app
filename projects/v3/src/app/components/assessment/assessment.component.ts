@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, ViewChildren, QueryList, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -29,6 +29,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
       transition('visible => hidden', animate('100ms ease-in')),
     ]),
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
@@ -125,6 +126,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  @ViewChild('form') form: HTMLFormElement;
+  @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+
   // prevent non participants from submitting team assessment
   get preventSubmission() {
     return this._preventSubmission();
@@ -148,6 +152,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.subscribeSaveSubmission();
+  }
+
+  getQuestionBoxes() {
+    return this.questionBoxes;
   }
 
   subscribeSaveSubmission() {
@@ -273,10 +281,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(): void {
     if (!this.assessment) {
       return;
     }
+
     this._initialise();
     this._populateQuestionsForm();
     this._handleSubmissionData();
@@ -399,7 +408,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
   private _compulsoryQuestionsAnswered(answers): Question[] {
-    const missing = [];
+    const missing: Question[] = [];
     const answered = {};
     this.utils.each(answers, answer => {
       answered[answer.questionId] = answer;
@@ -410,6 +419,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (this._isRequired(question)) {
           if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
             missing.push(question);
+
+            // add highlight effect to the question
+            const questionElement = this.form.nativeElement.querySelector(`#q-${question.id}`);
+            if (questionElement) {
+              questionElement.classList.add('flash-highlight');
+            }
           }
         }
       });
@@ -525,6 +540,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       return this.notifications.alert({
         message: $localize`Required question answer missing!`,
         buttons: [
+          {
+            text: $localize`Show me`,
+            handler: () => {
+              this.scrollToRequiredQuestion(`#q-${requiredQuestions[0].id}`);
+            },
+          },
           {
             text: $localize`OK`,
             role: 'cancel',
@@ -717,5 +738,23 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         this.btnDisabled$.next(false);
       }
     });
+  }
+
+  flashBlink(element: HTMLElement) {
+    // Add blink class
+    element.classList.add('blink');
+
+    // Remove the class after a short delay
+    setTimeout(() => {
+      element.classList.remove('blink');
+    }, 2000); // Adjust the timeout as needed for blinking duration
+  }
+
+  scrollToRequiredQuestion(elementId): void {
+    const element = document.querySelector(elementId);
+    if (element) {
+      this.utils.scrollToElement(element);
+      this.flashBlink(element);
+    }
   }
 }

@@ -690,4 +690,15 @@ describe('UtilsService', () => {
       expect(service.broadcastEvent).not.toHaveBeenCalled();
     });
   });
+
+  describe('scrollToElement()', () => {
+    it('should scroll to the element with smooth behavior and center block', () => {
+      const mockElement = document.createElement('div');
+      spyOn(mockElement, 'scrollIntoView');
+
+      service.scrollToElement(mockElement);
+
+      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    });
+  });
 });
