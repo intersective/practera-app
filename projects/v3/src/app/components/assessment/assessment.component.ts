@@ -314,7 +314,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       // user is trying to do the review, if
       // - the submission is pending review and
       // - this.action is review
-      if (this.submission.status === 'pending review' && this.action === 'review') {
+      if (this.submission?.status === 'pending review' && this.action === 'review') {
         this.isPendingReview = true;
       }
       return;
