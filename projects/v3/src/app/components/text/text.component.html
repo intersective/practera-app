@@ -1,19 +1,27 @@
 <h3 class="for-accessibility" [id]="'text-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
-  <div class="ion-padding" *ngIf="submission?.answer">
-    <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
-    <p class="body-2 gray-3 white-space-pre">{{ submission?.answer }}</p>
+  <div class="ion-no-padding ion-padding-horizontal" *ngIf="submission?.answer">
+    <ion-label class="white-space-normal body-2">
+      <p><ion-chip class="label orange" i18n>Learner's answer</ion-chip></p>
+      <p class="body-2 gray-3 white-space-pre black">{{ submission?.answer }}</p>
+    </ion-label>
   </div>
 
-  <div class="ion-padding" *ngIf="review?.answer">
-    <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
-    <p class="body-2 gray-3 white-space-pre">{{ review.answer }}</p>
-  </div>
+  <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
+    <ion-item lines="none">
+      <ion-label class="white-space-normal body-2 gray-3">
+        <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
+        <p class="body-2 gray-3 white-space-pre" [class]="{'noanswer': !review?.answer}">
+          {{ review?.answer || 'No answer given to this optional question.'}}
+        </p>
+      </ion-label>
+    </ion-item>
+  </ng-container>
 
   <ng-container *ngIf="review?.comment">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
-      <ion-label i18n>Feedback</ion-label>
+      <ion-label i18n class="white-space-normal">Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin preview textarea white-space-pre"
       [autoGrow]="true"
@@ -80,7 +88,7 @@
       <ion-list-header class="ion-no-padding" lines="none">
         <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
       </ion-list-header>
-      
+
       <ion-textarea
         [autoGrow]="true"
         [attr.aria-label]="'expert\'s review feedback'"
@@ -93,7 +101,8 @@
         (ionChange)="onChange('comment')"
         placeholder="Please put your feedback here"
         i18n-placeholder
-        [disabled]="control.disabled"></ion-textarea>
+        [disabled]="control.disabled"
+      ></ion-textarea>
     </ion-list>
 
   </div>

@@ -104,19 +104,21 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.unlockIndicatorService.unlockedTasks$
     .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((unlockedTasks) => {
-      this.hasUnlockedTasks = {}; // reset
-      unlockedTasks.forEach((task) => {
-        if (task.milestoneId) {
-          if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
-            this.verifyUnlockedMilestoneValidity(task.milestoneId);
+    .subscribe({
+      next: (unlockedTasks) => {
+        this.hasUnlockedTasks = {}; // reset
+        unlockedTasks.forEach((task) => {
+          if (task.milestoneId) {
+            if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
+              this.verifyUnlockedMilestoneValidity(task.milestoneId);
+            }
           }
-        }
 
-        if (task.activityId) {
-          this.hasUnlockedTasks[task.activityId] = true;
-        }
-      });
+          if (task.activityId) {
+            this.hasUnlockedTasks[task.activityId] = true;
+          }
+        });
+      },
     });
   }
 
@@ -198,9 +200,6 @@ export class HomePage implements OnInit, OnDestroy {
     if (activity.isLocked) {
       return;
     }
-
-    this.activityService.clearActivity();
-    this.assessmentService.clearAssessment();
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
       const clearedActivityTodo = this.unlockIndicatorService.clearActivity(activity.id);

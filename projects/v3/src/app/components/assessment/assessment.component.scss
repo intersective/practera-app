@@ -181,3 +181,20 @@ ion-footer {
   margin-left: auto;
   margin-right: auto;
 }
+
+// start --- highlight unanswered compulsory questions
+.blink > * {
+  animation: blink-animation 1s steps(5, start) infinite;
+}
+
+@keyframes blink-animation {
+  0%,
+  100% {
+    background-color: var(--ion-color-primary);
+  }
+
+  50% {
+    background-color: rgba(255, 255, 0, 0.3);
+  }
+}
+// end --- highlight unanswered compulsory questions
