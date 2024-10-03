@@ -79,7 +79,7 @@
         ></app-description>
       </ion-text>
 
-      <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
+      <ion-list *ngIf="submission?.isLocked" class="member-detail-container no-bg" lines="none">
         <ion-item lines="none">
           <ion-avatar slot="start">
             <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
@@ -156,7 +156,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
@@ -170,7 +170,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
@@ -184,7 +184,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
@@ -198,7 +198,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
@@ -213,7 +213,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
@@ -227,7 +227,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
@@ -241,7 +241,7 @@
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
-                [submissionId]="submission.id"
+                [submissionId]="submission?.id"
                 [reviewId]="review?.id"
                 [submission]="submission?.answers[question.id] || {}"
                 [review]="review?.answers[question.id] || {}"
