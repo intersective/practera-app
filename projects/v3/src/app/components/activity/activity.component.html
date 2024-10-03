@@ -31,7 +31,7 @@
       subtitle1Color="grey-50"
       (click)="goto(task)"
       (keydown)="goto(task, $event)"
-      [redDot]="newTasks[task.id]"
+      [redDot]="newTasks[task.id] || false"
       [title]="task.name"
       [subtitle1]="subtitle(task)"
       [label]="label(task)"
@@ -41,6 +41,7 @@
       [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
       [endingIcon]="endingIcon(task)"
       [endingIconColor]="endingIconColor(task)"
+      [loading]="false"
     ></app-list-item>
   </ng-container>
 </ng-container>

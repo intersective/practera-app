@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { first, map, shareReplay } from 'rxjs/operators';
+import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -63,7 +63,7 @@ export interface Task {
 
 export class ActivityService {
   private _activity$ = new BehaviorSubject<Activity>(null);
-  activity$ = this._activity$.pipe(shareReplay(1));
+  activity$ = this._activity$.pipe(tap(activity => this.activity = activity), shareReplay(1));
   private _currentTask$ = new BehaviorSubject<Task>(null);
   currentTask$ = this._currentTask$.pipe(shareReplay(1));
 
@@ -82,8 +82,8 @@ export class ActivityService {
     private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
-  public clearActivity(): void {
-    this._activity$.next(null);
+  public refreshActivity(data?): void {
+    this._activity$.next(data || this._activity$.getValue());
   }
 
   getActivityBase(activityId: number | string, options?: {}): Observable<{
@@ -118,7 +118,9 @@ export class ActivityService {
    *
    * @return  {Subscription}                graphql watch
    */
-  public getActivity(id: number, goToNextTask = false, afterTask?: Task, callback?: Function) {
+  public getActivity(
+    id: number, goToNextTask = false, afterTask?: Task, callback?: Function
+  ) {
     if (environment.demo) {
       const taskId = afterTask ? afterTask.id : 0;
       return this.demo.activity(taskId).pipe(map(res => this._normaliseActivity(res.data, goToNextTask, afterTask))).subscribe(_res => {
@@ -131,7 +133,6 @@ export class ActivityService {
 
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask)),
-      first(),
     ).subscribe(_res => {
       if (callback instanceof Function) {
         return callback(_res);
@@ -151,9 +152,11 @@ export class ActivityService {
     if (!data) {
       return null;
     }
+
     // clone the return data, instead of modifying it
-    const result = JSON.parse(JSON.stringify(data.activity));
-    result.tasks = result.tasks.map(task => {
+    const result = { ...data.activity };
+    const tasks = result?.tasks?.filter(task => task.id !== null) // filter out null task
+    .map(task => {
       if (task.isLocked) {
         return {
           id: 0,
@@ -171,6 +174,7 @@ export class ActivityService {
           };
 
         case 'assessment':
+          const taskStatus = task.status;
           return {
             id: task.id,
             name: task.name,
@@ -180,11 +184,11 @@ export class ActivityService {
             dueDate: task.deadline,
             isOverdue: task.deadline ? this.utils.timeComparer(task.deadline) < 0 : false,
             isDueToday: task.deadline ? this.utils.timeComparer(task.deadline, { compareDate: true }) === 0 : false,
-            status: task?.status?.status === 'pending approval' ? 'pending review' : task.status.status,
-            isLocked: task.status.isLocked,
+            status: taskStatus?.status === 'pending approval' ? 'pending review' : taskStatus?.status,
+            isLocked: taskStatus?.isLocked,
             submitter: {
-              name: task.status.submitterName,
-              image: task.status.submitterImage
+              name: taskStatus?.submitterName,
+              image: taskStatus?.submitterImage
             },
             assessmentType: task.assessmentType
           };
@@ -198,9 +202,10 @@ export class ActivityService {
       }
     });
 
+    result.tasks = tasks;
+
     this._activity$.next(result);
-    this.activity = result;
-    if (goToNextTask) {
+    if (goToNextTask === true) {
       this.goToNextTask(afterTask);
     }
     return result;
@@ -212,7 +217,7 @@ export class ActivityService {
    * @param tasks The list of tasks
    * @param afterTask Find the next task after this task
    */
-  calculateNextTask(tasks: Task[], afterTask?: Task) {
+  calculateNextTask(tasks: Task[], afterTask?: Task, callback?: Function) {
     // find the first accessible task that is not "done" or "pending review"
     let skipTask: boolean = !!afterTask;
     let nextTask: Task;
@@ -255,23 +260,39 @@ export class ActivityService {
     // if there is no next task
     if (!nextTask) {
       if (afterTask) {
-        this.assessment.getAssessment(
+        return this.assessment.fetchAssessment(
           afterTask.id,
           'assessment',
           this.activity.id,
           afterTask.contextId
-        );
-        return this._activityCompleted(hasUnfinishedTask);
+        ).subscribe({
+          next: () => {
+            return this._activityCompleted(hasUnfinishedTask);
+          },
+          error: (err) => {
+            console.error('Error fetching assessment::', err);
+            return this._activityCompleted(hasUnfinishedTask);
+          },
+          complete: () => {
+            if (callback instanceof Function) {
+              return callback();
+            }
+          }
+        });
       }
       nextTask = tasks[0]; // go to the first task
     }
     this.goToTask(nextTask);
+
+    if (callback instanceof Function) {
+      return callback();
+    }
   }
 
   // obtain latest activity to decide next task
-  goToNextTask(afterTask?: Task) {
+  goToNextTask(afterTask?: Task, callback?: Function) {
     return this.getActivity(this._activity$.getValue().id, false, null, (res: Activity) => {
-      return this.calculateNextTask(res.tasks, afterTask);
+      return this.calculateNextTask(res.tasks, afterTask, callback);
     });
   }
 
@@ -280,7 +301,7 @@ export class ActivityService {
     const referrer = this.storage.getReferrer();
     if (this.utils.has(referrer, 'activityTaskUrl')) {
       this.utils.redirectToUrl(referrer.activityTaskUrl);
-      return ;
+      return;
     }
 
     if (showPopup) {
@@ -318,13 +339,25 @@ export class ActivityService {
             task.id
           ]);
         }
-        this.getActivity(this.activity.id);
-        return this.assessment.getAssessment(task.id, 'assessment', this.activity.id, task.contextId);
+
+        try {
+          const activity = await this.getActivityBase(this.activity.id)
+            .pipe(
+              map(res => this._normaliseActivity(res.data, false))
+            ).toPromise();
+
+          await this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId).toPromise();
+        } catch (error) {
+          throw new Error(error);
+        }
+        break;
+
       case 'Topic':
         if (this.utils.isMobile()) {
           return this.router.navigate(['topic-mobile', this.activity.id, task.id]);
         }
-        return this.topic.getTopic(task.id);
+        this.topic.getTopic(task.id);
+        break;
     }
   }
 
