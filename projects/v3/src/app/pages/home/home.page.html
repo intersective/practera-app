@@ -74,7 +74,7 @@
     <ng-container *ngFor="let milestone of milestones">
       <ion-item class="headline-4 milestone-name" lines="none"
         aria-describedby="milestone-description">
-        <div>{{ milestone.name }}</div>
+        <div>{{ milestone.name }} {{ milestone.id }}</div>
         <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
       </ion-item>
 
@@ -89,6 +89,7 @@
       <app-list-item
         *ngFor="let activity of milestone.activities; let i = index"
         [title]="activity.name"
+        [id]="activity.id"
         [leadImage]="activity.leadImage"
         [fallbackLeadImage]="defaultLeadImage"
         [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
@@ -96,7 +97,7 @@
         (keydown)="gotoActivity({activity, milestone}, $event)"
         [endingIcon]="endingIcon(activity)"
         [endingIconColor]="endingIconColor(activity)"
-        [endingProgress]="endingProgress(activity)"
+        [endingProgress]="activityProgresses[activity.id]"
         [redDot]="hasUnlockedTasks[activity.id] || false"
         class="focusable"
         tabindex="0"
