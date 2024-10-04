@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 interface CTABtnType {
   name: string;
   color: string;
@@ -8,7 +8,6 @@ interface CTABtnType {
   selector: 'app-list-item',
   templateUrl: './list-item.component.html',
   styleUrls: ['./list-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListItemComponent {
   @Input() loading?: boolean = false;
