@@ -38,6 +38,10 @@ export interface User {
   LtiReturnUrl?: string;
   squareLogo?: string; // for collapsed sidemenu
   app_locale?: string;
+
+  // we handle nested assessment component differently, url may not reflect the focused/active assessment
+  lastVisitedAssessmentUrl?: string; // last visited assessment url
+  lastVisitedUrl?: string; // last visited url (non-assessment)
 }
 
 export interface Referrer {
