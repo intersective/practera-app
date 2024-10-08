@@ -262,12 +262,4 @@ export class HomePage implements OnInit, OnDestroy {
     }
     this.notification.achievementPopUp('', achievement);
   }
-
-  endingProgress(activity): number {
-    const progress = this.activityProgresses[activity.id];
-    if (!progress || progress === 1) {
-      return undefined;
-    }
-    return progress;
-  }
 }
