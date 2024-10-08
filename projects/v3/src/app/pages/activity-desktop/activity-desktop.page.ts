@@ -11,6 +11,7 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
+import { IonCol } from '@ionic/angular';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -42,7 +43,7 @@ export class ActivityDesktopPage {
   scrolSubject = new Subject();
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
-  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
+  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: {el: HTMLElement};
 
   // UI-purpose only variables
   flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
@@ -196,16 +197,35 @@ export class ActivityDesktopPage {
         }
       }
     });
+
+    this.restoreScrollPosition();
   }
 
   ionViewWillLeave() {
     this.topicService.clearTopic();
+    this.saveScrollPosition();
   }
 
   ionViewDidLeave() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     this.assessmentService.clearAssessment();
+  }
+
+  saveScrollPosition() {
+    const scrollHeight = this.scrollableTaskContent.el.scrollHeight;
+    const scrollTop = this.scrollableTaskContent.el.scrollTop;
+    const scrollPercentage = (scrollTop / scrollHeight) * 100;
+    localStorage.setItem('scrollPercentage', scrollPercentage.toString());
+  }
+
+  restoreScrollPosition() {
+    const scrollPercentage = localStorage.getItem('scrollPercentage');
+    if (scrollPercentage) {
+      const scrollHeight = this.scrollableTaskContent.el.scrollHeight;
+      const newScrollTop = (parseFloat(scrollPercentage) / 100) * scrollHeight;
+      this.scrollableTaskContent.el.scrollTop = newScrollTop;
+    }
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
