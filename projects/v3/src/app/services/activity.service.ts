@@ -347,6 +347,15 @@ export class ActivityService {
             ).toPromise();
 
           await this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId).toPromise();
+
+          // store last visited assessment url during visit
+          this.storage.set('lastVisitedAssessmentUrl', [
+            '/v3',
+            'activity-desktop',
+            task.contextId,
+            this.activity.id,
+            task.id
+          ].join('/'));
         } catch (error) {
           throw new Error(error);
         }
