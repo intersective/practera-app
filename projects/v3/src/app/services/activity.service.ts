@@ -349,7 +349,7 @@ export class ActivityService {
           await this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId).toPromise();
 
           // store last visited assessment url during visit
-          this.storage.set('lastVisitedAssessmentUrl', [
+          this.storage.lastVisited('assessmentUrl', [
             '/v3',
             'activity-desktop',
             task.contextId,
