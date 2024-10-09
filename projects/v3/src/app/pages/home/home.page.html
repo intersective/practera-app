@@ -87,6 +87,7 @@
       </ion-item>
 
       <app-list-item
+        [id]="activity?.id"
         *ngFor="let activity of milestone.activities; let i = index"
         [title]="activity.name"
         [leadImage]="activity.leadImage"
