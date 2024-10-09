@@ -1,5 +1,9 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 
+interface LastVisited {
+  [key: string]: string | number;
+}
+
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
   factory: () => localStorage
@@ -39,9 +43,12 @@ export interface User {
   squareLogo?: string; // for collapsed sidemenu
   app_locale?: string;
 
-  // we handle nested assessment component differently, url may not reflect the focused/active assessment
-  lastVisitedAssessmentUrl?: string; // last visited assessment url
-  lastVisitedUrl?: string; // last visited url (non-assessment)
+  lastVisited?: {
+    // we handle nested assessment component differently, url may not reflect the focused/active assessment
+    assessmentUrl: string;  // last visited assessment url
+    url: string; // last visited url (non-assessment)
+    activityId: number; // last visited activity id
+  },
 }
 
 export interface Referrer {
@@ -197,5 +204,24 @@ export class BrowserStorageService {
 
   set singlePageAccess(val) {
     this.set('singlePageAccess', val);
+  }
+
+  /**
+   * get/set last visited url/activityId/assessmentUrl
+   *
+   * @param   {string}  name   [name description]
+   * @param   {string | number}  value
+   *
+   * @return  {string | number}
+   */
+  lastVisited(name: string, value?: string | number): string | number | null {
+    let lastVisited: LastVisited = this.get('lastVisited') || {};
+
+    if (value !== undefined) {
+      lastVisited = { ...lastVisited, [name]: value };
+      this.append('lastVisited', lastVisited);
+    }
+
+    return lastVisited[name] || null;
   }
 }

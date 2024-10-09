@@ -188,6 +188,8 @@ export class HomePage implements OnInit, OnDestroy {
    * @returns A Promise that resolves when the navigation is complete.
    */
   async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
+    this.storageService.lastVisited('activityId', activity.id);
+
     if (
       keyboardEvent &&
       (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
