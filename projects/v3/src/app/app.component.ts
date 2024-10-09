@@ -39,7 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   saveAppState(): void {
-    this.storage.set('lastVisitedUrl', this.router.url);
+    this.storage.lastVisited('url', this.router.url);
   }
 
   // force every navigation happen under radar of angular
@@ -155,9 +155,9 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
 
-    const lastVisitedUrl = this.storage.get('lastVisitedUrl');
+    const lastVisitedUrl = this.storage.lastVisited('url') as string;
     if (lastVisitedUrl) {
-      const lastVisitedAssessmentUrl = this.storage.get('lastVisitedAssessmentUrl');
+      const lastVisitedAssessmentUrl = this.storage.lastVisited('assessmentUrl');
       if (lastVisitedUrl.includes('activity-desktop') && !this.utils.isEmpty(lastVisitedAssessmentUrl)) {
         return this.navigate([lastVisitedAssessmentUrl]);
       }
