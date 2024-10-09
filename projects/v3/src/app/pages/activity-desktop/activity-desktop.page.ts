@@ -43,7 +43,7 @@ export class ActivityDesktopPage {
   scrolSubject = new Subject();
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
-  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: {el: HTMLElement};
+  @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
 
   // UI-purpose only variables
   flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
