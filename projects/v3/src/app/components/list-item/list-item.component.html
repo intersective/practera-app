@@ -2,7 +2,6 @@
   [ngClass]="{'active': active, 'hasCallToActionBtn': callToActionBtn}"
   [lines]="lines"
   tabindex="0">
-  {{id}}
   <ng-container *ngIf="!loading; else loadingSkeleton">
     <div class="icon-container activitypage" *ngIf="!leadImage">
       <ion-icon *ngIf="leadingIcon"
