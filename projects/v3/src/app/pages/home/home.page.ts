@@ -137,9 +137,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
             if (task.activityId) {
               this.hasUnlockedTasks[task.activityId] = true;
             }
-          });
-        },
-      });
+          }
+        });
+      }
+    });
 
   }
 
