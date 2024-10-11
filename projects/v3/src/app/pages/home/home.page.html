@@ -44,7 +44,11 @@
           </ng-container>
         </ion-col>
 
-        <ion-col size="12" size-md="8" class="activity-col" [ngClass]="{'mobile': isMobile}">
+        <ion-col size="12" size-md="8"
+          #activityCol
+          id="activity-col"
+          class="activity-col"
+          [ngClass]="{'mobile': isMobile}">
           <h2 class="for-accessibility" i18n>Activities</h2>
           <ion-segment (ionChange)="switchContent($event)" [value]="display">
             <ion-segment-button value="activities" mode="ios">
@@ -70,7 +74,7 @@
 
 <ng-template #activityList>
   <h3 class="for-accessibility" i18n>Activity list</h3>
-  <ng-container *ngIf="(milestones$ | async) as milestones; else loadingMilestones">
+  <div #activities id="activity-list-item" *ngIf="milestones?.length > 0; else loadingMilestones">
     <ng-container *ngFor="let milestone of milestones">
       <ion-item class="headline-4 milestone-name" lines="none"
         aria-describedby="milestone-description">
@@ -87,6 +91,7 @@
       </ion-item>
 
       <app-list-item
+        [id]="'act-' + activity?.id"
         *ngFor="let activity of milestone.activities; let i = index"
         [title]="activity.name"
         [leadImage]="activity.leadImage"
@@ -103,7 +108,7 @@
         role="button">
       </app-list-item>
     </ng-container>
-  </ng-container>
+  </div>
 </ng-template>
 
 <ng-template #badgePoints>
