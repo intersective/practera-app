@@ -74,7 +74,7 @@
 
 <ng-template #activityList>
   <h3 class="for-accessibility" i18n>Activity list</h3>
-  <ng-container *ngIf="milestones?.length > 0; else loadingMilestones">
+  <div #activities id="activity-list-item" *ngIf="milestones?.length > 0; else loadingMilestones">
     <ng-container *ngFor="let milestone of milestones">
       <ion-item class="headline-4 milestone-name" lines="none"
         aria-describedby="milestone-description">
@@ -90,27 +90,25 @@
         <app-description [content]="milestone.description"></app-description>
       </ion-item>
 
-      <div #activities>
-        <app-list-item
-          [id]="'act-' + activity?.id"
-          *ngFor="let activity of milestone.activities; let i = index"
-          [title]="activity.name"
-          [leadImage]="activity.leadImage"
-          [fallbackLeadImage]="defaultLeadImage"
-          [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
-          (click)="gotoActivity({activity, milestone})"
-          (keydown)="gotoActivity({activity, milestone}, $event)"
-          [endingIcon]="endingIcon(activity)"
-          [endingIconColor]="endingIconColor(activity)"
-          [endingProgress]="activityProgresses[activity.id]"
-          [redDot]="hasUnlockedTasks[activity.id] || false"
-          class="focusable"
-          tabindex="0"
-          role="button">
-        </app-list-item>
-      </div>
+      <app-list-item
+        [id]="'act-' + activity?.id"
+        *ngFor="let activity of milestone.activities; let i = index"
+        [title]="activity.name"
+        [leadImage]="activity.leadImage"
+        [fallbackLeadImage]="defaultLeadImage"
+        [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
+        (click)="gotoActivity({activity, milestone})"
+        (keydown)="gotoActivity({activity, milestone}, $event)"
+        [endingIcon]="endingIcon(activity)"
+        [endingIconColor]="endingIconColor(activity)"
+        [endingProgress]="activityProgresses[activity.id]"
+        [redDot]="hasUnlockedTasks[activity.id] || false"
+        class="focusable"
+        tabindex="0"
+        role="button">
+      </app-list-item>
     </ng-container>
-  </ng-container>
+  </div>
 </ng-template>
 
 <ng-template #badgePoints>

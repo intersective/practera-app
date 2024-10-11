@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, Renderer2, ChangeDetectorRef, QueryList } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import {
   Achievement,
@@ -60,23 +60,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private renderer: Renderer2,
+    private cdr: ChangeDetectorRef,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
 
   ngAfterViewChecked() {
-    // this.scrollToElement();
-
-    const id = this.storageService.lastVisited('activityId');
-    if (this.activities?.nativeElement && !this.mutationObserver && id !== null) {
-      this.setupMutationObserver();
-    }
-  }
-
-  ionViewDidLeave() {
-    if (this.mutationObserver) {
-      this.mutationObserver.disconnect();
-      this.mutationObserver = null;
+    const id = this.storageService.lastVisited('activityId') as number;
+    if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
+      this.cdr.detectChanges();
+      this.scrollToElement(id);
     }
   }
 
@@ -150,11 +144,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
-  }
-
-  ionViewDidEnter() {
-    console.log('ionViewDidEnter');
-    // this.scrollToElement();
   }
 
   async updateDashboard() {
@@ -292,47 +281,20 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.notification.achievementPopUp('', achievement);
   }
 
-  scrollToElement(element) {
-    // const id = this.storageService.lastVisited('activityId');
-    // if (typeof id !== 'number') {
-    //   return;
-    // }
+  scrollToElement(id: number): void {
+    const activitiesEle = this.activities.nativeElement;
+    const element = activitiesEle.querySelector(`#act-${id}`);
 
-    // const element = document.getElementById(`#act-${id}`);
-    // const element = this.activityCol.el.querySelector(`#act-${id}`);
-
-    if (element.scrollIntoView) {
-      console.log('lastVisited::', this.storageService.lastVisited('activityId'));
-      // console.log('id::', id);
-      console.log('element::', element);
-      console.log(element);
-
+    if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
       element.scrollIntoView({ behavior: 'auto', block: 'center' });
       element.classList.add('lastVisited');
       this.storageService.lastVisited('activityId', null);
     }
-
   }
 
-  setupMutationObserver() {
-    const id = this.storageService.lastVisited('activityId');
-    // Create a MutationObserver instance to watch for changes in the child elements
-    this.mutationObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        // Check if the target element exists and trigger your function
-        const element = this.activities.nativeElement.querySelector(`#act-${id}`);
-        if (element) {
-          console.log('Element found:', element);
-          // Trigger your function here, e.g., scroll to it or manipulate it
-          this.scrollToElement(element);
-        }
-      });
-    });
-
-    // Start observing the activityCol for changes
-    this.mutationObserver.observe(this.activities.nativeElement, {
-      childList: true, // Watch for child elements being added or removed
-      subtree: true    // Watch for changes in the whole subtree of the element
-    });
+  // make sure the element is visible in viewport
+  private isElementVisible(element: HTMLElement): boolean {
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
   }
 }
