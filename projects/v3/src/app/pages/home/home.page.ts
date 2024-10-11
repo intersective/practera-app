@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import {
   Achievement,
@@ -13,14 +13,14 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, filter, finalize, first, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   display = 'activities';
 
   activityCount$: Observable<number>;
@@ -44,6 +44,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   milestones$: Observable<Milestone[]>;
 
+  @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
+  @ViewChild('activities', {static: false}) activities!: ElementRef;
+
+  private mutationObserver: MutationObserver;
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -54,77 +59,102 @@ export class HomePage implements OnInit, OnDestroy {
     private notification: NotificationsService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
-    private unlockIndicatorService: UnlockIndicatorService
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
 
+  ngAfterViewChecked() {
+    // this.scrollToElement();
+
+    const id = this.storageService.lastVisited('activityId');
+    if (this.activities?.nativeElement && !this.mutationObserver && id !== null) {
+      this.setupMutationObserver();
+    }
+  }
+
+  ionViewDidLeave() {
+    if (this.mutationObserver) {
+      this.mutationObserver.disconnect();
+      this.mutationObserver = null;
+    }
+  }
+
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
-    this.milestones$ = this.homeService.milestones$
-    .pipe(
-      distinctUntilChanged(),
-      filter((milestones) => milestones !== null),
-      takeUntil(this.unsubscribe$),
-    );
+    this.homeService.milestones$
+      .pipe(
+        distinctUntilChanged(),
+        filter((milestones) => milestones !== null),
+        takeUntil(this.unsubscribe$),
+      ).subscribe(
+        (milestones) => {
+          this.milestones = milestones;
+        }
+      );
 
     this.achievementService.achievements$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.achievements = res;
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.achievements = res;
+      });
 
     this.homeService.experienceProgress$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.experienceProgress = res;
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.experienceProgress = res;
+      });
 
     this.homeService.projectProgress$
-    .pipe(
-      filter((progress) => progress !== null),
-      takeUntil(this.unsubscribe$)
-    )
-    .subscribe((progress) => {
-      progress?.milestones?.forEach((m) => {
-        m.activities?.forEach(
-          (a) => (this.activityProgresses[a.id] = a.progress)
-        );
+      .pipe(
+        filter((progress) => progress !== null),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe((progress) => {
+        progress?.milestones?.forEach((m) => {
+          m.activities?.forEach(
+            (a) => (this.activityProgresses[a.id] = a.progress)
+          );
+        });
       });
-    });
-
 
     this.router.events
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.updateDashboard();
-      }
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.updateDashboard();
+        }
+      });
 
     this.unlockIndicatorService.unlockedTasks$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe({
-      next: (unlockedTasks) => {
-        this.hasUnlockedTasks = {}; // reset
-        unlockedTasks.forEach((task) => {
-          if (task.milestoneId) {
-            if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
-              this.verifyUnlockedMilestoneValidity(task.milestoneId);
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (unlockedTasks) => {
+          this.hasUnlockedTasks = {}; // reset
+          unlockedTasks.forEach((task) => {
+            if (task.milestoneId) {
+              if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
+                this.verifyUnlockedMilestoneValidity(task.milestoneId);
+              }
             }
-          }
 
-          if (task.activityId) {
-            this.hasUnlockedTasks[task.activityId] = true;
-          }
-        });
-      },
-    });
+            if (task.activityId) {
+              this.hasUnlockedTasks[task.activityId] = true;
+            }
+          });
+        },
+      });
+
   }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter');
+    // this.scrollToElement();
   }
 
   async updateDashboard() {
@@ -188,7 +218,10 @@ export class HomePage implements OnInit, OnDestroy {
    * @returns A Promise that resolves when the navigation is complete.
    */
   async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
-    this.storageService.lastVisited('activityId', activity.id);
+    // clear lastVisited indicator
+    this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
+      ele.classList.remove('lastVisited');
+    });
 
     if (
       keyboardEvent &&
@@ -257,5 +290,49 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     this.notification.achievementPopUp('', achievement);
+  }
+
+  scrollToElement(element) {
+    // const id = this.storageService.lastVisited('activityId');
+    // if (typeof id !== 'number') {
+    //   return;
+    // }
+
+    // const element = document.getElementById(`#act-${id}`);
+    // const element = this.activityCol.el.querySelector(`#act-${id}`);
+
+    if (element.scrollIntoView) {
+      console.log('lastVisited::', this.storageService.lastVisited('activityId'));
+      // console.log('id::', id);
+      console.log('element::', element);
+      console.log(element);
+
+      element.scrollIntoView({ behavior: 'auto', block: 'center' });
+      element.classList.add('lastVisited');
+      this.storageService.lastVisited('activityId', null);
+    }
+
+  }
+
+  setupMutationObserver() {
+    const id = this.storageService.lastVisited('activityId');
+    // Create a MutationObserver instance to watch for changes in the child elements
+    this.mutationObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        // Check if the target element exists and trigger your function
+        const element = this.activities.nativeElement.querySelector(`#act-${id}`);
+        if (element) {
+          console.log('Element found:', element);
+          // Trigger your function here, e.g., scroll to it or manipulate it
+          this.scrollToElement(element);
+        }
+      });
+    });
+
+    // Start observing the activityCol for changes
+    this.mutationObserver.observe(this.activities.nativeElement, {
+      childList: true, // Watch for child elements being added or removed
+      subtree: true    // Watch for changes in the whole subtree of the element
+    });
   }
 }
