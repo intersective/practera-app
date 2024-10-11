@@ -103,34 +103,29 @@ export class ActivityDesktopPage {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(res => this.currentTask = res);
 
-      /* this.assessmentService.assessment$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.assessment = res)); */
+    this.assessmentService.submission$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe((res) => (this.submission = res));
 
-      this.assessmentService.submission$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        )
-        .subscribe((res) => (this.submission = res));
+    this.assessmentService.review$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.review = res));
 
-      this.assessmentService.review$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.review = res));
-
-      this.topicService.topic$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.topic = res));
+    this.topicService.topic$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.topic = res));
 
     this.route.paramMap.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe(params => {
+
       // from route
       const activityId = +params.get('id');
       const contextId = +params.get('contextId'); // optional
@@ -148,6 +143,8 @@ export class ActivityDesktopPage {
         contextId: contextId,
         action: this.route.snapshot.data.action,
       };
+
+      this.storageService.lastVisited('activityId', activityId);
 
       this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
@@ -197,35 +194,16 @@ export class ActivityDesktopPage {
         }
       }
     });
-
-    this.restoreScrollPosition();
   }
 
   ionViewWillLeave() {
     this.topicService.clearTopic();
-    this.saveScrollPosition();
   }
 
   ionViewDidLeave() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
     this.assessmentService.clearAssessment();
-  }
-
-  saveScrollPosition() {
-    const scrollHeight = this.scrollableTaskContent.el.scrollHeight;
-    const scrollTop = this.scrollableTaskContent.el.scrollTop;
-    const scrollPercentage = (scrollTop / scrollHeight) * 100;
-    localStorage.setItem('scrollPercentage', scrollPercentage.toString());
-  }
-
-  restoreScrollPosition() {
-    const scrollPercentage = localStorage.getItem('scrollPercentage');
-    if (scrollPercentage) {
-      const scrollHeight = this.scrollableTaskContent.el.scrollHeight;
-      const newScrollTop = (parseFloat(scrollPercentage) / 100) * scrollHeight;
-      this.scrollableTaskContent.el.scrollTop = newScrollTop;
-    }
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
