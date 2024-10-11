@@ -10,6 +10,7 @@ interface CTABtnType {
   styleUrls: ['./list-item.component.scss'],
 })
 export class ListItemComponent {
+  @Input() id?: string;
   @Input() loading?: boolean = false;
   @Input() lines? = '';
   @Input() leadingIcon: string;
