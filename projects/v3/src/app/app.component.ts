@@ -1,21 +1,27 @@
-import { Component, OnInit, NgZone, HostListener, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { Platform } from '@ionic/angular';
-import { SharedService } from '@v3/services/shared.service';
-import { environment } from '@v3/environments/environment';
-import { BrowserStorageService } from '@v3/services/storage.service';
-import { UtilsService } from '@v3/services/utils.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { AuthService } from '@v3/services/auth.service';
-import { VersionCheckService } from '@v3/services/version-check.service';
+import {
+  Component,
+  OnInit,
+  NgZone,
+  HostListener,
+  OnDestroy,
+} from "@angular/core";
+import { Router } from "@angular/router";
+import { Platform } from "@ionic/angular";
+import { SharedService } from "@v3/services/shared.service";
+import { environment } from "@v3/environments/environment";
+import { BrowserStorageService } from "@v3/services/storage.service";
+import { UtilsService } from "@v3/services/utils.service";
+import { DomSanitizer } from "@angular/platform-browser";
+import { AuthService } from "@v3/services/auth.service";
+import { VersionCheckService } from "@v3/services/version-check.service";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'v3';
+  title = "v3";
   customHeader: string | any;
 
   constructor(
@@ -27,7 +33,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private sanitizer: DomSanitizer,
     private authService: AuthService,
-    private versionCheckService: VersionCheckService,
+    private versionCheckService: VersionCheckService
   ) {
     this.customHeader = null;
     this.initializeApp();
@@ -37,9 +43,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.saveAppState();
   }
 
-  @HostListener('window:beforeunload', ['$event'])
+  @HostListener("window:beforeunload", ["$event"])
   saveAppState(): void {
-    this.storage.lastVisited('url', this.router.url);
+    this.storage.lastVisited("url", this.router.url);
   }
 
   // force every navigation happen under radar of angular
@@ -50,8 +56,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private configVerification(): void {
-    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
-      this.storage.set('fastFeedbackOpening', false);
+    if (this.storage.get("fastFeedbackOpening")) {
+      // set default modal status
+      this.storage.set("fastFeedbackOpening", false);
     }
   }
 
@@ -76,11 +83,13 @@ export class AppComponent implements OnInit, OnDestroy {
             this.customHeader = config.html_branding.header;
           }
           if (this.customHeader) {
-            this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
+            this.customHeader = this.sanitizer.bypassSecurityTrustHtml(
+              this.customHeader
+            );
           }
 
           // add the domain if the logo url is not a full url
-          if (!logo?.includes('http') && !this.utils.isEmpty(logo)) {
+          if (!logo?.includes("http") && !this.utils.isEmpty(logo)) {
             logo = environment.APIEndpoint + logo;
           }
           const colors = {
@@ -93,7 +102,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
           // use brand color from getConfig API if no cached color available
           // in storage.getUser()
-          if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
+          if (
+            !this.utils.has(this.storage.getUser(), "colors") ||
+            !this.storage.getUser().colors
+          ) {
             this.utils.changeThemeColor(colors);
           }
         }
@@ -105,7 +117,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   magicLinkRedirect(currentLocation): Promise<boolean> {
     let searchParams = null;
-    let queryString = '';
+    let queryString = "";
     if (currentLocation.search) {
       queryString = currentLocation.search.substring(1);
     } else if (currentLocation.hash) {
@@ -113,31 +125,36 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     searchParams = new URLSearchParams(queryString);
 
-    if (searchParams.has('apikey')) {
+    if (searchParams.has("apikey")) {
       const queries = this.utils.urlQueryToObject(queryString);
-      return this.navigate(['auth', 'global_login', searchParams.get('apikey'), queries]);
+      return this.navigate([
+        "auth",
+        "global_login",
+        searchParams.get("apikey"),
+        queries,
+      ]);
     }
 
-    if (searchParams.has('do')) {
-      switch (searchParams.get('do')) {
-        case 'secure':
-          if (searchParams.has('auth_token')) {
+    if (searchParams.has("do")) {
+      switch (searchParams.get("do")) {
+        case "secure":
+          if (searchParams.has("auth_token")) {
             const queries = this.utils.urlQueryToObject(queryString);
             return this.navigate([
-              'auth',
-              'secure',
-              searchParams.get('auth_token'),
-              queries
+              "auth",
+              "secure",
+              searchParams.get("auth_token"),
+              queries,
             ]);
           }
           break;
-        case 'resetpassword':
-          if (searchParams.has('key') && searchParams.has('email')) {
+        case "resetpassword":
+          if (searchParams.has("key") && searchParams.has("email")) {
             return this.navigate([
-              'auth',
-              'reset_password',
-              searchParams.get('key'),
-              searchParams.get('email')
+              "auth",
+              "reset_password",
+              searchParams.get("key"),
+              searchParams.get("email"),
             ]);
           }
           break;
@@ -155,10 +172,16 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
 
-    const lastVisitedUrl = this.storage.lastVisited('url') as string;
+    const lastVisitedUrl = this.storage.lastVisited("url") as string;
     if (lastVisitedUrl) {
-      const lastVisitedAssessmentUrl = this.storage.lastVisited('assessmentUrl');
-      if (lastVisitedUrl.includes('activity-desktop') && !this.utils.isEmpty(lastVisitedAssessmentUrl)) {
+      const lastVisitedAssessmentUrl =
+        this.storage.lastVisited("assessmentUrl");
+      if (
+        (lastVisitedUrl.includes("activity-desktop") ||
+          lastVisitedUrl.includes("activity-mobile")) &&
+        !this.utils.isEmpty(lastVisitedAssessmentUrl)
+      ) {
+        this.storage.lastVisited("assessmentUrl", null);
         return this.navigate([lastVisitedAssessmentUrl]);
       }
       return this.navigate([lastVisitedUrl]);
