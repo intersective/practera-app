@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "defaultProject": "app",
+  "defaultProject": "v3",
   "newProjectRoot": "projects",
   "projects": {
     "app": {
@@ -42,8 +42,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js",
-              "./src/assets/newrelic.js"
+              "./node_modules/pusher-js/dist/web/pusher.min.js"
             ],
             "aot": false,
             "vendorChunk": true,

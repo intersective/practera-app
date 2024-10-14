@@ -52,7 +52,12 @@ export class HomeService {
   private _experienceProgress$ = new BehaviorSubject<number>(null);
   experienceProgress$ = this._experienceProgress$.pipe(shareReplay(1));
 
-  private _pulseCheck$ = new BehaviorSubject<number>(null);
+  private _pulseCheck$ = new BehaviorSubject<{
+    groupLabel: string; group: {
+      value: number;
+      label: string;
+    }[];
+  }>(null);
   pulseCheck$ = this._pulseCheck$.pipe(shareReplay(1));
 
   private _activityCount$ = new BehaviorSubject<number>(null);
@@ -218,8 +223,21 @@ export class HomeService {
 
     // we only want the "confidence" pulse check so pass the arg: question: "confidence"
     return this.apolloService.graphQLFetch(
+      // query {
+      //   pulseCheck {
+      //     questions ($confidence: String) {
       `query {
-        pulseCheck(question: "confidence")
+        pulseCheck {
+          questions {
+            id
+            name
+            description
+            choices {
+              id
+              name
+            }
+          }
+        }
       }`,
     ).pipe(
       map(res => this._handlePulseCheck(res)),
