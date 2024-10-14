@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone, HostListener, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { SharedService } from '@v3/services/shared.service';
@@ -14,7 +14,7 @@ import { VersionCheckService } from '@v3/services/version-check.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'v3';
   customHeader: string | any;
 
@@ -31,6 +31,15 @@ export class AppComponent implements OnInit {
   ) {
     this.customHeader = null;
     this.initializeApp();
+  }
+
+  ngOnDestroy(): void {
+    this.saveAppState();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  saveAppState(): void {
+    this.storage.set('lastVisitedUrl', this.router.url);
   }
 
   // force every navigation happen under radar of angular
@@ -91,6 +100,10 @@ export class AppComponent implements OnInit {
       }
     });
 
+    this.magicLinkRedirect(currentLocation);
+  }
+
+  magicLinkRedirect(currentLocation): Promise<boolean> {
     let searchParams = null;
     let queryString = '';
     if (currentLocation.search) {
@@ -110,7 +123,7 @@ export class AppComponent implements OnInit {
         case 'secure':
           if (searchParams.has('auth_token')) {
             const queries = this.utils.urlQueryToObject(queryString);
-            this.navigate([
+            return this.navigate([
               'auth',
               'secure',
               searchParams.get('auth_token'),
@@ -120,7 +133,7 @@ export class AppComponent implements OnInit {
           break;
         case 'resetpassword':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
+            return this.navigate([
               'auth',
               'reset_password',
               searchParams.get('key'),
@@ -131,7 +144,7 @@ export class AppComponent implements OnInit {
 
         case 'registration':
           if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
+            return this.navigate([
               'auth',
               'registration',
               searchParams.get('email'),
@@ -140,6 +153,15 @@ export class AppComponent implements OnInit {
           }
           break;
       }
+    }
+
+    const lastVisitedUrl = this.storage.get('lastVisitedUrl');
+    if (lastVisitedUrl) {
+      const lastVisitedAssessmentUrl = this.storage.get('lastVisitedAssessmentUrl');
+      if (lastVisitedUrl.includes('activity-desktop') && !this.utils.isEmpty(lastVisitedAssessmentUrl)) {
+        return this.navigate([lastVisitedAssessmentUrl]);
+      }
+      return this.navigate([lastVisitedUrl]);
     }
   }
 
