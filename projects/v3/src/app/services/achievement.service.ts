@@ -78,7 +78,7 @@ export class AchievementService {
     }));
   }
 
-  getAchievements() {
+  getAchievementsNew() {
     if (environment.demo) {
       return setTimeout(() => this._achievements$.next(this.demo.achievements.data), 1000);
     }
@@ -134,5 +134,60 @@ export class AchievementService {
 
   getIsPointsConfigured() {
     return this.isPointsConfigured;
+  }
+
+  // old API recovered for testing
+  getAchievements(order?) {
+    if (environment.demo) {
+      return setTimeout(() => this._achievements$.next(this.demo.achievements.data), 1000);
+    }
+
+    return this.request.get(api.get.achievements, {
+      params: {
+        order: order
+      }
+    }).pipe(map((res: any) => {
+      const data = res.data;
+      if (!Array.isArray(data)) {
+        return this.request.apiResponseFormatError('Achievement format error');
+      }
+      if (!data.length) {
+        this._achievements$.next([]);
+        return [];
+      }
+      this.earnedPoints = 0;
+      this.isPointsConfigured = false;
+      const achievements: Achievement[] = [];
+      data.forEach(achievement => {
+        if (!this.utils.has(achievement, 'id') ||
+          !this.utils.has(achievement, 'name') ||
+          !this.utils.has(achievement, 'description') ||
+          !this.utils.has(achievement, 'badge') ||
+          !this.utils.has(achievement, 'points') ||
+          !this.utils.has(achievement, 'isEarned') ||
+          !this.utils.has(achievement, 'earnedDate')) {
+          return this.request.apiResponseFormatError('Achievement object format error');
+        }
+        achievements.push({
+          id: achievement.id,
+          name: achievement.name,
+          description: achievement.description,
+          points: +achievement.points,
+          image: achievement.badge,
+          isEarned: achievement.isEarned,
+          earnedDate: achievement.earnedDate,
+          type: achievement.type,
+          badge: achievement.badge,
+        });
+        if (achievement.points > 0) {
+          this.isPointsConfigured = true;
+          if (achievement.isEarned) {
+            this.earnedPoints += +achievement.points;
+          }
+        }
+      });
+      this._achievements$.next(achievements);
+      return achievements;
+    })).subscribe();
   }
 }
