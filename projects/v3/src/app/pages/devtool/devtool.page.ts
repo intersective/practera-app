@@ -1,3 +1,4 @@
+import { AchievementService } from '@v3/app/services/achievement.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
@@ -26,7 +27,8 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
-    private unlockIndicatorService: UnlockIndicatorService
+    private unlockIndicatorService: UnlockIndicatorService,
+    private achievementService: AchievementService,
       ) { }
 
   ngOnInit() {
@@ -114,5 +116,9 @@ export class DevtoolPage implements OnInit {
       });
       this.unlockIndicatorService.removeTasks(task.taskId);
     });
+  }
+
+  getbadges() {
+    this.achievementService.getAchievementsOld();
   }
 }
