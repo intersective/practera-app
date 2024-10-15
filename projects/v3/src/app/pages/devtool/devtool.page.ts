@@ -178,6 +178,6 @@ export class DevtoolPage implements OnInit {
   }
 
   getbadges() {
-    this.achievementService.getAchievementsOld();
+    this.achievementService.getAchievements();
   }
 }
