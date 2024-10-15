@@ -291,7 +291,7 @@ export class NotificationsService {
    *    description: "qwert yuiop asdfg asdff"
    * });
    */
-  async achievementPopUp(type: string, achievement: Achievement, options?) {
+  async achievementPopUp(type: string, achievement: Partial<Achievement>, options?) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
