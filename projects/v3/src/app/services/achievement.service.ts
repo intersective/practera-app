@@ -78,7 +78,7 @@ export class AchievementService {
     }));
   }
 
-  getAchievements() {
+  getAchievementsNew() {
     if (environment.demo) {
       return setTimeout(() => this._achievements$.next(this.demo.achievements.data), 1000);
     }
@@ -137,7 +137,7 @@ export class AchievementService {
   }
 
   // old API recovered for testing
-  getAchievementsOld(order?) {
+  getAchievements(order?) {
     if (environment.demo) {
       return setTimeout(() => this._achievements$.next(this.demo.achievements.data), 1000);
     }
