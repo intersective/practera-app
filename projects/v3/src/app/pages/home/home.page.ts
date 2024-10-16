@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, QueryList } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import {
   Achievement,
@@ -19,7 +19,7 @@ import { MessagingService } from '../../services/messaging.service';
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   display = 'activities';
 
   activityCount$: Observable<number>;
@@ -43,6 +43,11 @@ export class HomePage implements OnInit, OnDestroy {
 
   milestones$: Observable<Milestone[]>;
 
+  @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
+  @ViewChild('activities', {static: false}) activities!: ElementRef;
+
+  private mutationObserver: MutationObserver;
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -52,54 +57,66 @@ export class HomePage implements OnInit, OnDestroy {
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
-    private messagingService: MessagingService
+    private messagingService: MessagingService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.activityCount$ = homeService.activityCount$;
+  }
+
+  ngAfterViewChecked() {
+    const id = this.storageService.lastVisited('activityId') as number;
+    if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
+      this.cdr.detectChanges();
+      this.scrollToElement(id);
+    }
   }
 
   ngOnInit() {
     this.messagingService.requestPermission();
     this.isMobile = this.utils.isMobile();
-    this.milestones$ = this.homeService.milestones$
-    .pipe(
-      distinctUntilChanged(),
-      filter((milestones) => milestones !== null),
-      takeUntil(this.unsubscribe$),
-    );
+    this.homeService.milestones$
+      .pipe(
+        distinctUntilChanged(),
+        filter((milestones) => milestones !== null),
+        takeUntil(this.unsubscribe$),
+      ).subscribe(
+        (milestones) => {
+          this.milestones = milestones;
+        }
+      );
 
     this.achievementService.achievements$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.achievements = res;
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.achievements = res;
+      });
 
     this.homeService.experienceProgress$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.experienceProgress = res;
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.experienceProgress = res;
+      });
 
     this.homeService.projectProgress$
-    .pipe(
-      filter((progress) => progress !== null),
-      takeUntil(this.unsubscribe$)
-    )
-    .subscribe((progress) => {
-      progress?.milestones?.forEach((m) => {
-        m.activities?.forEach(
-          (a) => (this.activityProgresses[a.id] = a.progress)
-        );
+      .pipe(
+        filter((progress) => progress !== null),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe((progress) => {
+        progress?.milestones?.forEach((m) => {
+          m.activities?.forEach(
+            (a) => (this.activityProgresses[a.id] = a.progress)
+          );
+        });
       });
-    });
-
 
     this.router.events
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.updateDashboard();
-      }
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.updateDashboard();
+        }
+      });
 
     this.unlockIndicatorService.unlockedTasks$
     .pipe(
@@ -114,14 +131,15 @@ export class HomePage implements OnInit, OnDestroy {
             if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
               this.verifyUnlockedMilestoneValidity(task.milestoneId);
             }
-          }
 
-          if (task.activityId) {
-            this.hasUnlockedTasks[task.activityId] = true;
+            if (task.activityId) {
+              this.hasUnlockedTasks[task.activityId] = true;
+            }
           }
         });
-      },
+      }
     });
+
   }
 
   ngOnDestroy(): void {
@@ -194,6 +212,11 @@ export class HomePage implements OnInit, OnDestroy {
    * @returns A Promise that resolves when the navigation is complete.
    */
   async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
+    // clear lastVisited indicator
+    this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
+      ele.classList.remove('lastVisited');
+    });
+
     if (
       keyboardEvent &&
       (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
@@ -261,5 +284,22 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     this.notification.achievementPopUp('', achievement);
+  }
+
+  scrollToElement(id: number): void {
+    const activitiesEle = this.activities.nativeElement;
+    const element = activitiesEle.querySelector(`#act-${id}`);
+
+    if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
+      element.scrollIntoView({ behavior: 'auto', block: 'center' });
+      element.classList.add('lastVisited');
+      this.storageService.lastVisited('activityId', null);
+    }
+  }
+
+  // make sure the element is visible in viewport
+  private isElementVisible(element: HTMLElement): boolean {
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
   }
 }

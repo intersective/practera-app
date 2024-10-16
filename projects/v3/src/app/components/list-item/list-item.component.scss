@@ -107,3 +107,11 @@ ion-avatar {
 .color-gray-2 {
   color: var(--practera-60-percent-gray) !important;
 }
+
+// make activity title stand out
+.lastVisited {
+  --background: var(--practera-light-grey-25);
+  div.body-2 {
+    font-style: italic !important;
+  }
+}
