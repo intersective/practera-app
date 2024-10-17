@@ -615,4 +615,15 @@ describe('UtilsService', () => {
       expect(service.redirectToUrl).toHaveBeenCalledWith(`${subject.origin}/${targetLocale}${subject.pathname}`);
     });
   });
+
+  describe('scrollToElement()', () => {
+    it('should scroll to the element with smooth behavior and center block', () => {
+      const mockElement = document.createElement('div');
+      spyOn(mockElement, 'scrollIntoView');
+
+      service.scrollToElement(mockElement);
+
+      expect(mockElement.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    });
+  });
 });

@@ -98,8 +98,8 @@
         (keydown)="gotoActivity({activity, milestone}, $event)"
         [endingIcon]="endingIcon(activity)"
         [endingIconColor]="endingIconColor(activity)"
-        [endingProgress]="endingProgress(activity)"
-        [redDot]="hasUnlockedTasks[activity.id] === true"
+        [endingProgress]="activityProgresses[activity.id]"
+        [redDot]="hasUnlockedTasks[activity.id] || false"
         class="focusable"
         tabindex="0"
         role="button">
