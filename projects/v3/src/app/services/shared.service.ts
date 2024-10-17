@@ -91,8 +91,8 @@ export class SharedService {
       `query user {
         user {
           teams {
-              id
-              name
+            id
+            name
           }
         }
       }`
