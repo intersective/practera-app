@@ -35,7 +35,7 @@ export interface Achievement {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AchievementService {
   private _achievements$ = new BehaviorSubject<Achievement[]>([]);
@@ -48,84 +48,123 @@ export class AchievementService {
     private apolloService: ApolloService,
     private request: RequestService,
     private utils: UtilsService,
-    private demo: DemoService,
-  ) { }
+    private demo: DemoService
+  ) {}
 
-  graphQLGetAchievements(): Observable<Achievement[]> {
-    return this.apolloService.graphQLFetch(
-      `query badges {
-        badges {
-          id
-          name
-          description
-          type
-          badge
-          openBadge
-          points
-          isEarned
-          earnedDate
-          progress
-          active
-          certificateUrl
+  /**
+   * [graphQLGetAchievements description]
+   * @link https://intersective.github.io/core-graphql-api/query.doc.html#:~:text=achievements(filter%3A%20String%2C%20type%3A%20String%2C%20active%3A%20Boolean)%3A%20%5BAchievement%5D
+   * @param   {string}                     filter  keyword to search for
+   * @param   {string}                     type    achievement type
+   * @param   {boolean}                    active  status of is active?
+   *
+   * @return  {Observable<Achievement>[]}          achievement list in badges
+   */
+  graphQLGetAchievements(
+    filter?: string,
+    type?: string,
+    active?: boolean
+  ): Observable<Achievement[]> {
+    return this.apolloService
+      .graphQLFetch(
+        `query achievements($filter: String, $type: String, $active: Boolean) {
+          achievements(filter: $filter, type: $type, active: $active) {
+            id
+            name
+            description
+            type
+            badge
+            openBadge
+            points
+            isEarned
+            earnedDate
+            progress
+            active
+            certificateUrl
+          }
+        }`,
+        {
+          variables: {
+            filter,
+            type,
+            active,
+          },
         }
-      }`
-    ).pipe(map((res: {
-      data: {
-        badges: Achievement[];
-      }
-    }) => {
-      return res?.data?.badges || [];
-    }));
+      )
+      .pipe(
+        map(
+          (res: {
+            data: {
+              badges: Achievement[];
+            };
+          }) => {
+            return res?.data?.badges || [];
+          }
+        )
+      );
   }
 
   getAchievements() {
     if (environment.demo) {
-      return setTimeout(() => this._achievements$.next(this.demo.achievements.data), 1000);
+      return setTimeout(
+        () => this._achievements$.next(this.demo.achievements.data),
+        1000
+      );
     }
 
-    return this.graphQLGetAchievements().pipe(map((res: Achievement[]) => {
-      const data = res;
-      if (!Array.isArray(data)) {
-        return this.request.apiResponseFormatError('Achievement format error');
-      }
-      if (!data.length) {
-        this._achievements$.next([]);
-        return [];
-      }
-      this.earnedPoints = 0;
-      this.isPointsConfigured = false;
-      const achievements: Achievement[] = [];
-      data.forEach(achievement => {
-        if (!this.utils.has(achievement, 'id') ||
-          !this.utils.has(achievement, 'name') ||
-          !this.utils.has(achievement, 'description') ||
-          !this.utils.has(achievement, 'badge') ||
-          !this.utils.has(achievement, 'points') ||
-          !this.utils.has(achievement, 'isEarned') ||
-          !this.utils.has(achievement, 'earnedDate')) {
-          return this.request.apiResponseFormatError('Achievement object format error');
-        }
-        achievements.push({
-          id: achievement.id,
-          name: achievement.name,
-          description: achievement.description,
-          points: +achievement.points,
-          image: achievement.badge,
-          isEarned: achievement.isEarned,
-          earnedDate: achievement.earnedDate,
-          type: achievement.type,
-          badge: achievement.badge,
-        });
-        if (achievement.points > 0) {
-          this.isPointsConfigured = true;
-          if (achievement.isEarned) {
-            this.earnedPoints += +achievement.points;
+    return this.graphQLGetAchievements()
+      .pipe(
+        map((res: Achievement[]) => {
+          const data = res;
+          if (!Array.isArray(data)) {
+            return this.request.apiResponseFormatError(
+              "Achievement format error"
+            );
           }
-        }
-      });
-      this._achievements$.next(achievements);
-      return achievements;
-    })).subscribe();
+          if (!data.length) {
+            this._achievements$.next([]);
+            return [];
+          }
+          this.earnedPoints = 0;
+          this.isPointsConfigured = false;
+          const achievements: Achievement[] = [];
+          data.forEach((achievement) => {
+            if (
+              !this.utils.has(achievement, "id") ||
+              !this.utils.has(achievement, "name") ||
+              !this.utils.has(achievement, "description") ||
+              !this.utils.has(achievement, "badge") ||
+              !this.utils.has(achievement, "points") ||
+              !this.utils.has(achievement, "isEarned") ||
+              !this.utils.has(achievement, "earnedDate")
+            ) {
+              return this.request.apiResponseFormatError(
+                "Achievement object format error"
+              );
+            }
+            achievements.push({
+              id: achievement.id,
+              name: achievement.name,
+              description: achievement.description,
+              points: +achievement.points,
+              image: achievement.badge,
+              isEarned: achievement.isEarned,
+              earnedDate: achievement.earnedDate,
+              type: achievement.type,
+              badge: achievement.badge,
+            });
+            if (achievement.points > 0) {
+              this.isPointsConfigured = true;
+              if (achievement.isEarned) {
+                this.earnedPoints += +achievement.points;
+              }
+            }
+          });
+          this._achievements$.next(achievements);
+          return achievements;
+        })
+      )
+      .subscribe();
   }
 
   getEarnedPoints() {
