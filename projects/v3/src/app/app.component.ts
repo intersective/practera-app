@@ -5,7 +5,7 @@ import {
   HostListener,
   OnDestroy,
 } from "@angular/core";
-import { Router } from "@angular/router";
+import { NavigationEnd, Router } from "@angular/router";
 import { Platform } from "@ionic/angular";
 import { SharedService } from "@v3/services/shared.service";
 import { environment } from "@v3/environments/environment";
@@ -14,6 +14,7 @@ import { UtilsService } from "@v3/services/utils.service";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AuthService } from "@v3/services/auth.service";
 import { VersionCheckService } from "@v3/services/version-check.service";
+import { Subject, takeUntil } from "rxjs";
 
 @Component({
   selector: "app-root",
@@ -23,6 +24,8 @@ import { VersionCheckService } from "@v3/services/version-check.service";
 export class AppComponent implements OnInit, OnDestroy {
   title = "v3";
   customHeader: string | any;
+  $unsubscribe = new Subject();
+  lastVisitedUrl: string;
 
   constructor(
     private platform: Platform,
@@ -45,20 +48,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   @HostListener("window:beforeunload", ["$event"])
   saveAppState(): void {
-    this.storage.lastVisited("url", this.router.url);
-  }
-
-  // force every navigation happen under radar of angular
-  private navigate(direction): Promise<boolean> {
-    return this.ngZone.run(() => {
-      return this.router.navigate(direction);
-    });
-  }
-
-  private configVerification(): void {
-    if (this.storage.get("fastFeedbackOpening")) {
-      // set default modal status
-      this.storage.set("fastFeedbackOpening", false);
+    if (this.lastVisitedUrl) {
+      this.storage.lastVisited("url", this.lastVisitedUrl);
     }
   }
 
@@ -70,7 +61,9 @@ export class AppComponent implements OnInit, OnDestroy {
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
     const domain = currentLocation.hostname;
-    this.authService.getConfig({ domain }).subscribe((response: any) => {
+    this.authService.getConfig({ domain })
+    .pipe(takeUntil(this.$unsubscribe))
+    .subscribe((response: any) => {
       if (response !== null) {
         const expConfig = response.data;
         const numOfConfigs = expConfig.length;
@@ -112,6 +105,17 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.router.events
+      .pipe(takeUntil(this.$unsubscribe))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          const currentUrl = event.urlAfterRedirects;
+          if (!currentUrl.includes('devtool')) {
+            this.lastVisitedUrl = currentUrl;
+          }
+        }
+      });
+
     this.magicLinkRedirect(currentLocation);
   }
 
@@ -148,6 +152,7 @@ export class AppComponent implements OnInit, OnDestroy {
             ]);
           }
           break;
+
         case "resetpassword":
           if (searchParams.has("key") && searchParams.has("email")) {
             return this.navigate([
@@ -172,10 +177,14 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
 
+    this.redirectToLastVisitedUrl();
+  }
+
+  // redirect to the last visited url/assessment if available
+  redirectToLastVisitedUrl(): Promise<boolean> {
     const lastVisitedUrl = this.storage.lastVisited("url") as string;
     if (lastVisitedUrl) {
-      const lastVisitedAssessmentUrl =
-        this.storage.lastVisited("assessmentUrl");
+      const lastVisitedAssessmentUrl = this.storage.lastVisited("assessmentUrl");
       if (
         (lastVisitedUrl.includes("activity-desktop") ||
           lastVisitedUrl.includes("activity-mobile")) &&
@@ -184,6 +193,8 @@ export class AppComponent implements OnInit, OnDestroy {
         this.storage.lastVisited("assessmentUrl", null);
         return this.navigate([lastVisitedAssessmentUrl]);
       }
+
+      this.storage.lastVisited("url", null);
       return this.navigate([lastVisitedUrl]);
     }
   }
@@ -197,5 +208,19 @@ export class AppComponent implements OnInit, OnDestroy {
       // initialise Pusher when app loading
       this.sharedService.initWebServices();
     });
+  }
+
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
+  }
+
+  private configVerification(): void {
+    if (this.storage.get("fastFeedbackOpening")) {
+      // set default modal status
+      this.storage.set("fastFeedbackOpening", false);
+    }
   }
 }
