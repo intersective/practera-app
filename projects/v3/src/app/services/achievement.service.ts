@@ -54,21 +54,13 @@ export class AchievementService {
   /**
    * [graphQLGetAchievements description]
    * @link https://intersective.github.io/core-graphql-api/query.doc.html#:~:text=achievements(filter%3A%20String%2C%20type%3A%20String%2C%20active%3A%20Boolean)%3A%20%5BAchievement%5D
-   * @param   {string}                     filter  keyword to search for
-   * @param   {string}                     type    achievement type
-   * @param   {boolean}                    active  status of is active?
-   *
    * @return  {Observable<Achievement>[]}          achievement list in badges
    */
-  graphQLGetAchievements(
-    filter?: string,
-    type?: string,
-    active?: boolean
-  ): Observable<Achievement[]> {
+  graphQLGetAchievements(): Observable<Achievement[]> {
     return this.apolloService
       .graphQLFetch(
-        `query achievements($filter: String, $type: String, $active: Boolean) {
-          achievements(filter: $filter, type: $type, active: $active) {
+        `query achievements {
+          achievements {
             id
             name
             description
@@ -82,23 +74,16 @@ export class AchievementService {
             active
             certificateUrl
           }
-        }`,
-        {
-          variables: {
-            filter,
-            type,
-            active,
-          },
-        }
+        }`
       )
       .pipe(
         map(
           (res: {
             data: {
-              badges: Achievement[];
+              achievements: Achievement[];
             };
           }) => {
-            return res?.data?.badges || [];
+            return res?.data?.achievements || [];
           }
         )
       );
