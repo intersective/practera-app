@@ -1,11 +1,8 @@
 <div class="traffic-light-group">
-  <span>{{ lights.groupLabel }}:</span>
-  <ng-container *ngFor="let light of lights.group">
-    <app-traffic-light [value]="light.value"></app-traffic-light>
-    <ion-chip *ngIf="light?.label"
-      class="traffic-light-labels"
-      [color]="light.value"
-    >{{ light.label }}</ion-chip>
+  <ng-container *ngFor="let group of ['self', 'expert', 'team']">
+    <ion-chip class="traffic-light-labels" [color]="lights[group]">
+      <ion-label class="spacing-right">{{ group | titlecase }}</ion-label>
+      <app-traffic-light [value]="lights[group]"></app-traffic-light>
+    </ion-chip>
   </ng-container>
 </div>
-

@@ -17,16 +17,16 @@ import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
+  selector: "app-home",
+  templateUrl: "./home.page.html",
+  styleUrls: ["./home.page.scss"],
 })
 export class HomePage implements OnInit, OnDestroy {
-  display = 'activities';
+  display = "activities";
 
   activityCount$: Observable<number>;
   experienceProgress: number;
-  pulseCheck: TrafficLightGroupComponent['lights'];
+  pulseCheckStatus: TrafficLightGroupComponent["lights"];
   milestones: Milestone[];
   achievements: Achievement[];
   experience: Experience;
@@ -39,7 +39,7 @@ export class HomePage implements OnInit, OnDestroy {
   hasUnlockedTasks: Object = {};
 
   // default card image (gracefully show broken url)
-  defaultLeadImage: string = '';
+  defaultLeadImage: string = "";
 
   unsubscribe$ = new Subject();
 
@@ -62,71 +62,65 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
-    this.milestones$ = this.homeService.milestones$
-    .pipe(
+    this.milestones$ = this.homeService.milestones$.pipe(
       distinctUntilChanged(),
       filter((milestones) => milestones !== null),
-      takeUntil(this.unsubscribe$),
+      takeUntil(this.unsubscribe$)
     );
 
     this.achievementService.achievements$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.achievements = res;
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.achievements = res;
+      });
 
     this.homeService.experienceProgress$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.experienceProgress = res;
-    });
-
-    this.homeService.pulseCheck$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((res) => {
-      this.pulseCheck = res;
-    });
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.experienceProgress = res;
+      });
 
     this.homeService.projectProgress$
-    .pipe(
-      filter((progress) => progress !== null),
-      takeUntil(this.unsubscribe$)
-    )
-    .subscribe((progress) => {
-      progress?.milestones?.forEach((m) => {
-        m.activities?.forEach(
-          (a) => (this.activityProgresses[a.id] = a.progress)
-        );
+      .pipe(
+        filter((progress) => progress !== null),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe((progress) => {
+        progress?.milestones?.forEach((m) => {
+          m.activities?.forEach(
+            (a) => (this.activityProgresses[a.id] = a.progress)
+          );
+        });
       });
-    });
 
-
-    this.router.events
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe((event) => {
+    this.router.events.pipe(takeUntil(this.unsubscribe$)).subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.updateDashboard();
       }
     });
 
     this.unlockIndicatorService.unlockedTasks$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe({
-      next: (unlockedTasks) => {
-        this.hasUnlockedTasks = {}; // reset
-        unlockedTasks.forEach((task) => {
-          if (task.milestoneId) {
-            if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
-              this.verifyUnlockedMilestoneValidity(task.milestoneId);
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (unlockedTasks) => {
+          this.hasUnlockedTasks = {}; // reset
+          unlockedTasks.forEach((task) => {
+            if (task.milestoneId) {
+              if (
+                this.unlockIndicatorService.isMilestoneClearable(
+                  task.milestoneId
+                )
+              ) {
+                this.verifyUnlockedMilestoneValidity(task.milestoneId);
+              }
             }
-          }
 
-          if (task.activityId) {
-            this.hasUnlockedTasks[task.activityId] = true;
-          }
-        });
-      },
-    });
+            if (task.activityId) {
+              this.hasUnlockedTasks[task.activityId] = true;
+            }
+          });
+        },
+      });
   }
 
   ngOnDestroy(): void {
@@ -136,27 +130,26 @@ export class HomePage implements OnInit, OnDestroy {
 
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
-    this.experience = this.storageService.get('experience');
+    this.experience = this.storageService.get("experience");
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
-    this.utils.setPageTitle(this.experience?.name || 'Practera');
-    this.defaultLeadImage = this.experience.cardUrl || '';
-    this.homeService.getPulseCheckStatuses().subscribe(res => {
-      console.log('pulseCheck', res);
-
-      this.pulseCheck = res;
+    this.utils.setPageTitle(this.experience?.name || "Practera");
+    this.defaultLeadImage = this.experience.cardUrl || "";
+    this.homeService.getPulseCheckStatuses().subscribe((res) => {
+      console.log("pulseCheck", res);
+      this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
     });
   }
 
   goBack() {
-    this.router.navigate(['experiences']);
+    this.router.navigate(["experiences"]);
   }
 
   switchContent(event) {
     // update points upon switching to badges tab
-    if (event.detail.value === 'badges') {
+    if (event.detail.value === "badges") {
       this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
       this.getEarnedPoints = this.achievementService.earnedPoints;
     }
@@ -165,14 +158,14 @@ export class HomePage implements OnInit, OnDestroy {
 
   endingIcon(activity) {
     if (activity.isLocked) {
-      return 'lock-closed';
+      return "lock-closed";
     }
     const progress = this.activityProgresses[activity.id];
     if (!progress) {
-      return 'chevron-forward';
+      return "chevron-forward";
     }
     if (progress === 1) {
-      return 'checkmark-circle';
+      return "checkmark-circle";
     }
     return null;
   }
@@ -180,10 +173,10 @@ export class HomePage implements OnInit, OnDestroy {
   endingIconColor(activity) {
     const progress = this.activityProgresses[activity.id];
     if (!progress || activity.isLocked) {
-      return 'medium';
+      return "medium";
     }
     if (progress === 1) {
-      return 'success';
+      return "success";
     }
     return null;
   }
@@ -202,7 +195,7 @@ export class HomePage implements OnInit, OnDestroy {
   async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
     if (
       keyboardEvent &&
-      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
     ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
@@ -214,16 +207,18 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
-      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(activity.id);
+      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(
+        activity.id
+      );
       clearedActivityTodo?.forEach((todo) => {
         this.notification
           .markTodoItemAsDone(todo)
           .pipe(first())
           .subscribe(() => {
             // eslint-disable-next-line no-console
-            console.log('Marked activity as done', todo);
+            console.log("Marked activity as done", todo);
           });
-        });
+      });
     }
 
     if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
@@ -231,10 +226,10 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     if (!this.isMobile) {
-      return this.router.navigate(['v3', 'activity-desktop', activity.id]);
+      return this.router.navigate(["v3", "activity-desktop", activity.id]);
     }
 
-    return this.router.navigate(['v3', 'activity-mobile', activity.id]);
+    return this.router.navigate(["v3", "activity-mobile", activity.id]);
   }
 
   /**
@@ -252,7 +247,7 @@ export class HomePage implements OnInit, OnDestroy {
         .pipe(first())
         .subscribe(() => {
           // eslint-disable-next-line no-console
-          console.log('Marked milestone as done', unlockedMilestone);
+          console.log("Marked milestone as done", unlockedMilestone);
         });
     });
   }
@@ -260,12 +255,12 @@ export class HomePage implements OnInit, OnDestroy {
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
-      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
     ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
-    this.notification.achievementPopUp('', achievement);
+    this.notification.achievementPopUp("", achievement);
   }
 }
