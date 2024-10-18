@@ -32,7 +32,10 @@
       <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
         <div class="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
         &nbsp; <!-- this is to add some space between two elements -->
-        <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
+        <span style="white-space: nowrap;"
+          class="item-title subtitle-3"
+          [ngClass]="'color-' + titleColor"
+        > {{ eventDayCount }}</span>
       </div>
 
       <div *ngIf="!isEventItem"
@@ -83,11 +86,13 @@
       [attr.aria-hidden]="!statusDescriptions(endingIcon)"
       [attr.aria-label]="statusDescriptions(endingIcon)"
     ></ion-icon>
-
-    <div *ngIf="endingProgress && !endingIcon"
+    <div *ngIf="(endingProgress && endingProgress !== 1) && !endingIcon"
       slot="end" style="width: 2em;"
       [attr.aria-label]="'progress ' + (endingProgress * 100) + '%'">
-      <app-circle-progress [data]='{ percent: endingProgress * 100 }' aria-hidden="true"></app-circle-progress>
+      <app-circle-progress
+        [data]='{ percent: endingProgress * 100 }'
+        aria-hidden="true"
+      ></app-circle-progress>
     </div>
 
     <div *ngIf="isEventItem" aria-labelledby="event-status">
