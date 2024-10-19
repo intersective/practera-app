@@ -1,8 +1,12 @@
 <div class="traffic-light-group">
   <ng-container *ngFor="let group of ['self', 'expert', 'team']">
-    <ion-chip class="traffic-light-labels" [color]="lights[group]">
+    <ion-chip class="traffic-light-labels" color="medium"
+      (click)="navigateToPulseCheck(group)"
+      [disabled]="group !== 'self'"
+    >
       <ion-label class="spacing-right">{{ group | titlecase }}</ion-label>
-      <app-traffic-light [value]="lights[group]"></app-traffic-light>
+      <ion-spinner name="bubbles" *ngIf="loading[group] === true"></ion-spinner>
+      <app-traffic-light *ngIf="!loading[group]" [value]="lights[group]"></app-traffic-light>
     </ion-chip>
   </ng-container>
 </div>
