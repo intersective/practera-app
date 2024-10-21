@@ -24,6 +24,7 @@
 
     <ion-avatar class="icon-container homepage" *ngIf="leadImage" slot="start" aria-hidden="true">
       <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
+      <ion-icon name="bookmark" class="bookmark-icon" color="primary" *ngIf="lastVisited === true"></ion-icon>
       <span class="notification-dot" *ngIf="redDot === true"></span>
     </ion-avatar>
 
