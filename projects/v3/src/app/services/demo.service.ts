@@ -87,6 +87,23 @@ export class DemoService {
     }).pipe(delay(1000));
   }
 
+  pulseCheck() {
+    return of({
+      data: {
+        confidence: {
+          self: 1,
+          team: .5,
+          expert: 0
+        },
+        satisfaction: {
+          self: 0.5,
+          team: 0.5,
+          expert: 0.5
+        }
+      }
+    }).pipe(delay(1000));
+  }
+
   projectProgress() {
     return of({
       data: {
