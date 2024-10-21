@@ -71,9 +71,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   ngAfterViewChecked() {
     const id = this.storageService.lastVisited('activityId') as number;
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
+      this.lastVisitedActivityId = id;
+
       this.cdr.detectChanges();
       this.scrollToElement(id);
-      this.lastVisitedActivityId = id;
     }
   }
 
