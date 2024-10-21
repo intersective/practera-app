@@ -163,7 +163,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.utils.setPageTitle(this.experience?.name || "Practera");
     this.defaultLeadImage = this.experience.cardUrl || "";
     this.homeService.getPulseCheckStatuses().subscribe((res) => {
-      console.log("pulseCheck", res);
       this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
     });
   }
