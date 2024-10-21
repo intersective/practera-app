@@ -25,6 +25,8 @@ export class TrafficLightGroupComponent {
       this.fastFeedbackService.pullFastFeedback().subscribe({
         next: (response) => {
           if (response) {
+            // @TODO: handle response
+            // eslint-disable-next-line no-console
             console.log(`Pulled fast feedback for type ${type}:`, response);
           }
         },
