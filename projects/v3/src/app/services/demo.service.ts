@@ -87,6 +87,23 @@ export class DemoService {
     }).pipe(delay(1000));
   }
 
+  pulseCheck() {
+    return of({
+      data: {
+        confidence: {
+          self: 1,
+          team: .5,
+          expert: 0
+        },
+        satisfaction: {
+          self: 0.5,
+          team: 0.5,
+          expert: 0.5
+        }
+      }
+    }).pipe(delay(1000));
+  }
+
   projectProgress() {
     return of({
       data: {
@@ -135,10 +152,15 @@ export class DemoService {
         id: i + 1,
         name: `Badge${ i + 1 }`,
         description: i < 2 ? `Badge description${ i + 1 }` : this.description,
-        image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
+        image: 'assets/images/badge.png',
         points: Math.floor(Math.random() * 1000),
         isEarned: i < 3,
-        earnedDate: '2021-10-04 05:44:49'
+        earnedDate: '2021-10-04 05:44:49',
+        progress: Math.random(),
+        active: i % 2 === 0,
+        certificateUrl: 'assets/images/badge.png',
+        type: '',
+        badge: 'assets/images/badge.png',
       }))
     };
   }

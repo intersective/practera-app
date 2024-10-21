@@ -1,0 +1,14 @@
+.traffic-light-group {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+  min-width: 215px;
+}
+.traffic-light-group span {
+  margin-right: 5px;
+}
+
+.spacing-right {
+  margin-right: 0.5rem;
+}
