@@ -126,6 +126,17 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       });
 
+    this.router.events
+      .pipe(takeUntil(this.$unsubscribe))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          const currentUrl = event.urlAfterRedirects;
+          if (!currentUrl.includes('devtool')) {
+            this.lastVisitedUrl = currentUrl;
+          }
+        }
+      });
+
     this.magicLinkRedirect(currentLocation);
   }
 

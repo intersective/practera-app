@@ -6,7 +6,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { HttpClient } from '@angular/common/http';
 import { Experience } from './experience.service';
 /*
 * @name api
