@@ -105,6 +105,7 @@
         [endingIconColor]="endingIconColor(activity)"
         [endingProgress]="activityProgresses[activity.id]"
         [redDot]="hasUnlockedTasks[activity.id] || false"
+        [lastVisited]="lastVisitedActivityId === activity.id"
         class="focusable"
         tabindex="0"
         role="button">

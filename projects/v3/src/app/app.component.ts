@@ -14,7 +14,8 @@ import { UtilsService } from "@v3/services/utils.service";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AuthService } from "@v3/services/auth.service";
 import { VersionCheckService } from "@v3/services/version-check.service";
-import { Subject, takeUntil } from "rxjs";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 @Component({
   selector: "app-root",
@@ -26,6 +27,15 @@ export class AppComponent implements OnInit, OnDestroy {
   customHeader: string | any;
   $unsubscribe = new Subject();
   lastVisitedUrl: string;
+
+  // list of urls that should not be cached
+  noneCachedUrl = [
+    'devtool',
+    'registration',
+    'register',
+    'forgot_password',
+    'reset_password',
+  ];
 
   constructor(
     private platform: Platform,
@@ -62,48 +72,59 @@ export class AppComponent implements OnInit, OnDestroy {
     // Get the custom branding info and update the theme color if needed
     const domain = currentLocation.hostname;
     this.authService.getConfig({ domain })
-    .pipe(takeUntil(this.$unsubscribe))
-    .subscribe((response: any) => {
-      if (response !== null) {
-        const expConfig = response.data;
-        const numOfConfigs = expConfig.length;
-        if (numOfConfigs > 0 && numOfConfigs < 2) {
-          let logo = expConfig[0].logo;
+      .pipe(takeUntil(this.$unsubscribe))
+      .subscribe((response: any) => {
+        if (response !== null) {
+          const expConfig = response.data;
+          const numOfConfigs = expConfig.length;
+          if (numOfConfigs > 0 && numOfConfigs < 2) {
+            let logo = expConfig[0].logo;
 
-          const config = expConfig[0].config || {}; // let it fail gracefully
+            const config = expConfig[0].config || {}; // let it fail gracefully
 
-          if (config.html_branding && config.html_branding.header) {
-            this.customHeader = config.html_branding.header;
-          }
-          if (this.customHeader) {
-            this.customHeader = this.sanitizer.bypassSecurityTrustHtml(
-              this.customHeader
-            );
-          }
+            if (config.html_branding && config.html_branding.header) {
+              this.customHeader = config.html_branding.header;
+            }
+            if (this.customHeader) {
+              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(
+                this.customHeader
+              );
+            }
 
-          // add the domain if the logo url is not a full url
-          if (!logo?.includes("http") && !this.utils.isEmpty(logo)) {
-            logo = environment.APIEndpoint + logo;
-          }
-          const colors = {
-            theme: config.theme_color,
-          };
-          this.storage.setConfig({
-            logo,
-            colors,
-          });
+            // add the domain if the logo url is not a full url
+            if (!logo?.includes("http") && !this.utils.isEmpty(logo)) {
+              logo = environment.APIEndpoint + logo;
+            }
+            const colors = {
+              theme: config.theme_color,
+            };
+            this.storage.setConfig({
+              logo,
+              colors,
+            });
 
-          // use brand color from getConfig API if no cached color available
-          // in storage.getUser()
-          if (
-            !this.utils.has(this.storage.getUser(), "colors") ||
-            !this.storage.getUser().colors
-          ) {
-            this.utils.changeThemeColor(colors);
+            // use brand color from getConfig API if no cached color available
+            // in storage.getUser()
+            if (
+              !this.utils.has(this.storage.getUser(), "colors") ||
+              !this.storage.getUser().colors
+            ) {
+              this.utils.changeThemeColor(colors);
+            }
           }
         }
-      }
-    });
+      });
+
+    this.router.events
+      .pipe(takeUntil(this.$unsubscribe))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          const currentUrl = event.urlAfterRedirects;
+          if (!this.noneCachedUrl.some((url) => currentUrl.includes(url))) {
+            this.lastVisitedUrl = currentUrl;
+          }
+        }
+      });
 
     this.router.events
       .pipe(takeUntil(this.$unsubscribe))
@@ -164,13 +185,13 @@ export class AppComponent implements OnInit, OnDestroy {
           }
           break;
 
-        case 'registration':
-          if (searchParams.has('key') && searchParams.has('email')) {
+        case "registration":
+          if (searchParams.has("key") && searchParams.has("email")) {
             return this.authService.logout({}, [
-              'auth',
-              'registration',
-              searchParams.get('email'),
-              searchParams.get('key')
+              "auth",
+              "registration",
+              searchParams.get("email"),
+              searchParams.get("key")
             ]);
           }
           break;
