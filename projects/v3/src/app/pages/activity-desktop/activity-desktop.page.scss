@@ -36,3 +36,38 @@ ion-content {
   height: 100vh;
   text-align: center;
 }
+.scrollable-fab {
+  display: block;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-height: 200px;
+  ion-fab-button {
+    --box-shadow: none;
+    &:hover::before {
+      --box-shadow: none;
+      opacity: 1;
+      bottom: 0;
+    }
+  }
+}
+
+
+.ion-fab-button::before {
+  content: attr(title);
+  display: inline-block;
+  position: absolute;
+  bottom: 8%;
+  padding: 3px;
+  background: gray;
+  color: #FFF;
+  border-radius: 3px;
+  opacity: 0;
+  transition: 0.3s;
+  overflow: hidden;
+  max-width: 100%;
+  pointer-events: none;
+  z-index: 2;
+  font-size: x-small;
+  right: 5%;
+}

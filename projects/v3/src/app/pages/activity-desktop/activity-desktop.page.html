@@ -41,6 +41,22 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end" *ngIf="(assessment | async) as asmt">
+    <ion-fab-button>
+      <ion-icon name="chevron-up-circle"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top" class="scrollable-fab">
+      <ng-container *ngFor="let group of asmt.groups">
+        <ion-fab-button *ngFor="let question of group.questions"
+        (click)="takethis(question)"
+        [title]="question.name"
+        >
+          <ion-icon name="document"></ion-icon>
+        </ion-fab-button>
+      </ng-container>
+    </ion-fab-list>
+  </ion-fab>
 </ion-content>
 
 <ng-template #showCurrentTask>
