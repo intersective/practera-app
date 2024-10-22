@@ -1,5 +1,5 @@
 <div class="traffic-light-group">
-  <ng-container *ngFor="let group of ['self', 'expert', 'team']">
+  <ng-container *ngFor="let group of ['self', 'team', 'expert']">
     <ion-chip class="traffic-light-labels" color="medium"
       (click)="navigateToPulseCheck(group)"
       [disabled]="group !== 'self'"
