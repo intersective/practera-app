@@ -41,8 +41,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // default card image (gracefully show broken url)
   defaultLeadImage: string = "";
 
-  unsubscribe$ = new Subject();
+  lastVisitedActivityId: number;
 
+  unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
@@ -68,6 +69,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   ngAfterViewChecked() {
     const id = this.storageService.lastVisited('activityId') as number;
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
+      this.lastVisitedActivityId = id;
+
       this.cdr.detectChanges();
       this.scrollToElement(id);
     }
