@@ -117,6 +117,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     this.subscribeSaveSubmission();
   }
 
+  getQuestionBoxById(id) {
+    return this.questionBoxes.find(boxes => boxes.el.id === id);
+  }
   getQuestionBoxes() {
     return this.questionBoxes;
   }
