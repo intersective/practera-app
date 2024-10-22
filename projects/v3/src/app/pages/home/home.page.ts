@@ -49,8 +49,6 @@ export class HomePage implements OnInit, OnDestroy {
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
-    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
@@ -250,6 +248,10 @@ export class HomePage implements OnInit, OnDestroy {
           console.log("Marked milestone as done", unlockedMilestone);
         });
     });
+  }
+
+  onTrackInfo() {
+    this.notification.trackInfo();
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
