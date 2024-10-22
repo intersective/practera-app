@@ -1,0 +1,30 @@
+ion-button.ion-focused {
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+.status-info {
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0 20px;
+  text-align: left;
+}
+
+.green {
+  color: green;
+  font-weight: bold;
+}
+
+.red {
+  color: red;
+  font-weight: bold;
+}
+
+.yellow {
+  color: yellow;
+  font-weight: bold;
+}
+
+.div-after-logo {
+  margin-top: 20px;
+}

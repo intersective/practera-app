@@ -1,9 +1,22 @@
+:host {
+  display: flex;
+}
+
+@media (max-width: 768px) {
+  :host {
+    flex: 1 1 100%;
+  }
+  .traffic-light-group {
+    width: 100%;
+  }
+}
+
 .traffic-light-group {
   display: flex;
   align-items: center;
   flex-direction: row;
-  justify-content: center;
   min-width: 215px;
+  justify-content: space-between; /* Distribute the items in the second row */
 }
 .traffic-light-group span {
   margin-right: 5px;
