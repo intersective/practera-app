@@ -1,11 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, Renderer2, ChangeDetectorRef, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
-import { ActivityService } from '@v3/app/services/activity.service';
-import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -13,7 +11,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, finalize, first, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -40,7 +38,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // default card image (gracefully show broken url)
   defaultLeadImage: string = '';
 
-  lastVisitedActivityId: number;
+  lastVisitedActivityId: number = null;
+  bookmarkedActivities: {
+    [key: number]: boolean;
+  } = {};
 
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
@@ -48,20 +49,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
   @ViewChild('activities', {static: false}) activities!: ElementRef;
 
-  private mutationObserver: MutationObserver;
-
   constructor(
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
-    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
-    private renderer: Renderer2,
     private cdr: ChangeDetectorRef,
   ) {
     this.activityCount$ = homeService.activityCount$;
@@ -69,10 +65,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked() {
     const id = this.storageService.lastVisited('activityId') as number;
-    if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
-      this.lastVisitedActivityId = id;
+    this.lastVisitedActivityId = id;
+    this.cdr.detectChanges();
 
-      this.cdr.detectChanges();
+
+    if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
       this.scrollToElement(id);
     }
   }
@@ -157,6 +154,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
+
+    // reset & load bookmarks
+    this.bookmarkedActivities = {};
+    const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[];
+    bookmarks.forEach((id) => {
+      this.bookmarkedActivities[id] = true;
+    });
   }
 
   goBack() {
@@ -209,7 +213,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @returns A Promise that resolves when the navigation is complete.
    */
   async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
-    // clear lastVisited indicator
+    // UI: clear lastVisited indicator (italic + grayed background)
     this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
       ele.classList.remove('lastVisited');
     });
@@ -290,6 +294,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
       element.scrollIntoView({ behavior: 'auto', block: 'center' });
       element.classList.add('lastVisited');
+
       this.storageService.lastVisited('activityId', null);
     }
   }
