@@ -287,6 +287,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
+  onTrackInfo() {
+    this.notification.trackInfo();
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
