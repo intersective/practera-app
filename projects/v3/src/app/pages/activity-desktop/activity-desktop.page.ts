@@ -144,7 +144,7 @@ export class ActivityDesktopPage {
         action: this.route.snapshot.data.action,
       };
 
-      this.storageService.lastVisited('activityId', activityId);
+      this.storageService.lastVisited('homeBookmarks', activityId);
 
       this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
