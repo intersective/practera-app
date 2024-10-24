@@ -114,23 +114,22 @@ export class FastFeedbackService {
     );
   }
 
-  submit(data, params) {
+  submit(answers, params) {
     if (environment.demo) {
-      console.log('data', data, 'params', params);
+      /* eslint-disable no-console */
+      console.log('data', answers, 'params', params);
       return this.demo.normalResponse();
     }
     return this.apolloService.graphQLMutate(
       `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answers: [PulseCheckAnswerInput]) {
-        submitPulseCheck(teamId: $teamId, targetUserId: $targetUserId, contextId: $contextId, answers: $answers) {
-          success
-        }
+        submitPulseCheck(teamId: $teamId, targetUserId: $targetUserId, contextId: $contextId, answers: $answers)
       }`,
-    );
-    /* return this.request.post(
       {
-        endPoint: api.submit,
-        data,
-        httpOptions: { params }
-      }); */
+        variables: {
+          ...params,
+          answers,
+        },
+      }
+    );
   }
 }
