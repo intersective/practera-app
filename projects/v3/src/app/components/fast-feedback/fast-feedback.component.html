@@ -15,7 +15,7 @@
         [ngClass]="{'ion-padding-horizontal': !isMobile }"
         [formGroup]="fastFeedbackForm">
         <ion-list-header class="question-title">
-          {{ question.title }}
+          {{ question.name }}
           <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
           <ion-text>
             <p><i>{{ question.description }}</i></p>
@@ -27,11 +27,12 @@
             *ngFor="let choice of question.choices"
             lines="none"
           >
-            <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
+            <ion-label class="white-space-normal">{{ choice.name }}</ion-label>
             <ion-radio [value]="choice.id"
-              [ariaLabel]="choice.title"
+              [ariaLabel]="choice.name"
               slot="start"
-              mode="md"></ion-radio>
+              mode="md"
+            ></ion-radio>
           </ion-item>
         </ion-radio-group>
       </ion-list>
