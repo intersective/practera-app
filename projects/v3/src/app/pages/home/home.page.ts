@@ -130,13 +130,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           this.hasUnlockedTasks = {}; // reset
           unlockedTasks.forEach((task) => {
             if (task.milestoneId) {
-              if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
+              if (
+                this.unlockIndicatorService.isMilestoneClearable(
+                  task.milestoneId
+                )
+              ) {
                 this.verifyUnlockedMilestoneValidity(task.milestoneId);
               }
+            }
 
-              if (task.activityId) {
-                this.hasUnlockedTasks[task.activityId] = true;
-              }
+            if (task.activityId) {
+              this.hasUnlockedTasks[task.activityId] = true;
             }
           });
         },

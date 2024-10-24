@@ -7,6 +7,7 @@ import { Component, Input } from '@angular/core';
 })
 export class TrafficLightComponent {
   @Input() value: number | null = null;
+  @Input() icon?: string;
 
   get color(): string {
     if (this.value === null || this.value === undefined) {

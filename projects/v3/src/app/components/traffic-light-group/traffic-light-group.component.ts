@@ -22,11 +22,12 @@ export class TrafficLightGroupComponent {
   navigateToPulseCheck(type: string) {
     if (!this.loading[type]) {
       this.loading[type] = true;
-      this.fastFeedbackService.pullFastFeedback().subscribe({
+      this.fastFeedbackService.pullFastFeedback({
+        skipChecking: true
+      }).subscribe({
         next: (response) => {
           if (response) {
-            // @TODO: handle response
-            // eslint-disable-next-line no-console
+            /* eslint-disable no-console */
             console.log(`Pulled fast feedback for type ${type}:`, response);
           }
         },
