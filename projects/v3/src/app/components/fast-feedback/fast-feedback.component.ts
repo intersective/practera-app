@@ -5,6 +5,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 
 @Component({
   selector: "app-fast-feedback",
@@ -20,10 +21,10 @@ export class FastFeedbackComponent implements OnInit {
   isMobile: boolean;
 
   constructor(
-    public modalController: ModalController,
+    private modalController: ModalController,
     private utils: UtilsService,
     private fastFeedbackService: FastFeedbackService,
-    public storage: BrowserStorageService
+    private storage: BrowserStorageService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -46,32 +47,38 @@ export class FastFeedbackComponent implements OnInit {
   async submit(): Promise<any> {
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
-    const data = [];
+    const answers = [];
 
     this.utils.each(formData, (answer, questionId) => {
-      data.push({
+      answers.push({
         id: questionId,
         choice_id: answer,
       });
     });
 
     // prepare parameters
-    const params = {
-      context_id: this.meta.context_id,
+    const params: {
+      context_id?: number;
+      team_id?: number;
+      target_user_id?: number;
+    } = {
+      context_id: this.meta?.context_id,
+      team_id: null,
+      target_user_id: null,
     };
+
     // if team_id exist, pass team_id
-    if (this.meta.team_id) {
-      params["team_id"] = this.meta.team_id;
-    } else if (this.meta.target_user_id) {
+    if (this.meta?.team_id) {
+      params.team_id = this.meta?.team_id;
+    } else if (this.meta?.target_user_id) {
       // otherwise, pass target_user_id
-      params["target_user_id"] = this.meta.target_user_id;
+      params.target_user_id = this.meta?.target_user_id;
     }
 
     let submissionResult;
     try {
-      submissionResult = await this.fastFeedbackService
-        .submit(data, params)
-        .toPromise();
+      submissionResult = await firstValueFrom(this.fastFeedbackService
+        .submit(answers, params));
 
       this.submissionCompleted = true;
       return setTimeout(() => {
