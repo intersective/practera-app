@@ -27,6 +27,7 @@ export class TrafficLightGroupComponent {
       }).subscribe({
         next: (response) => {
           if (response) {
+            /* eslint-disable no-console */
             console.log(`Pulled fast feedback for type ${type}:`, response);
           }
         },

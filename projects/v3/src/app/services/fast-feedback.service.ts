@@ -114,11 +114,11 @@ export class FastFeedbackService {
     );
   }
 
-  submit(answers, params) {
+  submit(answers, params): Observable<any> {
     if (environment.demo) {
       /* eslint-disable no-console */
       console.log('data', answers, 'params', params);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse() as Observable<any>;
     }
     return this.apolloService.graphQLMutate(
       `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answers: [PulseCheckAnswerInput]) {
