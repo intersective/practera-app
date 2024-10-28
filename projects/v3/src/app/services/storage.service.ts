@@ -3,6 +3,7 @@ import { Inject, Injectable, InjectionToken } from '@angular/core';
 interface LastVisited {
   [key: string]: string | number | number[];
 }
+const BOOKMARK_LIMIT = 1; // Limit the number of bookmarks to store
 
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
@@ -220,22 +221,25 @@ export class BrowserStorageService {
 
     if (value !== undefined) {
       if (name === "homeBookmarks" && typeof value === "number") {
-        const existingArray = (lastVisited["homeBookmarks"] as number[]) || [];
-        let updatedArray: number[];
+        let bookmarks = (lastVisited["homeBookmarks"] as number[]) || [];
 
-        if (existingArray.includes(value)) {
-          // Remove the value if it exists
-          updatedArray = existingArray.filter((item) => item !== value);
-          if (lastVisited["activityId"] === value) {
-            delete lastVisited["activityId"];
-          }
-        } else {
-          // Add the value if it doesn't exist
-          updatedArray = [...existingArray, value];
-          lastVisited = { ...lastVisited, activityId: value };
+        // Remove existing occurrences of value
+        bookmarks = bookmarks.filter((item) => item !== value);
+
+        // Add value to the end
+        bookmarks.push(value);
+
+        // Limit bookmarks to BOOKMARK_LIMIT in FIFO order
+        if (bookmarks.length > BOOKMARK_LIMIT) {
+          bookmarks = bookmarks.slice(-BOOKMARK_LIMIT);
         }
 
-        lastVisited = { ...lastVisited, [name]: updatedArray };
+        // Update lastVisited
+        lastVisited = {
+          ...lastVisited,
+          activityId: value,
+          [name]: bookmarks,
+        };
       } else if (name === "activityId" && typeof value === "number") {
         if (lastVisited["activityId"] === value) {
           // Remove the activityId if it exists and is the same
