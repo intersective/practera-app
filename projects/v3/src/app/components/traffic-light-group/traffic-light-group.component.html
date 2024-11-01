@@ -10,7 +10,7 @@
       <ion-spinner name="bubbles" *ngIf="loading[group] === true"></ion-spinner>
       <app-traffic-light *ngIf="!loading[group]"
         [value]="lights[group]"
-        [icon]="group === 'self' ? 'create-outline' : null"
+        [icon]="group === 'self' ? 'pencil-sharp' : null"
       ></app-traffic-light>
     </ion-chip>
   </ng-container>
