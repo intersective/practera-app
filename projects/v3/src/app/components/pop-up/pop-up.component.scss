@@ -23,6 +23,7 @@ ion-button.ion-focused {
 .yellow {
   color: yellow;
   font-weight: bold;
+  text-shadow: -0.5px -0.5px 0 var(--practera-30-percent-gray), 0.5px -0.5px 0 var(--practera-30-percent-gray), -0.5px 0.5px 0 var(--practera-30-percent-gray), 0.5px 0.5px 0 var(--practera-30-percent-gray);
 }
 
 .div-after-logo {
