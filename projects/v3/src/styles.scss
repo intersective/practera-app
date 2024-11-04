@@ -442,3 +442,12 @@ Used in achievement
     display: none;
   }
 }
+
+@media (min-width: 1900px) {
+  .modal-default, .filestack-preview-modal {
+    --width: 50vw;
+    --height: 70vh;
+  }
+}
+
+

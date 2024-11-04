@@ -98,7 +98,7 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   get isMobile() {
-    return this.platform.is('mobile');
+    return this.utils.isMobile();
   }
 
   ngOnDestroy(): void {
