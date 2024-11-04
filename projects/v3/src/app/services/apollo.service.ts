@@ -144,7 +144,7 @@ export class ApolloService {
   graphQLMutate(query: string, variables = {}): Observable<any> {
     return this.apollo.mutate({
       mutation: gql(query),
-      variables: variables
+      variables,
     }).pipe(
       concatMap(response => {
         return of(response);
