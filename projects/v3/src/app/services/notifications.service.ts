@@ -451,7 +451,11 @@ export class NotificationsService {
       modalOnly: false,
     }
   ): Promise<HTMLIonModalElement | void> {
-    const modalConfig = options;
+    const modalConfig = {
+      backdropDismiss: options?.closable === true,
+      showBackdrop: false,
+      ...options
+    };
     if (options.modalOnly) {
       return this.modalOnly(FastFeedbackComponent, props, modalConfig);
     }
