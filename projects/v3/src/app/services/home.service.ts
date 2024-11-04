@@ -313,12 +313,10 @@ export class HomeService {
         }
       }`,
       {
-        variables: {
-          teamId,
-          targetUserId,
-          contextId,
-          answer,
-        },
+        teamId,
+        targetUserId,
+        contextId,
+        answer,
       }
     );
   }
