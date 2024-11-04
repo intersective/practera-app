@@ -443,19 +443,20 @@ export class NotificationsService {
       questions?: Array<Question>;
       meta?: Meta | Object;
     },
-    modalOnly: boolean = false
+    options: {
+      closable?: boolean;
+      modalOnly: boolean;
+    } = {
+      closable: false,
+      modalOnly: false,
+    }
   ): Promise<HTMLIonModalElement | void> {
-    if (modalOnly) {
-      return this.modalOnly(FastFeedbackComponent, props, {
-        backdropDismiss: false,
-        showBackdrop: false,
-      });
+    const modalConfig = options;
+    if (options.modalOnly) {
+      return this.modalOnly(FastFeedbackComponent, props, modalConfig);
     }
 
-    return this.modal(FastFeedbackComponent, props, {
-      backdropDismiss: false,
-      showBackdrop: false,
-    });
+    return this.modal(FastFeedbackComponent, props, modalConfig);
   }
 
   getTodoItems(): Observable<any> {
