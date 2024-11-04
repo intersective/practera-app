@@ -4,14 +4,10 @@ import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
-import { switchMap, delay, take, retryWhen, map } from 'rxjs/operators';
+import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
-
-const api = {
-  submit: 'api/v2/observation/slider/create.json',
-};
 
 @Injectable({
   providedIn: 'root'
@@ -114,22 +110,25 @@ export class FastFeedbackService {
     );
   }
 
-  submit(answers, params): Observable<any> {
+  submit(answers, params: {
+    teamId?: number;
+    targetUserId?: number;
+    contextId?: number;
+  }): Observable<any> {
     if (environment.demo) {
       /* eslint-disable no-console */
       console.log('data', answers, 'params', params);
       return this.demo.normalResponse() as Observable<any>;
     }
+
     return this.apolloService.graphQLMutate(
       `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answers: [PulseCheckAnswerInput]) {
         submitPulseCheck(teamId: $teamId, targetUserId: $targetUserId, contextId: $contextId, answers: $answers)
       }`,
       {
-        variables: {
-          ...params,
-          answers,
-        },
-      }
+        ...params,
+        answers,
+      },
     );
   }
 }
