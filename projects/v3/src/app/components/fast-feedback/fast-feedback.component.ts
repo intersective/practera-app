@@ -32,7 +32,7 @@ export class FastFeedbackComponent implements OnInit {
   ngOnInit() {
     const group: any = {};
     this.questions.forEach((question) => {
-      group[question.id] = new FormControl("", Validators.required);
+      group[question.id] = new FormControl(null, Validators.required);
     });
     this.fastFeedbackForm = new FormGroup(group);
     this.submissionCompleted = false;
@@ -51,28 +51,28 @@ export class FastFeedbackComponent implements OnInit {
 
     this.utils.each(formData, (answer, questionId) => {
       answers.push({
-        id: questionId,
-        choice_id: answer,
+        questionId: +questionId,
+        choiceId: answer,
       });
     });
 
     // prepare parameters
     const params: {
-      context_id?: number;
-      team_id?: number;
-      target_user_id?: number;
+      contextId?: number;
+      teamId?: number;
+      targetUserId?: number;
     } = {
-      context_id: this.meta?.context_id,
-      team_id: null,
-      target_user_id: null,
+      contextId: this.meta?.context_id,
+      teamId: null,
+      targetUserId: null,
     };
 
     // if team_id exist, pass team_id
     if (this.meta?.team_id) {
-      params.team_id = this.meta?.team_id;
+      params.teamId = this.meta?.team_id;
     } else if (this.meta?.target_user_id) {
       // otherwise, pass target_user_id
-      params.target_user_id = this.meta?.target_user_id;
+      params.targetUserId = this.meta?.target_user_id;
     }
 
     let submissionResult;
