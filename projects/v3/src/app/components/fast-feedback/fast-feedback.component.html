@@ -1,6 +1,11 @@
 <ion-header class=" ion-no-border" aria-label="Pulse check">
   <ion-toolbar>
     <ion-title class="ion-text-center" i18n="user feedback form">Pulse Check</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss({ from: 'ui' })">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 

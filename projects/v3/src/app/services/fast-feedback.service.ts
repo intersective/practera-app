@@ -58,9 +58,11 @@ export class FastFeedbackService {
   pullFastFeedback(options: {
     modalOnly?: boolean;
     skipChecking?: boolean;
+    closable?: boolean; // can skip the modal popup (closable)
   } = {
     modalOnly: false,
     skipChecking: false,
+    closable: false,
   }): Observable<any> {
     return this._getFastFeedback(options.skipChecking).pipe(
       switchMap((res) => {
@@ -93,7 +95,10 @@ export class FastFeedbackService {
                   questions,
                   meta,
                 },
-                options.modalOnly
+                {
+                  closable: options.closable,
+                  modalOnly: options.modalOnly,
+                }
               )
             );
           }
