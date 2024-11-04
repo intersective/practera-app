@@ -1,7 +1,7 @@
 <ion-header class=" ion-no-border" aria-label="Pulse check">
   <ion-toolbar>
     <ion-title class="ion-text-center" i18n="user feedback form">Pulse Check</ion-title>
-    <ion-buttons slot="end">
+    <ion-buttons slot="end" *ngIf="closable === true">
       <ion-button (click)="dismiss({ from: 'ui' })">
         <ion-icon name="close"></ion-icon>
       </ion-button>
