@@ -1,5 +1,6 @@
 import { FastFeedbackService } from "@v3/services/fast-feedback.service";
 import { Component, Input } from "@angular/core";
+import { BrowserStorageService } from "@v3/app/services/storage.service";
 
 @Component({
   selector: "app-traffic-light-group",
@@ -17,12 +18,16 @@ export class TrafficLightGroupComponent {
     [key: string]: boolean;
   } = {};
 
-  constructor(private fastFeedbackService: FastFeedbackService) {}
+  constructor(
+    private fastFeedbackService: FastFeedbackService,
+    private storageService: BrowserStorageService,
+  ) {}
 
   navigateToPulseCheck(type: string) {
     if (!this.loading[type]) {
       this.loading[type] = true;
       this.fastFeedbackService.pullFastFeedback({
+        closable: true,
         skipChecking: true
       }).subscribe({
         next: (response) => {
@@ -35,6 +40,7 @@ export class TrafficLightGroupComponent {
           console.error(`Error pulling fast feedback for type ${type}:`, error);
         },
         complete: () => {
+          this.storageService.set('fastFeedbackOpening', false);
           this.loading[type] = false;
         },
       });
