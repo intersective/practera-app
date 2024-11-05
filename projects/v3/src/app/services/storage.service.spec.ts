@@ -140,4 +140,94 @@ describe('StorageService', () => {
       expect(service.singlePageAccess).toBeTruthy();
     });
   });
+
+  describe("lastVisited()", () => {
+    beforeEach(() => {
+      storageSpy.getItem.and.returnValue(null);
+    });
+
+    it("should return null if no value is set", () => {
+      const result = service.lastVisited("homeBookmarks");
+      expect(result).toBeNull();
+    });
+
+    it("should set and return a string value", () => {
+      service.lastVisited("url", "testUrl");
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({ url: "testUrl" })
+      );
+      const result = service.lastVisited("url");
+      expect(result).toBe("testUrl");
+    });
+
+    it("should set and return a number value", () => {
+      service.lastVisited("activityId", 123);
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({ activityId: 123 })
+      );
+      const result = service.lastVisited("activityId");
+      expect(result).toBe(123);
+    });
+
+    it("should add a number to homeBookmarks array", () => {
+      storageSpy.getItem.and.returnValue(
+        JSON.stringify({ homeBookmarks: [1, 2, 3] })
+      );
+      service.lastVisited("homeBookmarks", 4);
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({ homeBookmarks: [1, 2, 3, 4] })
+      );
+      const result = service.lastVisited("homeBookmarks");
+      expect(result).toEqual([1, 2, 3, 4]);
+    });
+
+    it("should remove a number from homeBookmarks array if it exists", () => {
+      storageSpy.getItem.and.returnValue(
+        JSON.stringify({ homeBookmarks: [1, 2, 3] })
+      );
+      service.lastVisited("homeBookmarks", 2);
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({ homeBookmarks: [1, 3] })
+      );
+      const result = service.lastVisited("homeBookmarks");
+      expect(result).toEqual([1, 3]);
+    });
+
+    it("should add a number to activityId if it does not exist", () => {
+      storageSpy.getItem.and.returnValue(JSON.stringify({ activityId: 1 }));
+      service.lastVisited("activityId", 2);
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({ activityId: 2 })
+      );
+      const result = service.lastVisited("activityId");
+      expect(result).toBe(2);
+    });
+
+    it("should remove activityId if it exists and is the same", () => {
+      storageSpy.getItem.and.returnValue(JSON.stringify({ activityId: 2 }));
+      service.lastVisited("activityId", 2);
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({})
+      );
+      const result = service.lastVisited("activityId");
+      expect(result).toBeNull();
+    });
+
+    it("should update lastVisited with new value", () => {
+      storageSpy.getItem.and.returnValue(JSON.stringify({ url: "oldUrl" }));
+      service.lastVisited("url", "newUrl");
+      expect(storageSpy.setItem).toHaveBeenCalledWith(
+        "lastVisited",
+        JSON.stringify({ url: "newUrl" })
+      );
+      const result = service.lastVisited("url");
+      expect(result).toBe("newUrl");
+    });
+  });
 });
