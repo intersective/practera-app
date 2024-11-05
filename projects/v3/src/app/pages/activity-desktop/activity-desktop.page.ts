@@ -11,6 +11,7 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
+import { IonCol } from '@ionic/angular';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -42,7 +43,7 @@ export class ActivityDesktopPage {
   scrolSubject = new Subject();
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
-  @ViewChild('scrollableTaskContent', { static: true }) scrollableTaskContent!: ElementRef;
+  @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
 
   // UI-purpose only variables
   flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
@@ -102,34 +103,29 @@ export class ActivityDesktopPage {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(res => this.currentTask = res);
 
-      /* this.assessmentService.assessment$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.assessment = res)); */
+    this.assessmentService.submission$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe((res) => (this.submission = res));
 
-      this.assessmentService.submission$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        )
-        .subscribe((res) => (this.submission = res));
+    this.assessmentService.review$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.review = res));
 
-      this.assessmentService.review$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.review = res));
-
-      this.topicService.topic$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.topic = res));
+    this.topicService.topic$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.topic = res));
 
     this.route.paramMap.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe(params => {
+
       // from route
       const activityId = +params.get('id');
       const contextId = +params.get('contextId'); // optional
@@ -147,6 +143,8 @@ export class ActivityDesktopPage {
         contextId: contextId,
         action: this.route.snapshot.data.action,
       };
+
+      this.storageService.lastVisited('homeBookmarks', activityId);
 
       this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
