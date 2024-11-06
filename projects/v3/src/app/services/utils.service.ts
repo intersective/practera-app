@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
@@ -38,7 +38,8 @@ export class UtilsService {
     @Inject(DOCUMENT) private document: Document,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
-    private title: Title
+    private title: Title,
+    private platform: Platform,
   ) {
     if (_) {
       this.lodash = _;
@@ -50,10 +51,9 @@ export class UtilsService {
   /**
    * @name isMobile
    * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
-   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
    */
-  isMobile() {
-    return window.innerWidth <= 576;
+  isMobile(): boolean {
+    return this.platform.is('mobile');
   }
 
   /** check if a value is empty
