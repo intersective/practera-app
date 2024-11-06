@@ -130,11 +130,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           this.hasUnlockedTasks = {}; // reset
           unlockedTasks.forEach((task) => {
             if (task.milestoneId) {
-              if (
-                this.unlockIndicatorService.isMilestoneClearable(
-                  task.milestoneId
-                )
-              ) {
+              if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
                 this.verifyUnlockedMilestoneValidity(task.milestoneId);
               }
             }
@@ -305,6 +301,24 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
     this.notification.achievementPopUp("", achievement);
+  }
+
+  scrollToElement(id: number): void {
+    const activitiesEle = this.activities.nativeElement;
+    const element = activitiesEle.querySelector(`#act-${id}`);
+
+    if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
+      element.scrollIntoView({ behavior: 'auto', block: 'center' });
+      element.classList.add('lastVisited');
+
+      this.storageService.lastVisited('activityId', null);
+    }
+  }
+
+  // make sure the element is visible in viewport
+  private isElementVisible(element: HTMLElement): boolean {
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
   }
 
   scrollToElement(id: number): void {
