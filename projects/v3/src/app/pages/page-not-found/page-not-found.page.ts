@@ -18,8 +18,6 @@ export class PageNotFoundPage {
   }
 
   goHome() {
-    this.storageService.lastVisited('url', '/');
-    // href = "/v3/home"
     this.route.navigate(['/v3/home'], {
       replaceUrl: true
     });
