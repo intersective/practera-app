@@ -87,7 +87,7 @@ export interface TodoItem {
   timeline_id?: number;
 }
 
-const api = {
+export const api = {
   get: {
     todoItem: 'api/v2/motivations/todo_item/list.json',
     events: 'api/v2/act/event/list.json',
@@ -287,7 +287,7 @@ export class NotificationsService {
    *    description: "qwert yuiop asdfg asdff"
    * });
    */
-  async achievementPopUp(type: string, achievement: Achievement, options?) {
+  async achievementPopUp(type: string, achievement: Partial<Achievement>, options?) {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
