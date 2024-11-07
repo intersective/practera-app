@@ -10,6 +10,7 @@ interface CTABtnType {
   styleUrls: ['./list-item.component.scss'],
 })
 export class ListItemComponent {
+  @Input() id?: string;
   @Input() loading?: boolean = false;
   @Input() lines? = '';
   @Input() leadingIcon: string;
@@ -43,6 +44,8 @@ export class ListItemComponent {
   @Input() eventFullyBooked: boolean;
   @Input() eventDayCount: string;
   @Input() redDot: boolean = false; // red dot on the top right corner (for notifications in home page)
+  @Input() lastVisited: boolean = false; // last visited activity (from home page)
+  @Input() bookmarked: boolean = false; // bookmarked activity (from home page)
 
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];
