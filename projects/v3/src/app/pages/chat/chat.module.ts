@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 
-import { QuillModule } from 'ngx-quill';
-
 import { ChatPage } from './chat.page';
 import { ChatListComponent } from './chat-list/chat-list.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
@@ -13,8 +11,11 @@ import { ComponentsModule } from '../../components/components.module';
 import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 import { AttachmentPopoverComponent } from './attachment-popover/attachment-popover.component';
 
-import 'quill-paste-smart';
-import Delta from 'quill-delta';
+import { QuillModule } from 'ngx-quill';
+// import Quill from 'quill';
+// import QuillPasteSmart from 'quill-paste-smart';
+
+// Quill.register('modules/pasteSmart', QuillPasteSmart);
 
 @NgModule({
   imports: [
@@ -25,20 +26,7 @@ import Delta from 'quill-delta';
       debug: "log",
       modules: {
         toolbar: true,
-        pasteSmart: {},
-        clipboard: {
-          matchers: [
-            (
-              Node.ELEMENT_NODE,
-              (node: any, delta: any) => {
-                const plaintext = node.innerText;
-                return new Delta().insert(plaintext);
-              }
-            )
-          ],
-        },
       },
-      placeholder: "Compose an epic...",
     }),
   ],
   declarations: [
