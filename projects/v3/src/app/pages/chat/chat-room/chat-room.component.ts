@@ -13,8 +13,7 @@ import { AttachmentPopoverComponent } from '../attachment-popover/attachment-pop
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 
-import Delta from "quill-delta";
-
+import Delta from 'quill-delta';
 
 enum ScrollPosition {
   Top = 'top',
@@ -73,32 +72,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   // quill editor modules
+  private isMatcherApplied = false;
   editorModules = {
     toolbar: [
-      [{ 'bold': true }, { 'italic': true }, { 'underline': true }, { 'strike': true }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      [{ 'link': true }]
+      ['bold', 'italic', 'underline', 'strike'], // Text formatting buttons
+      [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
+      ['link'] // Link button
     ],
-    pasteSmart: {
-      keepSelection: true,
-      plainText: false,
-      keepClassName: true,
-      allowedStyles: {
-        'color': true,
-        'background-color': true,
-        'font-size': true,
-        'font-weight': true,
-        'font-style': true,
-        'text-decoration': true
-      },
-      preserveWhiteSpace: true,
-      ignoredTags: ['meta', 'script', 'link'],
-      sanitizer: (html) => {
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        doc.querySelectorAll('script').forEach(script => script.remove());
-        return doc.body.innerHTML;
-      }
-    }
   };
 
   private destroy$ = new Subject<void>();
@@ -967,13 +947,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  formatQuillClipboard(quillEditor: any) {
-    return quillEditor.clipboard.addMatcher(
-      Node.ELEMENT_NODE,
-      (node: any, delta: any) => {
-        const plaintext = node.innerText;
-        return new Delta().insert(plaintext);
-      }
-    );
+  formatQuillClipboard(editor: any) {
+    editor.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+      const plaintext = node.innerText; // Convert content to plain text
+      return new Delta().insert(plaintext);
+    });
+  }
+
+  // Initialize formatQuillClipboard when the editor is created
+  onEditorCreated(editor: any) {
+    console.log("Editor created", editor);
+    if (!this.isMatcherApplied) {
+      this.formatQuillClipboard(editor);
+      this.isMatcherApplied = true;
+    }
+
+    this.formatQuillClipboard(editor); // Apply the custom matcher
   }
 }
