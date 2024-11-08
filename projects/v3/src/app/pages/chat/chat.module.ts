@@ -21,8 +21,8 @@ import { QuillModule } from 'ngx-quill';
     QuillModule.forRoot({
       theme: 'snow',
       modules: {
-        clipboard: false,
-        pasteSmart: true
+        pasteSmart: true,
+        keyboard: true
       }
     }),
   ],
