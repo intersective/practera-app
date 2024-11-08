@@ -83,6 +83,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
         enter: {
           key: 13,
           handler: () => {
+            if (this.isMobile) {
+              return true;
+            }
+
             this.ngZone.run(() => this.sendMessage());
           }
         }
