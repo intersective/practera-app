@@ -14,6 +14,9 @@ import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import Delta from 'quill-delta';
+import Quill from 'quill';
+import QuillPasteSmart from 'quill-paste-smart';
+Quill.register('modules/pasteSmart', QuillPasteSmart);
 
 enum ScrollPosition {
   Top = 'top',
@@ -79,6 +82,33 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
       ['link'] // Link button
     ],
+    pasteSmart: {
+      allowed: {
+        tags: ['a'],
+        attributes: ['href', 'rel', 'target', 'class']
+      },
+      keepSelection: true,
+      substituteBlockElements: true,
+      magicPasteLinks: true,
+      hooks: {
+        uponSanitizeElement(node, data, config) {
+          console.log(node);
+        },
+      },
+    },
+    keyboard: {
+      bindings: {
+        // Enter key
+        13: {
+          key: 13,
+          empty: true,
+          handler: (range, context) => {
+            this.sendMessage();
+            return true;
+          }
+        }
+      }
+    }
   };
 
   private destroy$ = new Subject<void>();
