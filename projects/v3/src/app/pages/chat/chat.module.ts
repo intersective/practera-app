@@ -12,10 +12,6 @@ import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalis
 import { AttachmentPopoverComponent } from './attachment-popover/attachment-popover.component';
 
 import { QuillModule } from 'ngx-quill';
-// import Quill from 'quill';
-// import QuillPasteSmart from 'quill-paste-smart';
-
-// Quill.register('modules/pasteSmart', QuillPasteSmart);
 
 @NgModule({
   imports: [
@@ -23,10 +19,11 @@ import { QuillModule } from 'ngx-quill';
     ChatRoutingModule,
     PersonalisedHeaderModule,
     QuillModule.forRoot({
-      debug: "log",
+      theme: 'snow',
       modules: {
-        toolbar: true,
-      },
+        clipboard: false,
+        pasteSmart: true
+      }
     }),
   ],
   declarations: [
