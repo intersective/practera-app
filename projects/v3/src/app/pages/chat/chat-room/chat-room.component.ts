@@ -13,11 +13,6 @@ import { AttachmentPopoverComponent } from '../attachment-popover/attachment-pop
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 
-import Delta from 'quill-delta';
-import Quill from 'quill';
-import QuillPasteSmart from 'quill-paste-smart';
-Quill.register('modules/pasteSmart', QuillPasteSmart);
-
 enum ScrollPosition {
   Top = 'top',
   Bottom = 'bottom',
@@ -82,32 +77,50 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
       ['link'] // Link button
     ],
-    pasteSmart: {
-      allowed: {
-        tags: ['a'],
-        attributes: ['href', 'rel', 'target', 'class']
-      },
-      keepSelection: true,
-      substituteBlockElements: true,
-      magicPasteLinks: true,
-      hooks: {
-        uponSanitizeElement(node, data, config) {
-          console.log(node);
-        },
-      },
-    },
     keyboard: {
       bindings: {
         // Enter key
-        13: {
+        enter: {
           key: 13,
-          empty: true,
-          handler: (range, context) => {
-            this.sendMessage();
-            return true;
+          handler: () => {
+            this.ngZone.run(() => this.sendMessage());
           }
         }
       }
+    },
+    clipboard: {
+      matchers: [
+        [Node.ELEMENT_NODE, (node, delta) => {
+          const allowedFormats = ['bold', 'italic', 'underline', 'strike', 'list'];
+
+          // Iterate over each delta operation
+          delta.ops = delta.ops.map(op => {
+            // Filter out formats that are not in the allowed list
+            if (op.attributes) {
+              op.attributes = Object.keys(op.attributes)
+                .filter(attr => allowedFormats.includes(attr))
+                .reduce((obj, key) => {
+                  obj[key] = op.attributes[key];
+                  return obj;
+                }, {});
+            }
+            return op;
+          });
+
+          // If node is a list, ensure it keeps the list format
+          if (node.tagName === 'UL' || node.tagName === 'OL') {
+            const listType = node.tagName === 'UL' ? 'bullet' : 'ordered';
+            delta.ops.forEach(op => {
+              if (!op.attributes) {
+                op.attributes = {};
+              }
+              op.attributes.list = listType;
+            });
+          }
+
+          return delta;
+        }]
+      ]
     }
   };
 
@@ -288,7 +301,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.content.ionScrollEnd
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(200)
+      )
       .subscribe((_event) => {
         this._checkScrollPosition();
       });
@@ -440,7 +456,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private postTextOnlyMessage() {
     const param = this.getPostMessageParams("text");
-    this._beforeSenMessages();
+    this._beforeSendMessages();
     this.chatService
       .postNewMessage(param)
       .pipe(takeUntil(this.destroy$))
@@ -463,7 +479,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selectedAttachments = [];
     selectedAttachments.forEach((attachment) => {
       const param = this.getPostMessageParams("file", attachment);
-      this._beforeSenMessages();
+      this._beforeSendMessages();
       this.chatService
         .postAttachmentMessage(param)
         .pipe(takeUntil(this.destroy$))
@@ -530,7 +546,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
    * to indicate message sending we have loading controll by sendingMessage.
    * we will insert type message to cost variable befoer clear it so type message will not lost from the api call.
    */
-  private _beforeSenMessages() {
+  private _beforeSendMessages() {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
     this.typingMessage = "";
@@ -975,23 +991,5 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
         .deleteFile(attachment.handle)
         .subscribe(console.log);
     }
-  }
-
-  formatQuillClipboard(editor: any) {
-    editor.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
-      const plaintext = node.innerText; // Convert content to plain text
-      return new Delta().insert(plaintext);
-    });
-  }
-
-  // Initialize formatQuillClipboard when the editor is created
-  onEditorCreated(editor: any) {
-    console.log("Editor created", editor);
-    if (!this.isMatcherApplied) {
-      this.formatQuillClipboard(editor);
-      this.isMatcherApplied = true;
-    }
-
-    this.formatQuillClipboard(editor); // Apply the custom matcher
   }
 }
