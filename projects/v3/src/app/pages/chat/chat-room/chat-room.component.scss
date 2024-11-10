@@ -338,6 +338,7 @@ $message-body-size: 60%;
         min-height: 48px;
 
         .message-text-editor {
+          width: 100%;
           .ql-toolbar.ql-snow, .ql-container.ql-snow {
             border: none !important;
           }
