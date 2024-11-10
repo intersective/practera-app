@@ -72,7 +72,7 @@ export class FastFeedbackService {
 
           // if any of either slider or meta is empty or not available,
           // should just skip the modal popup
-          const { questions, meta } = res.data.pulseCheck;
+          const { questions, meta } = res.data.pulseCheck ?? {};
           if (
             (this.utils.isEmpty(questions) || this.utils.isEmpty(meta)) &&
             options.skipChecking === false // if skipChecking is true, force open the modal

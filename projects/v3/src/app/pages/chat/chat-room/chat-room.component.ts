@@ -12,8 +12,8 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { DomSanitizer } from '@angular/platform-browser';
-
+import { Module } from 'quill';
+import { QuillConfigModule } from 'ngx-quill';
 
 enum ScrollPosition {
   Top = 'top',
@@ -72,7 +72,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // quill editor modules
   private isMatcherApplied = false;
-  editorModules = {
+  editorModules: QuillConfigModule = {
     magicUrl: {
       globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
       urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
@@ -80,13 +80,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'], // Text formatting buttons
       [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
-      ['link'] // Link button
+      ['link'], // Link button,
     ],
     keyboard: {
       bindings: {
-        // Enter key
-        enter: {
-          key: 13,
+        'enter': {
+          key: 'Enter',
           handler: () => {
             if (this.isMobile) {
               return true;
@@ -100,7 +99,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     clipboard: {
       matchers: [
         [Node.ELEMENT_NODE, (node, delta) => {
-          const allowedFormats = ['bold', 'italic', 'underline', 'strike', 'list'];
+          const allowedFormats = ['bold', 'italic', 'underline', 'strike', 'list', 'link'];
 
           // Iterate over each delta operation
           delta.ops = delta.ops.map(op => {
@@ -148,7 +147,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
-    private sanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils

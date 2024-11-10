@@ -22,6 +22,8 @@ Quill.register('modules/magicUrl', MagicUrl);
     ChatRoutingModule,
     PersonalisedHeaderModule,
     QuillModule.forRoot({
+      theme: 'snow',
+      debug: 'log',
       modules: {
         magicUrl: true,
         keyboard: true
@@ -34,11 +36,6 @@ Quill.register('modules/magicUrl', MagicUrl);
     ChatPreviewComponent,
     ChatRoomComponent,
     ChatViewComponent,
-    ChatInfoComponent,
-    AttachmentPopoverComponent,
-  ],
-  entryComponents: [
-    ChatPreviewComponent,
     ChatInfoComponent,
     AttachmentPopoverComponent,
   ],

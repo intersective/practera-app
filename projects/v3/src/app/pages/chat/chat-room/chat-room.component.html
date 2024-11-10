@@ -170,7 +170,7 @@
       </ion-col>
     </ion-row>
     <!-- Attachment Preview section -->
-    <ng-container *ngIf="selectedAttachments.length > 0">
+    <ng-container *ngIf="selectedAttachments?.length > 0">
       <ion-row nowrap class="ion-no-padding ion-align-items-left ion-justify-content-start attach-preview">
         <ng-container *ngFor="let attachment of selectedAttachments; let i = index">
           <!-- Image preview -->
