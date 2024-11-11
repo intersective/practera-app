@@ -10,8 +10,6 @@ import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 import { Title } from '@angular/platform-browser';
 
-import Delta from 'quill-delta';
-
 export enum ThemeColor {
   primary = 'primary',
   secondary = 'secondary',
@@ -665,22 +663,6 @@ export class UtilsService {
       return true;
     }
     return false;
-  }
-
-  /**
-   * This method will add matcher to the clipboard of the quill editor.
-   * And it will make sure every thing user paste will paste as plain text. without any formating that pasting text have.
-   * Reason we need this.
-   * User may copy and paste some formated text that may contain formats we are not supporting. So if those send as message
-   * UI/UX will out. becouse we didn't support them. that's why we make sure we remove formating  from text that user paste to text editor.
-   * @param quillEditor Quill text editor instance
-   * @returns quill clipboard matcher event
-   */
-  formatQuillClipboard(quillEditor: any) {
-    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, (node: any, delta: any) => {
-      const plaintext = node.innerText;
-      return new Delta().insert(plaintext);
-    });
   }
 
   moveToNewLocale(newLocale: string) {
