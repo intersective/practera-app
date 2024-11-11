@@ -297,6 +297,7 @@ chat text editor
 .editor-class {
   border: none !important;
   .ql-editor {
+    width: 100%;
     max-height: 82px;
   }
 
@@ -450,4 +451,9 @@ Used in achievement
   }
 }
 
-
+/****************
+ * quill editor (override quill-editor style)
+ ****************/
+quill-editor .ql-toolbar.ql-snow {
+  border: none !important;
+}
