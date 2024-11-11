@@ -156,39 +156,21 @@
   <ion-grid class="white-bg">
     <ion-row nowrap class="ion-no-padding">
       <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
-        <!-- quill editor -->
         <quill-editor aria-label="chat message input"
           customToolbarPosition="top"
-          [modules]="quillModules"
+          [modules]="editorModules"
           [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
           [required]="true"
           class="message-text-editor"
           placeholder="Enter your message"
           [(ngModel)]="typingMessage"
           (ngModelChange)="typing()"
-          (onEditorCreated)="utils.formatQuillClipboard($event)"
-          i18n-placeholder>
-          <div quill-editor-toolbar>
-            <span class="ql-formats">
-              <button class="ql-bold" [title]="'Bold'"></button>
-              <button class="ql-italic" [title]="'Italic'"></button>
-              <button class="ql-underline" [title]="'Underline'"></button>
-              <button class="ql-strike" [title]="'Strike'"></button>
-            </span>
-            <span class="ql-formats">
-              <button class="ql-list" value="ordered"></button>
-              <button class="ql-list" value="bullet"></button>
-            </span>
-            <span class="ql-formats">
-              <button class="ql-link"></button>
-            </span>
-          </div>
-        </quill-editor>
-      <!-- quill editor -->
+          i18n-placeholder
+        ></quill-editor>
       </ion-col>
     </ion-row>
     <!-- Attachment Preview section -->
-    <ng-container *ngIf="selectedAttachments.length > 0">
+    <ng-container *ngIf="selectedAttachments?.length > 0">
       <ion-row nowrap class="ion-no-padding ion-align-items-left ion-justify-content-start attach-preview">
         <ng-container *ngFor="let attachment of selectedAttachments; let i = index">
           <!-- Image preview -->

@@ -1,3 +1,4 @@
+
 $message-body-size: 60%;
 
 .not-started-empty-status {
@@ -337,8 +338,9 @@ $message-body-size: 60%;
         min-height: 48px;
 
         .message-text-editor {
-          .ql-toolbar, .ql-container.ql-snow {
-            border: none;
+          width: 100%;
+          .ql-toolbar.ql-snow, .ql-container.ql-snow {
+            border: none !important;
           }
         }
 
