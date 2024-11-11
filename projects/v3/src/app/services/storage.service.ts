@@ -1,8 +1,9 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 
 interface LastVisited {
-  [key: string]: string | number;
+  [key: string]: string | number | number[];
 }
+const BOOKMARK_LIMIT = 1; // Limit the number of bookmarks to store
 
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
@@ -48,6 +49,7 @@ export interface User {
     assessmentUrl: string;  // last visited assessment url
     url: string; // last visited url (non-assessment)
     activityId: number; // last visited activity id
+    homeBookmarks: number[]; // last visited home bookmarks (activity ids)
   },
 }
 
@@ -209,17 +211,51 @@ export class BrowserStorageService {
   /**
    * get/set last visited url/activityId/assessmentUrl
    *
-   * @param   {string}  name   [name description]
+   * @param   {string}  name   index for identify a value later
    * @param   {string | number}  value
    *
    * @return  {string | number}
    */
-  lastVisited(name: string, value?: string | number): string | number | null {
+  lastVisited(
+    name: 'assessmentUrl' | 'url' | 'activityId' | 'homeBookmarks',
+    value?: string | number
+  ): string | number | number[] | null {
     let lastVisited: LastVisited = this.get('lastVisited') || {};
 
     if (value !== undefined) {
-      lastVisited = { ...lastVisited, [name]: value };
-      this.append('lastVisited', lastVisited);
+      if (name === "homeBookmarks" && typeof value === "number") {
+        let bookmarks = (lastVisited["homeBookmarks"] as number[]) || [];
+
+        // Remove existing occurrences of value
+        bookmarks = bookmarks.filter((item) => item !== value);
+
+        // Add value to the end
+        bookmarks.push(value);
+
+        // Limit bookmarks to BOOKMARK_LIMIT in FIFO order
+        if (bookmarks.length > BOOKMARK_LIMIT) {
+          bookmarks = bookmarks.slice(-BOOKMARK_LIMIT);
+        }
+
+        // Update lastVisited
+        lastVisited = {
+          ...lastVisited,
+          activityId: value,
+          [name]: bookmarks,
+        };
+      } else if (name === "activityId" && typeof value === "number") {
+        if (lastVisited["activityId"] === value) {
+          // Remove the activityId if it exists and is the same
+          delete lastVisited["activityId"];
+        } else {
+          // Update the activityId with the new value
+          lastVisited = { ...lastVisited, [name]: value };
+        }
+      } else {
+        lastVisited = { ...lastVisited, [name]: value };
+      }
+
+      this.append("lastVisited", lastVisited);
     }
 
     return lastVisited[name] || null;

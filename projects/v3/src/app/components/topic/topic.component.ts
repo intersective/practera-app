@@ -120,7 +120,6 @@ export class TopicComponent implements OnChanges {
           header: 'Error Previewing file',
           message: err.msg || JSON.stringify(err)
         });
-        // this.newRelic.noticeError(`${JSON.stringify(err)}`);
         return toasted;
       }
     }

@@ -16,15 +16,15 @@
       <ion-badge color="danger" *ngIf="badges.review > 0">{{ badges.review }}</ion-badge>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="messages"
-      [ngClass]="{'selected': selectedTab === 'messages'}" *ngIf="showMessages">
+    <ion-tab-button class="tab-item" tab="messages" *ngIf="showMessages === true"
+      [ngClass]="{'selected': selectedTab === 'messages'}" >
       <ion-icon name="mail"></ion-icon>
       <ion-badge color="danger" *ngIf="badges.chat > 0">{{ badges.chat }}</ion-badge>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="dueStatus"
+    <ion-tab-button class="tab-item" tab="due-dates"
       [ngClass]="{'selected': selectedTab === 'dueStatus'}">
-      <ion-icon name="mail"></ion-icon>
+      <ion-icon name="alarm"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="settings"

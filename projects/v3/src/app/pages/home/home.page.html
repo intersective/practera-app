@@ -18,7 +18,7 @@
     <h1 id="homecontent" class="for-accessibility" i18n>Home content</h1>
     <ion-grid style="padding: inherit;">
       <ion-row>
-        <ion-col size="12" size-md="4" class="ion-no-padding">
+        <ion-col size="12" size-sm="4" class="ion-no-padding">
           <h2 class="for-accessibility" i18n>Experience Details</h2>
           <ng-container *ngIf="experience">
             <img [src]="experience.leadImage" [alt]="experience.name" />
@@ -35,7 +35,15 @@
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
               </ion-text>
-
+              <div class="ontrack-group">
+                <div class="ontrack-title">
+                  <span style="font: smaller;">On track</span>
+                  <ion-icon name="help-circle-outline" (click)="onTrackInfo()"></ion-icon>
+                </div>
+                <!-- put traffic light group here -->
+                <app-traffic-light-group *ngIf="pulseCheckStatus" [lights]="pulseCheckStatus"></app-traffic-light-group>
+                <!-- end traffic lights -->
+              </div>
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
@@ -44,7 +52,7 @@
           </ng-container>
         </ion-col>
 
-        <ion-col size="12" size-md="8"
+        <ion-col size="12" size-sm="8"
           #activityCol
           id="activity-col"
           class="activity-col"
@@ -103,6 +111,8 @@
         [endingIconColor]="endingIconColor(activity)"
         [endingProgress]="activityProgresses[activity.id]"
         [redDot]="hasUnlockedTasks[activity.id] || false"
+        [lastVisited]="lastVisitedActivityId === activity.id"
+        [bookmarked]="bookmarkedActivities[activity.id]"
         class="focusable"
         tabindex="0"
         role="button">
