@@ -82,7 +82,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
       ['link'], // Link button,
     ],
-    keyboard: {
+    // keep for future use (enter key to send message)
+    /* keyboard: {
       bindings: {
         'enter': {
           key: 'Enter',
@@ -95,7 +96,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
       }
-    },
+    }, */
     clipboard: {
       matchers: [
         [Node.ELEMENT_NODE, (node, delta) => {
