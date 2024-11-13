@@ -1,11 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, Renderer2, ChangeDetectorRef, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
-import { ActivityService } from '@v3/app/services/activity.service';
-import { AssessmentService } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -40,27 +38,26 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // default card image (gracefully show broken url)
   defaultLeadImage: string = '';
 
-  unsubscribe$ = new Subject();
+  lastVisitedActivityId: number = null;
+  bookmarkedActivities: {
+    [key: number]: boolean;
+  } = {};
 
+  unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
   @ViewChild('activities', {static: false}) activities!: ElementRef;
 
-  private mutationObserver: MutationObserver;
-
   constructor(
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
-    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
-    private renderer: Renderer2,
     private cdr: ChangeDetectorRef,
   ) {
     this.activityCount$ = homeService.activityCount$;
@@ -68,8 +65,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked() {
     const id = this.storageService.lastVisited('activityId') as number;
+    this.lastVisitedActivityId = id;
+    this.cdr.detectChanges();
+
+
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
-      this.cdr.detectChanges();
       this.scrollToElement(id);
     }
   }
@@ -138,7 +138,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           });
         },
       });
-
   }
 
   ngOnDestroy(): void {
@@ -155,6 +154,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
+
+    // reset & load bookmarks
+    this.bookmarkedActivities = {};
+    const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[];
+    bookmarks.forEach((id) => {
+      this.bookmarkedActivities[id] = true;
+    });
   }
 
   goBack() {
@@ -207,7 +213,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @returns A Promise that resolves when the navigation is complete.
    */
   async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
-    // clear lastVisited indicator
+    // UI: clear lastVisited indicator (italic + grayed background)
     this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
       ele.classList.remove('lastVisited');
     });
