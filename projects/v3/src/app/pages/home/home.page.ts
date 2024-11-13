@@ -11,7 +11,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, finalize, first, takeUntil, tap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',

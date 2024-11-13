@@ -46,7 +46,10 @@ export class ActivityDesktopPage {
   @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
 
   // UI-purpose only variables
-  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  flashesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  tooltipText: string;
+  tooltipVisible: boolean;
+  tooltipStyle: { top: string; right: string };
 
   constructor(
     private route: ActivatedRoute,
@@ -84,11 +87,11 @@ export class ActivityDesktopPage {
       .forEach((questionBox: any) => {
         const rect = questionBox.el.getBoundingClientRect();
         if (
-          !this.flahesIndicated[questionBox.el.id] &&
+          !this.flashesIndicated[questionBox.el.id] &&
           rect.top >= 0 &&
           rect.bottom <= window.innerHeight
         ) {
-          this.flahesIndicated[questionBox.el.id] = true;
+          this.flashesIndicated[questionBox.el.id] = true;
           this.assessmentComponent.flashBlink(questionBox.el);
         }
       });
@@ -497,13 +500,40 @@ export class ActivityDesktopPage {
   allTeamTasks(forTeamOnlyWarning: boolean) {
     this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
   }
-  takethis(question) {
-    console.log(question);
 
+  // UI-purpose only functions (ion-fab-button actions)
+  scrollTo(question) {
     const questionBoxes = this.assessmentComponent.getQuestionBoxById(`q-${question.id}`);
-    console.log(questionBoxes);
-
     const element = document.getElementById(`#q-${question}`) as HTMLElement;
     this.utils.scrollToElement(element || questionBoxes.el);
+  }
+
+  // Obtain the continuous index of the question (Question number)
+  getContinuousIndex(groupIndex: number, questionIndex: number): number {
+    const asmt = this.assessmentService.assessment;
+    let totalQuestions = 0;
+    for (let i = 0; i < groupIndex; i++) {
+      totalQuestions += asmt.groups[i].questions.length;
+    }
+    return totalQuestions + questionIndex + 1;
+  }
+
+  // UI-purpose only functions (show tooltip)
+  showTooltip(event, title: string) {
+    this.tooltipText = title;
+    this.tooltipVisible = true;
+  }
+
+  // UI-purpose only functions (hide tooltip)
+  hideTooltip() {
+    this.tooltipVisible = false;
+  }
+
+  // UI-purpose only functions (get total questions for decision of showing the ion-fab)
+  totalQuestions(): number {
+    return this.assessmentService.assessment?.groups.reduce(
+      (acc, group) => acc + group.questions.length,
+      0
+    );
   }
 }
