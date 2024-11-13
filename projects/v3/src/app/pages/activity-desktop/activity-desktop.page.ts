@@ -43,8 +43,7 @@ export class ActivityDesktopPage {
   scrolSubject = new Subject();
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
-  @ViewChild("scrollableTaskContent", { static: false })
-  scrollableTaskContent: { el: HTMLIonColElement };
+  @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
 
   // UI-purpose only variables
   flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
@@ -112,32 +111,40 @@ export class ActivityDesktopPage {
       .subscribe((res) => (this.currentTask = res));
 
     this.assessmentService.submission$
-      .pipe(distinctUntilChanged(), takeUntil(this.unsubscribe$))
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      )
       .subscribe((res) => (this.submission = res));
 
     this.assessmentService.review$
-      .pipe(distinctUntilChanged(), takeUntil(this.unsubscribe$))
-      .subscribe((res) => (this.review = res));
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.review = res));
 
     this.topicService.topic$
-      .pipe(distinctUntilChanged(), takeUntil(this.unsubscribe$))
-      .subscribe((res) => (this.topic = res));
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.topic = res));
 
-    this.route.paramMap
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((params) => {
-        // from route
-        const activityId = +params.get("id");
-        const contextId = +params.get("contextId"); // optional
-        const assessmentId = +params.get("assessmentId"); // optional
+    this.route.paramMap.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(params => {
 
-        // directlink params (optional)
-        const taskId: number = +params.get("task_id");
-        const taskType: string = params.get("task") as
-          | "assessment"
-          | "topic"
-          | null;
-        const isTopicDirectlink = taskType === "topic" && taskId > 0;
+      // from route
+      const activityId = +params.get('id');
+      const contextId = +params.get('contextId'); // optional
+      const assessmentId = +params.get('assessmentId');  // optional
+
+      // directlink params (optional)
+      const taskId: number = +params.get("task_id");
+      const taskType: string = params.get("task") as
+        | "assessment"
+        | "topic"
+        | null;
+      const isTopicDirectlink = taskType === "topic" && taskId > 0;
 
         // if assessmentId or taskId is provided, don't proceed to next task
         const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
@@ -148,6 +155,7 @@ export class ActivityDesktopPage {
         };
 
         this.storageService.lastVisited("activityId", activityId);
+        this.storageService.lastVisited('homeBookmarks', activityId);
 
         this.activityService.getActivity(
           activityId,
