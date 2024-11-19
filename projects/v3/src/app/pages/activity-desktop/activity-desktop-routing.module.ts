@@ -9,7 +9,6 @@ const routes: Routes = [
     path: ':id',
     component: ActivityDesktopPage,
     canDeactivate: [SinglePageDeactivateGuard],
-    data: { reuse: false }
   },
   {
     path: ':contextId/:id',
