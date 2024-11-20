@@ -66,9 +66,36 @@ export interface Timeline {
 
 export interface Experience {
   id: number;
+  uuid: string;
+  timelineId: number;
+  projectId: number;
   name: string;
-  lead_image: string;
-  config: any;
+  description: string;
+  type: string;
+  leadImage: string;
+  status: string;
+  color: string;
+  secondaryColor: string;
+  todoItemCount: number;
+  role: string;
+  isLast: boolean;
+  locale: string;
+  supportName: string;
+  supportEmail: string;
+  cardUrl: string;
+  bannerUrl: string;
+  logoUrl: string;
+  iconUrl: string;
+  reviewRating: boolean;
+  truncateDescription: boolean;
+  featureToggle: {
+    pulseCheckIndicator: boolean;
+  };
+  progress: number;
+  config: {
+    primary_color?: string;
+    secondary_color?: string;
+  };
 }
 
 export interface Enrolment {
@@ -79,6 +106,10 @@ export interface ProjectProgress {
   id: number;
   progress: number;
   todoItems: number;
+}
+
+interface APIResponse<T> {
+  data: T;
 }
 
 @Injectable({
@@ -155,10 +186,13 @@ export class ExperienceService {
           iconUrl
           reviewRating
           truncateDescription
+          featureToggle {
+            pulseCheckIndicator
+          }
         }
       }`
     )
-    .pipe(map(res => {
+    .pipe(map((res: APIResponse<{experiences: Experience[]}>) => {
       const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
       let imagewidth = 600;
 

@@ -35,7 +35,7 @@
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
               </ion-text>
-              <div class="ontrack-group">
+              <div class="ontrack-group" *ngIf="pulseCheckIndicatorEnabled === true">
                 <div class="ontrack-title">
                   <span style="font: smaller;">On track</span>
                   <ion-icon name="help-circle-outline" (click)="onTrackInfo()"></ion-icon>
