@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { Experience } from './experience.service';
 
 @Injectable({
   providedIn: 'root'
@@ -1639,7 +1640,7 @@ export class DemoService {
     ]
   }
 
-  get deletedExperience() {
+  get deletedExperience(): Experience {
     return {
       "id": 1933,
       "uuid": "ff96d1bc-a8aa-4f76-a048-f583c95fd013",
@@ -1649,7 +1650,7 @@ export class DemoService {
       "type": "Other",
       "leadImage": "https://cdn.filestackcontent.com/DX2DHY73QRuZvn7yUukP",
       "status": null,
-      "setupStep": null,
+      // "setupStep": null,
       "color": "#ff9c01",
       "secondaryColor": "#ffd966",
       "todoItemCount": 0,
@@ -1664,7 +1665,12 @@ export class DemoService {
       "iconUrl": "https://cdn.filestackcontent.com/oJBGJGbBRNq4TIKt2AGz",
       "reviewRating": true,
       "truncateDescription": true,
-      "__typename": "Experience"
+      "config": {},
+      "progress": 0,
+      "featureToggle": {
+        "pulseCheckIndicator": true,
+      },
+      "projectId": 1,
     };
   }
 }
