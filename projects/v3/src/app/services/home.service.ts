@@ -203,7 +203,10 @@ export class HomeService {
     if (environment.demo) {
       return this.demo
         .projectProgress()
-        .pipe(map((res) => this._handleProjectProgress(res)))
+        .pipe(
+          map((res) => this._handleProjectProgress(res)),
+          first()
+        )
         .subscribe();
     }
 
@@ -220,13 +223,16 @@ export class HomeService {
             }
           }
         }
-      }`,
-    ).pipe(
-      map(res => this._handleProjectProgress(res)),
-    ).subscribe({
-      error: err => {
-        console.error('milestone Progress::', err);
-      }
+      }`
+    )
+    .pipe(
+      map((res) => this._handleProjectProgress(res)),
+      first(),
+    )
+    .subscribe({
+      error: async (err) => {
+        console.error("Project:query", err);
+      },
     });
   }
 
