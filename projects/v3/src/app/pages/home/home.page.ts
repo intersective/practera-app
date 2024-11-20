@@ -30,6 +30,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   experience: Experience;
 
   isMobile: boolean;
+  pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
   getIsPointsConfigured: boolean = false;
@@ -75,6 +76,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
+    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(
@@ -158,7 +160,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
 
-    this.homeService.getPulseCheckStatuses().subscribe((res) => {
+    this.homeService.getPulseCheckStatuses().pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe((res) => {
       this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
     });
 
