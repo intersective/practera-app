@@ -1,7 +1,7 @@
 import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -9,9 +9,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
-import { IonCol } from '@ionic/angular';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -194,6 +193,9 @@ export class ActivityDesktopPage {
         }
       }
     });
+
+    // pull pulsecheck attempt on enter
+    this.assessmentService.pullFastFeedback();
   }
 
   ionViewWillLeave() {
@@ -285,7 +287,7 @@ export class ActivityDesktopPage {
   /**
    * Save the assessment
    *
-   * @param   {}event  save event emitted from the assessment component
+   * @param   {} event  save event emitted from the assessment component
    * @param   {Task}  task   the current task
    *
    * @return  {any}
