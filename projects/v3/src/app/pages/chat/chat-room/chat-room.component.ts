@@ -70,16 +70,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   isMobile: boolean = false;
   hasUnreadMessages: boolean = false;
   scrollPosition: ScrollPosition = ScrollPosition.Top;
-  quillModules = {
-    magicUrl: {
-      globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
-      urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
-    },
-  };
 
   // quill editor modules
   private isMatcherApplied = false;
   editorModules = {
+    magicUrl: {
+      globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
+      urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
+    },
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'], // Text formatting buttons
       [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
