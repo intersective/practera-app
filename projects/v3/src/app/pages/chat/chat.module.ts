@@ -23,10 +23,13 @@ Quill.register('modules/magicUrl', MagicUrl);
     ChatRoutingModule,
     PersonalisedHeaderModule,
     QuillModule.forRoot({
+      theme: 'snow',
       modules: {
         magicUrl: true,
-      },
-    })
+        pasteSmart: true,
+        keyboard: true
+      }
+    }),
   ],
   declarations: [
     ChatPage,
@@ -35,12 +38,14 @@ Quill.register('modules/magicUrl', MagicUrl);
     ChatRoomComponent,
     ChatViewComponent,
     ChatInfoComponent,
-    AttachmentPopoverComponent
+    AttachmentPopoverComponent,
   ],
-  entryComponents: [ChatPreviewComponent, ChatInfoComponent, AttachmentPopoverComponent],
+  entryComponents: [
+    ChatPreviewComponent,
+    ChatInfoComponent,
+    AttachmentPopoverComponent,
+  ],
   providers: [],
-  exports: [
-    ChatRoomComponent,
-  ]
+  exports: [ChatRoomComponent],
 })
 export class ChatModule {}

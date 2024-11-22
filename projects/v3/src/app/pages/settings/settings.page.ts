@@ -5,10 +5,11 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FilestackService } from '@v3/services/filestack.service';
-import { Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
+import { first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-settings',
@@ -19,7 +20,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   @Input() mode?: string; // indicate parents element: modal
   window; // document window
 
-  subscriptions: Subscription[] = [];
   profile = {
     contactNumber: '',
     email: '',
@@ -43,6 +43,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   // hubspot form
   hubspotActivated: boolean = false;
+  unsubscribe$ = new Subject();
 
   constructor(
     public router: Router,
@@ -56,12 +57,14 @@ export class SettingsPage implements OnInit, OnDestroy {
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
-    this.subscriptions[0] = this.route.queryParams.subscribe(_params => {
+    this.route.queryParams.pipe(takeUntil(this.unsubscribe$))
+    .subscribe(_params => {
       this._retrieveUserInfo();
     });
   }
 
-  private _retrieveUserInfo(): void {
+  private async _retrieveUserInfo(): Promise<void> {
+    const res = await this.authService.getMyInfo().toPromise();
     const user = this.storage.getUser();
     const {
       email,
@@ -86,7 +89,9 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this._retrieveUserInfo();
-    this.utils.getEvent('support-email-checked').subscribe(event => {
+    this.utils.getEvent('support-email-checked')
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(event => {
       this.hubspotActivated = event;
     });
     this.utils.checkIsPracteraSupportEmail();
@@ -103,7 +108,8 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   // loading pragram image to settings page by resizing it depend on device.
@@ -164,9 +170,9 @@ export class SettingsPage implements OnInit, OnDestroy {
   async uploadProfileImage(file, type = null) {
     if (file.success) {
       this.imageUpdating = true;
-      this.subscriptions[1] = this.authService.updateProfileImage({
+      this.authService.updateProfileImage({
         image: file.data.url
-      }).subscribe(
+      }).pipe(first()).subscribe(
         () => {
           this.imageUpdating = false;
           this.profile.image = file.data.url;

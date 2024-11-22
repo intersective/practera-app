@@ -134,6 +134,7 @@ export class ExperienceService {
           id
           uuid
           timelineId
+          projectId
           name
           description
           type
@@ -228,14 +229,22 @@ export class ExperienceService {
     };
   }
 
-  async switchProgram(authObj): Promise<Observable<any>> {
+  /**
+   * insert experience to localStorage and switch program
+   *
+   * @param   {any}  authObj  auth object return from authService:authenticate()
+   * @param   {object}  options  refreshJWT: boolean, 2nd call to auth query to refresh APIKEY
+   *
+   * @return  {Promise<any>}
+   */
+  async switchProgram(authObj): Promise<any> {
     const exp = authObj?.experience;
     this.storage.set('experience', exp);
     const colors = {
       themeColor: exp?.color,
       primary: exp?.color,
       secondary: exp?.secondaryColor,
-    }
+    };
 
     const cardBackgroundImage = (exp?.cardUrl) ? '/assets/' + exp?.cardUrl : '';
     this.storage.setUser({
@@ -270,79 +279,15 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const newAuth = await this.authService.authenticate({
-        apikey: this.storage.getUser().apikey,
-        experienceUuid: exp.uuid
-      }).toPromise();
-
-      // reset apikey
-      if (newAuth?.data?.auth?.apikey) {
-        this.storage.setUser({ apikey: newAuth?.data?.auth?.apikey });
-      }
-
       const teamInfo = await this.sharedService.getTeamInfo().toPromise();
-      const me = await this.getMyInfo().toPromise();
+      const me = await this.authService.getMyInfo().toPromise();
 
       this._experience$.next(exp);
 
-      return of([newAuth, teamInfo, me]);
+      return [teamInfo, me];
     } catch (err) {
       throw Error(err);
     }
-  }
-
-  /**
-   * @name getMyInfo
-   * @description get user info
-   */
-  getMyInfo(): Observable<any> {
-    if (environment.demo) {
-      this.storage.setUser({
-        uuid: this.demo.myInfo.uuid,
-        name: this.demo.myInfo.name,
-        firstName: this.demo.myInfo.firstName,
-        lastName:this.demo.myInfo.lastName,
-        email: this.demo.myInfo.email,
-        image: this.demo.myInfo.image,
-        role: this.demo.myInfo.role,
-        contactNumber: this.demo.myInfo.contactNumber,
-        userHash: this.demo.myInfo.userHash
-      });
-      return of(this.demo.myInfo);
-    }
-    return this.apolloService.graphQLFetch(
-      `query user {
-        user {
-          id
-          uuid
-          name
-          firstName
-          lastName
-          email
-          image
-          role
-          contactNumber
-          userHash
-        }
-      }`
-    ).pipe(map(response => {
-      if (response.data && response.data.user) {
-        const thisUser = response.data.user;
-
-        this.storage.setUser({
-          uuid: thisUser.uuid,
-          name: thisUser.name,
-          firstName: thisUser.firstName,
-          lastName: thisUser.lastName,
-          email: thisUser.email,
-          image: thisUser.image,
-          role: thisUser.role,
-          contactNumber: thisUser.contactNumber,
-          userHash: thisUser.userHash
-        });
-      }
-      return response;
-    }));
   }
 
   getEvents() {
@@ -380,6 +325,9 @@ export class ExperienceService {
     }
 
     await this.switchProgram({ experience });
+    await this.authService.authenticate({
+      experienceUuid: experience.uuid,
+    }).toPromise();
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data
@@ -397,12 +345,5 @@ export class ExperienceService {
     } */
 
     return ['v3', 'home'];
-  }
-
-  getNewJwt() {
-    return this.authService.authenticate({
-      apikey: this.storage.get('apikey'),
-      service: 'LOGIN'
-    });
   }
 }

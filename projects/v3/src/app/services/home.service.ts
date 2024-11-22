@@ -2,13 +2,12 @@ import { Injectable } from '@angular/core';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
-import { SharedService } from './shared.service';
-import { ActivityBase, ActivityService, Task, TaskBase } from './activity.service';
 import { BrowserStorageService } from './storage.service';
+import { UtilsService } from './utils.service';
 
 export interface Experience {
   leadImage: string;
@@ -68,23 +67,24 @@ export class HomeService {
     private demo: DemoService,
     private notificationsService: NotificationsService,
     private authService: AuthService,
-    private storageService: BrowserStorageService
+    private storageService: BrowserStorageService,
+    private utilsService: UtilsService,
   ) { }
 
   clearExperience() {
     return of([
       this._experience$.next(null),
       this._activityCount$.next(null),
-      this._milestones$.next(null),
+      this._milestones$.next([]),
     ]);
   }
 
-  getExperience(apikey: string) {
+  getExperience() {
     if (environment.demo) {
       return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
     }
 
-    return this.authService.authenticate({ apikey }).pipe(
+    return this.authService.authenticate().pipe(
       tap(async res => {
         if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
@@ -102,8 +102,13 @@ export class HomeService {
           })
         }
       }),
-      map(res => this._normaliseExperience(res))
-    ).subscribe();
+      map(res => this._normaliseExperience(res)),
+      first(),
+    ).subscribe({
+      error: async (err) => {
+        console.error('Auth:query', err);
+      }
+    });
   }
 
   private _normaliseExperience(res) {
@@ -121,7 +126,7 @@ export class HomeService {
 
     return this.apolloService.graphQLFetch(`
       {
-        milestones{
+        milestones {
           id
           name
           description
@@ -151,7 +156,12 @@ export class HomeService {
     this.storageService.set('activities', this.aggregateActivities(milestones));
 
     this._activityCount$.next(activityCount);
-    this._milestones$.next(milestones);
+
+    // only update if the milestones are different
+    if (!this.utilsService.isEqual(this._milestones$.getValue(), milestones)) {
+      this._milestones$.next(milestones);
+    }
+
     return milestones;
   }
 
