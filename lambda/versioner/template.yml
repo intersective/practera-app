@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: lambda@edge function for appv3 forwarder
+
+Parameters:
+  StackName:
+    Type: String
+    Default: p2-sandbox
+    Description: 'Stack name'
+  Env:
+    Type: String
+    Default: dev
+    Description: 'Environment'
+
+Resources:
+  Versioner:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      CodeUri: ./bin/handler.zip
+      Runtime: nodejs18.x
+      Timeout: 10
+      Role: !GetAtt LambdaVersionHelperRole.Arn
+  LambdaVersionHelperRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LambdaVersionPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:PublishVersion
+                Resource: "*"
+
+Outputs:
+  VersionerArn:
+    Description: "Lambda Function Versioner ARN"
+    Value: !GetAtt Versioner.Arn
+    Export:
+      Name: !Sub "${StackName}-LambdaVersionerArn-${Env}"

@@ -1,3 +1,14 @@
+.icon-container {
+  margin-right: 20px;
+  font-size: 24px  !important;
+
+  .bookmark-icon {
+    position: absolute;
+    height: 50%;
+    left: -0.5em;
+  }
+}
+
 .bolder {
   font-weight: bolder !important;
 }
@@ -21,21 +32,20 @@ ion-avatar {
 .item-subtitle-1, .item-subtitle-2 {
   margin: 4px 0 0;
 }
+
 .leading-icon {
-  margin-right: 20px;
-  font-size: 24px  !important;
   border-radius: 6px;
   padding: 8px 8px;
   color: white;
   background: var(--ion-color-primary);
 }
+
 .notification-icon {
-  margin-right: 20px;
-  font-size: 24px !important;
   border-radius: 1em;
   padding: 8px 8px;
   background: var(--practera-15-percent-gray);
 }
+
 .item-content {
   width: 100%;
   p {
@@ -101,4 +111,12 @@ ion-avatar {
 // use for expired event title @extend .gray-2 not working because this is a component scss file.
 .color-gray-2 {
   color: var(--practera-60-percent-gray) !important;
+}
+
+// make activity title stand out
+.lastVisited {
+  --background: var(--practera-light-grey-25);
+  div.body-2 {
+    font-style: italic !important;
+  }
 }

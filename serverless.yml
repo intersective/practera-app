@@ -1,3 +1,4 @@
+## deprecated
 service: ${env:STACK_NAME}-appv2
 frameworkVersion: '2'
 useDotenv: true
