@@ -2,15 +2,13 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 import { Title } from '@angular/platform-browser';
-
-import Delta from 'quill-delta';
 
 export enum ThemeColor {
   primary = 'primary',
@@ -38,7 +36,8 @@ export class UtilsService {
     @Inject(DOCUMENT) private document: Document,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
-    private title: Title
+    private title: Title,
+    private platform: Platform,
   ) {
     if (_) {
       this.lodash = _;
@@ -50,10 +49,9 @@ export class UtilsService {
   /**
    * @name isMobile
    * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
-   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
    */
-  isMobile() {
-    return window.innerWidth <= 576;
+  isMobile(): boolean {
+    return this.platform.is('mobile');
   }
 
   /** check if a value is empty
@@ -105,6 +103,10 @@ export class UtilsService {
 
   remove(collections, callback) {
     return this.lodash.remove(collections, callback);
+  }
+
+  isEqual(value, other) {
+    return this.lodash.isEqual(value, other);
   }
 
   openUrl(url, options?: { target: String }) {
@@ -235,9 +237,10 @@ export class UtilsService {
     const curLoc = this.getCurrentLocation();
 
     let result = null;
-    for (const check in checkings) {
+    for (const [check, value] of Object.entries(checkings)) {
       if (curLoc?.pathname.indexOf(check) === 0) {
-        result = checkings[check];
+        result = value;
+        break;
       }
     }
 
@@ -382,15 +385,8 @@ export class UtilsService {
       time.getFullYear() === compared.getFullYear())) {
       return 0;
     }
-    if (time.getTime() < compared.getTime()) {
-      return -1;
-    }
-    if (time.getTime() === compared.getTime()) {
-      return 0;
-    }
-    if (time.getTime() > compared.getTime()) {
-      return 1;
-    }
+
+    return Math.sign(time.getTime() - compared.getTime());
   }
 
   /**
@@ -411,7 +407,7 @@ export class UtilsService {
   /**
    * check if the targeted element in an array is located at the last in the last index
    */
-  checkOrderById(target: any[], currentId, options: {
+  checkOrderById(target: any[], currentId: number, options: {
     isLast: boolean;
   }): boolean {
     const length = target.length;
@@ -607,7 +603,7 @@ export class UtilsService {
    * @param role String - User role
    * @returns String - new user roles.
    */
-  getUserRolesForUI(role) {
+  getUserRolesForUI(role?: string) {
     switch (role) {
       case 'participant':
         return $localize`:labelling:learner`;
@@ -646,7 +642,7 @@ export class UtilsService {
         if (hueMatched && saturationMatched && lightnessMatched) {
           return true;
         }
-      break;
+        break;
     }
 
     return false;
@@ -669,22 +665,6 @@ export class UtilsService {
     return false;
   }
 
-  /**
-   * This method will add matcher to the clipboard of the quill editor.
-   * And it will make sure every thing user paste will paste as plain text. without any formating that pasting text have.
-   * Reason we need this.
-   * User may copy and paste some formated text that may contain formats we are not supporting. So if those send as message
-   * UI/UX will out. becouse we didn't support them. that's why we make sure we remove formating  from text that user paste to text editor.
-   * @param quillEditor Quill text editor instance
-   * @returns quill clipboard matcher event
-   */
-  formatQuillClipboard(quillEditor) {
-    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, function (node, delta) {
-      const plaintext = node.innerText;
-      return new Delta().insert(plaintext);
-    });
-  }
-
   moveToNewLocale(newLocale: string) {
     const currentURL = this.getCurrentLocation();
     const currentLocale = this.getCurrentLocale();
@@ -700,7 +680,8 @@ export class UtilsService {
     }
 
     // if pathname begin with different locale
-    const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
+    const safePathName = pathname ? pathname[0] : '';
+    const newPath = currentURL.pathname.replace(safePathName, `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 
@@ -738,5 +719,9 @@ export class UtilsService {
   // set page title
   setPageTitle(title: string) {
     this.title.setTitle(title);
+  }
+
+  scrollToElement(element: HTMLElement) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
