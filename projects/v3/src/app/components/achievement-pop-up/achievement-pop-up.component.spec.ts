@@ -62,7 +62,9 @@ describe('AchievementPopUpComponent', () => {
       component.achievement = {
         id: 1,
         name: 'achieve',
-        description: ''
+        description: '',
+        type: 'badge',
+        badge: 'badge',
       };
     });
 
