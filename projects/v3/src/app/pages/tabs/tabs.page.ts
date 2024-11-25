@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonTabs, Platform } from '@ionic/angular';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { IonTabs } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -29,8 +29,9 @@ export class TabsPage implements OnInit, OnDestroy {
     chat: 0,
   };
 
+  isMobile: boolean;
+
   constructor(
-    private platform: Platform,
     private reviewService: ReviewService,
     private storageService: BrowserStorageService,
     private chatService: ChatService,
@@ -38,7 +39,9 @@ export class TabsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private route: ActivatedRoute,
     private activityService: ActivityService,
-  ) {}
+  ) {
+    this.handleResize();
+  }
 
   ngOnInit() {
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
@@ -97,10 +100,6 @@ export class TabsPage implements OnInit, OnDestroy {
     });
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => {
       if (sub.closed === false) {
@@ -111,5 +110,10 @@ export class TabsPage implements OnInit, OnDestroy {
 
   setCurrentTab() {
     this.selectedTab = this.tabs.getSelected();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  handleResize() {
+    this.isMobile = this.utils.isMobile();
   }
 }
