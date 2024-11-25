@@ -1,3 +1,4 @@
+import { firstValueFrom } from 'rxjs';
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -84,7 +85,7 @@ export class ReviewRatingComponent implements OnInit {
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
 
     try {
-      await this.reviewRatingService.submitRating(this.ratingData).toPromise();
+      await firstValueFrom(this.reviewRatingService.submitRating(this.ratingData));
       this.isSubmitting = false;
       this.ratingSessionEnd = true;
     } catch (err) {
