@@ -12,6 +12,9 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { debounce } from 'lodash';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 enum ScrollPosition {
   Top = 'top',
@@ -68,10 +71,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   hasUnreadMessages: boolean = false;
   scrollPosition: ScrollPosition = ScrollPosition.Top;
 
-
   // quill editor modules
   private isMatcherApplied = false;
   editorModules = {
+    magicUrl: {
+      globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
+      urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
+    },
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'], // Text formatting buttons
       [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
@@ -144,6 +150,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
+    private sanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils

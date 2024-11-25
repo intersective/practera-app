@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
 
+import MagicUrl from 'quill-magic-url';
+import Quill from 'quill';
+import { QuillModule } from 'ngx-quill';
+
 import { ChatPage } from './chat.page';
 import { ChatListComponent } from './chat-list/chat-list.component';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
@@ -11,7 +15,7 @@ import { ComponentsModule } from '../../components/components.module';
 import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 import { AttachmentPopoverComponent } from './attachment-popover/attachment-popover.component';
 
-import { QuillModule } from 'ngx-quill';
+Quill.register('modules/magicUrl', MagicUrl);
 
 @NgModule({
   imports: [
@@ -21,6 +25,7 @@ import { QuillModule } from 'ngx-quill';
     QuillModule.forRoot({
       theme: 'snow',
       modules: {
+        magicUrl: true,
         pasteSmart: true,
         keyboard: true
       }
