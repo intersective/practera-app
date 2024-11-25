@@ -64,10 +64,35 @@ export class UtilsService {
   }
 
   /**
+   * get orientation of the device by comparing window height and width
+   *
+   * @return  {boolean} true if portrait, false if landscape
+   */
+  isPortrait(): boolean {
+    return window.innerHeight > window.innerWidth ? true : false;
+  }
+
+  /**
+   * Treat viewport size start from large tablet as desktop
+   * grouping device type into 2 group (mobile/desktop)
    * @name isMobile
-   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
+   * @return {boolean} true if mobile, false if desktop
    */
   isMobile(): boolean {
+    if (this.platform.is('desktop')) {
+      return false;
+    }
+
+    if (this.platform.is('tablet')) {
+      if (window.innerWidth < 1024) {
+        return true;
+      }
+
+      // for larger tablet (iPad Pro & samsung 10)
+      // considered as desktop (1024px = logical viewport)
+      return false;
+    }
+
     return this.platform.is('mobile');
   }
 
