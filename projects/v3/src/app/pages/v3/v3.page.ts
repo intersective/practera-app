@@ -1,5 +1,5 @@
 import { take, takeUntil, mergeMap } from 'rxjs/operators';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
@@ -99,6 +99,11 @@ export class V3Page implements OnInit, OnDestroy {
     this.isMobile = this.utils.isMobile();
   }
 
+  @HostListener('window:resize', ['$event'])
+  ionViewDidEnter() {
+    this.isMobile = this.utils.isMobile();
+  }
+
   ngOnDestroy(): void {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
@@ -177,7 +182,6 @@ export class V3Page implements OnInit, OnDestroy {
         }
       });
       this.appPages[3].badges = chat?.unreadMessages || 0; // messages tab
-
       this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length; // events tab
       this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
     });
