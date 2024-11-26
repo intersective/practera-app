@@ -166,6 +166,22 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
           this.resubscribe$.next();
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
+          // @link https://github.com/intersective/core-graphql-api/commit/92e636be64a3697bebda91d6f66eea487d8fb2a9#diff-4f45773ff5b570b41418d857c86f5b1e48b8e7ed744d92ebef4b96102de912e3R17-R22
+          if ((error.message.toLowerCase()).includes('invalid answer')) {
+            await this.notifications.alert({
+              header: $localize`Error`,
+              message: $localize`An error has occurred. The page will reload shortly; please try again.`,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                  handler: () => {
+                    window.location.reload(); // force reload
+                  }
+                }
+              ],
+            });
+          }
         }
       }
     );
