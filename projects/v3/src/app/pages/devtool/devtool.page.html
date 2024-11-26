@@ -5,6 +5,13 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Viewport Size Display -->
+  <div class="viewport-size">
+    <h4>Logical Viewport Size</h4>
+    <p>Width: {{ viewportWidth }} px</p>
+    <p>Height: {{ viewportHeight }} px</p>
+  </div>
+
   <ion-button routerLink="/v3">Go /</ion-button>
   <ion-button routerLink="/v3/settings">Go Setting</ion-button>
   <ion-button (click)="refresh()">Refresh JWT</ion-button>

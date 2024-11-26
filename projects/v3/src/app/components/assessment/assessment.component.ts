@@ -160,12 +160,13 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (error.message.includes('Autosave')) {
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
-            label: $localize`Save failed. Please try again.`,
+            label: $localize`Auto save failed. Please try again.`,
           });
+          // Resubscribe for autosave failures
+          this.resubscribe$.next();
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
         }
-        this.resubscribe$.next();
       }
     );
   }
