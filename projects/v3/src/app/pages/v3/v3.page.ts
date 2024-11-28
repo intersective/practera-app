@@ -97,12 +97,18 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly homeService: HomeService,
     private readonly unlockIndicatorService: UnlockIndicatorService,
   ) {
-    this.isMobile = this.utils.isMobile();
   }
 
   @HostListener('window:resize', ['$event'])
   ionViewDidEnter() {
     this.isMobile = this.utils.isMobile();
+
+    this.openMenu = false;
+    this.collapsibleMenu = 'closed';
+    // this.collapsibleMenu = this.collapseMenu();
+    this.institutionLogo = this.getInstitutionLogo();
+
+    console.log('v3-isMobile::', this.isMobile);
   }
 
   ngOnDestroy(): void {
