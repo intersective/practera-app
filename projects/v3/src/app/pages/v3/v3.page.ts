@@ -61,7 +61,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = false; // collapsible submenu
+  isMenuOpen = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   appPages: any[];
@@ -70,9 +70,11 @@ export class V3Page implements OnInit, OnDestroy {
   showReviews: boolean = false;
   showDueDates: boolean = true;
   directionIcon: string = this.direction();
-  collapsibleMenu: string = 'closed';
+  collapsibleMenu: 'open' | 'closed' = 'closed';
   institutionLogo: string = this.getInstitutionLogo();
   isMobile: boolean;
+  splitpaneEnabled: boolean | string;
+  isSwipeEnabled: boolean = false;
   institutionName: string;
 
   i18nText = {
@@ -101,11 +103,22 @@ export class V3Page implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   ionViewDidEnter() {
     this.isMobile = this.utils.isMobile();
+    let menuEnabled = true;
+    this.isMenuOpen = false;
+    this.splitpaneEnabled = '(min-width: 1024px)';
 
-    this.openMenu = false;
     this.collapsibleMenu = 'closed';
-    // this.collapsibleMenu = this.collapseMenu();
-    this.institutionLogo = this.getInstitutionLogo();
+
+    // toggleable-feature: allow swipe in menu when viewport is smaller than 576px
+    // make isSwipeEnabled dynamic to enable
+    if (window.innerWidth < 576) {
+      menuEnabled = false;
+      this.isMenuOpen = true;
+      this.collapsibleMenu = 'open';
+      this.splitpaneEnabled = false;
+    }
+
+    this.menuController.enable(menuEnabled);
   }
 
   ngOnDestroy(): void {
@@ -237,7 +250,7 @@ export class V3Page implements OnInit, OnDestroy {
           }
         });
     }
-    this.openMenu = false;
+    this.isMenuOpen = false;
 
     // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
     this.notificationsService.getTodoItems().pipe(
@@ -293,7 +306,7 @@ export class V3Page implements OnInit, OnDestroy {
       return '/assets/logo.svg'; // Default logo or some fallback
     }
 
-    if (this.openMenu !== true) {
+    if (this.isMenuOpen !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
 
@@ -301,24 +314,20 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   toggleMenu() {
-    this.openMenu = !this.openMenu;
+    this.isMenuOpen = !this.isMenuOpen;
     this.collapsibleMenu = this.collapseMenu();
     this.institutionLogo = this.getInstitutionLogo();
   }
 
   // only desktop version require collapsed menu
   // get collapsibleMenu() {
-  collapseMenu(): string {
-    if (this.isMobile) {
-      return 'open';
-    }
-
-    return (this.openMenu ? 'open' : 'closed');
+  collapseMenu(): 'open' | 'closed' {
+    return (this.isMenuOpen ? 'open' : 'closed');
   }
 
   // rotation animation logic
   direction(): string {
-    this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
+    this.directionIcon = this.isMenuOpen ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
     return this.directionIcon;
   }
 
