@@ -40,10 +40,10 @@ export class TabsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private activityService: ActivityService,
   ) {
-    this.handleResize();
   }
 
   ngOnInit() {
+    this.handleResize();
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -115,5 +115,6 @@ export class TabsPage implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   handleResize() {
     this.isMobile = this.utils.isMobile();
+    console.log('tab-isMobile::', this.isMobile);
   }
 }
