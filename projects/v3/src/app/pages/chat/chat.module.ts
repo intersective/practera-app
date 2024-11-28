@@ -26,6 +26,7 @@ Quill.register('modules/magicUrl', MagicUrl);
       debug: 'log',
       modules: {
         magicUrl: true,
+        pasteSmart: true,
         keyboard: true
       },
     })

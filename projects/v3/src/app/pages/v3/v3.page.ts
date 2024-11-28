@@ -1,4 +1,4 @@
-import { take, takeUntil, mergeMap } from 'rxjs/operators';
+import { takeUntil, mergeMap } from 'rxjs/operators';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
@@ -96,12 +96,16 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly homeService: HomeService,
     private readonly unlockIndicatorService: UnlockIndicatorService,
   ) {
-    this.isMobile = this.utils.isMobile();
   }
 
   @HostListener('window:resize', ['$event'])
   ionViewDidEnter() {
     this.isMobile = this.utils.isMobile();
+
+    this.openMenu = false;
+    this.collapsibleMenu = 'closed';
+    // this.collapsibleMenu = this.collapseMenu();
+    this.institutionLogo = this.getInstitutionLogo();
   }
 
   ngOnDestroy(): void {
