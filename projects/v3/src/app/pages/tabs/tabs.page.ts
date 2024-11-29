@@ -29,7 +29,7 @@ export class TabsPage implements OnInit, OnDestroy {
     chat: 0,
   };
 
-  isMobile: boolean;
+  hasLeftSidebar: boolean;
 
   constructor(
     private reviewService: ReviewService,
@@ -43,7 +43,9 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.handleResize();
+    this.utils.screenStatus$.subscribe((res) => {
+      this.hasLeftSidebar = res.leftSidebarExpanded;
+    });
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -110,10 +112,5 @@ export class TabsPage implements OnInit, OnDestroy {
 
   setCurrentTab() {
     this.selectedTab = this.tabs.getSelected();
-  }
-
-  @HostListener('window:resize', ['$event'])
-  handleResize() {
-    this.isMobile = this.utils.isMobile();
   }
 }

@@ -72,7 +72,6 @@ export class V3Page implements OnInit, OnDestroy {
   directionIcon: string = this.direction();
   collapsibleMenu: 'open' | 'closed' = 'closed';
   institutionLogo: string = this.getInstitutionLogo();
-  isMobile: boolean;
   splitpaneEnabled: boolean | string;
   isSwipeEnabled: boolean = false;
   institutionName: string;
@@ -102,10 +101,9 @@ export class V3Page implements OnInit, OnDestroy {
 
   @HostListener('window:resize', ['$event'])
   ionViewDidEnter() {
-    this.isMobile = this.utils.isMobile();
     let menuEnabled = true;
+    let splitpaneEnabled = false;
     this.isMenuOpen = false;
-    this.splitpaneEnabled = '(min-width: 1024px)';
 
     this.collapsibleMenu = 'closed';
 
@@ -115,9 +113,12 @@ export class V3Page implements OnInit, OnDestroy {
       menuEnabled = false;
       this.isMenuOpen = true;
       this.collapsibleMenu = 'open';
-      this.splitpaneEnabled = false;
+    } else if (window.innerWidth >= 1024) {
+      splitpaneEnabled = true;
     }
 
+    this.splitpaneEnabled = splitpaneEnabled;
+    this.utils.viewport('leftSidebarExpanded', this.splitpaneEnabled);
     this.menuController.enable(menuEnabled);
   }
 
@@ -173,10 +174,6 @@ export class V3Page implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.institutionLogo = this.getInstitutionLogo();
-
-    if (this.isMobile) {
-      this.menuController.enable(false);
-    }
     this._initMenuItems();
 
     this.reviewService.reviews$
