@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import { AchievementService } from '@v3/app/services/achievement.service';
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
@@ -8,6 +7,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 
 @Component({
   selector: 'app-devtool',
