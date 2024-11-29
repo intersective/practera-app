@@ -22,6 +22,19 @@ export class DevtoolPage implements OnInit {
 
   sample: any;
 
+  info: {
+    userAgent: string;
+    viewportWidth: number;
+    viewportHeight: number;
+    screenWidth: number;
+    screenHeight: number;
+    pixelRatio: number;
+    location: {
+      latitude: number;
+      longitude: number;
+    };
+  }
+
   constructor(
     private authService: AuthService,
     private storageService: BrowserStorageService,
@@ -47,7 +60,7 @@ export class DevtoolPage implements OnInit {
 
     // Listen for changes to the prefers-color-scheme media query
     prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkTheme(mediaQuery.matches));
-
+    this.deviceInfo();
   }
 
   refresh() {
@@ -179,5 +192,41 @@ export class DevtoolPage implements OnInit {
 
   getbadges() {
     this.achievementService.getAchievements();
+  }
+
+  deviceInfo() {
+    this.info = {
+      // User Agent
+      userAgent: navigator.userAgent,
+
+      // Viewport Size
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+
+      // Screen Resolution
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+
+      // Pixel Ratio
+      pixelRatio: window.devicePixelRatio || 1,
+
+      // Geolocation (initialized as null)
+      location: null,
+    };
+
+    // Geolocation (optional)
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.info.location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+        }
+      );
+    }
   }
 }
