@@ -22,7 +22,7 @@
             routerDirection="root"
             detail="false"
             [title]="p.title">
-            <ng-container *ngIf="!isMobile && openMenu === false; else iconOnly">
+            <ng-container *ngIf="isMenuOpen === false; else iconOnly">
               <div class="badge-wrapper icon-container">
                 <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
                 <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
