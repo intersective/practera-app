@@ -1,5 +1,5 @@
 <ion-tabs #tabs (ionTabsDidChange)="setCurrentTab()">
-  <ion-tab-bar slot="bottom" *ngIf="isMobile">
+  <ion-tab-bar slot="bottom" *ngIf="hasLeftSidebar !== true">
     <ion-tab-button class="tab-item" tab="home"
       [ngClass]="{'selected': selectedTab === 'home'}">
       <ion-icon name="home"></ion-icon>
