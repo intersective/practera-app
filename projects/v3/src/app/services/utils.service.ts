@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { ModalController, Platform } from '@ionic/angular';
 import isEmpty from 'lodash-es/isEmpty';
@@ -31,15 +31,16 @@ declare var window: any;
   providedIn: 'root'
 })
 export class UtilsService {
+  private _screenStatus$ = new BehaviorSubject<{
+    leftSidebarExpanded: boolean;
+  }>({
+    leftSidebarExpanded: false,
+  });
+  public screenStatus$ = this._screenStatus$.asObservable();
+
   private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
-  // -- Not in used anymore, leave them commented in case we need later --
-  // // this Subject is used in project.service to cache the project data
-  // public projectSubject = new BehaviorSubject(null);
-  // // this Subject is used in activity.service to cache the activity data
-  // // it stores key => Subject pairs of all activities
-  // public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -70,6 +71,15 @@ export class UtilsService {
    */
   isPortrait(): boolean {
     return window.innerHeight > window.innerWidth ? true : false;
+  }
+
+  // set screen status (left sidebar expanded, etc)
+  viewport(name: 'leftSidebarExpanded', value) {
+    const values = this._screenStatus$.getValue();
+    this._screenStatus$.next({
+      ...values,
+      ...{ [name]: value }
+    });
   }
 
   /**
