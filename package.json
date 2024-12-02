@@ -34,7 +34,10 @@
     "pubdocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build",
     "buildv3": "ng build v3 -c development",
     "prebuildv3": "ng build request",
-    "i18n": "ng extract-i18n v3 --output-path locales/"
+    "i18n": "ng extract-i18n v3 --output-path locales/",
+    "serve:es": "ng serve --configuration=development --localize=es --port=4201",
+    "serve:ja": "ng serve --configuration=development --localize=ja --port=4202",
+    "serve:ms": "ng serve --configuration=development --localize=ms --port=4203"
   },
   "dependencies": {
     "@angular/animations": "~13.3.11",
