@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { ModalController, Platform } from '@ionic/angular';
 import * as _ from 'lodash';
@@ -22,15 +22,16 @@ declare var window: any;
   providedIn: 'root'
 })
 export class UtilsService {
+  private _screenStatus$ = new BehaviorSubject<{
+    leftSidebarExpanded: boolean;
+  }>({
+    leftSidebarExpanded: false,
+  });
+  public screenStatus$ = this._screenStatus$.asObservable();
+
   private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
-  // -- Not in used anymore, leave them commented in case we need later --
-  // // this Subject is used in project.service to cache the project data
-  // public projectSubject = new BehaviorSubject(null);
-  // // this Subject is used in activity.service to cache the activity data
-  // // it stores key => Subject pairs of all activities
-  // public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -47,10 +48,44 @@ export class UtilsService {
   }
 
   /**
+   * get orientation of the device by comparing window height and width
+   *
+   * @return  {boolean} true if portrait, false if landscape
+   */
+  isPortrait(): boolean {
+    return window.innerHeight > window.innerWidth ? true : false;
+  }
+
+  // set screen status (left sidebar expanded, etc)
+  viewport(name: 'leftSidebarExpanded', value) {
+    const values = this._screenStatus$.getValue();
+    this._screenStatus$.next({
+      ...values,
+      ...{ [name]: value }
+    });
+  }
+
+  /**
+   * Treat viewport size start from large tablet as desktop
+   * grouping device type into 2 group (mobile/desktop)
    * @name isMobile
-   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
+   * @return {boolean} true if mobile, false if desktop
    */
   isMobile(): boolean {
+    if (this.platform.is('desktop')) {
+      return false;
+    }
+
+    if (this.platform.is('tablet')) {
+      if (window.innerWidth < 1024) {
+        return true;
+      }
+
+      // for larger tablet (iPad Pro & samsung 10)
+      // considered as desktop (1024px = logical viewport)
+      return false;
+    }
+
     return this.platform.is('mobile');
   }
 
