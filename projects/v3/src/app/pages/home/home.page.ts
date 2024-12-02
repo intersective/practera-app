@@ -157,7 +157,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     // reset & load bookmarks
     this.bookmarkedActivities = {};
-    const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[];
+    const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[] || [];
     bookmarks.forEach((id) => {
       this.bookmarkedActivities[id] = true;
     });
