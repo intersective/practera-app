@@ -91,6 +91,16 @@
             "ms": {
               "localize": ["ms"]
             },
+            "ja": {
+              "localize": [
+                "ja"
+              ]
+            },
+            "es": {
+              "localize": [
+                "es"
+              ]
+            },
             "custom": {
               "budgets": [
                 {
@@ -196,6 +206,9 @@
             },
             "development": {
               "buildTarget": "v3:build:development"
+            },
+            "ja": {
+              "buildTarget": "v3:build:ja"
             }
           },
           "defaultConfiguration": "development"

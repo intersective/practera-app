@@ -33,7 +33,10 @@
     "generate-version": "node ./hooks/post-build.js",
     "generate-version-v3": "node ./hooks/post-buildv3.js",
     "pubdocs": "npx compodoc -p tsconfig.json src && cp -R documentation/ www/ && ng deploy --base-href=/practera-app-v2/ --branch=compodoc-pages --no-build",
-    "i18n": "ng extract-i18n v3 --output-path locales/"
+    "i18n": "ng extract-i18n v3 --output-path locales/",
+    "serve:es": "ng serve --configuration=development --localize=es --port=4201",
+    "serve:ja": "ng serve --configuration=development --localize=ja --port=4202",
+    "serve:ms": "ng serve --configuration=development --localize=ms --port=4203"
   },
   "dependencies": {
     "@angular/animations": "^17.3.12",
