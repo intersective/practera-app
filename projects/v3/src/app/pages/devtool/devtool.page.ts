@@ -6,6 +6,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 
 @Component({
   selector: 'app-devtool',
@@ -19,6 +20,19 @@ export class DevtoolPage implements OnInit {
 
   sample: any;
 
+  info: {
+    userAgent: string;
+    viewportWidth: number;
+    viewportHeight: number;
+    screenWidth: number;
+    screenHeight: number;
+    pixelRatio: number;
+    location: {
+      latitude: number;
+      longitude: number;
+    };
+  }
+
   constructor(
     private authService: AuthService,
     private storageService: BrowserStorageService,
@@ -26,6 +40,7 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
+    private achievementService: AchievementService,
     private unlockIndicatorService: UnlockIndicatorService
       ) { }
 
@@ -34,6 +49,8 @@ export class DevtoolPage implements OnInit {
     if (this.doneLogin) {
       this.user = this.storageService.get('me');
     }
+
+    this.deviceInfo();
   }
 
   refresh() {
@@ -114,5 +131,45 @@ export class DevtoolPage implements OnInit {
       });
       this.unlockIndicatorService.removeTasks(task.taskId);
     });
+  }
+
+  getbadges() {
+    this.achievementService.getAchievements();
+  }
+
+  deviceInfo() {
+    this.info = {
+      // User Agent
+      userAgent: navigator.userAgent,
+
+      // Viewport Size
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+
+      // Screen Resolution
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+
+      // Pixel Ratio
+      pixelRatio: window.devicePixelRatio || 1,
+
+      // Geolocation (initialized as null)
+      location: null,
+    };
+
+    // Geolocation (optional)
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.info.location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+        }
+      );
+    }
   }
 }
