@@ -35,6 +35,9 @@ export class AppComponent implements OnInit, OnDestroy {
     'register',
     'forgot_password',
     'reset_password',
+    'global_login',
+    'direct_login',
+    'do=secure',
   ];
 
   constructor(
