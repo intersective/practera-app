@@ -350,7 +350,7 @@ export class AuthService {
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
-    } else if (typeof redirect === 'boolean' && redirect === true) {
+    } else if (redirect === true) {
       // still store config info even logout
       this.storage.setConfig(config);
       return this.router.navigate(['/'], navigationParams);
