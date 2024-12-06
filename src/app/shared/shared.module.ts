@@ -14,6 +14,8 @@ import { ListItemComponent } from '@shared/components/list-item/list-item.compon
 import { FloatDirective } from './directives/float/float.directive';
 import { ImgComponent } from '@shared/components/img/img.component';
 import { DragAndDropDirective } from './directives/drag-and-drop/drag-and-drop.directive';
+import { UppyAngularModule } from '@uppy/angular';
+import { UppyUploaderComponent } from './components/uppy-uploader/uppy-uploader.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -37,6 +39,7 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
+    UppyAngularModule
   ],
   declarations: [
     ActivityCardComponent,
@@ -50,6 +53,7 @@ const largeCircleDefaultConfig = {
     FloatDirective,
     DragAndDropDirective,
     ImgComponent,
+    UppyUploaderComponent,
   ],
   exports: [
     ActivityCardComponent,
@@ -65,7 +69,8 @@ const largeCircleDefaultConfig = {
     ListItemComponent,
     FloatDirective,
     ImgComponent,
-    DragAndDropDirective
+    DragAndDropDirective,
+    UppyUploaderComponent,
   ],
 })
 export class SharedModule {}
