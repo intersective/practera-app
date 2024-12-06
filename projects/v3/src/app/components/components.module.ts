@@ -39,6 +39,8 @@ import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
 import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
+import { UppyAngularDashboardModule, UppyAngularDashboardModalModule } from '@uppy/angular';
+import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -63,6 +65,7 @@ const largeCircleDefaultConfig = {
     FormsModule,
     ReactiveFormsModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
+    UppyAngularDashboardModule,
   ],
   declarations: [
     AchievementPopUpComponent,
@@ -101,6 +104,7 @@ const largeCircleDefaultConfig = {
     FallbackImageDirective,
     TrafficLightComponent,
     TrafficLightGroupComponent,
+    UppyUploaderComponent,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -143,6 +147,7 @@ const largeCircleDefaultConfig = {
     SupportPopupComponent,
     TrafficLightComponent,
     TrafficLightGroupComponent,
+    UppyUploaderComponent,
   ],
 })
 export class ComponentsModule {}
