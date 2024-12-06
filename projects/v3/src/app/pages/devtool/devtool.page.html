@@ -46,8 +46,31 @@
         <ion-col size="4" size-sm="3" size-xs="2">
           <ion-toggle [(ngModel)]="themeToggle" (ionChange)="toggleChange($event)">Dark Mode</ion-toggle>
         </ion-col>
-        <ion-col size="4" size-sm="3" size-xs="2">
-          <!-- Optional placeholder -->
+      </ion-row>
+    </ion-grid>
+  </div>
+  <div class="uppy-upload">
+    <h4>Uppy Integration</h4>
+    <ion-grid>
+      <ion-row class="tus-url">
+        <ion-col size="12" size-sm="8">
+          <ion-item>
+            <ion-label position="floating">Tus Upload URL</ion-label>
+            <ion-input [(ngModel)]="tusUploadUrl"
+              placeholder="Enter upload URL to start testing Uppy"
+              (keyup)="tusChanged()"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="12" size-sm="4">
+          <ion-button expand="block" color="secondary" (click)="applyTusUploadUrl()">
+            Apply
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="turnUppyOff === false">
+        <ion-col size="12">
+          <app-uppy-uploader [uploadUrl]="tusUploadUrl"></app-uppy-uploader>
         </ion-col>
       </ion-row>
     </ion-grid>
