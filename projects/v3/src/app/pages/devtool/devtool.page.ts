@@ -8,6 +8,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-devtool',
@@ -15,6 +16,8 @@ import { Achievement, AchievementService } from '@v3/app/services/achievement.se
   styleUrls: ['./devtool.page.scss'],
 })
 export class DevtoolPage implements OnInit {
+  turnUppyOff: boolean = true;
+  tusUploadUrl: string;
   doneLogin: boolean = false;
   user: any = {};
   themeToggle = false;
@@ -47,6 +50,7 @@ export class DevtoolPage implements OnInit {
       ) { }
 
   ngOnInit() {
+
     this.doneLogin = this.authService.isAuthenticated();
     if (this.doneLogin) {
       this.user = this.storageService.get('me');
@@ -228,5 +232,13 @@ export class DevtoolPage implements OnInit {
         }
       );
     }
+  }
+
+  tusChanged() {
+    this.turnUppyOff = true;
+  }
+
+  applyTusUploadUrl() {
+    this.turnUppyOff = false;
   }
 }
