@@ -2,7 +2,8 @@ import { Injectable, Output } from '@angular/core';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
-const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
+const baseURL = "/assets/ffmpeg";
+// const baseURL = "https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm";
 
 @Injectable({
   providedIn: 'root',
@@ -26,15 +27,9 @@ export class FfmpegService {
       this.message = message;
     });
     await this.ffmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.wasm`,
-        "application/wasm"
-      ),
-      workerURL: await toBlobURL(
-        `${baseURL}/ffmpeg-core.worker.js`,
-        "text/javascript"
-      ),
+      coreURL: `${baseURL}/ffmpeg-core.js`,
+      wasmURL: `${baseURL}/ffmpeg-core.wasm`,
+      workerURL: `${baseURL}/ffmpeg-core.worker.js`,
     });
     this.isLoaded = true;
   }
