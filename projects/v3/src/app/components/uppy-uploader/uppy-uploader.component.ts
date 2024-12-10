@@ -65,7 +65,11 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     this.uppy = new Uppy(uppyOptions);
     this.uppy.use(RemoteSources, {
       companionUrl: this.uploadUrl,
-    }).use(Tus, { endpoint: this.uploadUrl });
+    }).use(Tus, {
+      endpoint: this.uploadUrl,
+      retryDelays: [0, 1000, 3000, 5000],
+      withCredentials: true,
+    });
 
     this.uppy
       .on("upload", (data) => {
