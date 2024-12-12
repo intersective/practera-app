@@ -76,7 +76,7 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   async submitReviewRating() {
-    if (this.ratingData?.rating === undefined || this.moodSelected === undefined) {
+    if (this.ratingData?.rating === undefined || this.moodSelected === undefined || this.isSubmitting === true) {
       return;
     }
 
@@ -89,11 +89,18 @@ export class ReviewRatingComponent implements OnInit {
       this.isSubmitting = false;
       this.ratingSessionEnd = true;
     } catch (err) {
+      this.isSubmitting = false;
+
+      const error = err?.error;
+      if (error && error?.msg.includes('already rated this review') && error.success === false) {
+        return this.dismissModal();
+      }
+
       await this.notificationsService.alert({
         header: $localize`Error submitting rating`,
-        message: err.msg ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.msg}` : JSON.stringify(err),
+        subHeader: $localize`Apologies for the inconvenience caused. Something went wrong.`,
+        message: err.msg || error.msg || JSON.stringify(error),
       });
-      this.isSubmitting = false;
 
       throw new Error(err);
     }
