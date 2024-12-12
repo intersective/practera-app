@@ -15,14 +15,20 @@
   text-shadow: 1px 1px 3px black;
 }
 
+@media (min-width: 1900px) {
+  .activity-backdrop {
+    min-height: 20vh;
+  }
+}
+
 .overlay {
   position: absolute;
   top: 0;
-  width: 110%;
+  width: 100%;
   height: 200px;
   z-index: 0;
   background: linear-gradient(to bottom, rgba(33, 40, 55, 0.5), rgba(33, 40, 55, 0), rgba(33, 40, 55, 0)) !important;
-  left: -10px;
+  left: 0;
 }
 .task-header {
   --background: var(--ion-color-primary-tint);
