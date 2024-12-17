@@ -16,6 +16,18 @@ export const environment = {
   badgeProjectUrl: 'https://badge-issuer.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
   intercomAppId: ' ',
+  uppyConfig: {
+    tusUrl: 'https://127.0.0.1:8000/uploads',
+    uploadPreset: 'practera',
+    restrictions: {
+      minFileSize: undefined, // No minimum size
+      maxFileSize: 10485760, // 10MB max size
+      minNumberOfFiles: 1, // At least one file
+      maxNumberOfFiles: 5, // At most 5 files
+      maxTotalFileSize: undefined, // No limit on total size
+      requiredMetaFields: [], // No required metadata fields
+    }
+  },
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
