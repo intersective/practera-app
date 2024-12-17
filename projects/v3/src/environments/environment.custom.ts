@@ -13,6 +13,18 @@ export const environment = {
   badgeProjectUrl: '<CUSTOM_BADGE_PROJECT_URL>',
   stackUuid: '<CUSTOM_STACK_UUID>',
   intercomAppId: '<CUSTOM_INTERCOM>',
+  uppyConfig: {
+    tusUrl: '<CUSTOM_UPLOAD_TUS_ENDPOINT>',
+    uploadPreset: 'practera',
+    restrictions: {
+      minFileSize: undefined, // No minimum size
+      maxFileSize: 10485760, // 10MB max size
+      minNumberOfFiles: 1, // At least one file
+      maxNumberOfFiles: 5, // At most 5 files
+      maxTotalFileSize: undefined, // No limit on total size
+      requiredMetaFields: [], // No required metadata fields
+    }
+  },
   filestack: {
     key: '<CUSTOM_FILESTACK_KEY>',
     s3Config: {
