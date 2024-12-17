@@ -76,6 +76,13 @@
     </ion-grid>
   </div>
 
+  <div>
+    <h1>Video transcode with FFmpeg</h1>
+    <ion-button (click)="transcodeVideo()">Transcode</ion-button>
+
+    <div *ngIf="isCompressing">Compressing video... Please wait.</div>
+  </div>
+
   <ng-container class="device-info" *ngIf="info">
     <h4>Device Information</h4>
     <ion-list>

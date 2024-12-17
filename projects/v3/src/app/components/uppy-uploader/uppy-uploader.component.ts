@@ -63,6 +63,8 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       companionUrl: this.uploadUrl,
     }).use(Tus, {
       endpoint: environment.uppyConfig.tusUrl || this.uploadUrl,
+      retryDelays: [0, 1000, 3000, 5000],
+      withCredentials: true,
     });
 
     this.uppy
