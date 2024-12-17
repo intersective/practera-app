@@ -1,7 +1,7 @@
+import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import { environment } from '../../../environments/environment';
 import RemoteSources from '@uppy/remote-sources';
 import Tus from '@uppy/tus';
 
@@ -14,7 +14,7 @@ type FileBody = { [key: string]: any };
   styleUrls: ["./uppy-uploader.component.scss"],
 })
 export class UppyUploaderComponent implements OnInit, OnDestroy {
-  @Input() uploadUrl?: string = environment.APIEndpoint;
+  @Input() uploadUrl?: string = environment.uppyConfig.tusUrl; // tusUrl
   @Input() allowedFileTypes: string[] = [
     "image/*",
     "video/*",
@@ -25,6 +25,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   @Output() uploadComplete = new EventEmitter<any>();
 
   uppy: Uppy<FileMetadata, FileBody>;
+  // Uppy UI
   uppyProps = {
     inline: true,
     width: '100%',
@@ -52,20 +53,17 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       debug: true,
       autoProceed: false,
       restrictions: {
-        minFileSize: undefined, // No minimum size
-        maxFileSize: 10485760, // 10MB max size
-        minNumberOfFiles: 1, // At least one file
-        maxNumberOfFiles: 5, // At most 5 files
-        maxTotalFileSize: undefined, // No limit on total size
+        ...environment.uppyConfig.restrictions,
         allowedFileTypes: this.allowedFileTypes,
-        requiredMetaFields: [], // No required metadata fields
       },
     };
 
     this.uppy = new Uppy(uppyOptions);
     this.uppy.use(RemoteSources, {
       companionUrl: this.uploadUrl,
-    }).use(Tus, { endpoint: this.uploadUrl });
+    }).use(Tus, {
+      endpoint: environment.uppyConfig.tusUrl || this.uploadUrl,
+    });
 
     this.uppy
       .on("upload", (data) => {
