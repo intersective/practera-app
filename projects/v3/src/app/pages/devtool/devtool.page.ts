@@ -9,6 +9,7 @@ import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { environment } from '../../../environments/environment';
+import { FfmpegService } from '../../services/ffmpeg.service';
 
 @Component({
   selector: 'app-devtool',
@@ -47,7 +48,66 @@ export class DevtoolPage implements OnInit {
     private sharedService: SharedService,
     private unlockIndicatorService: UnlockIndicatorService,
     private achievementService: AchievementService,
-      ) { }
+    private ffmpegService: FfmpegService
+  ) { }
+
+  selectedFile: File | null = null;
+  isCompressing = false;
+
+  async transcodeVideo() {
+    try {
+      if (this.ffmpegService.isFfmpegLoaded() === false) {
+        await this.ffmpegService.loadFFmpeg();
+      }
+
+      this.isCompressing = true;
+      const compressedFile = await this.ffmpegService.transcode();
+      console.log('Compressed File:', compressedFile);
+
+      const url = URL.createObjectURL(compressedFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (compressedFile as File).name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.isCompressing = false;
+    } catch (error) {
+      console.error(error);
+      this.isCompressing = false;
+    }
+  }
+
+  /* async handleFileInput(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+
+      // Compress the file before uploading
+      this.isCompressing = true;
+      const compressedFile = await this.ffmpegService.compressVideo(this.selectedFile);
+      this.isCompressing = false;
+
+      console.log('Compressed File:', compressedFile);
+
+      // Proceed to upload the compressed file
+      // this.uploadFile(compressedFile);
+
+
+
+      // Create a download link for the compressed file
+      const url = URL.createObjectURL(compressedFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = compressedFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Optionally revoke the object URL after some time
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+  } */
 
   ngOnInit() {
 
