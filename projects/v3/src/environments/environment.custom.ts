@@ -22,7 +22,7 @@ export const environment = {
       minNumberOfFiles: 1, // At least one file
       maxNumberOfFiles: 5, // At most 5 files
       maxTotalFileSize: undefined, // No limit on total size
-      requiredMetaFields: [], // No required metadata fields
+      requiredMetaFields: [] // No required metadata fields
     }
   },
   filestack: {
