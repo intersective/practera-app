@@ -18,7 +18,7 @@ export const environment = {
     uploadPreset: 'practera',
     restrictions: {
       minFileSize: undefined, // No minimum size
-      maxFileSize: '<CUSTOM_UPLOAD_MAX_FILE_SIZE>', // 2GB max size
+      maxFileSize: <CUSTOM_UPLOAD_MAX_FILE_SIZE>, // 2GB max size
       minNumberOfFiles: 1, // At least one file
       maxNumberOfFiles: 5, // At most 5 files
       maxTotalFileSize: undefined, // No limit on total size
