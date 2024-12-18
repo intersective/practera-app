@@ -180,7 +180,6 @@ jobs:
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-stage.practera.com
           export CUSTOM_UPLOAD_TUS_ENDPOINT=''
-          export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -190,6 +189,7 @@ jobs:
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
 
         env:
+          CUSTOM_UPLOAD_MAX_FILE_SIZE: 2147483648
           CUSTOM_PATH_IMAGE: /appv3/test/images/
           CUSTOM_PATH_VIDEO: /appv3/test/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
