@@ -10,6 +10,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
 import { ApolloService } from './apollo.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
+import { DemoService } from './demo.service';
 
 /**
  * @name api
@@ -65,19 +66,45 @@ interface ExperienceConfig {
   logo: string;
 }
 
-interface AuthEndpoint {
+export interface AuthEndpoint {
   data: {
     auth: {
       apikey: string;
-      experience: {
-        cardUrl?: string;
-        [key: string]: any; // default card activity image
-      };
+      experience: AuthEndpointExperience;
       email?: string;
       unregistered?: boolean;
       activationCode?: string;
     }
   }
+}
+
+interface AuthEndpointExperience {
+  id: number;
+  uuid: string;
+  timelineId: number;
+  projectId: number;
+  name: string;
+  description: string;
+  type: string;
+  leadImage: string;
+  status: null | string;
+  setupStep: null | string;
+  color: string;
+  secondaryColor: string;
+  role: string;
+  isLast: null | boolean;
+  locale: string;
+  supportName: string;
+  supportEmail: string;
+  cardUrl: string;
+  bannerUrl: string;
+  logoUrl: string;
+  iconUrl: string;
+  reviewRating: boolean;
+  truncateDescription: boolean;
+  team: {
+    id: number;
+  };
 }
 
 interface AuthQuery {
@@ -94,6 +121,7 @@ export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(
+    private demo: DemoService,
     private request: RequestService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
@@ -105,7 +133,7 @@ export class AuthService {
 
   private authCacheDuration = environment.authCacheDuration;
 
-  authenticate(data?: AuthQuery): Observable<any> {
+  authenticate(data?: AuthQuery): Observable<AuthEndpoint> {
     const currentTime = new Date().getTime();
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
@@ -191,6 +219,9 @@ export class AuthService {
             iconUrl
             reviewRating
             truncateDescription
+            team {
+              id
+            }
           }
           email
           unregistered
@@ -247,20 +278,13 @@ export class AuthService {
     );
   }
 
-  private _handleAuthResponse(res: {
-    data: {
-      auth: {
-        apikey: string;
-        experience: object;
-      }
-    }
-  }): {
+  private _handleAuthResponse(res: AuthEndpoint): {
     apikey?: string;
     experience?: object;
   } {
     const data: {
-      apikey: string;
-      experience: object;
+      apikey,
+      experience,
     } = res.data.auth;
 
     this.storage.setUser({ apikey: data.apikey });
@@ -321,7 +345,7 @@ export class AuthService {
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
-    } else if (typeof redirect === 'boolean' && redirect === true) {
+    } else if (redirect === true) {
       // still store config info even logout
       this.storage.setConfig(config);
       return this.router.navigate(['/'], navigationParams);
@@ -510,5 +534,75 @@ export class AuthService {
     //   this.each(this.activitySubjects, (subject, key) => {
     //     this.activitySubjects[key].next(null);
     //   });
+  }
+
+
+  /**
+   * @name getMyInfo
+   * @description get user info
+   */
+  getMyInfo(): Observable<{
+    data: {
+      user: {
+        id: number;
+        uuid: string;
+        name: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        image: string;
+        role: string;
+        contactNumber: string;
+        userHash: string;
+      }
+    }
+  }> {
+    if (environment.demo) {
+      this.storage.setUser({
+        uuid: this.demo.myInfo.uuid,
+        name: this.demo.myInfo.name,
+        firstName: this.demo.myInfo.firstName,
+        lastName: this.demo.myInfo.lastName,
+        email: this.demo.myInfo.email,
+        image: this.demo.myInfo.image,
+        role: this.demo.myInfo.role,
+        contactNumber: this.demo.myInfo.contactNumber,
+        userHash: this.demo.myInfo.userHash
+      });
+      return of(this.demo.myInfo as any);
+    }
+    return this.apolloService.graphQLFetch(
+      `query user {
+        user {
+          id
+          uuid
+          name
+          firstName
+          lastName
+          email
+          image
+          role
+          contactNumber
+          userHash
+        }
+      }`
+    ).pipe(map(response => {
+      if (response?.data?.user) {
+        const thisUser = response.data.user;
+
+        this.storage.setUser({
+          uuid: thisUser.uuid,
+          name: thisUser.name,
+          firstName: thisUser.firstName,
+          lastName: thisUser.lastName,
+          email: thisUser.email,
+          image: thisUser.image,
+          role: thisUser.role,
+          contactNumber: thisUser.contactNumber,
+          userHash: thisUser.userHash
+        });
+      }
+      return response;
+    }));
   }
 }

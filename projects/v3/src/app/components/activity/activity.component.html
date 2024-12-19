@@ -19,8 +19,8 @@
 
   <ng-container *ngIf="isForTeamOnly === false; else notInATeamAndForTeamOnly">
     <ion-item class="headline-4 task-header" lines="none">
-      {{activity.tasks.length}}
-      <ng-container i18n>{activity.tasks.length, plural, =1 {Task} other {Tasks}}</ng-container>
+      {{activity?.tasks?.length}}
+      <ng-container i18n>{activity?.tasks?.length, plural, =1 {Task} other {Tasks}}</ng-container>
     </ion-item>
 
     <app-list-item class="focusable"
@@ -31,8 +31,8 @@
       subtitle1Color="grey-50"
       (click)="goto(task)"
       (keydown)="goto(task, $event)"
-      [redDot]="newTasks[task.id]"
-     [title]="task.name"
+      [redDot]="newTasks[task.id] || false"
+      [title]="task.name"
       [subtitle1]="subtitle(task)"
       [label]="label(task)"
       [labelColor]="labelColor(task)"
@@ -41,12 +41,13 @@
       [active]="currentTask && currentTask.type === task.type && currentTask.id === task.id"
       [endingIcon]="endingIcon(task)"
       [endingIconColor]="endingIconColor(task)"
+      [loading]="false"
     ></app-list-item>
   </ng-container>
 </ng-container>
 
 <ng-template #notInATeamAndForTeamOnly>
-  <ion-item class="headline-4 task-header" lines="none" i18n>{activity.tasks.length, plural, =1 {Task} other
+  <ion-item class="headline-4 task-header" lines="none" i18n>{activity?.tasks?.length, plural, =1 {Task} other
     {Tasks}}</ion-item>
   <app-list-item class="focusable"
     role="button"

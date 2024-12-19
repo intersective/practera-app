@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -7,12 +7,14 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { ActivityService } from '@v3/app/services/activity.service';
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
@@ -88,6 +90,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  @ViewChild('form') form: HTMLFormElement;
+  @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+
   // prevent non participants from submitting team assessment
   get preventSubmission() {
     return this._preventSubmission();
@@ -98,7 +103,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private notifications: NotificationsService,
     private storage: BrowserStorageService,
     private sharedService: SharedService,
-    private assessmentService: AssessmentService
+    private assessmentService: AssessmentService,
+    private activityService: ActivityService,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -109,6 +115,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.subscribeSaveSubmission();
+  }
+
+  getQuestionBoxes() {
+    return this.questionBoxes;
   }
 
   subscribeSaveSubmission() {
@@ -125,7 +135,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       }),
     ).subscribe(
       (data: {
-        autoSave: boolean;
+        autoSave: boolean; // true: this request is for autosave; false: request is for submission (manual submission);
         goBack: boolean;
         questionSave?: {
           submissionId: number;
@@ -218,10 +228,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (!this.assessment) {
       return;
     }
+
     this._initialise();
     this._populateQuestionsForm();
     this._handleSubmissionData();
@@ -295,7 +306,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       this.doAssessment = true;
       if (this.submission) {
         this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
-        this.btnDisabled$.next(false);
       }
       return;
     }
@@ -304,7 +314,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       // user is trying to do the review, if
       // - the submission is pending review and
       // - this.action is review
-      if (this.submission.status === 'pending review' && this.action === 'review') {
+      if (this.submission?.status === 'pending review' && this.action === 'review') {
         this.isPendingReview = true;
       }
       return;
@@ -345,7 +355,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
   private _compulsoryQuestionsAnswered(answers): Question[] {
-    const missing = [];
+    const missing: Question[] = [];
     const answered = {};
     this.utils.each(answers, answer => {
       answered[answer.questionId] = answer;
@@ -356,6 +366,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (this._isRequired(question)) {
           if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
             missing.push(question);
+
+            // add highlight effect to the question
+            const questionElement = this.form.nativeElement.querySelector(`#q-${question.id}`);
+            if (questionElement) {
+              questionElement.classList.add('flash-highlight');
+            }
           }
         }
       });
@@ -471,6 +487,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       return this.notifications.alert({
         message: $localize`Required question answer missing!`,
         buttons: [
+          {
+            text: $localize`Show me`,
+            handler: () => {
+              this.scrollToRequiredQuestion(`#q-${requiredQuestions[0].id}`);
+            },
+          },
           {
             text: $localize`OK`,
             role: 'cancel',
@@ -635,24 +657,51 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return this.utils.isColor('red', this.storage.getUser().colors?.primary);
   }
 
+  /**
+   * Resubmit the assessment submission
+   * (mostly for regenerate AI feedback)
+   */
   resubmit(): Subscription {
     if (!this.assessment?.id || !this.submission?.id || !this.activityId) {
       return;
     }
 
+    this.btnDisabled$.next(true);
     return this.assessmentService.resubmitAssessment({
       assessment_id: this.assessment.id,
       submission_id: this.submission.id
     }).subscribe({
-      next: () => {
-        this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
+      next: async () => {
+        this.activityService.getActivity(this.activityId);
+        await this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id).toPromise();
+        this.btnDisabled$.next(false);
       },
-      error: () => {
-        this.notifications.assessmentSubmittedToast({
+      error: async () => {
+        await this.notifications.assessmentSubmittedToast({
           isFail: true,
           label: $localize`Resubmit request failed. Please try again.`,
         });
+
+        this.btnDisabled$.next(false);
       }
     });
+  }
+
+  flashBlink(element: HTMLElement) {
+    // Add blink class
+    element.classList.add('blink');
+
+    // Remove the class after a short delay
+    setTimeout(() => {
+      element.classList.remove('blink');
+    }, 2000); // Adjust the timeout as needed for blinking duration
+  }
+
+  scrollToRequiredQuestion(elementId): void {
+    const element = document.querySelector(elementId);
+    if (element) {
+      this.utils.scrollToElement(element);
+      this.flashBlink(element);
+    }
   }
 }

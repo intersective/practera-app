@@ -42,6 +42,21 @@ export class UnlockIndicatorService {
     }
   }
 
+  getTasksByActivityId(activityId: number): UnlockedTask[] {
+    return this._unlockedTasksSubject.getValue().filter(unlocked => unlocked.activityId === activityId);
+  }
+
+  isActivityClearable(activityId: number): boolean {
+    const activities = this.getTasksByActivityId(activityId);
+    const hasUnlockedTasks = activities.some(task => task.taskId !== undefined);
+    if (hasUnlockedTasks === true) {
+      return false;
+    }
+
+    return true;
+  }
+
+
   /**
    * a unlockedTask has format { milestoneId, activityId, taskId }
    * so this will extract unlockedTask[] with milestoneId
@@ -74,20 +89,20 @@ export class UnlockIndicatorService {
   /**
    * Clear all tasks related to a particular activity
    *
-   * @param   {number[]}        id  [id description]
+   * @param   {number[]}        id  can either be activityId or milestoneId
    *
    * @return  {UnlockedTask[]}      unlocked tasks that were cleared
    */
   clearActivity(id: number): UnlockedTask[] {
     const currentTasks = this._unlockedTasksSubject.getValue();
 
-    const clearedActivity = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
+    const clearedActivities = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
     const latestTasks = currentTasks.filter(task => task.activityId !== id && task.milestoneId !== id);
 
     this.storageService.set('unlockedTasks', latestTasks);
     this._unlockedTasksSubject.next(latestTasks);
 
-    return clearedActivity;
+    return clearedActivities;
   }
 
   getTasksByMilestoneId(milestoneId: number): UnlockedTask[] {
@@ -117,34 +132,64 @@ export class UnlockIndicatorService {
     );
 
     this.storageService.set('unlockedTasks', uniquelatestTasks);
-    this._unlockedTasksSubject.next(latestTasks);
+    this._unlockedTasksSubject.next(uniquelatestTasks);
   }
 
-  // Method to remove an accessed task
-  removeTask(taskId?: number): UnlockedTask {
+  // Method to remove an accessed tasks
+  // (some tasks are repeatable due to unlock from different level of trigger eg. by milestone, activity, task)
+  // removeTasks(taskId?: number): UnlockedTask[] {
+  //   const currentTasks = this._unlockedTasksSubject.getValue();
+  //   const removedTask = currentTasks.filter(task => task.taskId === taskId);
+  //   const latestTasks = currentTasks.filter(task => task.taskId !== taskId);
+  //   this.storageService.set('unlockedTasks', latestTasks);
+  //   this._unlockedTasksSubject.next(latestTasks);
+  //   return removedTask;
+  // }
+  removeTasks(taskId?: number): UnlockedTask[] {
     const currentTasks = this._unlockedTasksSubject.getValue();
-    const removedTask = currentTasks.find(task => task.taskId === taskId);
-    const latestTasks = currentTasks.filter(task => task.taskId !== taskId);
+
+    // cascading removal of tasks, activities, milestones
+    // Step 1: Remove the specific taskId
+    const removedTasks = currentTasks.filter(task => task.taskId === taskId);
+    let latestTasks = currentTasks.filter(task => task.taskId !== taskId);
+
+    // Step 2: Identify the activityId associated with the removed taskId
+    // Check if any other tasks are under this activityId
+    if (removedTasks.length > 0) {
+      const activityId = removedTasks[0].activityId;
+      const hasOtherTasksInActivity = latestTasks.some(
+        (task) => task.activityId === activityId && task.taskId !== undefined
+      );
+
+      // If no more tasks under this activityId, remove the activityId
+      // Step 3: Identify the milestoneId associated with the removed activityId
+      if (!hasOtherTasksInActivity) {
+        latestTasks = latestTasks.filter(
+          (task) => task.activityId !== activityId
+        );
+        const milestoneId = removedTasks[0].milestoneId;
+
+        // Check if any other activities or tasks are under this milestoneId
+        const hasOtherTasksInMilestone = latestTasks.some(
+          (task) =>
+            task.milestoneId === milestoneId &&
+            (task.activityId !== undefined || task.taskId !== undefined)
+        );
+
+        // If no more tasks or activities under this milestoneId, remove the milestoneId
+        if (!hasOtherTasksInMilestone) {
+          latestTasks = latestTasks.filter(
+            (task) => task.milestoneId !== milestoneId
+          );
+        }
+      }
+    }
+
+    // Step 4: Save updated tasks and update the subject
     this.storageService.set('unlockedTasks', latestTasks);
     this._unlockedTasksSubject.next(latestTasks);
-    return removedTask;
-  }
 
-  dedupStored(records) {
-    const uniqueRecords = new Map();
-
-    records.forEach(record => {
-      // Determine the type of identifier and create a unique key
-      const key = `milestoneId:${record.milestoneId || 'none'}-activityId:${record.activityId || 'none'}-taskId:${record.taskId || 'none'}`;
-
-      // If the key doesn't exist in the map, add the record
-      if (!uniqueRecords.has(key)) {
-        uniqueRecords.set(key, record);
-      }
-    });
-
-    // Return an array of unique records
-    return Array.from(uniqueRecords.values());
+    return removedTasks;
   }
 
   // Method to transform and deduplicate the data

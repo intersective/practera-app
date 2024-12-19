@@ -1,16 +1,14 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 import { Title } from '@angular/platform-browser';
-
-import Delta from 'quill-delta';
 
 export enum ThemeColor {
   primary = 'primary',
@@ -24,21 +22,23 @@ declare var window: any;
   providedIn: 'root'
 })
 export class UtilsService {
+  private _screenStatus$ = new BehaviorSubject<{
+    leftSidebarExpanded: boolean;
+  }>({
+    leftSidebarExpanded: false,
+  });
+  public screenStatus$ = this._screenStatus$.asObservable();
+
   private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
-  // -- Not in used anymore, leave them commented in case we need later --
-  // // this Subject is used in project.service to cache the project data
-  // public projectSubject = new BehaviorSubject(null);
-  // // this Subject is used in activity.service to cache the activity data
-  // // it stores key => Subject pairs of all activities
-  // public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
-    private title: Title
+    private title: Title,
+    private platform: Platform,
   ) {
     if (_) {
       this.lodash = _;
@@ -48,12 +48,45 @@ export class UtilsService {
   }
 
   /**
-   * @name isMobile
-   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
-   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   * get orientation of the device by comparing window height and width
+   *
+   * @return  {boolean} true if portrait, false if landscape
    */
-  isMobile() {
-    return window.innerWidth <= 576;
+  isPortrait(): boolean {
+    return window.innerHeight > window.innerWidth ? true : false;
+  }
+
+  // set screen status (left sidebar expanded, etc)
+  viewport(name: 'leftSidebarExpanded', value) {
+    const values = this._screenStatus$.getValue();
+    this._screenStatus$.next({
+      ...values,
+      ...{ [name]: value }
+    });
+  }
+
+  /**
+   * Treat viewport size start from large tablet as desktop
+   * grouping device type into 2 group (mobile/desktop)
+   * @name isMobile
+   * @return {boolean} true if mobile, false if desktop
+   */
+  isMobile(): boolean {
+    if (this.platform.is('desktop')) {
+      return false;
+    }
+
+    if (this.platform.is('tablet')) {
+      if (window.innerWidth < 1024) {
+        return true;
+      }
+
+      // for larger tablet (iPad Pro & samsung 10)
+      // considered as desktop (1024px = logical viewport)
+      return false;
+    }
+
+    return this.platform.is('mobile');
   }
 
   /** check if a value is empty
@@ -105,6 +138,10 @@ export class UtilsService {
 
   remove(collections, callback) {
     return this.lodash.remove(collections, callback);
+  }
+
+  isEqual(value, other) {
+    return this.lodash.isEqual(value, other);
   }
 
   openUrl(url, options?: { target: String }) {
@@ -663,22 +700,6 @@ export class UtilsService {
     return false;
   }
 
-  /**
-   * This method will add matcher to the clipboard of the quill editor.
-   * And it will make sure every thing user paste will paste as plain text. without any formating that pasting text have.
-   * Reason we need this.
-   * User may copy and paste some formated text that may contain formats we are not supporting. So if those send as message
-   * UI/UX will out. becouse we didn't support them. that's why we make sure we remove formating  from text that user paste to text editor.
-   * @param quillEditor Quill text editor instance
-   * @returns quill clipboard matcher event
-   */
-  formatQuillClipboard(quillEditor: any) {
-    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, (node: any, delta: any) => {
-      const plaintext = node.innerText;
-      return new Delta().insert(plaintext);
-    });
-  }
-
   moveToNewLocale(newLocale: string) {
     const currentURL = this.getCurrentLocation();
     const currentLocale = this.getCurrentLocale();
@@ -733,5 +754,9 @@ export class UtilsService {
   // set page title
   setPageTitle(title: string) {
     this.title.setTitle(title);
+  }
+
+  scrollToElement(element: HTMLElement) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
