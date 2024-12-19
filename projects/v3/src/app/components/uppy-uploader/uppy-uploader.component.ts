@@ -64,7 +64,20 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     }).use(Tus, {
       endpoint: this.uploadUrl || environment.uppyConfig.tusUrl,
       retryDelays: [0, 1000, 3000, 5000],
-      withCredentials: true,
+      // withCredentials: true,
+      onError: (error) => {
+        // eslint-disable-next-line no-console
+        console.log("Tus error:", error);
+      },
+      onProgress: (bytesUploaded, bytesTotal) => {
+        const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
+        // eslint-disable-next-line no-console
+        console.log(bytesUploaded, bytesTotal, `${percentage}%`);
+      },
+      onSuccess: (upload) => {
+        // eslint-disable-next-line no-console
+        console.log("Upload complete:", upload);
+      },
     });
 
     this.uppy
@@ -98,6 +111,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       })
       .on("complete", this.onComplete);
   }
+
 
   onComplete(result) {
     const successfulFiles: UppyFile<FileMetadata, FileBody>[] =
