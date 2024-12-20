@@ -12,8 +12,8 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { QuillConfigModule } from 'ngx-quill';
 import { DomSanitizer } from '@angular/platform-browser';
+import { QuillModules } from 'ngx-quill';
 
 enum ScrollPosition {
   Top = 'top',
@@ -71,7 +71,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   scrollPosition: ScrollPosition = ScrollPosition.Top;
 
   // quill editor modules
-  editorModules: QuillConfigModule = {
+  private isMatcherApplied = false;
+  editorModules: QuillModules = {
     magicUrl: {
       globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
       urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
