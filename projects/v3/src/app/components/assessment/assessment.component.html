@@ -94,6 +94,8 @@
       </ion-list>
     </div>
 
+    <pre>{{submission | json}}</pre>
+
     <form [formGroup]="questionsForm" id="formgroup" #form>
       <ng-container *ngFor="let group of assessment.groups">
         <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
@@ -215,7 +217,7 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multiple>
 
-              <app-file *ngSwitchCase="'video'"
+              <app-file-upload *ngSwitchCase="'video'"
                 #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
@@ -229,9 +231,9 @@
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
-              <app-file *ngSwitchCase="'file'"
+              <app-file-upload *ngSwitchCase="'file'"
                 #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
@@ -244,7 +246,7 @@
                 [submissionStatus]="submission ? submission.status : ''"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
                 #questionField

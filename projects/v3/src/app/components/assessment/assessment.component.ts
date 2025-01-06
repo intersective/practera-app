@@ -16,6 +16,7 @@ import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/
 import { MultipleComponent } from '../multiple/multiple.component';
 import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
+import { SubmitActions } from '../types/assessment';
 
 @Component({
   selector: 'app-assessment',
@@ -88,22 +89,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // used to resubscribe to the assessment service
   resubscribe$ = new Subject<void>();
   // used to save the assessment/review answers
-  submitActions = new Subject<{
-    autoSave: boolean;
-    goBack: boolean;
-    questionSave?: {
-      submissionId: number;
-      questionId: number;
-      answer: string;
-    };
-    reviewSave?: {
-      reviewId: number;
-      submissionId: number;
-      questionId: number;
-      answer: string;
-      comment: string;
-    };
-  }>();
+  submitActions = new Subject<SubmitActions>();
   subscriptions: Subscription[] = [];
   unsubscribe$ = new Subject<void>();
 
@@ -314,15 +300,14 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    let validator = [];
+    // question groups
     this.assessment.groups.forEach(group => {
+      // questions in each group
       group.questions.forEach(question => {
+        let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question)) {
-          // put 'required' validator in FormControl
+        if (this._isRequired(question) === true) {
           validator = [Validators.required];
-        } else {
-          validator = [];
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
