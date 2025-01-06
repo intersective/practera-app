@@ -14,7 +14,7 @@ type FileBody = { [key: string]: any };
   styleUrls: ["./uppy-uploader.component.scss"],
 })
 export class UppyUploaderComponent implements OnInit, OnDestroy {
-  @Input() uploadUrl?: string = environment.uppyConfig.tusUrl; // tusUrl
+  @Input() uploadUrl?: string = '/uploads'; // tusUrl
   @Input() allowedFileTypes: string[] = [
     "image/*",
     "video/*",
@@ -62,7 +62,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     this.uppy.use(RemoteSources, {
       companionUrl: this.uploadUrl,
     }).use(Tus, {
-      endpoint: this.uploadUrl || environment.uppyConfig.tusUrl,
+      endpoint: this.uploadUrl || '/uploads',
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
       onError: (error) => {
