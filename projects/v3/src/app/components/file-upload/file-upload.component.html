@@ -7,7 +7,9 @@
       </ion-label>
     </ion-item>
 
-    <pre>{{submission?.answer | json}}</pre>
+    <app-file-display [file]="submission.answer" [fileType]="question.fileType || 'any'" [isFileComponent]="true"
+      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
+    </app-file-display>
   </ng-container>
 
   <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
@@ -43,7 +45,13 @@
       <p aria-live="polite">{{error}}</p>
     </ion-text>
 
-    <pre>{{uploadedFile ? uploadedFile : submission?.answer | json}}</pre>
+    <app-file-display
+      [file]="uploadedFile ? uploadedFile : submission?.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
+      (removeFile)="removeSubmitFile($event)"
+      [disabled]="control.disabled"
+    ></app-file-display>
   </div>
 </ng-container>
 
