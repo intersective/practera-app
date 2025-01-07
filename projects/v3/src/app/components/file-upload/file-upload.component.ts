@@ -6,6 +6,7 @@ import RemoteSources from '@uppy/remote-sources';
 import Tus from '@uppy/tus';
 import { environment } from '../../../environments/environment';
 import { Question, SubmitActions } from '../types/assessment';
+import { BrowserStorageService } from '../../services/storage.service';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -28,6 +29,7 @@ const UPPY_PROPS = {
   hideRetryButton: false,
   hidePauseResumeButton: false,
   hideCancelButton: false,
+  showRemoveButtonAfterComplete: true,
   hideProgressAfterFinish: false,
   doneButtonHandler: null,
 };
@@ -89,6 +91,7 @@ export class FileUploadComponent implements OnInit {
   errors: Array<any> = [];
 
   constructor(
+    private storageService: BrowserStorageService,
   ) { }
 
   ngOnInit() {
@@ -109,15 +112,17 @@ export class FileUploadComponent implements OnInit {
       restrictions: {
         ...environment.uppyConfig.restrictions,
         allowedFileTypes: ALLOWED_FILE_TYPES,
+        maxNumberOfFiles: 1,
+        minNumberOfFiles: 1,
       },
     };
 
     this.uppy = new Uppy(uppyOptions);
-    this.uppy.use(RemoteSources, {
-      companionUrl: this.uploadUrl,
-      sources: ['GoogleDrive', 'Dropbox', 'Instagram', 'Facebook', 'OneDrive', 'Box', 'Url'],
-    }).use(Tus, {
+    this.uppy.use(Tus, {
       // endpoint: environment.uppyConfig.tusUrl,
+      headers: {
+        'apikey': this.storageService.getUser().apikey,
+      },
       endpoint: this.uploadUrl,
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
@@ -133,7 +138,7 @@ export class FileUploadComponent implements OnInit {
       onSuccess: (upload) => {
         // eslint-disable-next-line no-console
         console.log("Upload complete:", upload);
-      }
+      },
     }).on('dashboard:file-edit-start', (file: any) => {
       // eslint-disable-next-line no-console
       console.log('file edit start', file);
@@ -152,18 +157,45 @@ export class FileUploadComponent implements OnInit {
     }).on('upload-success', (file: any, response: any) => {
       // eslint-disable-next-line no-console
       console.log('upload success', file, response);
-      this.onFileUploadCompleted({ success: true, data: response.body });
-    });
 
+      const submission = {
+        // to be return from backend
+        bucket: 'file-practera-aus',
+        path: '/assessment/inst_uuid/exp_uuid/',
+        uploadUrl: response.uploadURL,
+
+        // from uppy
+        name: file.name,
+        slug: file.id,
+        extension: file.extension,
+        type: file.type, // mime type
+        size: file.size,
+      };
+
+      // eslint-disable-next-line no-console
+      console.log('submission', submission);
+
+      this.onFileUploadCompleted({ success: true, data: submission });
+    }).on('file-removed', (file) => {
+      // eslint-disable-next-line no-console
+      console.log('file removed', file);
+      this.sendDeleteRequestForFile(file);
+    }).on('complete', (result) => {
+      // eslint-disable-next-line no-console
+      console.log('complete', result);
+    });
   }
 
-  onFileUploadCompleted(file, type: string = null) {
+  sendDeleteRequestForFile(file) {
+    // eslint-disable-next-line no-console
+    console.log('sendDeleteRequestForFile', file);
+    this.uppy.removeFile(file.id);
+  }
+
+  onFileUploadCompleted(file, type = null) {
     if (file.success) {
       // reset errors
       this.errors = [];
-      // currently we only support one file upload per question,
-      // if we need to support multiple file upload later, we need to change this to:
-      // this.uploadedFiles = push(file.data);
       this.uploadedFile = file.data;
       this.onChange('', type);
     } else {
@@ -205,7 +237,11 @@ export class FileUploadComponent implements OnInit {
   }
 
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type: string) {
+  onChange(value, type: 'comment' | 'answer' | null) {
+
+    // eslint-disable-next-line no-console
+    console.log('::onChange', value, type);
+
     // set changed value (answer or comment)
     if (type) {
       if (!this.innerValue) {
@@ -260,11 +296,16 @@ export class FileUploadComponent implements OnInit {
       this.onChange('', 'answer');
     }
 
-
     // this.filestackService.deleteFile(file.handle).subscribe(console.log);
   }
 
   audienceContainReviewer(): boolean {
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
+  }
+
+  extractFilenameFromUrl(url: string): string | null {
+    const regex = /\/uploads\/(.*?)\+/;
+    const match = url.match(regex);
+    return match ? match[1] : null;
   }
 }
