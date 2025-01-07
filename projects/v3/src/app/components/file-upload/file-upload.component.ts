@@ -22,7 +22,7 @@ const ALLOWED_FILE_TYPES = [
 const UPPY_PROPS = {
   inline: true,
   width: '100%',
-  height: 300,
+  height: 150,
   showProgressDetails: true,
   note: 'Images only, up to 10 MB',
   proudlyDisplayPoweredByUppy: false,
