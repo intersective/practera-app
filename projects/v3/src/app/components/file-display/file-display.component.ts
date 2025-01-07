@@ -107,8 +107,8 @@ export class FileDisplayComponent implements OnInit, OnChanges {
         this.utils.downloadFile(file.url);
         return;
       case 1:
-        this.previewFile(file);
-        return;
+        // this.previewFile(file);
+        // return;
       case 2:
         this.removeUploadedFile(file);
         return;
@@ -122,7 +122,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   get endingActionBtnIcons() {
     let icons = [];
     if (this.fileType === 'any') {
-      icons = ['download', 'search']
+      icons = ['download']
     }
     if (this.removeFile.observers.length > 0 && !this.disabled) {
       icons.push('trash');
