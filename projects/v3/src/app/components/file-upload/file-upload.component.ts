@@ -5,7 +5,7 @@ import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import RemoteSources from '@uppy/remote-sources';
 import Tus from '@uppy/tus';
 import { environment } from '../../../environments/environment';
-import { Question, SubmitActions } from '../types/assessment';
+import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { BrowserStorageService } from '../../services/storage.service';
 
 type FileMetadata = { [key: string]: any };
@@ -22,9 +22,9 @@ const ALLOWED_FILE_TYPES = [
 const UPPY_PROPS = {
   inline: true,
   width: '100%',
-  height: 150,
+  height: 400,
   showProgressDetails: true,
-  note: 'Images only, up to 10 MB',
+  note: 'Upload files here',
   proudlyDisplayPoweredByUppy: false,
   hideRetryButton: false,
   hidePauseResumeButton: false,
@@ -101,8 +101,23 @@ export class FileUploadComponent implements OnInit {
 
     this.initiateUppy();
 
+    this.uppyProps.note = this.noteMessage();
+
     // this.fileTypes = this.filestackService.getFileTypes(this.videoOnly ? 'video' : this.question.fileType);
     this._showSavedAnswers();
+  }
+
+  noteMessage(): string {
+    const size = environment.uppyConfig.restrictions.maxFileSize / 1024 / 1024; // in MB
+    if (this.question.fileType === 'video') {
+      return `Videos only, up to ${size} MB`;
+    }
+
+    if (this.question.fileType === 'image') {
+      return `Images only, up to ${size} MB`;
+    }
+
+    return `Docs, images and videos only, up to ${size} MB`;
   }
 
   private initiateUppy() {
@@ -158,15 +173,14 @@ export class FileUploadComponent implements OnInit {
       // eslint-disable-next-line no-console
       console.log('upload success', file, response);
 
-      const submission = {
+      const submission: FileInput = {
         // to be return from backend
-        bucket: 'file-practera-aus',
+        bucket: environment.fileupload.bucket,
         path: '/assessment/inst_uuid/exp_uuid/',
-        uploadUrl: response.uploadURL,
+        url: response.uploadURL,
 
         // from uppy
         name: file.name,
-        slug: file.id,
         extension: file.extension,
         type: file.type, // mime type
         size: file.size,
@@ -175,7 +189,10 @@ export class FileUploadComponent implements OnInit {
       // eslint-disable-next-line no-console
       console.log('submission', submission);
 
-      this.onFileUploadCompleted({ success: true, data: submission });
+      this.onFileUploadCompleted(
+        { success: true, data: submission },
+        this.doReview ? "answer" : null
+      );
     }).on('file-removed', (file) => {
       // eslint-disable-next-line no-console
       console.log('file removed', file);
@@ -220,7 +237,7 @@ export class FileUploadComponent implements OnInit {
         reviewId: this.reviewId,
         submissionId: this.submissionId,
         questionId: this.question.id,
-        answer: this.innerValue.answer,
+        file: this.innerValue.answer,
         comment: this.innerValue.comment,
       };
     }
@@ -229,7 +246,7 @@ export class FileUploadComponent implements OnInit {
       action.questionSave = {
         submissionId: this.submissionId,
         questionId: this.question.id,
-        answer: this.innerValue,
+        file: this.innerValue,
       };
     }
 
@@ -238,12 +255,8 @@ export class FileUploadComponent implements OnInit {
 
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type: 'comment' | 'answer' | null) {
-
-    // eslint-disable-next-line no-console
-    console.log('::onChange', value, type);
-
     // set changed value (answer or comment)
-    if (type) {
+    if (type) {  // for reviewing
       if (!this.innerValue) {
         this.innerValue = {
           answer: {},
@@ -256,8 +269,7 @@ export class FileUploadComponent implements OnInit {
       } else {
         this.innerValue.answer = this.uploadedFile;
       }
-    } else {
-      // this is for submitter, just pass the uploaded file as the answer
+    } else { // for assessment
       this.innerValue = this.uploadedFile;
     }
 

@@ -16,7 +16,7 @@ import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/
 import { MultipleComponent } from '../multiple/multiple.component';
 import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
-import { SubmitActions } from '../types/assessment';
+import { FileInput, SubmitActions } from '../types/assessment';
 
 @Component({
   selector: 'app-assessment',
@@ -225,7 +225,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   saveQuestionAnswer(questionInput: {
     submissionId: number;
     questionId: number;
-    answer: string;
+    answer?: string;
+    file?: FileInput;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
 
@@ -233,6 +234,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       questionInput.submissionId,
       questionInput.questionId,
       answer,
+      questionInput.file,
     ).pipe(
       tap({
         next: (_res) => {
@@ -253,17 +255,20 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     reviewId: number;
     submissionId: number;
     questionId: number;
-    answer: string;
+    answer?: string;
     comment: string;
+    file?: FileInput;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
     const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
+
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
       questionInput.submissionId,
       questionInput.questionId,
-      answer,
       comment,
+      answer,
+      questionInput.file,
     );
   }
 
