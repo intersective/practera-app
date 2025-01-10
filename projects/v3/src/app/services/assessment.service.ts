@@ -10,7 +10,7 @@ import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
 import { RequestService } from 'request';
-import { FileInput } from '../components/types/assessment';
+import { FileInput, FileResponse } from '../components/types/assessment';
 
 /**
  * @name api
@@ -85,6 +85,7 @@ export interface Submission {
   id: number;
   status: SubmissionStatuses;
   answers: any;
+  file?: FileResponse;
   submitterName: string;
   modified: string;
   isLocked: boolean;
@@ -178,7 +179,9 @@ export class AssessmentService {
               }
             }
             answers {
-              questionId answer
+              questionId answer file {
+                name url type
+              }
             }
             review {
               id status modified
@@ -397,7 +400,7 @@ export class AssessmentService {
     firstSubmission.answers.forEach((eachAnswer) => {
       eachAnswer.answer = this._normaliseAnswer(
         eachAnswer.questionId,
-        eachAnswer.answer
+        eachAnswer.answer || eachAnswer.file
       );
       submission.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
@@ -511,6 +514,12 @@ export class AssessmentService {
   private _normaliseAnswer(questionId, answer) {
     if (this.questions[questionId]) {
       switch (this.questions[questionId].type) {
+        case "file":
+          if (this.utils.isEmpty(answer)) {
+            return null;
+          }
+          return answer;
+
         case "oneof":
           // re-format answer from string to number
           if (typeof answer === "string" && answer.length === 0) {
