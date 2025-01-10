@@ -105,6 +105,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Example: React to value changes
+    this.control.valueChanges.subscribe(value => {
+      // eslint-disable-next-line no-console
+      console.log('Value changed to:', value);
+    });
+
     if (!this.uploadUrl) {
       throw new Error("uploadUrl is required.");
     }
@@ -212,6 +218,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }).on('files-added', (files: any) => {
       // eslint-disable-next-line no-console
       console.log('files added', files);
+      this.control.setValue({
+        ...this.innerValue,
+        files,
+      });
+
+      this.control.markAsTouched();
     }).on('file-removed', (file: any) => {
       // eslint-disable-next-line no-console
       console.log('file removed', file);
@@ -254,7 +266,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       console.log('complete', result);
     });
   }
-
 
   sendDeleteRequestForFile(file) {
     // eslint-disable-next-line no-console
