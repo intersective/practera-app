@@ -41,6 +41,7 @@ import { FallbackImageDirective } from '../directives/fallback-image/fallback-im
 import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
 import { UppyAngularDashboardModule, UppyAngularDashboardModalModule } from '@uppy/angular';
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -105,6 +106,7 @@ const largeCircleDefaultConfig = {
     TrafficLightComponent,
     TrafficLightGroupComponent,
     UppyUploaderComponent,
+    FileUploadComponent,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -148,6 +150,7 @@ const largeCircleDefaultConfig = {
     TrafficLightComponent,
     TrafficLightGroupComponent,
     UppyUploaderComponent,
+    FileUploadComponent,
   ],
 })
 export class ComponentsModule {}
