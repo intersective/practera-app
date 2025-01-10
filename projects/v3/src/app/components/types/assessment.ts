@@ -9,6 +9,12 @@ export interface FileInput {
   size: number; // file size
 }
 
+export interface FileResponse {
+  name: string;
+  type: string;
+  url: string;
+}
+
 export interface SubmitActions {
   autoSave: boolean;
   goBack: boolean;

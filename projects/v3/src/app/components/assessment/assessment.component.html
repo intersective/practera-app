@@ -219,6 +219,7 @@
 
               <app-file-upload *ngSwitchCase="'video'"
                 #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -235,6 +236,7 @@
 
               <app-file-upload *ngSwitchCase="'file'"
                 #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
