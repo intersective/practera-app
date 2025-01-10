@@ -614,17 +614,14 @@ export class UtilsService {
     return date.toISOString();
   }
 
-  downloadFile(path: string) {
-    // Create a new link
+  downloadFile(path: string, filename?: string) {
     const anchor = document.createElement('a');
     anchor.href = path;
-    anchor.download = 'download';
-    anchor.target = "_blank";
+    anchor.download = filename || 'download';
+    anchor.target = '_blank';
 
     // Append to the DOM
     document.body.appendChild(anchor);
-
-    // Trigger `click` event
     anchor.click();
 
     // Remove element from DOM
