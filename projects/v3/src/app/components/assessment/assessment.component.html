@@ -229,7 +229,6 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
                 [submitActions$]="submitActions"></app-file-upload>
@@ -246,7 +245,6 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-file-upload>
 
