@@ -21,6 +21,7 @@ const ALLOWED_FILE_TYPES = [
 ];
 
 const UPPY_PROPS = {
+  small: true,
   inline: true,
   width: '100%',
   height: 200,
@@ -151,8 +152,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       restrictions: {
         ...environment.uppyConfig.restrictions,
         allowedFileTypes,
-        maxNumberOfFiles: 1,
-        minNumberOfFiles: 1,
       },
     };
 
