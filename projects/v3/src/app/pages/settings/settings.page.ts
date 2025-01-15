@@ -6,11 +6,12 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FilestackService } from '@v3/services/filestack.service';
-import { Subject } from 'rxjs';
-import { ModalController } from '@ionic/angular';
+import { Subject, firstValueFrom } from 'rxjs';
+import { AlertOptions, ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
+import { throwError } from 'rxjs/internal/observable/throwError';
 
 @Component({
   selector: 'app-settings',
@@ -178,7 +179,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   async profileImage() {
     try {
-      const modal = await this.uppyUploaderService.open('profile');
+      const modal = await this.uppyUploaderService.open('chat');
       const res = await modal.onDidDismiss();
 
       // eslint-disable-next-line no-console
@@ -227,39 +228,17 @@ export class SettingsPage implements OnInit, OnDestroy {
 
       const file = res.data?.successful?.[0];
       if (file) {
-        return this.uploadProfileImage({
-          url: file.uploadURL
-        });
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('profile image error', error);
+        const url = file.uploadURL;
 
-      return this.notificationsService.alert({
-        message: $localize`File upload failed, please try again later.`,
-        buttons: [
-          {
-            text: $localize`OK`,
-            role: 'cancel'
-          }
-        ]
-      });
-    }
-  }
+        this.imageUpdating = true;
+        await firstValueFrom(this.authService.updateProfileImage({
+          image: url
+        }));
 
-  async uploadProfileImage(file: {
-    url: string;
-  }) {
-    this.imageUpdating = true;
-    this.authService.updateProfileImage({
-      image: file.url
-    }).pipe(first()).subscribe({
-      next: () => {
         this.imageUpdating = false;
-        this.profile.image = file.url;
-        this.storage.setUser({
-          image: file.url
-        });
+        this.profile.image = url;
+        this.storage.setUser({ image: url });
+
         return this.notificationsService.alert({
           message: $localize`Profile picture successfully updated!`,
           buttons: [
@@ -269,20 +248,29 @@ export class SettingsPage implements OnInit, OnDestroy {
             }
           ]
         });
-      },
-      error: () => {
-        this.imageUpdating = false;
-        return this.notificationsService.alert({
-          message: $localize`File upload failed, please try again later.`,
-          buttons: [
-            {
-              text: $localize`OK`,
-              role: 'cancel'
-            }
-          ]
-        });
-      },
-    });
+      }
+    } catch (error) {
+      this.imageUpdating = false;
+
+      // eslint-disable-next-line no-console
+      console.error('profile image error', error);
+
+      const alertOpts: AlertOptions = {
+        message: $localize`File upload failed, please try again later.`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel'
+          }
+        ]
+      };
+
+      // Actual error message from server
+      if (error?.error?.message || error?.error?.msg) {
+        alertOpts.subHeader = error?.error?.message || error?.error?.msg;
+      }
+      return this.notificationsService.alert(alertOpts);
+    }
   }
 
   goBack(): void {
