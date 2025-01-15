@@ -22,10 +22,7 @@
         </ion-avatar>
 
         <ion-label>
-          <app-file-stack [accept]="acceptFileTypes"
-            [fileType]="'image'" [type]="'profileImage'"
-            (uploadCompleted)="uploadProfileImage($event)"
-          ></app-file-stack>
+          <ion-button (click)="profileImage()">Upload</ion-button>
         </ion-label>
       </div>
     </ng-container>
@@ -40,8 +37,7 @@
         </ion-avatar>
 
         <ion-label>
-          <app-file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
-            (uploadCompleted)="uploadProfileImage($event)"></app-file-stack>
+          <ion-button (click)="profileImage()">Upload</ion-button>
         </ion-label>
       </ion-item>
     </ng-template>

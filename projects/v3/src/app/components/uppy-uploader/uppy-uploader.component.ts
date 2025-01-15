@@ -58,6 +58,8 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       throw new Error("source is required.");
     }
 
+    this.allowedFileTypes = this.loadAllowedFileTypes();
+
     const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
       debug: true,
       autoProceed: false,
@@ -124,6 +126,25 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     .on("complete", this.onComplete.bind(this));
   }
 
+  loadAllowedFileTypes() {
+    switch(this.source) {
+      case "profile":
+      case "image":
+        return ["image/*"];
+
+      case "video":
+        return ["video/*"];
+
+      case "chat":
+      case "any":
+      default:
+        return [
+          "image/*",
+          "video/*",
+          "application/pdf"
+        ];
+    }
+  }
 
   onComplete(result) {
     // eslint-disable-next-line no-console
