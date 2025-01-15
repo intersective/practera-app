@@ -37,7 +37,6 @@ export class AttachmentPopoverComponent{
 
     async openAttachPopup(selectedType) {
       try {
-
         if (selectedType === 'uppy') {
           const modal = await this.uppyUploaderService.open('chat');
           modal.onDidDismiss().then(async (res) => {
