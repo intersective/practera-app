@@ -4,6 +4,8 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angu
 import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import RemoteSources from '@uppy/remote-sources';
 import Tus from '@uppy/tus';
+import { ModalController } from '@ionic/angular';
+import { BrowserStorageService } from '../../services/storage.service';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -14,7 +16,8 @@ type FileBody = { [key: string]: any };
   styleUrls: ["./uppy-uploader.component.scss"],
 })
 export class UppyUploaderComponent implements OnInit, OnDestroy {
-  @Input() uploadUrl?: string = '/uploads'; // tusUrl
+  @Input() source!: string;
+  @Input() tusEndpoint?: string = environment.uppyConfig.tusUrl; // tusUrl
   @Input() allowedFileTypes: string[] = [
     "image/*",
     "video/*",
@@ -29,7 +32,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   uppyProps = {
     inline: true,
     width: '100%',
-    height: 300,
+    height: '70vh',
     showProgressDetails: true,
     note: 'Images only, up to 10 MB',
     proudlyDisplayPoweredByUppy: false,
@@ -42,12 +45,20 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   constructor(
     private notificationsService: NotificationsService,
+    private modalController: ModalController,
+    private storageService: BrowserStorageService,
   ) {}
 
   ngOnInit() {
-    if (!this.uploadUrl) {
-      throw new Error("uploadUrl is required.");
+    if (!this.tusEndpoint) {
+      throw new Error("tusEndpoint is required.");
     }
+
+    if (!this.source) {
+      throw new Error("source is required.");
+    }
+
+    this.allowedFileTypes = this.loadAllowedFileTypes();
 
     const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
       debug: true,
@@ -59,15 +70,21 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     };
 
     this.uppy = new Uppy(uppyOptions);
-    this.uppy.use(RemoteSources, {
-      companionUrl: this.uploadUrl,
-    }).use(Tus, {
-      endpoint: this.uploadUrl || '/uploads',
+    this.uppy.use(Tus, {
+      headers: {
+        'source': this.source,
+        'apikey': this.storageService.getUser().apikey,
+      },
+      endpoint: this.tusEndpoint,
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
       onError: (error) => {
-        // eslint-disable-next-line no-console
-        console.log("Tus error:", error);
+        this.notificationsService.alert({
+          header: "Upload Failed",
+          message: error?.message,
+        });
+        console.error("Upload error:", error);
+        return;
       },
       onProgress: (bytesUploaded, bytesTotal) => {
         const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
@@ -78,47 +95,61 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
         // eslint-disable-next-line no-console
         console.log("Upload complete:", upload);
       },
-    });
-
-    this.uppy
-      .on("upload", (data) => {
-        // eslint-disable-next-line no-console
-        console.log("Upload started:", data);
-      })
-      .on("upload-error", (file, error) => {
-        console.warn("Upload error:", error);
-      })
-      .on("file-added", (file) => {
-        // eslint-disable-next-line no-console
-        console.log("File added:", file);
-      })
-      .on("upload-success", (file, response) => {
-        if (response && response.status === 200) {
-          this.uploadComplete.emit(response.body);
-        } else {
-          console.warn("Upload failed:", response);
-        }
-      })
-      .on("restriction-failed", (file, error) => {
-        console.warn("Restriction failed:", error);
-        this.notificationsService.alert({
-          header: "Upload Failed",
-          message: error.message,
-        });
-      })
-      .on("error", (error) => {
-        console.error("Error:", error);
-      })
-      .on("complete", this.onComplete);
+    }).on("upload", (data) => {
+      // eslint-disable-next-line no-console
+      console.log("Upload started:", data);
+    })
+    .on("upload-error", (file, error) => {
+      console.warn("Upload error:", error);
+    })
+    .on("file-added", (file) => {
+      // eslint-disable-next-line no-console
+      console.log("File added:", file);
+    })
+    .on("upload-success", (file, response) => {
+      if (response && response.status === 200) {
+        this.uploadComplete.emit(response.body);
+      } else {
+        console.warn("Upload failed:", response);
+      }
+    })
+    .on("restriction-failed", (file, error) => {
+      console.warn("Restriction failed:", error);
+      this.notificationsService.alert({
+        header: "Upload Failed",
+        message: error.message,
+      });
+    })
+    .on("error", (error) => {
+      console.error("Error:", error);
+    })
+    .on("complete", this.onComplete.bind(this));
   }
 
+  loadAllowedFileTypes() {
+    switch(this.source) {
+      case "profile":
+      case "image":
+        return ["image/*"];
+
+      case "video":
+        return ["video/*"];
+
+      case "chat":
+      case "any":
+      default:
+        return [
+          "image/*",
+          "video/*",
+          "application/pdf"
+        ];
+    }
+  }
 
   onComplete(result) {
-    const successfulFiles: UppyFile<FileMetadata, FileBody>[] =
-      result.successful;
-
     // eslint-disable-next-line no-console
-    console.log("Uploaded files:", successfulFiles);
+    console.log("Uploaded files:", result);
+    this.closeModal(result);
   }
 
   ngOnDestroy() {
@@ -130,5 +161,9 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       this.uppy.off("complete", (res) => console.info(res));
       // this.uppy.close();
     }
+  }
+
+  closeModal(result) {
+    this.modalController.dismiss(result);
   }
 }

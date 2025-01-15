@@ -1,3 +1,4 @@
+import { UppyUploaderService } from './../../components/uppy-uploader/uppy-uploader.service';
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
@@ -37,7 +38,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   // controll profile image updating
   imageUpdating = false;
-  acceptFileTypes;
+  acceptFileTypes = ['image/*'];
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
@@ -54,6 +55,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private uppyUploaderService: UppyUploaderService,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -82,7 +84,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.currentProgramName = programName;
     this.returnLtiUrl = LtiReturnUrl;
 
-    this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
     // this.fastFeedbackService.pullFastFeedback().subscribe();
   }
@@ -175,41 +176,28 @@ export class SettingsPage implements OnInit, OnDestroy {
     return this.authService.logout({}, true);
   }
 
-  async uploadProfileImage(file, type = null) {
-    if (file.success) {
-      this.imageUpdating = true;
-      this.authService.updateProfileImage({
-        image: file.data.url
-      }).pipe(first()).subscribe(
-        () => {
-          this.imageUpdating = false;
-          this.profile.image = file.data.url;
-          this.storage.setUser({
-            image: file.data.url
-          });
-          return this.notificationsService.alert({
-            message: $localize`Profile picture successfully updated!`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ]
-          });
-        },
-        () => {
-          this.imageUpdating = false;
-          return this.notificationsService.alert({
-            message: $localize`File upload failed, please try again later.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ]
-          });
+  async profileImage() {
+    try {
+      const modal = await this.uppyUploaderService.open('profile');
+      const res = await modal.onDidDismiss();
+
+      // eslint-disable-next-line no-console
+      console.log('file-upload res', res);
+
+      if (!res?.data) {
+        return;
+      }
+
+      const file = res.data?.successful?.[0];
+      if (file) {
+        return this.uploadProfileImage({
+          url: file.uploadUrl
         });
-    } else {
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('profile image error', error);
+
       return this.notificationsService.alert({
         message: $localize`File upload failed, please try again later.`,
         buttons: [
@@ -220,6 +208,44 @@ export class SettingsPage implements OnInit, OnDestroy {
         ]
       });
     }
+  }
+
+  async uploadProfileImage(file: {
+    url: string;
+  }) {
+    this.imageUpdating = true;
+    this.authService.updateProfileImage({
+      image: file.url
+    }).pipe(first()).subscribe({
+      next: () => {
+        this.imageUpdating = false;
+        this.profile.image = file.url;
+        this.storage.setUser({
+          image: file.url
+        });
+        return this.notificationsService.alert({
+          message: $localize`Profile picture successfully updated!`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel'
+            }
+          ]
+        });
+      },
+      error: () => {
+        this.imageUpdating = false;
+        return this.notificationsService.alert({
+          message: $localize`File upload failed, please try again later.`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel'
+            }
+          ]
+        });
+      },
+    });
   }
 
   goBack(): void {
