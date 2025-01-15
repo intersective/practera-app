@@ -1,5 +1,9 @@
 <ion-list lines="full">
   <ion-list-header>Select a type</ion-list-header>
+  <ion-item button (click)="openAttachPopup('uppy')">
+    <ion-icon color="ocean" name="flower" slot="start"></ion-icon>
+    Uppy
+  </ion-item>
   <ion-item button (click)="openAttachPopup('any')">
     <ion-icon color="ocean" name="document" slot="start"></ion-icon>
     File

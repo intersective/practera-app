@@ -24,8 +24,8 @@ import { FileUploadComponent } from '../file-upload/file-upload.component';
   styleUrls: ['./assessment.component.scss'],
   animations: [
     trigger('tickAnimation', [
-      state('visible', style({ transform: 'scale(1)', opacity: 1 })),
-      state('hidden', style({ transform: 'scale(0)', opacity: 0 })),
+      state('visible', style({ transform: 'scale(1)', opacity: 1, willChange: 'transform, opacity' })),
+      state('hidden', style({ transform: 'scale(0)', opacity: 0, willChange: 'transform, opacity' })),
       transition('hidden => visible', animate('200ms ease-out')),
       transition('visible => hidden', animate('100ms ease-in')),
     ]),
