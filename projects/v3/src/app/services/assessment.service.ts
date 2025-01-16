@@ -566,6 +566,10 @@ export class AssessmentService {
     ).pipe(
       map(res => {
         if (!this.isValidData('saveQuestionAnswer', res)) {
+          if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+            throw new Error('Invalid answer format');
+          }
+
           throw new Error('Autosave: Invalid API data');
         }
         return res;
@@ -634,6 +638,9 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveReviewAnswer', res)) {
+        if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+          throw new Error('Invalid answer format');
+        }
         throw new Error('Autosave: Invalid API data');
       }
       return res;

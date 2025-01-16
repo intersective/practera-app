@@ -1,6 +1,7 @@
-<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
+<ion-split-pane contentId="main-content" [when]="splitpaneEnabled">
   <ion-menu contentId="main-content"
-    [ngClass]="{'collapsed': !isMobile && !openMenu}"
+    swipeGesture="false"
+    [ngClass]="{'collapsed': isMenuOpen === false}"
     [@openClose]="collapsibleMenu"
     (@openClose.done)="direction()">
 
@@ -21,7 +22,7 @@
             routerDirection="root"
             detail="false"
             [title]="p.title">
-            <ng-container *ngIf="!isMobile && openMenu === false; else iconOnly">
+            <ng-container *ngIf="isMenuOpen === false; else iconOnly">
               <div class="badge-wrapper icon-container">
                 <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
                 <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
@@ -59,7 +60,7 @@
         </ion-item>
       </ion-list>
 
-      <ion-item *ngIf="!isMobile"
+      <ion-item
         class="footer"
         lines="none"
         detail="false"
