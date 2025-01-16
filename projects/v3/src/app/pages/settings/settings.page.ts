@@ -179,48 +179,11 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   async profileImage() {
     try {
-      const modal = await this.uppyUploaderService.open('chat');
+      const modal = await this.uppyUploaderService.open('user-profile');
       const res = await modal.onDidDismiss();
 
       // eslint-disable-next-line no-console
       console.log('file-upload res', res);
-
-      /*
-
-{
-  "data": {
-      "successful": [],
-      "failed": [
-          {
-              "source": "angular:DashboardModal",
-              "id": "uppy-image/6/jpg-1d-1e-image/jpeg-204151-1734068695075",
-              "name": "image-6.jpg",
-              "extension": "jpg",
-              "meta": {
-                  "relativePath": null,
-                  "name": "image-6.jpg",
-                  "type": "image/jpeg"
-              },
-              "type": "image/jpeg",
-              "data": {},
-              "progress": {
-                  "uploadStarted": 1736918290492,
-                  "uploadComplete": false,
-                  "percentage": 0,
-                  "bytesUploaded": 0,
-                  "bytesTotal": 204151
-              },
-              "size": 204151,
-              "isGhost": false,
-              "isRemote": false,
-              "preview": "blob:https://app.p2-stage.practera.com/6623c6de-a343-455b-a9b2-b89cf69c9085",
-              "error": "This looks like a network error, the endpoint might be blocked by an internet provider or a firewall."
-          }
-      ],
-      "uploadID": "1Viw5b5DVN-K6sn1oQfE8"
-  }
-}
-      */
 
       if (!res?.data) {
         return;
