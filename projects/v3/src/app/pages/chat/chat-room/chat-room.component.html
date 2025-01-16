@@ -59,13 +59,13 @@
             <p class="seen-text caption gray-2">{{ utils.getUserRolesForUI(message.senderRole) }}</p>
           </ng-container>
 
-          <ng-container *ngIf="message.message || !message.fileObject;">
+          <ng-container *ngIf="message.message || !message.fileObject">
             <!-- Quill read only view/ use to render html content -->
-            <quill-view id="message-content"
-              [content]="message.message"
-              [strict]="true"
+            <quill-view-html id="message-content"
+              [content]="message?.message"
+              [sanitize]="true"
               tabindex="0"
-            ></quill-view>
+            ></quill-view-html>
           </ng-container>
 
           <ng-container *ngIf="message.fileObject">
@@ -139,12 +139,12 @@
   </ng-container>
 </ion-content>
 
-<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}">
-  <div *ngIf="whoIsTyping" style="position: absolute;
-    z-index: 9999;
-    top: -2em;
-    margin: 0 1em;
-    width: 100%;">
+<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer"
+  [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}"
+>
+  <div *ngIf="whoIsTyping"
+    style="position: absolute; z-index: 9999; top: -2em; margin: 0 1em; width: 100%;"
+  >
     <ion-label class="received-messages no-avatar" color="medium">
       <p class="message-typing">
         <i>{{ whoIsTyping }}</i>
@@ -160,6 +160,8 @@
           customToolbarPosition="top"
           [modules]="editorModules"
           [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
+          [preserveWhitespace]="false"
+          [trimOnValidation]="true"
           [required]="true"
           class="message-text-editor"
           placeholder="Enter your message"
