@@ -12,8 +12,8 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { debounce } from 'lodash';
 import { DomSanitizer } from '@angular/platform-browser';
+import { QuillModules } from 'ngx-quill';
 
 
 enum ScrollPosition {
@@ -73,7 +73,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // quill editor modules
   private isMatcherApplied = false;
-  editorModules = {
+  editorModules: QuillModules = {
     magicUrl: {
       globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
       urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
