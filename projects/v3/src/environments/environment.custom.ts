@@ -45,4 +45,5 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  helpline: '<CUSTOM_HELPLINE>',
 };
