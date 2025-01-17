@@ -94,8 +94,6 @@
       </ion-list>
     </div>
 
-    <pre>{{submission | json}}</pre>
-
     <form [formGroup]="questionsForm" id="formgroup" #form>
       <ng-container *ngFor="let group of assessment.groups">
         <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
