@@ -615,6 +615,10 @@ export class UtilsService {
   }
 
   downloadFile(path: string, filename?: string) {
+    if (!path) {
+      throw new Error('No file path provided');
+    }
+
     const anchor = document.createElement('a');
     anchor.href = path;
     anchor.download = filename || 'download';

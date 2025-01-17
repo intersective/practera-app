@@ -1,3 +1,4 @@
+import { NotificationsService } from './../../../services/notifications.service';
 import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
@@ -9,11 +10,11 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
-import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { QuillModules } from 'ngx-quill';
+import { UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
 
 enum ScrollPosition {
   Top = 'top',
@@ -62,7 +63,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   whoIsTyping: string = "";
   videoHandles = [];
 
-  selectedAttachments: any[] = [];
+  selectedAttachments: {
+    url: string;
+    filename: string;
+    mimetype: string;
+    size: number;
+  }[] = [];
 
 
   // cosmetic variables
@@ -149,6 +155,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     public popoverController: PopoverController,
     private sanitizer: DomSanitizer,
+    private uppyUploaderService: UppyUploaderService,
+    private notificationsService: NotificationsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.utils
@@ -969,17 +977,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async attachmentSelectPopover(ev: any) {
-    const popover = await this.popoverController.create({
-      component: AttachmentPopoverComponent,
-      cssClass: "my-custom-class",
-      event: ev,
-      translucent: true,
-    });
-    await popover.present();
+    const modal = await this.uppyUploaderService.open('chat');
+    const res = await modal.onDidDismiss();
 
-    const { data } = await popover.onDidDismiss();
-    if (data && data.selectedFile) {
-      this.selectedAttachments.push(data.selectedFile);
+    if (res?.data.successful?.length > 0) {
+      const success = res.data.successful.length > 0 ? res.data.successful[0] : {};
+      this.selectedAttachments.push({
+        url: success.uploadURL,
+        filename: success.name,
+        mimetype: success.type,
+        size: success.size,
+      });
+    } else if (res?.data.failed?.length > 0) {
+      this.notificationsService.presentToast("Failed to upload attachment");
     }
   }
 
