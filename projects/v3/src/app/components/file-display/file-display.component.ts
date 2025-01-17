@@ -96,7 +96,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
   actionBtnClick(file: {
     name: string;
-    uploadUrl: string;
+    url: string;
   }, index: number): void {
     if (this.fileType !== 'any') {
       return this.removeUploadedFile(file);
@@ -104,7 +104,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
     switch (index) {
       case 0:
-        this.utils.downloadFile(file.uploadUrl, file.name);
+        this.utils.downloadFile(file.url, file.name);
         return;
       case 1:
         // this.previewFile(file);
