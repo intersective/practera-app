@@ -581,21 +581,38 @@ export class AssessmentService {
     return this.apolloService
       .continuousGraphQLMutate(
         `mutation saveSubmissionAnswer(${paramsFormat}) {
-        saveSubmissionAnswer(${params}) {
-          success
-          message
-        }
-      }`,
+          saveSubmissionAnswer(${params}) {
+            success
+            message
+          }
+        }`,
         variables
       )
       .pipe(
         map((res) => {
           if (!this.isValidData("saveQuestionAnswer", res)) {
+            if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+              this.storeInvalidAnswer({ res, submission: variables });
+              throw new Error('Invalid answer format');
+            }
+
             throw new Error("Autosave: Invalid API data");
           }
           return res;
         })
       );
+  }
+
+  // store error in localStorage
+  storeInvalidAnswer(res) {
+    const storedErrors = this.storage.get('saveAssessmentErrors') || [];
+    storedErrors.push({
+      raw: res,
+      status: res.status,
+      message: res.message,
+      time: new Date().toISOString(),
+    });
+    this.storage.set('saveAssessmentErrors', storedErrors);
   }
 
   /**
@@ -662,16 +679,20 @@ export class AssessmentService {
     return this.apolloService
       .continuousGraphQLMutate(
         `mutation saveReviewAnswer(${paramsFormat}) {
-        saveReviewAnswer(${params}) {
-          success
-          message
-        }
-      }`,
+          saveReviewAnswer(${params}) {
+            success
+            message
+          }
+        }`,
         variables
       )
       .pipe(
         map((res) => {
           if (!this.isValidData("saveReviewAnswer", res)) {
+            if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+              this.storeInvalidAnswer({ res, submission: variables });
+              throw new Error('Invalid answer format');
+            }
             throw new Error("Autosave: Invalid API data");
           }
           return res;
@@ -699,8 +720,8 @@ export class AssessmentService {
     return this.apolloService
       .graphQLMutate(
         `mutation submitAssessment(${paramsFormat}) {
-        submitAssessment(${params})
-      }`,
+          submitAssessment(${params})
+        }`,
         variables
       )
       .pipe(
@@ -848,7 +869,7 @@ export class AssessmentService {
         await modal.onDidDismiss();
       }
     } catch (err) {
-      const toasted = await this.NotificationsService.alert({
+      await this.NotificationsService.alert({
         header: $localize`Error retrieving pulse check data`,
         message: err.msg || JSON.stringify(err),
       });
