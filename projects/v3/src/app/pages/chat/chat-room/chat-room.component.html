@@ -175,9 +175,9 @@
       <ion-row nowrap class="ion-no-padding ion-align-items-left ion-justify-content-start attach-preview">
         <ng-container *ngFor="let attachment of selectedAttachments; let i = index">
           <!-- Image preview -->
-          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('image')">
+          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment?.mimetype?.includes('image')">
             <div class="image" [ngClass]="{'mobile': isMobile}">
-              <img [src]="getResizedImageUrl(attachment, 80)" (click)="preview(attachment)">
+              <img [src]="attachment?.url" (click)="preview(attachment)">
               <div class="overlay" (click)="preview(attachment)"></div>
               <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
                 <ion-icon name="close"></ion-icon>
