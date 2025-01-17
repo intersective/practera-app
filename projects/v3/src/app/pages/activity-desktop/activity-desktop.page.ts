@@ -11,7 +11,6 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subject, firstValueFrom } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
-import { IonCol } from '@ionic/angular';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
