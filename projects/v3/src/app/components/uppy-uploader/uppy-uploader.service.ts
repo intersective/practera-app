@@ -37,8 +37,14 @@ export class UppyUploaderService {
     this.uppy.upload();
   }
 
-  // this will open up a modal showing the uppy uploader component as the content
-  async open(source: string): Promise<HTMLIonModalElement> {
+  /**
+   * this will open up a modal showing the uppy uploader component as the content
+   *
+   * @link https://intersective.slack.com/archives/C086A45JHSQ/p1736234870910269?thread_ts=1736232498.728959&cid=C086A45JHSQ
+   * @param   {string}        source
+   * @return  {Promise<HTMLIonModalElement>}
+   */
+  async open(source: 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | null): Promise<HTMLIonModalElement> {
     const modal = await this.modalController.create({
       component: UppyUploaderComponent,
       componentProps: {
