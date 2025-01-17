@@ -566,11 +566,28 @@ export class AssessmentService {
     ).pipe(
       map(res => {
         if (!this.isValidData('saveQuestionAnswer', res)) {
+          if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+            this.storeInvalidAnswer({ res, submission: variables });
+            throw new Error('Invalid answer format');
+          }
+
           throw new Error('Autosave: Invalid API data');
         }
         return res;
       })
     );
+  }
+
+  // store error in localStorage
+  storeInvalidAnswer(res) {
+    const storedErrors = this.storage.get('saveAssessmentErrors') || [];
+    storedErrors.push({
+      raw: res,
+      status: res.status,
+      message: res.message,
+      time: new Date().toISOString(),
+    });
+    this.storage.set('saveAssessmentErrors', storedErrors);
   }
 
   /**
@@ -634,6 +651,10 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveReviewAnswer', res)) {
+        if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+          this.storeInvalidAnswer({ res, submission: variables});
+          throw new Error('Invalid answer format');
+        }
         throw new Error('Autosave: Invalid API data');
       }
       return res;
@@ -670,7 +691,7 @@ export class AssessmentService {
         }
         return res;
       }),
-      catchError(error => {
+      catchError((error) => {
         if (error.status === 429) {
           // If the error is a 429, return a successful Observable
           return of({
@@ -807,7 +828,7 @@ export class AssessmentService {
         await modal.onDidDismiss();
       }
     } catch (err) {
-      const toasted = await this.NotificationsService.alert({
+      await this.NotificationsService.alert({
         header: $localize`Error retrieving pulse check data`,
         message: err.msg || JSON.stringify(err),
       });
