@@ -50,7 +50,7 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
 
   constructor(
     private utils: UtilsService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this._showSavedAnswers();
@@ -103,7 +103,7 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
   }
 
   // propagate changes into the form control
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   /**
    * event fired when checkbox is toggled. propagate the change up to the form control using the custom value accessor interface
