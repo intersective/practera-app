@@ -51,6 +51,9 @@ export interface User {
     activityId: number; // last visited activity id
     homeBookmarks: number[]; // last visited home bookmarks (activity ids)
   },
+
+  // error handling
+  saveAssessmentErrors?: [],
 }
 
 export interface Referrer {
