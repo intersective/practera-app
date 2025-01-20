@@ -1,3 +1,4 @@
+import { UppyUploaderService } from './../../components/uppy-uploader/uppy-uploader.service';
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
@@ -5,11 +6,12 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FilestackService } from '@v3/services/filestack.service';
-import { Subject } from 'rxjs';
-import { ModalController } from '@ionic/angular';
+import { Subject, firstValueFrom } from 'rxjs';
+import { AlertOptions, ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
+import { throwError } from 'rxjs/internal/observable/throwError';
 
 @Component({
   selector: 'app-settings',
@@ -32,12 +34,12 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   returnLtiUrl = '';
 
-  helpline = 'help@practera.com';
+  helpline = environment.helpline;
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   // controll profile image updating
   imageUpdating = false;
-  acceptFileTypes;
+  acceptFileTypes = ['image/*'];
   // card image CDN
   cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
@@ -54,6 +56,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private filestackService: FilestackService,
     private modalController: ModalController,
+    private uppyUploaderService: UppyUploaderService,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -82,7 +85,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.currentProgramName = programName;
     this.returnLtiUrl = LtiReturnUrl;
 
-    this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
     // this.fastFeedbackService.pullFastFeedback().subscribe();
   }
@@ -175,42 +177,48 @@ export class SettingsPage implements OnInit, OnDestroy {
     return this.authService.logout({}, true);
   }
 
-  async uploadProfileImage(file, type = null) {
-    if (file.success) {
-      this.imageUpdating = true;
-      this.authService.updateProfileImage({
-        image: file.data.url
-      }).pipe(first()).subscribe(
-        () => {
-          this.imageUpdating = false;
-          this.profile.image = file.data.url;
-          this.storage.setUser({
-            image: file.data.url
-          });
-          return this.notificationsService.alert({
-            message: $localize`Profile picture successfully updated!`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ]
-          });
-        },
-        () => {
-          this.imageUpdating = false;
-          return this.notificationsService.alert({
-            message: $localize`File upload failed, please try again later.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ]
-          });
+  async profileImage() {
+    try {
+      const modal = await this.uppyUploaderService.open('user-profile');
+      const res = await modal.onDidDismiss();
+
+      // eslint-disable-next-line no-console
+      console.log('file-upload res', res);
+
+      if (!res?.data) {
+        return;
+      }
+
+      const file = res.data?.successful?.[0];
+      if (file) {
+        const url = file.uploadURL;
+
+        this.imageUpdating = true;
+        await firstValueFrom(this.authService.updateProfileImage({
+          image: url
+        }));
+
+        this.imageUpdating = false;
+        this.profile.image = url;
+        this.storage.setUser({ image: url });
+
+        return this.notificationsService.alert({
+          message: $localize`Profile picture successfully updated!`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel'
+            }
+          ]
         });
-    } else {
-      return this.notificationsService.alert({
+      }
+    } catch (error) {
+      this.imageUpdating = false;
+
+      // eslint-disable-next-line no-console
+      console.error('profile image error', error);
+
+      const alertOpts: AlertOptions = {
         message: $localize`File upload failed, please try again later.`,
         buttons: [
           {
@@ -218,7 +226,13 @@ export class SettingsPage implements OnInit, OnDestroy {
             role: 'cancel'
           }
         ]
-      });
+      };
+
+      // Actual error message from server
+      if (error?.error?.message || error?.error?.msg) {
+        alertOpts.subHeader = error?.error?.message || error?.error?.msg;
+      }
+      return this.notificationsService.alert(alertOpts);
     }
   }
 

@@ -1,3 +1,4 @@
+import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -10,12 +11,13 @@ import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
 import { OneofComponent } from '../oneof/oneof.component';
-import { FileComponent } from '../file/file.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
 import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
+import { FileInput, SubmitActions } from '../types/assessment';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
 
 @Component({
   selector: 'app-assessment',
@@ -23,8 +25,8 @@ import { ActivityService } from '@v3/app/services/activity.service';
   styleUrls: ['./assessment.component.scss'],
   animations: [
     trigger('tickAnimation', [
-      state('visible', style({ transform: 'scale(1)', opacity: 1 })),
-      state('hidden', style({ transform: 'scale(0)', opacity: 0 })),
+      state('visible', style({ transform: 'scale(1)', opacity: 1, willChange: 'transform, opacity' })),
+      state('hidden', style({ transform: 'scale(0)', opacity: 0, willChange: 'transform, opacity' })),
       transition('hidden => visible', animate('200ms ease-out')),
       transition('visible => hidden', animate('100ms ease-in')),
     ]),
@@ -64,7 +66,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
-  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
+  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
 
   autosaving: {
     [key: number]: boolean
@@ -88,22 +90,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // used to resubscribe to the assessment service
   resubscribe$ = new Subject<void>();
   // used to save the assessment/review answers
-  submitActions = new Subject<{
-    autoSave: boolean;
-    goBack: boolean;
-    questionSave?: {
-      submissionId: number;
-      questionId: number;
-      answer: string;
-    };
-    reviewSave?: {
-      reviewId: number;
-      submissionId: number;
-      questionId: number;
-      answer: string;
-      comment: string;
-    };
-  }>();
+  submitActions = new Subject<SubmitActions>();
   subscriptions: Subscription[] = [];
   unsubscribe$ = new Subject<void>();
 
@@ -195,14 +182,52 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (error.message.includes('Autosave')) {
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
-            label: $localize`Save failed. Please try again.`,
+            label: $localize`Auto save failed. Please try again.`,
           });
+          // Resubscribe for autosave failures
+          this.resubscribe$.next();
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
+          // @link https://github.com/intersective/core-graphql-api/commit/92e636be64a3697bebda91d6f66eea487d8fb2a9#diff-4f45773ff5b570b41418d857c86f5b1e48b8e7ed744d92ebef4b96102de912e3R17-R22
+
+          if ((error.message.toLowerCase()).includes('invalid answer')) {
+            let message = $localize`An error has occurred. The page will reload shortly; please try again.`;
+
+            const invalidSaveErrors = this.storage.get('saveAssessmentErrors');
+            const errQuantity = invalidSaveErrors?.length;
+            if (errQuantity > 2) {
+              const lastError = invalidSaveErrors[errQuantity - 1];
+              message = $localize`Your answers couldn't be saved. Please reach out to your coordinator for help.` + `\n` + this.invalidAnswerEmailContent(lastError);
+            }
+            await this.notifications.alert({
+              header: $localize`Error`,
+              message,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                  handler: () => {
+                    window.location.reload(); // force reload
+                  }
+                }
+              ],
+            });
+          }
         }
-        this.resubscribe$.next();
       }
     });
+  }
+
+  private invalidAnswerEmailContent(rawData) {
+    const body = `Hi Team,\n
+I am experiencing issues with submitting my assessment answers.\n
+Assessment ID: ${this.assessment.id}
+Activity ID: ${this.activityId}\n\n
+Question Info: ${JSON.stringify(rawData)}\n\n
+Error: Invalid answer format detected\n
+Best regards`;
+
+    return `<a href="mailto:${environment.helpline}?subject=Assessment%20Answer%20Invalid&body=${encodeURIComponent(body)}">${environment.helpline}</a>`;
   }
 
   /**
@@ -239,7 +264,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   saveQuestionAnswer(questionInput: {
     submissionId: number;
     questionId: number;
-    answer: string;
+    answer?: string;
+    file?: FileInput;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
 
@@ -247,6 +273,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       questionInput.submissionId,
       questionInput.questionId,
       answer,
+      questionInput.file,
     ).pipe(
       tap({
         next: (_res) => {
@@ -267,17 +294,20 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     reviewId: number;
     submissionId: number;
     questionId: number;
-    answer: string;
+    answer?: string;
     comment: string;
+    file?: FileInput;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
     const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
+
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
       questionInput.submissionId,
       questionInput.questionId,
-      answer,
       comment,
+      answer,
+      questionInput.file,
     );
   }
 
@@ -314,15 +344,14 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    let validator = [];
+    // question groups
     this.assessment.groups.forEach(group => {
+      // questions in each group
       group.questions.forEach(question => {
+        let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question)) {
-          // put 'required' validator in FormControl
+        if (this._isRequired(question) === true) {
           validator = [Validators.required];
-        } else {
-          validator = [];
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));

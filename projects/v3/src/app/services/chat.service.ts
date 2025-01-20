@@ -166,7 +166,9 @@ export class ChatService {
               uuid
               isSender
               message
-              file
+              file {
+                url name type
+              }
               created
               sentAt
               sender {
@@ -348,7 +350,9 @@ export class ChatService {
             uuid
             isSender
             message
-            file
+            file {
+              url name type
+            }
             created
             sentAt
             sender {

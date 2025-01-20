@@ -95,7 +95,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   }
 
   actionBtnClick(file: {
-    handle: string;
+    name: string;
     url: string;
   }, index: number): void {
     if (this.fileType !== 'any') {
@@ -104,11 +104,11 @@ export class FileDisplayComponent implements OnInit, OnChanges {
 
     switch (index) {
       case 0:
-        this.utils.downloadFile(file.url);
+        this.utils.downloadFile(file.url, file.name);
         return;
       case 1:
-        this.previewFile(file);
-        return;
+        // this.previewFile(file);
+        // return;
       case 2:
         this.removeUploadedFile(file);
         return;
@@ -122,7 +122,7 @@ export class FileDisplayComponent implements OnInit, OnChanges {
   get endingActionBtnIcons() {
     let icons = [];
     if (this.fileType === 'any') {
-      icons = ['download', 'search']
+      icons = ['download']
     }
     if (this.removeFile.observers.length > 0 && !this.disabled) {
       icons.push('trash');
