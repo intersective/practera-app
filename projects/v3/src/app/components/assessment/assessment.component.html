@@ -215,8 +215,9 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multiple>
 
-              <app-file *ngSwitchCase="'video'"
+              <app-file-upload *ngSwitchCase="'video'"
                 #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -226,13 +227,13 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
-              <app-file *ngSwitchCase="'file'"
+              <app-file-upload *ngSwitchCase="'file'"
                 #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -242,9 +243,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
                 #questionField
