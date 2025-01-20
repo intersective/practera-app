@@ -5,6 +5,13 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Viewport Size Display -->
+  <div class="viewport-size">
+    <h4>Logical Viewport Size</h4>
+    <p>Width: {{ viewportWidth }} px</p>
+    <p>Height: {{ viewportHeight }} px</p>
+  </div>
+
   <div class="tools">
     <h4>Testing tools</h4>
     <ion-grid>
@@ -70,7 +77,7 @@
       </ion-row>
       <ion-row *ngIf="turnUppyOff === false">
         <ion-col size="12">
-          <app-uppy-uploader [uploadUrl]="tusUploadUrl"></app-uppy-uploader>
+          <app-uppy-uploader [tusEndpoint]="tusUploadUrl"></app-uppy-uploader>
         </ion-col>
       </ion-row>
     </ion-grid>
