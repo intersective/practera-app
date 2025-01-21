@@ -193,9 +193,17 @@ export class SettingsPage implements OnInit, OnDestroy {
       if (file) {
         const url = file.uploadURL;
 
+        // eslint-disable-next-line no-console
+        console.log('file-res', res);
         this.imageUpdating = true;
-        await firstValueFrom(this.authService.updateProfileImage({
-          image: url
+        await firstValueFrom(this.authService.updateUserProfile({
+          url,
+          name: file.name,
+          extension: file.extension,
+          type: file.type,
+          size: file.size,
+          bucket: res.data.bucket,
+          path: res.data.path,
         }));
 
         this.imageUpdating = false;
