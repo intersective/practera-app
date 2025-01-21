@@ -63,6 +63,11 @@
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+                "output": "./assets/ffmpeg"
               }
             ],
             "styles": [
@@ -142,6 +147,13 @@
                   "with": "projects/v3/src/environments/environment.custom.ts"
                 }
               ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+                  "output": "./assets/ffmpeg"
+                }
+              ],
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -180,6 +192,13 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "20kb"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+                  "output": "./assets/ffmpeg"
                 }
               ],
               "buildOptimizer": false,
