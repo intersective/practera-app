@@ -55,4 +55,18 @@ export class UppyUploaderService {
 
     return modal;
   }
+
+  // extract response from tus upload XHR state
+  extractResponseData(response: {
+    _xhr: {
+      response: string;
+    };
+  }): {
+    path: string;
+    bucket: string;
+  } {
+    const res = response?._xhr?.response;
+    const data = JSON.parse(res);
+    return data;
+  }
 }
