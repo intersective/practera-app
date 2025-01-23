@@ -67,6 +67,10 @@ export class UppyUploaderService {
   } {
     const res = response?._xhr?.response;
     const data = JSON.parse(res);
+
+    // eslint-disable-next-line no-console
+    console.log('uppy-xhr', data);
+
     return data;
   }
 }

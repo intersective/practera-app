@@ -618,6 +618,7 @@ export class AuthService {
           name
           firstName
           lastName
+          avatar
           email
           image
           role
@@ -634,6 +635,7 @@ export class AuthService {
           name: thisUser.name,
           firstName: thisUser.firstName,
           lastName: thisUser.lastName,
+          avatar: thisUser.avatar,
           email: thisUser.email,
           image: thisUser.image,
           role: thisUser.role,
