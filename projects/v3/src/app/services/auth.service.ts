@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { ApolloService } from './apollo.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
 import { DemoService } from './demo.service';
+import { Response } from './types';
 
 /**
  * @name api
@@ -32,6 +33,16 @@ const API = {
 interface VerifyParams {
   email: string;
   key: string;
+}
+
+interface ProfileAvatar {
+  bucket: string;
+  path: string;
+  name: string;
+  url: string;
+  extension: string;
+  type: string;
+  size: number;
 }
 
 interface RegisterData {
@@ -484,6 +495,8 @@ export class AuthService {
     );
   }
 
+
+
   saveRegistration(data: RegisterData): Observable<any> {
     if (environment.demo) {
       return of({});
@@ -605,6 +618,7 @@ export class AuthService {
           name
           firstName
           lastName
+          avatar
           email
           image
           role
@@ -621,6 +635,7 @@ export class AuthService {
           name: thisUser.name,
           firstName: thisUser.firstName,
           lastName: thisUser.lastName,
+          avatar: thisUser.avatar,
           email: thisUser.email,
           image: thisUser.image,
           role: thisUser.role,
@@ -630,5 +645,28 @@ export class AuthService {
       }
       return response;
     }));
+  }
+
+  /**
+   * @name updateUserProfile
+   * @description update user profile picture
+   *
+   * @param   {ProfileAvatar}  avatar
+   *
+   * @return  {}          [return description]
+   */
+  updateUserProfile(avatar: ProfileAvatar): Observable<Response> {
+    return this.apolloService.graphQLFetch(`
+      mutation updateUserProfile($avatar: FileInput) {
+        updateUserProfile(avatar: $avatar) {
+          success
+          message
+        }
+      }
+    `, {
+      variables: {
+        avatar
+      }
+    });
   }
 }
