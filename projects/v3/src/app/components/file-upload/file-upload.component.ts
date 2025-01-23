@@ -1,4 +1,3 @@
-import { UppyUploaderService } from './../uppy-uploader/uppy-uploader.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -100,7 +99,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   constructor(
     private storageService: BrowserStorageService,
-    private uppyUploaderService: UppyUploaderService,
   ) { }
 
   ngOnDestroy(): void {
@@ -184,12 +182,32 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         // eslint-disable-next-line no-console
         console.log('onAfterResponse', req, res);
         if (req.getMethod() === 'POST') {
-          this.tusResponse = this.uppyUploaderService.extractResponseData(res as any);
+          this.extractResponseData(res as any);
         }
       },
     });
 
     this.initializeEventHandlers(this.uppy);
+  }
+
+  // extract response from tus upload XHR state
+  extractResponseData(response: {
+    _xhr: {
+      response: string;
+    };
+  }) {
+    try {
+      const res = response?._xhr?.response;
+      const data = JSON.parse(res);
+      // eslint-disable-next-line no-console
+      console.log('extractResponseData', data);
+      this.tusResponse = data;
+      return data;
+    } catch (error) {
+      // @TODO: handle error (make file recoverable?)
+      // eslint-disable-next-line no-console
+      console.error('extractResponseData', error);
+    }
   }
 
   initializeEventHandlers(uppy) {
