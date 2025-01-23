@@ -15,7 +15,6 @@ export interface User {
   name?: string;
   firstName?: string;
   lastName?: string;
-  avatar?: string; // user avatar pic
   apikey?: string;
   contactNumber?: string;
   email?: string;

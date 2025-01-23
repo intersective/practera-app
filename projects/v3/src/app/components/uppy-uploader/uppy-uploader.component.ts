@@ -1,4 +1,3 @@
-import { UppyUploaderService } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
@@ -44,16 +43,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     doneButtonHandler: null,
   };
 
-  s3Info: {
-    path: string;
-    bucket: string;
-  };
-
   constructor(
     private notificationsService: NotificationsService,
     private modalController: ModalController,
     private storageService: BrowserStorageService,
-    private uppyUploaderService: UppyUploaderService,
   ) {}
 
   ngOnInit() {
@@ -101,13 +94,6 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       onSuccess: (upload) => {
         // eslint-disable-next-line no-console
         console.log("Upload complete:", upload);
-      },
-      onAfterResponse: async (req, res) => {
-        // eslint-disable-next-line no-console
-        console.log('onAfterResponse', req, res);
-        if (req.getMethod() === 'POST') {
-          this.s3Info = this.uppyUploaderService.extractResponseData(res as any);
-        }
       },
     }).on("upload", (data) => {
       // eslint-disable-next-line no-console
@@ -163,7 +149,6 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   onComplete(result) {
     // eslint-disable-next-line no-console
     console.log("Uploaded files:", result);
-
     this.closeModal(result);
   }
 
@@ -179,13 +164,6 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   closeModal(result) {
-    const data = {
-      ...result,
-      ...{
-        bucket: this.s3Info?.bucket,
-        path: this.s3Info?.path,
-      }
-    };
-    this.modalController.dismiss(data);
+    this.modalController.dismiss(result);
   }
 }
