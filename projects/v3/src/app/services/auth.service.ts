@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { environment } from '@v3/environments/environment';
+import { ApolloService } from './apollo.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 import { DemoService } from './demo.service';
 
 /**
@@ -64,32 +66,249 @@ interface ExperienceConfig {
   logo: string;
 }
 
+export interface AuthEndpoint {
+  data: {
+    auth: {
+      apikey: string;
+      experience: AuthEndpointExperience;
+      email?: string;
+      unregistered?: boolean;
+      activationCode?: string;
+    }
+  }
+}
+
+interface AuthEndpointExperience {
+  id: number;
+  uuid: string;
+  timelineId: number;
+  projectId: number;
+  name: string;
+  description: string;
+  type: string;
+  leadImage: string;
+  status: null | string;
+  setupStep: null | string;
+  color: string;
+  secondaryColor: string;
+  role: string;
+  isLast: null | boolean;
+  locale: string;
+  supportName: string;
+  supportEmail: string;
+  cardUrl: string;
+  bannerUrl: string;
+  logoUrl: string;
+  iconUrl: string;
+  reviewRating: boolean;
+  truncateDescription: boolean;
+  team: {
+    id: number;
+  };
+}
+
+interface AuthQuery {
+  authToken?: string;
+  apikey?: string;
+  service?: string;
+  experienceUuid?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
 
   constructor(
+    private demo: DemoService,
     private request: RequestService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private router: Router,
     private pusherService: PusherService,
-    private demo: DemoService
+    private apolloService: ApolloService,
+    private unlockIndicatorService: UnlockIndicatorService,
   ) { }
 
-  private _clearCache(): any {
-    // do clear user cache here
+  private authCacheDuration = environment.authCacheDuration;
+
+  authenticate(data?: AuthQuery): Observable<AuthEndpoint> {
+    const currentTime = new Date().getTime();
+    const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
+    const authCache = this.authCache$.getValue() || this.storage.get('authCache');
+
+    // 2 conditions to pull from server:
+    // when experienceUuid is not null (required for switch experience)
+    // when authToken available (directLogin)
+    if (!(data?.experienceUuid || data?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
+      return of(authCache);
+    } else {
+      return this.fetchData(data);
+    }
   }
 
-  private _login(body: HttpParams, serviceHeader?: string) {
+  fetchData(data?: AuthQuery): Observable<AuthEndpoint> {
+    const options: {
+      variables?: {
+        authToken?: string;
+        experienceUuid?: string;
+      };
+      context?: {
+        headers?: {
+          service?: string;
+          apikey?: string;
+        };
+      };
+    } = {};
+
+    if (data) {
+      // Initialize options.variables
+      if (data.authToken || data.experienceUuid) {
+        options.variables = {};
+      }
+
+      if (data.authToken) {
+        options.variables.authToken = data.authToken;
+      }
+
+      if (data.experienceUuid) {
+        options.variables.experienceUuid = data.experienceUuid;
+      }
+
+      // Initialize options.headers
+      if (data.apikey || data.service) {
+        options.context = { headers: {} };
+      }
+
+      if (data.apikey) {
+        this.storage.setUser({ apikey: data.apikey });
+        options.context.headers.apikey = data.apikey;
+      }
+
+      if (data.service) {
+        options.context.headers.service = data.service;
+      }
+    }
+
+    return this.apolloService.graphQLFetch(`
+      query auth($authToken: String, $experienceUuid: ID) {
+        auth(authToken: $authToken, experienceUuid: $experienceUuid) {
+          apikey
+          experience {
+            id
+            uuid
+            timelineId
+            projectId
+            name
+            description
+            type
+            leadImage
+            status
+            setupStep
+            color
+            secondaryColor
+            role
+            isLast
+            locale
+            supportName
+            supportEmail
+            cardUrl
+            bannerUrl
+            logoUrl
+            iconUrl
+            reviewRating
+            truncateDescription
+            team {
+              id
+            }
+          }
+          email
+          unregistered
+          activationCode
+        }
+      }`,
+      options
+    ).pipe(
+      map((res: AuthEndpoint)=> {
+        this.storage.set('lastAuthFetchTime', new Date().getTime());
+        this.storage.set('authCache', res);
+
+        if (res?.data?.auth?.unregistered === true) {
+          // [CORE-6011] trusting API returns email and activationCode
+          const { email, activationCode } = res.data.auth;
+          throw {
+            data: {
+              user: {
+                email,
+                key: activationCode
+              },
+              message: 'User is not registered'
+            },
+            status: 'forbidden',
+          };
+        }
+        return res;
+      }),
+      catchError(err => {
+        this.storage.remove('lastAuthFetchTime');
+        this.storage.remove('authCache');
+        this.logout(); // clear user's information
+
+        // When logout get call from here user get redirect without showing any error messages.
+        // so from here need to throw the error. and handle from the components.
+        // then we can show error message and add logout as call back of notification popup.
+        // Kepping this in case some error happen. logic moved
+        // this.logout(); // clear user's information
+        this.storage.remove('lastAuthFetchTime');
+        this.storage.remove('authCache');
+        return throwError(err);
+      })
+    );
+  }
+
+  autologin(data: {
+    authToken?: string;
+    apikey?: string;
+    service?: string;
+  }): Observable<any> {
+    this.logout({}, false);
+    return this.authenticate({...data, ...{ service: 'LOGIN' }}).pipe(
+      map(res => this._handleAuthResponse(res)),
+    );
+  }
+
+  private _handleAuthResponse(res: AuthEndpoint): {
+    apikey?: string;
+    experience?: object;
+  } {
+    const data: {
+      apikey,
+      experience,
+    } = res.data.auth;
+
+    this.storage.setUser({ apikey: data.apikey });
+    this.storage.set('experience', data.experience);
+    this.storage.set('isLoggedIn', true);
+    return data;
+  }
+
+  isAuthenticated(): boolean {
+    return this.storage.get('isLoggedIn');
+  }
+
+  deprecatingLogin({ email, password }): Observable<any> {
+    const body = new HttpParams({
+      encoder: new QueryEncoder()
+    })
+      .set('data[User][email]', email)
+      .set('data[User][password]', password)
+      .set('domain', this.getDomain());
+
+
     const headers = {
       'Content-Type': 'application/x-www-form-urlencoded',
-      service: serviceHeader
     };
-    if (!serviceHeader) {
-      delete headers.service;
-    }
     if (environment.demo) {
       return of({
         programs: []
@@ -106,111 +325,8 @@ export class AuthService {
         return of(err);
       }
     }).pipe(
-      map(res => this._handleLoginResponse(res)),
+      map(res => this._handleAuthResponse(res)),
     );
-  }
-
-  /**
-   * @name login
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { email, password } in string for each of the value
-   */
-  login({ email, password }): Observable<any> {
-    const body = new HttpParams({
-      encoder: new QueryEncoder()
-    })
-      .set('data[User][email]', email)
-      .set('data[User][password]', password)
-      .set('domain', this.getDomain());
-
-    return this._login(body);
-  }
-
-  /**
-   * @name directLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { authToken } in string
-   */
-  directLogin({ authToken }): Observable<any> {
-    const body = new HttpParams()
-      .set('auth_token', authToken);
-    this.logout({}, false);
-    return this._login(body);
-  }
-
-  /**
-   * @name globalLogin
-   * @description login API specifically only accept request data in encodedUrl formdata,
-   *              so must convert them into compatible formdata before submission
-   * @param {object} { apikey } in string
-   */
-  globalLogin({ apikey, service }): Observable<any> {
-    const body = new HttpParams()
-      .set('apikey', apikey);
-    this.logout({}, false);
-    return this._login(body, service);
-  }
-
-  private _handleLoginResponse(response): Observable<any> {
-    const norm = this._normaliseAuth(response);
-
-    this.storage.setUser({ apikey: norm.apikey });
-    this.storage.set('programs', norm.programs);
-    this.storage.set('isLoggedIn', true);
-    return norm;
-  }
-
-  private _normaliseAuth(rawData): any {
-    const data = rawData.data;
-    return {
-      success: rawData.success,
-      tutorial: data.tutorial,
-      apikey: data.apikey,
-      programs: data.Timelines.map(
-        (timeline): {
-          enrolment: any;
-          program: any;
-          project: any;
-          timeline: any;
-          experience: any;
-          institution: any;
-          locale: string;
-        } => {
-          // make sure 'Program.config.theme_color' exist
-          if (!timeline.Program.config?.theme_color) {
-            const PRIMARY_COLOR = 'var(--ion-color-primary)';
-            if (!timeline.Program?.config) {
-              timeline.Program.config = {
-                theme_color: PRIMARY_COLOR
-              };
-            } else {
-              timeline.Program.config.theme_color = PRIMARY_COLOR;
-            }
-          }
-
-          const app_locale = timeline.Institution.config?.application_language;
-
-          return {
-            enrolment: timeline.Enrolment,
-            program: timeline.Program,
-            project: timeline.Project,
-            timeline: timeline.Timeline,
-            experience: { ...timeline.Experience, lead_image: timeline?.Experience?.lead_url || '' },
-            institution: timeline.Institution,
-            locale: app_locale || 'en',
-          };
-        },
-        this
-      ),
-      config: (data.Experience || {}).config || {},
-      _raw: rawData
-    };
-  }
-
-  isAuthenticated(): boolean {
-    return this.storage.get('isLoggedIn');
   }
 
   /**
@@ -218,18 +334,20 @@ export class AuthService {
    * @param navigationParams the parameters needed when redirect
    * @param redirect         Whether redirect the user to login page or not
    */
-  logout(navigationParams = {}, redirect = true) {
+  logout(navigationParams = {}, redirect: boolean | string[] = true) {
     // use the config color
     this.utils.changeThemeColor(this.storage.getConfig().colors);
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
 
+    this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)
     this.storage.clear();
-    // still store config info even logout
-    this.storage.setConfig(config);
-
-    if (redirect) {
+    if (typeof redirect === 'object') {
+      return this.router.navigate(redirect);
+    } else if (redirect === true) {
+      // still store config info even logout
+      this.storage.setConfig(config);
       return this.router.navigate(['/'], navigationParams);
     }
   }
@@ -400,6 +518,91 @@ export class AuthService {
           return [];
         }
       })
-      );
+    );
+  }
+
+  // need to clear all Subject for cache
+  async clearCache(): Promise<void> {
+    const apolloClient = this.apolloService.getClient();
+    // clear cache before initialised
+    if (apolloClient) {
+      apolloClient.stop();
+      await apolloClient.clearStore();
+    }
+    //   // initialise the Subject for caches
+    //   this.projectSubject.next(null);
+    //   this.each(this.activitySubjects, (subject, key) => {
+    //     this.activitySubjects[key].next(null);
+    //   });
+  }
+
+
+  /**
+   * @name getMyInfo
+   * @description get user info
+   */
+  getMyInfo(): Observable<{
+    data: {
+      user: {
+        id: number;
+        uuid: string;
+        name: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        image: string;
+        role: string;
+        contactNumber: string;
+        userHash: string;
+      }
+    }
+  }> {
+    if (environment.demo) {
+      this.storage.setUser({
+        uuid: this.demo.myInfo.uuid,
+        name: this.demo.myInfo.name,
+        firstName: this.demo.myInfo.firstName,
+        lastName: this.demo.myInfo.lastName,
+        email: this.demo.myInfo.email,
+        image: this.demo.myInfo.image,
+        role: this.demo.myInfo.role,
+        contactNumber: this.demo.myInfo.contactNumber,
+        userHash: this.demo.myInfo.userHash
+      });
+      return of(this.demo.myInfo as any);
+    }
+    return this.apolloService.graphQLFetch(
+      `query user {
+        user {
+          id
+          uuid
+          name
+          firstName
+          lastName
+          email
+          image
+          role
+          contactNumber
+          userHash
+        }
+      }`
+    ).pipe(map(response => {
+      if (response?.data?.user) {
+        const thisUser = response.data.user;
+
+        this.storage.setUser({
+          uuid: thisUser.uuid,
+          name: thisUser.name,
+          firstName: thisUser.firstName,
+          lastName: thisUser.lastName,
+          email: thisUser.email,
+          image: thisUser.image,
+          role: thisUser.role,
+          contactNumber: thisUser.contactNumber,
+          userHash: thisUser.userHash
+        });
+      }
+      return response;
+    }));
   }
 }

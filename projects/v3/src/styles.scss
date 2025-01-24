@@ -59,14 +59,25 @@
 }
 
 .support-popup {
-  --height: 580px;
-  --width: 600px;
   --border-radius: 8px;
+  --max-height: 90vh;
 }
 
 .pulsing {
   -webkit-animation: pulse 2s infinite;
   animation: pulse 2s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.1;
+  }
 }
 
 @-webkit-keyframes pulse {
@@ -379,14 +390,19 @@ quill-view {
       .ngx-quill-view {
         .ql-editor {
           color: white !important;
-            p {
+          p {
+            color: white !important;
+            a {
+              text-decoration: underline;
               color: white !important;
-              a {
-                text-decoration: underline;
-                color: white !important;
+
+              &:hover {
+                color: initial !important;
               }
             }
+          }
         }
+
       }
     }
   }
@@ -397,4 +413,48 @@ Used in achievement
 *****************/
 .black-white-image {
   filter: grayscale(100%);
+}
+
+/****************
+ * attention seeker (red dot indicator)
+ ****************/
+.icon-container {
+  position: relative;
+  display: inline-block;
+}
+
+
+.notification-dot {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: red;
+  -webkit-animation: blink 1s ease-in-out 0s 3;
+  animation: blink 1s ease-in-out 0s 3;
+
+  &.milestone {
+    top: 0.5em;
+    right: 0.5em;
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 1900px) {
+  .modal-default, .filestack-preview-modal {
+    --width: 50vw;
+    --height: 70vh;
+  }
+}
+
+/****************
+ * quill editor (override quill-editor style)
+ ****************/
+quill-editor .ql-toolbar.ql-snow {
+  border: none !important;
 }

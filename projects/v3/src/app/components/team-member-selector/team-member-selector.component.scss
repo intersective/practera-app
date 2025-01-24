@@ -33,10 +33,18 @@ ion-textarea {
   border: 1px solid var(--practera-grey-50);
   border-radius: var(--border-radius);
   font-size: 14px !important;
+  &.preview {
+    border: none;
+    padding-left: var(--padding-start);
+  }
 }
 
 ion-item {
   &.item-radio-checked::part(native) {
     --background: var(--practera-light-grey-50);
   }
+}
+
+.feedback-title {
+  --min-height: 1em;
 }

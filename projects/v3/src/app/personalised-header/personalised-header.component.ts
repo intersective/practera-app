@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
@@ -18,6 +18,9 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   notiCount: number = 0;
   isShowSupportBtn: boolean = false;
+  @Input() isExpPage: boolean = false;
+
+  isLoadingSetting = false;
 
   constructor(
     private modalController: ModalController,
@@ -75,6 +78,7 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   }
 
   async settings(): Promise<void | boolean> {
+    this.isLoadingSetting = true;
     if (this.isMobile) {
       return this.router.navigate(['v3', 'settings']);
     }
@@ -89,7 +93,9 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
       cssClass: 'right-affixed',
     });
 
-    return modal.present();
+    return modal.present().finally(() => {
+      this.isLoadingSetting = false;
+    });
   }
 
   openSupport() {

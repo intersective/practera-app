@@ -2,26 +2,18 @@ import { gql, Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { InMemoryCache, defaultDataIdFromObject } from '@apollo/client/core';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { RequestService } from 'request';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-
-enum ClientType {
-  core = 'CORE',
-  chat = 'CHAT'
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApolloService {
   private apolloInstance: Apollo;
-  private _url = {
-    core: '',
-    chat: '',
-  };
+  private _url = '';
 
   constructor(
     private apollo: Apollo,
@@ -30,7 +22,7 @@ export class ApolloService {
   ) {}
 
   initiateCoreClient(): Apollo {
-    if (this._hasInitiated(environment.graphQL, ClientType.core)) {
+    if (this._hasInitiated()) {
       return this.apolloInstance;
     }
 
@@ -55,45 +47,26 @@ export class ApolloService {
     });
 
     this.apolloInstance = this.apollo;
-    this._url.core = environment.graphQL;
+    this._url = environment.graphQL;
 
     return this.apolloInstance;
   }
 
   /**
    * skip if apollo already created for an URI
-   * pairing conditions: URL & ClientType
+   * pairing conditions: URL
    * - core grahpql domain & 'core'
-   * - chat grahpql domain & 'chat'
    *
    * @param url {string}
    * @param type {ClientType}
    * @returns boolean
    */
-  private _hasInitiated(url: string, type: ClientType = ClientType.core): boolean {
-    if (type === ClientType.core
-      && this.apollo.client
-      && this._url.core === environment.graphQL) {
+  private _hasInitiated(): boolean {
+    if (this.apollo.client
+      && this._url === environment.graphQL) {
       return true;
-    } else if (type === ClientType.chat
-      && this.apollo.use('chat')
-      && this._url.chat === environment.chatGraphQL) {
-        return true;
     }
     return false;
-  }
-
-  initiateChatClient() {
-    if (this._hasInitiated(environment.chatGraphQL, ClientType.chat)) {
-      return;
-    }
-    this.apollo.createNamed('chat', {
-      link: this.httpLink.create({
-        uri: environment.chatGraphQL
-      }),
-      cache: new InMemoryCache(),
-    });
-    this._url.chat = environment.chatGraphQL;
   }
 
   getClient() {
@@ -139,7 +112,10 @@ export class ApolloService {
   /**
    * single fetch no-cache is only option
    */
-  graphQLFetch(query: string, variables?: any): Observable<any> {
+  graphQLFetch(query: string, options?: {
+    variables?: any;
+    context?: any;
+  }): Observable<any> {
     // Direct login is using GraphQL before landing on AppComponent,
     // so need force instantiation beforehand
     let apollo: Apollo = this.apollo;
@@ -149,8 +125,9 @@ export class ApolloService {
 
     const watch = apollo.query({
       query: gql(query),
-      variables: variables || {},
-      fetchPolicy: 'no-cache'
+      variables: options?.variables || {},
+      fetchPolicy: 'no-cache',
+      context: options?.context || {},
     });
     return watch
       .pipe(map(response => {
@@ -189,36 +166,6 @@ export class ApolloService {
       }),
       // prevent error thrown which will stop the autosave/submission
       catchError((error: HttpErrorResponse) => of({ error }))
-    );
-  }
-
-  /*
-   * Valid options:
-   * noCache: Boolean default false. If set to false, will not cache the result
-   */
-  chatGraphQLQuery(query: string, variables: any = {}) {
-    const watch = this.apollo.use('chat').query({
-      query: gql(query),
-      variables,
-      fetchPolicy: 'no-cache' // always retrieve a fresh one
-    });
-    return watch.pipe(
-      concatMap(response => {
-        return of(response);
-      }),
-      catchError((error) => this.requestService.handleError(error))
-    );
-  }
-
-  chatGraphQLMutate(query: string, variables = {}): Observable<any> {
-    return this.apollo.use('chat').mutate({
-      mutation: gql(query),
-      variables: variables
-    }).pipe(
-      concatMap(response => {
-        return of(response);
-      }),
-      catchError((error) => this.requestService.handleError(error))
     );
   }
 

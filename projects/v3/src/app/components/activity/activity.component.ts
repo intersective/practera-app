@@ -1,27 +1,103 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Subject } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { SharedService } from '@v3/app/services/shared.service';
-import { Activity, Task } from '@v3/services/activity.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Activity, ActivityService, Task } from '@v3/services/activity.service';
 import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss'],
 })
-export class ActivityComponent {
-  @Input() activity: Activity;
+export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() activity!: Activity;
   @Input() currentTask: Task;
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
+  leadImage: string = null;
+  newTasks: { [key: number]: any } = {};
+
+  // when user isn't in a team & all tasks are found to be team tasks, emit this event
+  // true: user not allowed to access
+  // false: at least one non-team task
+  @Output() cannotAccessTeamActivity = new EventEmitter();
+  isForTeamOnly: boolean = false;
+  private unsubscribe$: Subject<any> = new Subject();
+
   constructor(
     private utils: UtilsService,
     private storageService: BrowserStorageService,
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
-  ) { }
+    private activityService: ActivityService,
+    private unlockIndicatorService: UnlockIndicatorService
+  ) {}
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
+  }
+
+  resetTaskIndicator(unlockedTasks) {
+    this.newTasks = {};
+    unlockedTasks
+      .filter((task) => task.taskId)
+      .forEach((task) => {
+        this.newTasks[task.taskId] = true;
+      });
+  }
+
+  ngOnInit() {
+    this.leadImage = this.storageService.getUser().programImage;
+    this.unlockIndicatorService.unlockedTasks$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: res => this.resetTaskIndicator(res)
+      });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.activity?.currentValue) {
+      if (this.utils.isEqual(changes.activity.currentValue, changes.activity.previousValue)) {
+        return;
+      }
+      const activities = this.storageService.get('activities');
+
+      const currentActivity = (activities || {})[this.activity.id];
+      if (currentActivity?.leadImage) {
+        this.leadImage = currentActivity?.leadImage;
+      }
+
+      const currentValue = changes.activity.currentValue;
+      if (currentValue.tasks?.length > 0) {
+        // verify team status & restrict access
+        this.activityService
+          .nonTeamActivity(changes.activity.currentValue?.tasks)
+          .then((nonTeamActivity) => {
+            this.isForTeamOnly = !nonTeamActivity;
+            this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
+          });
+
+        // clear viewed unlocked indicator
+        const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+        this.resetTaskIndicator(unlockedTasks);
+        if (unlockedTasks.length === 0) {
+          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          clearedActivities.forEach((activity) => {
+            this.notificationsService
+              .markTodoItemAsDone(activity)
+              .pipe(takeUntil(this.unsubscribe$))
+              .subscribe();
+          });
+        }
+      }
+    }
+  }
 
   /**
    * Task icon type
@@ -54,10 +130,7 @@ export class ActivityComponent {
     if (!task.dueDate) {
       return '';
     }
-    // overdue shows the label only
-    if (task.isOverdue) {
-      return '';
-    }
+
     return `<strong>Due Date</strong>: ${ this.utils.utcToLocal(task.dueDate) }`;
   }
 
@@ -159,7 +232,7 @@ export class ActivityComponent {
     });
   }
 
-  private async _validateTeamAssessment(task: Task, proceedCB) {
+  private async _validateTeamAssessment(task: Task, proceedCB): Promise<void> {
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 

@@ -135,10 +135,15 @@ export class DemoService {
         id: i + 1,
         name: `Badge${ i + 1 }`,
         description: i < 2 ? `Badge description${ i + 1 }` : this.description,
-        image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
+        image: 'assets/images/badge.png',
         points: Math.floor(Math.random() * 1000),
         isEarned: i < 3,
-        earnedDate: '2021-10-04 05:44:49'
+        earnedDate: '2021-10-04 05:44:49',
+        progress: Math.random(),
+        active: i % 2 === 0,
+        certificateUrl: 'assets/images/badge.png',
+        type: '',
+        badge: 'assets/images/badge.png',
       }))
     };
   }
@@ -1617,4 +1622,32 @@ export class DemoService {
     ]
   }
 
+  get deletedExperience() {
+    return {
+      "id": 1933,
+      "uuid": "ff96d1bc-a8aa-4f76-a048-f583c95fd013",
+      "timelineId": 2656,
+      "name": "UniSA Base 2023 - Internal QA Check",
+      "description": "<p>Base program for UniSA cohort starting in March 2023.</p>",
+      "type": "Other",
+      "leadImage": "https://cdn.filestackcontent.com/DX2DHY73QRuZvn7yUukP",
+      "status": null,
+      "setupStep": null,
+      "color": "#ff9c01",
+      "secondaryColor": "#ffd966",
+      "todoItemCount": 0,
+      "role": "participant",
+      "isLast": false,
+      "locale": "en-US",
+      "supportName": "QA Playground Institution Email",
+      "supportEmail": "megan.sitoy@practera.com",
+      "cardUrl": "https://www.filepicker.io/api/file/LFUFT8lBTqzGaf9CyKuA",
+      "bannerUrl": "https://cdn.filestackcontent.com/tuhgyojYQmKkW7SpIKu2",
+      "logoUrl": "/storage/filestores/open/141208.png",
+      "iconUrl": "https://cdn.filestackcontent.com/oJBGJGbBRNq4TIKt2AGz",
+      "reviewRating": true,
+      "truncateDescription": true,
+      "__typename": "Experience"
+    };
+  }
 }

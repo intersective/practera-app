@@ -83,6 +83,7 @@ export class ReviewDesktopPage implements OnInit {
     }
     this.noReview = false;
     this.currentReview = review;
+    this.utils.setPageTitle(review?.name || 'Review');
     this.assessmentService.getAssessment(review.assessmentId, 'review', 0, review.contextId, review.submissionId);
   }
 
@@ -95,29 +96,51 @@ export class ReviewDesktopPage implements OnInit {
     this.btnDisabled$.next(true);
     this.savingText$.next('Saving...');
     try {
-      const res = await this.assessmentService.submitReview(
-        this.assessment.id,
-        this.review.id,
-        this.submission.id,
-        event.answers
-      ).toPromise();
+      const { submission } = await this.assessmentService
+        .fetchAssessment(
+          event.assessmentId,
+          "review",
+          null,
+          this.currentReview.contextId,
+          this.submission.id
+        )
+        .toPromise();
 
-      // [CORE-5876] - Fastfeedback is now added for reviewer
-      if (this.assessment.pulseCheck === true && event.autoSave === false) {
-        await this.assessmentService.pullFastFeedback();
-      }
+      if (submission.status === 'pending review') {
+        const res = await this.assessmentService.submitReview(
+          this.assessment.id,
+          this.review.id,
+          this.submission.id,
+          event.answers
+        ).toPromise();
 
-      this.assessmentService.getAssessment(this.assessment.id, 'review', 0, this.currentReview.contextId, this.submission.id);
-      this.reviewService.getReviews();
+        // [CORE-5876] - Fastfeedback is now added for reviewer
+        if (this.assessment.pulseCheck === true && event.autoSave === false) {
+          await this.assessmentService.pullFastFeedback();
+        }
 
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+        await this.assessmentService.fetchAssessment(
+          this.assessment.id,
+          'review',
+          0,
+          this.currentReview.contextId,
+          this.submission.id
+        ).toPromise();
+        this.reviewService.getReviews();
 
-      // fail gracefully: Review submission API may sometimes fail silently
-      if (res?.data?.submitReview === false) {
-        this.savingText$.next($localize`Save failed.`);
-        this.btnDisabled$.next(false);
-        this.loading = false;
-        return;
+        await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+
+        // fail gracefully: Review submission API may sometimes fail silently
+        if (res?.data?.submitReview === false) {
+          this.savingText$.next($localize`Save failed.`);
+          this.btnDisabled$.next(false);
+          this.loading = false;
+          return;
+        }
+
+        this.notificationsService.assessmentSubmittedToast({ isReview: true });
+      } else {
+        this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
       }
 
       this.loading = false;

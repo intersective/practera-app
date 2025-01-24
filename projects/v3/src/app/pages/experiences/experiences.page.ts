@@ -6,7 +6,9 @@ import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
-import { Subscription } from 'rxjs';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Subject, Observable, Subscription } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-experiences',
@@ -15,37 +17,74 @@ import { Subscription } from 'rxjs';
 })
 export class ExperiencesPage implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  programs$ = this.experienceService.programsWithProgress$;
+  experiences$: Observable<any[]>;
+  programs$: Observable<ProgramObj[]>;
+  progresses: {
+    [key: number]: number;
+  } = {};
+  isMobile: boolean = false;
+  unsubscribe$ = new Subject();
 
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private experienceService: ExperienceService,
-    public loadingController: LoadingController,
+    private loadingController: LoadingController,
     private notificationsService: NotificationsService,
     private utils: UtilsService,
-    private readonly storage: BrowserStorageService,
-  ) { }
+    private storage: BrowserStorageService,
+    private unlockIndicatorService: UnlockIndicatorService,
+  ) {
+    this.experiences$ = this.experienceService.experiences$;
+    this.programs$ = this.experienceService.programsWithProgress$;
+  }
 
   ngOnInit() {
-    this.subscriptions[0] = this.activatedRoute.params.subscribe(_params => {
-      this.experienceService.getPrograms();
+    this.activatedRoute.params.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe(_params => {
+      this.experienceService.getExperiences();
     });
+
+    this.experiences$
+      .pipe(
+        filter(experiences => experiences !== null),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe(experiences => {
+        const ids = experiences.map(experience => experience.projectId);
+        this.experienceService.getProgresses(ids).subscribe(res => {
+          res.forEach(progress => {
+            if (Array.isArray(progress)) {
+              progress.forEach(project => {
+                this.progresses[project.id] = Math.round(project.progress * 100);
+              });
+              return;
+            }
+
+            // single progress objects
+            this.progresses[progress.id] = Math.round(progress.progress * 100);
+          });
+        });
+      });
+
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnDestroy(): void {
-    this.subscriptions[0].unsubscribe();
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
-  get isMobile() {
-    return this.utils.isMobile();
+  async getProgress(projectId: number) {
+    return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
   get instituteLogo() {
     return this.storage.getConfig().instituteLogo;
   }
 
-  async switchProgram(program: ProgramObj, keyEvent?: KeyboardEvent) {
+  async switchProgram(experience: ProgramObj, keyEvent?: KeyboardEvent) {
     if (keyEvent && (keyEvent.code === 'Enter' || keyEvent.code === 'Space')) {
       keyEvent.preventDefault();
     } else if (keyEvent) {
@@ -58,7 +97,8 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     await loading.present();
 
     try {
-      const route = await this.experienceService.switchProgramAndNavigate(program);
+      this.unlockIndicatorService.clearAllTasks(); // reset indicators
+      const route = await this.experienceService.switchProgramAndNavigate(experience);
       loading.dismiss().then(() => {
         if (environment.demo) {
           return this.router.navigate(['v3','home']);
@@ -75,5 +115,4 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     }
     return this.router.navigate(['v3','home']);
   }
-
 }

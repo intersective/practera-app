@@ -4,7 +4,8 @@
     padding: 12px;
 
     img {
-      max-width: 100px;
+      width: 100px;
+      height: 100px; // follow admin panel max size
       border-radius: 50%;
       &.default {
         filter: invert(.5);
@@ -19,7 +20,7 @@
 
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-evenly;
   justify-items: center;
   align-items: center;
   height: 20rem;

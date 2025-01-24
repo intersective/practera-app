@@ -1,103 +1,166 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
-import { ActivityService } from '@v3/app/services/activity.service';
-import { AssessmentService } from '@v3/app/services/assessment.service';
+import {
+  Achievement,
+  AchievementService,
+} from '@v3/app/services/achievement.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Subscription } from 'rxjs';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy {
+export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   display = 'activities';
 
-  experience$ = this.homeService.experience$;
-  activityCount$ = this.homeService.activityCount$;
+  activityCount$: Observable<number>;
   experienceProgress: number;
 
   milestones: Milestone[];
   achievements: Achievement[];
   experience: Experience;
 
-  subscriptions: Subscription[] = [];
   isMobile: boolean;
   activityProgresses = {};
 
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
+  hasUnlockedTasks: Object = {};
+
+  // default card image (gracefully show broken url)
+  defaultLeadImage: string = '';
+
+  lastVisitedActivityId: number = null;
+  bookmarkedActivities: {
+    [key: number]: boolean;
+  } = {};
+
+  unsubscribe$ = new Subject();
+  milestones$: Observable<Milestone[]>;
+
+  @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
+  @ViewChild('activities', {static: false}) activities!: ElementRef;
 
   constructor(
     private router: Router,
     private homeService: HomeService,
     private achievementService: AchievementService,
-    private activityService: ActivityService,
-    private assessmentService: AssessmentService,
     private utils: UtilsService,
     private notification: NotificationsService,
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
-  ) { }
+    private unlockIndicatorService: UnlockIndicatorService,
+    private cdr: ChangeDetectorRef,
+  ) {
+    this.activityCount$ = homeService.activityCount$;
+  }
+
+  ngAfterViewChecked() {
+    const id = this.storageService.lastVisited('activityId') as number;
+    this.lastVisitedActivityId = id;
+    this.cdr.detectChanges();
+
+
+    if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
+      this.scrollToElement(id);
+    }
+  }
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
-    this.subscriptions = [];
-    this.subscriptions.push(this.homeService.milestones$.pipe(
-      distinctUntilChanged(),
-      filter(milestones => milestones !== null),
-    ).subscribe(
-      res => {
-        this.milestones = res;
-      }
-    ));
-    this.subscriptions.push(this.achievementService.achievements$.subscribe(
-      res => {
-        this.achievements = res;
-      }
-    ));
-    this.subscriptions.push(this.homeService.experienceProgress$.subscribe(
-      res => {
-        this.experienceProgress = res;
-      }
-    ));
-    this.subscriptions.push(this.homeService.projectProgress$.pipe(
-      filter(progress => progress !== null),
-    ).subscribe(
-      progress => {
-        progress?.milestones.forEach(m => {
-          m.activities.forEach(a => this.activityProgresses[a.id] = a.progress);
-        });
-      }
-    ));
+    this.homeService.milestones$
+      .pipe(
+        distinctUntilChanged(),
+        filter((milestones) => milestones !== null),
+        takeUntil(this.unsubscribe$),
+      ).subscribe(
+        (milestones) => {
+          this.milestones = milestones;
+        }
+      );
 
-    this.subscriptions.push(
-      this.router.events.subscribe(event => {
+    this.achievementService.achievements$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.achievements = res;
+      });
+
+    this.homeService.experienceProgress$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((res) => {
+        this.experienceProgress = res;
+      });
+
+    this.homeService.projectProgress$
+      .pipe(
+        filter((progress) => progress !== null),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe((progress) => {
+        progress?.milestones?.forEach((m) => {
+          m.activities?.forEach(
+            (a) => (this.activityProgresses[a.id] = a.progress)
+          );
+        });
+      });
+
+    this.router.events
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((event) => {
         if (event instanceof NavigationEnd) {
           this.updateDashboard();
         }
-      })
-    );
+      });
+
+    this.unlockIndicatorService.unlockedTasks$
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe({
+        next: (unlockedTasks) => {
+          this.hasUnlockedTasks = {}; // reset
+          unlockedTasks.forEach((task) => {
+            if (task.milestoneId) {
+              if (this.unlockIndicatorService.isMilestoneClearable(task.milestoneId)) {
+                this.verifyUnlockedMilestoneValidity(task.milestoneId);
+              }
+            }
+
+            if (task.activityId) {
+              this.hasUnlockedTasks[task.activityId] = true;
+            }
+          });
+        },
+      });
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
-  
+
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+    this.experience = this.storageService.get('experience');
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
-    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
-    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+    this.utils.setPageTitle(this.experience?.name || 'Practera');
+    this.defaultLeadImage = this.experience.cardUrl || '';
+
+    // reset & load bookmarks
+    this.bookmarkedActivities = {};
+    const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[] || [];
+    bookmarks.forEach((id) => {
+      this.bookmarkedActivities[id] = true;
+    });
   }
 
   goBack() {
@@ -105,6 +168,11 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   switchContent(event) {
+    // update points upon switching to badges tab
+    if (event.detail.value === 'badges') {
+      this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
+      this.getEarnedPoints = this.achievementService.earnedPoints;
+    }
     this.display = event.detail.value;
   }
 
@@ -133,42 +201,85 @@ export class HomePage implements OnInit, OnDestroy {
     return null;
   }
 
-  async gotoActivity(activity, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+  /**
+   * Navigates to the activity page when an activity is clicked or the enter/space key is pressed.
+   * If the activity is locked, nothing happens.
+   * Clears the activity and assessment services before navigating.
+   * If the user is not in a team, an alert is shown.
+   * If the user is on desktop, navigates to the desktop activity page.
+   * If the user is on mobile, navigates to the mobile activity page.
+   * @param activity The activity object to navigate to.
+   * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
+   * @returns A Promise that resolves when the navigation is complete.
+   */
+  async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
+    // UI: clear lastVisited indicator (italic + grayed background)
+    this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
+      ele.classList.remove('lastVisited');
+    });
+
+    if (
+      keyboardEvent &&
+      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+    ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
 
     if (activity.isLocked) {
-      return ;
+      return;
     }
 
-    this.activityService.clearActivity();
-    this.assessmentService.clearAssessment();
-
-    const isAccessible = await this.homeService.isAccessible(activity.id);
-    if (isAccessible === false) {
-      return this.notification.alert({
-        header: $localize`Team Activity`,
-        message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
-        buttons: [
-          {
-            text: $localize`OK`,
-            role: 'cancel',
-          }
-        ]
-      });
+    if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
+      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(activity.id);
+      clearedActivityTodo?.forEach((todo) => {
+        this.notification
+          .markTodoItemAsDone(todo)
+          .pipe(first())
+          .subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.log('Marked activity as done', todo);
+          });
+        });
     }
 
-    if (!this.utils.isMobile()) {
+    if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
+      this.verifyUnlockedMilestoneValidity(milestone.id);
+    }
+
+    if (!this.isMobile) {
       return this.router.navigate(['v3', 'activity-desktop', activity.id]);
     }
+
     return this.router.navigate(['v3', 'activity-mobile', activity.id]);
   }
 
+  /**
+   * clear visited milestone unlock indicators
+   * @param   {number}  milestoneId
+   * @return  {void}
+   */
+  verifyUnlockedMilestoneValidity(milestoneId: number): void {
+    // check & update unlocked milestones
+    const unlockedMilestones =
+      this.unlockIndicatorService.clearActivity(milestoneId);
+    unlockedMilestones.forEach((unlockedMilestone) => {
+      this.notification
+        .markTodoItemAsDone(unlockedMilestone)
+        .pipe(first())
+        .subscribe(() => {
+          // eslint-disable-next-line no-console
+          console.log('Marked milestone as done', unlockedMilestone);
+        });
+    });
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+    if (
+      keyboardEvent &&
+      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+    ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
@@ -176,11 +287,21 @@ export class HomePage implements OnInit, OnDestroy {
     this.notification.achievementPopUp('', achievement);
   }
 
-  endingProgress(activity): number {
-    const progress = this.activityProgresses[activity.id];
-    if (!progress || progress === 1) {
-      return undefined;
+  scrollToElement(id: number): void {
+    const activitiesEle = this.activities.nativeElement;
+    const element = activitiesEle.querySelector(`#act-${id}`);
+
+    if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
+      element.scrollIntoView({ behavior: 'auto', block: 'center' });
+      element.classList.add('lastVisited');
+
+      this.storageService.lastVisited('activityId', null);
     }
-    return progress;
+  }
+
+  // make sure the element is visible in viewport
+  private isElementVisible(element: HTMLElement): boolean {
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
   }
 }

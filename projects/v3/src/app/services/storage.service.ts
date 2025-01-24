@@ -1,5 +1,10 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
 
+interface LastVisited {
+  [key: string]: string | number | number[];
+}
+const BOOKMARK_LIMIT = 1; // Limit the number of bookmarks to store
+
 export const BROWSER_STORAGE = new InjectionToken<Storage>('Browser Storage', {
   providedIn: 'root',
   factory: () => localStorage
@@ -27,7 +32,7 @@ export interface User {
   teamName?: string;
   userHash?: string;
   colors?: Colors;
-  activityCardImage?: string;
+  activityCardImage?: string; // default activity card image
   hasReviewRating?: boolean;
   truncateDescription?: boolean;
   enrolment?: any;
@@ -38,6 +43,14 @@ export interface User {
   LtiReturnUrl?: string;
   squareLogo?: string; // for collapsed sidemenu
   app_locale?: string;
+
+  lastVisited?: {
+    // we handle nested assessment component differently, url may not reflect the focused/active assessment
+    assessmentUrl: string;  // last visited assessment url
+    url: string; // last visited url (non-assessment)
+    activityId: number; // last visited activity id
+    homeBookmarks: number[]; // last visited home bookmarks (activity ids)
+  },
 }
 
 export interface Referrer {
@@ -65,8 +78,6 @@ export interface Config {
 })
 
 export class BrowserStorageService {
-  public memoryCache: any;
-
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
 
   get(key: string) {
@@ -85,7 +96,7 @@ export class BrowserStorageService {
    *    - fastFeedbackOpening: boolean
    *    - authToken: string
    *    - hasMultipleStacks: boolean
-   *    - programs: array
+   *    - experience: Experience
    *    - tutorial: any
    *    - unRegisteredDirectLink: boolean
    *
@@ -195,5 +206,58 @@ export class BrowserStorageService {
 
   set singlePageAccess(val) {
     this.set('singlePageAccess', val);
+  }
+
+  /**
+   * get/set last visited url/activityId/assessmentUrl
+   *
+   * @param   {string}  name   index for identify a value later
+   * @param   {string | number}  value
+   *
+   * @return  {string | number}
+   */
+  lastVisited(
+    name: 'assessmentUrl' | 'url' | 'activityId' | 'homeBookmarks',
+    value?: string | number
+  ): string | number | number[] | null {
+    let lastVisited: LastVisited = this.get('lastVisited') || {};
+
+    if (value !== undefined) {
+      if (name === "homeBookmarks" && typeof value === "number") {
+        let bookmarks = (lastVisited["homeBookmarks"] as number[]) || [];
+
+        // Remove existing occurrences of value
+        bookmarks = bookmarks.filter((item) => item !== value);
+
+        // Add value to the end
+        bookmarks.push(value);
+
+        // Limit bookmarks to BOOKMARK_LIMIT in FIFO order
+        if (bookmarks.length > BOOKMARK_LIMIT) {
+          bookmarks = bookmarks.slice(-BOOKMARK_LIMIT);
+        }
+
+        // Update lastVisited
+        lastVisited = {
+          ...lastVisited,
+          activityId: value,
+          [name]: bookmarks,
+        };
+      } else if (name === "activityId" && typeof value === "number") {
+        if (lastVisited["activityId"] === value) {
+          // Remove the activityId if it exists and is the same
+          delete lastVisited["activityId"];
+        } else {
+          // Update the activityId with the new value
+          lastVisited = { ...lastVisited, [name]: value };
+        }
+      } else {
+        lastVisited = { ...lastVisited, [name]: value };
+      }
+
+      this.append("lastVisited", lastVisited);
+    }
+
+    return lastVisited[name] || null;
   }
 }

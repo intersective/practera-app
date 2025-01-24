@@ -1,17 +1,14 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { Platform } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
-import { ApolloService } from '@v3/services/apollo.service';
+import { ModalController, Platform } from '@ionic/angular';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
-
-import Delta from 'quill-delta';
+import { Title } from '@angular/platform-browser';
 
 export enum ThemeColor {
   primary = 'primary',
@@ -25,21 +22,23 @@ declare var window: any;
   providedIn: 'root'
 })
 export class UtilsService {
+  private _screenStatus$ = new BehaviorSubject<{
+    leftSidebarExpanded: boolean;
+  }>({
+    leftSidebarExpanded: false,
+  });
+  public screenStatus$ = this._screenStatus$.asObservable();
+
   private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
-  // -- Not in used anymore, leave them commented in case we need later --
-  // // this Subject is used in project.service to cache the project data
-  // public projectSubject = new BehaviorSubject(null);
-  // // this Subject is used in activity.service to cache the activity data
-  // // it stores key => Subject pairs of all activities
-  // public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private apolloService: ApolloService,
     private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
+    private title: Title,
+    private platform: Platform,
   ) {
     if (_) {
       this.lodash = _;
@@ -49,12 +48,45 @@ export class UtilsService {
   }
 
   /**
-   * @name isMobile
-   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
-   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   * get orientation of the device by comparing window height and width
+   *
+   * @return  {boolean} true if portrait, false if landscape
    */
-  isMobile() {
-    return window.innerWidth <= 576;
+  isPortrait(): boolean {
+    return window.innerHeight > window.innerWidth ? true : false;
+  }
+
+  // set screen status (left sidebar expanded, etc)
+  viewport(name: 'leftSidebarExpanded', value) {
+    const values = this._screenStatus$.getValue();
+    this._screenStatus$.next({
+      ...values,
+      ...{ [name]: value }
+    });
+  }
+
+  /**
+   * Treat viewport size start from large tablet as desktop
+   * grouping device type into 2 group (mobile/desktop)
+   * @name isMobile
+   * @return {boolean} true if mobile, false if desktop
+   */
+  isMobile(): boolean {
+    if (this.platform.is('desktop')) {
+      return false;
+    }
+
+    if (this.platform.is('tablet')) {
+      if (window.innerWidth < 1024) {
+        return true;
+      }
+
+      // for larger tablet (iPad Pro & samsung 10)
+      // considered as desktop (1024px = logical viewport)
+      return false;
+    }
+
+    return this.platform.is('mobile');
   }
 
   /** check if a value is empty
@@ -106,6 +138,10 @@ export class UtilsService {
 
   remove(collections, callback) {
     return this.lodash.remove(collections, callback);
+  }
+
+  isEqual(value, other) {
+    return this.lodash.isEqual(value, other);
   }
 
   openUrl(url, options?: { target: String }) {
@@ -222,21 +258,6 @@ export class UtilsService {
   //   this.activitySubjects[key].next(value);
   // }
 
-  // need to clear all Subject for cache
-  async clearCache(): Promise<void> {
-    const apolloClient = this.apolloService.getClient();
-    // clear cache before initialised
-    if (apolloClient) {
-      apolloClient.stop();
-      await apolloClient.clearStore();
-    }
-    //   // initialise the Subject for caches
-    //   this.projectSubject.next(null);
-    //   this.each(this.activitySubjects, (subject, key) => {
-    //     this.activitySubjects[key].next(null);
-    //   });
-  }
-
   getCurrentLocation(): Location {
     return this.document.location;
   }
@@ -251,9 +272,10 @@ export class UtilsService {
     const curLoc = this.getCurrentLocation();
 
     let result = null;
-    for (const check in checkings) {
+    for (const [check, value] of Object.entries(checkings)) {
       if (curLoc?.pathname.indexOf(check) === 0) {
-        result = checkings[check];
+        result = value;
+        break;
       }
     }
 
@@ -322,20 +344,26 @@ export class UtilsService {
     const date = new Date(this.iso8601Formatter(time));
 
     const currentLocale = this.getCurrentLocale();
-    const formattedTime = new Intl.DateTimeFormat(currentLocale, {
+    const timeFormat: Intl.DateTimeFormatOptions = {
       hour12: this.isHour12Format(currentLocale),
       hour: 'numeric',
       minute: 'numeric'
-    }).format(date);
+    };
 
     switch (display) {
       case 'date':
         return this.dateFormatter(date);
 
       case 'time':
-        return formattedTime;
+        return new Intl.DateTimeFormat(currentLocale, timeFormat).format(date);
+
+      case 'timeZone':
+        const formatted = new Intl.DateTimeFormat(currentLocale, timeFormat);
+        const resolvedOptions = formatted.resolvedOptions();
+        return `${this.dateFormatter(date)} ${formatted.format(date)} (${resolvedOptions.timeZone})`;
 
       default:
+        const formattedTime = new Intl.DateTimeFormat(currentLocale, timeFormat).format(date);
         return this.dateFormatter(date) + ' ' + formattedTime;
     }
   }
@@ -392,15 +420,8 @@ export class UtilsService {
       time.getFullYear() === compared.getFullYear())) {
       return 0;
     }
-    if (time.getTime() < compared.getTime()) {
-      return -1;
-    }
-    if (time.getTime() === compared.getTime()) {
-      return 0;
-    }
-    if (time.getTime() > compared.getTime()) {
-      return 1;
-    }
+
+    return Math.sign(time.getTime() - compared.getTime());
   }
 
   /**
@@ -421,7 +442,7 @@ export class UtilsService {
   /**
    * check if the targeted element in an array is located at the last in the last index
    */
-  checkOrderById(target: any[], currentId, options: {
+  checkOrderById(target: any[], currentId: number, options: {
     isLast: boolean;
   }): boolean {
     const length = target.length;
@@ -617,7 +638,7 @@ export class UtilsService {
    * @param role String - User role
    * @returns String - new user roles.
    */
-  getUserRolesForUI(role) {
+  getUserRolesForUI(role?: string) {
     switch (role) {
       case 'participant':
         return $localize`:labelling:learner`;
@@ -656,7 +677,7 @@ export class UtilsService {
         if (hueMatched && saturationMatched && lightnessMatched) {
           return true;
         }
-      break;
+        break;
     }
 
     return false;
@@ -679,22 +700,6 @@ export class UtilsService {
     return false;
   }
 
-  /**
-   * This method will add matcher to the clipboard of the quill editor.
-   * And it will make sure every thing user paste will paste as plain text. without any formating that pasting text have.
-   * Reason we need this.
-   * User may copy and paste some formated text that may contain formats we are not supporting. So if those send as message
-   * UI/UX will out. becouse we didn't support them. that's why we make sure we remove formating  from text that user paste to text editor.
-   * @param quillEditor Quill text editor instance
-   * @returns quill clipboard matcher event
-   */
-  formatQuillClipboard(quillEditor) {
-    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, function (node, delta) {
-      const plaintext = node.innerText;
-      return new Delta().insert(plaintext);
-    });
-  }
-
   moveToNewLocale(newLocale: string) {
     const currentURL = this.getCurrentLocation();
     const currentLocale = this.getCurrentLocale();
@@ -710,7 +715,8 @@ export class UtilsService {
     }
 
     // if pathname begin with different locale
-    const newPath = currentURL.pathname.replace(pathname[0], `/${newLocale}/`);
+    const safePathName = pathname ? pathname[0] : '';
+    const newPath = currentURL.pathname.replace(safePathName, `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 
@@ -731,16 +737,9 @@ export class UtilsService {
   }
 
   checkIsPracteraSupportEmail() {
-    const expId = this.storageService.getUser().experienceId;
-    const programList = this.storageService.get('programs');
-    if (!expId || !programList || programList.length < 1) {
-      return;
-    }
-    const currentExperience = programList.find((program)=> {
-      return program.experience.id === expId;
-    });
-    if (currentExperience) {
-      let supportEmail = currentExperience.experience.support_email;
+    const currentExperience = this.storageService.get('experience');
+    if (currentExperience && currentExperience.supportEmail) {
+      let supportEmail = currentExperience.supportEmail;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;
@@ -750,5 +749,14 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  // set page title
+  setPageTitle(title: string) {
+    this.title.setTitle(title);
+  }
+
+  scrollToElement(element: HTMLElement) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }

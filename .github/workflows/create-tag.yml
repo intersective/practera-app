@@ -55,7 +55,7 @@ jobs:
 #  GITHUB REPO CHECKOUT 
 ################################################
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           ref: ${{ github.event.inputs.RELEASE_BRANCH }}
@@ -65,7 +65,7 @@ jobs:
 #  AWS CLI CONFIGURATION - DEVOPS 
 ################################################ 
       - name: Configure AWS credentials from $STACK_NAME account
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.DEVOPS_AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.DEVOPS_AWS_SECRET_ACCESS_KEY }}

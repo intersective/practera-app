@@ -1,7 +1,7 @@
 export const environment = {
+  authCacheDuration: 5 * 60 * 1000, // 5 minutes
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
   demo: false,
-  skipGlobalLogin: '<CUSTOMPLAIN_SKIPGLOBALLOGINFLAG>',
   appkey: '<CUSTOM_APPKEY>',
   pusherKey: '<CUSTOM_PUSHERKEY>',
   pusherCluster: '<CUSTOM_PUSHER_CLUSTER>',
@@ -10,6 +10,7 @@ export const environment = {
   graphQL: '<CUSTOM_GRAPH_QL>',
   chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
   globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
+  badgeProjectUrl: '<CUSTOM_BADGE_PROJECT_URL>',
   stackUuid: '<CUSTOM_STACK_UUID>',
   intercomAppId: '<CUSTOM_INTERCOM>',
   filestack: {

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { ChatChannel } from '@v3/services/chat.service';
 import { DOCUMENT } from '@angular/common';
-import { SharedService } from '@v3/app/services/shared.service';
+import { AuthService } from '@v3/app/services/auth.service';
 
 @Component({
   selector: 'app-chat-view',
@@ -17,14 +17,15 @@ export class ChatViewComponent implements OnInit {
 
   @ViewChild('chatList') chatList;
   @ViewChild('chatRoom') chatRoom;
+  isMobile: boolean = false;
 
   constructor(
-    public router: Router,
     private route: ActivatedRoute,
-    public utils: UtilsService,
-    private sharedService: SharedService,
+    private authService: AuthService,
+    private utils: UtilsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
@@ -39,7 +40,7 @@ export class ChatViewComponent implements OnInit {
   private _initialise() {
     this.chatChannel = null;
     this.loadInfo = false;
-    this.sharedService.getNewJwt().subscribe();
+    this.authService.authenticate().subscribe();
   }
 
   // navigate to a chat-room (on desktop only)
@@ -71,7 +72,7 @@ export class ChatViewComponent implements OnInit {
     this.desktopGoto(chats[0]);
   }
 
-  loadchannelInfo(event) {
+  loadchannelInfo(_event) {
     this.loadInfo = true;
   }
 

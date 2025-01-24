@@ -1,18 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { takeUntil } from 'rxjs/operators';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Observable, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
-import { concat } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
   selector: 'app-v3',
@@ -60,22 +62,29 @@ import { concat } from 'rxjs';
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = true; // collapsible submenu
+  isMenuOpen = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
-  subscriptions: Subscription[];
   appPages: any[];
   showMessages: boolean = false;
   showEvents: boolean = false;
   showReviews: boolean = false;
   directionIcon: string = this.direction();
+  collapsibleMenu: 'open' | 'closed' = 'closed';
+  institutionLogo: string = this.getInstitutionLogo();
+  splitpaneEnabled: boolean | string;
+  isSwipeEnabled: boolean = false;
+  institutionName: string;
 
   i18nText = {
     'setting': $localize`Settings`,
     'myExperience': $localize`My Experiences`
   };
+  hasUnlockedTasks: boolean;
+  unsubscribe$ = new Subject();
 
   constructor(
+    private menuController: MenuController,
     private modalController: ModalController,
     private animationService: AnimationsService,
     private reviewService: ReviewService,
@@ -86,14 +95,36 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly utils: UtilsService,
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
-  ) { }
+    private readonly unlockIndicatorService: UnlockIndicatorService,
+  ) {
+  }
+
+  @HostListener('window:resize', ['$event'])
+  ionViewDidEnter() {
+    let menuEnabled = true;
+    let splitpaneEnabled = false;
+    this.isMenuOpen = false;
+
+    this.collapsibleMenu = 'closed';
+
+    // toggleable-feature: allow swipe in menu when viewport is smaller than 576px
+    // make isSwipeEnabled dynamic to enable
+    if (window.innerWidth < 576) {
+      menuEnabled = false;
+      this.isMenuOpen = true;
+      this.collapsibleMenu = 'open';
+    } else if (window.innerWidth >= 1024) {
+      splitpaneEnabled = true;
+    }
+
+    this.splitpaneEnabled = splitpaneEnabled;
+    this.utils.viewport('leftSidebarExpanded', this.splitpaneEnabled);
+    this.menuController.enable(menuEnabled);
+  }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(subs => {
-      if (subs.closed !== true) {
-        subs.unsubscribe();
-      }
-    });
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 
   private _initMenuItems() {
@@ -104,6 +135,7 @@ export class V3Page implements OnInit, OnDestroy {
         icon: 'home',
         code: 'Home',
         badges: 0,
+        hasNotification: false,
       },
       {
         title: $localize`Events`,
@@ -127,20 +159,24 @@ export class V3Page implements OnInit, OnDestroy {
         badges: 0,
       }
     ];
+
+    this.institutionName = this.storageService.getUser().institutionName || 'Practera';
   }
 
   ngOnInit(): void {
     this._initMenuItems();
-    this.subscriptions = [];
-    this.subscriptions.push(
-      this.reviewService.reviews$.subscribe(res => {
-        if (res && res.length) {
-          this.showReviews = true;
-        } else {
-          this.showReviews = false;
-        }
-      })
-    );
+
+    this.reviewService.reviews$
+    .pipe(
+      takeUntil(this.unsubscribe$),
+    )
+    .subscribe(res => {
+      if (res && res.length) {
+        this.showReviews = true;
+      } else {
+        this.showReviews = false;
+      }
+    });
 
     this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
@@ -150,7 +186,6 @@ export class V3Page implements OnInit, OnDestroy {
         }
       });
       this.appPages[3].badges = chat?.unreadMessages || 0; // messages tab
-
       this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length; // events tab
       this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
     });
@@ -161,9 +196,10 @@ export class V3Page implements OnInit, OnDestroy {
       }
     });
 
-    this.subscriptions.push(this.route.params.subscribe(_params => {
+    this.route.params
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(_params => {
       this.reviewService.getReviews();
-      this.homeService.getExperience();
 
       // Hide events tab to other user roles. Show only for participants
       if (this.storageService.getUser().role && this.storageService.getUser().role === 'participant') {
@@ -171,28 +207,52 @@ export class V3Page implements OnInit, OnDestroy {
       } else {
         this.showEvents = false;
       }
-    }));
+    });
+
+    this.router.events
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(event => {
+        if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
+          this.homeService.getExperience();
+        }
+      });
 
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
     } else {
       // display chat tab if a user has chatroom available
-      this.subscriptions.push(this.chatService.getChatList().subscribe(chats => {
-        if (chats && chats.length > 0) {
-          this.showMessages = true;
-        } else {
-          this.showMessages = false;
-        }
-      }));
+      this.chatService.getChatList()
+        .pipe(takeUntil(this.unsubscribe$))
+        .subscribe(chats => {
+          if (chats && chats.length > 0) {
+            this.showMessages = true;
+          } else {
+            this.showMessages = false;
+          }
+        });
     }
-    this.openMenu = false;
+    this.isMenuOpen = false;
 
-    this.notificationInitialise().subscribe();
-  }
+    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
+    this.notificationsService.getTodoItems().pipe(
+      mergeMap(_generic => {
+        return this.notificationsService.getChatMessage();
+      }),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
 
-  // initiate subscription TabPage level (required), so the rest independent listener can pickup the same sharedReplay
-  notificationInitialise(): Observable<any> {
-    return concat(this.notificationsService.getTodoItems(), this.notificationsService.getChatMessage());
+    // @NOTE: keep for future conflict resolve (not sure if still needed)
+    // this.notificationInitialise()
+    // .pipe(takeUntil(this.unsubscribe$))
+    // .subscribe();
+  // }
+
+    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+      this.appPages[0].hasNotification = false; // reset
+      if (unlockedTasks?.length > 0) {
+        this.appPages[0].hasNotification = true;
+      }
+    });
   }
 
   async presentModal(keyboardEvent?: KeyboardEvent): Promise<void> {
@@ -226,38 +286,33 @@ export class V3Page implements OnInit, OnDestroy {
     }
   }
 
-  get institutionLogo() {
-    if (this.openMenu !== true) {
+  getInstitutionLogo(): string {
+    if (!this.storageService) {
+      return '/assets/logo.svg'; // Default logo or some fallback
+    }
+
+    if (this.isMenuOpen !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
 
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
   }
 
-  get institutionName() {
-    return this.storageService.getUser().institutionName || 'Practera';
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
-  }
-
   toggleMenu() {
-    this.openMenu = !this.openMenu;
+    this.isMenuOpen = !this.isMenuOpen;
+    this.collapsibleMenu = this.collapseMenu();
+    this.institutionLogo = this.getInstitutionLogo();
   }
 
   // only desktop version require collapsed menu
-  get collapsibleMenu() {
-    if (this.isMobile) {
-      return 'open';
-    }
-
-    return (this.openMenu ? 'open' : 'closed');
+  // get collapsibleMenu() {
+  collapseMenu(): 'open' | 'closed' {
+    return (this.isMenuOpen ? 'open' : 'closed');
   }
 
   // rotation animation logic
   direction(): string {
-    this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
+    this.directionIcon = this.isMenuOpen ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
     return this.directionIcon;
   }
 

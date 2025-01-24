@@ -2,7 +2,7 @@ import { Component, OnInit, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { ExperienceService } from '@v3/services/experience.service';
+import { Experience, ExperienceService } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
@@ -31,25 +31,16 @@ export class AuthDirectLoginComponent implements OnInit {
       return this._error();
     }
 
-    try {
-      // skip the authentication if the same auth token has been used before
-      if (this.storage.get('authToken') !== authToken) {
-        await this.authService.directLogin({ authToken }).toPromise();
-        await this.experienceService.getMyInfo().toPromise();
-        // save the auth token to compare with future use
-        this.storage.set('authToken', authToken);
+    this.authService.autologin({ authToken }).subscribe({
+      next: async (authed) => {
+        await this.authService.getMyInfo().toPromise();
+        return this._redirect({ experience: authed.experience });
+      },
+      error: err => {
+        console.error(err);
+        this._error(err);
       }
-      if (environment.demo) {
-        setTimeout(() => {
-          return this._redirect();
-        }, 3000);
-      } else {
-        return this._redirect();
-      }
-    } catch (err) {
-      console.error(err);
-      this._error(err);
-    }
+    });
   }
 
   // force every navigation happen under radar of angular
@@ -65,7 +56,13 @@ export class AuthDirectLoginComponent implements OnInit {
    * @param {boolean}   redirectLater
    * @returns {Promise<boolean | void>}
    */
-  private async _redirect(redirectLater?: boolean): Promise<boolean | void> {
+  private async _redirect(options?: {
+    experience?: Experience;
+    redirectLater?: boolean;
+  }): Promise<boolean | void> {
+    const experience = options?.experience;
+    const redirectLater = options?.redirectLater || false;
+
     const redirect = this.route.snapshot.paramMap.get('redirect');
     const activityId = +this.route.snapshot.paramMap.get('act');
     const contextId = +this.route.snapshot.paramMap.get('ctxt');
@@ -75,11 +72,16 @@ export class AuthDirectLoginComponent implements OnInit {
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
     // clear the cached data
-    await this.utils.clearCache();
+    await this.authService.clearCache();
+
+    const redirectConfig = {
+      experience,
+      save: redirectLater
+    };
 
     if (!redirect || !timelineId) {
       // if there's no redirection or timeline id
-      return this._saveOrRedirect(['experiences'], redirectLater);
+      return this._saveOrRedirect(['experiences'], redirectConfig);
     }
 
     // purpose of return_url
@@ -93,34 +95,28 @@ export class AuthDirectLoginComponent implements OnInit {
     const restrictedAccess = this.singlePageRestriction();
 
     // switch program directly if user already registered
-    if (!redirectLater) {
-      const program = this.utils.find(this.storage.get('programs'), value => {
-        return value.timeline.id === timelineId;
+    if (!redirectLater && experience) {
+      await this.experienceService.switchProgram({
+        experience
       });
-      if (this.utils.isEmpty(program)) {
-        // if the timeline id is not found
-        return this._saveOrRedirect(['experiences']);
-      }
-      // switch to the program
-      await this.experienceService.switchProgram(program);
     }
 
     let referrerUrl = '';
     switch (redirect) {
       case 'home':
-        return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectConfig);
       case 'project':
-        return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectConfig);
       case 'activity':
         if (!activityId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         } else if (this.utils.isMobile()){
-          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectConfig);
         }
-        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectLater);
+        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectConfig);
       case 'activity_task':
         if (!activityId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
         referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
@@ -131,12 +127,12 @@ export class AuthDirectLoginComponent implements OnInit {
           });
         }
         if (this.utils.isMobile()){
-          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectConfig);
         }
-        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectLater);
+        return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectConfig);
       case 'assessment':
         if (!activityId || !contextId || !assessmentId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
 
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
@@ -150,9 +146,9 @@ export class AuthDirectLoginComponent implements OnInit {
 
         if (this.utils.isMobile() || restrictedAccess) {
           if (submissionId) {
-            return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId, submissionId], redirectLater);
+            return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId, submissionId], redirectConfig);
           }
-          return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId], redirectLater);
+          return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId], redirectConfig);
         } else {
           return this._saveOrRedirect([
             'v3', 'activity-desktop',
@@ -162,22 +158,22 @@ export class AuthDirectLoginComponent implements OnInit {
               contextId,
               assessmentId,
             }
-          ], redirectLater);
+          ], redirectConfig);
         }
       case 'topic':
         if (!activityId || !topicId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
         if (this.utils.isMobile() || restrictedAccess) {
-          return this._saveOrRedirect(['topic-mobile', activityId, topicId], redirectLater);
+          return this._saveOrRedirect(['topic-mobile', activityId, topicId], redirectConfig);
         } else {
-          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'topic', task_id: topicId }], redirectLater);
+          return this._saveOrRedirect(['v3', 'activity-desktop', activityId, { task: 'topic', task_id: topicId }], redirectConfig);
         }
       case 'reviews':
-        return this._saveOrRedirect(['v3', 'reviews'], redirectLater);
+        return this._saveOrRedirect(['v3', 'reviews'], redirectConfig);
       case 'review':
         if (!contextId || !assessmentId || !submissionId) {
-          return this._saveOrRedirect(['v3', 'home'], redirectLater);
+          return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
 
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
@@ -197,20 +193,35 @@ export class AuthDirectLoginComponent implements OnInit {
             assessmentId,
             submissionId,
             { from: 'reviews' }
-          ], redirectLater);
+          ], redirectConfig);
         }
-        return this._saveOrRedirect(['v3', 'review-desktop', submissionId], redirectLater);
+        return this._saveOrRedirect(['v3', 'review-desktop', submissionId], redirectConfig);
       case 'chat':
-        return this._saveOrRedirect(['v3', 'messages'], redirectLater);
+        return this._saveOrRedirect(['v3', 'messages'], redirectConfig);
       case 'settings':
-        return this._saveOrRedirect(['v3', 'settings'], redirectLater);
+        return this._saveOrRedirect(['v3', 'settings'], redirectConfig);
       default:
-        return this._saveOrRedirect(['v3', 'home'], redirectLater);
+        return this._saveOrRedirect(['v3', 'home'], redirectConfig);
     }
   }
 
-  private _saveOrRedirect(route: Array<String | number | object>, save = false) {
-    if (save) {
+  private _saveOrRedirect(route: Array<String | number | object>, options?: {
+    save?: boolean;
+    experience?: any;
+  }): void | Promise<boolean> {
+    const currentLocation = window.location.href;
+    const locale = options?.experience?.locale;
+    if (currentLocation.indexOf('localhost') === -1 && currentLocation.indexOf(locale) === -1) {
+      route = [`/${locale}`, ...route];
+      return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
+    } else { // Info: This block is only for development purpose
+      console.info('URL redirection::', {
+        dev: route,
+        prod: [`/${locale || null}`, ...route]
+      });
+    }
+
+    if (options?.save === true) {
       return this.storage.set('directLinkRoute', route);
     }
     /**
@@ -227,18 +238,22 @@ export class AuthDirectLoginComponent implements OnInit {
     if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
       'User is not registered'
     ].includes(res.data.message)) {
-      this._redirect(true);
+      this._redirect({ redirectLater: true });
       this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
+
+    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+
     return this.notificationsService.alert({
-      message: $localize`Your link is invalid or expired.`,
+      message: errorMessage,
       buttons: [
         {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            this.navigate(['login']);
+            // calling auth service logout mentod to clear user data and redirect
+            this.authService.logout();
           }
         }
       ]
@@ -256,4 +271,6 @@ export class AuthDirectLoginComponent implements OnInit {
 
     return this.storage.singlePageAccess;
   }
+
+
 }

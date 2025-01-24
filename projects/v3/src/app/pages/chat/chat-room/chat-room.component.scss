@@ -1,3 +1,4 @@
+
 $message-body-size: 60%;
 
 .not-started-empty-status {
@@ -334,8 +335,8 @@ $message-body-size: 60%;
         min-height: 48px;
 
         .message-text-editor {
-          .ql-toolbar, .ql-container.ql-snow {
-            border: none;
+          .ql-toolbar.ql-snow, .ql-container.ql-snow {
+            border: none !important;
           }
         }
 
@@ -514,4 +515,20 @@ ion-toolbar {
 ion-button.ion-focused {
   border: 1px solid black;
   border-radius: 8px;
+}
+
+ion-fab.scroll-to-bottom {
+  opacity: 0.7;
+}
+
+
+.ql-editor {
+  a {
+    text-decoration: underline;
+    word-break: break-all;
+  }
+
+   a:hover {
+    color: var(--ion-color-primary);
+  }
 }
