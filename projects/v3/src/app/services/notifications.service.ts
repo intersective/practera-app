@@ -260,7 +260,7 @@ export class NotificationsService {
 
       return this.presentToast($localize`Submission failed. Please try again.`, {
         color: 'danger',
-        icon: 'close-circle'
+        icon: 'close-circle',
       });
     }
 
