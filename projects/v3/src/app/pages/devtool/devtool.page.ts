@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
@@ -19,6 +19,8 @@ export class DevtoolPage implements OnInit {
   identifier: string;
 
   sample: any;
+  viewportWidth: number;
+  viewportHeight: number;
 
   info: {
     userAgent: string;
@@ -50,6 +52,17 @@ export class DevtoolPage implements OnInit {
       this.user = this.storageService.get('me');
     }
 
+    this.updateViewportSize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.updateViewportSize();
+  }
+
+  updateViewportSize() {
+    this.viewportWidth = window.innerWidth;
+    this.viewportHeight = window.innerHeight;
     this.deviceInfo();
   }
 
