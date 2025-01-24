@@ -1,14 +1,18 @@
 <ion-content color="light" text-center>
   <ng-container [ngSwitch]="type">
 
+    <!-- Forgot Password Confirmation -->
     <ng-container *ngSwitchCase="'forgotPasswordConfirmation'">
       <div class="div-logo"></div>
       <div class="div-after-logo">
-        <p i18n>We have sent an email to "<i>{{ data.email }}</i>" with a link to log into the system - please check your inbox. </p>
-        <p i18n>If you haven't received an email in a few minutes, please make sure the email you entered is correct and check your spam folder. Thank you.</p>
+        <p i18n>We have sent an email to "<i>{{ data.email }}</i>" with a link to log into the system - please check
+          your inbox.</p>
+        <p i18n>If you haven't received an email in a few minutes, please make sure the email you entered is correct and
+          check your spam folder. Thank you.</p>
       </div>
     </ng-container>
 
+    <!-- Short Message -->
     <ng-container *ngSwitchCase="'shortMessage'">
       <div class="div-logo"></div>
       <div class="div-after-logo" text-left>
@@ -16,9 +20,25 @@
       </div>
     </ng-container>
 
+    <!-- Pulsecheck Status Information -->
+    <ng-container *ngSwitchCase="'pulseCheckStatus'">
+      <div class="div-logo"></div>
+      <div class="div-after-logo">
+        <p class="status-info">
+          This shows how you, your team, and reviewers of your team's work feel about whether your project is on track.
+        </p>
+        <p class="status-info">
+          <span class="green">Green</span> is on track, <span class="red">red</span> is potentially off track. <span
+            class="yellow">Yellow</span> means mixed views.
+        </p>
+      </div>
+    </ng-container>
+
   </ng-container>
+
   <div class="div-after-logo">
-    <ion-button mode="ios" id="btn-popup-confirm" (click)="confirmed()" shape="round" color="primary" expand="full" i18n="dismiss button">OK</ion-button>
+    <ion-button mode="ios" id="btn-popup-confirm" (click)="confirmed()" shape="round" color="primary" expand="full"
+      i18n="dismiss button">OK</ion-button>
   </div>
 
 </ion-content>
