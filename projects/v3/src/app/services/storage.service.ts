@@ -51,6 +51,9 @@ export interface User {
     activityId: number; // last visited activity id
     homeBookmarks: number[]; // last visited home bookmarks (activity ids)
   },
+
+  // error handling
+  saveAssessmentErrors?: [],
 }
 
 export interface Referrer {
@@ -221,12 +224,15 @@ export class BrowserStorageService {
   /**
    * get/set last visited url/activityId/assessmentUrl
    *
-   * @param   {string}  name   [name description]
+   * @param   {string}  name   index for identify a value later
    * @param   {string | number}  value
    *
    * @return  {string | number}
    */
-  lastVisited(name: string, value?: string | number): string | number | number[] | null {
+  lastVisited(
+    name: 'assessmentUrl' | 'url' | 'activityId' | 'homeBookmarks',
+    value?: string | number
+  ): string | number | number[] | null {
     let lastVisited: LastVisited = this.get('lastVisited') || {};
 
     if (value !== undefined) {

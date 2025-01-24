@@ -43,6 +43,7 @@ export const environment = {
   intercom: false,
   newrelic: false,
   goMobile: false,
+  helpline: 'help@practera.com',
 };
 
 /*
