@@ -85,6 +85,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       endpoint: this.tusEndpoint,
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
+      onBeforeRequest: (req) => {
+        // eslint-disable-next-line no-console
+        console.log('onBeforeRequest', req);
+      },
       onError: (error) => {
         this.notificationsService.alert({
           header: "Upload Failed",
@@ -105,9 +109,20 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       onAfterResponse: async (req, res) => {
         // eslint-disable-next-line no-console
         console.log('onAfterResponse', req, res);
-        if (req.getMethod() === 'POST') {
-          this.s3Info = this.uppyUploaderService.extractResponseData(res as any);
-        }
+        // eslint-disable-next-line no-console
+        console.log('onAfterResponse::res.getBody()', res.getBody());
+
+        // eslint-disable-next-line no-console
+        req.getMethod() === 'POST' && console.log('onAfterResponse::res.getBody()', res.getBody());
+
+        /* if (req.getMethod() === 'POST') {
+          const data = JSON.parse(res?._xhr?.response);
+
+          // eslint-disable-next-line no-console
+          console.log('uppy-xhr', data);
+
+          this.s3Info = data;
+        } */
       },
     }).on("upload", (data) => {
       // eslint-disable-next-line no-console
