@@ -221,6 +221,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   private invalidAnswerEmailContent(rawData) {
     const body = `Hi Team,\n
 I am experiencing issues with submitting my assessment answers.\n
+Please do not change anything below this line - this information will help the Practera team identify the issue\n
 Assessment ID: ${this.assessment.id}
 Activity ID: ${this.activityId}\n\n
 Question Info: ${JSON.stringify(rawData)}\n\n
