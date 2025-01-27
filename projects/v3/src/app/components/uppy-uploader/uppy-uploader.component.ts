@@ -1,3 +1,4 @@
+import { UppyUploaderService } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
@@ -43,10 +44,16 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     doneButtonHandler: null,
   };
 
+  s3Info: string; /* {
+    path: string;
+    bucket: string;
+  } */;
+
   constructor(
     private notificationsService: NotificationsService,
     private modalController: ModalController,
     private storageService: BrowserStorageService,
+    private uppyUploaderService: UppyUploaderService,
   ) {}
 
   ngOnInit() {
@@ -78,6 +85,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       endpoint: this.tusEndpoint,
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
+      onBeforeRequest: (req) => {
+        // eslint-disable-next-line no-console
+        console.log('onBeforeRequest', req);
+      },
       onError: (error) => {
         this.notificationsService.alert({
           header: "Upload Failed",
@@ -94,6 +105,39 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       onSuccess: (upload) => {
         // eslint-disable-next-line no-console
         console.log("Upload complete:", upload);
+      },
+      onAfterResponse: async (req, res) => {
+        try {
+
+          // eslint-disable-next-line no-console
+          console.log('onAfterResponse', req, res);
+          // eslint-disable-next-line no-console
+          console.log('onAfterResponse::res.getBody()', res.getBody());
+          this.s3Info = res.getBody();
+
+          // this.s3Info = JSON.parse(res.getBody());
+          // eslint-disable-next-line no-console
+          console.log('onAfterResponse::this.s3Info', this.s3Info);
+
+          // eslint-disable-next-line no-console
+          // req.getMethod() === 'POST' && console.log('onAfterResponse::res.getBody()', res.getBody());
+
+          /* if (req.getMethod() === 'POST') {
+            const data = JSON.parse(res?._xhr?.response);
+
+            // eslint-disable-next-line no-console
+            console.log('uppy-xhr', data);
+
+            this.s3Info = data;
+          } */
+
+          // if (req.getMethod() === 'POST') {
+          //   this.s3Info = this.uppyUploaderService.extractResponseData(res as any);
+          // }
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('onAfterResponse::error', error);
+        }
       },
     }).on("upload", (data) => {
       // eslint-disable-next-line no-console
@@ -149,6 +193,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   onComplete(result) {
     // eslint-disable-next-line no-console
     console.log("Uploaded files:", result);
+
     this.closeModal(result);
   }
 
@@ -164,6 +209,14 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   closeModal(result) {
-    this.modalController.dismiss(result);
+    const s3Info = JSON.parse(this.s3Info);
+    const data = {
+      ...result,
+      ...{
+        bucket: s3Info?.bucket,
+        path: s3Info?.path,
+      }
+    };
+    this.modalController.dismiss(data);
   }
 }
