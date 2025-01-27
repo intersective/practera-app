@@ -25,7 +25,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   profile = {
     contactNumber: '',
     email: '',
-    image: '',
+    avatar: '',
     name: ''
   };
   hasMultipleStacks = false;
@@ -67,26 +67,38 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   private async _retrieveUserInfo(): Promise<void> {
-    const res = await this.authService.getMyInfo().toPromise();
-    const user = this.storage.getUser();
-    const {
-      email,
-      contactNumber,
-      image,
-      name,
-      programName,
-      LtiReturnUrl,
-    } = user;
-    // get contact number and email from local storage
-    this.profile.email = email;
-    this.profile.contactNumber = contactNumber;
-    this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = name;
-    this.currentProgramName = programName;
-    this.returnLtiUrl = LtiReturnUrl;
+    try {
+      await firstValueFrom(this.authService.getMyInfo());
+      const user = this.storage.getUser();
+      const {
+        email,
+        contactNumber,
+        avatar,
+        name,
+        programName,
+        LtiReturnUrl,
+      } = user;
+      // get contact number and email from local storage
+      this.profile.email = email;
+      this.profile.contactNumber = contactNumber;
+      this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
+      this.profile.name = name;
+      this.currentProgramName = programName;
+      this.returnLtiUrl = LtiReturnUrl;
 
-    this.currentProgramImage = this._getCurrentProgramImage();
-    // this.fastFeedbackService.pullFastFeedback().subscribe();
+      this.currentProgramImage = this._getCurrentProgramImage();
+      // this.fastFeedbackService.pullFastFeedback().subscribe();
+    } catch (error) {
+      this.notificationsService.alert({
+        message: $localize`Failed to retrieve user information`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel'
+          }
+        ]
+      });
+    }
   }
 
   ngOnInit() {
@@ -193,13 +205,21 @@ export class SettingsPage implements OnInit, OnDestroy {
       if (file) {
         const url = file.uploadURL;
 
+        // eslint-disable-next-line no-console
+        console.log('file-res', res);
         this.imageUpdating = true;
-        await firstValueFrom(this.authService.updateProfileImage({
-          image: url
+        await firstValueFrom(this.authService.updateUserProfile({
+          url,
+          name: file.name,
+          extension: file.extension,
+          type: file.type,
+          size: file.size,
+          bucket: res.data.bucket,
+          path: res.data.path,
         }));
 
         this.imageUpdating = false;
-        this.profile.image = url;
+        this.profile.avatar = url;
         this.storage.setUser({ image: url });
 
         return this.notificationsService.alert({
@@ -257,6 +277,9 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   openBadgeApp(event) {
-    this.utils.openUrl(`${environment.badgeProjectUrl}?apikey=${this.storage.getUser().apikey}&appkey=${environment.appkey}`, {target: '_blank'});
+    this.utils.openUrl(
+      `${environment.badgeProjectUrl}?apikey=${this.storage.getUser().apikey}&appkey=${environment.appkey}`,
+      { target: '_blank' }
+    );
   }
 }
