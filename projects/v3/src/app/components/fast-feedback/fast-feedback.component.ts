@@ -1,3 +1,4 @@
+import { SharedService } from '@v3/app/services/shared.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
@@ -16,6 +17,8 @@ export class FastFeedbackComponent implements OnInit {
   loading = false;
   submissionCompleted: boolean;
   isMobile: boolean;
+  teams: any[];
+  selectedTeamId: FormControl;
 
   @Input() questions = [];
   @Input() meta?: Meta;
@@ -27,19 +30,37 @@ export class FastFeedbackComponent implements OnInit {
     private fastFeedbackService: FastFeedbackService,
     private storage: BrowserStorageService,
     private navParams: NavParams,
+    private sharedService: SharedService
   ) {
     this.isMobile = this.utils.isMobile();
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     const group: any = {};
     this.questions.forEach((question) => {
       group[question.id] = new FormControl(null, Validators.required);
     });
+    if (this.teams?.length > 1) {
+      this.selectedTeamId = new FormControl(null, Validators.required);
+      group['selectedTeam'] = this.selectedTeamId;
+    }
     this.fastFeedbackForm = new FormGroup(group);
     this.submissionCompleted = false;
     const modal = this.navParams.get('modal');
     this.closable = modal.closable || false;
+
+
+    // if meta not exist, pull from sharedservice.getTeamInfo()
+    if (!this.meta) {
+      const teamInfo = await this.sharedService.getTeamInfo().toPromise();
+      const teams = teamInfo?.data?.user?.teams;
+      console.log("teamInfo", teamInfo.data.user.teams);
+      if (teams?.length === 1) {
+        this.selectedTeamId = teams[0].id;
+      } else {
+        this.teams = teams;
+      }
+    }
   }
 
   dismiss(data) {
@@ -54,10 +75,12 @@ export class FastFeedbackComponent implements OnInit {
     const answers = [];
 
     this.utils.each(formData, (answer, questionId) => {
-      answers.push({
-        questionId: +questionId,
-        choiceId: answer,
-      });
+      if (questionId !== 'selectedTeam') {
+        answers.push({
+          questionId: +questionId,
+          choiceId: answer,
+        });
+      }
     });
 
     // prepare parameters
@@ -74,6 +97,8 @@ export class FastFeedbackComponent implements OnInit {
     // if team_id exist, pass team_id
     if (this.meta?.team_id) {
       params.teamId = this.meta?.team_id;
+    } else if (this.teams?.length > 1) {
+      params.teamId = this.fastFeedbackForm.get('selectedTeam').value;
     } else if (this.meta?.target_user_id) {
       // otherwise, pass target_user_id
       params.targetUserId = this.meta?.target_user_id;

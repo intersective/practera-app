@@ -115,6 +115,7 @@ export class FastFeedbackService {
     );
   }
 
+  // submit pulse check answers (fast feedback)
   submit(answers, params: {
     teamId?: number;
     targetUserId?: number;

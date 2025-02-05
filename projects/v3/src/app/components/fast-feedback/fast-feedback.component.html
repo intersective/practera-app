@@ -15,6 +15,20 @@
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
+    <ng-container *ngIf="teams?.length > 1">
+      <ion-list class="practera-card ion-text-left ion-no-padding"
+        [ngClass]="{'ion-padding-horizontal': !isMobile }">
+        <ion-item>
+          <ion-label>Select Team</ion-label>
+          <ion-select formControlName="selectedTeam">
+            <ion-select-option *ngFor="let team of teams" [value]="team.id">
+              {{team.name}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ng-container>
+
     <ng-container *ngFor="let question of questions">
       <ion-list class="practera-card ion-text-left ion-no-padding"
         [ngClass]="{'ion-padding-horizontal': !isMobile }"

@@ -304,6 +304,7 @@ export class HomeService {
     );
   }
 
+  // submit pulse check status (self-assessment)
   submitPulseCheckStatuses(
     teamId: number,
     targetUserId: number,

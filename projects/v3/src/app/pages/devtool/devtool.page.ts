@@ -185,4 +185,13 @@ export class DevtoolPage implements OnInit {
       );
     }
   }
+
+  async getTeams() {
+    try {
+      const response = await this.sharedService.getTeamInfo().toPromise();
+      console.log('Teams:', response);
+    } catch (error) {
+      console.error('Error getting teams:', error);
+    }
+  }
 }

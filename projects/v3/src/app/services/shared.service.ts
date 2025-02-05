@@ -96,7 +96,16 @@ export class SharedService {
           }
         }
       }`
-    ).pipe(map(async response => {
+    ).pipe(map(async (response: {
+      data: {
+        user: {
+          teams: {
+            id: number;
+            name: string;
+          }[];
+        };
+      };
+    }) => {
       if (response?.data?.user) {
         const thisUser = response.data.user;
         const newTeamId = thisUser.teams.length > 0 ? thisUser.teams[0].id : null;
