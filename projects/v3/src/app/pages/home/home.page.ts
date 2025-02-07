@@ -76,7 +76,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
-    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
+    const role = this.storageService.getUser().role;
+    this.pulseCheckIndicatorEnabled = role === 'participant' && this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(
@@ -160,11 +161,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
 
-    this.homeService.getPulseCheckStatuses().pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe((res) => {
-      this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
-    });
+    if (this.pulseCheckIndicatorEnabled === true) {
+      this.homeService.getPulseCheckStatuses().pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((res) => {
+        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
+      });
+    }
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';

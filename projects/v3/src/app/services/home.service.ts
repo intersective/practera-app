@@ -295,7 +295,7 @@ export class HomeService {
 
   // traffic light indicator
   getPulseCheckStatuses() {
-    return this.apolloService.graphQLFetch(
+    return this.apolloService.graphQLWatch(
       `query pulseCheckStatus {
           pulseCheckStatus {
             self
@@ -303,27 +303,6 @@ export class HomeService {
             expert
           }
         }`
-    );
-  }
-
-  submitPulseCheckStatuses(
-    teamId: number,
-    targetUserId: number,
-    contextId: number,
-    answer: { questionId: number; choiceId: number }
-  ): Observable<any> {
-    return this.apolloService.graphQLMutate(
-      `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answer: [PulseCheckAnswerInput]) {
-        submitPulseCheck(teamId: $teamId, targetUserId: $targetUserId, contextId: $contextId, answer: $answer) {
-          success
-        }
-      }`,
-      {
-        teamId,
-        targetUserId,
-        contextId,
-        answer,
-      }
     );
   }
 }
