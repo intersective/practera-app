@@ -41,7 +41,11 @@
                   <ion-icon name="help-circle-outline" (click)="onTrackInfo()"></ion-icon>
                 </div>
                 <!-- put traffic light group here -->
-                <app-traffic-light-group *ngIf="pulseCheckStatus" [lights]="pulseCheckStatus"></app-traffic-light-group>
+                <app-traffic-light-group
+                  *ngIf="pulseCheckStatus"
+                  [lights]="pulseCheckStatus"
+                  [displayOnly]="isParticipant !== true"
+                ></app-traffic-light-group>
                 <!-- end traffic lights -->
               </div>
               <ng-container #experienceDescription *ngIf="experience?.description">
