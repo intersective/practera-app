@@ -30,6 +30,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   experience: Experience;
 
   isMobile: boolean;
+  isParticipant: boolean;
   pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
@@ -78,7 +79,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit() {
     const role = this.storageService.getUser().role;
-    this.pulseCheckIndicatorEnabled = role === 'participant' && this.storageService.getFeature('pulseCheckIndicator');
+    this.isParticipant = role === 'participant';
+    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(
@@ -158,18 +160,20 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
 
-    this.homeService.getPulseCheckStatuses().pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe((res) => {
-      this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
-    });
-
     // reset & load bookmarks
     this.bookmarkedActivities = {};
     const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[] || [];
     bookmarks.forEach((id) => {
       this.bookmarkedActivities[id] = true;
     });
+
+    if (this.pulseCheckIndicatorEnabled === true) {
+      this.homeService.getPulseCheckStatuses().pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((res) => {
+        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
+      });
+    }
   }
 
   goBack() {

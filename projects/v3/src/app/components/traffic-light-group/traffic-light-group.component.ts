@@ -14,6 +14,7 @@ export class TrafficLightGroupComponent {
     expert: any;
     team: any;
   };
+  @Input() displayOnly: boolean = false;
   loading: {
     [key: string]: boolean;
   } = {};
