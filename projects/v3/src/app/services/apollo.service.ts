@@ -93,19 +93,19 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  graphQLWatch(query: string, variables?: any, options?: any): Observable<any> {
+  graphQLWatch<T>(query: string, variables?: any, options?: any): Observable<any> {
     options = { ...{ noCache: false }, ...options };
-    const watch = this.apollo.watchQuery({
+    const watch = this.apollo.watchQuery<T>({
       query: gql(query),
       variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+      fetchPolicy: options?.noCache ? 'no-cache' : 'cache-and-network'
     });
     return watch.valueChanges
-      .pipe(map(response => {
-        return response;
-      }))
       .pipe(
-        catchError((error) => this.requestService.handleError(error))
+        catchError((error) => {
+          console.error('GraphQL watchQuery error:', error);
+          return this.requestService.handleError(error);
+        })
       );
   }
 
