@@ -19,7 +19,7 @@ export interface User {
   apikey?: string;
   contactNumber?: string;
   email?: string;
-  role?: string;
+  role?: string; // mentor, participant
   image?: string;
   programId?: number;
   programName?: string;
