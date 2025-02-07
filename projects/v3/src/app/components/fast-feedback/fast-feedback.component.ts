@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
@@ -14,17 +14,20 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 })
 export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
-  questions = [];
-  meta: Meta;
   loading = false;
   submissionCompleted: boolean;
   isMobile: boolean;
+
+  @Input() questions = [];
+  @Input() meta?: Meta;
+  @Input() closable: boolean;
 
   constructor(
     private modalController: ModalController,
     private utils: UtilsService,
     private fastFeedbackService: FastFeedbackService,
     private storage: BrowserStorageService,
+    private navParams: NavParams,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -36,6 +39,8 @@ export class FastFeedbackComponent implements OnInit {
     });
     this.fastFeedbackForm = new FormGroup(group);
     this.submissionCompleted = false;
+    const modal = this.navParams.get('modal');
+    this.closable = modal.closable || false;
   }
 
   dismiss(data) {
