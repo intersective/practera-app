@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { HomeService } from '@v3/app/services/home.service';
 
 @Component({
   selector: "app-fast-feedback",
@@ -28,6 +29,7 @@ export class FastFeedbackComponent implements OnInit {
     private fastFeedbackService: FastFeedbackService,
     private storage: BrowserStorageService,
     private navParams: NavParams,
+    private homeService: HomeService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -47,6 +49,7 @@ export class FastFeedbackComponent implements OnInit {
     // change the flag to false
     this.storage.set("fastFeedbackOpening", false);
     this.modalController.dismiss(data);
+    this.homeService.getPulseCheckStatuses().subscribe();
   }
 
   async submit(): Promise<any> {
