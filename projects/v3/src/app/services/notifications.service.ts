@@ -201,11 +201,11 @@ export class NotificationsService {
     return modal;
   }
 
-  async modal(component, componentProps, options?, event?): Promise<void> {
+  async modal(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
     return this.modalOnly(component, componentProps, options, event);
   }
 
-  async modalOnly(component, componentProps, options?, event?): Promise<void> {
+  async modalOnly(component, componentProps, options?, event?): Promise<any> {
     const modalConfig = this.modalConfig(
       { component, componentProps },
       options
@@ -388,7 +388,7 @@ export class NotificationsService {
   async activityCompletePopUp(
     activityId: number,
     activityCompleted: boolean
-  ): Promise<void> {
+  ): Promise<HTMLIonModalElement> {
     let cssClass = "practera-popup activity-complete-popup";
     if (this.utils.isMobile()) {
       cssClass += " mobile-view";
