@@ -77,7 +77,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
-    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
+    const role = this.storageService.getUser().role;
+    this.pulseCheckIndicatorEnabled = role === 'participant' && this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(
