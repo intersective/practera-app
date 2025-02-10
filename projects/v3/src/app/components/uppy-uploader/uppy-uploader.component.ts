@@ -86,6 +86,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
       onBeforeRequest: (req) => {
+        this.reset();
         // eslint-disable-next-line no-console
         console.log('onBeforeRequest', req);
       },
@@ -108,35 +109,22 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       },
       onAfterResponse: async (req, res) => {
         try {
-
           // eslint-disable-next-line no-console
           console.log('onAfterResponse', req, res);
+          const body = res.getBody();
           // eslint-disable-next-line no-console
-          console.log('onAfterResponse::res.getBody()', res.getBody());
-          this.s3Info = res.getBody();
+          console.log('onAfterResponse::res.getBody()', body);
 
-          // this.s3Info = JSON.parse(res.getBody());
+          this.s3Info = body;
           // eslint-disable-next-line no-console
           console.log('onAfterResponse::this.s3Info', this.s3Info);
-
-          // eslint-disable-next-line no-console
-          // req.getMethod() === 'POST' && console.log('onAfterResponse::res.getBody()', res.getBody());
-
-          /* if (req.getMethod() === 'POST') {
-            const data = JSON.parse(res?._xhr?.response);
-
-            // eslint-disable-next-line no-console
-            console.log('uppy-xhr', data);
-
-            this.s3Info = data;
-          } */
-
-          // if (req.getMethod() === 'POST') {
-          //   this.s3Info = this.uppyUploaderService.extractResponseData(res as any);
-          // }
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error('onAfterResponse::error', error);
+          this.notificationsService.alert({
+            header: "Upload Failed",
+            message: error.message,
+          });
         }
       },
     }).on("upload", (data) => {
@@ -170,6 +158,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     .on("complete", this.onComplete.bind(this));
   }
 
+  reset() {
+    this.uppy.resetProgress();
+  }
+
   loadAllowedFileTypes() {
     switch(this.source) {
       case "profile":
@@ -194,7 +186,14 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line no-console
     console.log("Uploaded files:", result);
 
-    this.closeModal(result);
+    if (this.s3Info) {
+      this.closeModal(result);
+    } else {
+      this.notificationsService.alert({
+        header: "Upload Failed",
+        message: "No response from server",
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -204,7 +203,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
       // eslint-disable-next-line no-console
       this.uppy.off("complete", (res) => console.info(res));
-      // this.uppy.close();
+      this.uppy.resetProgress();
     }
   }
 

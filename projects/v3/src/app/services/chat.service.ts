@@ -31,21 +31,60 @@ export interface ChannelMembers {
   avatar: string;
 }
 
+export interface Team {
+  id: number;
+  uuid: string;
+  name: string;
+}
+
+export interface User {
+  id: number;
+  uuid: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  role?: string;
+  email: string;
+  image?: string;
+  team?: Team;
+  teams?: Team[];
+  enrolmentUuid?: string;
+  timelineUuid?: string;
+  institution?: {
+    id: number;
+    uuid: string;
+    name: string;
+  };
+  userHash?: string;
+  contactNumber?: string;
+}
+
+export interface FileResponse {
+  name: string;
+  type: string;
+  url: string;
+}
+
 export interface Message {
   uuid: string;
-  senderUuid?: string;
-  senderName?: string;
-  senderRole?: string;
-  senderAvatar?: string;
+  sender: User;
   isSender: boolean;
   message: string;
+  file: FileResponse;
   created: string;
-  file: string;
+  scheduled: string;
+  sentAt?: string;
+
+  // TBC
   fileObject?: any;
   preview?: string;
   noAvatar?: boolean;
   channelUuid?: string;
-  sentAt?: string;
+  senderUuid?: string;
+  senderName?: string;
+  senderRole?: string;
+  senderAvatar?: string;
 }
 
 export interface MessageListResult {
@@ -162,12 +201,14 @@ export class ChatService {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
             cursor
-            chatLogs{
+            chatLogs {
               uuid
               isSender
               message
               file {
-                url name type
+                name
+                type
+                url
               }
               created
               sentAt
@@ -220,20 +261,26 @@ export class ChatService {
       } else {
         fileObject = message.file;
       }
+
       messageList.push({
+        fileObject,
+
         uuid: message.uuid,
+        sender: message.sender,
         isSender: message.isSender,
         message: message.message,
         file: message.file,
-        fileObject: fileObject,
         created: message.created,
+        scheduled: message.scheduled,
+        sentAt: message.sentAt,
+
         senderUuid: message.sender.uuid,
         senderName: message.sender.name,
         senderRole: message.sender.role,
         senderAvatar: message.sender.avatar,
-        sentAt: message.sentAt
       });
     });
+
     return {
       cursor: cursor,
       messages: messageList
@@ -397,18 +444,23 @@ export class ChatService {
     } else {
       fileObject = result.file;
     }
+
     return {
       uuid: result.uuid,
+      sender: result.sender,
       isSender: result.isSender,
       message: result.message,
       file: result.file,
-      fileObject: fileObject,
       created: result.created,
+      scheduled: result.scheduled,
+      sentAt: result.sentAt,
+
+      // TBC
+      fileObject: fileObject,
       senderUuid: result.sender.uuid,
       senderName: result.sender.name,
       senderRole: result.sender.role,
       senderAvatar: result.sender.avatar,
-      sentAt: result.sentAt
     };
   }
 
