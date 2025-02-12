@@ -77,7 +77,6 @@ export interface Message {
   sentAt?: string;
 
   // TBC
-  fileObject?: any;
   preview?: string;
   noAvatar?: boolean;
   channelUuid?: string;
@@ -95,7 +94,15 @@ export interface MessageListResult {
 interface NewMessageParam {
   channelUuid: string;
   message: string;
-  file?: string;
+  file?: {
+    path: string;
+    bucket: string;
+    name: string;
+    url: string;
+    extension: string;
+    type: string;
+    size: number;
+  };
 }
 
 interface MessageListParams {
@@ -386,7 +393,6 @@ export class ChatService {
    * @description post new text message (with text) or attachment (with file)
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
-
     if (environment.demo) {
       return of(this._normalisePostMessageResponse(this.demo.createChatLog(data.message, data.file)));
     }
@@ -397,8 +403,14 @@ export class ChatService {
             uuid
             isSender
             message
-            file {
-              url name type
+            fileObj {
+              bucket
+              path
+              name
+              url
+              extension
+              type
+              size
             }
             created
             sentAt
@@ -456,7 +468,6 @@ export class ChatService {
       sentAt: result.sentAt,
 
       // TBC
-      fileObject: fileObject,
       senderUuid: result.sender.uuid,
       senderName: result.sender.name,
       senderRole: result.sender.role,

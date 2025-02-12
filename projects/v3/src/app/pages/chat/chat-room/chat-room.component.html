@@ -55,11 +55,11 @@
           aria-describedby="message-content">
 
           <ng-container *ngIf="!message.isSender">
-            <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+            <p class="seen-text subtitle-1 black">{{ message.senderName }}</p>
             <p class="seen-text caption gray-2">{{ utils.getUserRolesForUI(message.senderRole) }}</p>
           </ng-container>
 
-          <ng-container *ngIf="message.message || !message.fileObject">
+          <ng-container *ngIf="message.message || !message.file">
             <!-- Quill read only view/ use to render html content -->
             <quill-view-html id="message-content"
               [content]="message?.message"
@@ -68,16 +68,16 @@
             ></quill-view-html>
           </ng-container>
 
-          <ng-container *ngIf="message?.fileObject?.type">
-            <ng-container *ngIf="message?.fileObject?.type?.includes('video')">
-              <ng-container *ngIf="message?.fileObject?.type === 'video/mp4'; else nonMp4Format">
+          <ng-container *ngIf="message?.file?.type">
+            <ng-container *ngIf="message?.file?.type?.includes('video')">
+              <ng-container *ngIf="message?.file?.type === 'video/mp4'; else nonMp4Format">
                 <div id="message-content" class="label"
-                  (click)="preview(message.fileObject)"
-                  (keydown)="preview(message.fileObject, $event)"
+                  (click)="preview(message.file)"
+                  (keydown)="preview(message.file, $event)"
                   tabindex="0"
                   role="button">
                   <p class="label">
-                    {{ message.fileObject.name }}
+                    {{ message.file.name }}
                   </p>
                   <div id="inner-box">
                     <p>
@@ -92,26 +92,25 @@
               </ng-template>
             </ng-container>
 
-            <ng-container *ngIf="message?.fileObject?.type?.includes('image')">
-              <pre>{{message | json}}</pre>
+            <ng-container *ngIf="message?.file?.type?.includes('image')">
               <div [innerHTML]="message.preview"
-                (click)="preview(message.fileObject)"
-                (keydown)="preview(message.fileObject, $event)"
+                (click)="preview(message.file)"
+                (keydown)="preview(message.file, $event)"
                 tabindex="0"
                 role="button"
               ></div>
             </ng-container>
 
-            <ng-container *ngIf="(message.fileObject && !message.fileObject.type) || (message.fileObject && (
-              !message.fileObject.type.includes('image') && !message.fileObject.type.includes('video')))">
-              <ion-item class="general-attachment" (click)="previewFile(message.fileObject)">
+            <ng-container *ngIf="(message.file && !message.file.type) || (message.file && (
+              !message.file.type.includes('image') && !message.file.type.includes('video')))">
+              <ion-item class="general-attachment" (click)="previewFile(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document-outline" slot="start"></ion-icon>
                 <ion-label color="primary">
-                  {{ message.fileObject.name }}
+                  {{ message.file.name }}
                 </ion-label>
-                <ion-note *ngIf="getTypeByMime(message.fileObject.type)">
-                  {{ getTypeByMime(message.fileObject.type) }}
+                <ion-note *ngIf="getTypeByMime(message.file.type)">
+                  {{ getTypeByMime(message.file.type) }}
                 </ion-note>
               </ion-item>
             </ng-container>
