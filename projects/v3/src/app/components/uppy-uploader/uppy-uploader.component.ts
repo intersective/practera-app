@@ -3,7 +3,6 @@ import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import RemoteSources from '@uppy/remote-sources';
 import Tus from '@uppy/tus';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
@@ -27,6 +26,8 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     "application/pdf",
   ];
   @Output() uploadComplete = new EventEmitter<any>();
+
+  uploadedFile: UppyFile<any, any> | null = null;
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
@@ -86,6 +87,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       retryDelays: [0, 1000, 3000, 5000],
       // withCredentials: true,
       onBeforeRequest: (req) => {
+        this.reset();
         // eslint-disable-next-line no-console
         console.log('onBeforeRequest', req);
       },
@@ -108,35 +110,22 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       },
       onAfterResponse: async (req, res) => {
         try {
-
           // eslint-disable-next-line no-console
           console.log('onAfterResponse', req, res);
+          const body = res.getBody();
           // eslint-disable-next-line no-console
-          console.log('onAfterResponse::res.getBody()', res.getBody());
-          this.s3Info = res.getBody();
+          console.log('onAfterResponse::res.getBody()', body);
 
-          // this.s3Info = JSON.parse(res.getBody());
+          this.s3Info = body;
           // eslint-disable-next-line no-console
           console.log('onAfterResponse::this.s3Info', this.s3Info);
-
-          // eslint-disable-next-line no-console
-          // req.getMethod() === 'POST' && console.log('onAfterResponse::res.getBody()', res.getBody());
-
-          /* if (req.getMethod() === 'POST') {
-            const data = JSON.parse(res?._xhr?.response);
-
-            // eslint-disable-next-line no-console
-            console.log('uppy-xhr', data);
-
-            this.s3Info = data;
-          } */
-
-          // if (req.getMethod() === 'POST') {
-          //   this.s3Info = this.uppyUploaderService.extractResponseData(res as any);
-          // }
         } catch (error) {
           // eslint-disable-next-line no-console
           console.error('onAfterResponse::error', error);
+          this.notificationsService.alert({
+            header: "Upload Failed",
+            message: error.message,
+          });
         }
       },
     }).on("upload", (data) => {
@@ -152,6 +141,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     })
     .on("upload-success", (file, response) => {
       if (response && response.status === 200) {
+        this.uploadedFile = file;
         this.uploadComplete.emit(response.body);
       } else {
         console.warn("Upload failed:", response);
@@ -168,6 +158,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       console.error("Error:", error);
     })
     .on("complete", this.onComplete.bind(this));
+  }
+
+  reset() {
+    this.uppy.resetProgress();
   }
 
   loadAllowedFileTypes() {
@@ -190,11 +184,36 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  clearUploadedCache(name: string) {
+    return this.storageService.clearByName(name);
+  }
+
+  sanitizeName(name: string) {
+    return name.replace(/[^a-zA-Z0-9]/g, '/');
+  }
+
   onComplete(result) {
     // eslint-disable-next-line no-console
     console.log("Uploaded files:", result);
 
-    this.closeModal(result);
+    if (this.uploadedFile) {
+      // const sanitizedName = this.sanitizeName(this.uploadedFile.name);
+      // const cacheClearResult = this.clearUploadedCache(sanitizedName);
+      const cacheClearResult = this.clearUploadedCache(this.uploadedFile.id);
+      // eslint-disable-next-line no-console
+      console.log('Cache cleared:', cacheClearResult);
+    }
+
+    if (this.s3Info) {
+      this.storageService.clearByName('activityId');
+      this.closeModal(result);
+
+    } else {
+      this.notificationsService.alert({
+        header: "Upload Failed",
+        message: "No response from server",
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -204,7 +223,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
       // eslint-disable-next-line no-console
       this.uppy.off("complete", (res) => console.info(res));
-      // this.uppy.close();
+      this.uppy.resetProgress();
     }
   }
 
@@ -215,8 +234,31 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       ...{
         bucket: s3Info?.bucket,
         path: s3Info?.path,
+        preview: this.transformTusUrl(this.uploadedFile?.tus?.uploadUrl),
       }
     };
     this.modalController.dismiss(data);
+  }
+
+  /**
+   * Transform a TUS upload URL to a file URL
+   * @param tusUrl The TUS upload URL
+   * @returns The transformed file URL
+   */
+  transformTusUrl(tusUrl: string): string {
+    try {
+      // Extract the path part (everything between "uploads/" and the first "+")
+      const pathMatch = tusUrl.match(/uploads\/(.*?)\+/);
+      if (!pathMatch) {
+        throw new Error('Invalid TUS URL path format');
+      }
+      const path = pathMatch[1];
+
+      // Construct the new URL
+      return `https://file.${environment.domain}/files/${path}`;
+    } catch (error) {
+      console.error('Error transforming TUS URL:', error);
+      return tusUrl; // Return original URL if transformation fails
+    }
   }
 }
