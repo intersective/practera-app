@@ -398,34 +398,30 @@ export class ChatService {
     }
 
     return this.apolloService.graphQLMutate(
-      `mutation createChatLogs($channelUuid: String!, $message: String, $file: String) {
-        createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
+      `mutation createChatLogs($channelUuid: String!, $message: String, $fileObj: FileInput) {
+        createChatLog(channelUuid: $channelUuid, message: $message, fileObj: $fileObj) {
+          uuid
+          isSender
+          message
+          file {
+            name
+            type
+            url
+          }
+          created
+          sentAt
+          sender {
             uuid
-            isSender
-            message
-            fileObj {
-              bucket
-              path
-              name
-              url
-              extension
-              type
-              size
-            }
-            created
-            sentAt
-            sender {
-              uuid
-              name
-              role
-              avatar
+            name
+            role
+            avatar
           }
         }
       }`,
       {
         channelUuid: data.channelUuid,
         message: data.message,
-        file: data.file
+        fileObj: data.file
       }
     ).pipe(
       map(response => {
@@ -473,12 +469,5 @@ export class ChatService {
       senderRole: result.sender.role,
       senderAvatar: result.sender.avatar,
     };
-  }
-
-  postAttachmentMessage(data: NewMessageParam): Observable<any> {
-    if (!data.file) {
-      throw new Error('Fatal: File value must not be empty.');
-    }
-    return this.postNewMessage(data);
   }
 }
