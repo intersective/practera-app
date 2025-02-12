@@ -18,7 +18,7 @@ export interface User {
   apikey?: string;
   contactNumber?: string;
   email?: string;
-  role?: string;
+  role?: string; // mentor, participant
   image?: string;
   programId?: number;
   programName?: string;
@@ -51,6 +51,9 @@ export interface User {
     activityId: number; // last visited activity id
     homeBookmarks: number[]; // last visited home bookmarks (activity ids)
   },
+
+  // error handling
+  saveAssessmentErrors?: [],
 }
 
 export interface Referrer {
@@ -131,6 +134,16 @@ export class BrowserStorageService {
   setUser(user: User) {
     this.set('me', Object.assign(this.getUser(), user));
     return true;
+  }
+
+  /**
+   * Retrieves the status of a specified feature toggle. (controlled by the backend)
+   *
+   * @param name - The name of the feature toggle to check. Currently supports 'pulseCheckIndicator'.
+   * @returns A boolean indicating whether the specified feature toggle is enabled.
+   */
+  getFeature(name: 'pulseCheckIndicator'): boolean {
+    return this.get('experience')?.featureToggle?.[name] || false;
   }
 
   getReferrer() {
