@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { RequestService } from 'request';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -14,7 +13,6 @@ import { ApolloService } from './apollo.service';
 })
 export class FastFeedbackService {
   constructor(
-    private request: RequestService,
     private notificationsService: NotificationsService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
