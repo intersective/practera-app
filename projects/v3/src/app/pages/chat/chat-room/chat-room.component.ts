@@ -469,7 +469,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (type === 'file' && file) {
       return {
-        file,
+        file: {
+          path: file.path,
+          bucket: file.bucket,
+          name: file.name,
+          url: file.url,
+          extension: file.extension,
+          type: file.type,
+          size: file.size,
+        },
         channelUuid: this.channelUuid,
         message: this.typingMessage || '',
       };
@@ -503,9 +511,17 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.selectedAttachments = [];
     selectedAttachments.forEach((attachment) => {
       const param = this.getPostMessageParams("file", attachment);
+      if (param === null) { // if message is empty
+        this.notificationsService.alert({
+          header: 'Error',
+          message: 'Message attachment is empty, please try again.',
+        });
+        throw new Error('Message attachment is empty');
+      }
+      
       this._beforeSendMessages();
       this.chatService
-        .postAttachmentMessage(param)
+        .postNewMessage(param)
         .pipe(takeUntil(this.destroy$))
         .subscribe(
           (response) => {
