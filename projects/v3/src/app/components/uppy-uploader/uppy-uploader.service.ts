@@ -5,6 +5,16 @@ import Tus from '@uppy/tus';
 import { environment } from '../../../environments/environment';
 import { UppyUploaderComponent } from './uppy-uploader.component';
 
+export interface UppyUploaderResponse {
+  path: string;
+  bucket: string;
+  name: string;
+  url: string;
+  extension: string;
+  type: string;
+  size: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })

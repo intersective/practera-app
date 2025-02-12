@@ -14,12 +14,23 @@ import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { QuillModules } from 'ngx-quill';
-import { UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
+import { UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
 
 enum ScrollPosition {
   Top = 'top',
   Bottom = 'bottom',
   Middle = 'middle'
+}
+
+interface selectedAttachment {
+  bucket: string;
+  path: string;
+  url: string;
+  name: string;
+  type: string;
+  size: number; // size of the attachment
+  extension: string; // extension of the attachment
+  preview: string; // preview url
 }
 
 @Component({
@@ -63,13 +74,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   whoIsTyping: string = "";
   videoHandles = [];
 
-  // attachments
-  selectedAttachments: {
-    url: string;
-    name: string;
-    type: string;
-    preview: string; // preview url
-  }[] = [];
+  selectedAttachments: selectedAttachment[] = [];
 
 
   // cosmetic variables
@@ -178,10 +183,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
               fileObject = null;
             }
 
-            receivedMessage.fileObject = fileObject;
-            receivedMessage.preview = this.attachmentPreview(
-              receivedMessage.fileObject
-            );
+            receivedMessage.file = fileObject;
+            receivedMessage.preview = this.attachmentPreview(receivedMessage.file);
           }
 
           if (
@@ -414,8 +417,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           this.messagePageCursor = messageListResult.cursor;
           this.loadingChatMessages = false;
           messages = messages.map((msg) => {
-            if (msg.file && msg.fileObject) {
-              msg.preview = this.attachmentPreview(msg.fileObject);
+            if (msg.file && msg.file) {
+              msg.preview = this.attachmentPreview(msg.file);
             }
             return msg;
           });
@@ -453,11 +456,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private getPostMessageParams(type: 'text' | 'file', file?: {
-    type?: string;
-    name: string;
-    url: string;
-  }) {
+  private getPostMessageParams(type: 'text' | 'file', file?: UppyUploaderResponse) {
     if (type === 'text') {
       if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
         return null;
@@ -470,9 +469,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (type === 'file' && file) {
       return {
+        file,
         channelUuid: this.channelUuid,
         message: this.typingMessage || '',
-        file: JSON.stringify({ ...file, type: file.type || '' }),
       };
     }
 
@@ -559,7 +558,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       sentAt: response.sentAt,
 
       // TBC
-      fileObject: response.fileObject,
       preview: this.attachmentPreview(response.fileObject),
       senderUuid: response.senderUuid,
       senderName: response.senderName,
@@ -987,6 +985,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  addAttachment(uppyRes) {
+    this.selectedAttachments.push({
+      bucket: uppyRes.bucket,
+      path: uppyRes.path,
+      name: uppyRes.name,
+      url: uppyRes.uploadURL,
+      extension: uppyRes.extension,
+      type: uppyRes.type,
+      size: uppyRes.size,
+      preview: uppyRes.preview,
+    });
+  }
+
   async attachmentSelectPopover(ev: any) {
     const modal = await this.uppyUploaderService.open('chat');
     const res = await modal.onDidDismiss();
@@ -996,12 +1007,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
     if (res?.data.successful?.length > 0) {
       const success = res.data.successful[0] || {};
-      this.selectedAttachments.push({
-        url: success.uploadURL,
-        name: success.name,
-        type: success.type,
-        preview: res.data.preview,
-      });
+      this.addAttachment({ ...res.data, ...success });
     } else if (res?.data.failed?.length > 0) {
       this.notificationsService.presentToast("Failed to upload attachment");
     }
