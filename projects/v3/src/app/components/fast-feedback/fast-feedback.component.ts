@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { HomeService } from '@v3/app/services/home.service';
 
 @Component({
   selector: "app-fast-feedback",
@@ -14,17 +15,21 @@ import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 })
 export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
-  questions = [];
-  meta: Meta;
   loading = false;
   submissionCompleted: boolean;
   isMobile: boolean;
+
+  @Input() questions = [];
+  @Input() meta?: Meta;
+  @Input() closable: boolean;
 
   constructor(
     private modalController: ModalController,
     private utils: UtilsService,
     private fastFeedbackService: FastFeedbackService,
     private storage: BrowserStorageService,
+    private navParams: NavParams,
+    private homeService: HomeService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -36,12 +41,15 @@ export class FastFeedbackComponent implements OnInit {
     });
     this.fastFeedbackForm = new FormGroup(group);
     this.submissionCompleted = false;
+    const modal = this.navParams.get('modal');
+    this.closable = modal.closable || false;
   }
 
   dismiss(data) {
     // change the flag to false
     this.storage.set("fastFeedbackOpening", false);
     this.modalController.dismiss(data);
+    this.homeService.getPulseCheckStatuses().subscribe();
   }
 
   async submit(): Promise<any> {
