@@ -3,7 +3,6 @@ import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import RemoteSources from '@uppy/remote-sources';
 import Tus from '@uppy/tus';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
@@ -27,6 +26,8 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     "application/pdf",
   ];
   @Output() uploadComplete = new EventEmitter<any>();
+
+  uploadedFile: UppyFile<any, any> | null = null;
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
@@ -140,6 +141,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     })
     .on("upload-success", (file, response) => {
       if (response && response.status === 200) {
+        this.uploadedFile = file;
         this.uploadComplete.emit(response.body);
       } else {
         console.warn("Upload failed:", response);
@@ -182,12 +184,30 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  clearUploadedCache(name: string) {
+    return this.storageService.clearByName(name);
+  }
+
+  sanitizeName(name: string) {
+    return name.replace(/[^a-zA-Z0-9]/g, '/');
+  }
+
   onComplete(result) {
     // eslint-disable-next-line no-console
     console.log("Uploaded files:", result);
 
+    if (this.uploadedFile) {
+      // const sanitizedName = this.sanitizeName(this.uploadedFile.name);
+      // const cacheClearResult = this.clearUploadedCache(sanitizedName);
+      const cacheClearResult = this.clearUploadedCache(this.uploadedFile.id);
+      // eslint-disable-next-line no-console
+      console.log('Cache cleared:', cacheClearResult);
+    }
+
     if (this.s3Info) {
+      this.storageService.clearByName('activityId');
       this.closeModal(result);
+
     } else {
       this.notificationsService.alert({
         header: "Upload Failed",
@@ -214,8 +234,31 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       ...{
         bucket: s3Info?.bucket,
         path: s3Info?.path,
+        preview: this.transformTusUrl(this.uploadedFile?.tus?.uploadUrl),
       }
     };
     this.modalController.dismiss(data);
+  }
+
+  /**
+   * Transform a TUS upload URL to a file URL
+   * @param tusUrl The TUS upload URL
+   * @returns The transformed file URL
+   */
+  transformTusUrl(tusUrl: string): string {
+    try {
+      // Extract the path part (everything between "uploads/" and the first "+")
+      const pathMatch = tusUrl.match(/uploads\/(.*?)\+/);
+      if (!pathMatch) {
+        throw new Error('Invalid TUS URL path format');
+      }
+      const path = pathMatch[1];
+
+      // Construct the new URL
+      return `https://file.${environment.domain}/files/${path}`;
+    } catch (error) {
+      console.error('Error transforming TUS URL:', error);
+      return tusUrl; // Return original URL if transformation fails
+    }
   }
 }
