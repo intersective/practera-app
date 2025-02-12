@@ -224,6 +224,40 @@ export class UtilsService {
     this.document.documentElement.style.setProperty(`--ion-color-${type}-rgb`, `${red}, ${green}, ${blue}`);
   }
 
+  /**
+   * Check if the primary color is dark or bright
+   * @returns {boolean} true if the primary color is dark, false if bright
+   */
+  isPrimaryColorDark(): boolean {
+    const primaryColor = getComputedStyle(this.document.documentElement).getPropertyValue('--ion-color-primary').trim();
+    if (!primaryColor) {
+      return false;
+    }
+
+    const rgb = convert.hex.rgb(primaryColor.replace('#', ''));
+    // Calculate the luminance of the color
+    const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+    return luminance < 0.5;
+  }
+
+  /**
+   * Determines whether to show white or black content on top of a given color.
+   * Uses the YIQ color space to determine the contrast.
+   * @param {string} hexColor - The hex color code.
+   * @returns {string} - 'black' or 'white' based on the contrast.
+   */
+  getContrastColor(hexColor: string): string {
+    if (!hexColor) {
+      return 'black';
+    }
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 128 ? 'black' : 'white';
+  }
+
   changeCardBackgroundImage(image) {
     this.document.documentElement.style.setProperty('--practera-card-background-image', 'url(\'' + image + '\')');
   }
