@@ -1,9 +1,9 @@
 import { ModalController } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { Uppy } from '@uppy/core';
-import { UppyUploaderComponent } from './uppy-uploader.component';
 import Tus from '@uppy/tus';
 import { environment } from '../../../environments/environment';
+import { UppyUploaderComponent } from './uppy-uploader.component';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +38,7 @@ export class UppyUploaderService {
   }
 
   /**
-   * this will open up a modal showing the uppy uploader component as the content
+   * this will open up a modal showing the file upload component as the content
    *
    * @link https://intersective.slack.com/archives/C086A45JHSQ/p1736234870910269?thread_ts=1736232498.728959&cid=C086A45JHSQ
    * @param   {string}        source

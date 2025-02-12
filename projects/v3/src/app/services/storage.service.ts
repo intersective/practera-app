@@ -274,4 +274,22 @@ export class BrowserStorageService {
 
     return lastVisited[name] || null;
   }
+
+  clearByName(name: string) {
+    const storages = localStorage;
+    const result = {};
+
+    for (let i = 0; i < storages.length; i++) {
+      const key = storages.key(i);
+      try {
+        if (key && key.includes(name)) {
+          result[key] = storages.removeItem(key);
+        }
+      } catch (error) {
+        console.error(`Error removing key: ${key}`, error);
+      }
+    }
+
+    return result;
+  }
 }
