@@ -181,6 +181,7 @@ jobs:
           export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-stage.practera.com
           export CUSTOM_UPLOAD_TUS_ENDPOINT=https://tusd.p2-stage.practera.com/uploads/
           export CUSTOM_HELPLINE=help@practera.com
+          export CUSTOM_DOMAIN=${{env.PUBLICZONENAME}}
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
