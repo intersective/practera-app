@@ -68,6 +68,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     url: string;
     name: string;
     type: string;
+    preview: string; // preview url
   }[] = [];
 
 
@@ -452,33 +453,30 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private getPostMessageParams(type, file?) {
-    if (type === "text") {
-      if (
-        !this.typingMessage ||
-        this.utils.isQuillContentEmpty(this.typingMessage)
-      ) {
-        return;
+  private getPostMessageParams(type: 'text' | 'file', file?: {
+    type?: string;
+    name: string;
+    url: string;
+  }) {
+    if (type === 'text') {
+      if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
+        return null;
       }
-      const message = this.typingMessage;
       return {
         channelUuid: this.channelUuid,
-        message: message,
+        message: this.typingMessage,
       };
     }
-    if (type === "file" && file) {
-      if (!file.mimetype) {
-        file.mimetype = "";
-      }
-      const message = this.typingMessage;
+
+    if (type === 'file' && file) {
       return {
         channelUuid: this.channelUuid,
-        message: message,
-        file: JSON.stringify(file),
+        message: this.typingMessage || '',
+        file: JSON.stringify({ ...file, type: file.type || '' }),
       };
-    } else {
-      return;
     }
+
+    return null;
   }
 
   private postTextOnlyMessage() {
@@ -993,12 +991,16 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     const modal = await this.uppyUploaderService.open('chat');
     const res = await modal.onDidDismiss();
 
+    // eslint-disable-next-line no-console
+    console.log('abcdefg', res);
+
     if (res?.data.successful?.length > 0) {
-      const success = res.data.successful.length > 0 ? res.data.successful[0] : {};
+      const success = res.data.successful[0] || {};
       this.selectedAttachments.push({
         url: success.uploadURL,
         name: success.name,
         type: success.type,
+        preview: res.data.preview,
       });
     } else if (res?.data.failed?.length > 0) {
       this.notificationsService.presentToast("Failed to upload attachment");
