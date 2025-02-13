@@ -32,10 +32,12 @@ export class TrafficLightGroupComponent {
         skipChecking: true
       }).subscribe({
         next: (response) => {
-          if (response) {
-            /* eslint-disable no-console */
-            console.log(`Pulled fast feedback for type ${type}:`, response);
+          if (response?.error) {
+            console.error(response.message);
+            return;
           }
+          /* eslint-disable no-console */
+          console.log(`Pulled fast feedback for type ${type}:`, response);
         },
         error: (error) => {
           console.error(`Error pulling fast feedback for type ${type}:`, error);
