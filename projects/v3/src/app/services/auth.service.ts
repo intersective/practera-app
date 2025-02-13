@@ -105,6 +105,9 @@ interface AuthEndpointExperience {
   team: {
     id: number;
   };
+  featureToggle: {
+    pulseCheckIndicator: boolean;
+  };
 }
 
 interface AuthQuery {
@@ -221,6 +224,9 @@ export class AuthService {
             truncateDescription
             team {
               id
+            }
+            featureToggle {
+              pulseCheckIndicator
             }
           }
           email
