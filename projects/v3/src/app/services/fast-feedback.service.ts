@@ -56,7 +56,7 @@ export class FastFeedbackService {
   pullFastFeedback(options: {
     modalOnly?: boolean;
     skipChecking?: boolean;
-    closable?: boolean; // can skip the modal popup (closable)
+    closable?: boolean; // allow skipping modal popup (with a close button)
   } = {
     modalOnly: false,
     skipChecking: false,
@@ -67,6 +67,14 @@ export class FastFeedbackService {
         try {
           // don't open it again if there's one opening
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
+
+          // check if pulseCheck is null
+          if (!res.data.pulseCheck) {
+            return of({
+              error: true,
+              message: "No pulseCheck data available.",
+            });
+          }
 
           // if any of either slider or meta is empty or not available,
           // should just skip the modal popup
@@ -103,7 +111,12 @@ export class FastFeedbackService {
           return of(res);
         } catch (error) {
           console.error("Error in switchMap:", error);
-          throw error;
+          // Return a fallback observable to allow the consumer to continue working
+          return of({
+            error: true,
+            message: "An error occurred while processing fast feedback.",
+            details: error.message
+          });
         }
       }),
       retryWhen((errors) => {
