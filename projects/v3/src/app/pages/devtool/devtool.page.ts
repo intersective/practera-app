@@ -83,7 +83,12 @@ export class DevtoolPage implements OnInit {
 
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
-    const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    if (response.error) {
+      console.error(response.message);
+      return;
+    }
+    const modal = response;
     if (modal && modal.present) {
       await modal.present();
       await modal.onDidDismiss();
