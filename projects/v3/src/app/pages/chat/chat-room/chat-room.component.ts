@@ -160,7 +160,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
-    private sanitizer: DomSanitizer,
     private uppyUploaderService: UppyUploaderService,
     private notificationsService: NotificationsService,
     @Inject(DOCUMENT) private readonly document: Document
@@ -172,9 +171,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this._isValidPusherEvent(event)) {
           const receivedMessage = this.getMessageFromEvent(event);
 
-
           // eslint-disable-next-line no-console
-          console.log(receivedMessage);
+          console.log('receivedMessage::', receivedMessage);
 
           if (receivedMessage?.file) {
             let fileObject = null;
@@ -496,13 +494,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(
         (response) => {
-          this.triggerPusherEvent(response);
-          this.updateListData(response);
-          this.utils.broadcastEvent("chat:info-update", true);
-          this._scrollToBottom();
-          this._afterSendMessage();
+          this.afterEventEmission(response);
         },
         (_error) => {
+          console.error("Error sending message", _error);
           this._afterSendMessage();
         }
       );
@@ -527,27 +522,34 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
         .pipe(takeUntil(this.destroy$))
         .subscribe(
           (response) => {
-            this.triggerPusherEvent(response, attachment);
-            this.updateListData(response);
-            this.utils.broadcastEvent("chat:info-update", true);
-            this._scrollToBottom();
+            this.afterEventEmission(response, attachment);
             this.removeSelectAttachment(attachment);
-            this._afterSendMessage();
           },
           (error) => {
+            console.error("Error posting attachment", error);
             this._afterSendMessage();
           }
         );
     });
   }
 
-  triggerPusherEvent(response, file?) {
+  // series of after event emission actions (triggered after sending message)
+  afterEventEmission(response, attachment?) {
+    this.triggerPusherEvent(response, attachment);
+    this.updateListData(response);
+    this.utils.broadcastEvent("chat:info-update", true);
+    this._scrollToBottom();
+    this._afterSendMessage();
+  }
+
+  // trigger pusher event with file response
+  triggerPusherEvent(response, file?: FileResponse) {
     const pusherData: SendMessageParam = {
       channelUuid: this.channelUuid,
       uuid: response.uuid,
       isSender: response.isSender,
       message: response.message,
-      file: response.file,
+      file: file || response.file,
       created: response.created,
       senderUuid: response.senderUuid,
       senderName: response.senderName,
@@ -555,9 +557,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       senderAvatar: response.senderAvatar,
       sentAt: response.sentAt,
     };
-    if (file) {
-      pusherData.file = JSON.stringify(file);
-    }
+
     this.pusherService.triggerSendMessage(
       this.chatChannel.pusherChannel,
       pusherData
@@ -576,7 +576,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       sentAt: response.sentAt,
 
       // TBC
-      preview: this.attachmentPreview(response.fileObject),
+      preview: this.attachmentPreview(response.file),
       senderUuid: response.senderUuid,
       senderName: response.senderName,
       senderRole: response.senderRole,
