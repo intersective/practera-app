@@ -820,9 +820,17 @@ export class AssessmentService {
    */
   async pullFastFeedback() {
     try {
-      const modal = await this.fastFeedbackService
-        .pullFastFeedback({ modalOnly: true })
-        .toPromise();
+      const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+      if (response?.error) {
+        await this.NotificationsService.alert({
+          header: $localize`Error retrieving pulse check data`,
+          message: response.message,
+        });
+        console.error(response.message);
+        return;
+      }
+
+      const modal = response;
       if (modal && modal.present) {
         await modal.present();
         await modal.onDidDismiss();
