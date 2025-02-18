@@ -65,7 +65,7 @@
               [content]="message?.message"
               [sanitize]="true"
               tabindex="0"
-              [ngStyle]="{'color': message.isSender && contrastPrimaryColor ? 'white' : 'var(--ion-text-color)'}"
+              [ngStyle]="{'color': message.isSender && isDark ? 'white' : 'var(--ion-color-primary-contrast)'}"
             ></quill-view-html>
           </ng-container>
 
