@@ -113,6 +113,9 @@ $message-body-size: 60%;
           position:relative;
           cursor: pointer;
           padding: 16px;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal;
 
           .message-text {
             margin-bottom: 10px;
