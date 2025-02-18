@@ -64,8 +64,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   videoHandles = [];
 
   selectedAttachments: any[] = [];
-  isDark: boolean;
-
 
   // cosmetic variables
   isMobile: boolean = false;
@@ -241,8 +239,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       });
 
     this.isMobile = this.utils.isMobile();
-
-    this.isDark = this.utils.isPrimaryColorDark() ? true : false;
   }
 
   ngOnInit() {
