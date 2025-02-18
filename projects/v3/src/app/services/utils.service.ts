@@ -239,14 +239,20 @@ export class UtilsService {
     const blue = parseInt(hex.substring(4, 6), 16);
 
     this.document.documentElement.style.setProperty(`--ion-color-${type}-rgb`, `${red}, ${green}, ${blue}`);
+    this.document.documentElement.style.setProperty(`--ion-color-${type}-contrast`, this.generateContrastColor(color));
+  }
+
+  generateContrastColor(color: string): string {
+    this.isPrimaryColorDark(color);
+    return this.isPrimaryColorDark(color) ? 'white' : 'black';
   }
 
   /**
    * Check if the primary color is dark or bright
    * @returns {boolean} true if the primary color is dark, false if bright
    */
-  isPrimaryColorDark(): boolean {
-    const primaryColor = getComputedStyle(this.document.documentElement).getPropertyValue('--ion-color-primary').trim();
+  isPrimaryColorDark(colorInHex?: string): boolean {
+    const primaryColor = colorInHex || getComputedStyle(this.document.documentElement).getPropertyValue('--ion-color-primary').trim();
     if (!primaryColor) {
       return false;
     }

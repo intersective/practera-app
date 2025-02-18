@@ -65,7 +65,6 @@
               [content]="message?.message"
               [sanitize]="true"
               tabindex="0"
-              [ngStyle]="{'color': message.isSender && contrastPrimaryColor ? 'white' : null}"
             ></quill-view-html>
           </ng-container>
 
@@ -107,7 +106,7 @@
               <ion-item class="general-attachment" (click)="previewFile(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document-outline" slot="start"></ion-icon>
-                <ion-label color="primary">
+                <ion-label>
                   {{ message.file.name }}
                 </ion-label>
                 <ion-note *ngIf="getTypeByMime(message.file.type)">
