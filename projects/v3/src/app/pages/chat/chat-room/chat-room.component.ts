@@ -728,24 +728,24 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     return "received-messages";
   }
 
-  getClassForMessageBody(message) {
+  getClassForMessageBody(fileObject: FileResponse) {
     if (
-      !message.fileObject ||
-      !message.fileObject.mimetype ||
-      (!message.fileObject.mimetype.includes("image") &&
-        !message.fileObject.mimetype.includes("video"))
+      !fileObject ||
+      !fileObject.type ||
+      (!fileObject.type.includes("image") &&
+        !fileObject.type.includes("video"))
     ) {
       return "";
     }
     if (
-      message.fileObject.mimetype &&
-      message.fileObject.mimetype.includes("video")
+      fileObject.type &&
+      fileObject.type.includes("video")
     ) {
       return "video-attachment-container";
     }
     if (
-      message.fileObject.mimetype &&
-      message.fileObject.mimetype.includes("image")
+      fileObject.type &&
+      fileObject.type.includes("image")
     ) {
       return "image";
     }
