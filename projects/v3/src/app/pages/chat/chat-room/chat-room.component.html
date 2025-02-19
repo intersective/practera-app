@@ -51,7 +51,7 @@
         </div>
 
         <div class="message-body"
-          [ngClass]="getClassForMessageBody(message)"
+          [ngClass]="getClassForMessageBody(message.file)"
           aria-describedby="message-content">
 
           <ng-container *ngIf="!message.isSender">
