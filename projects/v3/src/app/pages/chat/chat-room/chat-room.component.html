@@ -106,7 +106,7 @@
               <ion-item class="general-attachment" (click)="previewFile(message.fileObject)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document-outline" slot="start"></ion-icon>
-                <ion-label color="primary">
+                <ion-label>
                   {{ message.fileObject.filename }}
                 </ion-label>
                 <ion-note *ngIf="getTypeByMime(message.fileObject.mimetype)">
