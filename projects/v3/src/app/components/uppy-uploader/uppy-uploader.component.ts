@@ -3,7 +3,6 @@ import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import Tus from '@uppy/tus';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
 
@@ -31,19 +30,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
-  uppyProps = {
-    inline: true,
-    width: '100%',
-    height: '70vh',
-    showProgressDetails: true,
-    note: 'Images only, up to 10 MB',
-    proudlyDisplayPoweredByUppy: false,
-    hideRetryButton: false,
-    hidePauseResumeButton: false,
-    hideCancelButton: false,
-    hideProgressAfterFinish: false,
-    doneButtonHandler: null,
-  };
+  uppyProps = this.uppyUploaderService.uppyProps;
 
   s3Info: string; /* {
     path: string;
@@ -68,96 +55,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
     this.allowedFileTypes = this.loadAllowedFileTypes();
 
-    const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
-      debug: true,
-      autoProceed: false,
-      restrictions: {
-        ...environment.uppyConfig.restrictions,
-        allowedFileTypes: this.allowedFileTypes,
-      },
-    };
-
-    this.uppy = new Uppy(uppyOptions);
-    this.uppy.use(Tus, {
-      headers: {
-        'source': this.source,
-        'apikey': this.storageService.getUser().apikey,
-      },
-      endpoint: this.tusEndpoint,
-      retryDelays: [0, 1000, 3000, 5000],
-      // withCredentials: true,
-      onBeforeRequest: (req) => {
-        this.reset();
-        // eslint-disable-next-line no-console
-        console.log('onBeforeRequest', req);
-      },
-      onError: (error) => {
-        this.notificationsService.alert({
-          header: "Upload Failed",
-          message: error?.message,
-        });
-        console.error("Upload error:", error);
-        return;
-      },
-      onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
-        // eslint-disable-next-line no-console
-        console.log(bytesUploaded, bytesTotal, `${percentage}%`);
-      },
-      onSuccess: (upload) => {
-        // eslint-disable-next-line no-console
-        console.log("Upload complete:", upload);
-      },
-      onAfterResponse: async (req, res) => {
-        try {
-          // eslint-disable-next-line no-console
-          console.log('onAfterResponse', req, res);
-          const body = res.getBody();
-          // eslint-disable-next-line no-console
-          console.log('onAfterResponse::res.getBody()', body);
-
-          this.s3Info = body;
-          // eslint-disable-next-line no-console
-          console.log('onAfterResponse::this.s3Info', this.s3Info);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('onAfterResponse::error', error);
-          this.notificationsService.alert({
-            header: "Upload Failed",
-            message: error.message,
-          });
-        }
-      },
-    }).on("upload", (data) => {
-      // eslint-disable-next-line no-console
-      console.log("Upload started:", data);
-    })
-    .on("upload-error", (file, error) => {
-      console.warn("Upload error:", error);
-    })
-    .on("file-added", (file) => {
-      // eslint-disable-next-line no-console
-      console.log("File added:", file);
-    })
-    .on("upload-success", (file, response) => {
-      if (response && response.status === 200) {
-        this.uploadedFile = file;
-        this.uploadComplete.emit(response.body);
-      } else {
-        console.warn("Upload failed:", response);
-      }
-    })
-    .on("restriction-failed", (file, error) => {
-      console.warn("Restriction failed:", error);
-      this.notificationsService.alert({
-        header: "Upload Failed",
-        message: error.message,
-      });
-    })
-    .on("error", (error) => {
-      console.error("Error:", error);
-    })
-    .on("complete", this.onComplete.bind(this));
+    this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.tusEndpoint, this.onUploadSuccess.bind(this));
   }
 
   reset() {
@@ -207,7 +105,6 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     if (this.s3Info) {
       this.storageService.clearByName('activityId');
       this.closeModal(result);
-
     } else {
       this.notificationsService.alert({
         header: "Upload Failed",
@@ -259,6 +156,15 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error transforming TUS URL:', error);
       return tusUrl; // Return original URL if transformation fails
+    }
+  }
+
+  onUploadSuccess(file: UppyFile<any, any>, response: any) {
+    if (response && response.status === 200) {
+      this.uploadedFile = file;
+      this.uploadComplete.emit(response.body);
+    } else {
+      console.warn("Upload failed:", response);
     }
   }
 }
