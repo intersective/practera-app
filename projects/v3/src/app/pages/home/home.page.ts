@@ -13,6 +13,7 @@ import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 
 @Component({
   selector: "app-home",
@@ -62,6 +63,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
     private cdr: ChangeDetectorRef,
+    private fastFeedbackService: FastFeedbackService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -144,6 +146,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           });
         },
       });
+
   }
 
   ngOnDestroy(): void {
@@ -174,6 +177,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
       });
     }
+
+    this.fastFeedbackService.pullFastFeedback().pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
   }
 
   goBack() {
