@@ -18,6 +18,36 @@ export interface UppyUploaderResponse {
   size: number;
 }
 
+export interface UppyFileData {
+  source: string;
+  id: string;
+  name: string;
+  extension: string;
+  meta: {
+    relativePath: string | null;
+    name: string;
+    type: string;
+  };
+  type: string;
+  data: any;
+  progress: {
+    uploadStarted: number;
+    uploadComplete: boolean;
+    percentage: number;
+    bytesUploaded: number;
+    bytesTotal: number;
+  };
+  size: number;
+  isGhost: boolean;
+  isRemote: boolean;
+  preview: string;
+  tus: {
+    uploadUrl: string;
+  };
+  bucket: string;
+  path: string;
+}
+
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
 
@@ -139,7 +169,8 @@ export class UppyUploaderService {
       component: UppyUploaderComponent,
       componentProps: {
         source
-      }
+      },
+      cssClass: 'uppy-uploader-modal',
     });
     await modal.present();
 

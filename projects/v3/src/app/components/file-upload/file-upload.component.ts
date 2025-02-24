@@ -106,9 +106,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initiateUppy();
-
     this.uppyProps.note = this.noteMessage();
-
     this._showSavedAnswers();
   }
 
@@ -176,7 +174,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    console.log('onFileUploadCompleted', data, response);
     const type = this.doReview ? 'answer' : null;
 
     // reset errors
