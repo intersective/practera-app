@@ -181,6 +181,10 @@ export class ApolloService {
     success: boolean;
     message: string;
   }> {
+    if (environment.production !== true) {
+      return of(null);
+    }
+
     if (typeof message !== 'string') {
       message = JSON.stringify(message);
     }
