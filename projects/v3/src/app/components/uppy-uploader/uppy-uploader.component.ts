@@ -32,17 +32,20 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   // Uppy UI
   uppyProps = this.uppyUploaderService.uppyProps;
 
-  s3Info: string; /* {
+  s3Info: {
     path: string;
     bucket: string;
-  } */;
+  };
 
   constructor(
     private notificationsService: NotificationsService,
     private modalController: ModalController,
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
-  ) {}
+  ) {
+    this.uppyProps.height = null;
+    this.uppyProps.note = "Upload a file here";
+  }
 
   ngOnInit() {
     if (!this.tusEndpoint) {
@@ -55,7 +58,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
     this.allowedFileTypes = this.loadAllowedFileTypes();
 
-    this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.tusEndpoint, this.onUploadSuccess.bind(this));
+    this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.tusEndpoint, {
+      onAfterResponse: this.onComplete.bind(this),
+      onUploadSuccess: this.onUploadSuccess.bind(this),
+    });
   }
 
   reset() {
@@ -94,16 +100,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     // eslint-disable-next-line no-console
     console.log("Uploaded files:", result);
 
-    if (this.uploadedFile) {
-      // const sanitizedName = this.sanitizeName(this.uploadedFile.name);
-      // const cacheClearResult = this.clearUploadedCache(sanitizedName);
-      const cacheClearResult = this.clearUploadedCache(this.uploadedFile.id);
-      // eslint-disable-next-line no-console
-      console.log('Cache cleared:', cacheClearResult);
-    }
-
     if (this.s3Info) {
-      this.storageService.clearByName('activityId');
       this.closeModal(result);
     } else {
       this.notificationsService.alert({
@@ -125,7 +122,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   closeModal(result) {
-    const s3Info = JSON.parse(this.s3Info);
+    const s3Info = JSON.parse(result);
     const data = {
       ...result,
       ...{
