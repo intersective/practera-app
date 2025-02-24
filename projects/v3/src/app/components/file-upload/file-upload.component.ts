@@ -2,13 +2,10 @@ import { UppyUploaderService } from './../uppy-uploader/uppy-uploader.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import RemoteSources from '@uppy/remote-sources';
-import Tus from '@uppy/tus';
+import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { BrowserStorageService } from '../../services/storage.service';
-import { HttpResponse } from '@angular/common/http';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -85,7 +82,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
-  uploadedFile;
+  uploadedFile: FileInput;
   fileTypes = '';
   tusResponse: {
     path: string;
@@ -108,24 +105,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Example: React to value changes
-    this.control.valueChanges.subscribe(value => {
-      // eslint-disable-next-line no-console
-      console.log('Value changed to:', value);
-    });
-
-    if (!this.uploadUrl) {
-      throw new Error("uploadUrl is required.");
-    }
-
     this.initiateUppy();
-
     this.uppyProps.note = this.noteMessage();
-
-    // this.fileTypes = this.filestackService.getFileTypes(this.videoOnly ? 'video' : this.question.fileType);
     this._showSavedAnswers();
   }
 
+  // size notice based on fileType
   noteMessage(): string {
     const size = environment.uppyConfig.restrictions.maxFileSize / 1024 / 1024; // in MB
     if (this.question.fileType === 'video') {
@@ -148,55 +133,21 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       allowedFileTypes = ['image/*'];
     }
 
-    const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
-      debug: true,
-      autoProceed: false,
-      restrictions: {
-        ...environment.uppyConfig.restrictions,
-        allowedFileTypes,
-      },
-    };
-
-    this.uppy = new Uppy(uppyOptions);
-
-    // initialise uppy with tus
-    this.uppy.use(Tus, {
-      headers: {
-        'apikey': this.storageService.getUser().apikey,
-        'source': this.source,
-      },
-      endpoint: this.uploadUrl,
-      retryDelays: [0, 1000, 3000, 5000],
-      onError: (error) => {
-        // eslint-disable-next-line no-console
-        console.log("Tus error:", error);
-      },
-      onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
-        // eslint-disable-next-line no-console
-        console.log(bytesUploaded, bytesTotal, `${percentage}%`);
-      },
-      onSuccess: (upload) => {
-        // eslint-disable-next-line no-console
-        console.log("Upload complete:", upload);
-      },
-      onAfterResponse: async (req, res) => {
-        // eslint-disable-next-line no-console
-        console.log('onAfterResponse', req, res);
-        if (req.getMethod() === 'POST') {
-          this.tusResponse = this.uppyUploaderService.extractResponseData(res as any);
-        }
-      },
+    this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.uploadUrl, {
+      onAfterResponse: this.onAfterResponse.bind(this),
+      onUploadSuccess: this.onFileUploadCompleted.bind(this),
     });
-
     this.initializeEventHandlers(this.uppy);
   }
 
+  onAfterResponse(req: any, res: any): void {
+    // eslint-disable-next-line no-console
+    console.log('onAfterResponse', req, res);
+    this.tusResponse = JSON.parse(res.getBody());
+  }
+
   initializeEventHandlers(uppy) {
-    uppy.on('dashboard:file-edit-start', (file: any) => {
-      // eslint-disable-next-line no-console
-      console.log('file edit start', file);
-    }).on('files-added', (files: any) => {
+    uppy.on('files-added', (files: any) => {
       // eslint-disable-next-line no-console
       console.log('files added', files);
       this.control.setValue({
@@ -205,46 +156,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       });
 
       this.control.markAsTouched();
-    }).on('file-removed', (file: any) => {
-      // eslint-disable-next-line no-console
-      console.log('file removed', file);
-    }).on('restriction-failed', (file: any, error: any) => {
-      // eslint-disable-next-line no-console
-      console.log('restriction failed', file, error);
-    }).on('upload-error', (file: any, error: any) => {
-      // eslint-disable-next-line no-console
-      console.log('upload error', file, error);
-    }).on('upload-success', (file: any, response: any) => {
-      // eslint-disable-next-line no-console
-      console.log('upload success', file, response);
-
-      const submission: FileInput = {
-        // to be return from backend
-        bucket: this.tusResponse.bucket,
-        path: this.tusResponse.path,
-        url: response.uploadURL,
-
-        // from uppy
-        name: file.name,
-        extension: file.extension,
-        type: file.type, // mime type
-        size: file.size,
-      };
-
-      // eslint-disable-next-line no-console
-      console.log('submission', submission);
-
-      this.onFileUploadCompleted(
-        { success: true, data: submission },
-        this.doReview ? "answer" : null
-      );
     }).on('file-removed', (file) => {
       // eslint-disable-next-line no-console
       console.log('file removed', file);
       this.sendDeleteRequestForFile(file);
-    }).on('complete', (result) => {
-      // eslint-disable-next-line no-console
-      console.log('complete', result);
     });
   }
 
@@ -254,20 +169,29 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.uppy.removeFile(file.id);
   }
 
-  onFileUploadCompleted(file, type = null) {
-    if (file.success) {
-      // reset errors
-      this.errors = [];
-      this.uploadedFile = file.data;
-      this.onChange('', type);
-    } else {
-      // display error message for user
-      // if error is drag and drop error will show a custom message. ex:- nore than one file droped, invalid file type droped.
-      if (file.data.isDragAndDropError) {
-        this.errors.push(`${file.data.message}, please try again.`);
-      } else {
-        this.errors.push('File upload failed, please try again later.');
-      }
+  onFileUploadCompleted(data: UppyFile<any, any>, response: {
+    body: XMLHttpRequest;
+    status: number;
+    uploadURL: string;
+  }): void {
+    const type = this.doReview ? 'answer' : null;
+
+    // reset errors
+    this.errors = [];
+    const fileInput: FileInput = {
+      name: data.name,
+      type: data.type,
+      size: data.size,
+      extension: data.extension,
+      url: response.uploadURL,
+      bucket: this.tusResponse.bucket,
+      path: this.tusResponse.path,
+    };
+
+    this.uploadedFile = fileInput;
+    this.onChange('', type);
+    if (response?.status !== 200) {
+      this.errors.push('File upload failed, please try again later.');
     }
   }
 
@@ -299,7 +223,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type: 'comment' | 'answer' | null) {
+  onChange(value, type?: 'comment' | 'answer') {
     // set changed value (answer or comment)
     if (type) {  // for reviewing
       if (!this.innerValue) {
@@ -345,7 +269,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     if (this.doAssessment === true) {
       this.submission.answer = null;
-      this.onChange('', null);
+      this.onChange('');
     }
 
     if (this.doReview === true) {
