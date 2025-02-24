@@ -1017,9 +1017,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     const modal = await this.uppyUploaderService.open('chat');
     const res = await modal.onDidDismiss();
 
-    // eslint-disable-next-line no-console
-    console.log('abcdefg', res);
-
     if (res?.data.successful?.length > 0) {
       const success = res.data.successful[0] || {};
       this.addAttachment({ ...res.data, ...success });
