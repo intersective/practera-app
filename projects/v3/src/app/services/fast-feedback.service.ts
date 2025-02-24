@@ -68,6 +68,11 @@ export class FastFeedbackService {
           // don't open it again if there's one opening
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
 
+          if (this.utils.isEmpty(res.data)) {
+            this.apolloService.logError(JSON.stringify(res)).subscribe();
+            return of(res);
+          }
+
           // if any of either slider or meta is empty or not available,
           // should just skip the modal popup
           const { questions, meta } = res.data.pulseCheck;
