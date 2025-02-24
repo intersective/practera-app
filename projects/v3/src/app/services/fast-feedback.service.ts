@@ -69,11 +69,9 @@ export class FastFeedbackService {
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
 
           // check if pulseCheck is null
-          if (!res.data.pulseCheck) {
-            return of({
-              error: true,
-              message: "No pulseCheck data available.",
-            });
+          if (this.utils.isEmpty(res.data.pulseCheck)) {
+            this.apolloService.logError(JSON.stringify(res)).subscribe();
+            return of(res);
           }
 
           // if any of either slider or meta is empty or not available,
