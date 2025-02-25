@@ -6,15 +6,15 @@
     </ng-container>
     <ng-template #animated>
       <div id="{{name}}" #description [innerHtml]="content"
-      [ngClass]="{
-        'limit-height': isTruncating && !isInPopup,
-        'limit-height-popup': isTruncating && isInPopup,
-        'full-height-animated': !isTruncating && !isInPopup,
-        'full-height-popup': !isTruncating && isInPopup
-      }"
-      style="overflow-wrap: anywhere;">
-    </div>
-  </ng-template>
+        [ngClass]="{
+          'limit-height': isTruncating && !isInPopup,
+          'limit-height-popup': isTruncating && isInPopup,
+          'full-height-animated': !isTruncating && !isInPopup,
+          'full-height-popup': !isTruncating && isInPopup
+        }"
+        style="overflow-wrap: anywhere;">
+      </div>
+    </ng-template>
   </div>
 
   <ng-container *ngIf="isTruncating && heightExceeded">
