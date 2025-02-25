@@ -864,14 +864,6 @@ export class AssessmentService {
       const response = await firstValueFrom(this.fastFeedbackService.pullFastFeedback({
         modalOnly: true
       }));
-      if (response?.error) {
-        await this.NotificationsService.alert({
-          header: $localize`Error retrieving pulse check data`,
-          message: response.message,
-        });
-        console.error(response.message);
-        return;
-      }
 
       const modal = response;
       if (modal && modal.present) {
@@ -879,11 +871,7 @@ export class AssessmentService {
         await modal.onDidDismiss();
       }
     } catch (err) {
-      await this.NotificationsService.alert({
-        header: $localize`Error retrieving pulse check data`,
-        message: err.msg || JSON.stringify(err),
-      });
-      throw new Error(err);
+      console.error('Pulsecheck Retrieval Error::', err);
     }
   }
 
