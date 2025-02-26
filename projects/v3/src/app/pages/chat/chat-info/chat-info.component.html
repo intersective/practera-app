@@ -21,7 +21,7 @@
 
 <ion-content class="ion-padding" [ngClass]="{'border': !utils.isMobile()}">
   <div class="who-in-chat-container channel-name">
-    <ion-label class="subtitle-1 black">{{ selectedChat.name }}</ion-label>
+    <ion-label class="subtitle-1 black" [innerHTML]="selectedChat.name"></ion-label>
   </div>
   <div class="who-in-chat-container">
     <ion-label class="subtitle-1 gray-2" i18n>Who is in this chat</ion-label>
@@ -47,7 +47,7 @@
                 <img [src]="member.avatar" [alt]="member.name">
               </ion-avatar>
               <ion-label>
-                <p class="subtitle-1 black">{{member.name}}</p>
+                <p class="subtitle-1 black" [innerHTML]="member.name"></p>
                 <p class="caption gray-2" *ngIf="member.role !== 'participant'">{{ utils.getUserRolesForUI(member.role) }}</p>
               </ion-label>
             </ion-item>
