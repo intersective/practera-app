@@ -6,7 +6,7 @@
       <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
         <ion-item class="item-bottom-border" lines="none">
           <ion-label>
-            {{ teamMember.userName }}
+            <span [innerHTML]="teamMember.userName"></span>
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
               <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner's answer</ion-chip>
               <ion-chip class="label yellow black" *ngIf="teamMember.key === review.answer" i18n>Expert's answer</ion-chip>
@@ -16,7 +16,7 @@
       </ng-container>
     </ion-radio-group>
   </ion-list>
-  
+
   <ng-container *ngIf="review?.comment">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
@@ -46,7 +46,7 @@
           [value]="teamMember.key"
           [disabled]="control.disabled"
         ></ion-radio>
-        <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
+        <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
       </ion-item>
     </ion-radio-group>
   </ion-list>
@@ -65,7 +65,7 @@
         [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
         <ion-radio color="success" slot="start" [value]="teamMember.key" [disabled]="control.disabled" mode="md"></ion-radio>
         <ion-label class="white-space-normal body-2 black">
-          {{ teamMember.userName }}
+            <span [innerHTML]="teamMember.userName"></span>
           <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
             <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner's answer</ion-chip>
           </p>
