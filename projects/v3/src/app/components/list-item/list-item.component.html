@@ -31,7 +31,7 @@
     <div class="item-content ion-padding-vertical"
       [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
       <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
-        <div class="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
+        <div class="'item-title body-2 ion-color-' + titleColor" [innerHTML]="title"></div>
         &nbsp; <!-- this is to add some space between two elements -->
         <span style="white-space: nowrap;"
           class="item-title subtitle-3"
@@ -70,7 +70,7 @@
 
       <div *ngIf="label" [attr.aria-label]="label">
         <ion-chip [class]="'label ion-no-margin ' + labelColor">
-          <ion-label class="body-3">{{ label }}</ion-label>
+          <ion-label class="body-3" [innerHTML]="label"></ion-label>
         </ion-chip>
       </div>
     </div>
@@ -80,7 +80,8 @@
       [color]="endingTextColor"
       slot="end"
       [attr.aria-label]="endingText"
-    >{{ endingText }}</ion-text>
+      [innerHTML]="endingText"
+    ></ion-text>
 
     <ion-icon *ngIf="endingIcon"
       [name]="endingIcon"
