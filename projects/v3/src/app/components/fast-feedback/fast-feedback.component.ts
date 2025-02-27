@@ -74,12 +74,18 @@ export class FastFeedbackComponent implements OnInit {
       targetUserId: null,
     };
 
-    // if team_id exist, pass team_id
-    if (this.meta?.team_id) {
-      params.teamId = this.meta?.team_id;
-    } else if (this.meta?.target_user_id) {
-      // otherwise, pass target_user_id
-      params.targetUserId = this.meta?.target_user_id;
+
+    // for temporary, "closable = true" is an indicator of this pulsecheck is opened from the traffic light group (self-assessment)
+    if (this.closable === true) {
+      params.teamId = this.storage.getUser().teamId;
+    } else {
+      // if team_id exist, pass team_id
+      if (this.meta?.team_id) {
+        params.teamId = this.meta?.team_id;
+      } else if (this.meta?.target_user_id) {
+        // otherwise, pass target_user_id
+        params.targetUserId = this.meta?.target_user_id;
+      }
     }
 
     let submissionResult;
