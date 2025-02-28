@@ -65,7 +65,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   selectedAttachments: any[] = [];
 
-
   // cosmetic variables
   isMobile: boolean = false;
   hasUnreadMessages: boolean = false;

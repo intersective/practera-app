@@ -5,7 +5,7 @@
       [ngClass]="{ 'subtitle-2': !isMobile }"
       aria-live="polite"
       [attr.aria-label]="memberList.length + ' members'">
-      {{ chatChannel.name }}
+      <span [innerHTML]="chatChannel.name"></span>
       <div class="ion-text-center sub-title caption gray-1 saving-msg" i18n>
         {{ memberList.length }} members
       </div>
@@ -106,7 +106,7 @@
               <ion-item class="general-attachment" (click)="previewFile(message.fileObject)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document-outline" slot="start"></ion-icon>
-                <ion-label color="primary">
+                <ion-label>
                   {{ message.fileObject.filename }}
                 </ion-label>
                 <ion-note *ngIf="getTypeByMime(message.fileObject.mimetype)">
@@ -204,7 +204,7 @@
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document" slot="start"></ion-icon>
                 <ion-label color="black">
-                  <p>{{ attachment.filename }}</p>
+                  <p [innerHTML]="attachment.filename"></p>
                   <p class="mimetype" *ngIf="getTypeByMime(attachment.mimetype)">{{ getTypeByMime(attachment.mimetype) }}</p>
                 </ion-label>
               </ion-item>
