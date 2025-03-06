@@ -84,7 +84,6 @@ export class SettingsPage implements OnInit, OnDestroy {
 
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
-    // this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   ngOnInit() {
