@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subscription, firstValueFrom } from 'rxjs';
 import { map, shareReplay, catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -861,7 +861,7 @@ export class AssessmentService {
    */
   async pullFastFeedback() {
     try {
-      const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+      const response = await firstValueFrom(this.fastFeedbackService.pullFastFeedback({ modalOnly: true }));
       if (response?.error) {
         await this.NotificationsService.alert({
           header: $localize`Error retrieving pulse check data`,

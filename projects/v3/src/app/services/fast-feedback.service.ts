@@ -68,12 +68,10 @@ export class FastFeedbackService {
           // don't open it again if there's one opening
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
 
-          // check if pulseCheck is null
-          if (!res.data.pulseCheck) {
-            return of({
-              error: true,
-              message: "No pulseCheck data available.",
-            });
+          // no need to alert user, just display as error on console
+          if (this.utils.isEmpty(res.data?.pulseCheck)) {
+            console.error('No pulse check data found');
+            return of(res);
           }
 
           // if any of either slider or meta is empty or not available,
