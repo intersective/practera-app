@@ -42,7 +42,6 @@ import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-
 import { UppyAngularDashboardModule, UppyAngularDashboardModalModule } from '@uppy/angular';
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
-import { UppyModalComponent } from './uppy-modal/uppy-modal.component';
 import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
 
 const largeCircleDefaultConfig = {
@@ -110,7 +109,6 @@ const largeCircleDefaultConfig = {
     TrafficLightGroupComponent,
     UppyUploaderComponent,
     FileUploadComponent,
-    UppyModalComponent,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -155,8 +153,7 @@ const largeCircleDefaultConfig = {
     TrafficLightGroupComponent,
     UppyUploaderComponent,
     FileUploadComponent,
-    UppyModalComponent,
   ],
   providers: [UppyUploaderService]
 })
-export class ComponentsModule {}
+export class ComponentsModule { }
