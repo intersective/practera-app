@@ -278,7 +278,7 @@ export class AuthService {
         this.storage.remove('lastAuthFetchTime');
         this.storage.remove('authCache');
         this.logout(); // clear user's information
-        throw new Error(err);
+        throw err;
       })
     );
   }
