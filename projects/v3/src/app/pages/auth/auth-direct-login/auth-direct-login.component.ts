@@ -253,7 +253,7 @@ export class AuthDirectLoginComponent implements OnInit {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            // calling auth service logout mentod to clear user data and redirect
+            // clear login data
             this.authService.logout();
           }
         }
