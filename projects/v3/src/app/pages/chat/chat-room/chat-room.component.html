@@ -76,9 +76,7 @@
                   (keydown)="preview(message.file, $event)"
                   tabindex="0"
                   role="button">
-                  <p class="label">
-                    {{ message.file.name }}
-                  </p>
+                  <p class="label" [innerHTML]="message.file.name"></p>
                   <div id="inner-box">
                     <p>
                       <ion-icon name="play-circle"></ion-icon>
