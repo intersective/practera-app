@@ -470,4 +470,8 @@ export class ChatService {
       senderAvatar: result.sender.avatar,
     };
   }
+
+  logChatError(data) {
+    return this.apolloService.logError(JSON.stringify(data)).subscribe();
+  }
 }

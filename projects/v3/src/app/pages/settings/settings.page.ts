@@ -5,7 +5,6 @@ import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { FilestackService } from '@v3/services/filestack.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { AlertOptions, ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
@@ -40,8 +39,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   // controll profile image updating
   imageUpdating = false;
   acceptFileTypes = ['image/*'];
-  // card image CDN
-  cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
 
   // hubspot form
   hubspotActivated: boolean = false;
@@ -54,7 +51,6 @@ export class SettingsPage implements OnInit, OnDestroy {
     private storage: BrowserStorageService,
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
-    private filestackService: FilestackService,
     private modalController: ModalController,
     private uppyUploaderService: UppyUploaderService,
     @Inject(DOCUMENT) private document: Document,
@@ -77,6 +73,7 @@ export class SettingsPage implements OnInit, OnDestroy {
         name,
         programName,
         LtiReturnUrl,
+        programImage
       } = user;
       // get contact number and email from local storage
       this.profile.email = email;
@@ -85,9 +82,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.profile.name = name;
       this.currentProgramName = programName;
       this.returnLtiUrl = LtiReturnUrl;
-
-      this.currentProgramImage = this._getCurrentProgramImage();
-      // this.fastFeedbackService.pullFastFeedback().subscribe();
+      this.currentProgramImage = programImage;
     } catch (error) {
       this.notificationsService.alert({
         message: $localize`Failed to retrieve user information`,
@@ -124,21 +119,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
-  }
-
-  // loading pragram image to settings page by resizing it depend on device.
-  // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
-  // because of that we load image also in mobile view.
-  private _getCurrentProgramImage() {
-    if (!this.utils.isEmpty(this.storage.getUser().programImage)) {
-      let imagewidth = 600;
-      const imageId = this.storage.getUser().programImage.split('/').pop();
-      if (!this.utils.isMobile()) {
-        imagewidth = 1024;
-      }
-      return `${this.cdn}${imagewidth}/${imageId}`;
-    }
-    return '';
   }
 
   openLink(event) {
