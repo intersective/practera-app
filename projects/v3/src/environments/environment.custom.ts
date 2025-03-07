@@ -22,7 +22,7 @@ export const environment = {
       minFileSize: undefined, // No minimum size
       maxFileSize: <CUSTOM_UPLOAD_MAX_FILE_SIZE>, // 2GB max size
       minNumberOfFiles: 1, // At least one file
-      maxNumberOfFiles: 5, // At most 5 files
+      maxNumberOfFiles: 1, // max one file for now
       maxTotalFileSize: undefined, // No limit on total size
       requiredMetaFields: [] // No required metadata fields
     }
