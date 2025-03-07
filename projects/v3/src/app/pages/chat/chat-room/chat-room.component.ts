@@ -14,7 +14,7 @@ import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { QuillModules } from 'ngx-quill';
-import { UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
+import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
 
 enum ScrollPosition {
   Top = 'top',
@@ -525,6 +525,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           (error) => {
             console.error("Error posting attachment", error);
             this._afterSendMessage();
+            this.chatService.logChatError(error);
           }
         );
     });
@@ -728,24 +729,24 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     return "received-messages";
   }
 
-  getClassForMessageBody(message) {
+  getClassForMessageBody(fileObject: FileResponse) {
     if (
-      !message.fileObject ||
-      !message.fileObject.mimetype ||
-      (!message.fileObject.mimetype.includes("image") &&
-        !message.fileObject.mimetype.includes("video"))
+      !fileObject ||
+      !fileObject.type ||
+      (!fileObject.type.includes("image") &&
+        !fileObject.type.includes("video"))
     ) {
       return "";
     }
     if (
-      message.fileObject.mimetype &&
-      message.fileObject.mimetype.includes("video")
+      fileObject.type &&
+      fileObject.type.includes("video")
     ) {
       return "video-attachment-container";
     }
     if (
-      message.fileObject.mimetype &&
-      message.fileObject.mimetype.includes("image")
+      fileObject.type &&
+      fileObject.type.includes("image")
     ) {
       return "image";
     }
@@ -1005,7 +1006,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       bucket: uppyRes.bucket,
       path: uppyRes.path,
       name: uppyRes.name,
-      url: uppyRes.uploadURL,
+      url: uppyRes.tus.uploadUrl,
       extension: uppyRes.extension,
       type: uppyRes.type,
       size: uppyRes.size,
@@ -1017,13 +1018,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     const modal = await this.uppyUploaderService.open('chat');
     const res = await modal.onDidDismiss();
 
-    // eslint-disable-next-line no-console
-    console.log('abcdefg', res);
-
-    if (res?.data.successful?.length > 0) {
-      const success = res.data.successful[0] || {};
-      this.addAttachment({ ...res.data, ...success });
-    } else if (res?.data.failed?.length > 0) {
+    const data: UppyFileData = res.data;
+    if (data) {
+      this.addAttachment(data);
+    } else if (data) {
       this.notificationsService.presentToast("Failed to upload attachment");
     }
   }

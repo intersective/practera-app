@@ -1,11 +1,11 @@
-import { UppyUploaderService } from './uppy-uploader.service';
+import { UppyFileData, UppyUploaderService } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
-import Tus from '@uppy/tus';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
+import { UtilsService } from '../../services/utils.service';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -31,31 +31,23 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
-  uppyProps = {
-    inline: true,
-    width: '100%',
-    height: '70vh',
-    showProgressDetails: true,
-    note: 'Images only, up to 10 MB',
-    proudlyDisplayPoweredByUppy: false,
-    hideRetryButton: false,
-    hidePauseResumeButton: false,
-    hideCancelButton: false,
-    hideProgressAfterFinish: false,
-    doneButtonHandler: null,
-  };
+  uppyProps = this.uppyUploaderService.uppyProps;
 
-  s3Info: string; /* {
+  s3Info: {
     path: string;
     bucket: string;
-  } */;
+  };
 
   constructor(
     private notificationsService: NotificationsService,
     private modalController: ModalController,
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
-  ) {}
+    private utils: UtilsService,
+  ) {
+    this.uppyProps.height = 500;
+    this.uppyProps.note = "Upload a file here";
+  }
 
   ngOnInit() {
     if (!this.tusEndpoint) {
@@ -68,96 +60,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
     this.allowedFileTypes = this.loadAllowedFileTypes();
 
-    const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
-      debug: true,
-      autoProceed: false,
-      restrictions: {
-        ...environment.uppyConfig.restrictions,
-        allowedFileTypes: this.allowedFileTypes,
-      },
-    };
-
-    this.uppy = new Uppy(uppyOptions);
-    this.uppy.use(Tus, {
-      headers: {
-        'source': this.source,
-        'apikey': this.storageService.getUser().apikey,
-      },
-      endpoint: this.tusEndpoint,
-      retryDelays: [0, 1000, 3000, 5000],
-      // withCredentials: true,
-      onBeforeRequest: (req) => {
-        this.reset();
-        // eslint-disable-next-line no-console
-        console.log('onBeforeRequest', req);
-      },
-      onError: (error) => {
-        this.notificationsService.alert({
-          header: "Upload Failed",
-          message: error?.message,
-        });
-        console.error("Upload error:", error);
-        return;
-      },
-      onProgress: (bytesUploaded, bytesTotal) => {
-        const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
-        // eslint-disable-next-line no-console
-        console.log(bytesUploaded, bytesTotal, `${percentage}%`);
-      },
-      onSuccess: (upload) => {
-        // eslint-disable-next-line no-console
-        console.log("Upload complete:", upload);
-      },
-      onAfterResponse: async (req, res) => {
-        try {
-          // eslint-disable-next-line no-console
-          console.log('onAfterResponse', req, res);
-          const body = res.getBody();
-          // eslint-disable-next-line no-console
-          console.log('onAfterResponse::res.getBody()', body);
-
-          this.s3Info = body;
-          // eslint-disable-next-line no-console
-          console.log('onAfterResponse::this.s3Info', this.s3Info);
-        } catch (error) {
-          // eslint-disable-next-line no-console
-          console.error('onAfterResponse::error', error);
-          this.notificationsService.alert({
-            header: "Upload Failed",
-            message: error.message,
-          });
-        }
-      },
-    }).on("upload", (data) => {
-      // eslint-disable-next-line no-console
-      console.log("Upload started:", data);
-    })
-    .on("upload-error", (file, error) => {
-      console.warn("Upload error:", error);
-    })
-    .on("file-added", (file) => {
-      // eslint-disable-next-line no-console
-      console.log("File added:", file);
-    })
-    .on("upload-success", (file, response) => {
-      if (response && response.status === 200) {
-        this.uploadedFile = file;
-        this.uploadComplete.emit(response.body);
-      } else {
-        console.warn("Upload failed:", response);
-      }
-    })
-    .on("restriction-failed", (file, error) => {
-      console.warn("Restriction failed:", error);
-      this.notificationsService.alert({
-        header: "Upload Failed",
-        message: error.message,
-      });
-    })
-    .on("error", (error) => {
-      console.error("Error:", error);
-    })
-    .on("complete", this.onComplete.bind(this));
+    this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.tusEndpoint, {
+      onAfterResponse: this.onAfterResponse.bind(this),
+      onUploadSuccess: this.onUploadSuccess.bind(this),
+    });
   }
 
   reset() {
@@ -192,23 +98,12 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     return name.replace(/[^a-zA-Z0-9]/g, '/');
   }
 
-  onComplete(result) {
-    // eslint-disable-next-line no-console
-    console.log("Uploaded files:", result);
-
-    if (this.uploadedFile) {
-      // const sanitizedName = this.sanitizeName(this.uploadedFile.name);
-      // const cacheClearResult = this.clearUploadedCache(sanitizedName);
-      const cacheClearResult = this.clearUploadedCache(this.uploadedFile.id);
+  onAfterResponse(req, res) {
+    try {
       // eslint-disable-next-line no-console
-      console.log('Cache cleared:', cacheClearResult);
-    }
-
-    if (this.s3Info) {
-      this.storageService.clearByName('activityId');
-      this.closeModal(result);
-
-    } else {
+      console.log("Uploaded files:", req, res);
+      this.s3Info = JSON.parse(res.getBody());
+    } catch(error) {
       this.notificationsService.alert({
         header: "Upload Failed",
         message: "No response from server",
@@ -227,13 +122,12 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  closeModal(result) {
-    const s3Info = JSON.parse(this.s3Info);
-    const data = {
-      ...result,
+  closeModal(file) {
+    const data: UppyFileData = {
+      ...file,
       ...{
-        bucket: s3Info?.bucket,
-        path: s3Info?.path,
+        bucket: this.s3Info?.bucket,
+        path: this.s3Info?.path,
         preview: this.transformTusUrl(this.uploadedFile?.tus?.uploadUrl),
       }
     };
@@ -259,6 +153,16 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error transforming TUS URL:', error);
       return tusUrl; // Return original URL if transformation fails
+    }
+  }
+
+  onUploadSuccess(file: UppyFile<any, any>, response: any) {
+    if (response && response.status === 200) {
+      this.uploadedFile = file;
+      this.closeModal(file);
+      this.uploadComplete.emit(response.body);
+    } else {
+      console.warn("Upload failed:", response);
     }
   }
 }
