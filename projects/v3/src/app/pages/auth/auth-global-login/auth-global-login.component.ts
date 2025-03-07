@@ -80,7 +80,6 @@ export class AuthGlobalLoginComponent implements OnInit {
   }
 
   private _error(res?): Promise<any> {
-
     const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({
