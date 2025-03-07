@@ -2,6 +2,10 @@
 :host {
   display: block;
   width: 100%;
+  --height: 500px;
+  ion-modal>.ion-page {
+    --height: 500px;
+  }
 }
 .uppy-container {
   height: 100%;
