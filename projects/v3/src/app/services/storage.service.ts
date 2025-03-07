@@ -82,7 +82,7 @@ export interface Config {
 })
 
 export class BrowserStorageService {
-  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
+  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) { }
 
   get(key: string) {
     const cached = this.storage.getItem(key);
@@ -152,7 +152,7 @@ export class BrowserStorageService {
   }
 
   setReferrer(referrer: Referrer) {
-    this.set('referrer', {...this.getReferrer(), ...referrer});
+    this.set('referrer', { ...this.getReferrer(), ...referrer });
     return true;
   }
 
@@ -275,9 +275,10 @@ export class BrowserStorageService {
     return lastVisited[name] || null;
   }
 
+  // clear cache by the storage index name
   clearByName(name: string) {
     const storages = localStorage;
-    const result = {};
+    const result: { [key: string]: any } = {};
 
     for (let i = 0; i < storages.length; i++) {
       const key = storages.key(i);
