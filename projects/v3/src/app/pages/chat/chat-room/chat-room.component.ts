@@ -1037,4 +1037,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(console.log);
     }
   }
+
+  download(file: FileResponse): void {
+    return this.utils.downloadFile(file.url, file.name);
+  }
 }
