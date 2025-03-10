@@ -16,7 +16,7 @@ type FileBody = { [key: string]: any };
   styleUrls: ["./uppy-uploader.component.scss"],
 })
 export class UppyUploaderComponent implements OnInit, OnDestroy {
-  @Input() source!: string;
+  @Input() source!: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image";
   @Input() tusEndpoint?: string = environment.uppyConfig.tusUrl; // tusUrl
   @Input() allowedFileTypes: string[] = [
     "image/*",
@@ -63,6 +63,8 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.tusEndpoint, {
       onAfterResponse: this.onAfterResponse.bind(this),
       onUploadSuccess: this.onUploadSuccess.bind(this),
+    }, {
+      allowedFileTypes: this.allowedFileTypes,
     });
   }
 
@@ -85,7 +87,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
         return [
           "image/*",
           "video/*",
-          "application/pdf"
+          "application/*"
         ];
     }
   }
