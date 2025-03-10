@@ -85,17 +85,24 @@ export class UppyUploaderService {
   ) {
   }
 
-  createUppyInstance(source: string, uploadUrl: string, events?: {
+  /**
+   * Create an Uppy instance
+   * @param source
+   * @param uploadUrl
+   * @param events
+   * @param restrictions
+   * @returns Uppy<FileMetadata, FileBody>
+   */
+  createUppyInstance(source: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image", uploadUrl: string, events?: {
     onAfterResponse: (req: any, res: any) => void,
     onUploadSuccess: (file: UppyFile<any, any>, response: any) => void
+  }, restrictions?: {
+    allowedFileTypes: string[],
   }): Uppy<FileMetadata, FileBody> {
     const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
       debug: true,
       autoProceed: false,
-      restrictions: {
-        ...environment.uppyConfig.restrictions,
-        allowedFileTypes: ['image/*', 'video/*', '.jpeg', '.png', 'application/pdf'],
-      },
+      restrictions: { ...environment.uppyConfig.restrictions, ...restrictions },
     };
 
     const uppy = new Uppy(uppyOptions);
