@@ -102,15 +102,18 @@
             <ng-container *ngIf="(message.file && !message.file.type) || (message.file && (
               !message.file.type.includes('image') && !message.file.type.includes('video')))">
               <ion-item class="general-attachment"
-                (click)="preview(message.file)">
-                <ion-ripple-effect></ion-ripple-effect>
-                <ion-icon name="document-outline" slot="start"></ion-icon>
-                <ion-label>
-                  {{ message.file.name }}
-                </ion-label>
-                <ion-note *ngIf="getTypeByMime(message.file.type)">
-                  {{ getTypeByMime(message.file.type) }}
-                </ion-note>
+                (click)="download(message.file)">
+                <ng-container>
+                  <ion-ripple-effect></ion-ripple-effect>
+                  <ion-icon name="document-outline"
+                    slot="start"></ion-icon>
+                  <ion-label>
+                    {{ message.file.name }}
+                  </ion-label>
+                  <ion-note *ngIf="getTypeByMime(message.file.type)">
+                    {{ getTypeByMime(message.file.type) }}
+                  </ion-note>
+                </ng-container>
               </ion-item>
             </ng-container>
           </ng-container>
