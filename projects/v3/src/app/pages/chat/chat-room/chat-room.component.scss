@@ -367,36 +367,28 @@ $message-body-size: 60%;
             max-height: 100px;
             padding: 10px;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+
             img {
               border-radius: 4px;
             }
-            .overlay {
-              left: 10px;
-            }
+
             &:hover {
-              .remove-attach {
-                display: block;
-                text-align: center;
-                left: 80px;
-              }
-              .overlay {
-                display: block;
-                background: rgba(0, 0, 0, .6);
-              }
+              opacity: 0.7;
             }
-            &.mobile {
-              .overlay {
-                display: none;
-              }
+
+            &.mobile, &:hover {
               .remove-attach {
                 display: block;
                 text-align: center;
-                left: 80px;
+                right: 0;
+                top: -1em;
               }
             }
           }
+
           .video {
-            width: 80px;
             height: 80px;
             margin: 10px;
             padding: 20px;
@@ -404,6 +396,9 @@ $message-body-size: 60%;
             border: 1px solid;
             border-color: var(--practera-light-grey-75);
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             .play-icon {
               width: 40px;
               height: 40px;
@@ -416,18 +411,12 @@ $message-body-size: 60%;
                 padding: 11px;
               }
             }
-            .overlay {
-              left: 10px;
-            }
             &:hover {
+              opacity: 0.7;
               .remove-attach {
                 display: block;
                 text-align: center;
-                left: 80px;
-              }
-              .overlay {
-                display: block;
-                background: rgba(0, 0, 0, .6);
+                right: 0;
               }
             }
             &.mobile {
@@ -437,7 +426,7 @@ $message-body-size: 60%;
               .remove-attach {
                 display: block;
                 text-align: center;
-                left: 80px;
+                right: 0;
               }
             }
           }
@@ -491,24 +480,12 @@ $message-body-size: 60%;
             cursor: pointer;
             position: absolute;
             top: 0px;
-            left: 100px;
             background: var(--practera-ocean-100);
             width: 20px;
             height: 20px;
             border-radius: 50%;
             color: white;
             display: none;
-          }
-          .overlay {
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            left: 28px;
-            width: 80px;
-            height: 80px;
-            display: none;
-            color: transparent;
-            border-radius: 4px;
           }
         }
       }
