@@ -50,7 +50,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // Uppy UI
   uppyProps = UPPY_PROPS;
 
-  @Input() source!: string;
+  @Input() source!: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image";
   @Input() submitActions$: Subject<SubmitActions>;
 
   @Input() videoOnly?: boolean;
