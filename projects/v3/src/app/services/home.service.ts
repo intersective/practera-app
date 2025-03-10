@@ -151,8 +151,11 @@ export class HomeService {
           name
           description
           isLocked
-          activities{
+          activities {
             id name isLocked leadImage
+          }
+          unlockConditions {
+            name action { submit complete other }
           }
         }
       }`
