@@ -94,10 +94,13 @@ export class ActivityService {
     return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
-          id name description tasks{
-            id name type isLocked isTeam deadline contextId assessmentType status{
+          id name description tasks {
+            id name type isLocked isTeam deadline contextId assessmentType status {
               status isLocked submitterName submitterImage
             }
+          }
+          unlockConditions {
+            name action { submit complete other }
           }
         }
       }`,
