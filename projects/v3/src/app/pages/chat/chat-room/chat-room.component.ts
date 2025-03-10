@@ -12,7 +12,6 @@ import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { DomSanitizer } from '@angular/platform-browser';
 import { QuillModules } from 'ngx-quill';
 import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
 
@@ -833,10 +832,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     return preview;
   }
 
-  previewFile(file) {
-    return this.filestackService.previewFile(file);
-  }
-
   getTypeByMime(mimetype: string): string {
     const zip = [
       "application/x-compressed",
@@ -958,10 +953,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // if file didn't have mimetype use filestack Url to priview the file.
-    if (!file.mimetype) {
-      return this.filestackService.previewFile(file);
-    }
     const modal = await this.modalController.create({
       component: ChatPreviewComponent,
       componentProps: {

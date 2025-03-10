@@ -101,7 +101,8 @@
 
             <ng-container *ngIf="(message.file && !message.file.type) || (message.file && (
               !message.file.type.includes('image') && !message.file.type.includes('video')))">
-              <ion-item class="general-attachment" (click)="previewFile(message.file)">
+              <ion-item class="general-attachment"
+                (click)="preview(message.file)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document-outline" slot="start"></ion-icon>
                 <ion-label>
@@ -174,8 +175,9 @@
           <!-- Image preview -->
           <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment?.type?.includes('image')">
             <div class="image" [ngClass]="{'mobile': isMobile}">
-              <img [src]="attachment?.preview" alt="attachment preview" (click)="preview(attachment)">
-              <div class="overlay" (click)="preview(attachment)"></div>
+              <img [src]="attachment?.preview"
+                alt="attachment preview"
+                (click)="preview(attachment)">
               <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
                 <ion-icon name="close"></ion-icon>
               </span>
@@ -187,7 +189,6 @@
               <div class="play-icon" (click)="preview(attachment)">
                 <ion-icon name="play" color="ocean"></ion-icon>
               </div>
-              <div class="overlay" (click)="preview(attachment)"></div>
               <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
                 <ion-icon name="close"></ion-icon>
               </span>
