@@ -37,6 +37,10 @@ export interface Activity {
   name: string;
   description?: string;
   tasks: Array<Task>;
+  unlockConditions: Array<{
+    name: string;
+    action: string;
+  }>;
 }
 
 export interface Task {
@@ -100,7 +104,7 @@ export class ActivityService {
             }
           }
           unlockConditions {
-            name action { submit complete other }
+            name action
           }
         }
       }`,

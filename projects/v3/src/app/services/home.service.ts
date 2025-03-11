@@ -28,6 +28,10 @@ export interface Milestone {
     isLocked: boolean;
     leadImage: string;
     progress?: number;
+    unlockConditions?: {
+      name: string;
+      action: string;
+    }[];
   }[];
   unlockConditions: {
     name: string;
@@ -157,6 +161,10 @@ export class HomeService {
           isLocked
           activities {
             id name isLocked leadImage
+            unlockConditions {
+              name
+              action
+            }
           }
           unlockConditions {
             name
