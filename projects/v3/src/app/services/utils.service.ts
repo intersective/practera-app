@@ -65,6 +65,10 @@ export class UtilsService {
     });
   }
 
+  ucfirst(text) {
+    return this.lodash.upperFirst(text);
+  }
+
   /**
    * Treat viewport size start from large tablet as desktop
    * grouping device type into 2 group (mobile/desktop)

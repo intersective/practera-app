@@ -29,6 +29,10 @@ export interface Milestone {
     leadImage: string;
     progress?: number;
   }[];
+  unlockConditions: {
+    name: string;
+    action: string;
+  }[];
 }
 
 export interface ProjectProgress {
@@ -155,7 +159,8 @@ export class HomeService {
             id name isLocked leadImage
           }
           unlockConditions {
-            name action { submit complete other }
+            name
+            action
           }
         }
       }`
@@ -216,11 +221,15 @@ export class HomeService {
         `query {
         project {
           progress
-          milestones{
+          milestones {
             id
             progress
-            activities{
+            activities {
               id progress
+            }
+            unlockConditions {
+              name
+              action
             }
           }
         }
