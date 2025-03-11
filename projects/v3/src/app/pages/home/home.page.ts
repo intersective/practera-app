@@ -15,6 +15,7 @@ import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
+import { Activity } from '@v3/app/services/activity.service';
 
 @Component({
   selector: "app-home",
@@ -250,8 +251,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
+    // show guideline if locked
     if (activity.isLocked) {
-      return;
+      return this.showGuideline(activity, 'activity');
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
@@ -352,16 +354,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-  async showGuideline(milestone: Milestone) {
+  // show unlock guideline for locked milestone or activity
+  async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
     let message = '';
-    const guidelines = milestone.unlockConditions;
+    const guidelines = item.unlockConditions;
     if (guidelines.length === 0) {
       return;
     } else if (guidelines.length === 1) {
       const guideline = guidelines[0];
-      message += `Please <i>${guideline.action}</i> the item <b>${guideline.name}</b> to unlock this milestone.`;
+      message += `Please <i>${guideline.action}</i> the item <b>${guideline.name}</b> to unlock this ${type}.`;
     } else if (guidelines.length > 1) {
-      message += "Please follow the steps below to unlock this milestone:";
+      message += `Please follow the steps below to unlock this ${type}:`;
       guidelines.forEach((guideline, index) => {
         if (index === 0) {
           message += '<ol>';
