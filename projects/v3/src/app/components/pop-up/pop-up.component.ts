@@ -1,6 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+
+export interface PopUpData {
+  email: string;
+  message: string;
+  logo: string;
+}
 
 @Component({
   selector: 'app-pop-up',
@@ -10,12 +16,10 @@ import { ModalController } from '@ionic/angular';
 export class PopUpComponent {
   type = '';
   redirect = ['/'];
-  data: {
-    email: string;
-    message: string;
-  } = {
+  @Input() data: PopUpData = {
     email: '',
     message: '',
+    logo: '',
   };
 
   constructor(
