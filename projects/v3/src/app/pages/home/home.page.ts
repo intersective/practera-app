@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
@@ -328,7 +328,44 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    try {
+      const style = window.getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    } catch (e) {
+      console.error(e);
+      if (isDevMode()) {
+        this.storageService.append('errors', e);
+      }
+    }
+  }
+
+  async showGuideline(milestone: Milestone) {
+    let message = '';
+    const guidelines = milestone.unlockConditions;
+    if (guidelines.length === 0) {
+      return;
+    } else if (guidelines.length === 1) {
+      const guideline = guidelines[0];
+      message += `Please <i>${guideline.action}</i> the item <b>${guideline.name}</b> to unlock this milestone.`;
+    } else if (guidelines.length > 1) {
+      message += "Please follow the steps below to unlock this milestone:";
+      guidelines.forEach((guideline, index) => {
+        if (index === 0) {
+          message += '<ol>';
+        }
+        message += `<li><i>${this.utils.ucfirst(guideline.action)}</i> - <b>${guideline.name}</b></li>`;
+        if (index === guidelines.length - 1) {
+          message += '</ol>';
+        }
+      });
+    }
+
+    await this.notification.popUp(
+      "shortMessage",
+      {
+        logo: 'lock-open',
+        message
+      },
+    );
   }
 }
