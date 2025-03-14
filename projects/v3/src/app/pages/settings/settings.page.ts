@@ -181,26 +181,22 @@ export class SettingsPage implements OnInit, OnDestroy {
         return;
       }
 
-      const file = res.data?.successful?.[0];
+      const file = res.data;
       if (file) {
-        const url = file.uploadURL;
-
-        // eslint-disable-next-line no-console
-        console.log('file-res', res);
         this.imageUpdating = true;
         await firstValueFrom(this.authService.updateUserProfile({
-          url,
+          url: file.tus.uploadUrl,
           name: file.name,
           extension: file.extension,
           type: file.type,
           size: file.size,
-          bucket: res.data.bucket,
-          path: res.data.path,
+          bucket: file.bucket,
+          path: file.path,
         }));
 
         this.imageUpdating = false;
-        this.profile.avatar = url;
-        this.storage.setUser({ image: url });
+        this.profile.avatar = file.preview;
+        this.storage.setUser({ image: file.preview });
 
         return this.notificationsService.alert({
           message: $localize`Profile picture successfully updated!`,
