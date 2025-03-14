@@ -26,7 +26,7 @@ export class AssessmentMobilePage implements OnInit {
   contextId: number;
   submissionId: number;
   action: string;
-  fromPage: string;
+  fromPage: string; // referal source page
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   saving: boolean;
