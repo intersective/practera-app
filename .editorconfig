@@ -10,7 +10,7 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 # TypeScript & JavaScript
-[*.ts,*.js]
+[*.{ts,js}]
 quote_type = single
 
 # JSON (e.g., package.json, tsconfig.json)
@@ -19,11 +19,11 @@ quote_type = double
 indent_size = 2
 
 # YAML files (e.g., CI/CD, Firebase configs)
-[*.yml,*.yaml]
+[*.{yml,yaml}]
 indent_size = 2
 
 # HTML, CSS, SCSS files
-[*.html,*.css,*.scss]
+[*.{html,css,scss}]
 indent_size = 2
 
 # Markdown (e.g., README.md)
@@ -36,6 +36,6 @@ trim_trailing_whitespace = false
 trim_trailing_whitespace = false
 
 # Prettier & ESLint config files
-[*.prettierrc,*.eslintrc,*.editorconfig]
+[*.{prettierrc,eslintrc,editorconfig}]
 indent_size = 2
 quote_type = double
