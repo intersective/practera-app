@@ -52,7 +52,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() activityId?: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
-  @Input() isMobile?: boolean = false;
+  @Input() isSinglePage?: boolean = false;
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
