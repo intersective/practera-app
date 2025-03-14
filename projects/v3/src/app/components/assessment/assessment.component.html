@@ -60,9 +60,9 @@
 
 <ng-container *ngIf="assessment">
   <div class="main-content ion-padding"
-    [ngClass]="{'extra-padding-left': action === 'review'}"
+    [ngClass]="{'extra-padding-left': action === 'review' && isSinglePage}"
     style="min-height: 100%;">
-    <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
+    <div [ngClass]="{'ion-padding-horizontal padding-top': isSinglePage}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
         role="heading"
@@ -103,7 +103,7 @@
 
     <form [formGroup]="questionsForm" id="formgroup" #form>
       <ng-container *ngFor="let group of assessment.groups">
-        <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
+        <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}">
           <h3 [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
           <ion-text color="dark" class="ion-text-left">
             <div
