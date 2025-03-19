@@ -333,6 +333,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
     try {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
       const style = window.getComputedStyle(element);
       return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
     } catch (e) {
