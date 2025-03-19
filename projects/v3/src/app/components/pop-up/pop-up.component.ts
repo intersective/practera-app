@@ -6,6 +6,7 @@ export interface PopUpData {
   email: string;
   message: string;
   logo: string;
+  routes?: { label: string; path: string; }[]; // guidelines
 }
 
 @Component({
@@ -20,6 +21,7 @@ export class PopUpComponent {
     email: '',
     message: '',
     logo: '',
+    routes: [],
   };
 
   constructor(
@@ -33,5 +35,10 @@ export class PopUpComponent {
     if (this.redirect) {
       this.router.navigate(this.redirect);
     }
+  }
+
+  goTo(route: string) {
+    this.modalController.dismiss();
+    this.router.navigate([route]);
   }
 }
