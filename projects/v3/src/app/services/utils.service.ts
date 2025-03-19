@@ -13,6 +13,7 @@ import flatten from 'lodash-es/flatten';
 import indexOf from 'lodash-es/indexOf';
 import remove from 'lodash-es/remove';
 import isEqual from 'lodash-es/isEqual';
+import upperFirst from 'lodash-es/upperFirst';
 import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
@@ -61,6 +62,7 @@ export class UtilsService {
       indexOf,
       remove,
       isEqual,
+      upperFirst,
     };
   }
 
