@@ -1,3 +1,4 @@
+import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
@@ -17,6 +18,13 @@ export interface Experience {
   cardUrl?: string;
 }
 
+interface UnlockConditionMeta {
+  activityId: number;
+  assessmentId: number;
+  topicId: number;
+  contextId: number;
+}
+
 export interface Milestone {
   id: number;
   name: string;
@@ -31,11 +39,13 @@ export interface Milestone {
     unlockConditions?: {
       name: string;
       action: string;
+      meta: UnlockConditionMeta
     }[];
   }[];
   unlockConditions: {
     name: string;
     action: string;
+    meta: UnlockConditionMeta;
   }[];
 }
 
@@ -164,11 +174,23 @@ export class HomeService {
             unlockConditions {
               name
               action
+              meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
             }
           }
           unlockConditions {
             name
             action
+            meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
           }
         }
       }`
