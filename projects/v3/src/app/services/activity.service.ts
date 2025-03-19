@@ -372,6 +372,12 @@ export class ActivityService {
         if (this.utils.isMobile()) {
           return this.router.navigate(['topic-mobile', this.activity.id, task.id]);
         }
+        this.storage.lastVisited('assessmentUrl', [
+          '/v3',
+          'activity-desktop',
+          this.activity.id,
+          task.id
+        ].join('/'));
         this.topic.getTopic(task.id);
         break;
     }
