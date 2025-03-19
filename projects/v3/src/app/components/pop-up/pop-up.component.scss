@@ -34,3 +34,13 @@ ion-button.ion-focused {
 .div-after-logo {
   margin-top: 20px;
 }
+
+.link {
+  cursor: pointer;
+  color: var(--ion-color-primary);
+
+  &:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+  }
+}

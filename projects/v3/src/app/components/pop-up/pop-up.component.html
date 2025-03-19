@@ -27,6 +27,24 @@
         </div>
         </ng-container>
 
+      <!-- Short Message -->
+      <ng-container *ngSwitchCase="'guidelines'">
+        <div class="div-after-logo"
+          text-left>
+          <p id="popup-message"
+            [innerHTML]="data.message"></p>
+          <ng-container *ngIf="data.routes">
+            <ol>
+              <li *ngFor="let route of data.routes">
+                <div (click)="goTo(route.path)"
+                class="link"
+                [innerHTML]="route.label"></div>
+              </li>
+            </ol>
+          </ng-container>
+        </div>
+        </ng-container>
+
       <!-- Pulsecheck Status Information -->
       <ng-container *ngSwitchCase="'pulseCheckStatus'">
         <div class="div-after-logo">
