@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
@@ -14,6 +14,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
+import { Activity } from '@v3/app/services/activity.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: "app-home",
@@ -64,6 +66,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private unlockIndicatorService: UnlockIndicatorService,
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
+    private sanitizer: DomSanitizer,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -254,8 +257,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
+    // show guideline if locked
     if (activity.isLocked) {
-      return;
+      return this.showGuideline(activity, 'activity');
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
@@ -334,7 +338,65 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    try {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      const style = window.getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    } catch (e) {
+      console.error(e);
+      if (isDevMode()) {
+        this.storageService.append('errors', e);
+      }
+    }
+  }
+
+  // show unlock guideline for locked milestone or activity
+  async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
+    let message = '';
+
+    const routes = [];
+    const guidelines = item.unlockConditions;
+
+    if (guidelines.length === 0) {
+      return;
+    } else if (guidelines.length >= 1) {
+      message += `Please follow the steps below to unlock this ${type}:`;
+
+      guidelines.forEach((guideline, index) => {
+        if (guideline.meta) {
+          const { activityId, assessmentId, topicId, contextId } = guideline.meta;
+
+          const action = this.utils.ucfirst(guideline.action);
+          const isMobile = this.utils.isMobile();
+          if (topicId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/topic-mobile/${activityId}/${topicId}`
+                : `/v3/activity-desktop/${activityId}/${topicId}?task=topic`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          } else if (assessmentId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
+                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          }
+        }
+      });
+    }
+
+    await this.notification.popUp(
+      "guidelines",
+      {
+        logo: 'lock-open',
+        message,
+        routes,
+      },
+    );
   }
 }
