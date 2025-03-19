@@ -1,3 +1,4 @@
+import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
@@ -17,6 +18,13 @@ export interface Experience {
   cardUrl?: string;
 }
 
+interface UnlockConditionMeta {
+  activityId: number;
+  assessmentId: number;
+  topicId: number;
+  contextId: number;
+}
+
 export interface Milestone {
   id: number;
   name: string;
@@ -28,6 +36,16 @@ export interface Milestone {
     isLocked: boolean;
     leadImage: string;
     progress?: number;
+    unlockConditions?: {
+      name: string;
+      action: string;
+      meta: UnlockConditionMeta
+    }[];
+  }[];
+  unlockConditions: {
+    name: string;
+    action: string;
+    meta: UnlockConditionMeta;
   }[];
 }
 
@@ -153,8 +171,28 @@ export class HomeService {
           name
           description
           isLocked
-          activities{
+          activities {
             id name isLocked leadImage
+            unlockConditions {
+              name
+              action
+              meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
+            }
+          }
+          unlockConditions {
+            name
+            action
+            meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
           }
         }
       }`
@@ -215,11 +253,15 @@ export class HomeService {
         `query {
         project {
           progress
-          milestones{
+          milestones {
             id
             progress
-            activities{
+            activities {
               id progress
+            }
+            unlockConditions {
+              name
+              action
             }
           }
         }
