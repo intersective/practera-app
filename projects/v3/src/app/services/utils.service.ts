@@ -82,6 +82,10 @@ export class UtilsService {
     });
   }
 
+  ucfirst(text) {
+    return this.lodash.upperFirst(text);
+  }
+
   /**
    * Treat viewport size start from large tablet as desktop
    * grouping device type into 2 group (mobile/desktop)
@@ -298,22 +302,6 @@ export class UtilsService {
         map(e => e.value)
       );
   }
-
-  // // get the activity Subject for cache
-  // getActivityCache(key): BehaviorSubject<any> {
-  //   if (!(key in this.activitySubjects)) {
-  //     this.activitySubjects[key] = new BehaviorSubject(null);
-  //   }
-  //   return this.activitySubjects[key];
-  // }
-
-  // // update the activity cache for given key(activity id)
-  // updateActivityCache(key, value) {
-  //   if (!(key in this.activitySubjects)) {
-  //     this.activitySubjects[key] = new BehaviorSubject(null);
-  //   }
-  //   this.activitySubjects[key].next(value);
-  // }
 
   getCurrentLocation(): Location {
     return this.document.location;
