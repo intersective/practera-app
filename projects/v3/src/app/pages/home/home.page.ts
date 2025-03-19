@@ -16,7 +16,6 @@ import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: "app-home",
@@ -68,7 +67,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
-    private sanitizer: DomSanitizer,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -346,6 +344,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
     try {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
       const style = window.getComputedStyle(element);
       return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
     } catch (e) {
