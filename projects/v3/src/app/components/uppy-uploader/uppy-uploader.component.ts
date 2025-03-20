@@ -36,6 +36,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   s3Info: {
     path: string;
     bucket: string;
+    url: string;
   };
 
   constructor(
@@ -130,32 +131,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       ...{
         bucket: this.s3Info?.bucket,
         path: this.s3Info?.path,
-        preview: this.transformTusUrl(this.uploadedFile?.tus?.uploadUrl),
+        url: this.s3Info?.url,
       }
     };
     this.modalController.dismiss(data);
-  }
-
-  /**
-   * Transform a TUS upload URL to a file URL
-   * @param tusUrl The TUS upload URL
-   * @returns The transformed file URL
-   */
-  transformTusUrl(tusUrl: string): string {
-    try {
-      // Extract the path part (everything between "uploads/" and the first "+")
-      const pathMatch = tusUrl.match(/uploads\/(.*?)\+/);
-      if (!pathMatch) {
-        throw new Error('Invalid TUS URL path format');
-      }
-      const path = pathMatch[1];
-
-      // Construct the new URL
-      return `https://file.${environment.domain}/files/${path}`;
-    } catch (error) {
-      console.error('Error transforming TUS URL:', error);
-      return tusUrl; // Return original URL if transformation fails
-    }
   }
 
   onUploadSuccess(file: UppyFile<any, any>, response: any) {

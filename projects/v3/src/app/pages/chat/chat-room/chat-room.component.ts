@@ -992,16 +992,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  addAttachment(uppyRes) {
+  addAttachment(uppyRes: UppyFileData) {
     this.selectedAttachments.push({
-      bucket: uppyRes.bucket,
-      path: uppyRes.path,
       name: uppyRes.name,
-      url: uppyRes.tus.uploadUrl,
+      url: uppyRes.url || uppyRes.tus.uploadUrl,
       extension: uppyRes.extension,
       type: uppyRes.type,
       size: uppyRes.size,
-      preview: uppyRes.preview,
+
+      // tusd custom fields
+      bucket: uppyRes.bucket,
+      path: uppyRes.path,
+      preview: uppyRes.url || uppyRes.tus.uploadUrl,
     });
   }
 

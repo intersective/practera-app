@@ -1,6 +1,4 @@
-const domain = '<CUSTOM_DOMAIN>';
 export const environment = {
-  domain,
   stackName: '<CUSTOM_STACK_NAME>',
   authCacheDuration: 5 * 60 * 1000, // 5 minutes
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
