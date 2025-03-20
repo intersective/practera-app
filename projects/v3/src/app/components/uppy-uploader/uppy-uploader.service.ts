@@ -44,8 +44,11 @@ export interface UppyFileData {
   tus: {
     uploadUrl: string;
   };
+
+  // custom fields (Tus Server)
   bucket: string;
   path: string;
+  url: string;
 }
 
 type FileMetadata = { [key: string]: any };
