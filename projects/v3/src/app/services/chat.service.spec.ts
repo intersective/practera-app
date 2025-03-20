@@ -357,12 +357,15 @@ describe('ChatService', () => {
       const attachmentMessageParam = {
         message: 'test message',
         channelUuid: '10',
-        file: JSON.stringify({
-          filename: 'unnamed.jpg',
-          mimetype: 'image/jpeg',
+        file: {
+          path: '/path/to/file',
+          bucket: 'file-bucket',
+          name: 'unnamed.jpg',
           url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-          status: 'Stored'
-        })
+          extension: 'jpg',
+          type: 'image/jpeg',
+          size: 12345
+        }
       };
       const newMessageRes = {
         data: {
@@ -393,7 +396,7 @@ describe('ChatService', () => {
         status: 'Stored'
       };
       apolloSpy.graphQLMutate.and.returnValue(of(newMessageRes));
-      service.postAttachmentMessage(attachmentMessageParam).subscribe(
+      service.postNewMessage(attachmentMessageParam).subscribe(
         message => {
           expect(message.uuid).toEqual(newMessageRes.data.createChatLog.uuid);
           expect(message.isSender).toEqual(newMessageRes.data.createChatLog.isSender);
@@ -413,12 +416,7 @@ describe('ChatService', () => {
         {
           message: 'test message',
           channelUuid: '10',
-          file: JSON.stringify({
-            filename: 'unnamed.jpg',
-            mimetype: 'image/jpeg',
-            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-            status: 'Stored'
-          })
+          fileObj: attachmentMessageParam.file
         }
       ));
     });

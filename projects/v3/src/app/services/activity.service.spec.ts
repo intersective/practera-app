@@ -147,6 +147,7 @@ describe('ActivityService', () => {
       id: activity.id,
       name: activity.name,
       description: activity.description,
+      unlockConditions: [],
       tasks: [
         {
           id: 0,

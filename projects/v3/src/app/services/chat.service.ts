@@ -72,6 +72,7 @@ export interface Message {
   isSender: boolean;
   message: string;
   file: FileResponse;
+  fileObject?: any; // Adding the missing fileObject property
   created: string;
   scheduled: string;
   sentAt?: string;

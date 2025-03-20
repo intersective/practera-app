@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatRoomComponent } from './chat-room.component';
-import { ChannelMembers, ChatService } from '@v3/services/chat.service';
+import { ChannelMembers, ChatService, Message } from '@v3/services/chat.service';
 import { of } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -277,7 +277,16 @@ describe('ChatRoomComponent', () => {
         senderUuid: '8bee29d0-bf45',
         senderName: 'user01',
         senderRole: 'participants',
-        senderAvatar: 'http://www.example.com/image.png'
+        senderAvatar: 'http://www.example.com/image.png',
+        sender: {
+          uuid: '8bee29d0-bf45',
+          name: 'user01',
+          role: 'participants',
+          avatar: 'http://www.example.com/image.png'
+        },
+        channelUuid: 'c43vwsvc',
+        sentAt: undefined,
+        scheduled: undefined,
       };
       chatServiceSpy.postNewMessage.and.returnValue(of(saveMessageRes));
       chatServiceSpy.getMessageList.and.returnValue(of(mockChatMessages));
@@ -288,17 +297,25 @@ describe('ChatRoomComponent', () => {
       );
       component.sendMessage();
       expect(component.messageList[2]).toEqual({
+        id: saveMessageRes.uuid,
+        email: 'saveMessageRes.email',
         uuid: saveMessageRes.uuid,
-        senderName: saveMessageRes.senderName,
-        senderRole: saveMessageRes.senderRole,
-        senderAvatar: saveMessageRes.senderAvatar,
+        sender: {
+          uuid: saveMessageRes.senderUuid,
+          name: saveMessageRes.senderName,
+          role: saveMessageRes.senderRole,
+          avatar: saveMessageRes.senderAvatar
+        },
         isSender: saveMessageRes.isSender,
         message: saveMessageRes.message,
         created: saveMessageRes.created,
         file: saveMessageRes.file,
+        scheduled: undefined,
         senderUuid: saveMessageRes.senderUuid,
+        senderName: saveMessageRes.senderName,
+        senderRole: saveMessageRes.senderRole,
+        senderAvatar: saveMessageRes.senderAvatar,
         sentAt: undefined
-        // sentAt: saveMessageRes.sentAt,
       });
     });
   });
@@ -544,7 +561,7 @@ describe('ChatRoomComponent', () => {
 
   describe('when testing isLastMessage()', () => {
     it(`should assign correct value for 'noAvatar' variable`, () => {
-      component.messageList = mockChatMessages.messages;
+      component.messageList = mockChatMessages.messages as Message[];
       component.isLastMessage(mockChatMessages.messages[1]);
       expect(component.messageList[1].noAvatar).toEqual(false);
     });

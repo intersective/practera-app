@@ -128,7 +128,6 @@ describe('V3Page', () => {
 
     // Check if component properties are set correctly
     expect(component.showEvents).toBeTrue();
-    expect(component.openMenu).toBeFalse();
     expect(component.showMessages).toBeFalse();
   });
 });

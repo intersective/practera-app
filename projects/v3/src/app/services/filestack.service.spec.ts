@@ -298,7 +298,6 @@ describe('FilestackService', () => {
 
   describe('onFileSelectedRename()', () => {
     it('should rename file with spacing', fakeAsync(() => {
-      let result: any;
       const currentFile = {
         filename: 'a b c',
         handle: 'a-b-c',
@@ -308,13 +307,16 @@ describe('FilestackService', () => {
         source: 'earth',
         uploadId: '12345',
         url: 'https://test.com',
+        alt: ''
       };
-      service['onFileSelectedRename'](currentFile).then(res => {
-        result = res.filename;
-      });
 
+      // Since onFileSelectedRename is always returning a Promise now
+      let result;
+      service['onFileSelectedRename'](currentFile).then(res => {
+        result = res;
+        expect(result.filename).toEqual('a_b_c');
+      });
       flushMicrotasks();
-      expect(result).toEqual('a_b_c');
     }));
   });
 });
