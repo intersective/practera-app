@@ -1,6 +1,5 @@
-const domain = '<CUSTOM_DOMAIN>';
 export const environment = {
-  domain,
+  stackName: '<CUSTOM_STACK_NAME>',
   authCacheDuration: 5 * 60 * 1000, // 5 minutes
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
   demo: false,
@@ -19,7 +18,7 @@ export const environment = {
     tusUrl: '<CUSTOM_UPLOAD_TUS_ENDPOINT>',
     uploadPreset: 'practera',
     restrictions: {
-      minFileSize: undefined, // No minimum size
+      minFileSize: 0, // No minimum size
       maxFileSize: <CUSTOM_UPLOAD_MAX_FILE_SIZE>, // 2GB max size
       minNumberOfFiles: 1, // At least one file
       maxNumberOfFiles: 1, // max one file for now

@@ -2,9 +2,7 @@
 // The build system defaults to the dev environment which uses `environment.ts`, but if you do
 // `ng build --configuration=production` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in configurations section of `angular.json`.
-const domain = 'p2.practera.com';
 export const environment = {
-  domain,
   authCacheDuration: 5 * 60 * 1000, // 5 minutes
   demo: false,
   production: false,
