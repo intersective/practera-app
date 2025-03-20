@@ -112,7 +112,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   // size notice based on fileType
   noteMessage(): string {
-    const size = environment.uppyConfig.restrictions.maxFileSize / 1024 / 1024; // in MB
+    const size = environment.uppyConfig.restrictions.maxFileSize;
     if (this.question.fileType === 'video') {
       return `Videos only, up to ${size} MB`;
     }
