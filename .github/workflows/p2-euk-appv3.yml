@@ -179,6 +179,7 @@ jobs:
           export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
           export CUSTOM_HELPLINE=help@practera.com
           export CUSTOM_DOMAIN=${{env.PUBLICZONENAME}}
+          export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
