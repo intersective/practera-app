@@ -1,6 +1,7 @@
+import { supportQuestionList } from './../../app/components/support-popup/support-questions';
 import { ProgramObj } from "@v3/app/services/experience.service";
 
-const programObj: ProgramObj[] = [1, 2].map(num => {
+const programObj = [1, 2].map(num => {
   return {
     program: {
       id: num,
@@ -57,6 +58,31 @@ programObj.push(...[3].map(num => {
       config: null,
       name: '',
       lead_image: '',
+      uuid: '',
+      timelineId: 0,
+      projectId: 0,
+      description: '',
+      type: '',
+      leadImage: '',
+      status: '',
+      color: '',
+      secondaryColor: '',
+      todoItemCount: 0,
+      role: '',
+      isLast: false,
+      locale: '',
+      supportName: '',
+      supportEmail: '',
+      cardUrl: '',
+      iconUrl: '',
+      bannerUrl: '',
+      logoUrl: '',
+      reviewRating: true,
+      truncateDescription: true,
+      featureToggle: {
+        pulseCheckIndicator: false,
+      },
+      progress: 0,
     },
     institution: {
       name: '',
@@ -90,6 +116,31 @@ programObj.push(...[4].map(num => {
       config: null,
       name: '',
       lead_image: '',
+      uuid: '',
+      timelineId: 0,
+      projectId: 0,
+      description: '',
+      type: '',
+      leadImage: '',
+      status: '',
+      color: '',
+      secondaryColor: '',
+      todoItemCount: 0,
+      role: '',
+      isLast: false,
+      locale: '',
+      supportName: '',
+      supportEmail: '',
+      cardUrl: '',
+      iconUrl: '',
+      bannerUrl: '',
+      logoUrl: '',
+      reviewRating: true,
+      truncateDescription: true,
+      featureToggle: {
+        pulseCheckIndicator: false,
+      },
+      progress: 0,
     },
     institution: {
       name: '',
@@ -100,4 +151,4 @@ programObj.push(...[4].map(num => {
   };
 }));
 
-export const ProgramFixture: ProgramObj[] = programObj;
+export const ProgramFixture = programObj;
