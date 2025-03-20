@@ -96,13 +96,20 @@ export class UppyUploaderService {
   createUppyInstance(source: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image", uploadUrl: string, events?: {
     onAfterResponse: (req: any, res: any) => void,
     onUploadSuccess: (file: UppyFile<any, any>, response: any) => void
-  }, restrictions?: {
-    allowedFileTypes: string[],
+  }, options?: {
+    allowedFileTypes: string[];
   }): Uppy<FileMetadata, FileBody> {
+
+    if (!environment.uppyConfig?.restrictions || !environment.stackName) {
+      console.error('Uppy configuration is missing or incomplete.');
+    }
+
+    const restrictions = { ...environment.uppyConfig.restrictions, ...options };
+
     const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
       debug: true,
       autoProceed: false,
-      restrictions: { ...environment.uppyConfig.restrictions, ...restrictions },
+      restrictions,
     };
 
     const uppy = new Uppy(uppyOptions);
@@ -111,6 +118,7 @@ export class UppyUploaderService {
       headers: {
         'apikey': this.storageService.getUser().apikey,
         'source': source,
+        'stackName': environment.stackName,
       },
       endpoint: uploadUrl,
       retryDelays: [0, 1000, 3000, 5000],
