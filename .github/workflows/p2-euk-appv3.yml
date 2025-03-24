@@ -206,6 +206,7 @@ jobs:
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
           CUSTOM_LIVE_SERVER_REGION: UK
+          CUSTOM_STACK_NAME: ${{ env.STACK_NAME }}
 
 ###############################################################
 #  BUILD WEB PACKAGES
