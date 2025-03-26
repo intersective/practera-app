@@ -335,12 +335,19 @@ export class HomeService {
 
   // traffic light indicator
   getPulseCheckStatuses() {
+    if (environment.demo) {
+      return of(this.demo.getPulseCheckStatus(this.storageService.getUser().role));
+    }
     return this.apolloService.graphQLWatch(
       `query pulseCheckStatus {
           pulseCheckStatus {
             self
             team
             expert
+            teams {
+              teamName
+              average
+            }
           }
         }`
     );

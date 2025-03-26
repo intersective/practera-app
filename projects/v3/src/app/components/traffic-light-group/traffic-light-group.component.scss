@@ -21,14 +21,6 @@
   margin-right: 0.5rem;
 }
 
-.traffic-light-labels {
-  pointer-events: none;
-
-  &.self {
-    pointer-events: all;
-  }
-}
-
 @media (max-width: 768px) {
   :host {
     flex: 1 1 100%;
