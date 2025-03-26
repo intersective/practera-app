@@ -20,4 +20,5 @@ export class TrafficLightComponent {
       return 'yellow';
     }
   }
+
 }
