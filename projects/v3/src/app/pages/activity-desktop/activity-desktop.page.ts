@@ -124,7 +124,6 @@ export class ActivityDesktopPage {
     this.route.paramMap.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe(params => {
-
       // from route
       const activityId = +params.get('id');
       const contextId = +params.get('contextId'); // optional
