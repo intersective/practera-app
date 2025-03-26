@@ -299,6 +299,10 @@ export class HomeService {
             self
             team
             expert
+            teams {
+              teamName
+              average
+            }
           }
         }`
     );
