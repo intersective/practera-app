@@ -16,6 +16,7 @@ import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { Activity } from '@v3/app/services/activity.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: "app-home",
@@ -67,6 +68,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private sanitizer: DomSanitizer,
+    private alertController: AlertController
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -308,8 +310,19 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  onTrackInfo() {
-    this.notification.trackInfo();
+  async onTrackInfo() {
+    const alert = await this.alertController.create({
+      header: 'Traffic Light System',
+      message: `This traffic light system helps visualise your project's progress:\n\n` +
+        `• Green: Project is flowing smoothly and meeting expectations - great work!\n` +
+        `• Orange: Different perspectives exist that create an opportunity for valuable team discussion\n` +
+        `• Red: The project appears to be facing challenges that need attention - a perfect time to bring the team together to realign and find solutions\n\n` +
+        `Remember, identifying when adjustments are needed is a strength that leads to better outcomes!`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
