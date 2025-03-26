@@ -17,7 +17,7 @@ export class TrafficLightComponent {
     } else if (this.value > 0.65) {
       return 'green';
     } else {
-      return 'yellow';
+      return 'orange';
     }
   }
 

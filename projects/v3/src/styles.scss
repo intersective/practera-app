@@ -483,3 +483,11 @@ quill-editor .ql-toolbar.ql-snow {
 .uppy-uploader-modal {
   --height: 500px;
 }
+
+// Alert styles
+.wide-alert {
+  .alert-wrapper {
+    --min-width: 70%;
+    --max-width: 400px;
+  }
+}
