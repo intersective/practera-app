@@ -25,6 +25,18 @@ export class TrafficLightGroupComponent {
     private storageService: BrowserStorageService,
   ) {}
 
+  get isMentor(): boolean {
+    return this.storageService.getUser().role === 'mentor';
+  }
+
+  get learnerGroups(): string[] {
+    return ['self', 'team', 'expert'];
+  }
+
+  get teamGroups(): { teamName: string, average: number }[] {
+    return this.lights?.teams || [];
+  }
+
   navigateToPulseCheck(type: string) {
     if (!this.loading[type]) {
       this.loading[type] = true;
