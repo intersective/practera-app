@@ -481,3 +481,11 @@ Used in achievement
 quill-editor .ql-toolbar.ql-snow {
   border: none !important;
 }
+
+// Alert styles
+.wide-alert {
+  .alert-wrapper {
+    --min-width: 70%;
+    --max-width: 400px;
+  }
+}
