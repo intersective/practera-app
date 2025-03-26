@@ -13,6 +13,7 @@ export class TrafficLightGroupComponent {
     self: any;
     expert: any;
     team: any;
+    teams: { teamName: string, average: number }[];
   };
   @Input() displayOnly: boolean = false;
   loading: {
