@@ -37,6 +37,10 @@ export interface Activity {
   name: string;
   description?: string;
   tasks: Array<Task>;
+  unlockConditions: Array<{
+    name: string;
+    action: string;
+  }>;
 }
 
 export interface Task {
@@ -94,10 +98,13 @@ export class ActivityService {
     return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
-          id name description tasks{
-            id name type isLocked isTeam deadline contextId assessmentType status{
+          id name description tasks {
+            id name type isLocked isTeam deadline contextId assessmentType status {
               status isLocked submitterName submitterImage
             }
+          }
+          unlockConditions {
+            name action
           }
         }
       }`,
@@ -365,6 +372,12 @@ export class ActivityService {
         if (this.utils.isMobile()) {
           return this.router.navigate(['topic-mobile', this.activity.id, task.id]);
         }
+        this.storage.lastVisited('assessmentUrl', [
+          '/v3',
+          'activity-desktop',
+          this.activity.id,
+          task.id
+        ].join('/'));
         this.topic.getTopic(task.id);
         break;
     }
