@@ -2,6 +2,7 @@ import { FastFeedbackService } from "@v3/services/fast-feedback.service";
 import { Component, Input } from "@angular/core";
 import { BrowserStorageService } from "@v3/app/services/storage.service";
 import { AlertController } from '@ionic/angular';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
   selector: "app-traffic-light-group",
@@ -24,7 +25,8 @@ export class TrafficLightGroupComponent {
   constructor(
     private fastFeedbackService: FastFeedbackService,
     private storageService: BrowserStorageService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private notificationsService: NotificationsService
   ) {}
 
   get isMentor(): boolean {
@@ -63,20 +65,7 @@ export class TrafficLightGroupComponent {
       return;
     }
 
-    const alert = await this.alertController.create({
-      header: 'Team Check-In Time! 👥',
-      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
-        `✓ Schedule a quick team huddle\n` +
-        `✓ Review your Project plan and milestones together\n` +
-        `✓ Redistribute tasks if needed\n` +
-        `✓ Document 3 next steps forward\n\n` +
-        `Need strategies? Visit Teamwork Toolkit →\n` +
-        `We're here to help: programs@practera.com`,
-      buttons: ['OK'],
-      cssClass: 'team-check-in-alert'
-    });
-
-    await alert.present();
+    await this.notificationsService.showTeamCheckInAlert();
   }
 
 }
