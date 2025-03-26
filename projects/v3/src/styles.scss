@@ -408,6 +408,29 @@ quill-view {
   }
 }
 
+
+.team-check-in-alert {
+  .alert-message {
+    white-space: pre-line !important;
+    line-height: 1.5 !important;
+    padding: 16px !important;
+    font-size: 14px !important;
+  }
+
+  .alert-wrapper {
+    max-width: 90% !important;
+    width: 320px !important;
+  }
+
+  .alert-head {
+    padding: 16px !important;
+  }
+
+  ion-alert {
+    --min-width: 320px;
+  }
+}
+
 /****************
 Used in achievement
 *****************/
