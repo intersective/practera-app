@@ -42,6 +42,7 @@ export interface Milestone {
       meta: UnlockConditionMeta
     }[];
   }[];
+
   unlockConditions: {
     name: string;
     action: string;

@@ -89,8 +89,8 @@ export class FastFeedbackComponent implements OnInit {
         .toPromise();
 
       // Check if question 7's answer is 0
-      const question7Answer = formData['7'];
-      if (question7Answer === 0) {
+      const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)
+      if (question7Answer === 0) { // if answer is No (where value = 0)
         await this.notificationsService.showTeamCheckInAlert();
       }
 
