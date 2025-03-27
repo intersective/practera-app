@@ -16,7 +16,6 @@ import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: "app-home",
@@ -67,8 +66,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private unlockIndicatorService: UnlockIndicatorService,
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
-    private alertController: AlertController
-    private sanitizer: DomSanitizer,
+    private alertController: AlertController,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
