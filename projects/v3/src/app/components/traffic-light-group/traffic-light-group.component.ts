@@ -1,7 +1,6 @@
 import { FastFeedbackService } from "@v3/services/fast-feedback.service";
 import { Component, Input } from "@angular/core";
 import { BrowserStorageService } from "@v3/app/services/storage.service";
-import { AlertController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
@@ -25,7 +24,6 @@ export class TrafficLightGroupComponent {
   constructor(
     private fastFeedbackService: FastFeedbackService,
     private storageService: BrowserStorageService,
-    private alertController: AlertController,
     private notificationsService: NotificationsService
   ) {}
 
