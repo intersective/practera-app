@@ -1,4 +1,3 @@
-
 <div *ngIf="!assessment" class="ion-padding-horizontal">
   <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
   <ion-skeleton-text animated></ion-skeleton-text>
@@ -154,19 +153,22 @@
               <div class="tick-container">
                 <ion-spinner name="dots" class="tick-icon"
                   style="max-width: 16px; max-height: 16px;"
-                  *ngIf="autosaving[question.id]"
-                  [@tickAnimation]="autosaving[question.id] ? 'visible' : 'hidden'"
+                  *ngIf="autosaving()[question.id]"
+                  [@tickAnimation]="autosaving()[question.id] ? 'visible' : 'hidden'"
                   (@tickAnimation.done)="onAnimationEnd($event, question.id)"
                 ></ion-spinner>
 
                 <ion-icon name="checkmark-circle-outline"
                   class="tick-icon"
-                  *ngIf="saved[question.id]"
-                  [@tickAnimation]="saved[question.id] ? 'visible' : 'hidden'"
+                  *ngIf="saved()[question.id]"
+                  [@tickAnimation]="saved()[question.id] ? 'visible' : 'hidden'"
                 ></ion-icon>
 
-                <ion-icon name="reload-circle-outline" class="tick-icon" *ngIf="failed[question.id]" (click)="retrySave(question)"
-                  [@tickAnimation]="failed[question.id] ? 'visible' : 'hidden'"></ion-icon>
+                <ion-icon name="reload-circle-outline" class="tick-icon"
+                  *ngIf="failed()[question.id]"
+                  (click)="retrySave(question)"
+                  [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
+                ></ion-icon>
               </div>
 
               <ion-item *ngIf="!doAssessment && (
