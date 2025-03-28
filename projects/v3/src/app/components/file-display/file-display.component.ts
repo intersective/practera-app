@@ -107,9 +107,6 @@ export class FileDisplayComponent implements OnInit, OnChanges {
         this.utils.downloadFile(file.url, file.name);
         return;
       case 1:
-        // this.previewFile(file);
-        return;
-      case 2:
         this.removeUploadedFile(file);
         return;
     }
