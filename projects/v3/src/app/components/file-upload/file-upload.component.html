@@ -7,7 +7,9 @@
       </ion-label>
     </ion-item>
 
-    <app-file-display [file]="submission.answer" [fileType]="question.fileType || 'any'" [isFileComponent]="true"
+    <app-file-display [file]="submission.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
       [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
     </app-file-display>
   </ng-container>
@@ -16,8 +18,9 @@
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
-        <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">No answer given to this optional
-          question.</p>
+        <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">
+          No answer given to this optional question.
+        </p>
       </ion-label>
     </ion-item>
 
@@ -57,8 +60,8 @@
       [file]="uploadedFile ? uploadedFile : submission?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
-      (removeFile)="removeSubmitFile($event)"
       [disabled]="control.disabled"
+      (removeFile)="removeSubmitFile($event)"
     ></app-file-display>
   </div>
 </ng-container>
@@ -82,6 +85,7 @@
         [file]="review?.answer"
         [fileType]="question.fileType || 'any'"
         [isFileComponent]="true"
+        (removeFile)="removeSubmitFile($event)"
       ></app-file-display>
     </ng-container>
   </ng-container>
