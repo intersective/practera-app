@@ -43,6 +43,7 @@ import { UppyAngularDashboardModule, UppyAngularDashboardModalModule } from '@up
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
+import { FilePopupComponent } from './file-popup/file-popup.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -84,6 +85,7 @@ const largeCircleDefaultConfig = {
     DragAndDropDirective,
     FastFeedbackComponent,
     FileComponent,
+    FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
     FilestackComponent,
@@ -128,6 +130,7 @@ const largeCircleDefaultConfig = {
     FastFeedbackComponent,
     FallbackImageDirective,
     FileComponent,
+    FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
     FilestackComponent,
