@@ -23,9 +23,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   @Input() question: Question;
   @Input() submission;
-  @Input() submissionId: number;
+  @Input() submissionId?: number;
   @Input() review;
-  @Input() reviewId: number;
+  @Input() reviewId?: number;
   // this is for review status
   @Input() reviewStatus;
   // this is for assessment status
