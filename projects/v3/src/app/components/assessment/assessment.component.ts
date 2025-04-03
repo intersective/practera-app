@@ -58,7 +58,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() activityId?: number;
-  @Input() submission: Submission;
+  @Input() submission?: Submission;
   @Input() review: AssessmentReview;
   @Input() isSinglePage?: boolean = false;
 
@@ -114,9 +114,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // to hide assessment content if user not is a team.
   isNotInATeam = false;
 
-  questionsForm: FormGroup;
+  questionsForm?: FormGroup = new FormGroup({});
 
-  @ViewChild('form') form: HTMLFormElement;
+  @ViewChild('form') form?: HTMLFormElement;
   @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
 
   // prevent non participants from submitting team assessment
