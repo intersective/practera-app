@@ -159,15 +159,15 @@ export class UtilsService {
     return this.lodash.indexOf(values, value, fromIndex);
   }
 
-  remove(collections, callback) {
+  remove(collections: any[], callback: (value: any) => boolean) {
     return this.lodash.remove(collections, callback);
   }
 
-  isEqual(value, other) {
+  isEqual(value: any, other: any) {
     return this.lodash.isEqual(value, other);
   }
 
-  openUrl(url, options?: { target: String }) {
+  openUrl(url: string, options?: { target: string }) {
     options = options || { target: '_self' };
     return window.open(url, options.target);
   }
@@ -210,8 +210,9 @@ export class UtilsService {
   changeThemeColor(colors?: Colors): void {
     const defaultColor = '#2bbfd4';
     if (colors) {
-      if (colors.primary || colors.theme) {
-        this.setColor(colors.primary || colors.theme, ThemeColor.primary);
+      if (colors?.primary || colors?.theme) {
+        const color = colors.primary || colors.theme || defaultColor;
+        this.setColor(color, ThemeColor.primary);
       } else {
         this.setColor(defaultColor, ThemeColor.primary);
       }
@@ -287,7 +288,7 @@ export class UtilsService {
     return yiq >= 128 ? 'black' : 'white';
   }
 
-  changeCardBackgroundImage(image) {
+  changeCardBackgroundImage(image: string): void {
     this.document.documentElement.style.setProperty('--practera-card-background-image', 'url(\'' + image + '\')');
   }
 
@@ -809,7 +810,7 @@ export class UtilsService {
     if (!expId || !programList || programList.length < 1) {
       return;
     }
-    const currentExperience = programList.find((program)=> {
+    const currentExperience = programList.find((program: any) => {
       return program.experience.id === expId;
     });
     if (currentExperience) {

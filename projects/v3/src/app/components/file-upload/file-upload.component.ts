@@ -55,7 +55,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   @Input() videoOnly?: boolean;
   @Input() question: Question = {
-    id: null,
+    id: 0,
     name: '',
     description: '',
     isRequired: false,
@@ -87,6 +87,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   tusResponse: {
     path: string;
     bucket: string;
+    url: string;
   };
 
   // the value of answer
@@ -153,6 +154,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.control.setValue({
         ...this.innerValue,
         files,
+        url: this.tusResponse.url,
       });
 
       this.control.markAsTouched();
@@ -174,7 +176,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    const type = this.doReview ? 'answer' : null;
+    const type = this.doReview ? 'answer' : undefined;
 
     // reset errors
     this.errors = [];
@@ -183,9 +185,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       type: data.type,
       size: data.size,
       extension: data.extension,
-      url: response.uploadURL,
       bucket: this.tusResponse.bucket,
       path: this.tusResponse.path,
+      url: this.tusResponse.url,
     };
 
     this.uploadedFile = fileInput;
