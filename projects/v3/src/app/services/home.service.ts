@@ -18,7 +18,7 @@ export interface Experience {
   cardUrl?: string;
 }
 
-interface UnlockConditionMeta {
+export interface UnlockConditionMeta {
   activityId: number;
   assessmentId: number;
   topicId: number;
@@ -39,7 +39,7 @@ export interface Milestone {
     unlockConditions?: {
       name: string;
       action: string;
-      meta: UnlockConditionMeta
+      meta: UnlockConditionMeta;
     }[];
   }[];
   unlockConditions: {
