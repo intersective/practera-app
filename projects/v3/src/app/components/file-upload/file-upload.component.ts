@@ -137,6 +137,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.uploadUrl, {
       onAfterResponse: this.onAfterResponse.bind(this),
       onUploadSuccess: this.onFileUploadCompleted.bind(this),
+    }, {
+      allowedFileTypes,
     });
     this.initializeEventHandlers(this.uppy);
   }
@@ -221,6 +223,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       };
     }
 
+    this.control.setValue(this.innerValue);
     this.submitActions$.next(action);
   }
 
@@ -244,6 +247,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue = this.uploadedFile;
     }
 
+    this.control.setValue(this.innerValue);
     this.triggerSave();
   }
 
