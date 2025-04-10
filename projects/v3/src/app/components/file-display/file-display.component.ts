@@ -77,7 +77,7 @@ export class FileDisplayComponent {
   }
 
   get endingActionBtnIcons() {
-    let icons: string[] = [
+    const icons: string[] = [
       'download',
     ];
 
