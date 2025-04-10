@@ -291,6 +291,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.review.answer = null;
       this.onChange('', 'answer');
     }
+
+    this.uppy.removeFile(file?.handle);
+    this.uppy.clear();
   }
 
   audienceContainReviewer(): boolean {

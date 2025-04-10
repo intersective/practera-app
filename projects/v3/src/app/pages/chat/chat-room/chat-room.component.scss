@@ -196,6 +196,10 @@ $message-body-size: 60%;
         text-align: right;
         margin-right: 0;
 
+        .time.caption {
+          color: initial;
+        }
+
         .message-body {
           background-color: var(--ion-color-primary);
 
