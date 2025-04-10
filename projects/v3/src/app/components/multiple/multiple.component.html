@@ -78,14 +78,6 @@
     <ion-item *ngFor="let choice of question.choices; let i = index"
       [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
       lines="none">
-      <ion-label class="ion-text-wrap body-2 black">
-        <span [innerHTML]="choice.name"></span>
-        <p *ngIf="submission?.answer?.includes(choice.id)">
-          <ion-chip class="label orange" i18n
-            *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's answer</ion-chip>
-        </p>
-      </ion-label>
       <ion-checkbox color="success"
         [attr.aria-label]="choice.name"
         [checked]="review.answer ? review.answer.includes(choice.id) : false"
@@ -93,7 +85,16 @@
         slot="start"
         (ionChange)="onChange(choice.id, 'answer')"
         [disabled]="control.disabled"
-      ></ion-checkbox>
+      >
+        <ion-label class="ion-text-wrap body-2 black">
+          <span [innerHTML]="choice.name"></span>
+          <p *ngIf="submission?.answer?.includes(choice.id)">
+            <ion-chip class="label orange" i18n
+              *ngIf="submission?.answer?.includes(choice.id)"
+            >Learner's answer</ion-chip>
+          </p>
+        </ion-label>
+      </ion-checkbox>
     </ion-item>
   </ion-list>
 
