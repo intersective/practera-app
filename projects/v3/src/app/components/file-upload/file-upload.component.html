@@ -10,7 +10,8 @@
     <app-file-display [file]="submission.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
-      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
+      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'"
+      [deletable]="false">
     </app-file-display>
   </ng-container>
 
@@ -29,6 +30,7 @@
       [file]="review?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
+      [deletable]="false"
     ></app-file-display>
   </ng-container>
 
@@ -81,8 +83,8 @@
       </ion-item>
 
       <app-file-display
-        *ngIf="review?.answer"
-        [file]="review?.answer"
+        *ngIf="uploadedFile || review?.answer"
+        [file]="uploadedFile || review?.answer"
         [fileType]="question.fileType || 'any'"
         [isFileComponent]="true"
         (removeFile)="removeSubmitFile($event)"

@@ -12,6 +12,7 @@ import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
 import { SharedService } from './shared.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
+import { UnlockConditionMeta } from './home.service';
 
 export interface TaskBase {
   id: number;
@@ -40,6 +41,7 @@ export interface Activity {
   unlockConditions: Array<{
     name: string;
     action: string;
+    meta: UnlockConditionMeta;
   }>;
 }
 

@@ -184,10 +184,13 @@ export class AssessmentService {
               }
             }
             review {
-              id status modified
+              id status modified meta
               reviewer { name }
               answers {
                 questionId answer comment
+                file {
+                  name url type size
+                }
               }
             }
           }
@@ -424,7 +427,7 @@ export class AssessmentService {
     }
   }
 
-  private _normaliseReview(data, action: string): AssessmentReview {
+  private _normaliseReview(data, action: 'assessment' | 'review'): AssessmentReview {
     if (
       !this.utils.has(data, "assessment.submissions") ||
       data.assessment.submissions.length < 1
@@ -453,7 +456,7 @@ export class AssessmentService {
     firstSubmissionReview.answers.forEach((eachAnswer) => {
       eachAnswer.answer = this._normaliseAnswer(
         eachAnswer.questionId,
-        eachAnswer.answer
+        eachAnswer.answer || eachAnswer.file, // we do this because answer could be a file
       );
       review.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
