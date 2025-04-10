@@ -7,7 +7,6 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
-import { environment } from '@v3/environments/environment';
 import { FileInput } from '../types/assessment';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 import { ModalController } from '@ionic/angular';
@@ -21,10 +20,11 @@ export class FileDisplayComponent {
   @Input() fileType: string = 'any';
   @Input() file?: FileInput;
   @Input() isFileComponent: boolean = false; // flag parent component is FileComponent
-  @ViewChild('videoEle') videoEle?: ElementRef;
-  @Output() removeFile: EventEmitter<any> = new EventEmitter();
+  @ViewChild('videoEle') videoEle?: ElementRef = new ElementRef(null);
+  @Output() removeFile: EventEmitter<any> = new EventEmitter<any>();
   @Input() disabled?: boolean;
   @Input() lines?: string = 'full';
+  @Input() deletable?: boolean = true;
 
   constructor(
     private utils: UtilsService,
@@ -60,10 +60,6 @@ export class FileDisplayComponent {
     file: FileInput,
     index: number
   ): void {
-    if (this.fileType !== 'any') {
-      return this.removeUploadedFile(file);
-    }
-
     switch (index) {
       case 0:
         this.utils.downloadFile(file.url, file.name);
@@ -75,15 +71,17 @@ export class FileDisplayComponent {
   }
 
   removeUploadedFile(file?: FileInput): void {
-    return this.removeFile.emit(file);
+    if (this.removeFile) {
+      return this.removeFile.emit(file);
+    }
   }
 
   get endingActionBtnIcons() {
-    let icons: string[] = [];
-    if (this.fileType === 'any') {
-      icons = ['download'];
-    }
-    if (this.removeFile && !this.disabled) {
+    let icons: string[] = [
+      'download',
+    ];
+
+    if (this.deletable === true && !this.disabled) {
       icons.push('trash');
     }
     return icons;

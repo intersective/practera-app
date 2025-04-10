@@ -5,7 +5,6 @@ import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
-import { BrowserStorageService } from '../../services/storage.service';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -97,7 +96,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   errors: Array<any> = [];
 
   constructor(
-    private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
   ) { }
 
@@ -150,13 +148,24 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   initializeEventHandlers(uppy) {
-    uppy.on('files-added', (files: any) => {
+    uppy.on('files-added', (files: {
+      id: string;
+      meta: {
+        name: string;
+        type: string;
+        relativePath: number;
+      };
+      extension: string;
+      name: string;
+      source: string;
+      type: string;
+      size: number;
+    }) => {
       // eslint-disable-next-line no-console
       console.log('files added', files);
       this.control.setValue({
         ...this.innerValue,
         files,
-        url: this.tusResponse.url,
       });
 
       this.control.markAsTouched();
