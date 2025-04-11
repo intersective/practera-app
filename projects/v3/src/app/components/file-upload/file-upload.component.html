@@ -11,8 +11,8 @@
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
       [lines]="(doReview && question?.canAnswer) ? 'none': 'full'"
-      [deletable]="false">
-    </app-file-display>
+      [deletable]="false"
+    ></app-file-display>
   </ng-container>
 
   <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
