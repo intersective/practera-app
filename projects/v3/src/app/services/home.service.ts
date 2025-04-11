@@ -18,7 +18,7 @@ export interface Experience {
   cardUrl?: string;
 }
 
-interface UnlockConditionMeta {
+export interface UnlockConditionMeta {
   activityId: number;
   assessmentId: number;
   topicId: number;
