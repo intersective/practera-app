@@ -67,7 +67,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
-    private sanitizer: DomSanitizer,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
