@@ -306,9 +306,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const alert = await this.alertController.create({
       header: 'Traffic Light System',
       message: `This traffic light system helps visualise your project's progress:\n\n` +
-        `• Green: Project is flowing smoothly and meeting expectations - great work!\n` +
-        `• Orange: Different perspectives exist that create an opportunity for valuable team discussion\n` +
-        `• Red: The project appears to be facing challenges that need attention - a perfect time to bring the team together to realign and find solutions\n\n` +
+        `• <span class='txt-green'>Green</span>: Project is flowing smoothly and meeting expectations - great work!\n` +
+        `• <span class='txt-orange'>Orange</span>: Different perspectives exist that create an opportunity for valuable team discussion\n` +
+        `• <span class='txt-red'>Red</span>: The project appears to be facing challenges that need attention - a perfect time to bring the team together to realign and find solutions\n\n` +
         `Remember, identifying when adjustments are needed is a strength that leads to better outcomes!`,
       buttons: ['OK'],
       cssClass: ['team-check-in-alert', 'wide-alert']
