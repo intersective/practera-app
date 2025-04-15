@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
+import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -17,12 +18,11 @@ const ALLOWED_FILE_TYPES = [
   'application/pdf',
 ];
 
-const UPPY_PROPS = {
-  small: true,
+const UPPY_PROPS: DashboardOptions<any, any> = {
   inline: true,
   width: '100%',
-  height: 200,
-  showProgressDetails: true,
+  height: '200px',
+  singleFileFullScreen: true,
   note: 'Upload files here',
   proudlyDisplayPoweredByUppy: false,
   hideRetryButton: false,
@@ -30,7 +30,6 @@ const UPPY_PROPS = {
   hideCancelButton: false,
   showRemoveButtonAfterComplete: true,
   hideProgressAfterFinish: false,
-  doneButtonHandler: null,
 };
 
 @Component({
@@ -148,7 +147,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   initializeEventHandlers(uppy) {
-    uppy.on('files-added', (files: {
+    uppy
+      .on('files-added', (files: {
       id: string;
       meta: {
         name: string;
