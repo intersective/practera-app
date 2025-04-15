@@ -7,6 +7,7 @@ import Tus from '@uppy/tus';
 import { environment } from '../../../environments/environment';
 import { UppyUploaderComponent } from './uppy-uploader.component';
 import { BrowserStorageService } from '../../services/storage.service';
+import { Dashboard } from 'uppy';
 
 export interface UppyUploaderResponse {
   path: string;
@@ -56,10 +57,12 @@ type FileBody = { [key: string]: any };
 
 const UPPY_PROPS = {
   small: true,
+  size: 'sm',
   inline: true,
   width: '100%',
-  height: 200,
+  height: '200px',
   showProgressDetails: true,
+  singleFileFullScreen: true,
   note: 'Upload files here',
   proudlyDisplayPoweredByUppy: false,
   hideRetryButton: false,
@@ -115,9 +118,8 @@ export class UppyUploaderService {
       restrictions,
     };
 
-    const uppy = new Uppy(uppyOptions);
-
-    uppy.use(Tus, {
+    const uppy = new Uppy(uppyOptions)
+      .use(Tus, {
       headers: {
         'apikey': this.storageService.getUser().apikey,
         'source': source,
