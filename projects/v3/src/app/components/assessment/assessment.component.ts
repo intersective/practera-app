@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -25,10 +25,18 @@ import { FileUploadComponent } from '../file-upload/file-upload.component';
   styleUrls: ['./assessment.component.scss'],
   animations: [
     trigger('tickAnimation', [
-      state('visible', style({ transform: 'scale(1)', opacity: 1, willChange: 'transform, opacity' })),
-      state('hidden', style({ transform: 'scale(0)', opacity: 0, willChange: 'transform, opacity' })),
-      transition('hidden => visible', animate('200ms ease-out')),
-      transition('visible => hidden', animate('100ms ease-in')),
+      state('visible', style({
+        transform: 'scale(1)',
+        opacity: 1,
+        willChange: 'transform, opacity'
+      })),
+      state('hidden', style({
+        transform: 'scale(0)',
+        opacity: 0,
+        willChange: 'transform, opacity'
+      })),
+      transition('hidden => visible', animate('200ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
+      transition('visible => hidden', animate('100ms cubic-bezier(0.4, 0.0, 1, 1)')),
     ]),
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +58,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() activityId?: number;
-  @Input() submission: Submission;
+  @Input() submission?: Submission;
   @Input() review: AssessmentReview;
   @Input() isSinglePage?: boolean = false;
 
@@ -68,21 +76,16 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() continue = new EventEmitter();
   @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
 
-  autosaving: {
-    [key: number]: boolean
-  } = {};
-  saved: {
-    [key:number]: boolean
-  } = {};
-  failed: {
-    [key:number]: boolean
-  } = {};
+  autosaving = signal<{ [key: number]: boolean }>({});
+  saved = signal<{ [key: number]: boolean }>({});
+  failed = signal<{ [key: number]: boolean }>({});
 
   onAnimationEnd(event, questionId: number) {
     if (event.toState === 'visible') {
       // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
       timer(1000).pipe(take(1)).subscribe(() => {
-        this.autosaving[questionId] = false;
+        const currentValues = this.autosaving();
+        this.autosaving.set({ ...currentValues, [questionId]: false });
       });
     }
   }
@@ -111,9 +114,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // to hide assessment content if user not is a team.
   isNotInATeam = false;
 
-  questionsForm: FormGroup;
+  questionsForm?: FormGroup = new FormGroup({});
 
-  @ViewChild('form') form: HTMLFormElement;
+  @ViewChild('form') form?: HTMLFormElement;
   @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
 
   // prevent non participants from submitting team assessment
@@ -155,7 +158,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         if (request?.questionSave) {
-          this.autosaving[request.questionSave.questionId] = true;
+          const currentValues = this.autosaving();
+          this.autosaving.set({ ...currentValues, [request.questionSave.questionId]: true });
           this.saved[request.questionSave.questionId] = false;
           this.failed[request.questionSave.questionId] = false;
           return this.saveQuestionAnswer(request.questionSave);
@@ -244,7 +248,8 @@ Best regards`;
   }
 
   retrySave(question): void {
-    this.autosaving[question.id] = true;
+    const currentValues = this.autosaving();
+    this.autosaving.set({ ...currentValues, [question.id]: true });
     this.questionComponents?.forEach((questionComponent) => {
       if (questionComponent?.question?.id === question?.id) {
         questionComponent.triggerSave();
@@ -278,13 +283,21 @@ Best regards`;
     ).pipe(
       tap({
         next: (_res) => {
-          this.autosaving[questionInput.questionId] = false;
-          this.saved[questionInput.questionId] = true;
+          const currentValues = this.autosaving();
+          this.autosaving.set({ ...currentValues, [questionInput.questionId]: false });
+
+          const savedValues = this.saved();
+          this.saved.set({ ...savedValues, [questionInput.questionId]: true });
         },
         error: (error: unknown) => {
-          this.autosaving[questionInput.questionId] = false;
-          this.saved[questionInput.questionId] = false;
-          this.failed[questionInput.questionId] = true;
+          const currentValues = this.autosaving();
+          this.autosaving.set({ ...currentValues, [questionInput.questionId]: false });
+
+          const savedValues = this.saved();
+          this.saved.set({ ...savedValues, [questionInput.questionId]: false });
+
+          const failedValues = this.failed();
+          this.failed.set({ ...failedValues, [questionInput.questionId]: true });
         }
       }),
       delay(800),
@@ -301,6 +314,9 @@ Best regards`;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
     const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
+
+    const savedValues = this.saved();
+    this.saved.set({ ...savedValues, [questionInput.questionId]: true });
 
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
@@ -422,7 +438,7 @@ Best regards`;
    * a consistent comparison logic to ensure mandatory status
    * @param {question} question
    */
-  private _isRequired(question) {
+  private _isRequired(question: Question): boolean {
     let role = 'submitter';
 
     if (this.action === 'review') {

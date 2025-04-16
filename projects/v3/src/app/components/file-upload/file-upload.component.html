@@ -7,17 +7,21 @@
       </ion-label>
     </ion-item>
 
-    <app-file-display [file]="submission.answer" [fileType]="question.fileType || 'any'" [isFileComponent]="true"
-      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'">
-    </app-file-display>
+    <app-file-display [file]="submission.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
+      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'"
+      [deletable]="false"
+    ></app-file-display>
   </ng-container>
 
   <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
         <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
-        <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">No answer given to this optional
-          question.</p>
+        <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">
+          No answer given to this optional question.
+        </p>
       </ion-label>
     </ion-item>
 
@@ -26,6 +30,7 @@
       [file]="review?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
+      [deletable]="false"
     ></app-file-display>
   </ng-container>
 
@@ -57,8 +62,8 @@
       [file]="uploadedFile ? uploadedFile : submission?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
-      (removeFile)="removeSubmitFile($event)"
       [disabled]="control.disabled"
+      (removeFile)="removeSubmitFile($event)"
     ></app-file-display>
   </div>
 </ng-container>
@@ -78,10 +83,11 @@
       </ion-item>
 
       <app-file-display
-        *ngIf="review?.answer"
-        [file]="review?.answer"
+        *ngIf="uploadedFile || review?.answer"
+        [file]="uploadedFile || review?.answer"
         [fileType]="question.fileType || 'any'"
         [isFileComponent]="true"
+        (removeFile)="removeSubmitFile($event)"
       ></app-file-display>
     </ng-container>
   </ng-container>

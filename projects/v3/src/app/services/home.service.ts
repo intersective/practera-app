@@ -18,7 +18,7 @@ export interface Experience {
   cardUrl?: string;
 }
 
-interface UnlockConditionMeta {
+export interface UnlockConditionMeta {
   activityId: number;
   assessmentId: number;
   topicId: number;
@@ -39,7 +39,7 @@ export interface Milestone {
     unlockConditions?: {
       name: string;
       action: string;
-      meta: UnlockConditionMeta
+      meta: UnlockConditionMeta;
     }[];
   }[];
   unlockConditions: {
@@ -337,12 +337,19 @@ export class HomeService {
 
   // traffic light indicator
   getPulseCheckStatuses() {
+    if (environment.demo) {
+      return of(this.demo.getPulseCheckStatus(this.storageService.getUser().role));
+    }
     return this.apolloService.graphQLWatch(
       `query pulseCheckStatus {
           pulseCheckStatus {
             self
             team
             expert
+            teams {
+              teamName
+              average
+            }
           }
         }`
     );

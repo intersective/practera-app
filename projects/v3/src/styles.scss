@@ -408,6 +408,28 @@ ion-textarea {
   overflow: visible;
 }
 
+.team-check-in-alert {
+  .alert-message {
+    white-space: pre-line !important;
+    line-height: 1.5 !important;
+    padding: 16px !important;
+    font-size: 14px !important;
+  }
+
+  .alert-wrapper {
+    max-width: 90% !important;
+    width: 320px !important;
+  }
+
+  .alert-head {
+    padding: 16px !important;
+  }
+
+  ion-alert {
+    --min-width: 320px;
+  }
+}
+
 /****************
 Used in achievement
 *****************/
@@ -460,4 +482,24 @@ quill-editor .ql-toolbar.ql-snow {
 
 .uppy-uploader-modal {
   --height: 500px;
+}
+
+// Alert styles
+.wide-alert {
+  .alert-wrapper {
+    --min-width: 70%;
+    --max-width: 400px;
+  }
+}
+
+.txt-green {
+  color: green;
+}
+
+.txt-orange {
+  color: orange;
+}
+
+.txt-red {
+  color: red;
 }

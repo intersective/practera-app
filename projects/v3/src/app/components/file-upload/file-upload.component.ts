@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
-import { BrowserStorageService } from '../../services/storage.service';
+import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -18,12 +18,11 @@ const ALLOWED_FILE_TYPES = [
   'application/pdf',
 ];
 
-const UPPY_PROPS = {
-  small: true,
+const UPPY_PROPS: DashboardOptions<any, any> = {
   inline: true,
   width: '100%',
-  height: 200,
-  showProgressDetails: true,
+  height: '200px',
+  singleFileFullScreen: true,
   note: 'Upload files here',
   proudlyDisplayPoweredByUppy: false,
   hideRetryButton: false,
@@ -31,7 +30,6 @@ const UPPY_PROPS = {
   hideCancelButton: false,
   showRemoveButtonAfterComplete: true,
   hideProgressAfterFinish: false,
-  doneButtonHandler: null,
 };
 
 @Component({
@@ -55,7 +53,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   @Input() videoOnly?: boolean;
   @Input() question: Question = {
-    id: null,
+    id: 0,
     name: '',
     description: '',
     isRequired: false,
@@ -87,6 +85,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   tusResponse: {
     path: string;
     bucket: string;
+    url: string;
   };
 
   // the value of answer
@@ -96,7 +95,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   errors: Array<any> = [];
 
   constructor(
-    private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
   ) { }
 
@@ -136,6 +134,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.uploadUrl, {
       onAfterResponse: this.onAfterResponse.bind(this),
       onUploadSuccess: this.onFileUploadCompleted.bind(this),
+    }, {
+      allowedFileTypes,
     });
     this.initializeEventHandlers(this.uppy);
   }
@@ -147,7 +147,20 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   initializeEventHandlers(uppy) {
-    uppy.on('files-added', (files: any) => {
+    uppy
+      .on('files-added', (files: {
+      id: string;
+      meta: {
+        name: string;
+        type: string;
+        relativePath: number;
+      };
+      extension: string;
+      name: string;
+      source: string;
+      type: string;
+      size: number;
+    }) => {
       // eslint-disable-next-line no-console
       console.log('files added', files);
       this.control.setValue({
@@ -174,7 +187,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    const type = this.doReview ? 'answer' : null;
+    const type = this.doReview ? 'answer' : undefined;
 
     // reset errors
     this.errors = [];
@@ -183,9 +196,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       type: data.type,
       size: data.size,
       extension: data.extension,
-      url: response.uploadURL,
       bucket: this.tusResponse.bucket,
       path: this.tusResponse.path,
+      url: this.tusResponse.url,
     };
 
     this.uploadedFile = fileInput;
@@ -219,6 +232,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       };
     }
 
+    this.control.setValue(this.innerValue);
     this.submitActions$.next(action);
   }
 
@@ -242,6 +256,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue = this.uploadedFile;
     }
 
+    this.control.setValue(this.innerValue);
     this.triggerSave();
   }
 
@@ -276,6 +291,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.review.answer = null;
       this.onChange('', 'answer');
     }
+
+    this.uppy.removeFile(file?.handle);
+    this.uppy.clear();
   }
 
   audienceContainReviewer(): boolean {

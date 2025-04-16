@@ -7,6 +7,7 @@ import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { HomeService } from '@v3/app/services/home.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
   selector: "app-fast-feedback",
@@ -30,6 +31,7 @@ export class FastFeedbackComponent implements OnInit {
     private storage: BrowserStorageService,
     private navParams: NavParams,
     private homeService: HomeService,
+    private notificationsService: NotificationsService
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -43,13 +45,6 @@ export class FastFeedbackComponent implements OnInit {
     this.submissionCompleted = false;
     const modal = this.navParams.get('modal');
     this.closable = modal.closable || false;
-  }
-
-  dismiss(data) {
-    // change the flag to false
-    this.storage.set("fastFeedbackOpening", false);
-    this.modalController.dismiss(data);
-    this.homeService.getPulseCheckStatuses().subscribe();
   }
 
   async submit(): Promise<any> {
@@ -75,7 +70,6 @@ export class FastFeedbackComponent implements OnInit {
       targetUserId: null,
     };
 
-
     // for temporary, "closable = true" is an indicator of this pulsecheck is opened from the traffic light group (self-assessment)
     if (this.closable === true) {
       params.teamId = this.storage.getUser().teamId;
@@ -94,6 +88,12 @@ export class FastFeedbackComponent implements OnInit {
       submissionResult = await firstValueFrom(this.fastFeedbackService
         .submit(answers, params));
 
+      // Check if question 7's answer is 0
+      const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)
+      if (question7Answer === 0) { // if answer is No (where value = 0)
+        await this.notificationsService.showTeamCheckInAlert();
+      }
+
       this.submissionCompleted = true;
       return setTimeout(() => {
         return this.dismiss(submissionResult);
@@ -105,6 +105,13 @@ export class FastFeedbackComponent implements OnInit {
       this.submissionCompleted = true;
       this.dismiss(submissionResult);
     }
+  }
+
+  dismiss(data) {
+    // change the flag to false
+    this.storage.set("fastFeedbackOpening", false);
+    this.modalController.dismiss(data);
+    this.homeService.getPulseCheckStatuses().subscribe();
   }
 
   get isRedColor(): boolean {

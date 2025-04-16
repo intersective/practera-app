@@ -2,7 +2,7 @@ import { UppyFileData, UppyUploaderService } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { Uppy, UppyFile, UppyOptions } from '@uppy/core';
+import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
 import { UtilsService } from '../../services/utils.service';
@@ -46,7 +46,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private uppyUploaderService: UppyUploaderService,
     private utils: UtilsService,
   ) {
-    this.uppyProps.height = 500;
+    this.uppyProps.height = '500px';
     this.uppyProps.note = "Upload a file here";
   }
 

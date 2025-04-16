@@ -1,3 +1,4 @@
+import { UppyAngularDashboardModalModule, UppyAngularDashboardModule } from '@uppy/angular';
 import { TrafficLightComponent } from './traffic-light/traffic-light.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -39,10 +40,10 @@ import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
 import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
-import { UppyAngularDashboardModule, UppyAngularDashboardModalModule } from '@uppy/angular';
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
+import { FilePopupComponent } from './file-popup/file-popup.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -66,9 +67,9 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
-    UppyAngularDashboardModule,
     UppyAngularDashboardModalModule,
+    UppyAngularDashboardModule,
+    NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
   declarations: [
     AchievementPopUpComponent,
@@ -84,6 +85,7 @@ const largeCircleDefaultConfig = {
     DragAndDropDirective,
     FastFeedbackComponent,
     FileComponent,
+    FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
     FilestackComponent,
@@ -128,6 +130,7 @@ const largeCircleDefaultConfig = {
     FastFeedbackComponent,
     FallbackImageDirective,
     FileComponent,
+    FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
     FilestackComponent,
