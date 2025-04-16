@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { UtilsService } from '@v3/services/utils.service';
+// import { UtilsService } from '@v3/services/utils.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,9 +17,14 @@ export class ActivityCompletePopUpComponent {
 
   constructor(
     public modalController: ModalController,
-    public utils: UtilsService,
+    // private utils: UtilsService,
     private router: Router,
   ) {}
+
+  get isMobile() {
+    return false;
+    // return this.utils.isMobile();
+  }
 
   ionViewDidEnter() {
     const interactiveEl = [
@@ -49,7 +54,7 @@ export class ActivityCompletePopUpComponent {
   confirmed(continueToActivity: boolean) {
     this.modalController.dismiss();
     if (!continueToActivity) {
-      const route = this.utils.isMobile() ? ['v3', 'activity-mobile', this.activityId] : ['v3', 'activity-desktop', this.activityId];
+      const route = this.isMobile ? ['v3', 'activity-mobile', this.activityId] : ['v3', 'activity-desktop', this.activityId];
       this.router.navigate(route);
     } else {
       if (this.activityCompleted) {

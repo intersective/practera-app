@@ -103,7 +103,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     .subscribe(event => {
       this.hubspotActivated = event;
     });
-    this.utils.checkIsPracteraSupportEmail();
+    this.utils.checkIsPracteraSupportEmail(this.storage.get('experience').supportEmail);
   }
 
   get isMobile() {
@@ -150,11 +150,11 @@ export class SettingsPage implements OnInit, OnDestroy {
     }
 
     let mailto = `mailto:${this.helpline}?subject=${this.currentProgramName}`;
-    const supportEmail = this.utils.getSupportEmail();
+    const supportEmail = this.storage.get('experience').supportEmail;
 
     // check if support email is not practera one and have support email
     // then send message to that email
-    if (!this.utils.checkIsPracteraSupportEmail() && !this.utils.isEmpty(supportEmail)) {
+    if (!this.utils.checkIsPracteraSupportEmail(supportEmail) && !this.utils.isEmpty(supportEmail)) {
       mailto = `mailto:${supportEmail}?subject=${this.currentProgramName}`;
     }
     window.open(mailto, '_self');

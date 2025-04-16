@@ -130,6 +130,13 @@ describe('FilestackService', () => {
     it('should popup file preview', fakeAsync(() => {
       spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'https://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -139,7 +146,13 @@ describe('FilestackService', () => {
     it('should popup file preview (support older URL format)', fakeAsync(() => {
       spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
         url: 'www.filepicker.io/api/file',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -149,7 +162,13 @@ describe('FilestackService', () => {
     it('should popup file preview (support older URL format 2)', fakeAsync(() => {
       spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
         url: 'filestackcontent.com',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -163,7 +182,13 @@ describe('FilestackService', () => {
       }));
 
       service.previewFile({
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
         url: 'filestackcontent.com',
+        extension: 'pdf',
+        type: 'application/pdf',
+        size: 11 * 1000 * 1000, // 11mb
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -299,14 +324,19 @@ describe('FilestackService', () => {
   describe('onFileSelectedRename()', () => {
     it('should rename file with spacing', fakeAsync(() => {
       const currentFile = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'a b c',
+        url: 'http://example.com/a-b-c',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
         filename: 'a b c',
         handle: 'a-b-c',
         mimetype: 'mimetype',
         originalPath: 'here',
-        size: 1,
         source: 'earth',
         uploadId: '12345',
-        url: 'https://test.com',
         alt: ''
       };
 

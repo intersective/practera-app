@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
 import { first, map, shareReplay, takeUntil } from 'rxjs/operators';
 import { RequestService } from 'request';
-import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
+import has from 'lodash-es/has';
 
 /**
  * @name api
@@ -47,7 +47,6 @@ export class AchievementService {
   constructor(
     private apolloService: ApolloService,
     private request: RequestService,
-    private utils: UtilsService,
     private demo: DemoService
   ) {}
 
@@ -115,13 +114,13 @@ export class AchievementService {
           const achievements: Achievement[] = [];
           data.forEach((achievement) => {
             if (
-              !this.utils.has(achievement, "id") ||
-              !this.utils.has(achievement, "name") ||
-              !this.utils.has(achievement, "description") ||
-              !this.utils.has(achievement, "badge") ||
-              !this.utils.has(achievement, "points") ||
-              !this.utils.has(achievement, "isEarned") ||
-              !this.utils.has(achievement, "earnedDate")
+              !has(achievement, "id") ||
+              !has(achievement, "name") ||
+              !has(achievement, "description") ||
+              !has(achievement, "badge") ||
+              !has(achievement, "points") ||
+              !has(achievement, "isEarned") ||
+              !has(achievement, "earnedDate")
             ) {
               return this.request.apiResponseFormatError(
                 "Achievement object format error"

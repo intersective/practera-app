@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Achievement } from '@v3/services/achievement.service';
-import { UtilsService } from '@v3/services/utils.service';
+// import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-achievement-pop-up',
@@ -20,11 +20,12 @@ export class AchievementPopUpComponent {
 
   constructor(
     private modalController: ModalController,
-    private utils: UtilsService,
+    // private utils: UtilsService,
   ) {}
 
   get isMobile() {
-    return this.utils.isMobile();
+    // return this.utils.isMobile();
+    return false;
   }
 
   ionViewDidEnter() {

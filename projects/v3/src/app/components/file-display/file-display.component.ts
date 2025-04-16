@@ -55,7 +55,6 @@ export class FileDisplayComponent {
     return await modal.present();
   }
 
-
   actionBtnClick(
     file: FileInput,
     index: number

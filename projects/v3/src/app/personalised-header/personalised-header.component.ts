@@ -41,7 +41,7 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
       // hide support button on mobile. because we need space in heder for other things. but we still have the settings page
         this.isShowSupportBtn = event;
     }));
-    this.utilService.checkIsPracteraSupportEmail();
+    this.utilService.checkIsPracteraSupportEmail(this.storageService.get('experience').supportEmail);
   }
 
   ngOnDestroy() {

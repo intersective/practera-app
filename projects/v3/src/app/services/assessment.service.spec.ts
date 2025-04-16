@@ -12,6 +12,7 @@ describe('AssessmentService', () => {
   let service: AssessmentService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -50,6 +51,7 @@ describe('AssessmentService', () => {
     service = TestBed.inject(AssessmentService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     utils = TestBed.inject(UtilsService);
   });
 

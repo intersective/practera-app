@@ -283,7 +283,7 @@ describe('UtilsService', () => {
   //     expect(result).toEqual('activity');
 
   //   });
-// });
+  // });
 
   describe('urlQueryToObject()', () => {
     it('should turn url query into programmatically useable object', () => {
@@ -619,75 +619,31 @@ describe('UtilsService', () => {
   });
 
   describe('checkIsPracteraSupportEmail()', () => {
-
-    const tempUser = {
-      uuid: 'uuid-1',
-      name: 'test user',
-      firstName: 'test',
-      lastName: 'user',
-      email: 'test@abcd.com',
-      image: 'https://swapnil2597.github.io/assets/img/profile.png',
-      role: 'participent',
-      contactNumber: '1212121212',
-      userHash: '1234#asdwdd',
-      institutionName: 'Test institute',
-      teamName: 'team 1',
-      experienceId: 1234
-    }
-
-    const tempPrograms = [
-      {
-        experience: {
-          id: 1234,
-          name: 'Global Trade Accelerator - 01',
-          config: {
-            primary_color: '#2bc1d9',
-            secondary_color: '#9fc5e8',
-            email_template: 'email_1',
-            card_url: 'https://cdn.filestackcontent.com/uYxes8YBS2elXV0m2yjA',
-            manual_url: 'https://www.filepicker.io/api/file/lNQp4sFcTjGj2ojOm1fR',
-            design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
-            overview_url: 'https://vimeo.com/325554048'
-          },
-          lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
-          support_email: 'help@practera.com'
-        }
-      }
-    ]
-
-    it('"experienceId" and email matched should broadcast event with "true"', () => {
+    it('should return true and broadcast event with "true" when email is a practera.com email', () => {
       spyOn(service, 'broadcastEvent');
-      storageSpy.getUser.and.returnValue(tempUser);
-      storageSpy.get.and.returnValue(tempPrograms);
-      service.checkIsPracteraSupportEmail();
+
+      const result = service.checkIsPracteraSupportEmail('test@practera.com');
+
+      expect(result).toBeTruthy();
       expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', true);
     });
 
-    it('"experienceId" matched and email not matched should broadcast event with "false"', () => {
-      const program = tempPrograms;
-      program[0].experience.support_email = 'asd@wer.com';
+    it('should return false and broadcast event with "false" when email is not a practera.com email', () => {
       spyOn(service, 'broadcastEvent');
-      storageSpy.getUser.and.returnValue(tempUser);
-      storageSpy.get.and.returnValue(program);
-      service.checkIsPracteraSupportEmail();
+
+      const result = service.checkIsPracteraSupportEmail('test@example.com');
+
+      expect(result).toBeFalsy();
       expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);
     });
 
-    it('"experienceId" not matched should broadcast event with "false"', () => {
-      const program = tempPrograms;
-      program[0].experience.id = 54654;
+    it('should return false and broadcast event with "false" when no email is provided', () => {
       spyOn(service, 'broadcastEvent');
-      storageSpy.getUser.and.returnValue(tempUser);
-      storageSpy.get.and.returnValue(program);
-      service.checkIsPracteraSupportEmail();
-      expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);
-    });
 
-    it('"experienceId" or programs empty should return', () => {
-      spyOn(service, 'broadcastEvent');
-      storageSpy.getUser.and.returnValue(tempUser);
-      service.checkIsPracteraSupportEmail();
-      expect(service.broadcastEvent).not.toHaveBeenCalled();
+      const result = service.checkIsPracteraSupportEmail(undefined);
+
+      expect(result).toBeFalsy();
+      expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);
     });
   });
 

@@ -147,7 +147,14 @@ describe('TopicComponent', () => {
       component.topic = {
         videolink: 'test.com/vimeo',
       } as any;
-      component.ngOnChanges();
+      component.ngOnChanges({
+        topic: {
+          currentValue: component.topic,
+          firstChange: true,
+          previousValue: undefined,
+          isFirstChange: () => true
+        }
+      });
       expect(component.continuing).toEqual(false);
 
       tick(500);
@@ -175,7 +182,14 @@ describe('TopicComponent', () => {
       component.topic = {
         videolink: 'test.com',
       } as any;
-      component.ngOnChanges();
+      component.ngOnChanges({
+        topic: {
+          currentValue: component.topic,
+          firstChange: true,
+          previousValue: undefined,
+          isFirstChange: () => true
+        }
+      });
       expect(component.continuing).toEqual(false);
 
       tick(500);

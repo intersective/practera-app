@@ -28,9 +28,9 @@ export class SupportPopupComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
+    private utilService: UtilsService,
     private hubspotService: HubspotService,
     private filestackService: FilestackService,
-    private utilService: UtilsService,
     private notificationsService: NotificationsService,
   ) { }
 

@@ -133,7 +133,7 @@ describe('AchievementService', () => {
     it('should return an array of achievements', (done) => {
       const mockResponse = {
         data: {
-          badges: [
+          achievements: [
             {
               id: 1,
               name: 'Achievement 1',
@@ -170,7 +170,7 @@ describe('AchievementService', () => {
 
       service.graphQLGetAchievements().subscribe((achievements) => {
         expect(achievements.length).toBe(2);
-        expect(achievements).toEqual(mockResponse.data.badges);
+        expect(achievements).toEqual(mockResponse.data.achievements);
         done();
       });
     });
@@ -178,7 +178,7 @@ describe('AchievementService', () => {
     it('should return an empty array if no badges are returned', (done) => {
       const mockResponse = {
         data: {
-          badges: []
+          achievements: []
         }
       };
 

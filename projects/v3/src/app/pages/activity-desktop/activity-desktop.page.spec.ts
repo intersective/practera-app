@@ -116,7 +116,7 @@ describe('ActivityDesktopPage', () => {
   });
 
   it('should call getActivity with correct parameters', () => {
-    component.ionViewWillEnter();
+    component.ionViewDidEnter();
     expect(activitySpy.getActivity).toHaveBeenCalledWith(1, false, undefined, jasmine.any(Function));
   });
 
@@ -138,9 +138,10 @@ describe('ActivityDesktopPage', () => {
         id: 1,
         name: 'test',
         tasks: [NormalisedTaskFixture],
+        unlockConditions: []
       };
 
-      component.ionViewWillEnter();
+      component.ionViewDidEnter();
 
       expect(component.goToTask).toHaveBeenCalled();
     });

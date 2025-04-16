@@ -135,8 +135,8 @@ describe('FastFeedbackComponent', () => {
         component.submit();
         tick(2500);
         expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
-          context_id: 1,
-          team_id: 2
+          contextId: 1,
+          teamId: 2
         });
       }));
 
@@ -146,8 +146,8 @@ describe('FastFeedbackComponent', () => {
         tick(2500);
 
         expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
-          context_id: 1,
-          target_user_id: 3
+          contextId: 1,
+          targetUserId: 3
         });
       }));
 
@@ -157,7 +157,7 @@ describe('FastFeedbackComponent', () => {
         component.submit();
         tick(2500);
         expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
-          context_id: 1
+          contextId: 1
         });
       }));
     });

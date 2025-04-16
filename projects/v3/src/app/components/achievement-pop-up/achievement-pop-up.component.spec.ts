@@ -118,7 +118,9 @@ describe('AchievementPopUpComponent', () => {
       component.achievement = {
         id: 1,
         name: 'achieve',
-        description: ''
+        description: '',
+        type: 'badge',
+        badge: 'badge-image'
       };
 
       let keyboardEvent = new KeyboardEvent('keydown', {

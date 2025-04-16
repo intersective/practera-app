@@ -4,7 +4,7 @@ import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic
 import { PopUpComponent } from '../components/pop-up/pop-up.component';
 import { AchievementPopUpComponent } from '../components/achievement-pop-up/achievement-pop-up.component';
 import { ActivityCompletePopUpComponent } from '../components/activity-complete-pop-up/activity-complete-pop-up.component';
-import { Achievement, AchievementService } from './achievement.service';
+import { Achievement } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
@@ -124,8 +124,7 @@ export class NotificationsService {
     private alertController: AlertController,
     private toastController: ToastController,
     private loadingController: LoadingController,
-    readonly achievementService: AchievementService,
-    readonly utils: UtilsService,
+    private utils: UtilsService,
     private request: RequestService,
     private storage: BrowserStorageService,
     private apolloService: ApolloService,

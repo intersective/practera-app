@@ -127,6 +127,13 @@ describe('ChatRoomComponent', () => {
         file: null,
         created: '2020-08-28 05:45:52',
         sentAt: '2020-08-28 05:45:52',
+        sender: {
+          id: 1,
+          uuid: '8bee29d0-bf45',
+          name: 'Test User 1',
+          email: 'test1@example.com'
+        },
+        scheduled: null
       },
       {
         uuid: '0403b4d9',
@@ -136,6 +143,13 @@ describe('ChatRoomComponent', () => {
         file: null,
         created: '2020-08-28 05:45:50',
         sentAt: '2020-08-28 05:45:50',
+        sender: {
+          id: 1,
+          uuid: '8bee29d0-bf45',
+          name: 'Test User 1',
+          email: 'test1@example.com'
+        },
+        scheduled: null
       }
     ]
   };
@@ -250,6 +264,14 @@ describe('ChatRoomComponent', () => {
       tick();
       expect(receivedMessage).toEqual({
         uuid: pusherData.uuid,
+        sender: {
+          id: 1,
+          uuid: pusherData.senderUuid,
+          name: pusherData.senderName,
+          role: pusherData.senderRole,
+          avatar: pusherData.senderAvatar,
+          email: 'test@example.com'
+        },
         senderName: pusherData.senderName,
         senderRole: pusherData.senderRole,
         senderAvatar: pusherData.senderAvatar,
@@ -259,7 +281,8 @@ describe('ChatRoomComponent', () => {
         file: pusherData.file,
         channelUuid: pusherData.channelUuid,
         senderUuid: '8bee29d0-bf45',
-        sentAt: undefined
+        sentAt: undefined,
+        scheduled: null
       });
     }));
   });
@@ -297,14 +320,14 @@ describe('ChatRoomComponent', () => {
       );
       component.sendMessage();
       expect(component.messageList[2]).toEqual({
-        id: saveMessageRes.uuid,
-        email: 'saveMessageRes.email',
         uuid: saveMessageRes.uuid,
         sender: {
+          id: 1,
           uuid: saveMessageRes.senderUuid,
           name: saveMessageRes.senderName,
           role: saveMessageRes.senderRole,
-          avatar: saveMessageRes.senderAvatar
+          avatar: saveMessageRes.senderAvatar,
+          email: 'test@example.com'
         },
         isSender: saveMessageRes.isSender,
         message: saveMessageRes.message,

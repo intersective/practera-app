@@ -33,7 +33,44 @@ describe('AuthRegistrationComponent', () => {
   });
 
   it('should authenticate user and switch program on successful registration', async () => {
-    spyOn(authService, 'authenticate').and.returnValue(of({ data: { auth: { apikey: 'test-api-key', experience: {} } } }));
+    spyOn(authService, 'authenticate').and.returnValue(of({
+      data: {
+        auth: {
+          apikey: 'test-api-key',
+          experience: {
+            id: 1,
+            uuid: 'test-uuid',
+            timelineId: 1,
+            projectId: 1,
+            name: 'Test Experience',
+            description: 'Test Description',
+            type: 'Test Type',
+            leadImage: 'test-image.jpg',
+            status: null,
+            setupStep: null,
+            color: '#000000',
+            secondaryColor: '#FFFFFF',
+            role: 'participant',
+            isLast: false,
+            locale: 'en-US',
+            supportName: 'Support',
+            supportEmail: 'support@example.com',
+            cardUrl: 'card-url',
+            bannerUrl: 'banner-url',
+            logoUrl: 'logo-url',
+            iconUrl: 'icon-url',
+            reviewRating: false,
+            truncateDescription: false,
+            team: {
+              id: 1
+            },
+            featureToggle: {
+              pulseCheckIndicator: false
+            }
+          }
+        }
+      }
+    }));
     spyOn(storageService, 'set');
     spyOn(storageService, 'remove');
     spyOn(experienceService, 'switchProgram').and.returnValue(Promise.resolve(of()));
