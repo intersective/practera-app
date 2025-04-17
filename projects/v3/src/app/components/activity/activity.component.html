@@ -3,13 +3,9 @@
     [appBackgroundImage]="leadImage"
     aria-live="polite"
     aria-labelledby="activity-name">
-    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info">
-      {{ activity.name }}
-    </h1>
-    <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
-
+    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info" [innerHtml]="activity.name"></h1>
+    <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"  aria-hidden="true"></ion-skeleton-text>
-
     <div class="overlay"></div>
   </div>
 
@@ -33,7 +29,7 @@
       subtitle1Color="grey-50"
       (click)="goto(task)"
       (keydown)="goto(task, $event)"
-      [redDot]="newTasks[task.id]"
+      [redDot]="newTasks[task.id] || false"
       [title]="task.name"
       [subtitle1]="subtitle(task)"
       [label]="label(task)"

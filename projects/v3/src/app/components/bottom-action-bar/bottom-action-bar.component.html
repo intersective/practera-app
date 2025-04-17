@@ -1,16 +1,17 @@
-<div class="wrapper">
+<ion-footer class="wrapper">
   <ng-container [ngSwitch]="buttonType">
     <ion-text *ngSwitchCase="'blocked-role'" color="grey-50">
       <p>Team assessment submissions restricted to participants only.</p>
     </ion-text>
     <ng-container *ngSwitchDefault>
-      <ion-button
+      <ion-button class="ion-margin"
         mode="ios"
         [disabled]="disabled$ | async"
         [color]="color"
         (click)="onClick($event)"
       >{{ text }}</ion-button>
-      <ion-button *ngIf="showResubmit === true"
+      <ion-button class="ion-margin"
+        *ngIf="showResubmit === true"
         [disabled]="disabled$ | async"
         mode="ios"
         [color]="color"
@@ -19,4 +20,4 @@
     </ng-container>
 
   </ng-container>
-</div>
+</ion-footer>

@@ -63,7 +63,13 @@
                 "glob": "**/*.svg",
                 "input": "node_modules/ionicons/dist/ionicons/svg",
                 "output": "./svg"
-              }
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+                "output": "./assets/ffmpeg"
+              },
+              "projects/v3/src/assets/ffmpeg"
             ],
             "styles": [
               {
@@ -90,6 +96,16 @@
           "configurations": {
             "ms": {
               "localize": ["ms"]
+            },
+            "ja": {
+              "localize": [
+                "ja"
+              ]
+            },
+            "es": {
+              "localize": [
+                "es"
+              ]
             },
             "custom": {
               "budgets": [
@@ -196,9 +212,15 @@
             },
             "development": {
               "buildTarget": "v3:build:development"
+            },
+            "ja": {
+              "buildTarget": "v3:build:ja"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "proxyConfig": "projects/v3/proxy.json"
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",

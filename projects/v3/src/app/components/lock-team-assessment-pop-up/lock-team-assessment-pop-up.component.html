@@ -9,7 +9,7 @@
   <div class="details-container">
     <div class="div-after-img">
       <div class="description body-1" *ngIf="name">
-        <b>{{ name }}</b> <span class="gray-2" i18n>is currently edting this team submission. Click on</span> <b i18n>'View Read Only'</b> <span class="gray-2" i18n>to open in read only mode</span>.
+        <b [innerHTML]="name"></b> <span class="gray-2" i18n>is currently editing this team submission. Click on</span> <b i18n>'View Read Only'</b> <span class="gray-2" i18n>to open in read only mode</span>.
       </div>
     </div>
 

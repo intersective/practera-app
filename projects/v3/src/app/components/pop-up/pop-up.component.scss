@@ -1,0 +1,46 @@
+div.content {
+  display: flex;
+  flex-direction: column;
+}
+
+ion-button.ion-focused {
+  border: 1px solid black;
+  border-radius: 8px;
+}
+
+.status-info {
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0 20px;
+  text-align: left;
+}
+
+.green {
+  color: green;
+  font-weight: bold;
+}
+
+.red {
+  color: red;
+  font-weight: bold;
+}
+
+.yellow {
+  color: yellow;
+  font-weight: bold;
+  text-shadow: -0.5px -0.5px 0 var(--practera-30-percent-gray), 0.5px -0.5px 0 var(--practera-30-percent-gray), -0.5px 0.5px 0 var(--practera-30-percent-gray), 0.5px 0.5px 0 var(--practera-30-percent-gray);
+}
+
+.div-after-logo {
+  margin-top: 20px;
+}
+
+.link {
+  cursor: pointer;
+  color: var(--ion-color-primary);
+
+  &:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+  }
+}

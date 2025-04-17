@@ -23,9 +23,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   @Input() question: Question;
   @Input() submission;
-  @Input() submissionId: number;
+  @Input() submissionId?: number;
   @Input() review;
-  @Input() reviewId: number;
+  @Input() reviewId?: number;
   // this is for review status
   @Input() reviewStatus;
   // this is for assessment status
@@ -93,7 +93,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         filter(text => text.length >= 0),
         debounceTime(800),
         distinctUntilChanged(),
-      ).subscribe(_data => {
+      ).subscribe(_answer => {
         return this.triggerSave();
       }));
     }
@@ -130,7 +130,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(type: string = null) {
+  onChange(type: 'answer' | 'comment' = null) {
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -145,9 +145,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
       this.innerValue = this.answer;
     }
 
-    // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
-
 
     // 05/02/2019
     // Don't check "is required" error for now, it has some error.

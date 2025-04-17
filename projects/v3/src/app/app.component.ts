@@ -1,22 +1,46 @@
-import { Component, OnInit, NgZone } from '@angular/core';
-import { Router } from '@angular/router';
-import { Platform } from '@ionic/angular';
-import { SharedService } from '@v3/services/shared.service';
-import { environment } from '@v3/environments/environment';
-import { BrowserStorageService } from '@v3/services/storage.service';
-import { UtilsService } from '@v3/services/utils.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { AuthService } from '@v3/services/auth.service';
-import { VersionCheckService } from '@v3/services/version-check.service';
+import {
+  Component,
+  OnInit,
+  NgZone,
+  HostListener,
+  OnDestroy,
+} from "@angular/core";
+import { NavigationEnd, Router } from "@angular/router";
+import { Platform } from "@ionic/angular";
+import { SharedService } from "@v3/services/shared.service";
+import { environment } from "@v3/environments/environment";
+import { BrowserStorageService } from "@v3/services/storage.service";
+import { UtilsService } from "@v3/services/utils.service";
+import { DomSanitizer } from "@angular/platform-browser";
+import { AuthService } from "@v3/services/auth.service";
+import { VersionCheckService } from "@v3/services/version-check.service";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  selector: "app-root",
+  templateUrl: "./app.component.html",
+  styleUrls: ["./app.component.scss"],
 })
-export class AppComponent implements OnInit {
-  title = 'v3';
+export class AppComponent implements OnInit, OnDestroy {
+  title = "v3";
   customHeader: string | any;
+  $unsubscribe = new Subject();
+  lastVisitedUrl: string;
+
+  // list of urls that should not be cached
+  noneCachedUrl = [
+    'devtool',
+    'registration',
+    'register',
+    'forgot_password',
+    'reset_password',
+    'global_login',
+    'direct_login',
+    'do=secure',
+    'auth/secure',
+    'undefined',
+  ];
 
   constructor(
     private platform: Platform,
@@ -27,35 +51,20 @@ export class AppComponent implements OnInit {
     private utils: UtilsService,
     private sanitizer: DomSanitizer,
     private authService: AuthService,
-    private versionCheckService: VersionCheckService,
+    private versionCheckService: VersionCheckService
   ) {
-    this.redirectIfNeeded(); // redirect to "app" if the url has "appv3 in it
-
     this.customHeader = null;
     this.initializeApp();
   }
 
-  private redirectIfNeeded() {
-    // Check if the current URL matches the condition
-    if (window.location.href.startsWith('https://appv3.')) {
-      // Replace 'appv3.practera.com' with 'app.practera.com'
-      const newUrl = window.location.href.replace('https://appv3.', 'https://app.');
-
-      // Redirect to the new URL
-      window.location.href = newUrl;
-    }
+  ngOnDestroy(): void {
+    this.saveAppState();
   }
 
-  // force every navigation happen under radar of angular
-  private navigate(direction): Promise<boolean> {
-    return this.ngZone.run(() => {
-      return this.router.navigate(direction);
-    });
-  }
-
-  private configVerification(): void {
-    if (this.storage.get('fastFeedbackOpening')) { // set default modal status
-      this.storage.set('fastFeedbackOpening', false);
+  @HostListener("window:beforeunload", ["$event"])
+  saveAppState(): void {
+    if (this.lastVisitedUrl) {
+      this.storage.lastVisited("url", this.lastVisitedUrl);
     }
   }
 
@@ -67,45 +76,67 @@ export class AppComponent implements OnInit {
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
     const domain = currentLocation.hostname;
-    this.authService.getConfig({ domain }).subscribe((response: any) => {
-      if (response !== null) {
-        const expConfig = response.data;
-        const numOfConfigs = expConfig.length;
-        if (numOfConfigs > 0 && numOfConfigs < 2) {
-          let logo = expConfig[0].logo;
+    this.authService.getConfig({ domain })
+      .pipe(takeUntil(this.$unsubscribe))
+      .subscribe((response: any) => {
+        if (response !== null) {
+          const expConfig = response.data;
+          const numOfConfigs = expConfig.length;
+          if (numOfConfigs > 0 && numOfConfigs < 2) {
+            let logo: string = expConfig[0].logo;
 
-          const config = expConfig[0].config || {}; // let it fail gracefully
+            const config = expConfig[0].config || {}; // let it fail gracefully
 
-          if (config.html_branding && config.html_branding.header) {
-            this.customHeader = config.html_branding.header;
-          }
-          if (this.customHeader) {
-            this.customHeader = this.sanitizer.bypassSecurityTrustHtml(this.customHeader);
-          }
+            if (config.html_branding && config.html_branding.header) {
+              this.customHeader = config.html_branding.header;
+            }
+            if (this.customHeader) {
+              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(
+                this.customHeader
+              );
+            }
 
-          // add the domain if the logo url is not a full url
-          if (!logo?.includes('http') && !this.utils.isEmpty(logo)) {
-            logo = environment.APIEndpoint + logo;
-          }
-          const colors = {
-            theme: config.theme_color,
-          };
-          this.storage.setConfig({
-            logo,
-            colors,
-          });
+            // add the domain if the logo url is not a full url
+            if (!this.utils.isEmpty(logo) && logo?.includes("http")) {
+              logo = environment.APIEndpoint + logo;
+            }
+            const colors = {
+              theme: config.theme_color,
+            };
+            this.storage.setConfig({
+              logo,
+              colors,
+            });
 
-          // use brand color from getConfig API if no cached color available
-          // in storage.getUser()
-          if (!this.utils.has(this.storage.getUser(), 'colors') || !this.storage.getUser().colors) {
-            this.utils.changeThemeColor(colors);
+            // use brand color from getConfig API if no cached color available
+            // in storage.getUser()
+            if (
+              !this.utils.has(this.storage.getUser(), "colors") ||
+              !this.storage.getUser().colors
+            ) {
+              this.utils.changeThemeColor(colors);
+            }
           }
         }
-      }
-    });
+      });
 
+    this.router.events
+      .pipe(takeUntil(this.$unsubscribe))
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          const currentUrl = event.urlAfterRedirects;
+          if (!this.noneCachedUrl.some((url) => currentUrl.includes(url))) {
+            this.lastVisitedUrl = currentUrl;
+          }
+        }
+      });
+
+    this.magicLinkRedirect(currentLocation);
+  }
+
+  magicLinkRedirect(currentLocation): Promise<boolean> {
     let searchParams = null;
-    let queryString = '';
+    let queryString = "";
     if (currentLocation.search) {
       queryString = currentLocation.search.substring(1);
     } else if (currentLocation.hash) {
@@ -113,46 +144,77 @@ export class AppComponent implements OnInit {
     }
     searchParams = new URLSearchParams(queryString);
 
-    if (searchParams.has('apikey')) {
+    if (searchParams.has("apikey")) {
       const queries = this.utils.urlQueryToObject(queryString);
-      return this.navigate(['auth', 'global_login', searchParams.get('apikey'), queries]);
+      return this.navigate([
+        "auth",
+        "global_login",
+        searchParams.get("apikey"),
+        queries,
+      ]);
     }
 
-    if (searchParams.has('do')) {
-      switch (searchParams.get('do')) {
-        case 'secure':
-          if (searchParams.has('auth_token')) {
+    if (searchParams.has("do")) {
+      switch (searchParams.get("do")) {
+        case "secure":
+          if (searchParams.has("auth_token")) {
             const queries = this.utils.urlQueryToObject(queryString);
-            this.navigate([
-              'auth',
-              'secure',
-              searchParams.get('auth_token'),
-              queries
-            ]);
-          }
-          break;
-        case 'resetpassword':
-          if (searchParams.has('key') && searchParams.has('email')) {
-            this.navigate([
-              'auth',
-              'reset_password',
-              searchParams.get('key'),
-              searchParams.get('email')
+            return this.navigate([
+              "auth",
+              "secure",
+              searchParams.get("auth_token"),
+              queries,
             ]);
           }
           break;
 
-        case 'registration':
-          if (searchParams.has('key') && searchParams.has('email')) {
+        case "resetpassword":
+          if (searchParams.has("key") && searchParams.has("email")) {
+            return this.navigate([
+              "auth",
+              "reset_password",
+              searchParams.get("key"),
+              searchParams.get("email"),
+            ]);
+          }
+          break;
+
+        case "registration":
+          if (searchParams.has("key") && searchParams.has("email")) {
             return this.authService.logout({}, [
-              'auth',
-              'registration',
-              searchParams.get('email'),
-              searchParams.get('key')
+              "auth",
+              "registration",
+              searchParams.get("email"),
+              searchParams.get("key")
             ]);
           }
           break;
       }
+    }
+
+    this.redirectToLastVisitedUrl();
+  }
+
+  // redirect to the last visited url/assessment if available
+  redirectToLastVisitedUrl(): Promise<boolean> {
+    if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
+      return this.navigate(window.location.href);
+    }
+
+    const lastVisitedUrl = this.storage.lastVisited("url") as string;
+    if (lastVisitedUrl) {
+      const lastVisitedAssessmentUrl = this.storage.lastVisited("assessmentUrl");
+      if (
+        (lastVisitedUrl.includes("activity-desktop") ||
+          lastVisitedUrl.includes("activity-mobile")) &&
+        !this.utils.isEmpty(lastVisitedAssessmentUrl)
+      ) {
+        this.storage.lastVisited("assessmentUrl", null);
+        return this.navigate([lastVisitedAssessmentUrl]);
+      }
+
+      this.storage.lastVisited("url", null);
+      return this.navigate([lastVisitedUrl]);
     }
   }
 
@@ -165,5 +227,19 @@ export class AppComponent implements OnInit {
       // initialise Pusher when app loading
       this.sharedService.initWebServices();
     });
+  }
+
+  // force every navigation happen under radar of angular
+  private navigate(direction): Promise<boolean> {
+    return this.ngZone.run(() => {
+      return this.router.navigate(direction);
+    });
+  }
+
+  private configVerification(): void {
+    if (this.storage.get("fastFeedbackOpening")) {
+      // set default modal status
+      this.storage.set("fastFeedbackOpening", false);
+    }
   }
 }
