@@ -27,7 +27,6 @@ export class TopicComponent implements OnChanges {
 
   btnToggleTopicIsDone = false;
   isLoadingPreview = false;
-  isMobile: boolean;
 
   iframeHtml: SafeHtml;
   sanitizedTitle: SafeHtml;
