@@ -1,11 +1,11 @@
 import { debounce } from 'lodash';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, Observable } from 'rxjs';
 import { Assessment, AssessmentService } from './../../services/assessment.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventAttributes, convertTimestampToArray } from 'ics';
 import { DueDatesService } from './due-dates.service';
-import { debounceTime, first, takeUntil } from 'rxjs/operators';
+import { debounceTime, first, takeUntil, map, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 interface CalendarEvent {
@@ -25,11 +25,12 @@ interface GroupedAssessments {
   templateUrl: './due-dates.component.html',
   styleUrls: ['./due-dates.component.scss'],
 })
-export class DueDatesComponent implements OnInit, OnDestroy {
-  searchText: string;
+export class DueDatesComponent implements OnDestroy, OnInit {
+  searchText: string = '';
   statusFilter: string;
   filteredItems: Assessment[];
   assessments$: BehaviorSubject<GroupedAssessments[]> = new BehaviorSubject<GroupedAssessments[]>(null);
+  filteredAssessments$: Observable<GroupedAssessments[]>;
   unsubscribe$: Subject<void> = new Subject<void>();
 
   searchText$: Subject<string> = new Subject<string>();
@@ -42,13 +43,26 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     private router: Router,
   ) {}
 
-  ngOnInit(): void {
-    // this.searchText$.pipe(
-    //   takeUntil(this.unsubscribe$),
-    //   debounceTime(300),
-    // ).subscribe(() => {
-    //   this.filterItems();
-    // });
+  ngOnInit() {
+    // search changes & debounce
+    this.searchText$
+      .pipe(
+        debounceTime(200),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe(searchTerm => {
+        this.filterAssessments(searchTerm);
+      });
+
+    this.filteredAssessments$ = this.assessments$.pipe(
+      map(groups => {
+        if (!groups) return null;
+        if (!this.searchText) return groups;
+
+        // Filter assessments based on search text
+        return this.filterAssessmentGroups(groups, this.searchText);
+      })
+    );
   }
 
   ionViewDidEnter() {
@@ -77,6 +91,45 @@ export class DueDatesComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
+  }
+
+  /**
+   * Filter assessments
+   */
+  private filterAssessments(searchText: string) {
+    this.searchText = searchText;
+    // Trigger a new value emission on the assessments$ subject to force re-filtering
+    const currentValue = this.assessments$.getValue();
+    if (currentValue) {
+      this.assessments$.next([...currentValue]);
+    }
+  }
+
+  /**
+   * Filter assessment groups
+   */
+  private filterAssessmentGroups(groups: GroupedAssessments[], searchText: string): GroupedAssessments[] {
+    if (!searchText.trim()) {
+      return groups;
+    }
+
+    const searchLower = searchText.toLowerCase();
+
+    // Filter each group's assessments
+    const filteredGroups = groups.map(group => {
+      const filteredAssessments = group.assessments.filter(assessment =>
+        assessment.name.toLowerCase().includes(searchLower) ||
+        assessment.description?.toLowerCase().includes(searchLower)
+      );
+
+      return {
+        ...group,
+        assessments: filteredAssessments
+      };
+    });
+
+    // Remove empty groups
+    return filteredGroups.filter(group => group.assessments.length > 0);
   }
 
   groupByDate(assessments: Assessment[]): GroupedAssessments[] {
@@ -168,22 +221,6 @@ export class DueDatesComponent implements OnInit, OnDestroy {
     }
   }
 
-  /* filterItems() {
-    this.filteredItems = this.assessments$.getValue().filter(item => {
-      if (this.searchText && !item.name.toLowerCase().includes(this.searchText.toLowerCase())) {
-        return false;
-      }
-
-      if (this.statusFilter && item.name !== this.statusFilter) {
-        return false;
-      }
-
-      return true;
-    });
-  } */
-
-  // @TODO: implement goTo method
-  // current API data is not sufficient to implement this method
   goTo(assessment) {
     this.assessmentService.fetchAssessment(assessment.id, 'assessment', null, null).subscribe((res) => {
       console.log('assessment', res);
