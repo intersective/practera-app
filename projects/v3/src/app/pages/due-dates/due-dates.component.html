@@ -6,9 +6,9 @@
 </ion-header>
 
 <ion-content>
-  <ion-searchbar [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)"></ion-searchbar>
+  <ion-searchbar [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)" placeholder="Search by assessment name"></ion-searchbar>
 
-  <ion-list *ngIf="(assessments$ | async) as assessments; else loading">
+  <ion-list *ngIf="(filteredAssessments$ | async) as assessments; else loading">
     <ng-container *ngFor="let group of assessments">
       <!-- Date divider (Group title) -->
       <ion-item-divider>
