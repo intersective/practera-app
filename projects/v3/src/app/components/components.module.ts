@@ -1,3 +1,5 @@
+import { UppyAngularDashboardModalModule, UppyAngularDashboardModule } from '@uppy/angular';
+import { TrafficLightComponent } from './traffic-light/traffic-light.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -37,6 +39,11 @@ import { VideoConversionComponent } from './video-conversion/video-conversion.co
 import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
+import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
+import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
+import { FileUploadComponent } from './file-upload/file-upload.component';
+import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
+import { FilePopupComponent } from './file-popup/file-popup.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -60,6 +67,8 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    UppyAngularDashboardModalModule,
+    UppyAngularDashboardModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
   declarations: [
@@ -76,6 +85,7 @@ const largeCircleDefaultConfig = {
     DragAndDropDirective,
     FastFeedbackComponent,
     FileComponent,
+    FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
     FilestackComponent,
@@ -97,6 +107,10 @@ const largeCircleDefaultConfig = {
     BottomActionBarComponent,
     SupportPopupComponent,
     FallbackImageDirective,
+    TrafficLightComponent,
+    TrafficLightGroupComponent,
+    UppyUploaderComponent,
+    FileUploadComponent,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -116,6 +130,7 @@ const largeCircleDefaultConfig = {
     FastFeedbackComponent,
     FallbackImageDirective,
     FileComponent,
+    FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
     FilestackComponent,
@@ -136,7 +151,12 @@ const largeCircleDefaultConfig = {
     TopicComponent,
     BrandingLogoComponent,
     BottomActionBarComponent,
-    SupportPopupComponent
+    SupportPopupComponent,
+    TrafficLightComponent,
+    TrafficLightGroupComponent,
+    UppyUploaderComponent,
+    FileUploadComponent,
   ],
+  providers: [UppyUploaderService]
 })
-export class ComponentsModule {}
+export class ComponentsModule { }

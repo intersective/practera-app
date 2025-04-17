@@ -1,4 +1,4 @@
-<ion-item
+<ion-item [id]="id"
   [ngClass]="{'active': active, 'hasCallToActionBtn': callToActionBtn}"
   [lines]="lines"
   tabindex="0">
@@ -19,26 +19,31 @@
         aria-hidden="true"
       ></ion-icon>
 
-      <span class="notification-dot" [class.hidden]="!redDot"></span>
+      <span class="notification-dot" *ngIf="redDot === true"></span>
     </div>
 
     <ion-avatar class="icon-container homepage" *ngIf="leadImage" slot="start" aria-hidden="true">
       <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
-      <span class="notification-dot" [class.hidden]="!redDot"></span>
+      <ion-icon name="bookmark" class="bookmark-icon" color="primary" *ngIf="bookmarked === true"></ion-icon>
+      <span class="notification-dot" *ngIf="redDot === true"></span>
     </ion-avatar>
 
     <div class="item-content ion-padding-vertical"
       [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
       <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
-        <div class="'item-title body-2 ion-color-' + titleColor">{{ title }}</div>
+        <div class="'item-title body-2 ion-color-' + titleColor" [innerHTML]="title"></div>
         &nbsp; <!-- this is to add some space between two elements -->
-        <span style="white-space: nowrap;" class="item-title subtitle-3" [ngClass]="'color-' + titleColor"> {{ eventDayCount }}</span>
+        <span style="white-space: nowrap;"
+          class="item-title subtitle-3"
+          [ngClass]="'color-' + titleColor"
+        > {{ eventDayCount }}</span>
       </div>
 
       <div *ngIf="!isEventItem"
         [class]="'body-2 ' + titleColor"
         [attr.aria-label]="title"
-      >{{ title }}</div>
+        [innerHTML]="title"
+      ></div>
 
       <div *ngIf="subtitle1"
         [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color"
@@ -46,9 +51,10 @@
         [attr.aria-label]="subtitle1"
       ></div>
 
-      <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color" [attr.aria-label]="subtitle2">
-        {{ subtitle2 }}
-      </div>
+      <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color"
+        [attr.aria-label]="subtitle2"
+        [innerHTML]="subtitle2"
+      ></div>
 
       <div *ngIf="callToActionBtn"
         [class]="'call-to-action ion-color-' + callToActionBtn.color"
@@ -64,7 +70,7 @@
 
       <div *ngIf="label" [attr.aria-label]="label">
         <ion-chip [class]="'label ion-no-margin ' + labelColor">
-          <ion-label class="body-3">{{ label }}</ion-label>
+          <ion-label class="body-3" [innerHTML]="label"></ion-label>
         </ion-chip>
       </div>
     </div>
@@ -74,7 +80,8 @@
       [color]="endingTextColor"
       slot="end"
       [attr.aria-label]="endingText"
-    >{{ endingText }}</ion-text>
+      [innerHTML]="endingText"
+    ></ion-text>
 
     <ion-icon *ngIf="endingIcon"
       [name]="endingIcon"
@@ -83,11 +90,13 @@
       [attr.aria-hidden]="!statusDescriptions(endingIcon)"
       [attr.aria-label]="statusDescriptions(endingIcon)"
     ></ion-icon>
-
-    <div *ngIf="endingProgress && !endingIcon"
+    <div *ngIf="(endingProgress && endingProgress !== 1) && !endingIcon"
       slot="end" style="width: 2em;"
       [attr.aria-label]="'progress ' + (endingProgress * 100) + '%'">
-      <app-circle-progress [data]='{ percent: endingProgress * 100 }' aria-hidden="true"></app-circle-progress>
+      <app-circle-progress
+        [data]='{ percent: endingProgress * 100 }'
+        aria-hidden="true"
+      ></app-circle-progress>
     </div>
 
     <div *ngIf="isEventItem" aria-labelledby="event-status">

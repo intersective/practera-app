@@ -1,3 +1,4 @@
+
 $message-body-size: 60%;
 
 .not-started-empty-status {
@@ -81,6 +82,10 @@ $message-body-size: 60%;
           .message-text {
             margin-bottom: 10px;
           }
+
+          ion-icon, ion-note, ion-label {
+            color: var(--ion-text-color) !important;
+          }
         }
 
         p {
@@ -90,10 +95,7 @@ $message-body-size: 60%;
               font-weight: 500;
             }
           }
-        }
 
-        p {
-          color: black;
           margin: 0;
           text-align: left;
           user-select: all !important;
@@ -112,6 +114,9 @@ $message-body-size: 60%;
           position:relative;
           cursor: pointer;
           padding: 16px;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal;
 
           .message-text {
             margin-bottom: 10px;
@@ -187,19 +192,24 @@ $message-body-size: 60%;
       }
 
       &.send-messages {
+        --color: var(--ion-color-primary-contrast) !important;
         text-align: right;
         margin-right: 0;
+
+        .time.caption {
+          color: initial;
+        }
 
         .message-body {
           background-color: var(--ion-color-primary);
 
           &.video-attachment-container {
             .label {
-              color: white;
+              color: var(--ion-color-primary-contrast) !important;
             }
             #inner-box {
               p {
-                color: white;
+                color: var(--ion-color-primary-contrast) !important;
               }
             }
           }
@@ -210,11 +220,10 @@ $message-body-size: 60%;
             --background: transparent;
             cursor: pointer;
             ion-icon, ion-note, ion-label {
-              color: white !important;
+              color: var(--ion-color-primary-contrast) !important;
             }
           }
 
-          // margin-left: calc(100% - 150px) !important;
           float: right;
         }
       }
@@ -337,8 +346,9 @@ $message-body-size: 60%;
         min-height: 48px;
 
         .message-text-editor {
-          .ql-toolbar, .ql-container.ql-snow {
-            border: none;
+          width: 100%;
+          .ql-toolbar.ql-snow, .ql-container.ql-snow {
+            border: none !important;
           }
         }
 
@@ -361,36 +371,28 @@ $message-body-size: 60%;
             max-height: 100px;
             padding: 10px;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+
             img {
               border-radius: 4px;
             }
-            .overlay {
-              left: 10px;
-            }
+
             &:hover {
-              .remove-attach {
-                display: block;
-                text-align: center;
-                left: 80px;
-              }
-              .overlay {
-                display: block;
-                background: rgba(0, 0, 0, .6);
-              }
+              opacity: 0.7;
             }
-            &.mobile {
-              .overlay {
-                display: none;
-              }
+
+            &.mobile, &:hover {
               .remove-attach {
                 display: block;
                 text-align: center;
-                left: 80px;
+                right: 0;
+                top: -1em;
               }
             }
           }
+
           .video {
-            width: 80px;
             height: 80px;
             margin: 10px;
             padding: 20px;
@@ -398,6 +400,9 @@ $message-body-size: 60%;
             border: 1px solid;
             border-color: var(--practera-light-grey-75);
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             .play-icon {
               width: 40px;
               height: 40px;
@@ -410,18 +415,12 @@ $message-body-size: 60%;
                 padding: 11px;
               }
             }
-            .overlay {
-              left: 10px;
-            }
             &:hover {
+              opacity: 0.7;
               .remove-attach {
                 display: block;
                 text-align: center;
-                left: 80px;
-              }
-              .overlay {
-                display: block;
-                background: rgba(0, 0, 0, .6);
+                right: 0;
               }
             }
             &.mobile {
@@ -431,7 +430,7 @@ $message-body-size: 60%;
               .remove-attach {
                 display: block;
                 text-align: center;
-                left: 80px;
+                right: 0;
               }
             }
           }
@@ -485,24 +484,12 @@ $message-body-size: 60%;
             cursor: pointer;
             position: absolute;
             top: 0px;
-            left: 100px;
             background: var(--practera-ocean-100);
             width: 20px;
             height: 20px;
             border-radius: 50%;
             color: white;
             display: none;
-          }
-          .overlay {
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            left: 28px;
-            width: 80px;
-            height: 80px;
-            display: none;
-            color: transparent;
-            border-radius: 4px;
           }
         }
       }
@@ -521,4 +508,16 @@ ion-button.ion-focused {
 
 ion-fab.scroll-to-bottom {
   opacity: 0.7;
+}
+
+
+.ql-editor {
+  a {
+    text-decoration: underline;
+    word-break: break-all;
+  }
+
+   a:hover {
+    color: var(--ion-color-primary);
+  }
 }

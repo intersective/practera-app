@@ -1,12 +1,12 @@
+import { UppyUploaderService } from './../../components/uppy-uploader/uppy-uploader.service';
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { FilestackService } from '@v3/services/filestack.service';
-import { Subject } from 'rxjs';
-import { ModalController } from '@ionic/angular';
+import { Subject, firstValueFrom } from 'rxjs';
+import { AlertOptions, ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   profile = {
     contactNumber: '',
     email: '',
-    image: '',
+    avatar: '',
     name: ''
   };
   hasMultipleStacks = false;
@@ -33,14 +33,12 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   returnLtiUrl = '';
 
-  helpline = 'help@practera.com';
+  helpline = environment.helpline;
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   // controll profile image updating
   imageUpdating = false;
-  acceptFileTypes;
-  // card image CDN
-  cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
+  acceptFileTypes = ['image/*'];
 
   // hubspot form
   hubspotActivated: boolean = false;
@@ -53,8 +51,8 @@ export class SettingsPage implements OnInit, OnDestroy {
     private storage: BrowserStorageService,
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
-    private filestackService: FilestackService,
     private modalController: ModalController,
+    private uppyUploaderService: UppyUploaderService,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -65,27 +63,37 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   private async _retrieveUserInfo(): Promise<void> {
-    const res = await this.authService.getMyInfo().toPromise();
-    const user = this.storage.getUser();
-    const {
-      email,
-      contactNumber,
-      image,
-      name,
-      programName,
-      LtiReturnUrl,
-    } = user;
-    // get contact number and email from local storage
-    this.profile.email = email;
-    this.profile.contactNumber = contactNumber;
-    this.profile.image = image ? image : 'https://my.practera.com/img/user-512.png';
-    this.profile.name = name;
-    this.currentProgramName = programName;
-    this.returnLtiUrl = LtiReturnUrl;
-
-    this.acceptFileTypes = this.filestackService.getFileTypes('image');
-    this.currentProgramImage = this._getCurrentProgramImage();
-    // this.fastFeedbackService.pullFastFeedback().subscribe();
+    try {
+      await firstValueFrom(this.authService.getMyInfo());
+      const user = this.storage.getUser();
+      const {
+        email,
+        contactNumber,
+        avatar,
+        name,
+        programName,
+        LtiReturnUrl,
+        programImage
+      } = user;
+      // get contact number and email from local storage
+      this.profile.email = email;
+      this.profile.contactNumber = contactNumber;
+      this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
+      this.profile.name = name;
+      this.currentProgramName = programName;
+      this.returnLtiUrl = LtiReturnUrl;
+      this.currentProgramImage = programImage;
+    } catch (error) {
+      this.notificationsService.alert({
+        message: $localize`Failed to retrieve user information`,
+        buttons: [
+          {
+            text: $localize`OK`,
+            role: 'cancel'
+          }
+        ]
+      });
+    }
   }
 
   ngOnInit() {
@@ -111,21 +119,6 @@ export class SettingsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
-  }
-
-  // loading pragram image to settings page by resizing it depend on device.
-  // in mobile we are not showing card with image but in some mobile phones on landscape mode desktop view is loading.
-  // because of that we load image also in mobile view.
-  private _getCurrentProgramImage() {
-    if (!this.utils.isEmpty(this.storage.getUser().programImage)) {
-      let imagewidth = 600;
-      const imageId = this.storage.getUser().programImage.split('/').pop();
-      if (!this.utils.isMobile()) {
-        imagewidth = 1024;
-      }
-      return `${this.cdn}${imagewidth}/${imageId}`;
-    }
-    return '';
   }
 
   openLink(event) {
@@ -176,42 +169,52 @@ export class SettingsPage implements OnInit, OnDestroy {
     return this.authService.logout({}, true);
   }
 
-  async uploadProfileImage(file, type = null) {
-    if (file.success) {
-      this.imageUpdating = true;
-      this.authService.updateProfileImage({
-        image: file.data.url
-      }).pipe(first()).subscribe(
-        () => {
-          this.imageUpdating = false;
-          this.profile.image = file.data.url;
-          this.storage.setUser({
-            image: file.data.url
-          });
-          return this.notificationsService.alert({
-            message: $localize`Profile picture successfully updated!`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ]
-          });
-        },
-        () => {
-          this.imageUpdating = false;
-          return this.notificationsService.alert({
-            message: $localize`File upload failed, please try again later.`,
-            buttons: [
-              {
-                text: $localize`OK`,
-                role: 'cancel'
-              }
-            ]
-          });
+  async profileImage() {
+    try {
+      const modal = await this.uppyUploaderService.open('user-profile');
+      const res = await modal.onDidDismiss();
+
+      // eslint-disable-next-line no-console
+      console.log('file-upload res', res);
+
+      if (!res?.data) {
+        return;
+      }
+
+      const file = res.data;
+      if (file) {
+        this.imageUpdating = true;
+        await firstValueFrom(this.authService.updateUserProfile({
+          url: file.tus.uploadUrl,
+          name: file.name,
+          extension: file.extension,
+          type: file.type,
+          size: file.size,
+          bucket: file.bucket,
+          path: file.path,
+        }));
+
+        this.imageUpdating = false;
+        this.profile.avatar = file.preview;
+        this.storage.setUser({ image: file.preview });
+
+        return this.notificationsService.alert({
+          message: $localize`Profile picture successfully updated!`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel'
+            }
+          ]
         });
-    } else {
-      return this.notificationsService.alert({
+      }
+    } catch (error) {
+      this.imageUpdating = false;
+
+      // eslint-disable-next-line no-console
+      console.error('profile image error', error);
+
+      const alertOpts: AlertOptions = {
         message: $localize`File upload failed, please try again later.`,
         buttons: [
           {
@@ -219,7 +222,13 @@ export class SettingsPage implements OnInit, OnDestroy {
             role: 'cancel'
           }
         ]
-      });
+      };
+
+      // Actual error message from server
+      if (error?.error?.message || error?.error?.msg) {
+        alertOpts.subHeader = error?.error?.message || error?.error?.msg;
+      }
+      return this.notificationsService.alert(alertOpts);
     }
   }
 
@@ -256,6 +265,9 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   openBadgeApp(event) {
-    this.utils.openUrl(`${environment.badgeProjectUrl}?apikey=${this.storage.getUser().apikey}&appkey=${environment.appkey}`, {target: '_blank'});
+    this.utils.openUrl(
+      `${environment.badgeProjectUrl}?apikey=${this.storage.getUser().apikey}&appkey=${environment.appkey}`,
+      { target: '_blank' }
+    );
   }
 }

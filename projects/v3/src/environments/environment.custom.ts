@@ -1,4 +1,5 @@
 export const environment = {
+  stackName: '<CUSTOM_STACK_NAME>',
   authCacheDuration: 5 * 60 * 1000, // 5 minutes
   production: '<CUSTOMPLAIN_PRDMODEFLAG>',
   demo: false,
@@ -13,6 +14,18 @@ export const environment = {
   badgeProjectUrl: '<CUSTOM_BADGE_PROJECT_URL>',
   stackUuid: '<CUSTOM_STACK_UUID>',
   intercomAppId: '<CUSTOM_INTERCOM>',
+  uppyConfig: {
+    tusUrl: '<CUSTOM_UPLOAD_TUS_ENDPOINT>',
+    uploadPreset: 'practera',
+    restrictions: {
+      minFileSize: 0, // No minimum size
+      maxFileSize: <CUSTOM_UPLOAD_MAX_FILE_SIZE>, // 2GB max size
+      minNumberOfFiles: 1, // At least one file
+      maxNumberOfFiles: 1, // max one file for now
+      maxTotalFileSize: undefined, // No limit on total size
+      requiredMetaFields: [] // No required metadata fields
+    }
+  },
   filestack: {
     key: '<CUSTOM_FILESTACK_KEY>',
     s3Config: {
@@ -45,4 +58,5 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  helpline: '<CUSTOM_HELPLINE>',
 };

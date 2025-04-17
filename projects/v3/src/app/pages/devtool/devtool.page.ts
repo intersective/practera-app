@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
@@ -7,6 +7,9 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
+import { environment } from '../../../environments/environment';
+import { FfmpegService } from '../../services/ffmpeg.service';
 
 @Component({
   selector: 'app-devtool',
@@ -14,12 +17,29 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
   styleUrls: ['./devtool.page.scss'],
 })
 export class DevtoolPage implements OnInit {
+  turnUppyOff: boolean = true;
+  tusUploadUrl: string;
   doneLogin: boolean = false;
   user: any = {};
   themeToggle = false;
   identifier: string = '';
 
   sample: any;
+  viewportWidth: number;
+  viewportHeight: number;
+
+  info: {
+    userAgent: string;
+    viewportWidth: number;
+    viewportHeight: number;
+    screenWidth: number;
+    screenHeight: number;
+    pixelRatio: number;
+    location: {
+      latitude: number;
+      longitude: number;
+    };
+  }
 
   constructor(
     private authService: AuthService,
@@ -28,10 +48,71 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
-    private unlockIndicatorService: UnlockIndicatorService
-      ) { }
+    private unlockIndicatorService: UnlockIndicatorService,
+    private achievementService: AchievementService,
+    private ffmpegService: FfmpegService
+  ) { }
+
+  selectedFile: File | null = null;
+  isCompressing = false;
+
+  async transcodeVideo() {
+    try {
+      if (this.ffmpegService.isFfmpegLoaded() === false) {
+        await this.ffmpegService.loadFFmpeg();
+      }
+
+      this.isCompressing = true;
+      const compressedFile = await this.ffmpegService.transcode();
+      console.log('Compressed File:', compressedFile);
+
+      const url = URL.createObjectURL(compressedFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (compressedFile as File).name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.isCompressing = false;
+    } catch (error) {
+      console.error(error);
+      this.isCompressing = false;
+    }
+  }
+
+  /* async handleFileInput(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+
+      // Compress the file before uploading
+      this.isCompressing = true;
+      const compressedFile = await this.ffmpegService.compressVideo(this.selectedFile);
+      this.isCompressing = false;
+
+      console.log('Compressed File:', compressedFile);
+
+      // Proceed to upload the compressed file
+      // this.uploadFile(compressedFile);
+
+
+
+      // Create a download link for the compressed file
+      const url = URL.createObjectURL(compressedFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = compressedFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Optionally revoke the object URL after some time
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+  } */
 
   ngOnInit() {
+
     this.doneLogin = this.authService.isAuthenticated();
     if (this.doneLogin) {
       this.user = this.storageService.get('me');
@@ -45,7 +126,18 @@ export class DevtoolPage implements OnInit {
 
     // Listen for changes to the prefers-color-scheme media query
     prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkTheme(mediaQuery.matches));
+    this.updateViewportSize();
+  }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.updateViewportSize();
+  }
+
+  updateViewportSize() {
+    this.viewportWidth = window.innerWidth;
+    this.viewportHeight = window.innerHeight;
+    this.deviceInfo();
   }
 
   refresh() {
@@ -54,7 +146,12 @@ export class DevtoolPage implements OnInit {
 
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
-    const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    if (response.error) {
+      console.error(response.message);
+      return;
+    }
+    const modal = response;
     if (modal && modal.present) {
       await modal.present();
       await modal.onDidDismiss();
@@ -173,5 +270,53 @@ export class DevtoolPage implements OnInit {
       });
       this.unlockIndicatorService.removeTasks(task.taskId);
     });
+  }
+
+  getbadges() {
+    this.achievementService.getAchievements();
+  }
+
+  deviceInfo() {
+    this.info = {
+      // User Agent
+      userAgent: navigator.userAgent,
+
+      // Viewport Size
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+
+      // Screen Resolution
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+
+      // Pixel Ratio
+      pixelRatio: window.devicePixelRatio || 1,
+
+      // Geolocation (initialized as null)
+      location: null,
+    };
+
+    // Geolocation (optional)
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          this.info.location = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+        }
+      );
+    }
+  }
+
+  tusChanged() {
+    this.turnUppyOff = true;
+  }
+
+  applyTusUploadUrl() {
+    this.turnUppyOff = false;
   }
 }

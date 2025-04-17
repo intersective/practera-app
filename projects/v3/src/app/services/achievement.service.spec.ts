@@ -128,4 +128,77 @@ describe('AchievementService', () => {
       expect(service.isPointsConfigured).toBe(true);
     });
   });
+
+  describe('graphQLGetAchievements', () => {
+    it('should return an array of achievements', (done) => {
+      const mockResponse = {
+        data: {
+          badges: [
+            {
+              id: 1,
+              name: 'Achievement 1',
+              description: 'Description 1',
+              type: 'type1',
+              badge: 'badge1',
+              openBadge: 'openBadge1',
+              points: 10,
+              isEarned: true,
+              earnedDate: '2021-01-01',
+              progress: 50,
+              active: true,
+              certificateUrl: 'url1'
+            },
+            {
+              id: 2,
+              name: 'Achievement 2',
+              description: 'Description 2',
+              type: 'type2',
+              badge: 'badge2',
+              openBadge: 'openBadge2',
+              points: 20,
+              isEarned: false,
+              earnedDate: '2021-02-01',
+              progress: 75,
+              active: false,
+              certificateUrl: 'url2'
+            }
+          ]
+        }
+      };
+
+      spyOn(service['apolloService'], 'graphQLFetch').and.returnValue(of(mockResponse));
+
+      service.graphQLGetAchievements().subscribe((achievements) => {
+        expect(achievements.length).toBe(2);
+        expect(achievements).toEqual(mockResponse.data.badges);
+        done();
+      });
+    });
+
+    it('should return an empty array if no badges are returned', (done) => {
+      const mockResponse = {
+        data: {
+          badges: []
+        }
+      };
+
+      spyOn(service['apolloService'], 'graphQLFetch').and.returnValue(of(mockResponse));
+
+      service.graphQLGetAchievements().subscribe((achievements) => {
+        expect(achievements.length).toBe(0);
+        expect(achievements).toEqual([]);
+        done();
+      });
+    });
+
+    it('should handle errors gracefully', (done) => {
+      spyOn(service['apolloService'], 'graphQLFetch').and.returnValue(of({ data: null }));
+
+      service.graphQLGetAchievements().subscribe((achievements) => {
+        expect(achievements.length).toBe(0);
+        expect(achievements).toEqual([]);
+        done();
+      });
+    });
+  });
 });
