@@ -3,16 +3,16 @@ import { HubspotService } from './hubspot.service';
 import { RequestService } from 'request';
 import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { UtilsService } from '@v3/services/utils.service';
 import { environment } from '@v3/environments/environment';
 import { TestUtils } from '@testingv3/utils';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from './utils.service';
 
 describe('HubspotService', () => {
   let service: HubspotService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
-  let utils: UtilsService;
+  let utils: jasmine.SpyObj<UtilsService>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,7 +20,8 @@ describe('HubspotService', () => {
         HubspotService,
         {
           provide: UtilsService,
-          useClass: TestUtils,
+          useValue: jasmine.createSpyObj('UtilsService', ['isEmpty']),
+          // useClass: TestUtils,
         },
         {
           provide: RequestService,
@@ -34,7 +35,7 @@ describe('HubspotService', () => {
     });
     service = TestBed.inject(HubspotService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-    utils = TestBed.inject(UtilsService);
+    utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
