@@ -10,7 +10,7 @@ import { AlertOptions, ModalController } from '@ionic/angular';
 import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
-import { throwError } from 'rxjs/internal/observable/throwError';
+import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
 
 @Component({
   selector: 'app-settings',
@@ -246,7 +246,19 @@ export class SettingsPage implements OnInit, OnDestroy {
       return;
     }
     if (this.hubspotActivated === true) {
-      return this.utils.openSupportPopup({ formOnly: true });
+      const componentProps = {
+        mode: 'modal',
+        isShowFormOnly: true,
+      };
+
+      const modal = await this.modalController.create({
+        componentProps,
+        component: SupportPopupComponent,
+        cssClass: 'support-popup',
+        backdropDismiss: false,
+      });
+
+      return modal.present();
     }
 
     return this.mailTo(event);
