@@ -1,11 +1,23 @@
 import { Injectable } from '@angular/core';
 import { createEvent, EventAttributes } from 'ics';
 
+export interface GoogleCalendarParams {
+  start: Date;
+  end?: Date;
+  title: string;
+  description?: string;
+  location?: string;
+  reminder?: number; // minutes before event
+  organizer?: {
+    name: string;
+    email: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class DueDatesService {
-
   constructor() { }
 
   createCalendarEvent(eventData: EventAttributes): void {
@@ -27,33 +39,47 @@ export class DueDatesService {
     window.URL.revokeObjectURL(url);
   }
 
-  generateGoogleCalendarUrl(event: {
-    start?: Date;
-    duration?: number;
-    title: string | number | boolean;
-    description?: string | number | boolean;
-    location?: string | number | boolean;
-    organizer?: { name: string; email: string };
-  }): string {
-    event.duration = event.duration || 60; // 1 hour default duration
-    const startTime = this.formatDate(event.start);
-    const endTime = this.formatDate(new Date(event.start.getTime() + event.duration * 60000));
+  // Format dates for Google Calendar URL
+  private googleCompactDateTime(date: Date): string {
+    const pad = (n: number) => n < 10 ? `0${n}` : `${n}`;
+    return date.getFullYear() +
+      pad(date.getMonth() + 1) +
+      pad(date.getDate()) +
+      'T' +
+      pad(date.getHours()) +
+      pad(date.getMinutes()) +
+      pad(date.getSeconds());
+  }
 
-    let url = `https://calendar.google.com/calendar/render?action=TEMPLATE`;
-    url += `&text=${encodeURIComponent(event.title)}`;
-    if (event.start) {
-      url += `&dates=${startTime}/${endTime}`;
+  generateGoogleCalendarUrl(params: GoogleCalendarParams): string {
+    const startDateTime = this.googleCompactDateTime(params.start);
+    let endDateTime = startDateTime;
+
+    if (params.end) {
+      endDateTime = this.googleCompactDateTime(params.end);
+    } else {
+      // Default to 1 hour duration if no end date provided
+      const endDate = new Date(params.start);
+      endDate.setHours(endDate.getHours() + 1);
+      endDateTime = this.googleCompactDateTime(endDate);
     }
 
-    if (event.description) {
-      url += `&details=${encodeURIComponent(event.description)}`;
+    // Encode parameters
+    const text = encodeURIComponent(params.title || '');
+    const details = encodeURIComponent(params.description || '');
+    const location = encodeURIComponent(params.location || '');
+
+    // Build URL
+    let url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${startDateTime}/${endDateTime}&details=${details}`;
+
+    if (location) {
+      url += `&location=${location}`;
     }
 
-    if (event.location) {
-      url += `&location=${encodeURIComponent(event.location)}`;
+    // Add reminder if specified (in minutes)
+    if (params.reminder) {
+      url += `&reminders=reminder_${params.reminder}_minutes`;
     }
-    // url += `&organizer=${encodeURIComponent(event.organizer.toString())}`;
-    url += `&sprop=&sprop=name:`;
 
     return url;
   }
