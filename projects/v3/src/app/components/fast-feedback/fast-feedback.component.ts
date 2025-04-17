@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, OnInit } from '@angular/core';
+import { ModalController, NavParams } from '@ionic/angular';
+import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -7,6 +8,9 @@ import { RequestService } from 'request';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { DemoService } from '../../services/demo.service';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { HomeService } from '@v3/app/services/home.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 export interface Meta {
   context_id: number;
@@ -17,80 +21,96 @@ export interface Meta {
 }
 
 @Component({
-  selector: 'app-fast-feedback',
-  templateUrl: './fast-feedback.component.html',
-  styleUrls: ['./fast-feedback.component.scss']
+  selector: "app-fast-feedback",
+  templateUrl: "./fast-feedback.component.html",
+  styleUrls: ["./fast-feedback.component.scss"],
 })
 export class FastFeedbackComponent implements OnInit {
   fastFeedbackForm: FormGroup;
-  questions = [];
-  meta: Meta;
   loading = false;
-  submissionCompleted: Boolean;
+  submissionCompleted: boolean;
+  isMobile: boolean;
+
+  @Input() questions = [];
+  @Input() meta?: Meta;
+  @Input() closable: boolean;
 
   constructor(
-    public modalController: ModalController,
+    private modalController: ModalController,
     private utils: UtilsService,
-    public storage: BrowserStorageService,
+    private fastFeedbackService: FastFeedbackService,
+    private storage: BrowserStorageService,
+    private navParams: NavParams,
+    private homeService: HomeService,
+    private notificationsService: NotificationsService,
     private request: RequestService,
     private demo: DemoService
-  ) {}
-
-  get isMobile() {
-    return this.utils.isMobile();
+  ) {
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
     const group: any = {};
-    this.questions.forEach(question => {
-      group[question.id] = new FormControl('', Validators.required);
+    this.questions.forEach((question) => {
+      group[question.id] = new FormControl(null, Validators.required);
     });
     this.fastFeedbackForm = new FormGroup(group);
     this.submissionCompleted = false;
-  }
-
-  dismiss(data) {
-    // change the flag to false
-    this.storage.set('fastFeedbackOpening', false);
-    this.modalController.dismiss(data);
+    const modal = this.navParams.get('modal');
+    this.closable = modal.closable || false;
   }
 
   async submit(): Promise<any> {
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
-    const data = [];
+    const answers = [];
 
     this.utils.each(formData, (answer, questionId) => {
-      data.push({
-        id: questionId,
-        choice_id: answer,
+      answers.push({
+        questionId: +questionId,
+        choiceId: answer,
       });
     });
 
     // prepare parameters
-    const params = {
-      context_id: this.meta.context_id
+    const params: {
+      contextId?: number;
+      teamId?: number;
+      targetUserId?: number;
+    } = {
+      contextId: this.meta?.context_id,
+      teamId: null,
+      targetUserId: null,
     };
-    // if team_id exist, pass team_id
-    if (this.meta.team_id) {
-      params['team_id'] = this.meta.team_id;
-    } else if (this.meta.target_user_id) {
-      // otherwise, pass target_user_id
-      params['target_user_id'] = this.meta.target_user_id;
-    }
 
+    // for temporary, "closable = true" is an indicator of this pulsecheck is opened from the traffic light group (self-assessment)
+    if (this.closable === true) {
+      params.teamId = this.storage.getUser().teamId;
+    } else {
+      // if team_id exist, pass team_id
+      if (this.meta?.team_id) {
+        params.teamId = this.meta?.team_id;
+      } else if (this.meta?.target_user_id) {
+        // otherwise, pass target_user_id
+        params.targetUserId = this.meta?.target_user_id;
+      }
+    }
 
     let submissionResult;
     try {
-      submissionResult = await this.submitData(data, params).toPromise();
+      submissionResult = await firstValueFrom(this.fastFeedbackService
+        .submit(answers, params));
+
+      // Check if question 7's answer is 0
+      const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)
+      if (question7Answer === 0) { // if answer is No (where value = 0)
+        await this.notificationsService.showTeamCheckInAlert();
+      }
 
       this.submissionCompleted = true;
-      return setTimeout(
-        () => {
-          return this.dismiss(submissionResult);
-        },
-        2000
-      );
+      return setTimeout(() => {
+        return this.dismiss(submissionResult);
+      }, 2000);
     } catch (err) {
       console.error(err); // output error in devtool
 
@@ -100,8 +120,15 @@ export class FastFeedbackComponent implements OnInit {
     }
   }
 
+  dismiss(data) {
+    // change the flag to false
+    this.storage.set("fastFeedbackOpening", false);
+    this.modalController.dismiss(data);
+    this.homeService.getPulseCheckStatuses().subscribe();
+  }
+
   get isRedColor(): boolean {
-    return this.utils.isColor('red', this.storage.getUser().colors?.primary);
+    return this.utils.isColor("red", this.storage.getUser().colors?.primary);
   }
 
   submitData(data, params): Observable<any> {

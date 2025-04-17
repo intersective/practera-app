@@ -1,7 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
+import { Platform } from '@ionic/angular';
 import isEmpty from 'lodash-es/isEmpty';
 import each from 'lodash-es/each';
 import unset from 'lodash-es/unset';
@@ -12,12 +13,11 @@ import flatten from 'lodash-es/flatten';
 import indexOf from 'lodash-es/indexOf';
 import remove from 'lodash-es/remove';
 import isEqual from 'lodash-es/isEqual';
+import upperFirst from 'lodash-es/upperFirst';
 import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
 import { Title } from '@angular/platform-browser';
-
-import Delta from 'quill-delta';
 
 export enum ThemeColor {
   primary = 'primary',
@@ -31,20 +31,22 @@ declare const window: Window & typeof globalThis;
   providedIn: 'root'
 })
 export class UtilsService {
+  private _screenStatus$ = new BehaviorSubject<{
+    leftSidebarExpanded: boolean;
+  }>({
+    leftSidebarExpanded: false,
+  });
+  public screenStatus$ = this._screenStatus$.asObservable();
+
   private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
-  // -- Not in used anymore, leave them commented in case we need later --
-  // // this Subject is used in project.service to cache the project data
-  // public projectSubject = new BehaviorSubject(null);
-  // // this Subject is used in activity.service to cache the activity data
-  // // it stores key => Subject pairs of all activities
-  // public activitySubjects = {};
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
     private readonly storageService: BrowserStorageService,
-    private title: Title
+    private title: Title,
+    private platform: Platform,
   ) {
     // initialise lodash (reduce bundle size)
     this.lodash = {
@@ -58,16 +60,54 @@ export class UtilsService {
       indexOf,
       remove,
       isEqual,
+      upperFirst,
     };
   }
 
   /**
-   * @name isMobile
-   * @description grouping device type into 2 group (mobile/desktop) and return true if mobile, otherwise return false
-   * @example https://github.com/ionic-team/ionic/blob/master/angular/src/providers/platform.ts#L71-L115
+   * get orientation of the device by comparing window height and width
+   *
+   * @return  {boolean} true if portrait, false if landscape
    */
-  isMobile() {
-    return window.innerWidth <= 576;
+  isPortrait(): boolean {
+    return window.innerHeight > window.innerWidth ? true : false;
+  }
+
+  // set screen status (left sidebar expanded, etc)
+  viewport(name: 'leftSidebarExpanded', value) {
+    const values = this._screenStatus$.getValue();
+    this._screenStatus$.next({
+      ...values,
+      ...{ [name]: value }
+    });
+  }
+
+  ucfirst(text) {
+    return this.lodash.upperFirst(text);
+  }
+
+  /**
+   * Treat viewport size start from large tablet as desktop
+   * grouping device type into 2 group (mobile/desktop)
+   * @name isMobile
+   * @return {boolean} true if mobile, false if desktop
+   */
+  isMobile(): boolean {
+    if (this.platform.is('desktop')) {
+      return false;
+    }
+
+    if (this.platform.is('tablet')) {
+      if (window.innerWidth < 1024) {
+        return true;
+      }
+
+      // for larger tablet (iPad Pro & samsung 10)
+      // considered as desktop (1024px = logical viewport)
+      return false;
+    }
+
+    return this.platform.is('mobile');
   }
 
   /** check if a value is empty
@@ -117,15 +157,15 @@ export class UtilsService {
     return this.lodash.indexOf(values, value, fromIndex);
   }
 
-  remove(collections, callback) {
+  remove(collections: any[], callback: (value: any) => boolean) {
     return this.lodash.remove(collections, callback);
   }
 
-  isEqual(value, other) {
+  isEqual(value: any, other: any) {
     return this.lodash.isEqual(value, other);
   }
 
-  openUrl(url, options?: { target: string }) {
+  openUrl(url: string, options?: { target: string }) {
     options = options || { target: '_self' };
     return window.open(url, options.target);
   }
@@ -168,8 +208,9 @@ export class UtilsService {
   changeThemeColor(colors?: Colors): void {
     const defaultColor = '#2bbfd4';
     if (colors) {
-      if (colors.primary || colors.theme) {
-        this.setColor(colors.primary || colors.theme, ThemeColor.primary);
+      if (colors?.primary || colors?.theme) {
+        const color = colors.primary || colors.theme || defaultColor;
+        this.setColor(color, ThemeColor.primary);
       } else {
         this.setColor(defaultColor, ThemeColor.primary);
       }
@@ -203,9 +244,49 @@ export class UtilsService {
     const blue = parseInt(hex.substring(4, 6), 16);
 
     this.document.documentElement.style.setProperty(`--ion-color-${type}-rgb`, `${red}, ${green}, ${blue}`);
+    this.document.documentElement.style.setProperty(`--ion-color-${type}-contrast`, this.generateContrastColor(color));
   }
 
-  changeCardBackgroundImage(image) {
+  generateContrastColor(color: string): string {
+    this.isPrimaryColorDark(color);
+    return this.isPrimaryColorDark(color) ? 'white' : 'black';
+  }
+
+  /**
+   * Check if the primary color is dark or bright
+   * @returns {boolean} true if the primary color is dark, false if bright
+   */
+  isPrimaryColorDark(colorInHex?: string): boolean {
+    const primaryColor = colorInHex || getComputedStyle(this.document.documentElement).getPropertyValue('--ion-color-primary').trim();
+    if (!primaryColor) {
+      return false;
+    }
+
+    const rgb = convert.hex.rgb(primaryColor.replace('#', ''));
+    // Calculate the luminance of the color
+    const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+    return luminance < 0.5;
+  }
+
+  /**
+   * Determines whether to show white or black content on top of a given color.
+   * Uses the YIQ color space to determine the contrast.
+   * @param {string} hexColor - The hex color code.
+   * @returns {string} - 'black' or 'white' based on the contrast.
+   */
+  getContrastColor(hexColor: string): string {
+    if (!hexColor) {
+      return 'black';
+    }
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+    return yiq >= 128 ? 'black' : 'white';
+  }
+
+  changeCardBackgroundImage(image: string): void {
     this.document.documentElement.style.setProperty('--practera-card-background-image', 'url(\'' + image + '\')');
   }
 
@@ -222,22 +303,6 @@ export class UtilsService {
         map(e => e.value)
       );
   }
-
-  // // get the activity Subject for cache
-  // getActivityCache(key): BehaviorSubject<any> {
-  //   if (!(key in this.activitySubjects)) {
-  //     this.activitySubjects[key] = new BehaviorSubject(null);
-  //   }
-  //   return this.activitySubjects[key];
-  // }
-
-  // // update the activity cache for given key(activity id)
-  // updateActivityCache(key, value) {
-  //   if (!(key in this.activitySubjects)) {
-  //     this.activitySubjects[key] = new BehaviorSubject(null);
-  //   }
-  //   this.activitySubjects[key].next(value);
-  // }
 
   getCurrentLocation(): Location {
     return this.document.location;
@@ -578,17 +643,18 @@ export class UtilsService {
     return date.toISOString();
   }
 
-  downloadFile(path: string) {
-    // Create a new link
+  downloadFile(path: string, filename?: string) {
+    if (!path) {
+      throw new Error('No file path provided');
+    }
+
     const anchor = document.createElement('a');
     anchor.href = path;
-    anchor.download = 'download';
-    anchor.target = "_blank";
+    anchor.download = filename || 'download';
+    anchor.target = '_blank';
 
     // Append to the DOM
     document.body.appendChild(anchor);
-
-    // Trigger `click` event
     anchor.click();
 
     // Remove element from DOM
@@ -685,22 +751,6 @@ export class UtilsService {
     return false;
   }
 
-  /**
-   * This method will add matcher to the clipboard of the quill editor.
-   * And it will make sure every thing user paste will paste as plain text. without any formating that pasting text have.
-   * Reason we need this.
-   * User may copy and paste some formated text that may contain formats we are not supporting. So if those send as message
-   * UI/UX will out. becouse we didn't support them. that's why we make sure we remove formating  from text that user paste to text editor.
-   * @param quillEditor Quill text editor instance
-   * @returns quill clipboard matcher event
-   */
-  formatQuillClipboard(quillEditor: any) {
-    return quillEditor.clipboard.addMatcher(Node.ELEMENT_NODE, (node: any, delta: any) => {
-      const plaintext = node.innerText;
-      return new Delta().insert(plaintext);
-    });
-  }
-
   moveToNewLocale(newLocale: string) {
     const currentURL = this.getCurrentLocation();
     const currentLocale = this.getCurrentLocale();
@@ -742,7 +792,7 @@ export class UtilsService {
     if (!expId || !programList || programList.length < 1) {
       return;
     }
-    const currentExperience = programList.find((program)=> {
+    const currentExperience = programList.find((program: any) => {
       return program.experience.id === expId;
     });
     if (currentExperience) {
@@ -758,5 +808,9 @@ export class UtilsService {
   // set page title
   setPageTitle(title: string) {
     this.title.setTitle(title);
+  }
+
+  scrollToElement(element: HTMLElement) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }

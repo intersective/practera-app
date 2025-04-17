@@ -1,15 +1,16 @@
+import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subject, firstValueFrom } from 'rxjs';
-import { delay, filter, tap, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -37,8 +38,14 @@ export class ActivityDesktopPage {
     action: null,
     contextId: null,
   };
-
   unsubscribe$ = new Subject();
+  scrolSubject = new Subject();
+
+  @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
+  @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
+
+  // UI-purpose only variables
+  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
 
   constructor(
     private route: ActivatedRoute,
@@ -51,7 +58,38 @@ export class ActivityDesktopPage {
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
     @Inject(DOCUMENT) private readonly document: Document,
-  ) { }
+  ) {
+    // slow down the scroll event trigger
+    this.scrolSubject
+      .pipe(debounceTime(300))
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe(() => this.flashHighlight());
+  }
+
+  /**
+   * Flash highlight on the question box when it's in the viewport (task content ion-col)
+   * @return  {void}  void
+   */
+  flashHighlight(): void {
+    if (!this.assessmentComponent) {
+      return;
+    }
+
+    const questionBoxes = this.assessmentComponent.getQuestionBoxes();
+    questionBoxes.filter(questionBox => {
+      return questionBox.el.classList.contains('flash-highlight');
+    }).forEach((questionBox: any) => {
+      const rect = questionBox.el.getBoundingClientRect();
+      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
+        this.flahesIndicated[questionBox.el.id] = true;
+        this.assessmentComponent.flashBlink(questionBox.el);
+      }
+    });
+  }
+
+  onScroll(): void {
+    this.scrolSubject.next(null);
+  }
 
   ionViewDidEnter() {
     this.activityService.activity$
@@ -64,30 +102,24 @@ export class ActivityDesktopPage {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe(res => this.currentTask = res);
 
-      /* this.assessmentService.assessment$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.assessment = res)); */
+    this.assessmentService.submission$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      )
+      .subscribe((res) => (this.submission = res));
 
-      this.assessmentService.submission$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        )
-        .subscribe((res) => (this.submission = res));
+    this.assessmentService.review$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.review = res));
 
-      this.assessmentService.review$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.review = res));
-
-      this.topicService.topic$
-        .pipe(
-          distinctUntilChanged(),
-          takeUntil(this.unsubscribe$),
-        ).subscribe((res) => (this.topic = res));
+    this.topicService.topic$
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$),
+      ).subscribe((res) => (this.topic = res));
 
     this.route.paramMap.pipe(
       takeUntil(this.unsubscribe$)
@@ -109,6 +141,8 @@ export class ActivityDesktopPage {
         contextId: contextId,
         action: this.route.snapshot.data.action,
       };
+
+      this.storageService.lastVisited('homeBookmarks', activityId);
 
       this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
         // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
@@ -346,12 +380,12 @@ export class ActivityDesktopPage {
     try {
       this.loading = true;
       const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
-      await savedReview.pipe(
+      await firstValueFrom(savedReview.pipe(
         // get the latest activity tasks and navigate to the next task
         // wait for a while for the server to save the "read feedback" status
         tap(() => this.activityService.getActivity(this.activity.id, true, currentTask)),
         delay(400)
-      ).toPromise();
+      ));
       await this.reviewRatingPopUp();
       await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 

@@ -5,17 +5,126 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-button routerLink="/v3">Go /</ion-button>
-  <ion-button routerLink="/v3/settings">Go Setting</ion-button>
-  <ion-button (click)="refresh()">Refresh JWT</ion-button>
-  <ion-button (click)="pulsecheck()">Pulse check</ion-button>
-  <ion-button (click)="reviewrating()">Rating</ion-button>
-  <ion-button (click)="showErrorAlert()">Alert Error Test</ion-button>
-  <ion-button (click)="showAlert()">Alert Test</ion-button>
-  <ion-button (click)="testAuth()">testAuth</ion-button>
-  <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
+  <!-- Viewport Size Display -->
+  <div class="viewport-size">
+    <h4>Logical Viewport Size</h4>
+    <p>Width: {{ viewportWidth }} px</p>
+    <p>Height: {{ viewportHeight }} px</p>
+  </div>
 
-  <ion-toggle [(ngModel)]="themeToggle" (ionChange)="toggleChange($event)" justify="space-between">Dark Mode</ion-toggle>
+  <div class="tools">
+    <h4>Testing tools</h4>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button routerLink="/v3">Go /</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button routerLink="/v3/settings">Go Setting</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="getbadges()">Get Badges</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="refresh()">Refresh JWT</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="pulsecheck()">Pulse check</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="reviewrating()">Rating</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="showErrorAlert()">Alert Error Test</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="showAlert()">Alert Test</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="testAuth()">testAuth</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-toggle [(ngModel)]="themeToggle" (ionChange)="toggleChange($event)">Dark Mode</ion-toggle>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+  <div class="uppy-upload">
+    <h4>Uppy Integration</h4>
+    <ion-grid>
+      <ion-row class="tus-url">
+        <ion-col size="12" size-sm="8">
+          <ion-item>
+            <ion-label position="floating">Tus Upload URL</ion-label>
+            <ion-input [(ngModel)]="tusUploadUrl"
+              placeholder="Enter upload URL to start testing Uppy"
+              (keyup)="tusChanged()"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="12" size-sm="4">
+          <ion-button expand="block" color="secondary" (click)="applyTusUploadUrl()">
+            Apply
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="turnUppyOff === false">
+        <ion-col size="12">
+          <app-uppy-uploader [tusEndpoint]="tusUploadUrl" [source]="'chat'"></app-uppy-uploader>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <div>
+    <h1>Video transcode with FFmpeg</h1>
+    <ion-button (click)="transcodeVideo()">Transcode</ion-button>
+
+    <div *ngIf="isCompressing">Compressing video... Please wait.</div>
+  </div>
+
+  <ng-container class="device-info" *ngIf="info">
+    <h4>Device Information</h4>
+    <ion-list>
+      <ion-item>
+        <ion-label>User Agent</ion-label>
+        <ion-text>{{ info.userAgent }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Viewport Width</ion-label>
+        <ion-text>{{ info.viewportWidth }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Viewport Height</ion-label>
+        <ion-text>{{ info.viewportHeight }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Screen Width</ion-label>
+        <ion-text>{{ info.screenWidth }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Screen Height</ion-label>
+        <ion-text>{{ info.screenHeight }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Pixel Ratio</ion-label>
+        <ion-text>{{ info.pixelRatio }}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="info.location">
+        <ion-label>Location</ion-label>
+        <ion-text>
+          Latitude: {{ info.location.latitude }}, Longitude: {{ info.location.longitude }}
+        </ion-text>
+      </ion-item>
+    </ion-list>
+  </ng-container>
 
   <h4>Task Unlock indicator</h4>
   <ion-button (click)="triggerAchievement()">MarkAsDone</ion-button>

@@ -8,13 +8,27 @@ export const environment = {
   production: false,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
+  pusherCluster: '',
   env: 'sandbox',
   APIEndpoint: 'http://127.0.0.1:8080/',
   graphQL: 'http://127.0.0.1:8000/',
   chatGraphQL: 'http://localhost:3000/local/graphql/',
   globalLoginUrl: 'https://login.p2.practera.com',
+  badgeProjectUrl: 'https://badge-issuer.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
   intercomAppId: ' ',
+  uppyConfig: {
+    tusUrl: 'https://127.0.0.1:8000/uploads',
+    uploadPreset: 'practera',
+    restrictions: {
+      minFileSize: undefined, // No minimum size
+      maxFileSize: 2147483648, // 2GB max size
+      minNumberOfFiles: 1, // At least one file
+      maxNumberOfFiles: 5, // At most 5 files
+      maxTotalFileSize: undefined, // No limit on total size
+      requiredMetaFields: [], // No required metadata fields
+    }
+  },
   filestack: {
     key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
@@ -38,10 +52,16 @@ export const environment = {
       virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
     },
   },
+  hubspot: {
+    liveServerRegion: '',
+    supportFormPortalId: '',
+    supportFormId: ''
+  },
   defaultCountryModel: 'AUS',
   intercom: false,
-  newrelic: true,
+  newrelic: false,
   goMobile: false,
+  helpline: 'help@practera.com',
 };
 
 /*
