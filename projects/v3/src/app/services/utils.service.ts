@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ModalController, Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import isEmpty from 'lodash-es/isEmpty';
 import each from 'lodash-es/each';
 import unset from 'lodash-es/unset';
@@ -17,7 +17,6 @@ import upperFirst from 'lodash-es/upperFirst';
 import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
-import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 import { Title } from '@angular/platform-browser';
 
 export enum ThemeColor {
@@ -26,7 +25,7 @@ export enum ThemeColor {
 }
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
-declare var window: any;
+declare const window: Window & typeof globalThis;
 
 @Injectable({
   providedIn: 'root'
@@ -45,7 +44,6 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
     private title: Title,
     private platform: Platform,
@@ -771,22 +769,6 @@ export class UtilsService {
     const safePathName = pathname ? pathname[0] : '';
     const newPath = currentURL.pathname.replace(safePathName, `/${newLocale}/`);
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
-  }
-
-  async openSupportPopup(options?: { formOnly: boolean; }) {
-    const componentProps = {
-      mode: 'modal',
-      isShowFormOnly: options?.formOnly,
-    };
-
-    const modal = await this.modalController.create({
-      componentProps,
-      component: SupportPopupComponent,
-      cssClass: 'support-popup',
-      backdropDismiss: false,
-    });
-
-    return modal.present();
   }
 
   checkIsPracteraSupportEmail() {

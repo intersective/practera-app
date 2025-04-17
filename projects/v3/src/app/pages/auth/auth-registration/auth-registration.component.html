@@ -85,7 +85,7 @@
         <div class="div-after-logo directlink">
           <p class="subtitle-1" i18n>Please accept the <a (click)="termsAndConditionsPopup()">Terms and Conditions</a> in order to continue.</p>
         </div>
-        <div [ngClass]="{'div-after-logo directlink': !utils.isMobile()}">
+        <div [ngClass]="{'div-after-logo directlink': !isMobile}">
           <ion-list margin lines="none">
             <ion-item>
               <ion-label class="body-2" aria-label="I agree to the terms & conditions" i18n>I agree to the Terms and Conditions</ion-label>
@@ -99,7 +99,7 @@
         <div class="title div-after-logo directlink">
           <p class="subtitle-1" i18n>Optionally, create an account password as an additional future login option.</p>
         </div>
-        <div [ngClass]="{'div-after-logo directlink': !utils.isMobile()}">
+        <div [ngClass]="{'div-after-logo directlink': !isMobile}">
           <ion-list margin lines="none">
             <ion-item>
               <ion-label class="body-2" position="fixed" i18n>Password</ion-label>
