@@ -1,12 +1,12 @@
 <ion-header class="ion-no-border header-border" aria-label="Due Status">
-  <h1 class="for-accessibility">Due Status</h1>
+  <h1 class="for-accessibility">Due Dates</h1>
   <ion-toolbar>
-    <ion-title class="headline-4 grey-75" i18n>Due Status</ion-title>
+    <ion-title class="headline-4 grey-75" i18n>Due Dates</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-searchbar [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)" placeholder="Search by assessment name"></ion-searchbar>
+  <ion-searchbar [(ngModel)]="searchText" (ionInput)="searchText$.next(searchText)" placeholder="Search by assessment name"></ion-searchbar>
 
   <ion-list *ngIf="(filteredAssessments$ | async) as assessments; else loading">
     <ng-container *ngFor="let group of assessments">
