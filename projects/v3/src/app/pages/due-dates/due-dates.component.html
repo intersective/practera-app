@@ -6,7 +6,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-searchbar *ngIf="false" [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)"></ion-searchbar>
+  <ion-searchbar [(ngModel)]="searchText" (ionChange)="searchText$.next(searchText)"></ion-searchbar>
 
   <ion-list *ngIf="(assessments$ | async) as assessments; else loading">
     <ng-container *ngFor="let group of assessments">
@@ -51,8 +51,34 @@
 </ion-content>
 
 <ng-template #loading>
-  <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-    <ion-spinner name="bubbles"></ion-spinner>
-  </div>
+  <ion-list>
+    <ion-item-divider>
+      <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+    </ion-item-divider>
+
+    <ion-item *ngFor="let i of [1,2,3]">
+      <ion-label>
+        <h3><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></h3>
+        <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
+      </ion-label>
+      <ion-button disabled>
+        <ion-skeleton-text animated style="width: 100px; height: 20px"></ion-skeleton-text>
+      </ion-button>
+    </ion-item>
+
+    <ion-item-divider>
+      <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+    </ion-item-divider>
+
+    <ion-item *ngFor="let i of [1,2]">
+      <ion-label>
+        <h3><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></h3>
+        <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
+      </ion-label>
+      <ion-button disabled>
+        <ion-skeleton-text animated style="width: 100px; height: 20px"></ion-skeleton-text>
+      </ion-button>
+    </ion-item>
+  </ion-list>
 </ng-template>
 
