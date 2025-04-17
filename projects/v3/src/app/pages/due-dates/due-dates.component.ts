@@ -1,19 +1,11 @@
-import { debounce } from 'lodash';
-import { BehaviorSubject, Subject, Subscription, Observable } from 'rxjs';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { Assessment, AssessmentService } from './../../services/assessment.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { EventAttributes, convertTimestampToArray } from 'ics';
+import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
-import { debounceTime, first, takeUntil, map, switchMap } from 'rxjs/operators';
+import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
-interface CalendarEvent {
-  dueDate: Date;
-  name: string;
-  description: string;
-  location?: string;
-}
 
 interface GroupedAssessments {
   month: string;
@@ -101,7 +93,6 @@ export class DueDatesComponent implements OnDestroy, OnInit {
    */
   private filterAssessments(searchText: string) {
     this.searchText = searchText;
-    // Trigger a new value emission on the assessments$ subject to force re-filtering
     const currentValue = this.assessments$.getValue();
     if (currentValue) {
       this.assessments$.next([...currentValue]);
@@ -136,31 +127,38 @@ export class DueDatesComponent implements OnDestroy, OnInit {
   }
 
   groupByDate(assessments: Assessment[]): GroupedAssessments[] {
-    const grouped = assessments.reduce((groups, assessment) => {
-      const date = new Date(assessment.dueDate);
-      const month = date.toLocaleString('default', { month: 'long' });
-      const year = date.getFullYear();
-      const monthYear = assessment.dueDate ? `${month} ${year}` : 'No due date';  // Group by Month Year (e.g., "September 2024")
+    const grouped: { [key: string]: Assessment[] } = {};
 
-      if (!groups[monthYear]) {
-        groups[monthYear] = [];
+    for (const assessment of assessments) {
+      let monthYear: string;
+      if (assessment.dueDate) {
+        const date = new Date(assessment.dueDate);
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+        monthYear = `${month} ${year}`;
+      } else {
+        monthYear = 'No due date';
       }
 
-      groups[monthYear].push(assessment);
-      return groups;
-    }, {});
+      if (!grouped[monthYear]) {
+        grouped[monthYear] = [];
+      }
+      grouped[monthYear].push(assessment);
+    }
 
-    // Convert grouped object to an array of { month, assessments }
     const groupedArray = Object.keys(grouped).map(month => ({
       month,
       assessments: grouped[month]
     }));
 
-    // Sort the array to ensure "No due date" is always the last group
+    // Sort by date, "No due date" last
     groupedArray.sort((a, b) => {
       if (a.month === 'No due date') return 1;
       if (b.month === 'No due date') return -1;
-      return 0;
+      // Optional: sort by actual date if desired
+      const aDate = new Date(a.assessments[0].dueDate);
+      const bDate = new Date(b.assessments[0].dueDate);
+      return aDate.getTime() - bDate.getTime();
     });
 
     return groupedArray;
@@ -175,41 +173,56 @@ export class DueDatesComponent implements OnDestroy, OnInit {
 
   downloadiCal(event: Assessment) {
     try {
-      const [year, month, day, hour, minutes] = this.convertDateTimeString(event.dueDate);
+      // Parse the due date properly
+      const dueDate = new Date(event.dueDate);
+
+      // Convert to expected format for ics library [year, month, day, hour, minute]
+      // Note: ics library expects month to be 1-12 (JavaScript Date uses 0-11)
+      // The ics library's start property requires number[] with 5 elements
+      const dateArray: [number, number, number, number, number] = [
+        dueDate.getFullYear(),
+        dueDate.getMonth() + 1, // Month is 0-based in JS, but ics expects 1-12
+        dueDate.getDate(),
+        dueDate.getHours(),
+        dueDate.getMinutes()
+      ];
+
       const eventData: EventAttributes = {
-        start: [year, month, day, hour, minutes],
-        // start: dateArray,
-        duration: { hours: 1, minutes: 30 },
+        start: dateArray,
+        duration: { hours: 1 }, // Consistent 1 hour duration, same as Google Calendar
         title: event.name,
-        description: event.description,
-        // location: event.location || 'Sydney',
+        description: event.description || `Complete assessment: ${event.name}`,
         location: '',
-        // url: /* event.url || */ '',
-        // status: event.status,
         busyStatus: 'BUSY',
         organizer: { name: 'Practera', email: 'contact@practera.com' },
+        alarms: [{ action: 'display', trigger: { minutes: 60, before: true } }] // Add reminder 60 min before
       };
 
       this.dueDatesService.createCalendarEvent(eventData);
     } catch (error) {
       console.error('Failed to create calendar event', error);
       this.notificationsService.alert({
-        message: 'Failed to create calendar event',
+        message: 'Failed to create iCalendar event: ' + (error.message || 'Unknown error')
       });
     }
   }
 
   downloadGoogleCalendar(assessment: Assessment) {
     try {
+      // Format date in the required format for Google Calendar (YYYYMMDDTHHMMSS)
+      const startDate = new Date(assessment.dueDate);
+      const endDate = new Date(startDate);
+      endDate.setHours(endDate.getHours() + 1); // Add 1 hour duration by default
+
       const googleCalendarUrl = this.dueDatesService.generateGoogleCalendarUrl({
-        start: new Date(assessment.dueDate),
-        // duration: 90,
+        start: startDate,
+        end: endDate,
         title: assessment.name,
-        description: assessment.description,
-        // location: assessment?.location || 'Sydney',
+        description: assessment.description || `Complete assessment: ${assessment.name}`,
+        reminder: 60, // Add a reminder 60 minutes before
         organizer: { name: 'Practera', email: 'contact@practera.com' },
       });
-
+      // Open the Google Calendar URL in a new tab
       const newWindow = window.open(googleCalendarUrl, '_blank');
       if (!newWindow) {
         this.notificationsService.alert({
@@ -228,16 +241,5 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     this.assessmentService.fetchAssessment(assessment.id, 'assessment', null, null).subscribe((res) => {
       this.router.navigate(['v3', 'activity-desktop', assessment.id]);
     });
-  }
-
-  addToCalendar() {
-    // this.modalCtrl.create({
-    //   component: AddToCalendarComponent,
-    //   componentProps: {
-    //     assessments: this.assessments$.getValue(),
-    //   },
-    // }).then(modal => {
-    //   modal.present();
-    // });
   }
 }
