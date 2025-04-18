@@ -1,3 +1,4 @@
+import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -34,7 +35,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() activityId?: number;
   @Input() submission: Submission;
   @Input() review: AssessmentReview;
-  @Input() isMobile?: boolean = false;
+  @Input() isSinglePage?: boolean = false;
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -163,14 +164,53 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (error.message.includes('Autosave')) {
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
-            label: $localize`Save failed. Please try again.`,
+            label: $localize`Auto save failed. Please try again.`,
           });
+          // Resubscribe for autosave failures
+          this.resubscribe$.next();
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
+          // @link https://github.com/intersective/core-graphql-api/commit/92e636be64a3697bebda91d6f66eea487d8fb2a9#diff-4f45773ff5b570b41418d857c86f5b1e48b8e7ed744d92ebef4b96102de912e3R17-R22
+
+          if ((error.message.toLowerCase()).includes('invalid answer')) {
+            let message = $localize`An error has occurred. The page will reload shortly; please try again.`;
+
+            const invalidSaveErrors = this.storage.get('saveAssessmentErrors');
+            const errQuantity = invalidSaveErrors?.length;
+            if (errQuantity > 2) {
+              const lastError = invalidSaveErrors[errQuantity - 1];
+              message = $localize`Your answers couldn't be saved. Please reach out to your coordinator for help.` + `\n` + this.invalidAnswerEmailContent(lastError);
+            }
+            await this.notifications.alert({
+              header: $localize`Error`,
+              message,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                  handler: () => {
+                    window.location.reload(); // force reload
+                  }
+                }
+              ],
+            });
+          }
         }
-        this.resubscribe$.next();
       }
     );
+  }
+
+  private invalidAnswerEmailContent(rawData) {
+    const body = `Hi Team,\n
+I am experiencing issues with submitting my assessment answers.\n
+Please do not change anything below this line - this information will help the Practera team identify the issue\n
+Assessment ID: ${this.assessment.id}
+Activity ID: ${this.activityId}\n\n
+Question Info: ${JSON.stringify(rawData)}\n\n
+Error: Invalid answer format detected\n
+Best regards`;
+
+    return `<a href="mailto:${environment.helpline}?subject=Assessment%20Answer%20Invalid&body=${encodeURIComponent(body)}">${environment.helpline}</a>`;
   }
 
   /**

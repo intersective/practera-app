@@ -11,14 +11,6 @@ const routes: Routes = [
     canDeactivate: [SinglePageDeactivateGuard],
   },
   {
-    path: ':contextId/:id',
-    component: ActivityDesktopPage,
-    data: {
-      action: 'Assessment'
-    },
-    canDeactivate: [SinglePageDeactivateGuard],
-  },
-  {
     path: ':contextId/:id/:assessmentId',
     component: ActivityDesktopPage,
     data: {
@@ -26,6 +18,14 @@ const routes: Routes = [
     },
     canDeactivate: [SinglePageDeactivateGuard],
   },
+  {
+    path: ':id/:topicId',
+    component: ActivityDesktopPage,
+    data: {
+      action: 'Topic'
+    },
+    canDeactivate: [SinglePageDeactivateGuard],
+  }
 ];
 
 @NgModule({

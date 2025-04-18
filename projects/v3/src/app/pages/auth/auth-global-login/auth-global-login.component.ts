@@ -25,7 +25,8 @@ export class AuthGlobalLoginComponent implements OnInit {
 
   async ngOnInit() {
     const apikey = this.route.snapshot.paramMap.get('apikey');
-    const multipleStacks = this.route.snapshot.paramMap.get('multiple');
+    const multipleStacks: string = this.route.snapshot.paramMap.get('multiple');
+
     if (!apikey) {
       return this._error();
     }
@@ -37,7 +38,7 @@ export class AuthGlobalLoginComponent implements OnInit {
       });
 
       const homePath = ['v3', 'home'];
-      if (multipleStacks) {
+      if (multipleStacks === 'true') {
         this.storage.set('hasMultipleStacks', true);
       }
       if (environment.demo) {
@@ -62,10 +63,10 @@ export class AuthGlobalLoginComponent implements OnInit {
             prod: [`/${locale}`, ...homePath],
           });
         }
-
         return this.navigate(homePath);
       }
     } catch (err) {
+
       this._error(err);
     }
   }
@@ -78,7 +79,6 @@ export class AuthGlobalLoginComponent implements OnInit {
   }
 
   private _error(res?): Promise<any> {
-
     const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({

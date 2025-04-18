@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
   Achievement,
   AchievementService,
@@ -12,23 +13,28 @@ import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
+import { AlertController } from '@ionic/angular';
+import { Activity } from '@v3/app/services/activity.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
+  selector: "app-home",
+  templateUrl: "./home.page.html",
+  styleUrls: ["./home.page.scss"],
 })
 export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   display = 'activities';
 
   activityCount$: Observable<number>;
   experienceProgress: number;
-
+  pulseCheckStatus: TrafficLightGroupComponent["lights"];
   milestones: Milestone[];
   achievements: Achievement[];
   experience: Experience;
 
   isMobile: boolean;
+  isParticipant: boolean;
+  pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
   getIsPointsConfigured: boolean = false;
@@ -36,7 +42,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   hasUnlockedTasks: Object = {};
 
   // default card image (gracefully show broken url)
-  defaultLeadImage: string = '';
+  defaultLeadImage: string = "";
 
   lastVisitedActivityId: number = null;
   bookmarkedActivities: {
@@ -59,6 +65,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
     private cdr: ChangeDetectorRef,
+    private fastFeedbackService: FastFeedbackService,
+    private alertController: AlertController,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -75,6 +83,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
+    const role = this.storageService.getUser().role;
+    this.isParticipant = role === 'participant';
+    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(
@@ -138,6 +149,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           });
         },
       });
+
   }
 
   ngOnDestroy(): void {
@@ -147,11 +159,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
-    this.experience = this.storageService.get('experience');
+    this.experience = this.storageService.get("experience");
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
-
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
 
@@ -161,15 +172,28 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     bookmarks.forEach((id) => {
       this.bookmarkedActivities[id] = true;
     });
+
+    if (this.pulseCheckIndicatorEnabled === true) {
+      this.homeService.getPulseCheckStatuses().pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((res) => {
+        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
+      });
+    }
+
+    this.fastFeedbackService.pullFastFeedback().pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
   }
 
   goBack() {
-    this.router.navigate(['experiences']);
+    this.router.navigate(["experiences"]);
   }
 
   switchContent(event) {
     // update points upon switching to badges tab
-    if (event.detail.value === 'badges') {
+    if (event.detail.value === "badges") {
       this.getIsPointsConfigured = this.achievementService.isPointsConfigured;
       this.getEarnedPoints = this.achievementService.earnedPoints;
     }
@@ -178,14 +202,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   endingIcon(activity) {
     if (activity.isLocked) {
-      return 'lock-closed';
+      return "lock-closed";
     }
     const progress = this.activityProgresses[activity.id];
     if (!progress) {
-      return 'chevron-forward';
+      return "chevron-forward";
     }
     if (progress === 1) {
-      return 'checkmark-circle';
+      return "checkmark-circle";
     }
     return null;
   }
@@ -193,10 +217,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   endingIconColor(activity) {
     const progress = this.activityProgresses[activity.id];
     if (!progress || activity.isLocked) {
-      return 'medium';
+      return "medium";
     }
     if (progress === 1) {
-      return 'success';
+      return "success";
     }
     return null;
   }
@@ -220,28 +244,31 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     if (
       keyboardEvent &&
-      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
     ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
 
+    // show guideline if locked
     if (activity.isLocked) {
-      return;
+      return this.showGuideline(activity, 'activity');
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
-      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(activity.id);
+      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(
+        activity.id
+      );
       clearedActivityTodo?.forEach((todo) => {
         this.notification
           .markTodoItemAsDone(todo)
           .pipe(first())
           .subscribe(() => {
             // eslint-disable-next-line no-console
-            console.log('Marked activity as done', todo);
+            console.log("Marked activity as done", todo);
           });
-        });
+      });
     }
 
     if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
@@ -249,10 +276,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     if (!this.isMobile) {
-      return this.router.navigate(['v3', 'activity-desktop', activity.id]);
+      return this.router.navigate(["v3", "activity-desktop", activity.id]);
     }
 
-    return this.router.navigate(['v3', 'activity-mobile', activity.id]);
+    return this.router.navigate(["v3", "activity-mobile", activity.id]);
   }
 
   /**
@@ -270,21 +297,36 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         .pipe(first())
         .subscribe(() => {
           // eslint-disable-next-line no-console
-          console.log('Marked milestone as done', unlockedMilestone);
+          console.log("Marked milestone as done", unlockedMilestone);
         });
     });
+  }
+
+  async onTrackInfo() {
+    const alert = await this.alertController.create({
+      header: 'Traffic Light System',
+      message: `This traffic light system helps visualise your project's progress:\n\n` +
+        `• <span class='txt-green'>Green</span>: Project is flowing smoothly and meeting expectations - great work!\n` +
+        `• <span class='txt-orange'>Orange</span>: Different perspectives exist that create an opportunity for valuable team discussion\n` +
+        `• <span class='txt-red'>Red</span>: The project appears to be facing challenges that need attention - a perfect time to bring the team together to realign and find solutions\n\n` +
+        `Remember, identifying when adjustments are needed is a strength that leads to better outcomes!`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
-      (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')
+      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
     ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
-    this.notification.achievementPopUp('', achievement);
+    this.notification.achievementPopUp("", achievement);
   }
 
   scrollToElement(id: number): void {
@@ -300,7 +342,65 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    try {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      const style = window.getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    } catch (e) {
+      console.error(e);
+      if (isDevMode()) {
+        this.storageService.append('errors', e);
+      }
+    }
+  }
+
+  // show unlock guideline for locked milestone or activity
+  async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
+    let message = '';
+
+    const routes = [];
+    const guidelines = item.unlockConditions;
+
+    if (guidelines.length === 0) {
+      return;
+    } else if (guidelines.length >= 1) {
+      message += `Please follow the steps below to unlock this ${type}:`;
+
+      guidelines.forEach((guideline, index) => {
+        if (guideline.meta) {
+          const { activityId, assessmentId, topicId, contextId } = guideline.meta;
+
+          const action = this.utils.ucfirst(guideline.action);
+          const isMobile = this.utils.isMobile();
+          if (topicId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/topic-mobile/${activityId}/${topicId}`
+                : `/v3/activity-desktop/${activityId}/${topicId}?task=topic`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          } else if (assessmentId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
+                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          }
+        }
+      });
+    }
+
+    await this.notification.popUp(
+      "guidelines",
+      {
+        logo: 'lock-open',
+        message,
+        routes,
+      },
+    );
   }
 }

@@ -5,13 +5,87 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-button routerLink="/v3">Go /</ion-button>
-  <ion-button routerLink="/v3/settings">Go Setting</ion-button>
-  <ion-button (click)="refresh()">Refresh JWT</ion-button>
-  <ion-button (click)="pulsecheck()">Pulse check</ion-button>
-  <ion-button (click)="reviewrating()">Rating</ion-button>
-  <ion-button (click)="testAuth()">testAuth</ion-button>
-  <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
+  <!-- Viewport Size Display -->
+  <div class="viewport-size">
+    <h4>Logical Viewport Size</h4>
+    <p>Width: {{ viewportWidth }} px</p>
+    <p>Height: {{ viewportHeight }} px</p>
+  </div>
+
+  <div class="tools">
+    <h4>Testing tools</h4>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button routerLink="/v3">Go /</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button routerLink="/v3/settings">Go Setting</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="getbadges()">Get Badges</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="refresh()">Refresh JWT</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="pulsecheck()">Pulse check</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="reviewrating()">Rating</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="testAuth()">testAuth</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <ion-button (click)="testAuth(true)">testAuth-apikey</ion-button>
+        </ion-col>
+        <ion-col size="4" size-sm="3" size-xs="2">
+          <!-- Optional placeholder -->
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <ng-container class="device-info" *ngIf="info">
+    <h4>Device Information</h4>
+    <ion-list>
+      <ion-item>
+        <ion-label>User Agent</ion-label>
+        <ion-text>{{ info.userAgent }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Viewport Width</ion-label>
+        <ion-text>{{ info.viewportWidth }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Viewport Height</ion-label>
+        <ion-text>{{ info.viewportHeight }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Screen Width</ion-label>
+        <ion-text>{{ info.screenWidth }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Screen Height</ion-label>
+        <ion-text>{{ info.screenHeight }}</ion-text>
+      </ion-item>
+      <ion-item>
+        <ion-label>Pixel Ratio</ion-label>
+        <ion-text>{{ info.pixelRatio }}</ion-text>
+      </ion-item>
+      <ion-item *ngIf="info.location">
+        <ion-label>Location</ion-label>
+        <ion-text>
+          Latitude: {{ info.location.latitude }}, Longitude: {{ info.location.longitude }}
+        </ion-text>
+      </ion-item>
+    </ion-list>
+  </ng-container>
 
   <h4>Task Unlock indicator</h4>
   <ion-button (click)="triggerAchievement()">MarkAsDone</ion-button>
