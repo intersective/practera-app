@@ -45,7 +45,10 @@ export class ActivityDesktopPage {
   @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
 
   // UI-purpose only variables
-  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  flashesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  tooltipText: string;
+  tooltipVisible: boolean;
+  tooltipStyle: { top: string; right: string };
 
   constructor(
     private route: ActivatedRoute,
@@ -57,7 +60,7 @@ export class ActivityDesktopPage {
     private storageService: BrowserStorageService,
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
-    @Inject(DOCUMENT) private readonly document: Document,
+    @Inject(DOCUMENT) private readonly document: Document
   ) {
     // slow down the scroll event trigger
     this.scrolSubject
@@ -76,15 +79,21 @@ export class ActivityDesktopPage {
     }
 
     const questionBoxes = this.assessmentComponent.getQuestionBoxes();
-    questionBoxes.filter(questionBox => {
-      return questionBox.el.classList.contains('flash-highlight');
-    }).forEach((questionBox: any) => {
-      const rect = questionBox.el.getBoundingClientRect();
-      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
-        this.flahesIndicated[questionBox.el.id] = true;
-        this.assessmentComponent.flashBlink(questionBox.el);
-      }
-    });
+    questionBoxes
+      .filter((questionBox) => {
+        return questionBox.el.classList.contains('flash-highlight');
+      })
+      .forEach((questionBox: any) => {
+        const rect = questionBox.el.getBoundingClientRect();
+        if (
+          !this.flashesIndicated[questionBox.el.id] &&
+          rect.top >= 0 &&
+          rect.bottom <= window.innerHeight
+        ) {
+          this.flashesIndicated[questionBox.el.id] = true;
+          this.assessmentComponent.flashBlink(questionBox.el);
+        }
+      });
   }
 
   onScroll(): void {
@@ -94,13 +103,14 @@ export class ActivityDesktopPage {
   ionViewDidEnter() {
     this.activityService.activity$
       .pipe(
-        filter((res) => res?.id === +this.route.snapshot.paramMap.get("id")),
-        takeUntil(this.unsubscribe$),
-      ).subscribe(res => this._setActivity(res));
+        filter((res) => res?.id === +this.route.snapshot.paramMap.get('id')),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe((res) => this._setActivity(res));
 
     this.activityService.currentTask$
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(res => this.currentTask = res);
+      .subscribe((res) => (this.currentTask = res));
 
     this.assessmentService.submission$
       .pipe(
@@ -131,67 +141,90 @@ export class ActivityDesktopPage {
 
       // directlink params (optional)
       const taskId: number = +params.get('task_id');
-      const taskType: string = params.get('task') as 'assessment' | 'topic' | null;
+      const taskType: string = params.get('task') as
+        | 'assessment'
+        | 'topic'
+        | null;
       const isTopicDirectlink = taskType === 'topic' && taskId > 0;
 
-      // if assessmentId or taskId is provided, don't proceed to next task
-      const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
+        // if assessmentId or taskId is provided, don't proceed to next task
+        const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
 
-      this.urlParams = {
-        contextId: contextId,
-        action: this.route.snapshot.data.action,
-      };
+        this.urlParams = {
+          contextId: contextId,
+          action: this.route.snapshot.data.action,
+        };
 
-      this.storageService.lastVisited('homeBookmarks', activityId);
+        this.storageService.lastVisited('activityId', activityId);
+        this.storageService.lastVisited('homeBookmarks', activityId);
 
-      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
-        // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
-        if (!proceedToNextTask && (assessmentId > 0 || isTopicDirectlink === true)) {
-          const filtered: Task = this.utils.find(this.activity.tasks, {
-            id: assessmentId || taskId,  // assessmentId or taskId
-          });
+        this.activityService.getActivity(
+          activityId,
+          proceedToNextTask,
+          undefined,
+          async (data) => {
+            // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
+            if (
+              !proceedToNextTask &&
+              (assessmentId > 0 || isTopicDirectlink === true)
+            ) {
+              const filtered: Task = this.utils.find(this.activity.tasks, {
+                id: assessmentId || taskId, // assessmentId or taskId
+              });
 
-          // if API not returning any related activity, handle bad API response gracefully
-          if (filtered === undefined) {
-            await this.notificationsService.alert({
-              header: $localize`Activity not found`,
-              message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
-            });
-            return this.goBack();
+              // if API not returning any related activity, handle bad API response gracefully
+              if (filtered === undefined) {
+                await this.notificationsService.alert({
+                  header: $localize`Activity not found`,
+                  message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
+                });
+                return this.goBack();
+              }
+
+              this.goToTask({
+                id: assessmentId || taskId,
+                contextId: this.urlParams.contextId,
+                type: filtered.type,
+                name: filtered.name,
+              });
+            }
           }
-
-          this.goToTask({
-            id: assessmentId || taskId,
-            contextId: this.urlParams.contextId,
-            type: filtered.type,
-            name: filtered.name
-          });
-        }
+        );
       });
-    });
 
     // refresh when review is available (AI review, peer review, etc.)
-    this.utils.getEvent('notification')
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe(event => {
-      const review = event?.meta?.AssessmentReview;
-      if (event.type === 'assessment_review_published' && review?.assessment_id) {
-        if (this.currentTask.id === review.assessment_id) {
-          this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+    this.utils
+      .getEvent('notification')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((event) => {
+        const review = event?.meta?.AssessmentReview;
+        if (
+          event.type === 'assessment_review_published' &&
+          review?.assessment_id
+        ) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(
+              review.assessment_id,
+              'assessment',
+              review.activity_id,
+              review.context_id
+            );
+          }
         }
-      }
-    });
+      });
 
     // check new unlock indicator to refresh
     this.unlockIndicatorService.unlockedTasks$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe(unlockedTasks => {
-      if (this.activity) {
-        if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
-          this.activityService.getActivity(this.activity.id);
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((unlockedTasks) => {
+        if (this.activity) {
+          if (
+            unlockedTasks.some((task) => task.activityId === this.activity.id)
+          ) {
+            this.activityService.getActivity(this.activity.id);
+          }
         }
-      }
-    });
+      });
   }
 
   ionViewWillLeave() {
@@ -206,7 +239,10 @@ export class ActivityDesktopPage {
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
   private _setActivity(res: Activity) {
-    if (this.activity !== undefined && this.activity?.tasks.length === res.tasks.length) {
+    if (
+      this.activity !== undefined &&
+      this.activity?.tasks.length === res.tasks.length
+    ) {
       // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
       if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
         // Collect new tasks with id as key
@@ -220,19 +256,23 @@ export class ActivityDesktopPage {
         const tasksToRemove = [];
 
         this.activity.tasks.forEach((task, index) => {
-          if (task.id === 0) {  // Locked/hidden task
+          if (task.id === 0) {
+            // Locked/hidden task
             const newTask = res.tasks[index];
             if (newTask.id !== 0) {
               this.activity.tasks[index] = { ...task, ...newTask };
               tasksToRemove.push(index); // Mark this task for removal
             }
-          } else if (newTasks[task.id] && task.status !== newTasks[task.id]?.status) {
+          } else if (
+            newTasks[task.id] &&
+            task.status !== newTasks[task.id]?.status
+          ) {
             this.activity.tasks[index].status = newTasks[task.id].status;
           }
         });
 
         // Remove the locked tasks (id = 0) that were updated
-        tasksToRemove.reverse().forEach(index => {
+        tasksToRemove.reverse().forEach((index) => {
           if (this.activity.tasks[index].id === 0) {
             this.activity.tasks.splice(index, 1);
           }
@@ -271,13 +311,19 @@ export class ActivityDesktopPage {
       });
     }
     // mark the topic as complete
-    await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
+    await firstValueFrom(this.topicService
+      .updateTopicProgress(task.id, 'completed'));
 
     // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activity.id, true, task, () => {
-      this.loading = false;
-      this.btnDisabled$.next(false);
-    });
+    return this.activityService.getActivity(
+      this.activity.id,
+      true,
+      task,
+      () => {
+        this.loading = false;
+        this.btnDisabled$.next(false);
+      }
+    );
   }
 
   /**
@@ -306,7 +352,7 @@ export class ActivityDesktopPage {
       const { submission } = await this.assessmentService
         .fetchAssessment(
           event.assessmentId,
-          "assessment",
+          'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
@@ -328,10 +374,13 @@ export class ActivityDesktopPage {
           saved?.data?.submitAssessment?.success !== true ||
           this.utils.isEmpty(saved)
         ) {
-          throw new Error("Error submitting assessment");
+          throw new Error('Error submitting assessment');
         }
 
-        if (this.assessmentService.assessment?.pulseCheck === true && event.autoSave === false) {
+        if (
+          this.assessmentService.assessment?.pulseCheck === true &&
+          event.autoSave === false
+        ) {
           await this.assessmentService.pullFastFeedback();
         }
       } else {
@@ -344,7 +393,9 @@ export class ActivityDesktopPage {
 
       if (!event.autoSave) {
         if (hasSubmssion === true) {
-          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+          this.notificationsService.assessmentSubmittedToast({
+            isDuplicated: true,
+          });
         } else {
           this.notificationsService.assessmentSubmittedToast();
         }
@@ -358,10 +409,15 @@ export class ActivityDesktopPage {
         ));
 
         // get the latest activity tasks
-        return this.activityService.getActivity(this.activity.id, false, task, () => {
-          this.loading = false;
-          this.btnDisabled$.next(false);
-        });
+        return this.activityService.getActivity(
+          this.activity.id,
+          false,
+          task,
+          () => {
+            this.loading = false;
+            this.btnDisabled$.next(false);
+          }
+        );
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);
@@ -392,7 +448,7 @@ export class ActivityDesktopPage {
       this.loading = false;
       this.btnDisabled$.next(false);
       return true;
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       this.loading = false;
       this.btnDisabled$.next(false);
@@ -415,7 +471,10 @@ export class ActivityDesktopPage {
     }
 
     // display review rating modal
-    return await this.notificationsService.popUpReviewRating(this.review.id, false);
+    return await this.notificationsService.popUpReviewRating(
+      this.review.id,
+      false
+    );
   }
 
   goBack() {
@@ -426,5 +485,41 @@ export class ActivityDesktopPage {
 
   allTeamTasks(forTeamOnlyWarning: boolean) {
     this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
+  }
+
+  // UI-purpose only functions (ion-fab-button actions)
+  scrollTo(question) {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxById(`q-${question.id}`);
+    const element = document.getElementById(`#q-${question}`) as HTMLElement;
+    this.utils.scrollToElement(element || questionBoxes.el);
+  }
+
+  // Obtain the continuous index of the question (Question number)
+  getContinuousIndex(groupIndex: number, questionIndex: number): number {
+    const asmt = this.assessmentService.assessment;
+    let totalQuestions = 0;
+    for (let i = 0; i < groupIndex; i++) {
+      totalQuestions += asmt.groups[i].questions.length;
+    }
+    return totalQuestions + questionIndex + 1;
+  }
+
+  // UI-purpose only functions (show tooltip)
+  showTooltip(event, title: string) {
+    this.tooltipText = title;
+    this.tooltipVisible = true;
+  }
+
+  // UI-purpose only functions (hide tooltip)
+  hideTooltip() {
+    this.tooltipVisible = false;
+  }
+
+  // UI-purpose only functions (get total questions for decision of showing the ion-fab)
+  totalQuestions(): number {
+    return this.assessmentService.assessment?.groups.reduce(
+      (acc, group) => acc + group.questions.length,
+      0
+    );
   }
 }
