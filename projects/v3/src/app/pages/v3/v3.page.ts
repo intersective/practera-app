@@ -1,5 +1,5 @@
-import { take, takeUntil } from 'rxjs/operators';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { takeUntil } from 'rxjs/operators';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
@@ -62,7 +62,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
   ]
 })
 export class V3Page implements OnInit, OnDestroy {
-  openMenu = false; // collapsible submenu
+  isMenuOpen = false; // collapsible submenu
   wait: boolean = false; // loading flag
   reviews: Review[];
   appPages: any[];
@@ -70,9 +70,10 @@ export class V3Page implements OnInit, OnDestroy {
   showEvents: boolean = false;
   showReviews: boolean = false;
   directionIcon: string = this.direction();
-  collapsibleMenu: string = 'closed';
+  collapsibleMenu: 'open' | 'closed' = 'closed';
   institutionLogo: string = this.getInstitutionLogo();
-  isMobile: boolean;
+  splitpaneEnabled: boolean | string;
+  isSwipeEnabled: boolean = false;
   institutionName: string;
 
   i18nText = {
@@ -80,7 +81,6 @@ export class V3Page implements OnInit, OnDestroy {
     'myExperience': $localize`My Experiences`
   };
   hasUnlockedTasks: boolean;
-
   unsubscribe$ = new Subject();
 
   constructor(
@@ -97,7 +97,29 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly homeService: HomeService,
     private readonly unlockIndicatorService: UnlockIndicatorService,
   ) {
-    this.isMobile = this.utils.isMobile();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  ionViewDidEnter() {
+    let menuEnabled = true;
+    let splitpaneEnabled = false;
+    this.isMenuOpen = false;
+
+    this.collapsibleMenu = 'closed';
+
+    // toggleable-feature: allow swipe in menu when viewport is smaller than 576px
+    // make isSwipeEnabled dynamic to enable
+    if (window.innerWidth < 576) {
+      menuEnabled = false;
+      this.isMenuOpen = true;
+      this.collapsibleMenu = 'open';
+    } else if (window.innerWidth >= 1024) {
+      splitpaneEnabled = true;
+    }
+
+    this.splitpaneEnabled = splitpaneEnabled;
+    this.utils.viewport('leftSidebarExpanded', this.splitpaneEnabled);
+    this.menuController.enable(menuEnabled);
   }
 
   ngOnDestroy(): void {
@@ -142,9 +164,6 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.isMobile) {
-      this.menuController.enable(false);
-    }
     this._initMenuItems();
 
     this.reviewService.reviews$
@@ -167,7 +186,6 @@ export class V3Page implements OnInit, OnDestroy {
         }
       });
       this.appPages[3].badges = chat?.unreadMessages || 0; // messages tab
-
       this.appPages[1].badges = notifications.filter(noti => noti.type === 'event-reminder').length; // events tab
       this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
     });
@@ -213,7 +231,7 @@ export class V3Page implements OnInit, OnDestroy {
           }
         });
     }
-    this.openMenu = false;
+    this.isMenuOpen = false;
 
     // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
     this.notificationsService.getTodoItems().pipe(
@@ -269,7 +287,11 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   getInstitutionLogo(): string {
-    if (this.openMenu !== true) {
+    if (!this.storageService) {
+      return '/assets/logo.svg'; // Default logo or some fallback
+    }
+
+    if (this.isMenuOpen !== true) {
       return this.storageService.getUser().squareLogo || '';
     }
 
@@ -277,24 +299,20 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   toggleMenu() {
-    this.openMenu = !this.openMenu;
+    this.isMenuOpen = !this.isMenuOpen;
     this.collapsibleMenu = this.collapseMenu();
     this.institutionLogo = this.getInstitutionLogo();
   }
 
   // only desktop version require collapsed menu
   // get collapsibleMenu() {
-  collapseMenu(): string {
-    if (this.isMobile) {
-      return 'open';
-    }
-
-    return (this.openMenu ? 'open' : 'closed');
+  collapseMenu(): 'open' | 'closed' {
+    return (this.isMenuOpen ? 'open' : 'closed');
   }
 
   // rotation animation logic
   direction(): string {
-    this.directionIcon = this.openMenu ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
+    this.directionIcon = this.isMenuOpen ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right';
     return this.directionIcon;
   }
 

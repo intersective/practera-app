@@ -29,13 +29,25 @@
               aria-hidden="true"></ion-progress-bar>
 
             <div class="exp-content">
-              <h1 class="headline-2">{{ experience.name }}</h1>
+              <h1 class="headline-2" [innerHTML]="experience.name"></h1>
               <ion-text class="subtitle-3" color="grey-75">
                 <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress" i18n>{{ count }} Activities</ng-container>
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
               </ion-text>
-
+              <div class="ontrack-group" *ngIf="pulseCheckIndicatorEnabled === true">
+                <div class="ontrack-title">
+                  <span style="font: smaller;">On track</span>
+                  <ion-icon name="help-circle-outline" (click)="onTrackInfo()"></ion-icon>
+                </div>
+                <!-- put traffic light group here -->
+                <app-traffic-light-group
+                  *ngIf="pulseCheckStatus"
+                  [lights]="pulseCheckStatus"
+                  [displayOnly]="isParticipant !== true"
+                ></app-traffic-light-group>
+                <!-- end traffic lights -->
+              </div>
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
@@ -76,10 +88,18 @@
   <h3 class="for-accessibility" i18n>Activity list</h3>
   <div #activities id="activity-list-item" *ngIf="milestones?.length > 0; else loadingMilestones">
     <ng-container *ngFor="let milestone of milestones">
-      <ion-item class="headline-4 milestone-name" lines="none"
+      <ion-item class="headline-4 milestone-name"
+        [ngClass]="{'locked': milestone.isLocked}"
+        lines="none"
+        (click)="showGuideline(milestone)"
         aria-describedby="milestone-description">
-        <div>{{ milestone.name }}</div>
-        <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
+        <div [innerHTML]="milestone.name"></div>
+        <ion-icon *ngIf="milestone.isLocked"
+          color="medium"
+          name="lock-closed"
+          slot="end"
+          aria-label="milestone locked"
+        ></ion-icon>
       </ion-item>
 
       <ion-item id="milestone-description"

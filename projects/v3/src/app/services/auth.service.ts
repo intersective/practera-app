@@ -105,6 +105,9 @@ interface AuthEndpointExperience {
   team: {
     id: number;
   };
+  featureToggle: {
+    pulseCheckIndicator: boolean;
+  };
 }
 
 interface AuthQuery {
@@ -222,6 +225,9 @@ export class AuthService {
             team {
               id
             }
+            featureToggle {
+              pulseCheckIndicator
+            }
           }
           email
           unregistered
@@ -254,14 +260,6 @@ export class AuthService {
         this.storage.remove('lastAuthFetchTime');
         this.storage.remove('authCache');
         this.logout(); // clear user's information
-
-        // When logout get call from here user get redirect without showing any error messages.
-        // so from here need to throw the error. and handle from the components.
-        // then we can show error message and add logout as call back of notification popup.
-        // Kepping this in case some error happen. logic moved
-        // this.logout(); // clear user's information
-        this.storage.remove('lastAuthFetchTime');
-        this.storage.remove('authCache');
         return throwError(err);
       })
     );
@@ -345,7 +343,7 @@ export class AuthService {
     this.storage.clear();
     if (typeof redirect === 'object') {
       return this.router.navigate(redirect);
-    } else if (typeof redirect === 'boolean' && redirect === true) {
+    } else if (redirect === true) {
       // still store config info even logout
       this.storage.setConfig(config);
       return this.router.navigate(['/'], navigationParams);

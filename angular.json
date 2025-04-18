@@ -42,8 +42,7 @@
               "src/styles.scss"
             ],
             "scripts": [
-              "./node_modules/pusher-js/dist/web/pusher.min.js",
-              "./src/assets/newrelic.js"
+              "./node_modules/pusher-js/dist/web/pusher.min.js"
             ],
             "aot": false,
             "vendorChunk": true,

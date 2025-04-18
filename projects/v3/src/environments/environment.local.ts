@@ -8,6 +8,7 @@ export const environment = {
   production: false,
   appkey: 'b11e7c189b',
   pusherKey: '255f010d210933ca7675',
+  pusherCluster: '',
   env: 'sandbox',
   APIEndpoint: 'http://127.0.0.1:8080/',
   graphQL: 'http://127.0.0.1:8000/',
@@ -39,10 +40,16 @@ export const environment = {
       virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
     },
   },
+  hubspot: {
+    liveServerRegion: '',
+    supportFormPortalId: '',
+    supportFormId: ''
+  },
   defaultCountryModel: 'AUS',
   intercom: false,
-  newrelic: true,
+  newrelic: false,
   goMobile: false,
+  helpline: 'help@practera.com',
 };
 
 /*
