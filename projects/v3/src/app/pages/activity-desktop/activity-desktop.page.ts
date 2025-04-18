@@ -9,9 +9,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
-import { IonCol } from '@ionic/angular';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -135,7 +134,6 @@ export class ActivityDesktopPage {
     this.route.paramMap.pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe(params => {
-
       // from route
       const activityId = +params.get('id');
       const contextId = +params.get('contextId'); // optional

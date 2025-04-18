@@ -32,7 +32,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   returnLtiUrl = '';
 
-  helpline = 'help@practera.com';
+  helpline = environment.helpline;
 
   termsUrl = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
   // controll profile image updating
@@ -84,7 +84,6 @@ export class SettingsPage implements OnInit, OnDestroy {
 
     this.acceptFileTypes = this.filestackService.getFileTypes('image');
     this.currentProgramImage = this._getCurrentProgramImage();
-    // this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   ngOnInit() {

@@ -35,6 +35,11 @@ export class AppComponent implements OnInit, OnDestroy {
     'register',
     'forgot_password',
     'reset_password',
+    'global_login',
+    'direct_login',
+    'do=secure',
+    'auth/secure',
+    'undefined',
   ];
 
   constructor(
@@ -192,6 +197,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // redirect to the last visited url/assessment if available
   redirectToLastVisitedUrl(): Promise<boolean> {
+    if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
+      return this.navigate(window.location.href);
+    }
+
     const lastVisitedUrl = this.storage.lastVisited("url") as string;
     if (lastVisitedUrl) {
       const lastVisitedAssessmentUrl = this.storage.lastVisited("assessmentUrl");

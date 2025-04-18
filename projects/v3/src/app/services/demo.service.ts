@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { Experience } from './experience.service';
 
 @Injectable({
   providedIn: 'root'
@@ -85,6 +86,63 @@ export class DemoService {
         ]
       }
     }).pipe(delay(1000));
+  }
+
+  pulseCheck() {
+    return of({
+      data: {
+        confidence: {
+          self: 1,
+          team: .5,
+          expert: 0
+        },
+        satisfaction: {
+          self: 0.5,
+          team: 0.5,
+          expert: 0.5
+        }
+      }
+    }).pipe(delay(1000));
+  }
+
+  getPulseCheckStatus(role: string) {
+    if (role === 'participant') {
+      return {
+        data: {
+          pulseCheckStatus: {
+            self: Math.random() > 0.5 ? 1 : 0,
+            team: Math.random(),
+            expert: Math.random(),
+            teams: null
+          }
+        }
+      };
+    } else if (role === 'mentor') {
+      return {
+        data: {
+          pulseCheckStatus: {
+            self: null,
+            team: null,
+            expert: null,
+            teams: [
+              { teamName: 'Team A', average: Math.random() },
+              { teamName: 'Team B', average: Math.random() },
+              { teamName: 'Team C', average: Math.random() }
+            ]
+          }
+        }
+      };
+    }
+    return {
+      data: {
+        pulseCheckStatus: {
+          self: null,
+          team: null,
+          expert: null,
+          teams: null
+        }
+      }
+    };
   }
 
   projectProgress() {
@@ -1622,7 +1680,7 @@ export class DemoService {
     ]
   }
 
-  get deletedExperience() {
+  get deletedExperience(): Experience {
     return {
       "id": 1933,
       "uuid": "ff96d1bc-a8aa-4f76-a048-f583c95fd013",
@@ -1632,7 +1690,7 @@ export class DemoService {
       "type": "Other",
       "leadImage": "https://cdn.filestackcontent.com/DX2DHY73QRuZvn7yUukP",
       "status": null,
-      "setupStep": null,
+      // "setupStep": null,
       "color": "#ff9c01",
       "secondaryColor": "#ffd966",
       "todoItemCount": 0,
@@ -1647,7 +1705,12 @@ export class DemoService {
       "iconUrl": "https://cdn.filestackcontent.com/oJBGJGbBRNq4TIKt2AGz",
       "reviewRating": true,
       "truncateDescription": true,
-      "__typename": "Experience"
+      "config": {},
+      "progress": 0,
+      "featureToggle": {
+        "pulseCheckIndicator": true,
+      },
+      "projectId": 1,
     };
   }
 }

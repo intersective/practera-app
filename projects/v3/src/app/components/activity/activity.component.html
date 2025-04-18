@@ -3,13 +3,9 @@
     [appBackgroundImage]="leadImage"
     aria-live="polite"
     aria-labelledby="activity-name">
-    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info">
-      {{ activity.name }}
-    </h1>
+    <h1 id="activity-name" *ngIf="activity.name" class="headline-2 activity-info" [innerHtml]="activity.name"></h1>
     <ion-skeleton-text *ngIf="!activity.name" animated style="width: 50%;" aria-hidden="true"></ion-skeleton-text>
-
     <ion-skeleton-text *ngIf="!activity.tasks" animated style="width: 30px;"  aria-hidden="true"></ion-skeleton-text>
-
     <div class="overlay"></div>
   </div>
 
@@ -66,5 +62,3 @@
     <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
   </div>
 </ng-template>
-
-
