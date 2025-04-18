@@ -342,7 +342,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
       element.scrollIntoView({ behavior: 'auto', block: 'center' });
       element.classList.add('lastVisited');
-
       this.storageService.lastVisited('activityId', null);
     }
   }
