@@ -49,7 +49,7 @@
 
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding">
-    <div class="uppy-container">
+    <div class="uppy-container" *ngIf="!uploadedFile && !submission?.answer">
       <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
