@@ -4,6 +4,8 @@
       <p>Team assessment submissions restricted to participants only.</p>
     </ion-text>
     <ng-container *ngSwitchDefault>
+      <ng-content *ngIf="hasCustomContent"></ng-content>
+
       <ion-button class="ion-margin"
         mode="ios"
         [disabled]="disabled$ | async"
