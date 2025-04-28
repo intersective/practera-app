@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -9,6 +9,8 @@ import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
 import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { ActivityService } from '@v3/app/services/activity.service';
+
+const MIN_SCROLLING_PAGES = 6; // minimum number of pages to show pagination scrolling
 
 // const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
@@ -91,11 +93,13 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
-
+  // pagination
   pageRequiredCompletion: boolean[] = []; // indicator for required questions
+  readonly manyPages = MIN_SCROLLING_PAGES;
 
   @ViewChild('form') form: HTMLFormElement;
   @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+  @ViewChild('pageIndicatorsContainer') pageIndicatorsContainer: ElementRef;
 
   // prevent non participants from submitting team assessment
   get preventSubmission() {
@@ -133,11 +137,17 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   prevPage() {
-    if (this.pageIndex > 0) { this.pageIndex--; }
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+      this.scrollActivePageIntoView();
+    }
   }
 
   nextPage() {
-    if (this.pageIndex < this.pageCount - 1) { this.pageIndex++; }
+    if (this.pageIndex < this.pageCount - 1) {
+      this.pageIndex++;
+      this.scrollActivePageIntoView();
+    }
   }
 
   get pages(): number[] {
@@ -147,6 +157,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   goToPage(i: number) {
     if (i >= 0 && i < this.pageCount) {
       this.pageIndex = i;
+      this.scrollActivePageIntoView();
     }
   }
 
@@ -318,6 +329,9 @@ Best regards`;
     // split by question count every time assessment changes
     this.pagesGroups = this.splitGroupsByQuestionCount();
     this.pageIndex = 0;
+
+    // Ensure we scroll the active page into view after rendering
+    setTimeout(() => this.scrollActivePageIntoView(), 200);
   }
 
   ngOnDestroy() {
@@ -850,6 +864,9 @@ Best regards`;
       const pageQuestions = this.getAllQuestionsForPage(index);
       this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
     });
+
+    // Update the scroll position when page completion status changes
+    setTimeout(() => this.scrollActivePageIntoView(), 100);
   }
 
   private getAllQuestionsForPage(pageIndex: number): Question[] {
@@ -953,5 +970,27 @@ Best regards`;
         this.flashBlink(questionBox.el);
       }
     }
+  }
+
+  /**
+   * Scrolls the active page indicator into view within the pagination container
+   */
+  scrollActivePageIntoView() {
+    setTimeout(() => {
+      if (this.pageIndicatorsContainer && this.pageCount > this.manyPages) {
+        const container = this.pageIndicatorsContainer.nativeElement;
+        const activeIndicator = document.getElementById(`page-indicator-${this.pageIndex}`);
+
+        if (activeIndicator && container) {
+          // Calculate the scroll position to center the active indicator
+          const containerWidth = container.offsetWidth;
+          const indicatorWidth = activeIndicator.offsetWidth;
+          const indicatorLeft = activeIndicator.offsetLeft;
+
+          // Scroll to position the active indicator in the center
+          container.scrollLeft = indicatorLeft - (containerWidth / 2) + (indicatorWidth / 2);
+        }
+      }
+    }, 50);
   }
 }

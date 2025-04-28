@@ -4,12 +4,13 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
+import { environment } from '@environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -175,6 +176,20 @@ export class SharedService {
   }
 
   private _ipAPI(): Observable<any> {
+    if (environment.production !== true) {
+      // mock data for development mode
+      return of({
+        ip: '127.0.0.1',
+        city: 'Development City',
+        region: 'Development Region',
+        country_name: 'Development Country',
+        postal: '00000',
+        latitude: 0,
+        longitude: 0,
+        timezone: 'UTC'
+      });
+    }
+
     return this.http.get('https://ipapi.co/json');
   }
 
