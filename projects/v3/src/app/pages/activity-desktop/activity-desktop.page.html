@@ -33,7 +33,7 @@
         size="12" size-md="8" class="border-left"
         (scroll)="onScroll()"
         [ngClass]="{'loading-overlay': isLoadingAssessment}">
-        <ng-container *ngIf="notInATeamAndForTeamOnly === true; else showCurrentTask">
+        <ng-container *ngIf="notInATeamAndForTeamOnly; else showCurrentTask">
           <div class="centered-text">
             This assessment can only be accessed when you are in a team.
           </div>
