@@ -301,15 +301,17 @@
           <span>Prev</span>
         </ion-button>
 
-        <div class="page-indicators" *ngIf="pageCount > 1">
+        <div class="page-indicators"
+             [class.many-pages]="pageCount > manyPages"
+             *ngIf="pageCount > 1"
+             #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
-            <div
-              class="page-indicator"
-              [class.active]="pageIndex === page"
-              [class.incompleted]="!pageRequiredCompletion[page]"
-              (click)="goToPage(page)"
-              (dblclick)="findAndGoToFirstUnansweredQuestion()"
-              >
+            <div class="page-indicator"
+                [class.active]="pageIndex === page"
+                [class.incompleted]="!pageRequiredCompletion[page]"
+                [id]="'page-indicator-' + page"
+                (click)="goToPage(page)"
+                (dblclick)="findAndGoToFirstUnansweredQuestion()">
               <span class="page-number">{{ i + 1 }}</span>
               <ion-icon
                 *ngIf="!pageRequiredCompletion[page]"
