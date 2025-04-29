@@ -12,12 +12,13 @@ export class TrafficLightComponent {
   get color(): string {
     if (this.value === null || this.value === undefined) {
       return 'grey'; // No data
-    } else if (this.value < 0.4) {
+    } else if (this.value < 0.32) {
       return 'red';
-    } else if (this.value > 0.7) {
+    } else if (this.value > 0.65) {
       return 'green';
     } else {
-      return 'yellow';
+      return 'orange';
     }
   }
+
 }
