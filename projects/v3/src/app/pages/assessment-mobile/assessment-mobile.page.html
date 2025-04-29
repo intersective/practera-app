@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [scrollEvents]="true" (ionScroll)="onScroll()">
   <app-assessment
     [assessment]="assessment"
     [submission]="submission"

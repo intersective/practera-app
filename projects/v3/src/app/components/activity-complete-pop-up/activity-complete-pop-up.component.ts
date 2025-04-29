@@ -55,7 +55,7 @@ export class ActivityCompletePopUpComponent {
       if (this.activityCompleted) {
         this.router.navigate(['v3', 'home'], { queryParams: { activityId: this.activityId, activityCompleted: this.activityCompleted } });
       } else {
-        this.router.navigate(['v3', 'home'], { queryParams: { activityId: this.activityId } });
+        this.router.navigate(['v3', 'home']);
       }
     }
   }

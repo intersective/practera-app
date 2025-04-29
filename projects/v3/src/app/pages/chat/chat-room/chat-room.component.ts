@@ -12,7 +12,8 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { AttachmentPopoverComponent } from '../attachment-popover/attachment-popover.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { debounce } from 'lodash';
+import { DomSanitizer } from '@angular/platform-browser';
+import { QuillModules } from 'ngx-quill';
 
 
 enum ScrollPosition {
@@ -22,29 +23,29 @@ enum ScrollPosition {
 }
 
 @Component({
-  selector: 'app-chat-room',
-  templateUrl: './chat-room.component.html',
-  styleUrls: ['./chat-room.component.scss']
+  selector: "app-chat-room",
+  templateUrl: "./chat-room.component.html",
+  styleUrls: ["./chat-room.component.scss"],
 })
 export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(IonContent) content: IonContent;
   @Input() chatChannel?: ChatChannel = {
-    uuid: '',
-    name: '',
-    avatar: '',
-    pusherChannel: '',
+    uuid: "",
+    name: "",
+    avatar: "",
+    pusherChannel: "",
     isAnnouncement: false,
     isDirectMessage: false,
     readonly: false,
     roles: [],
     unreadMessageCount: 0,
-    lastMessage: '',
-    lastMessageCreated: '',
-    canEdit: false
+    lastMessage: "",
+    lastMessageCreated: "",
+    canEdit: false,
   };
   @Output() loadInfo = new EventEmitter();
 
-  routeUrl = '/chat/chat-room';
+  routeUrl = "/chat/chat-room";
   channelUuid: string;
   // message history list
   messageList: Message[] = [];
@@ -52,27 +53,89 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   memberList: ChannelMembers[] = [];
   // the message that the current user is typing
   typingMessage: string;
-  messagePageCursor = '';
+  messagePageCursor = "";
   messagePageSize = 20;
   loadingChatMessages = false;
   sendingMessage = false;
 
   // display "someone is typing" when received a typing event
   typingSubject: Subject<string> = new Subject<string>();
-  whoIsTyping: string = '';
+  whoIsTyping: string = "";
   videoHandles = [];
 
   selectedAttachments: any[] = [];
 
-  private destroy$ = new Subject<void>();
-
   // cosmetic variables
   isMobile: boolean = false;
   hasUnreadMessages: boolean = false;
-
-  private scrollSubject = new Subject<void>();
   scrollPosition: ScrollPosition = ScrollPosition.Top;
 
+  // quill editor modules
+  private isMatcherApplied = false;
+  editorModules: QuillModules = {
+    magicUrl: {
+      globalRegularExpression: /(https?:\/\/|www\.)[\S]+/g,
+      urlRegularExpression: /(https?:\/\/[\S]+)|(www.[\S]+)/g,
+    },
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'], // Text formatting buttons
+      [{ list: 'ordered' }, { list: 'bullet' }], // List buttons
+      ['link'] // Link button
+    ],
+    // keep for future use (enter key to send message)
+    /* keyboard: {
+      bindings: {
+        // Enter key
+        enter: {
+          key: 13,
+          handler: () => {
+            if (this.isMobile) {
+              return true;
+            }
+
+            this.ngZone.run(() => this.sendMessage());
+          }
+        }
+      }
+    }, */
+    clipboard: {
+      matchers: [
+        [Node.ELEMENT_NODE, (node, delta) => {
+          const allowedFormats = ['bold', 'italic', 'underline', 'strike', 'list'];
+
+          // Iterate over each delta operation
+          delta.ops = delta.ops.map(op => {
+            // Filter out formats that are not in the allowed list
+            if (op.attributes) {
+              op.attributes = Object.keys(op.attributes)
+                .filter(attr => allowedFormats.includes(attr))
+                .reduce((obj, key) => {
+                  obj[key] = op.attributes[key];
+                  return obj;
+                }, {});
+            }
+            return op;
+          });
+
+          // If node is a list, ensure it keeps the list format
+          if (node.tagName === 'UL' || node.tagName === 'OL') {
+            const listType = node.tagName === 'UL' ? 'bullet' : 'ordered';
+            delta.ops.forEach(op => {
+              if (!op.attributes) {
+                op.attributes = {};
+              }
+              op.attributes.list = listType;
+            });
+          }
+
+          return delta;
+        }]
+      ]
+    }
+  };
+
+  private destroy$ = new Subject<void>();
+  private scrollSubject = new Subject<void>();
 
   constructor(
     private chatService: ChatService,
@@ -86,95 +149,106 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
+    private sanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
-    this.utils.getEvent('chat:new-message')
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(event => {
-      if (this._isValidPusherEvent(event)) {
-        const receivedMessage = this.getMessageFromEvent(event);
+    this.utils
+      .getEvent("chat:new-message")
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event) => {
+        if (this._isValidPusherEvent(event)) {
+          const receivedMessage = this.getMessageFromEvent(event);
 
-        if (receivedMessage && receivedMessage.file) {
-          let fileObject = null;
-          fileObject = JSON.parse(receivedMessage.file);
-          if (this.utils.isEmpty(fileObject)) {
-            fileObject = null;
+          if (receivedMessage && receivedMessage.file) {
+            let fileObject = null;
+            fileObject = JSON.parse(receivedMessage.file);
+            if (this.utils.isEmpty(fileObject)) {
+              fileObject = null;
+            }
+            receivedMessage.fileObject = fileObject;
+            receivedMessage.preview = this.attachmentPreview(
+              receivedMessage.fileObject
+            );
           }
-          receivedMessage.fileObject = fileObject;
-          receivedMessage.preview = this.attachmentPreview(receivedMessage.fileObject);
-        }
-        if (receivedMessage.senderUuid &&
-          this.storage.getUser().uuid &&
-          receivedMessage.senderUuid === this.storage.getUser().uuid
-        ) {
-          receivedMessage.isSender = true;
-        }
-        if (!this.utils.isEmpty(receivedMessage)) {
-          this.messageList.push(receivedMessage);
-          if (this.scrollPosition === ScrollPosition.Bottom) {
-            this._scrollToBottom();
-          } else {
-            this.hasUnreadMessages = true;
+          if (
+            receivedMessage.senderUuid &&
+            this.storage.getUser().uuid &&
+            receivedMessage.senderUuid === this.storage.getUser().uuid
+          ) {
+            receivedMessage.isSender = true;
+          }
+          if (!this.utils.isEmpty(receivedMessage)) {
+            this.messageList.push(receivedMessage);
+            if (this.scrollPosition === ScrollPosition.Bottom) {
+              this._scrollToBottom();
+            } else {
+              this.hasUnreadMessages = true;
+            }
           }
         }
-      }
-    });
+      });
 
-    this.utils.getEvent('chat:delete-message')
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(event => {
-      if (this._isValidPusherEvent(event)) {
-        const deletedMessageIndex = this.messageList.findIndex(message => {
-          return message.uuid === event.uuid;
-        });
-        if (deletedMessageIndex > -1) {
-          this.messageList.splice(deletedMessageIndex, 1);
+    this.utils
+      .getEvent("chat:delete-message")
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event) => {
+        if (this._isValidPusherEvent(event)) {
+          const deletedMessageIndex = this.messageList.findIndex((message) => {
+            return message.uuid === event.uuid;
+          });
+          if (deletedMessageIndex > -1) {
+            this.messageList.splice(deletedMessageIndex, 1);
+          }
         }
-      }
-    });
+      });
 
-    this.utils.getEvent('chat:edit-message')
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(event => {
-      if (this._isValidPusherEvent(event)) {
-        const receivedMessage = this.getMessageFromEvent(event);
-        const editedMessageIndex = this.messageList.findIndex(message => {
-          return message.uuid === event.uuid;
-        });
-        if (editedMessageIndex > -1 && !this.utils.isEmpty(receivedMessage)) {
-          this.messageList[editedMessageIndex] = receivedMessage;
+    this.utils
+      .getEvent("chat:edit-message")
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event) => {
+        if (this._isValidPusherEvent(event)) {
+          const receivedMessage = this.getMessageFromEvent(event);
+          const editedMessageIndex = this.messageList.findIndex((message) => {
+            return message.uuid === event.uuid;
+          });
+          if (editedMessageIndex > -1 && !this.utils.isEmpty(receivedMessage)) {
+            this.messageList[editedMessageIndex] = receivedMessage;
+          }
         }
-      }
-    });
+      });
 
-    this.scrollSubject.pipe(
-      debounceTime(300), // debounce, so it won't scroll if button is rapidly clicked multiple times
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.content.scrollToBottom(300);
-    });
+    this.scrollSubject
+      .pipe(
+        debounceTime(300), // debounce, so it won't scroll if button is rapidly clicked multiple times
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.content.scrollToBottom(300);
+      });
 
-    this.typingSubject.pipe(
-      tap(username => {
-        this.whoIsTyping = username + ' is typing'
-      }),
-      switchMap(() => timer(3000)),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.whoIsTyping = '';
-    });
+    this.typingSubject
+      .pipe(
+        tap((username) => {
+          this.whoIsTyping = username + " is typing";
+        }),
+        switchMap(() => timer(3000)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.whoIsTyping = "";
+      });
 
     this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this._initialise();
       this._subscribeToTypingEvent();
       this._loadMessages();
       this._loadMembers();
       this._scrollToBottom();
-      this.whoIsTyping = '';
+      this.whoIsTyping = "";
     });
   }
 
@@ -184,19 +258,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private _initialise() {
-    this.typingMessage = '';
+    this.typingMessage = "";
     this.messageList = [];
     this.loadingChatMessages = false;
-    this.messagePageCursor = '';
+    this.messagePageCursor = "";
     this.messagePageSize = 20;
     this.sendingMessage = false;
   }
 
   private _isValidPusherEvent(pusherData) {
-    if (!this.isMobile && (this.router.url !== '/v3/messages')) {
+    if (!this.isMobile && this.router.url !== "/v3/messages") {
       return false;
     }
-    if (this.isMobile && (this.router.url !== '/v3/messages/chat-room')) {
+    if (this.isMobile && this.router.url !== "/v3/messages/chat-room") {
       return false;
     }
     if (pusherData.channelUuid !== this.channelUuid) {
@@ -211,9 +285,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.channelUuid = this.chatChannel.uuid;
     // subscribe to typing event
-    this.utils.getEvent('typing-' + this.chatChannel.pusherChannel)
+    this.utils
+      .getEvent("typing-" + this.chatChannel.pusherChannel)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(event => this._showTyping(event));
+      .subscribe((event) => this._showTyping(event));
   }
 
   /**
@@ -231,15 +306,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       created: data.created,
       file: data.file,
       channelUuid: data.channelUuid,
-      sentAt: data.sentAt
+      sentAt: data.sentAt,
     };
   }
 
   ngAfterViewInit() {
-    this.content.ionScrollEnd.pipe(takeUntil(this.destroy$))
-    .subscribe(_event => {
-      this._checkScrollPosition();
-    });
+    this.content.ionScrollEnd
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(200)
+      )
+      .subscribe((_event) => {
+        this._checkScrollPosition();
+      });
   }
 
   /**
@@ -271,19 +350,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private _loadMembers() {
-    this.chatService.getChatMembers(this.channelUuid)
+    this.chatService
+      .getChatMembers(this.channelUuid)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-      (response) => {
-        if (response.length === 0) {
-          return;
+        (response) => {
+          if (response.length === 0) {
+            return;
+          }
+          this.memberList = response;
+        },
+        (error) => {
+          console.error(error);
         }
-        this.memberList = response;
-      },
-      error => {
-        console.error(error);
-      }
-    );
+      );
   }
 
   private _loadMessages() {
@@ -296,50 +376,51 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.loadingChatMessages = true;
 
-    this.chatService.getMessageList({
-      channelUuid: this.channelUuid,
-      cursor: this.messagePageCursor,
-      size: this.messagePageSize
-    })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(
-      (messageListResult: MessageListResult) => {
-        if (!messageListResult) {
-          this.loadingChatMessages = false;
-          return;
-        }
-        let messages = messageListResult.messages;
-        if (messages.length === 0) {
-          this.loadingChatMessages = false;
-          return;
-        }
-        this.messagePageCursor = messageListResult.cursor;
-        this.loadingChatMessages = false;
-        messages = messages.map(msg => {
-          if (msg.file && msg.fileObject) {
-            msg.preview = this.attachmentPreview(msg.fileObject);
+    this.chatService
+      .getMessageList({
+        channelUuid: this.channelUuid,
+        cursor: this.messagePageCursor,
+        size: this.messagePageSize,
+      })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (messageListResult: MessageListResult) => {
+          if (!messageListResult) {
+            this.loadingChatMessages = false;
+            return;
           }
-          return msg;
-        });
-        messages.reverse();
-        if (this.messageList.length > 0) {
-          this.messageList = messages.concat(this.messageList);
-        } else {
-          this.messageList = messages;
-          this._scrollToBottom();
-        }
+          let messages = messageListResult.messages;
+          if (messages.length === 0) {
+            this.loadingChatMessages = false;
+            return;
+          }
+          this.messagePageCursor = messageListResult.cursor;
+          this.loadingChatMessages = false;
+          messages = messages.map((msg) => {
+            if (msg.file && msg.fileObject) {
+              msg.preview = this.attachmentPreview(msg.fileObject);
+            }
+            return msg;
+          });
+          messages.reverse();
+          if (this.messageList.length > 0) {
+            this.messageList = messages.concat(this.messageList);
+          } else {
+            this.messageList = messages;
+            this._scrollToBottom();
+          }
 
-        this._markAsSeen();
-      },
-      error => {
-        console.error('Error', error);
-        this.loadingChatMessages = false;
-      }
-    );
+          this._markAsSeen();
+        },
+        (error) => {
+          console.error("Error", error);
+          this.loadingChatMessages = false;
+        }
+      );
   }
 
   back() {
-    return this.ngZone.run(() => this.router.navigate(['v3', 'messages']));
+    return this.ngZone.run(() => this.router.navigate(["v3", "messages"]));
   }
 
   sendMessage() {
@@ -356,25 +437,28 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private getPostMessageParams(type, file?: any) {
-    if (type === 'text') {
-      if (!this.typingMessage || this.utils.isQuillContentEmpty(this.typingMessage)) {
+    if (type === "text") {
+      if (
+        !this.typingMessage ||
+        this.utils.isQuillContentEmpty(this.typingMessage)
+      ) {
         return;
       }
       const message = this.typingMessage;
       return {
         channelUuid: this.channelUuid,
-        message: message
+        message: message,
       };
     }
-    if (type === 'file' && file) {
+    if (type === "file" && file) {
       if (!file.mimetype) {
-        file.mimetype = '';
+        file.mimetype = "";
       }
       const message = this.typingMessage;
       return {
         channelUuid: this.channelUuid,
         message: message,
-        file: JSON.stringify(file)
+        file: JSON.stringify(file),
       };
     } else {
       return;
@@ -382,19 +466,20 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private postTextOnlyMessage() {
-    const param = this.getPostMessageParams('text');
-    this._beforeSenMessages();
-    this.chatService.postNewMessage(param)
+    const param = this.getPostMessageParams("text");
+    this._beforeSendMessages();
+    this.chatService
+      .postNewMessage(param)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        response => {
+        (response) => {
           this.triggerPusherEvent(response);
           this.updateListData(response);
-          this.utils.broadcastEvent('chat:info-update', true);
+          this.utils.broadcastEvent("chat:info-update", true);
           this._scrollToBottom();
           this._afterSendMessage();
         },
-        _error => {
+        (_error) => {
           this._afterSendMessage();
         }
       );
@@ -403,24 +488,25 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   private postAttachment() {
     const selectedAttachments = this.selectedAttachments;
     this.selectedAttachments = [];
-    selectedAttachments.forEach(attachment => {
-      const param = this.getPostMessageParams('file', attachment);
-      this._beforeSenMessages();
-      this.chatService.postAttachmentMessage(param)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        response => {
-          this.triggerPusherEvent(response, attachment);
-          this.updateListData(response);
-          this.utils.broadcastEvent('chat:info-update', true);
-          this._scrollToBottom();
-          this.removeSelectAttachment(attachment);
-          this._afterSendMessage();
-        },
-        error => {
-          this._afterSendMessage();
-        }
-      );
+    selectedAttachments.forEach((attachment) => {
+      const param = this.getPostMessageParams("file", attachment);
+      this._beforeSendMessages();
+      this.chatService
+        .postAttachmentMessage(param)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          (response) => {
+            this.triggerPusherEvent(response, attachment);
+            this.updateListData(response);
+            this.utils.broadcastEvent("chat:info-update", true);
+            this._scrollToBottom();
+            this.removeSelectAttachment(attachment);
+            this._afterSendMessage();
+          },
+          (error) => {
+            this._afterSendMessage();
+          }
+        );
     });
   }
 
@@ -436,31 +522,32 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       senderName: response.senderName,
       senderRole: response.senderRole,
       senderAvatar: response.senderAvatar,
-      sentAt: response.sentAt
+      sentAt: response.sentAt,
     };
     if (file) {
       pusherData.file = JSON.stringify(file);
     }
-    this.pusherService.triggerSendMessage(this.chatChannel.pusherChannel, pusherData);
+    this.pusherService.triggerSendMessage(
+      this.chatChannel.pusherChannel,
+      pusherData
+    );
   }
 
   updateListData(response) {
-    this.messageList.push(
-      {
-        uuid: response.uuid,
-        isSender: response.isSender,
-        message: response.message,
-        file: response.file,
-        fileObject: response.fileObject,
-        preview: this.attachmentPreview(response.fileObject),
-        created: response.created,
-        senderUuid: response.senderUuid,
-        senderName: response.senderName,
-        senderRole: response.senderRole,
-        senderAvatar: response.senderAvatar,
-        sentAt: response.sentAt
-      }
-    );
+    this.messageList.push({
+      uuid: response.uuid,
+      isSender: response.isSender,
+      message: response.message,
+      file: response.file,
+      fileObject: response.fileObject,
+      preview: this.attachmentPreview(response.fileObject),
+      created: response.created,
+      senderUuid: response.senderUuid,
+      senderName: response.senderName,
+      senderRole: response.senderRole,
+      senderAvatar: response.senderAvatar,
+      sentAt: response.sentAt,
+    });
   }
 
   /**
@@ -470,10 +557,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
    * to indicate message sending we have loading controll by sendingMessage.
    * we will insert type message to cost variable befoer clear it so type message will not lost from the api call.
    */
-  private _beforeSenMessages() {
+  private _beforeSendMessages() {
     this.sendingMessage = true;
     // remove typed message from text area and shrink text area.
-    this.typingMessage = '';
+    this.typingMessage = "";
   }
 
   private _afterSendMessage() {
@@ -484,18 +571,21 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
      * if we didn't do that when user scroll message list api call with page cursor empty and load same messages again.
      * only way we can get cursor is from API. so calling message list in background to get cursor.
      */
-    if (this.messageList.length > 0 && this.utils.isEmpty(this.messagePageCursor)) {
+    if (
+      this.messageList.length > 0 &&
+      this.utils.isEmpty(this.messagePageCursor)
+    ) {
       this.chatService
         .getMessageList({
           channelUuid: this.channelUuid,
           cursor: this.messagePageCursor,
-          size: this.messagePageSize
+          size: this.messagePageSize,
         })
         .pipe(takeUntil(this.destroy$))
         .subscribe((messageListResult: MessageListResult) => {
           const messages = messageListResult.messages;
           if (messages.length === 0) {
-            this.messagePageCursor = '';
+            this.messagePageCursor = "";
             return;
           }
           this.messagePageCursor = messageListResult.cursor;
@@ -509,19 +599,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const messageIds = this.messageList.map(m => m.uuid);
+    const messageIds = this.messageList.map((m) => m.uuid);
     this.chatService
       .markMessagesAsSeen(messageIds)
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        _res => {
-          this.utils.broadcastEvent('chat-badge-update', {
+        (_res) => {
+          this.utils.broadcastEvent("chat-badge-update", {
             channelUuid: this.chatChannel.uuid,
-            readcount: messageIds.length
+            readcount: messageIds.length,
           });
           this.hasUnreadMessages = false;
         },
-        err => {
+        (err) => {
           console.error(err);
         }
       );
@@ -545,9 +635,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getAvatarClass(message) {
     if (!this.checkToShowMessageTime(message)) {
-      return 'no-time';
+      return "no-time";
     }
-    return '';
+    return "";
   }
 
   /**
@@ -583,8 +673,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       return true;
     }
     const timeDiff =
-      (nextMessageTime.getTime() - currentMessageTime.getTime()) /
-      (60 * 1000);
+      (nextMessageTime.getTime() - currentMessageTime.getTime()) / (60 * 1000);
     if (timeDiff > 5) {
       this.messageList[index].noAvatar = false;
       return true;
@@ -600,24 +689,34 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   getClassForMessageBubble(message) {
     if (message.isSender) {
-      return 'send-messages';
+      return "send-messages";
     }
     if (message.noAvatar) {
-      return 'received-messages no-avatar';
+      return "received-messages no-avatar";
     }
-    return 'received-messages';
+    return "received-messages";
   }
 
   getClassForMessageBody(message) {
-    if (!message.fileObject || !message.fileObject.mimetype ||
-      (!message.fileObject.mimetype.includes('image') && !message.fileObject.mimetype.includes('video'))) {
-      return '';
+    if (
+      !message.fileObject ||
+      !message.fileObject.mimetype ||
+      (!message.fileObject.mimetype.includes("image") &&
+        !message.fileObject.mimetype.includes("video"))
+    ) {
+      return "";
     }
-    if (message.fileObject.mimetype && message.fileObject.mimetype.includes('video')) {
-      return 'video-attachment-container';
+    if (
+      message.fileObject.mimetype &&
+      message.fileObject.mimetype.includes("video")
+    ) {
+      return "video-attachment-container";
     }
-    if (message.fileObject.mimetype && message.fileObject.mimetype.includes('image')) {
-      return 'image';
+    if (
+      message.fileObject.mimetype &&
+      message.fileObject.mimetype.includes("image")
+    ) {
+      return "image";
     }
   }
 
@@ -625,9 +724,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
    * check date and time diffrance between current message(message object of index) old message.
    * @param {int} message
    */
-  checkToShowMessageTime(message: {
-    uuid: string;
-  }): boolean {
+  checkToShowMessageTime(message: { uuid: string }): boolean {
     const index = this.messageList.findIndex(function (msg, i) {
       return msg.uuid === message.uuid;
     });
@@ -640,11 +737,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     const currentMessageTime = new Date(this.messageList[index].sentAt);
     const oldMessageTime = new Date(this.messageList[index - 1].sentAt);
-    if ((currentMessageTime.getDate() - oldMessageTime.getDate()) === 0) {
-      return this._checkmessageOldThan5Min(
-        currentMessageTime,
-        oldMessageTime
-      );
+    if (currentMessageTime.getDate() - oldMessageTime.getDate() === 0) {
+      return this._checkmessageOldThan5Min(currentMessageTime, oldMessageTime);
     }
     return true;
   }
@@ -696,11 +790,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     if (!filestackRes.mimetype) {
       return preview;
     }
-    if (filestackRes.mimetype.includes('image')) {
+    if (filestackRes.mimetype.includes("image")) {
       const attachmentURL = `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${filestackRes.handle}`;
       // preview = `<p>Uploaded ${filestackRes.filename}</p><img src=${attachmentURL}>`;
       preview = `<img src="${attachmentURL}" alt="filestack attachment">`;
-    } else if (filestackRes.mimetype.includes('video')) {
+    } else if (filestackRes.mimetype.includes("video")) {
       // we'll need to identify filetype for 'any' type fileupload
       preview = `<app-file-display [file]="submission.answer" [fileType]="question.fileType"></app-file-display>`;
     }
@@ -713,54 +807,54 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getTypeByMime(mimetype: string): string {
     const zip = [
-      'application/x-compressed',
-      'application/x-zip-compressed',
-      'application/zip',
-      'multipart/x-zip',
+      "application/x-compressed",
+      "application/x-zip-compressed",
+      "application/zip",
+      "multipart/x-zip",
     ];
 
-    let result = '';
+    let result = "";
 
     if (!mimetype) {
-      return 'File';
+      return "File";
     }
 
     if (zip.indexOf(mimetype) >= 0) {
-      result = 'Zip';
+      result = "Zip";
 
       // set icon to different document type (excel, word, powerpoint, audio, video)
-    } else if (mimetype.indexOf('audio/') >= 0) {
-      result = 'Audio';
-    } else if (mimetype.indexOf('image/') >= 0) {
-      result = 'Image';
-    } else if (mimetype.indexOf('text/') >= 0) {
-      result = 'Text';
-    } else if (mimetype.indexOf('video/') >= 0) {
-      result = 'Video';
+    } else if (mimetype.indexOf("audio/") >= 0) {
+      result = "Audio";
+    } else if (mimetype.indexOf("image/") >= 0) {
+      result = "Image";
+    } else if (mimetype.indexOf("text/") >= 0) {
+      result = "Text";
+    } else if (mimetype.indexOf("video/") >= 0) {
+      result = "Video";
     } else {
       switch (mimetype) {
-        case 'application/pdf':
-          result = 'PDF';
+        case "application/pdf":
+          result = "PDF";
           break;
-        case 'application/msword':
-        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-          result = 'Word';
+        case "application/msword":
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          result = "Word";
           break;
-        case 'application/excel':
-        case 'application/vnd.ms-excel':
-        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        case 'application/x-excel':
-        case 'application/x-msexcel':
-          result = 'Excel';
+        case "application/excel":
+        case "application/vnd.ms-excel":
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        case "application/x-excel":
+        case "application/x-msexcel":
+          result = "Excel";
           break;
-        case 'application/mspowerpoint':
-        case 'application/vnd.ms-powerpoint':
-        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-        case 'application/x-mspowerpoint':
-          result = 'Powerpoint';
+        case "application/mspowerpoint":
+        case "application/vnd.ms-powerpoint":
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        case "application/x-mspowerpoint":
+          result = "Powerpoint";
           break;
         default:
-          result = 'File';
+          result = "File";
           break;
       }
     }
@@ -770,51 +864,51 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getIconByMime(mimetype: string): string {
     const zip = [
-      'application/x-compressed',
-      'application/x-zip-compressed',
-      'application/zip',
-      'multipart/x-zip',
+      "application/x-compressed",
+      "application/x-zip-compressed",
+      "application/zip",
+      "multipart/x-zip",
     ];
-    let result = '';
+    let result = "";
 
     if (!mimetype) {
-      return 'document';
+      return "document";
     }
 
     if (zip.indexOf(mimetype) >= 0) {
-      result = 'document';
-    } else if (mimetype.includes('audio')) {
-      result = 'volume-mute';
-    } else if (mimetype.includes('image')) {
-      result = 'photos';
-    } else if (mimetype.includes('text')) {
-      result = 'clipboard-outline';
-    } else if (mimetype.includes('video')) {
-      result = 'videocam';
+      result = "document";
+    } else if (mimetype.includes("audio")) {
+      result = "volume-mute";
+    } else if (mimetype.includes("image")) {
+      result = "photos";
+    } else if (mimetype.includes("text")) {
+      result = "clipboard-outline";
+    } else if (mimetype.includes("video")) {
+      result = "videocam";
     } else {
       switch (mimetype) {
-        case 'application/pdf':
-          result = 'document'; // 'pdf';
+        case "application/pdf":
+          result = "document"; // 'pdf';
           break;
-        case 'application/msword':
-        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
-          result = 'document'; // 'word';
+        case "application/msword":
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          result = "document"; // 'word';
           break;
-        case 'application/excel':
-        case 'application/vnd.ms-excel':
-        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
-        case 'application/x-excel':
-        case 'application/x-msexcel':
-          result = 'document'; // 'excel';
+        case "application/excel":
+        case "application/vnd.ms-excel":
+        case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        case "application/x-excel":
+        case "application/x-msexcel":
+          result = "document"; // 'excel';
           break;
-        case 'application/mspowerpoint':
-        case 'application/vnd.ms-powerpoint':
-        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
-        case 'application/x-mspowerpoint':
-          result = 'document'; // 'powerpoint';
+        case "application/mspowerpoint":
+        case "application/vnd.ms-powerpoint":
+        case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+        case "application/x-mspowerpoint":
+          result = "document"; // 'powerpoint';
           break;
         default:
-          result = 'document'; // 'file';
+          result = "document"; // 'file';
           break;
       }
     }
@@ -823,7 +917,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async preview(file, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+    if (
+      keyboardEvent &&
+      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
+    ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
@@ -837,23 +934,23 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       component: ChatPreviewComponent,
       componentProps: {
         file,
-      }
+      },
     });
     return await modal.present();
   }
 
   // @Deprecated in case we need it later
   createThumb(video, w, h) {
-    const c = document.createElement('canvas'),    // create a canvas
-      ctx = c.getContext('2d');                // get context
-    c.width = w;                                 // set size = thumb
+    const c = document.createElement("canvas"), // create a canvas
+      ctx = c.getContext("2d"); // get context
+    c.width = w; // set size = thumb
     c.height = h;
-    ctx.drawImage(video, 0, 0, w, h);            // draw in frame
-    return c;                                    // return canvas
+    ctx.drawImage(video, 0, 0, w, h); // draw in frame
+    return c; // return canvas
   }
 
   async openChatInfo() {
-    const info = this.document.getElementById('chatroom');
+    const info = this.document.getElementById("chatroom");
     if (info) {
       info.focus();
     }
@@ -863,10 +960,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     } else {
       const modal = await this.modalController.create({
         component: ChatInfoComponent,
-        cssClass: 'chat-info-page',
+        cssClass: "chat-info-page",
         componentProps: {
           selectedChat: this.chatChannel,
-        }
+        },
       });
       await modal.present();
     }
@@ -875,7 +972,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   async attachmentSelectPopover(ev: any) {
     const popover = await this.popoverController.create({
       component: AttachmentPopoverComponent,
-      cssClass: 'my-custom-class',
+      cssClass: "my-custom-class",
       event: ev,
       translucent: true,
     });
@@ -901,8 +998,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.selectedAttachments.splice(attachIndex, 1);
     if (isDelete) {
-      this.filestackService.deleteFile(attachment.handle).subscribe(console.log);
+      this.filestackService
+        .deleteFile(attachment.handle)
+        .subscribe(console.log);
     }
   }
-
 }

@@ -248,7 +248,8 @@ export class FilestackService {
       componentProps: {
         url: url,
         file: filestackUploadedResponse, // for whole object reference
-      }
+      },
+      cssClass: 'filestack-preview-modal',
     });
     return await modal.present();
   }

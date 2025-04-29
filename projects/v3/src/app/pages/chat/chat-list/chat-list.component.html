@@ -25,7 +25,7 @@
       <ion-label class="chat-item-label" aria-describedby="chatroom-name">
         <div class="chat-name-container caption" id="chatroom-name"
           [attr.aria-label]="'chatroom: ' + chat.name">
-          <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}">{{ chat.name }}</p>
+          <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}" [innerHTML]="chat.name"></p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
             <span>{{ utils.getUserRolesForUI('mentor') }}</span>
           </ng-container>

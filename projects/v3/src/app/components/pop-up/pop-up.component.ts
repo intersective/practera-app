@@ -5,7 +5,7 @@ import { ModalController } from '@ionic/angular';
 @Component({
   selector: 'app-pop-up',
   templateUrl: 'pop-up.component.html',
-  styleUrls: ['pop-up.component.css']
+  styleUrls: ['pop-up.component.scss']
 })
 export class PopUpComponent {
   type = '';

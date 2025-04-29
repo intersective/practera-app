@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
-import { map, shareReplay, catchError } from 'rxjs/operators';
+import { map, shareReplay, catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -117,7 +117,6 @@ export class AssessmentService {
   private _review$ = new BehaviorSubject<AssessmentReview>(null);
   review$ = this._review$.pipe(shareReplay(1));
 
-  private assessment: Assessment;
   questions = {};
 
   constructor(
@@ -130,7 +129,11 @@ export class AssessmentService {
     private demo: DemoService,
     private request: RequestService,
   ) {
-    this.assessment$.subscribe((res) => (this.assessment = res));
+    // this.assessment$.subscribe((res) => (this.assessment = res));
+  }
+
+  get assessment() {
+    return this._assessment$.getValue();
   }
 
   clearAssessment() {
@@ -196,7 +199,9 @@ export class AssessmentService {
           },
         },
       )
-      .pipe(map((res) => this._handleAssessmentResponse(res, action)));
+      .pipe(
+        map((res) => this._handleAssessmentResponse(res, action)),
+      );
   }
 
   /**
@@ -217,9 +222,6 @@ export class AssessmentService {
     contextId,
     submissionId?
   ): Subscription {
-    if (!this.assessment || this.assessment.id !== id) {
-      this.clearAssessment();
-    }
     if (environment.demo) {
       return this.demo
         .assessment(id)
@@ -564,11 +566,28 @@ export class AssessmentService {
     ).pipe(
       map(res => {
         if (!this.isValidData('saveQuestionAnswer', res)) {
+          if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+            this.storeInvalidAnswer({ res, submission: variables });
+            throw new Error('Invalid answer format');
+          }
+
           throw new Error('Autosave: Invalid API data');
         }
         return res;
       })
     );
+  }
+
+  // store error in localStorage
+  storeInvalidAnswer(res) {
+    const storedErrors = this.storage.get('saveAssessmentErrors') || [];
+    storedErrors.push({
+      raw: res,
+      status: res.status,
+      message: res.message,
+      time: new Date().toISOString(),
+    });
+    this.storage.set('saveAssessmentErrors', storedErrors);
   }
 
   /**
@@ -632,6 +651,10 @@ export class AssessmentService {
       variables
     ).pipe(map(res => {
       if (!this.isValidData('saveReviewAnswer', res)) {
+        if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+          this.storeInvalidAnswer({ res, submission: variables});
+          throw new Error('Invalid answer format');
+        }
         throw new Error('Autosave: Invalid API data');
       }
       return res;
@@ -668,7 +691,7 @@ export class AssessmentService {
         }
         return res;
       }),
-      catchError(error => {
+      catchError((error) => {
         if (error.status === 429) {
           // If the error is a 429, return a successful Observable
           return of({
@@ -796,20 +819,12 @@ export class AssessmentService {
    * - show pulsecheck/fastfeedback at next sequence if submission successful
    */
   async pullFastFeedback() {
-    try {
-      const modal = await this.fastFeedbackService
-        .pullFastFeedback({ modalOnly: true })
-        .toPromise();
-      if (modal && modal.present) {
-        await modal.present();
-        await modal.onDidDismiss();
-      }
-    } catch (err) {
-      const toasted = await this.NotificationsService.alert({
-        header: $localize`Error retrieving pulse check data`,
-        message: err.msg || JSON.stringify(err),
-      });
-      throw new Error(err);
+    const modal = await this.fastFeedbackService
+      .pullFastFeedback({ modalOnly: true })
+      .toPromise();
+    if (modal && modal.present) {
+      await modal.present();
+      await modal.onDidDismiss();
     }
   }
 

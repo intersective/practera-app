@@ -33,10 +33,14 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
+  // FormControlName
+  @Input() formControlName!: string;
+
   // answer field for submitter & reviewer
   @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+
 
   // the value of answer
   innerValue: any;
@@ -46,14 +50,14 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
 
   constructor(
     private utils: UtilsService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this._showSavedAnswers();
   }
 
   // propagate changes into the form control
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   /**
    * event fired when checkbox is toggled. propagate the change up to the form control using the custom value accessor interface

@@ -1,12 +1,11 @@
-import { Topic } from '@v3/services/topic.service';
-import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange, OnChanges } from '@angular/core';
+import { Topic, TopicService } from '@v3/services/topic.service';
+import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
-import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import * as Plyr from 'plyr';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
-import { SafeHtml } from '@angular/platform-browser';
+import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject } from 'rxjs';
@@ -23,23 +22,29 @@ export class TopicComponent implements OnChanges {
   continuing: boolean;
   @Output() continue = new EventEmitter();
   @Input() buttonDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  thisTask
 
-  iframeHtml = '' as SafeHtml;
+  isMobile: boolean;
+
   btnToggleTopicIsDone = false;
   isLoadingPreview = false;
+
+  iframeHtml: SafeHtml;
+  sanitizedTitle: SafeHtml;
 
   constructor(
     private embedService: EmbedVideoService,
     private notification: NotificationsService,
-    public storage: BrowserStorageService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private sharedService: SharedService,
     private filestack: FilestackService,
+    private topicService: TopicService,
+    private sanitizer: DomSanitizer,
     @Inject(DOCUMENT) private readonly document: Document
-  ) { }
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
-  ngOnChanges(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     this.continuing = false;
     if (this.topic) {
       if (this.topic.videolink) {
@@ -47,18 +52,32 @@ export class TopicComponent implements OnChanges {
       }
       this._initVideoPlayer();
     }
+
+    if (changes.topic?.currentValue?.title) {
+      this.sanitizedTitle = this.sanitizer.bypassSecurityTrustHtml(changes.topic?.currentValue?.title);
+    }
   }
 
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
   }
 
+  ionViewDidLeave() {
+    this.topicService.clearTopic();
+  }
+
   private _setVideoUrlElelemts() {
-    this.iframeHtml = null;
     if (this.topic.videolink.includes('vimeo') ||
-        this.topic.videolink.includes('youtube') || 
+        this.topic.videolink.includes('youtube') ||
         this.topic.videolink.includes('youtu.be')) {
-      this.iframeHtml = this.embedService.embed(this.topic.videolink, { attr: { class: !this.utils.isMobile() ? 'topic-video desktop-view' : 'topic-video' } }) || null;
+      this.iframeHtml =
+        this.embedService.embed(this.topic.videolink, {
+          attr: {
+            class: !this.utils.isMobile()
+              ? "topic-video desktop-view"
+              : "topic-video",
+          },
+        }) || null;
     }
   }
 
@@ -112,7 +131,6 @@ export class TopicComponent implements OnChanges {
           header: 'Error Previewing file',
           message: err.msg || JSON.stringify(err)
         });
-        // this.newRelic.noticeError(`${JSON.stringify(err)}`);
         return toasted;
       }
     }
@@ -133,5 +151,9 @@ export class TopicComponent implements OnChanges {
     this.continuing = true;
     this.continue.emit(topic);
     return;
+  }
+
+  handleVideoError(videoError) {
+    console.error('Video Error::', videoError);
   }
 }

@@ -1,6 +1,12 @@
 .icon-container {
   margin-right: 20px;
   font-size: 24px  !important;
+
+  .bookmark-icon {
+    position: absolute;
+    height: 50%;
+    left: -0.5em;
+  }
 }
 
 .bolder {
@@ -105,4 +111,12 @@ ion-avatar {
 // use for expired event title @extend .gray-2 not working because this is a component scss file.
 .color-gray-2 {
   color: var(--practera-60-percent-gray) !important;
+}
+
+// make activity title stand out
+.lastVisited {
+  --background: var(--practera-light-grey-25);
+  div.body-2 {
+    font-style: italic !important;
+  }
 }

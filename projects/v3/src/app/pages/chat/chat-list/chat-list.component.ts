@@ -2,7 +2,6 @@ import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { ChatService, ChatChannel } from '@v3/services/chat.service';
 import { PusherService } from '@v3/services/pusher.service';
 
@@ -23,13 +22,12 @@ export class ChatListComponent {
   isMobile: boolean = false;
 
   constructor(
-    private chatService: ChatService,
-    public router: Router,
-    public storage: BrowserStorageService,
     public utils: UtilsService,
-    public fastFeedbackService: FastFeedbackService,
+    private chatService: ChatService,
+    private router: Router,
+    private storage: BrowserStorageService,
     private ngZone: NgZone,
-    public pusherService: PusherService
+    private pusherService: PusherService
   ) {
     this.isMobile = this.utils.isMobile();
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
@@ -60,7 +58,6 @@ export class ChatListComponent {
     this._initialise();
     this._checkAndSubscribePusherChannels();
     this._loadChatData();
-    this.fastFeedbackService.pullFastFeedback().subscribe();
   }
 
   /**

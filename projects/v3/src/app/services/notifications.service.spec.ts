@@ -6,7 +6,7 @@ import { AchievementService } from './achievement.service';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 
-import { NotificationsService } from './notifications.service';
+import { api, NotificationsService } from './notifications.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
 
@@ -78,6 +78,69 @@ describe('NotificationsService', () => {
       expect(service.modal).toHaveBeenCalledWith({} as any, {
         reviewId: 1,
         redirect: ['home']
+      });
+    });
+  });
+
+  describe('markTodoItemAsDone', () => {
+    let requestService: jasmine.SpyObj<RequestService>;
+    let storageService: jasmine.SpyObj<BrowserStorageService>;
+
+    beforeEach(() => {
+      requestService = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+      storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    });
+
+    it('should call request.post with correct parameters when identifier is provided', () => {
+      const projectId = 123;
+      const identifier = 'test-identifier';
+      storageService.getUser.and.returnValue({ projectId });
+
+      service.markTodoItemAsDone({ identifier });
+
+      expect(requestService.post).toHaveBeenCalledWith({
+        endPoint: api.post.todoItem,
+        data: {
+          identifier,
+          project_id: projectId,
+          is_done: true
+        }
+      });
+    });
+
+    it('should call request.post with correct parameters when id is provided', () => {
+      const projectId = 123;
+      const id = 456;
+      storageService.getUser.and.returnValue({ projectId });
+
+      service.markTodoItemAsDone({ id });
+
+      expect(requestService.post).toHaveBeenCalledWith({
+        endPoint: api.post.todoItem,
+        data: {
+          id,
+          project_id: projectId,
+          is_done: true
+        }
+      });
+    });
+
+    it('should call request.post with correct parameters when both identifier and id are provided', () => {
+      const projectId = 123;
+      const identifier = 'test-identifier';
+      const id = 456;
+      storageService.getUser.and.returnValue({ projectId });
+
+      service.markTodoItemAsDone({ identifier, id });
+
+      expect(requestService.post).toHaveBeenCalledWith({
+        endPoint: api.post.todoItem,
+        data: {
+          identifier,
+          id,
+          project_id: projectId,
+          is_done: true
+        }
       });
     });
   });

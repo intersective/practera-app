@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit } from '@angular/core';
+import { environment } from '@v3/environments/environment';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -14,6 +15,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
@@ -89,6 +91,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   questionsForm: FormGroup;
 
+  @ViewChild('form') form: HTMLFormElement;
+  @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+
   // prevent non participants from submitting team assessment
   get preventSubmission() {
     return this._preventSubmission();
@@ -111,6 +116,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.subscribeSaveSubmission();
+  }
+
+  getQuestionBoxes() {
+    return this.questionBoxes;
   }
 
   subscribeSaveSubmission() {
@@ -152,14 +161,53 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (error.message.includes('Autosave')) {
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
-            label: $localize`Save failed. Please try again.`,
+            label: $localize`Auto save failed. Please try again.`,
           });
+          // Resubscribe for autosave failures
+          this.resubscribe$.next();
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
+          // @link https://github.com/intersective/core-graphql-api/commit/92e636be64a3697bebda91d6f66eea487d8fb2a9#diff-4f45773ff5b570b41418d857c86f5b1e48b8e7ed744d92ebef4b96102de912e3R17-R22
+
+          if ((error.message.toLowerCase()).includes('invalid answer')) {
+            let message = $localize`An error has occurred. The page will reload shortly; please try again.`;
+
+            const invalidSaveErrors = this.storage.get('saveAssessmentErrors');
+            const errQuantity = invalidSaveErrors?.length;
+            if (errQuantity > 2) {
+              const lastError = invalidSaveErrors[errQuantity - 1];
+              message = $localize`Your answers couldn't be saved. Please reach out to your coordinator for help.` + `\n` + this.invalidAnswerEmailContent(lastError);
+            }
+            await this.notifications.alert({
+              header: $localize`Error`,
+              message,
+              buttons: [
+                {
+                  text: $localize`OK`,
+                  role: 'cancel',
+                  handler: () => {
+                    window.location.reload(); // force reload
+                  }
+                }
+              ],
+            });
+          }
         }
-        this.resubscribe$.next();
       }
     );
+  }
+
+  private invalidAnswerEmailContent(rawData) {
+    const body = `Hi Team,\n
+I am experiencing issues with submitting my assessment answers.\n
+Please do not change anything below this line - this information will help the Practera team identify the issue\n
+Assessment ID: ${this.assessment.id}
+Activity ID: ${this.activityId}\n\n
+Question Info: ${JSON.stringify(rawData)}\n\n
+Error: Invalid answer format detected\n
+Best regards`;
+
+    return `<a href="mailto:${environment.helpline}?subject=Assessment%20Answer%20Invalid&body=${encodeURIComponent(body)}">${environment.helpline}</a>`;
   }
 
   /**
@@ -220,10 +268,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     );
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     if (!this.assessment) {
       return;
     }
+
     this._initialise();
     this._populateQuestionsForm();
     this._handleSubmissionData();
@@ -305,7 +354,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       // user is trying to do the review, if
       // - the submission is pending review and
       // - this.action is review
-      if (this.submission.status === 'pending review' && this.action === 'review') {
+      if (this.submission?.status === 'pending review' && this.action === 'review') {
         this.isPendingReview = true;
       }
       return;
@@ -346,7 +395,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * @param {Object[]} answers a list of answer object (in submission-based format)
    */
   private _compulsoryQuestionsAnswered(answers): Question[] {
-    const missing = [];
+    const missing: Question[] = [];
     const answered = {};
     this.utils.each(answers, answer => {
       answered[answer.questionId] = answer;
@@ -357,6 +406,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (this._isRequired(question)) {
           if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
             missing.push(question);
+
+            // add highlight effect to the question
+            const questionElement = this.form.nativeElement.querySelector(`#q-${question.id}`);
+            if (questionElement) {
+              questionElement.classList.add('flash-highlight');
+            }
           }
         }
       });
@@ -472,6 +527,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       return this.notifications.alert({
         message: $localize`Required question answer missing!`,
         buttons: [
+          {
+            text: $localize`Show me`,
+            handler: () => {
+              this.scrollToRequiredQuestion(`#q-${requiredQuestions[0].id}`);
+            },
+          },
           {
             text: $localize`OK`,
             role: 'cancel',
@@ -645,20 +706,42 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
+    this.btnDisabled$.next(true);
     return this.assessmentService.resubmitAssessment({
       assessment_id: this.assessment.id,
       submission_id: this.submission.id
     }).subscribe({
-      next: () => {
+      next: async () => {
         this.activityService.getActivity(this.activityId);
-        this.assessmentService.getAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id);
+        await this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id).toPromise();
+        this.btnDisabled$.next(false);
       },
-      error: () => {
-        this.notifications.assessmentSubmittedToast({
+      error: async () => {
+        await this.notifications.assessmentSubmittedToast({
           isFail: true,
           label: $localize`Resubmit request failed. Please try again.`,
         });
+
+        this.btnDisabled$.next(false);
       }
     });
+  }
+
+  flashBlink(element: HTMLElement) {
+    // Add blink class
+    element.classList.add('blink');
+
+    // Remove the class after a short delay
+    setTimeout(() => {
+      element.classList.remove('blink');
+    }, 2000); // Adjust the timeout as needed for blinking duration
+  }
+
+  scrollToRequiredQuestion(elementId): void {
+    const element = document.querySelector(elementId);
+    if (element) {
+      this.utils.scrollToElement(element);
+      this.flashBlink(element);
+    }
   }
 }

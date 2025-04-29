@@ -13,6 +13,7 @@ export const environment = {
   graphQL: 'http://127.0.0.1:8000/',
   chatGraphQL: 'http://localhost:3000/local/graphql/',
   globalLoginUrl: 'https://login.p2.practera.com',
+  badgeProjectUrl: 'https://badge-issuer.p2.practera.com',
   stackUuid: '9c31655d-fb73-4ea7-8315-aa4c725b367e',
   intercomAppId: '',
   filestack: {
@@ -40,8 +41,9 @@ export const environment = {
   },
   defaultCountryModel: 'AUS',
   intercom: false,
-  newrelic: true,
+  newrelic: false,
   goMobile: false,
+  helpline: 'help@practera.com',
 };
 
 /*

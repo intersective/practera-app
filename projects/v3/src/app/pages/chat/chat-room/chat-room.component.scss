@@ -1,3 +1,4 @@
+
 $message-body-size: 60%;
 
 .not-started-empty-status {
@@ -81,6 +82,10 @@ $message-body-size: 60%;
           .message-text {
             margin-bottom: 10px;
           }
+
+          ion-icon, ion-note, ion-label {
+            color: var(--ion-text-color) !important;
+          }
         }
 
         p {
@@ -112,6 +117,9 @@ $message-body-size: 60%;
           position:relative;
           cursor: pointer;
           padding: 16px;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal;
 
           .message-text {
             margin-bottom: 10px;
@@ -187,6 +195,7 @@ $message-body-size: 60%;
       }
 
       &.send-messages {
+        --color: var(--ion-color-primary-contrast) !important;
         text-align: right;
         margin-right: 0;
 
@@ -195,11 +204,11 @@ $message-body-size: 60%;
 
           &.video-attachment-container {
             .label {
-              color: white;
+              color: var(--ion-color-primary-contrast) !important;
             }
             #inner-box {
               p {
-                color: white;
+                color: var(--ion-color-primary-contrast) !important;
               }
             }
           }
@@ -210,11 +219,10 @@ $message-body-size: 60%;
             --background: transparent;
             cursor: pointer;
             ion-icon, ion-note, ion-label {
-              color: white !important;
+              color: var(--ion-color-primary-contrast) !important;
             }
           }
 
-          // margin-left: calc(100% - 150px) !important;
           float: right;
         }
       }
@@ -334,8 +342,8 @@ $message-body-size: 60%;
         min-height: 48px;
 
         .message-text-editor {
-          .ql-toolbar, .ql-container.ql-snow {
-            border: none;
+          .ql-toolbar.ql-snow, .ql-container.ql-snow {
+            border: none !important;
           }
         }
 
@@ -518,4 +526,16 @@ ion-button.ion-focused {
 
 ion-fab.scroll-to-bottom {
   opacity: 0.7;
+}
+
+
+.ql-editor {
+  a {
+    text-decoration: underline;
+    word-break: break-all;
+  }
+
+   a:hover {
+    color: var(--ion-color-primary);
+  }
 }
