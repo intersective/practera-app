@@ -710,4 +710,24 @@ describe('AssessmentComponent', () => {
       expect(component.restrictedAccess).toEqual(result);
     });
   });
+
+  describe('scrollIntoView for unanswered question', () => {
+    it('should scroll to the required question and add/remove blink class', fakeAsync(() => {
+      const elementId = '#test-element';
+      const element = document.createElement('div');
+      element.id = 'test-element';
+      document.body.appendChild(element);
+
+      spyOn(document, 'querySelector').and.returnValue(element);
+      component.scrollToRequiredQuestion(elementId);
+
+      expect(utils.scrollToElement).toHaveBeenCalledWith(element);
+      expect(element.classList.contains('blink')).toBeTrue();
+
+      tick(2000); // Simulate the passage of time
+      expect(element.classList.contains('blink')).toBeFalse();
+
+      document.body.removeChild(element);
+    }));
+  });
 });

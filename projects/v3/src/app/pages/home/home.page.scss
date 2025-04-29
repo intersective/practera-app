@@ -67,3 +67,24 @@ ion-content.scrollable-desktop {
   border: 1px solid var(--ion-color-primary);
   display: block;
 }
+
+.ontrack-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.ontrack-title {
+  flex: 0 1 auto;
+  margin-top: 10px;
+  align-items: center;
+
+  ion-icon {
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}

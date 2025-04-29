@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { Experience } from './experience.service';
 
 @Injectable({
   providedIn: 'root'
@@ -87,6 +88,23 @@ export class DemoService {
     }).pipe(delay(1000));
   }
 
+  pulseCheck() {
+    return of({
+      data: {
+        confidence: {
+          self: 1,
+          team: .5,
+          expert: 0
+        },
+        satisfaction: {
+          self: 0.5,
+          team: 0.5,
+          expert: 0.5
+        }
+      }
+    }).pipe(delay(1000));
+  }
+
   projectProgress() {
     return of({
       data: {
@@ -135,10 +153,15 @@ export class DemoService {
         id: i + 1,
         name: `Badge${ i + 1 }`,
         description: i < 2 ? `Badge description${ i + 1 }` : this.description,
-        image: 'https://www.filepicker.io/api/file/Pt5V84aSTvyYEil1bttc',
+        image: 'assets/images/badge.png',
         points: Math.floor(Math.random() * 1000),
         isEarned: i < 3,
-        earnedDate: '2021-10-04 05:44:49'
+        earnedDate: '2021-10-04 05:44:49',
+        progress: Math.random(),
+        active: i % 2 === 0,
+        certificateUrl: 'assets/images/badge.png',
+        type: '',
+        badge: 'assets/images/badge.png',
       }))
     };
   }
@@ -1617,7 +1640,7 @@ export class DemoService {
     ]
   }
 
-  get deletedExperience() {
+  get deletedExperience(): Experience {
     return {
       "id": 1933,
       "uuid": "ff96d1bc-a8aa-4f76-a048-f583c95fd013",
@@ -1627,7 +1650,7 @@ export class DemoService {
       "type": "Other",
       "leadImage": "https://cdn.filestackcontent.com/DX2DHY73QRuZvn7yUukP",
       "status": null,
-      "setupStep": null,
+      // "setupStep": null,
       "color": "#ff9c01",
       "secondaryColor": "#ffd966",
       "todoItemCount": 0,
@@ -1642,7 +1665,12 @@ export class DemoService {
       "iconUrl": "https://cdn.filestackcontent.com/oJBGJGbBRNq4TIKt2AGz",
       "reviewRating": true,
       "truncateDescription": true,
-      "__typename": "Experience"
+      "config": {},
+      "progress": 0,
+      "featureToggle": {
+        "pulseCheckIndicator": true,
+      },
+      "projectId": 1,
     };
   }
 }
