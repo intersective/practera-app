@@ -1047,4 +1047,24 @@ export class NotificationsService {
 
     return await modal.present();
   }
+
+  /**
+   * Show team check-in alert when there's misalignment in team status
+   */
+  async showTeamCheckInAlert() {
+    const alert = await this.alertController.create({
+      header: 'Team Check-In Time! 👥',
+      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
+        `✓ Schedule a quick team huddle\n` +
+        `✓ Review your Project plan and milestones together\n` +
+        `✓ Redistribute tasks if needed\n` +
+        `✓ Document 3 next steps forward\n\n` +
+        `Need strategies? Visit Teamwork Toolkit →\n` +
+        `We're here to help: programs@practera.com`,
+      buttons: ['OK'],
+      cssClass: 'team-check-in-alert'
+    });
+
+    await alert.present();
+  }
 }
