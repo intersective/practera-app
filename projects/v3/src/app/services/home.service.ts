@@ -1,3 +1,4 @@
+import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
@@ -17,6 +18,13 @@ export interface Experience {
   cardUrl?: string;
 }
 
+export interface UnlockConditionMeta {
+  activityId: number;
+  assessmentId: number;
+  topicId: number;
+  contextId: number;
+}
+
 export interface Milestone {
   id: number;
   name: string;
@@ -28,6 +36,16 @@ export interface Milestone {
     isLocked: boolean;
     leadImage: string;
     progress?: number;
+    unlockConditions?: {
+      name: string;
+      action: string;
+      meta: UnlockConditionMeta
+    }[];
+  }[];
+  unlockConditions: {
+    name: string;
+    action: string;
+    meta: UnlockConditionMeta;
   }[];
 }
 
@@ -151,8 +169,28 @@ export class HomeService {
           name
           description
           isLocked
-          activities{
+          activities {
             id name isLocked leadImage
+            unlockConditions {
+              name
+              action
+              meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
+            }
+          }
+          unlockConditions {
+            name
+            action
+            meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
           }
         }
       }`
@@ -213,11 +251,15 @@ export class HomeService {
         `query {
         project {
           progress
-          milestones{
+          milestones {
             id
             progress
-            activities{
+            activities {
               id progress
+            }
+            unlockConditions {
+              name
+              action
             }
           }
         }
@@ -293,12 +335,19 @@ export class HomeService {
 
   // traffic light indicator
   getPulseCheckStatuses() {
+    if (environment.demo) {
+      return of(this.demo.getPulseCheckStatus(this.storageService.getUser().role));
+    }
     return this.apolloService.graphQLWatch(
       `query pulseCheckStatus {
           pulseCheckStatus {
             self
             team
             expert
+            teams {
+              teamName
+              average
+            }
           }
         }`
     );

@@ -1,3 +1,8 @@
+div.content {
+  display: flex;
+  flex-direction: column;
+}
+
 ion-button.ion-focused {
   border: 1px solid black;
   border-radius: 8px;
@@ -28,4 +33,14 @@ ion-button.ion-focused {
 
 .div-after-logo {
   margin-top: 20px;
+}
+
+.link {
+  cursor: pointer;
+  color: var(--ion-color-primary);
+
+  &:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+  }
 }
