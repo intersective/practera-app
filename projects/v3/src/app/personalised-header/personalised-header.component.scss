@@ -15,6 +15,10 @@ ion-avatar {
     &.no-hover-effect {
       --background-hover: none;
     }
+    &.loading-overlay {
+      pointer-events: none;
+      opacity: 0.5;
+    }
   }
   .notify-btn {
     height: 34px;

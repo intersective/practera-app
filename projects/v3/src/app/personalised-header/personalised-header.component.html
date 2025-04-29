@@ -18,7 +18,10 @@
   <ion-button class="avatar-btn"
     aria-label="go to settings"
     (click)="settings()"
-    [ngClass]="{'no-hover-effect': user?.image}"
+    [ngClass]="{
+      'no-hover-effect': user?.image,
+      'loading-overlay': isLoadingSetting === true
+    }"
   >
     <ion-avatar class="ion-margin-horizontal"
       *ngIf="user?.image"

@@ -1,4 +1,4 @@
-<div class="wrapper">
+<ion-footer class="wrapper">
   <ng-container [ngSwitch]="buttonType">
     <ion-text *ngSwitchCase="'blocked-role'" color="grey-50">
       <p>Team assessment submissions restricted to participants only.</p>
@@ -11,6 +11,7 @@
         (click)="onClick($event)"
       >{{ text }}</ion-button>
       <ion-button *ngIf="showResubmit === true"
+        [disabled]="disabled$ | async"
         mode="ios"
         [color]="color"
         (click)="onResubmit($event)"
@@ -18,4 +19,4 @@
     </ng-container>
 
   </ng-container>
-</div>
+</ion-footer>

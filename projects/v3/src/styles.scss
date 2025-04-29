@@ -390,14 +390,19 @@ quill-view {
       .ngx-quill-view {
         .ql-editor {
           color: white !important;
-            p {
+          p {
+            color: white !important;
+            a {
+              text-decoration: underline;
               color: white !important;
-              a {
-                text-decoration: underline;
-                color: white !important;
+
+              &:hover {
+                color: initial !important;
               }
             }
+          }
         }
+
       }
     }
   }
@@ -438,4 +443,18 @@ Used in achievement
   &.hidden {
     display: none;
   }
+}
+
+@media (min-width: 1900px) {
+  .modal-default, .filestack-preview-modal {
+    --width: 50vw;
+    --height: 70vh;
+  }
+}
+
+/****************
+ * quill editor (override quill-editor style)
+ ****************/
+quill-editor .ql-toolbar.ql-snow {
+  border: none !important;
 }

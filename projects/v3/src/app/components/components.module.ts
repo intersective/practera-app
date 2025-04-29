@@ -1,3 +1,4 @@
+import { TrafficLightComponent } from './traffic-light/traffic-light.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -37,6 +38,7 @@ import { VideoConversionComponent } from './video-conversion/video-conversion.co
 import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
+import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -97,6 +99,8 @@ const largeCircleDefaultConfig = {
     BottomActionBarComponent,
     SupportPopupComponent,
     FallbackImageDirective,
+    TrafficLightComponent,
+    TrafficLightGroupComponent,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -136,7 +140,9 @@ const largeCircleDefaultConfig = {
     TopicComponent,
     BrandingLogoComponent,
     BottomActionBarComponent,
-    SupportPopupComponent
+    SupportPopupComponent,
+    TrafficLightComponent,
+    TrafficLightGroupComponent,
   ],
 })
 export class ComponentsModule {}
