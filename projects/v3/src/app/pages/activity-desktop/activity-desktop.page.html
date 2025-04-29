@@ -42,7 +42,7 @@
     </ion-row>
   </ion-grid>
 
-  <ng-container *ngIf="currentTask?.type === 'Assessment'">
+  <ng-container *ngIf="longAsmtNavigator && currentTask?.type === 'Assessment'">
     <span class="tooltip-container"
       [ngStyle]="tooltipStyle"
       *ngIf="tooltipVisible">
