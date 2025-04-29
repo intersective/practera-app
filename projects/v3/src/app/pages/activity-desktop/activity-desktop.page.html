@@ -19,7 +19,7 @@
 <ion-content>
   <ion-grid class="ion-no-padding">
     <ion-row>
-      <ion-col size="12" size-md="4" size-lg>
+      <ion-col size="12" size-md="3" size-lg>
         <app-activity
           [activity]="activity"
           [currentTask]="currentTask"
@@ -30,10 +30,10 @@
       </ion-col>
 
       <ion-col #scrollableTaskContent
-        size="12" size-md="8" class="border-left"
+        size="12" size-md="9" class="border-left"
         (scroll)="onScroll()"
         [ngClass]="{'loading-overlay': isLoadingAssessment}">
-        <ng-container *ngIf="notInATeamAndForTeamOnly === true; else showCurrentTask">
+        <ng-container *ngIf="notInATeamAndForTeamOnly; else showCurrentTask">
           <div class="centered-text">
             This assessment can only be accessed when you are in a team.
           </div>
@@ -42,7 +42,7 @@
     </ion-row>
   </ion-grid>
 
-  <ng-container *ngIf="currentTask?.type === 'Assessment'">
+  <ng-container *ngIf="longAsmtNavigator && currentTask?.type === 'Assessment'">
     <span class="tooltip-container"
       [ngStyle]="tooltipStyle"
       *ngIf="tooltipVisible">
