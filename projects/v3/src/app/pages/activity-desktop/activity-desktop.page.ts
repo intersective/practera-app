@@ -33,8 +33,6 @@ export class ActivityDesktopPage {
   // loading overlay for assessment
   isLoadingAssessment: boolean = false;
 
-  longAsmtNavigator: boolean = false; // disable fab navigator on long assessment
-
   // grabs from URL parameter
   urlParams = {
     action: null,
