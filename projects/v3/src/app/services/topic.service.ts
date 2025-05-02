@@ -154,7 +154,7 @@ export class TopicService {
       topic.videolink = thisTopic.Story.videolink;
     }
 
-    if (this.utils.has(thisTopic.Story, 'audiolink')) {
+    if (thisTopic.Story?.audiolink) {
       topic.audio = {
         link: thisTopic.Story.audiolink,
         language: thisTopic.Story.meta?.audio_content?.language || null,
