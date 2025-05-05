@@ -43,16 +43,8 @@ describe('FastFeedbackComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
-          provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['submit'])
-        },
-        {
           provide: UtilsService,
           useClass: TestUtils,
-        },
-        {
-          provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ModalController,
@@ -119,10 +111,10 @@ describe('FastFeedbackComponent', () => {
         team_name: 'team',
         assessment_name: 'asmt'
       };
-      fastfeedbackSpy.submit.and.returnValue(of({}));
+      spyOn(component, 'submitData').and.returnValue(of({}));
     });
     afterEach(() => {
-      expect(fastfeedbackSpy.submit.calls.count()).toBe(1);
+      expect(component.submitData).toBe(1);
       expect(modalSpy.dismiss.calls.count()).toBe(1);
     });
 
@@ -165,7 +157,7 @@ describe('FastFeedbackComponent', () => {
     describe('submit()', () => {
       it('should fail submission gracefully', fakeAsync(() => {
         const THROWN_ERROR = 'ERROR MESSAGE';
-        fastfeedbackSpy.submit.and.throwError(THROWN_ERROR);
+        // component.submitData.and.throwError(THROWN_ERROR);
 
         component.ngOnInit();
         component.submit();

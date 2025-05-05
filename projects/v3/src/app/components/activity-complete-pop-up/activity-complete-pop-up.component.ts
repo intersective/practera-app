@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-// import { UtilsService } from '@v3/services/utils.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,19 +11,17 @@ import { Router } from '@angular/router';
 export class ActivityCompletePopUpComponent {
   activityId: number;
   activityCompleted: boolean;
+  isMobile: boolean;
   @ViewChild('activityComplete') activityComplete;
   @ViewChild('reviewTasks') reviewTasks;
   @ViewChild('continueNextActivity') continueNextActivity;
 
   constructor(
     public modalController: ModalController,
-    // private utils: UtilsService,
+    private utils: UtilsService,
     private router: Router,
-  ) {}
-
-  get isMobile() {
-    return false;
-    // return this.utils.isMobile();
+  ) {
+    this.isMobile = this.utils.isMobile();
   }
 
   ionViewDidEnter() {

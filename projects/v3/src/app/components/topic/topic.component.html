@@ -15,6 +15,21 @@
     </video>
   </div>
 
+  <div *ngIf="topic.audio" class="audio-player-container ion-margin-vertical">
+    <div class="audio-player-header">
+      <ion-icon name="musical-notes-outline" class="audio-icon"></ion-icon>
+      <span class="headline-4" i18n="audio content">
+        Listen to content {{ "(" + topic.audio.language + ")" | uppercase }}
+      </span>
+    </div>
+    <div class="audio-player">
+      <audio controls class="audio-element" preload="metadata">
+        <source [src]="topic.audio.link" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  </div>
+
   <app-description *ngIf="topic.content"
     class="body-2"
     [name]="'topic'+topic.id"

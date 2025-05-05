@@ -3,11 +3,22 @@ import { ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
-import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { RequestService } from 'request';
+import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+import { DemoService } from '../../services/demo.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/services/notifications.service';
+
+export interface Meta {
+  context_id: number;
+  team_id: number;
+  target_user_id: number;
+  team_name: string;
+  assessment_name: string;
+}
 
 @Component({
   selector: "app-fast-feedback",
@@ -31,7 +42,9 @@ export class FastFeedbackComponent implements OnInit {
     private storage: BrowserStorageService,
     private navParams: NavParams,
     private homeService: HomeService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private request: RequestService,
+    private demo: DemoService
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -116,5 +129,19 @@ export class FastFeedbackComponent implements OnInit {
 
   get isRedColor(): boolean {
     return this.utils.isColor("red", this.storage.getUser().colors?.primary);
+  }
+
+  submitData(data, params): Observable<any> {
+    if (environment.demo) {
+      // eslint-disable-next-line no-console
+      console.log('data', data, 'params', params);
+      return this.demo.normalResponse('observable') as Observable<any>;
+    }
+    return this.request.post(
+      {
+        endPoint: 'api/v2/observation/slider/create.json',
+        data,
+        httpOptions: { params }
+      });
   }
 }

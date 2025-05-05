@@ -114,5 +114,4 @@ describe('TopicService', () => {
     service.updateTopicProgress(1, '').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });
-
 });
