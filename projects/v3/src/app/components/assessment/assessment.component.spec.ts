@@ -274,16 +274,15 @@ describe('AssessmentComponent', () => {
   });
 
   describe('ngOnChanges()', () => {
-    it('should straightaway return when assessment not loaded', () => {
-      expect(component.ngOnChanges({})).toBeFalsy();
-    });
+    it('should straightaway return when assessment not loaded', () => {      expect(component.ngOnChanges()).toBeFalsy();
+  });
 
-    it('should update assessment with latest data', () => {
-      component.assessment = mockAssessment;
-      component.ngOnChanges({});
+  it('should update assessment with latest data', () => {
+    component.assessment = mockAssessment;
+    component.ngOnChanges();
 
-      expect(component.doAssessment).toEqual(true);
-      expect(component.feedbackReviewed).toEqual(false);
+    expect(component.doAssessment).toEqual(true);
+    expect(component.feedbackReviewed).toEqual(false);
       expect(component.btnDisabled$.value).toEqual(false);
       expect(component.isNotInATeam).toEqual(false);
       expect(component.isPendingReview).toEqual(false);
@@ -293,7 +292,7 @@ describe('AssessmentComponent', () => {
       component.assessment = mockAssessment;
       component.submission = mockSubmission as any;
       component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.ngOnChanges();
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -305,7 +304,7 @@ describe('AssessmentComponent', () => {
       component.assessment = mockAssessment;
       component.submission = mockSubmission as any;
       component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.ngOnChanges();
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -320,7 +319,7 @@ describe('AssessmentComponent', () => {
       component.submission.status = 'in progress';
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
-      component.ngOnChanges({});
+      component.ngOnChanges();
 
       tick();
       expect(component.doAssessment).toBeTrue();
@@ -342,7 +341,7 @@ describe('AssessmentComponent', () => {
       const spy = spyOn(component.savingMessage$, 'next');
 
       component.action = 'review';
-      component.ngOnChanges({});
+      component.ngOnChanges();
 
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
@@ -357,7 +356,7 @@ describe('AssessmentComponent', () => {
       component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'done';
-      component.ngOnChanges({});
+      component.ngOnChanges();
 
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });

@@ -70,7 +70,7 @@ describe('TopicComponent', () => {
   });
 
   it('should call stopPlayingVideos on ionViewWillLeave', () => {
-    sharedSpy.stopPlayingVideos.and.returnValue('');
+    sharedSpy.stopPlayingVideos.and.returnValue(undefined);
     component.ionViewWillLeave();
     expect(sharedSpy.stopPlayingVideos).toHaveBeenCalledTimes(1);
   });
@@ -155,7 +155,7 @@ describe('TopicComponent', () => {
     it('should handle preview file failure', fakeAsync(() => {
       const SAMPLE_RESULT = 'FAILED_SAMPLE';
       let result: any;
-      notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_RESULT));
+      notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_RESULT as any));
       filestackSpy.previewFile.and.rejectWith(new Error('File preview test error'));
       component.isLoadingPreview = false;
 

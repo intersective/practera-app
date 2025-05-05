@@ -7,6 +7,7 @@ import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { environment } from '@v3/environments/environment';
+import { FileInput, TusFileResponse } from '../types/assessment';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -96,7 +97,7 @@ describe('FileDisplayComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
-      };
+      } as TusFileResponse;
     });
     it('should display image element based on filetype', () => {
       component.fileType = 'image';
@@ -150,7 +151,7 @@ describe('FileDisplayComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
-      }, 999);
+      } as TusFileResponse, 999);
 
       expect(component.removeFile.emit).toHaveBeenCalled();
     });
@@ -166,7 +167,7 @@ describe('FileDisplayComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
-      }, 0);
+      } as TusFileResponse, 0);
 
       // expect(component.removeFile.emit).toHaveBeenCalled();
       expect(utilsSpy.downloadFile).toHaveBeenCalled();
@@ -179,7 +180,7 @@ describe('FileDisplayComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
-      }, 1);
+      } as TusFileResponse, 1);
 
       tick();
       expect(filestackSpy.previewFile).toHaveBeenCalled();
@@ -192,7 +193,7 @@ describe('FileDisplayComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
-      }, 2);
+      } as TusFileResponse, 2);
 
       tick();
       expect(component.removeFile.emit).toHaveBeenCalled();
