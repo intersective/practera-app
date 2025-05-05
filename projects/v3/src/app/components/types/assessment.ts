@@ -1,11 +1,14 @@
 // @link: https://intersective.github.io/core-graphql-api/fileinput.doc.html
+
+export interface TusFileResponse extends FileInput {
+  directUrl: string;
+  cdnUrl: string;
+}
 export interface FileInput {
   bucket: string;
   path: string;
   name: string; // file name
-  url: string; // file uploaded url (direct url)
-  cdnUrl: string; // file cdn url
-  directUrl: string; // file direct url
+  url: string; // file uploaded url (cdnUrl)
   extension: string; // file extension
   type: string; // mime type
   size: number; // file size
