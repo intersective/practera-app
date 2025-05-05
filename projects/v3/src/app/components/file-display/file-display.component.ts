@@ -7,7 +7,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
-import { FileInput } from '../types/assessment';
+import { FileInput, TusFileResponse } from '../types/assessment';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 import { ModalController } from '@ionic/angular';
 
@@ -18,7 +18,7 @@ import { ModalController } from '@ionic/angular';
 })
 export class FileDisplayComponent {
   @Input() fileType: string = 'any';
-  @Input() file?: FileInput;
+  @Input() file?: TusFileResponse;
   @Input() isFileComponent: boolean = false; // flag parent component is FileComponent
   @ViewChild('videoEle') videoEle?: ElementRef = new ElementRef(null);
   @Output() removeFile: EventEmitter<any> = new EventEmitter<any>();
@@ -57,12 +57,14 @@ export class FileDisplayComponent {
 
 
   actionBtnClick(
-    file: FileInput,
+    file: TusFileResponse,
     index: number
   ): void {
     switch (index) {
       case 0:
-        this.utils.downloadFile(file.url, file.name);
+        // fallback for file URL (when value is loaded from API)
+        const url = (file as TusFileResponse).directUrl || (file as FileInput).url;
+        this.utils.downloadFile(url, file.name);
         return;
       case 1:
         this.removeUploadedFile(file);
@@ -70,7 +72,7 @@ export class FileDisplayComponent {
     }
   }
 
-  removeUploadedFile(file?: FileInput): void {
+  removeUploadedFile(file?: TusFileResponse): void {
     if (this.removeFile) {
       return this.removeFile.emit(file);
     }
