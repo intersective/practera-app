@@ -63,7 +63,7 @@ export class TrafficLightGroupComponent {
       return;
     }
 
-    await this.notificationsService.showTeamCheckInAlert();
+    await this.fastFeedbackService.showTeamCheckInAlert();
   }
 
 }

@@ -8,7 +8,6 @@ import { Achievement } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
-import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
@@ -438,33 +437,7 @@ export class NotificationsService {
     );
   }
 
-  /**
-   * Pop up the fast feedback modal window
-   */
-  fastFeedbackModal(
-    props: {
-      questions?: Array<Question>;
-      meta?: Meta | Object;
-    },
-    options: {
-      closable?: boolean;
-      modalOnly: boolean;
-    } = {
-      closable: false,
-      modalOnly: false,
-    }
-  ): Promise<HTMLIonModalElement | void> {
-    const modalConfig = {
-      backdropDismiss: options?.closable === true,
-      showBackdrop: false,
-      ...options
-    };
-    if (options.modalOnly) {
-      return this.modalOnly(FastFeedbackComponent, props, modalConfig);
-    }
-
-    return this.modal(FastFeedbackComponent, props, modalConfig);
-  }
+  // Fast feedback modal functionality has been moved to FeedbackModalService
 
   getTodoItems(): Observable<any> {
     return this.request
@@ -1049,25 +1022,5 @@ export class NotificationsService {
     });
 
     return await modal.present();
-  }
-
-  /**
-   * Show team check-in alert when there's misalignment in team status
-   */
-  async showTeamCheckInAlert() {
-    const alert = await this.alertController.create({
-      header: 'Team Check-In Time! 👥',
-      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
-        `✓ Schedule a quick team huddle\n` +
-        `✓ Review your Project plan and milestones together\n` +
-        `✓ Redistribute tasks if needed\n` +
-        `✓ Document 3 next steps forward\n\n` +
-        `Need strategies? Visit Teamwork Toolkit →\n` +
-        `We're here to help: programs@practera.com`,
-      buttons: ['OK'],
-      cssClass: 'team-check-in-alert'
-    });
-
-    await alert.present();
   }
 }

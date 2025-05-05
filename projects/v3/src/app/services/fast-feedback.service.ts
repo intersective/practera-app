@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { NotificationsService } from './notifications.service';
+import { AlertController, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
@@ -13,11 +13,12 @@ import { ApolloService } from './apollo.service';
 })
 export class FastFeedbackService {
   constructor(
-    private notificationsService: NotificationsService,
+    private modalController: ModalController,
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private demo: DemoService,
     private apolloService: ApolloService,
+    private alertController: AlertController,
   ) {}
 
   private _getFastFeedback(skipChecking = false): Observable<any> {
@@ -93,17 +94,23 @@ export class FastFeedbackService {
             // add a flag to indicate that a fast feedback pop up is opening
             this.storage.set("fastFeedbackOpening", true);
 
+            // Import dynamically to avoid circular dependency
             return from(
-              this.notificationsService.fastFeedbackModal(
-                {
-                  questions,
-                  meta,
-                },
-                {
-                  closable: options.closable,
-                  modalOnly: options.modalOnly,
-                }
-              )
+              import('../components/fast-feedback/fast-feedback.component').then(async module => {
+                const FastFeedbackComponent = module.FastFeedbackComponent;
+                const modal = await this.modalController.create({
+                  component: FastFeedbackComponent,
+                  componentProps: {
+                    questions,
+                    meta,
+                    closable: options.closable
+                  },
+                  backdropDismiss: options?.closable === true,
+                  showBackdrop: false
+                });
+                await modal.present();
+                return modal;
+              })
             );
           }
           return of(res);
@@ -144,5 +151,25 @@ export class FastFeedbackService {
         answers,
       },
     );
+  }
+
+  /**
+   * Show team check-in alert when there's misalignment in team status
+   */
+  async showTeamCheckInAlert() {
+    const alert = await this.alertController.create({
+      header: 'Team Check-In Time! 👥',
+      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
+        `✓ Schedule a quick team huddle\n` +
+        `✓ Review your Project plan and milestones together\n` +
+        `✓ Redistribute tasks if needed\n` +
+        `✓ Document 3 next steps forward\n\n` +
+        `Need strategies? Visit Teamwork Toolkit →\n` +
+        `We're here to help: programs@practera.com`,
+      buttons: ['OK'],
+      cssClass: 'team-check-in-alert'
+    });
+
+    await alert.present();
   }
 }
