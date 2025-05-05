@@ -3,7 +3,9 @@ export interface FileInput {
   bucket: string;
   path: string;
   name: string; // file name
-  url: string; // file uploaded url
+  url: string; // file uploaded url (direct url)
+  cdnUrl: string; // file cdn url
+  directUrl: string; // file direct url
   extension: string; // file extension
   type: string; // mime type
   size: number; // file size

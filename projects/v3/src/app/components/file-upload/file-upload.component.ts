@@ -85,7 +85,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   tusResponse: {
     path: string;
     bucket: string;
-    url: string;
+    cdnUrl: string;
+    directUrl: string;
   };
 
   // the value of answer
@@ -198,7 +199,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       extension: data.extension,
       bucket: this.tusResponse.bucket,
       path: this.tusResponse.path,
-      url: this.tusResponse.url,
+      url: this.tusResponse.directUrl,
+      directUrl: this.tusResponse.directUrl,
+      cdnUrl: this.tusResponse.cdnUrl,
     };
 
     this.uploadedFile = fileInput;
