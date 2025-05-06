@@ -45,7 +45,14 @@ export class ImgComponent {
 
   ngOnChanges(changes: SimpleChanges) {
     // In development mode, replace the Practera file URL with a proxied URL to avoid CORS issues.
-    if (isDevMode() && this.imgSrc?.startsWith('https://file.practera.com')) {
+    const hostname = window.location.hostname;
+    const isLocalhost = /(^localhost$)|(^127\.)|(^::1$)/.test(hostname);
+
+    if (
+      isDevMode() &&
+      isLocalhost &&
+      this.imgSrc?.startsWith('https://file.practera.com')
+    ) {
       this.proxiedImgSrc = this.imgSrc.replace(
         /^https?:\/\/file\.practera\.com(\/.*)/,
         '/practera-proxy$1'
