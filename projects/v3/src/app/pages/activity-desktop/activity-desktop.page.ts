@@ -136,8 +136,10 @@ export class ActivityDesktopPage {
     ).subscribe(params => {
       // from route
       const activityId = +params.get('id');
-      const contextId = +params.get('contextId'); // optional
-      const assessmentId = +params.get('assessmentId');  // optional
+      // optional
+      const contextId = +params.get('contextId');
+      const assessmentId = +params.get('assessmentId');
+      const topicId = +params.get('topicId');
 
       // directlink params (optional)
       const taskId: number = +params.get('task_id');
@@ -145,52 +147,53 @@ export class ActivityDesktopPage {
         | 'assessment'
         | 'topic'
         | null;
-      const isTopicDirectlink = taskType === 'topic' && taskId > 0;
+      const isTopicDirectlink = (taskType === 'topic' && taskId > 0) || topicId > 0;
+      const directTaskId = (topicId > 0) ? topicId : taskId;
 
-        // if assessmentId or taskId is provided, don't proceed to next task
-        const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
+      // if assessmentId or taskId is provided, don't proceed to next task
+      const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
 
-        this.urlParams = {
-          contextId: contextId,
-          action: this.route.snapshot.data.action,
-        };
+      this.urlParams = {
+        contextId: contextId,
+        action: this.route.snapshot.data.action,
+      };
 
-        this.storageService.lastVisited('activityId', activityId);
-        this.storageService.lastVisited('homeBookmarks', activityId);
+      this.storageService.lastVisited('activityId', activityId);
+      this.storageService.lastVisited('homeBookmarks', activityId);
 
-        this.activityService.getActivity(
-          activityId,
-          proceedToNextTask,
-          undefined,
-          async (data) => {
-            // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
-            if (
-              !proceedToNextTask &&
-              (assessmentId > 0 || isTopicDirectlink === true)
-            ) {
-              const filtered: Task = this.utils.find(this.activity.tasks, {
-                id: assessmentId || taskId, // assessmentId or taskId
+      this.activityService.getActivity(
+        activityId,
+        proceedToNextTask,
+        undefined,
+        async (data) => {
+          // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
+          if (
+            !proceedToNextTask &&
+            (assessmentId > 0 || isTopicDirectlink === true)
+          ) {
+            const filtered: Task = this.utils.find(this.activity.tasks, {
+              id: assessmentId || directTaskId, // assessmentId or topicId/taskId
+            });
+
+            // if API not returning any related activity, handle bad API response gracefully
+            if (filtered === undefined) {
+              await this.notificationsService.alert({
+                header: $localize`Activity not found`,
+                message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
               });
-
-              // if API not returning any related activity, handle bad API response gracefully
-              if (filtered === undefined) {
-                await this.notificationsService.alert({
-                  header: $localize`Activity not found`,
-                  message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
-                });
-                return this.goBack();
-              }
-
-              this.goToTask({
-                id: assessmentId || taskId,
-                contextId: this.urlParams.contextId,
-                type: filtered.type,
-                name: filtered.name,
-              });
+              return this.goBack();
             }
+
+            this.goToTask({
+              id: assessmentId || directTaskId,
+              contextId: this.urlParams.contextId,
+              type: filtered.type,
+              name: filtered.name,
+            });
           }
-        );
-      });
+        }
+      );
+    });
 
     // refresh when review is available (AI review, peer review, etc.)
     this.utils
