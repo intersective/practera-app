@@ -380,7 +380,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
             routes.push({
               path: isMobile
                 ? `/v3/topic-mobile/${activityId}/${topicId}`
-                : `/v3/activity-desktop/${activityId}/${topicId}?task=topic`,
+                : `/v3/activity-desktop/${activityId}/${topicId}`,
               label: `<i><b>${action}</b></i> ${guideline.name}`,
             });
           } else if (assessmentId) {
