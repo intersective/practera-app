@@ -94,7 +94,8 @@
     id="task-content"
   ></app-assessment>
 
-  <app-topic *ngIf="currentTask?.type === 'Topic'"
+  <app-topic
+    *ngIf="currentTask?.type === 'Topic'"
     [topic]="topic"
     [task]="currentTask"
     (continue)="topicComplete(currentTask)"

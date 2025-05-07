@@ -158,7 +158,7 @@ export class TopicService {
       topic.audio = {
         link: thisTopic.Story.audiolink,
         language: thisTopic.Story.meta?.audio_content?.language || null,
-        status: thisTopic.Story.meta?.audio_content?.status || null
+        status: thisTopic.Story.meta?.audio_content?.status || undefined
       };
     }
 
