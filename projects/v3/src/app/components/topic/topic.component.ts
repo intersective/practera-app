@@ -1,5 +1,5 @@
 import { Topic, TopicService } from '@v3/services/topic.service';
-import { Component, NgZone, Input, Output, EventEmitter, Inject, SimpleChange, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
 import { SharedService } from '@v3/services/shared.service';
@@ -8,15 +8,16 @@ import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { Activity, Task } from '@v3/app/services/activity.service';
+import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
 @Component({
   selector: 'app-topic',
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent implements OnChanges {
+export class TopicComponent implements OnChanges, OnDestroy {
   @Input() topic: Topic;
   @Input() task: Task;
   continuing: boolean;
@@ -31,6 +32,8 @@ export class TopicComponent implements OnChanges {
   iframeHtml: SafeHtml;
   sanitizedTitle: SafeHtml;
 
+  private cleanupSub: Subscription;
+
   constructor(
     private embedService: EmbedVideoService,
     private notification: NotificationsService,
@@ -39,9 +42,13 @@ export class TopicComponent implements OnChanges {
     private filestack: FilestackService,
     private topicService: TopicService,
     private sanitizer: DomSanitizer,
+    private cleanupService: ComponentCleanupService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.isMobile = this.utils.isMobile();
+    this.cleanupSub = this.cleanupService.cleanup$.subscribe(() => {
+      this.cleanupMedia();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -58,12 +65,45 @@ export class TopicComponent implements OnChanges {
     }
   }
 
+  ngOnDestroy(): void {
+    this.sharedService.stopPlayingVideos();
+    this.topicService.clearTopic();
+    this.cleanupMedia();
+    this.cleanupSub.unsubscribe();
+  }
+
   ionViewWillLeave() {
     this.sharedService.stopPlayingVideos();
   }
 
   ionViewDidLeave() {
     this.topicService.clearTopic();
+  }
+
+  public cleanupMedia() {
+    this._pauseResetAndReplaceMediaElements('audio');
+    this._pauseResetAndReplaceMediaElements('video');
+
+    // remove any plyr instances when necessary
+    this.utils.each(this.document.querySelectorAll('.plyr'), (plyrEl: HTMLElement) => {
+      if ((plyrEl as any).plyr) {
+        (plyrEl as any).plyr.destroy();
+        (plyrEl as any).plyr = null;
+      }
+    });
+
+    // nullify iframehtml reference for garbage collection
+    this.iframeHtml = null;
+  }
+
+  private _pauseResetAndReplaceMediaElements(selector: 'audio' | 'video') {
+    const elements = this.document.querySelectorAll(selector);
+    elements.forEach((el: HTMLMediaElement) => {
+      el.pause();
+      el.currentTime = 0;
+      const newEl = el.cloneNode(true);
+      el.parentNode?.replaceChild(newEl, el);
+    });
   }
 
   private _setVideoUrlElelemts() {

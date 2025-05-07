@@ -5,7 +5,7 @@ import {
   HostListener,
   OnDestroy,
 } from "@angular/core";
-import { NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, NavigationStart, Router } from "@angular/router";
 import { Platform } from "@ionic/angular";
 import { SharedService } from "@v3/services/shared.service";
 import { environment } from "@v3/environments/environment";
@@ -16,6 +16,7 @@ import { AuthService } from "@v3/services/auth.service";
 import { VersionCheckService } from "@v3/services/version-check.service";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
   selector: "app-root",
@@ -51,10 +52,17 @@ export class AppComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private sanitizer: DomSanitizer,
     private authService: AuthService,
-    private versionCheckService: VersionCheckService
+    private versionCheckService: VersionCheckService,
+    private cleanupService: ComponentCleanupService,
   ) {
     this.customHeader = null;
     this.initializeApp();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.cleanupService.triggerCleanup();
+      }
+    });
   }
 
   ngOnDestroy(): void {
