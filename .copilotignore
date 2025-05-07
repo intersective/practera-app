@@ -1,0 +1,36 @@
+# ignore dependency directories
+node_modules/
+
+# ignore build outputs
+dist/
+build/
+www/dist/
+www/build/
+package-lock.json
+
+# angular ionic specific
+.angular/
+.gradle/
+
+# deprecated
+./src/
+./e2e/
+
+# development files
+scripts/
+buildspec*.yml
+appspec*.yml
+serverless*.yml
+docker-compose*.yml
+*.sh
+sonar-project.properties
+
+# ignore temporary and log files
+tmp/
+*.log
+
+# ignore system files
+.DS_Store
+
+# ignore environment files
+.env
