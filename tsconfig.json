@@ -20,24 +20,6 @@
     ],
     "baseUrl": "./",
     "paths": {
-      "@app/*": [
-        "src/app/*"
-      ],
-      "@services/*": [
-        "src/app/services/*"
-      ],
-      "@components/*": [
-        "src/app/shared/components/*"
-      ],
-      "@shared/*": [
-        "src/app/shared/*"
-      ],
-      "@environments/*": [
-        "src/environments/*"
-      ],
-      "@testing/*": [
-        "src/testing/*"
-      ],
       "@testingv3/*": [
         "projects/v3/src/testing/*"
       ],

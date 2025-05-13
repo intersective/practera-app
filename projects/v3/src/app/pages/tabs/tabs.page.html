@@ -22,6 +22,11 @@
       <ion-badge color="danger" *ngIf="badges.chat > 0">{{ badges.chat }}</ion-badge>
     </ion-tab-button>
 
+    <ion-tab-button class="tab-item" tab="dueStatus"
+      [ngClass]="{'selected': selectedTab === 'dueStatus'}">
+      <ion-icon name="mail"></ion-icon>
+    </ion-tab-button>
+
     <ion-tab-button class="tab-item" tab="settings"
       [ngClass]="{'selected': selectedTab === 'settings'}">
       <ion-icon name="settings"></ion-icon>

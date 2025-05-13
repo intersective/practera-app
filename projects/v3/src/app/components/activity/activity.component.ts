@@ -103,7 +103,6 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
    * Task icon type
    *
    * @param   {Task}  task  task's type is the only required value
-   *
    * @return  {string}      ionicon's name
    */
   leadIcon(task: Task) {
