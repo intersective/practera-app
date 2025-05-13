@@ -1,7 +1,7 @@
 <ion-header class="ion-no-border header-border" aria-label="Due Status">
-  <h1 class="for-accessibility">Due Dates</h1>
+  <h1 class="for-accessibility">Due Dates (Beta)</h1>
   <ion-toolbar>
-    <ion-title class="headline-4 grey-75" i18n>Due Dates</ion-title>
+    <ion-title class="headline-4 grey-75" i18n>Due Dates (Beta)</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,19 +10,20 @@
 
   <ion-list *ngIf="(filteredAssessments$ | async) as assessments; else loading">
     <ng-container *ngFor="let group of assessments">
-      <!-- Date divider (Group title) -->
       <ion-item-divider>
         <ion-label>{{ group.month }}</ion-label>
       </ion-item-divider>
 
-      <!-- Assessment items -->
       <ion-item *ngFor="let assessment of group.assessments">
         <ion-label>
           <h3>{{ assessment.name }}</h3>
           <p>{{ assessment.dueDate | date }}</p>
         </ion-label>
         <ion-button *ngIf="false" fill="clear" (click)="goTo(assessment)">Details</ion-button>
-        <ion-button aria-label="export icalendar" [id]="'popover-button' + assessment.id" color="primary">
+        <ion-button aria-label="export icalendar"
+          *ngIf="assessment?.dueDate"
+          [id]="'popover-button' + assessment.id"
+          color="primary">
           <ion-icon slot="start" name="calendar"></ion-icon>
           Add to Calendar
         </ion-button>
