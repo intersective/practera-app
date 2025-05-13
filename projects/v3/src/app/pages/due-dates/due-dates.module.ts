@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { DueDatesComponent } from './due-dates.component';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 
 @NgModule({
   declarations: [
