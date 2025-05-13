@@ -4,7 +4,7 @@ import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
-import { FileInput, Question, SubmitActions } from '../types/assessment';
+import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
 import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
@@ -80,12 +80,13 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
-  uploadedFile: FileInput;
+  uploadedFile: TusFileResponse;
   fileTypes = '';
   tusResponse: {
     path: string;
     bucket: string;
-    url: string;
+    cdnUrl: string;
+    directUrl: string;
   };
 
   // the value of answer
@@ -191,14 +192,16 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     // reset errors
     this.errors = [];
-    const fileInput: FileInput = {
+    const fileInput: TusFileResponse = {
       name: data.name,
       type: data.type,
       size: data.size,
       extension: data.extension,
       bucket: this.tusResponse.bucket,
       path: this.tusResponse.path,
-      url: this.tusResponse.url,
+      url: this.tusResponse.cdnUrl,
+      directUrl: this.tusResponse.directUrl,
+      cdnUrl: this.tusResponse.cdnUrl,
     };
 
     this.uploadedFile = fileInput;
@@ -253,7 +256,16 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         this.innerValue.answer = this.uploadedFile;
       }
     } else { // for assessment
-      this.innerValue = this.uploadedFile;
+      const fileInput: FileInput = {
+        name: this.uploadedFile.name,
+        type: this.uploadedFile.type,
+        size: this.uploadedFile.size,
+        extension: this.uploadedFile.extension,
+        bucket: this.uploadedFile.bucket,
+        path: this.uploadedFile.path,
+        url: this.uploadedFile.cdnUrl,
+      };
+      this.innerValue = fileInput;
     }
 
     this.control.setValue(this.innerValue);

@@ -41,6 +41,38 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  <ng-container *ngIf="currentTask?.type === 'Assessment'">
+    <span class="tooltip-container"
+      [ngStyle]="tooltipStyle"
+      *ngIf="tooltipVisible">
+      {{ tooltipText }}
+    </span>
+
+    <ion-fab
+      slot="fixed"
+      vertical="bottom"
+      horizontal="end"
+      *ngIf="totalQuestions() > 5 && (assessment | async) as asmt">
+
+      <ion-fab-button>
+        <ion-icon name="chevron-up-circle"></ion-icon>
+      </ion-fab-button>
+
+      <ion-fab-list side="top" class="scrollable-fab">
+        <ng-container *ngFor="let group of asmt.groups; let groupIndex = index">
+          <ion-fab-button (click)="scrollTo(question)"
+            class="fab-button"
+            *ngFor="let question of group.questions; let questionIndex = index"
+            (mouseenter)="showTooltip($event, question.name)"
+            (mouseleave)="hideTooltip()"
+            [title]="question.name">
+            Q{{ getContinuousIndex(groupIndex, questionIndex) }}
+          </ion-fab-button>
+        </ng-container>
+      </ion-fab-list>
+    </ion-fab>
+  </ng-container>
 </ion-content>
 
 <ng-template #showCurrentTask>
@@ -62,7 +94,8 @@
     id="task-content"
   ></app-assessment>
 
-  <app-topic *ngIf="currentTask?.type === 'Topic'"
+  <app-topic
+    *ngIf="currentTask?.type === 'Topic'"
     [topic]="topic"
     [task]="currentTask"
     (continue)="topicComplete(currentTask)"
