@@ -30,6 +30,7 @@ export interface ActivityBase {
   id: number;
   name: string;
   description?: string;
+  isLocked?: boolean;
   tasks: Array<TaskBase>;
 }
 
@@ -38,6 +39,7 @@ export interface Activity {
   name: string;
   description?: string;
   tasks: Array<Task>;
+  isLocked?: boolean;
   unlockConditions: Array<{
     name: string;
     action: string;
@@ -100,7 +102,7 @@ export class ActivityService {
     return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
-          id name description tasks {
+          id name description isLocked tasks {
             id name type isLocked isTeam deadline contextId assessmentType status {
               status isLocked submitterName submitterImage
             }
