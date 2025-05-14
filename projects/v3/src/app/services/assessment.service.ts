@@ -22,6 +22,15 @@ const api = {
     resubmit: 'api/assessment_resubmit.json'
   }
 };
+export interface DueAssessment {
+  id: number;
+  activityId: number;
+  contextId: number;
+  name: string;
+  description: string;
+  type: string;
+  dueDate: string;
+}
 
 export interface AssessmentSubmitParams {
   id: number;
@@ -906,16 +915,17 @@ export class AssessmentService {
     });
   }
 
-  dueStatusAssessments(): Observable<Assessment[]> {
-    return this.apolloService
-      .graphQLFetch(
-        `query assessments {
+  dueStatusAssessments(): Observable<DueAssessment[]> {
+    return this.apolloService.graphQLFetch(
+      `query assessments {
         assessments {
           id
           name
           type
           dueDate
           contextId
+          activityId
+          description
         }
       }`,
         {
