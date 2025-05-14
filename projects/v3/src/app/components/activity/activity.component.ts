@@ -35,7 +35,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
     private notificationsService: NotificationsService,
     private sharedService: SharedService,
     private activityService: ActivityService,
-    private unlockIndicatorService: UnlockIndicatorService
+    private unlockIndicatorService: UnlockIndicatorService,
   ) {}
 
   ngOnDestroy(): void {
