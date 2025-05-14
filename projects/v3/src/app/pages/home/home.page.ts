@@ -365,6 +365,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const routes = [];
     const guidelines = item.unlockConditions;
 
+    if (!guidelines) {
+      return;
+    }
+
     if (guidelines.length === 0) {
       return;
     } else if (guidelines.length >= 1) {
