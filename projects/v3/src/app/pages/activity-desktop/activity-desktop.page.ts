@@ -1,7 +1,7 @@
 import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -9,9 +9,10 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 import { TopicComponent } from '@v3/app/components/topic/topic.component';
+import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -39,8 +40,7 @@ export class ActivityDesktopPage {
     action: null,
     contextId: null,
   };
-  unsubscribe$ = new Subject();
-  scrolSubject = new Subject();
+  scrolSubject = new BehaviorSubject(null);
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
@@ -48,6 +48,7 @@ export class ActivityDesktopPage {
 
   // UI-purpose only variables
   flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  activityLockShown: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,12 +60,13 @@ export class ActivityDesktopPage {
     private storageService: BrowserStorageService,
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private componentCleanupService: ComponentCleanupService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
     // slow down the scroll event trigger
     this.scrolSubject
       .pipe(debounceTime(300))
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntil(this.componentCleanupService.cleanup$))
       .subscribe(() => this.flashHighlight());
   }
 
@@ -90,41 +92,48 @@ export class ActivityDesktopPage {
   }
 
   onScroll(): void {
-    this.scrolSubject.next();
+    this.scrolSubject.next(null);
   }
 
   ionViewDidEnter() {
+    // cleanup previous session
+    this.componentCleanupService.triggerCleanup();
+
     this.activityService.activity$
       .pipe(
         filter((res) => res?.id === +this.route.snapshot.paramMap.get("id")),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       ).subscribe(res => this._setActivity(res));
 
     this.activityService.currentTask$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        // stop update currentTask if activity is locked
+        filter(() => !this.activityLockShown),
+        takeUntil(this.componentCleanupService.cleanup$)
+      )
       .subscribe(res => this.currentTask = res);
 
     this.assessmentService.submission$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       )
       .subscribe((res) => (this.submission = res));
 
     this.assessmentService.review$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       ).subscribe((res) => (this.review = res));
 
     this.topicService.topic$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       ).subscribe((res) => (this.topic = res));
 
     this.route.paramMap.pipe(
-      takeUntil(this.unsubscribe$)
+      takeUntil(this.componentCleanupService.cleanup$)
     ).subscribe(params => {
       // from route
       const activityId = +params.get('id');
@@ -177,7 +186,9 @@ export class ActivityDesktopPage {
 
     // refresh when review is available (AI review, peer review, etc.)
     this.utils.getEvent('notification')
-    .pipe(takeUntil(this.unsubscribe$))
+    .pipe(
+      takeUntil(this.componentCleanupService.cleanup$)
+    )
     .subscribe(event => {
       const review = event?.meta?.AssessmentReview;
       if (event.type === 'assessment_review_published' && review?.assessment_id) {
@@ -189,7 +200,9 @@ export class ActivityDesktopPage {
 
     // check new unlock indicator to refresh
     this.unlockIndicatorService.unlockedTasks$
-    .pipe(takeUntil(this.unsubscribe$))
+    .pipe(
+      takeUntil(this.componentCleanupService.cleanup$)
+    )
     .subscribe(unlockedTasks => {
       if (this.activity) {
         if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
@@ -204,13 +217,14 @@ export class ActivityDesktopPage {
   }
 
   ionViewDidLeave() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
     this.assessmentService.clearAssessment();
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
   private _setActivity(res: Activity) {
+    // check if activity is locked
+    this.checkActivityLocked(res);
+
     if (this.activity !== undefined && this.activity?.tasks.length === res.tasks.length) {
       // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
       if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
@@ -247,6 +261,28 @@ export class ActivityDesktopPage {
     }
 
     this.activity = res;
+  }
+
+  /**
+   * checks if activity is locked and shows popup to inform user
+   * @param activity activity object
+   * @return  {Promise<void>}  void
+   */
+  private async checkActivityLocked(activity: Activity): Promise<void> {
+    if (activity?.isLocked === true && !this.activityLockShown) {
+      this.activityLockShown = true;
+      await this.notificationsService.alert({
+        header: $localize`Activity Locked`,
+        message: $localize`This activity is currently locked and not available. Please check back later or contact your coordinator for assistance.`,
+        buttons: [{
+          text: $localize`OK`,
+          handler: () => {
+            this.activityLockShown = false;
+            this.goBack();
+          }
+        }]
+      });
+    }
   }
 
   async goToTask(task: Task): Promise<any> {
