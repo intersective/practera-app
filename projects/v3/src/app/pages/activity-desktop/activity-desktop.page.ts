@@ -11,6 +11,7 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
+import { TopicComponent } from '@v3/app/components/topic/topic.component';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -43,6 +44,7 @@ export class ActivityDesktopPage {
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
+  @ViewChild(TopicComponent) topicComponent: TopicComponent;
 
   // UI-purpose only variables
   flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
