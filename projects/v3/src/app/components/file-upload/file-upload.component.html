@@ -70,7 +70,7 @@
 
 <ng-container *ngIf="doReview">
   <ng-container *ngIf="question.canAnswer">
-    <div class="uppy-container"  *ngIf="!uploadedFile && !review?.answer">
+    <div class="uppy-container ion-padding"  *ngIf="!uploadedFile && !review?.answer">
       <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
