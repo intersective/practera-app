@@ -25,7 +25,6 @@ import { ClickableItemComponent } from './clickable-item/clickable-item.componen
 import { AssessmentComponent } from './assessment/assessment.component';
 import { TextComponent } from './text/text.component';
 import { TeamMemberSelectorComponent } from './team-member-selector/team-member-selector.component';
-import { FileComponent } from './file/file.component';
 import { MultipleComponent } from './multiple/multiple.component';
 import { OneofComponent } from './oneof/oneof.component';
 import { FileDisplayComponent } from './file-display/file-display.component';
@@ -84,7 +83,6 @@ const largeCircleDefaultConfig = {
     DescriptionComponent,
     DragAndDropDirective,
     FastFeedbackComponent,
-    FileComponent,
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
@@ -129,7 +127,6 @@ const largeCircleDefaultConfig = {
     DragAndDropDirective,
     FastFeedbackComponent,
     FallbackImageDirective,
-    FileComponent,
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
