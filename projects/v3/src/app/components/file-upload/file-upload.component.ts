@@ -297,7 +297,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   removeSubmitFile(file?: {
     handle: string;
   }): void {
-    this.uploadedFile = null;
+    this.uploadedFile = {} as TusFileResponse;
 
     if (this.doAssessment === true) {
       this.submission.answer = null;
