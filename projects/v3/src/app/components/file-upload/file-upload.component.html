@@ -59,7 +59,7 @@
     </ion-text>
 
     <app-file-display
-      [file]="uploadedFile ? uploadedFile : submission?.answer"
+      [file]="uploadedFile || submission?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
       [disabled]="control.disabled"

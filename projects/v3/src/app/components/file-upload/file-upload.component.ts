@@ -264,6 +264,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   fileRequestFormat(): FileInput {
+    // return empty object if uploadedFile is empty or not set
+    if (!this.uploadedFile || Object.keys(this.uploadedFile).length === 0) {
+      return {} as FileInput;
+    }
+
     const fileInput: FileInput = {
       name: this.uploadedFile.name,
       type: this.uploadedFile.type,
@@ -297,7 +302,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   removeSubmitFile(file?: {
     handle: string;
   }): void {
-    this.uploadedFile = {} as TusFileResponse;
+    this.uploadedFile = null as TusFileResponse;
 
     if (this.doAssessment === true) {
       this.submission.answer = null;
