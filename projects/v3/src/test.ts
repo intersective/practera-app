@@ -8,7 +8,6 @@ import {
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
 
-// First, initialize the Angular testing environment.
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting(),
@@ -16,3 +15,12 @@ getTestBed().initTestEnvironment(
     teardown: { destroyAfterEach: false }
   }
 );
+
+declare const require: {
+  context(path: string, deep?: boolean, filter?: RegExp): {
+    keys(): string[];
+    <T>(id: string): T;
+  };
+};
+const context = require.context('./', true, /\.spec\.ts$/);
+context.keys().forEach(context);

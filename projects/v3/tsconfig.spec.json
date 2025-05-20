@@ -1,12 +1,9 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "outDir": "../../out-tsc/spec",
-    "types": [
-      "jasmine"
-    ]
+    "types": ["jasmine"]
   },
   "files": [
     "src/test.ts",
@@ -15,11 +12,10 @@
   "include": [
     "src/testing",
     "src/**/*.spec.ts",
-    "src/**/*.d.ts",
+    "src/**/*.d.ts"
   ],
   "exclude": [
     "../../node_modules",
-    "../../dist",
-    "../../src"
+    "../../dist"
   ]
 }
