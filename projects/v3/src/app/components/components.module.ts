@@ -17,7 +17,6 @@ import { ActivityCompletePopUpComponent } from './activity-complete-pop-up/activ
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { FastFeedbackModule } from '../fast-feedback/fast-feedback.module';
 import { FilestackComponent } from './filestack/filestack.component';
 import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
@@ -25,7 +24,6 @@ import { ClickableItemComponent } from './clickable-item/clickable-item.componen
 import { AssessmentComponent } from './assessment/assessment.component';
 import { TextComponent } from './text/text.component';
 import { TeamMemberSelectorComponent } from './team-member-selector/team-member-selector.component';
-import { FileComponent } from './file/file.component';
 import { MultipleComponent } from './multiple/multiple.component';
 import { OneofComponent } from './oneof/oneof.component';
 import { FileDisplayComponent } from './file-display/file-display.component';
@@ -44,6 +42,7 @@ import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
 import { FilePopupComponent } from './file-popup/file-popup.component';
+import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -70,7 +69,6 @@ const largeCircleDefaultConfig = {
     UppyAngularDashboardModalModule,
     UppyAngularDashboardModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
-    FastFeedbackModule,
   ],
   declarations: [
     AchievementPopUpComponent,
@@ -84,7 +82,7 @@ const largeCircleDefaultConfig = {
     ContactNumberFormComponent,
     DescriptionComponent,
     DragAndDropDirective,
-    FileComponent,
+    FastFeedbackComponent,
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
@@ -127,8 +125,8 @@ const largeCircleDefaultConfig = {
     ContactNumberFormComponent,
     DescriptionComponent,
     DragAndDropDirective,
+    FastFeedbackComponent,
     FallbackImageDirective,
-    FileComponent,
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,

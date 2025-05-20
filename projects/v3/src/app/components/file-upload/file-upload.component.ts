@@ -253,23 +253,33 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         // just pass the value for comment since comment is always just text
         this.innerValue.comment = value;
       } else {
-        this.innerValue.answer = this.uploadedFile;
+        this.innerValue.answer = this.fileRequestFormat();
       }
     } else { // for assessment
-      const fileInput: FileInput = {
-        name: this.uploadedFile.name,
-        type: this.uploadedFile.type,
-        size: this.uploadedFile.size,
-        extension: this.uploadedFile.extension,
-        bucket: this.uploadedFile.bucket,
-        path: this.uploadedFile.path,
-        url: this.uploadedFile.cdnUrl,
-      };
-      this.innerValue = fileInput;
+      this.innerValue = this.fileRequestFormat();
     }
 
     this.control.setValue(this.innerValue);
     this.triggerSave();
+  }
+
+  fileRequestFormat(): FileInput {
+    // return empty object if uploadedFile is empty or not set
+    if (!this.uploadedFile || Object.keys(this.uploadedFile).length === 0) {
+      return {} as FileInput;
+    }
+
+    const fileInput: FileInput = {
+      name: this.uploadedFile.name,
+      type: this.uploadedFile.type,
+      size: this.uploadedFile.size,
+      extension: this.uploadedFile.extension,
+      bucket: this.uploadedFile.bucket,
+      path: this.uploadedFile.path,
+      url: this.uploadedFile.cdnUrl,
+    };
+
+    return fileInput;
   }
 
   // adding save values to from control
@@ -292,7 +302,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   removeSubmitFile(file?: {
     handle: string;
   }): void {
-    this.uploadedFile = null;
+    this.uploadedFile = null as TusFileResponse;
 
     if (this.doAssessment === true) {
       this.submission.answer = null;

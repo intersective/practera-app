@@ -32,7 +32,7 @@
       <ion-col #scrollableTaskContent
         size="12" size-md="8" class="border-left"
         (scroll)="onScroll()"
-        [ngClass]="{'loading-overlay': isLoadingAssessment}">
+        [ngClass]="{'loading-overlay': isLoadingAssessment, 'hidden-asmt':  activityLockShown}">
         <ng-container *ngIf="notInATeamAndForTeamOnly === true; else showCurrentTask">
           <div class="centered-text">
             This assessment can only be accessed when you are in a team.
@@ -94,7 +94,8 @@
     id="task-content"
   ></app-assessment>
 
-  <app-topic *ngIf="currentTask?.type === 'Topic'"
+  <app-topic
+    *ngIf="currentTask?.type === 'Topic'"
     [topic]="topic"
     [task]="currentTask"
     (continue)="topicComplete(currentTask)"
