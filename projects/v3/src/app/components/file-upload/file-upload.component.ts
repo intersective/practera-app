@@ -164,12 +164,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }) => {
       // eslint-disable-next-line no-console
       console.log('files added', files);
-      this.control.setValue({
-        ...this.innerValue,
-        files,
-      });
-
-      this.control.markAsTouched();
     }).on('file-removed', (file) => {
       // eslint-disable-next-line no-console
       console.log('file removed', file);
