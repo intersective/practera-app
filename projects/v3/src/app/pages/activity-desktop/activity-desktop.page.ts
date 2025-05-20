@@ -312,6 +312,7 @@ export class ActivityDesktopPage {
       await this.notificationsService.alert({
         header: $localize`Activity Locked`,
         message: $localize`This activity is currently locked and not available. Please check back later or contact your coordinator for assistance.`,
+        backdropDismiss: false,
         buttons: [{
           text: $localize`OK`,
           handler: () => {
