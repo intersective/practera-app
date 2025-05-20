@@ -113,7 +113,9 @@ export class ActivityDesktopPage {
         filter((res) => res?.id === +this.route.snapshot.paramMap.get('id')),
         takeUntil(this.componentCleanupService.cleanup$)
       )
-      .subscribe((res) => this._setActivity(res));
+      .subscribe((res) => {
+        this._setActivity(res);
+      });
 
     this.activityService.currentTask$
       .pipe(
@@ -176,31 +178,36 @@ export class ActivityDesktopPage {
         activityId,
         proceedToNextTask,
         undefined,
-        async (data) => {
+        async (activity) => {
           // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
           if (
             !proceedToNextTask &&
             (assessmentId > 0 || isTopicDirectlink === true)
           ) {
-            const filtered: Task = this.utils.find(this.activity.tasks, {
+            const targetTask: Task = this.utils.find(this.activity.tasks, {
               id: assessmentId || directTaskId, // assessmentId or topicId/taskId
             });
 
-            // if API not returning any related activity, handle bad API response gracefully
-            if (filtered === undefined) {
+            // if task is not found, show alert
+            // if activity is locked, do nothing, as we are already showing the alert from:
+            // 1. checkActivityLocked() method - for locked activity
+            // 2. activityService.getActivity() - for missing activity
+            if (!targetTask && this.activity.isLocked === false) {
               await this.notificationsService.alert({
-                header: $localize`Activity not found`,
-                message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
+                header: $localize`Task Not Found`,
+                message: $localize`The task you are trying to access is not available. Please check back later or contact your coordinator for assistance.`,
               });
               return this.goBack();
             }
 
-            this.goToTask({
-              id: assessmentId || directTaskId,
-              contextId: this.urlParams.contextId,
-              type: filtered.type,
-              name: filtered.name,
-            });
+            if (targetTask) {
+              this.goToTask({
+                id: assessmentId || directTaskId,
+                contextId: this.urlParams.contextId,
+                type: targetTask.type,
+                name: targetTask.name,
+              });
+            }
           }
         }
       );
