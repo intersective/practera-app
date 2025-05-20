@@ -119,11 +119,11 @@ export class HomeService {
       .pipe(tap(async (res) => {
         if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
-            header: "Unable to access experience",
-            message: "Please re-login and try again later",
+            header: $localize`Unable to access experience`,
+            message: $localize`Please re-login and try again later`,
             buttons: [
               {
-                text: "OK",
+                text: $localize`OK`,
                 role: "cancel",
                 handler: () => {
                   this.authService.logout();
