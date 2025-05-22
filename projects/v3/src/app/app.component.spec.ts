@@ -1,8 +1,7 @@
 import { NgZone } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { Router, RouterModule } from '@angular/router';
 import { Platform } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
 import { of } from 'rxjs';
@@ -27,7 +26,9 @@ describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterModule.forRoot([
+          { path: '', component: AppComponent }
+        ]),
       ],
       declarations: [
         AppComponent
@@ -59,6 +60,7 @@ describe('AppComponent', () => {
             'getConfig',
             'setConfig',
             'getUser',
+            'lastVisited'
           ]),
         },
         {
@@ -73,6 +75,7 @@ describe('AppComponent', () => {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', {
             getConfig: of({data: []}),
+            logout: (...args: any[]) => Promise.resolve()
           }),
         },
         {

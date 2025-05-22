@@ -5,6 +5,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { shareReplay } from 'rxjs/operators';
+import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
+import { NotificationsService } from './notifications.service';
 
 const api = {
   reviews: 'api/reviews.json',
@@ -36,6 +38,7 @@ export class ReviewService {
     private request: RequestService,
     private utils: UtilsService,
     private demoService: DemoService,
+    private notificationService: NotificationsService,
   ) { }
 
   getReviews() {
@@ -77,4 +80,29 @@ export class ReviewService {
     return reviews;
   }
 
+  /**
+   * trigger reviewer rating modal
+   *
+   * @param   {number}          reviewId  submission review record id
+   * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
+   *                                      routing (stay at same component)
+   *
+   * @return  {Promise<void>}             deferred ionic modal
+   */
+  async popUpReviewRating(
+    reviewId,
+    redirect: string[] | boolean
+  ): Promise<void> {
+    return this.notificationService.modalOnly(
+      ReviewRatingComponent,
+      {
+        reviewId,
+        redirect,
+      },
+      {
+        id: `review-popup-${reviewId}`,
+        backdropDismiss: false,
+      }
+    );
+  }
 }

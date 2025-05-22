@@ -1,9 +1,9 @@
-import { UppyUploaderService } from './../../../components/uppy-uploader/uppy-uploader.service';
 import { Component, OnInit } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 
 import { FilestackService } from '@v3/services/filestack.service';
 import { NotificationsService } from '../../../services/notifications.service';
+import { ModalService } from '../../../services/modal.service';
 
 @Component({
   selector: 'app-attachment-popover',
@@ -15,7 +15,7 @@ export class AttachmentPopoverComponent{
   constructor(
     private popoverController: PopoverController,
     private filestackService: FilestackService,
-    private uppyUploaderService: UppyUploaderService,
+    private modalService: ModalService,
     private notificationsService: NotificationsService,
   ) { }
 
@@ -38,7 +38,7 @@ export class AttachmentPopoverComponent{
     async openAttachPopup(selectedType) {
       try {
         if (selectedType === 'uppy') {
-          const modal = await this.uppyUploaderService.open('chat');
+          const modal = await this.modalService.openUppyUploaderModal('chat');
           modal.onDidDismiss().then(async (res) => {
             if (res.data) {
               const success = res.data.successful.length > 0 ? res.data.successful[0] : {};

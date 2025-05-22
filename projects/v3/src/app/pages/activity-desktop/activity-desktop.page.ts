@@ -13,6 +13,7 @@ import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 import { TopicComponent } from '@v3/app/components/topic/topic.component';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
+import { ReviewService } from '../../services/review.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -64,6 +65,7 @@ export class ActivityDesktopPage {
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
     private componentCleanupService: ComponentCleanupService,
+    private reviewService: ReviewService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
     // slow down the scroll event trigger
@@ -518,7 +520,7 @@ export class ActivityDesktopPage {
     }
 
     // display review rating modal
-    return await this.notificationsService.popUpReviewRating(
+    return await this.reviewService.popUpReviewRating(
       this.review.id,
       false
     );

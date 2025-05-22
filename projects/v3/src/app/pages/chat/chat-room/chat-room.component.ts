@@ -13,7 +13,8 @@ import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuillModules } from 'ngx-quill';
-import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
+import { UppyFileData, UppyUploaderResponse } from '../../../components/uppy-uploader/uppy-uploader.service';
+import { ModalService } from '../../../services/modal.service';
 
 enum ScrollPosition {
   Top = 'top',
@@ -158,7 +159,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
-    private uppyUploaderService: UppyUploaderService,
+    private modalService: ModalService,
     private notificationsService: NotificationsService,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
@@ -1008,7 +1009,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async attachmentSelectPopover(ev: any) {
-    const modal = await this.uppyUploaderService.open('chat');
+    const modal = await this.modalService.openUppyUploaderModal('chat');
     const res = await modal.onDidDismiss();
 
     const data: UppyFileData = res.data;

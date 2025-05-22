@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
 import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import isEmpty from 'lodash-es/isEmpty';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,6 @@ export class FastFeedbackService {
   constructor(
     private modalController: ModalController,
     private storage: BrowserStorageService,
-    private utils: UtilsService,
     private demo: DemoService,
     private apolloService: ApolloService,
     private alertController: AlertController,
@@ -70,7 +69,7 @@ export class FastFeedbackService {
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
 
           // no need to alert user, just display as error on console
-          if (this.utils.isEmpty(res.data?.pulseCheck)) {
+          if (isEmpty(res.data?.pulseCheck)) {
             console.error('No pulse check data found');
             return of(res);
           }
@@ -79,7 +78,7 @@ export class FastFeedbackService {
           // should just skip the modal popup
           const { questions, meta } = res.data.pulseCheck ?? {};
           if (
-            (this.utils.isEmpty(questions) || this.utils.isEmpty(meta)) &&
+            (isEmpty(questions) || isEmpty(meta)) &&
             options.skipChecking === false // if skipChecking is true, force open the modal
           ) {
             return of(res);
@@ -87,7 +86,7 @@ export class FastFeedbackService {
 
           // popup instant feedback view if question quantity found > 0
           if (
-            !this.utils.isEmpty(res.data) &&
+            !isEmpty(res.data) &&
             questions?.length > 0 &&
             !fastFeedbackIsOpened
           ) {
@@ -173,3 +172,4 @@ export class FastFeedbackService {
     await alert.present();
   }
 }
+

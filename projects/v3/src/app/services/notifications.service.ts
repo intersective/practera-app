@@ -6,7 +6,6 @@ import { AchievementPopUpComponent } from '../components/achievement-pop-up/achi
 import { ActivityCompletePopUpComponent } from '../components/activity-complete-pop-up/activity-complete-pop-up.component';
 import { Achievement } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
@@ -154,8 +153,8 @@ export class NotificationsService {
     });
   }
 
-  dismiss() {
-    return this.modalController.dismiss();
+  dismiss(...args: any[]) {
+    return this.modalController.dismiss(...args);
   }
 
   get notificationsCount(): number {
@@ -409,32 +408,6 @@ export class NotificationsService {
       }
     );
     return loading.present();
-  }
-
-  /**
-   * trigger reviewer rating modal
-   *
-   * @param   {number}          reviewId  submission review record id
-   * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
-   *                                      routing (stay at same component)
-   *
-   * @return  {Promise<void>}             deferred ionic modal
-   */
-  async popUpReviewRating(
-    reviewId,
-    redirect: string[] | boolean
-  ): Promise<void> {
-    return this.modalOnly(
-      ReviewRatingComponent,
-      {
-        reviewId,
-        redirect,
-      },
-      {
-        id: `review-popup-${reviewId}`,
-        backdropDismiss: false,
-      }
-    );
   }
 
   // Fast feedback modal functionality has been moved to FeedbackModalService

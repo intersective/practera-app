@@ -4,10 +4,13 @@ import { of } from 'rxjs';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
+import { DemoService } from './demo.service';
+import { NotificationsService } from './notifications.service';
 
 describe('ReviewService', () => {
   let service: ReviewService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -17,6 +20,14 @@ describe('ReviewService', () => {
         {
           provide: UtilsService,
           useClass: TestUtils,
+        },
+        {
+          provide: DemoService,
+          useValue: jasmine.createSpyObj('DemoService', ['getReviews']),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['modal']),
         },
         {
           provide: RequestService,
@@ -29,6 +40,7 @@ describe('ReviewService', () => {
     service = TestBed.inject(ReviewService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     utils = TestBed.inject(UtilsService);
+    notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
   });
 
   it('should be created', () => {
@@ -98,4 +110,14 @@ describe('ReviewService', () => {
     });
   });
 
+  describe('when testing popUpReviewRating()', () => {
+    it('should pass the correct data to notification modal', () => {
+      service.popUpReviewRating(1, ['home']);
+      expect(notificationSpy.modal).toHaveBeenCalledTimes(1);
+      expect(notificationSpy.modal).toHaveBeenCalledWith({} as any, {
+        reviewId: 1,
+        redirect: ['home']
+      });
+    });
+  });
 });

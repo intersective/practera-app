@@ -11,6 +11,7 @@ import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
+import { ModalService } from '../../services/modal.service';
 
 @Component({
   selector: 'app-settings',
@@ -51,8 +52,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     private storage: BrowserStorageService,
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
-    private modalController: ModalController,
-    private uppyUploaderService: UppyUploaderService,
+    private modalService: ModalService,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -111,7 +111,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   dismiss() {
-    this.modalController.dismiss({
+    this.notificationsService.dismiss({
       'dismissed': true
     });
   }
@@ -171,7 +171,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   async profileImage() {
     try {
-      const modal = await this.uppyUploaderService.open('user-profile');
+      const modal = await this.modalService.openUppyUploaderModal('user-profile');
       const res = await modal.onDidDismiss();
 
       // eslint-disable-next-line no-console
@@ -251,9 +251,7 @@ export class SettingsPage implements OnInit, OnDestroy {
         isShowFormOnly: true,
       };
 
-      const modal = await this.modalController.create({
-        componentProps,
-        component: SupportPopupComponent,
+      const modal = await this.notificationsService.modal(SupportPopupComponent, componentProps, {
         cssClass: 'support-popup',
         backdropDismiss: false,
       });

@@ -1,15 +1,13 @@
 /* eslint-disable no-console */
 import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
-import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
-import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
-import { environment } from '../../../environments/environment';
+import { AchievementService } from '@v3/app/services/achievement.service';
 import { FfmpegService } from '../../services/ffmpeg.service';
+import { ReviewService } from '../../services/review.service';
 
 @Component({
   selector: 'app-devtool',
@@ -46,8 +44,7 @@ export class DevtoolPage implements OnInit {
     private storageService: BrowserStorageService,
     private fastFeedbackService: FastFeedbackService,
     private notificationsService: NotificationsService,
-    private experienceService: ExperienceService,
-    private sharedService: SharedService,
+    private reviewService: ReviewService,
     private unlockIndicatorService: UnlockIndicatorService,
     private achievementService: AchievementService,
     private ffmpegService: FfmpegService
@@ -201,7 +198,7 @@ export class DevtoolPage implements OnInit {
   }
 
   async reviewrating() {
-    this.notificationsService.popUpReviewRating(1, false);
+    this.reviewService.popUpReviewRating(1, false);
   }
 
   async testAuth(withAPIkey?: boolean) {

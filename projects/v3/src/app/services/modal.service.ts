@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
+import { UppyUploaderComponent } from '../components/uppy-uploader/uppy-uploader.component';
 
+// type for the source parameter, matching the original method signature
+export type UppyModalSource = 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | null;
 @Injectable({
   providedIn: 'root'
 })
@@ -34,5 +37,25 @@ export class ModalService {
     });
 
     return await modal.present();
+  }
+
+  /**
+   * opens a modal with the uppyuploadercomponent.
+   * @param source the context or type of upload.
+   * @return a promise that resolves with the modal element.
+   */
+  async openUppyUploaderModal(source: UppyModalSource): Promise<HTMLIonModalElement> {
+    const modal = await this.modalController.create({
+      component: UppyUploaderComponent,
+      componentProps: {
+        // 'source' will be passed to uppyuploadercomponent's @input() source.
+        // there's an existing type mismatch between uppymodalsource and the component's expected source type.
+        // using 'as any' to bypass this for now, as in the previous implementation.
+        source: source as any
+      },
+      cssClass: 'uppy-uploader-modal',
+    });
+    await modal.present();
+    return modal;
   }
 }

@@ -1,11 +1,9 @@
+import { AlertController, ModalController } from '@ionic/angular';
 import { UppyFileData, UppyUploaderService } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
-import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
-import { ModalController } from '@ionic/angular';
+import { Uppy, UppyFile } from '@uppy/core';
 import { BrowserStorageService } from '../../services/storage.service';
-import { UtilsService } from '../../services/utils.service';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -31,7 +29,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
-  uppyProps = this.uppyUploaderService.uppyProps;
+  uppyProps: any; // Changed to any to resolve immediate type issue
 
   s3Info: {
     path: string;
@@ -40,12 +38,12 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private notificationsService: NotificationsService,
-    private modalController: ModalController,
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
-    private utils: UtilsService,
+    private alertController: AlertController,
+    private modalController: ModalController,
   ) {
+    this.uppyProps = { ...this.uppyUploaderService.uppyProps };
     this.uppyProps.height = '500px';
     this.uppyProps.note = "Upload a file here";
   }
@@ -101,16 +99,17 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     return name.replace(/[^a-zA-Z0-9]/g, '/');
   }
 
-  onAfterResponse(req, res) {
+  async onAfterResponse(req, res) {
     try {
       // eslint-disable-next-line no-console
       console.log("Uploaded files:", req, res);
       this.s3Info = JSON.parse(res.getBody());
     } catch(error) {
-      this.notificationsService.alert({
+      const popup = await this.alertController.create({
         header: "Upload Failed",
         message: "No response from server",
       });
+      await popup.present();
     }
   }
 

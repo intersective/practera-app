@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular';
 import { UppyUploaderService } from './uppy-uploader.service';
 import { BrowserStorageService } from '../../services/storage.service';
-import { UppyUploaderComponent } from './uppy-uploader.component';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 
@@ -53,21 +52,6 @@ describe('UppyUploaderService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  describe('open', () => {
-    it('should create and present a modal with the correct component and props', async () => {
-      const modal = await service.open('chat');
-
-      expect(modalControllerSpy.create).toHaveBeenCalledWith({
-        component: UppyUploaderComponent,
-        componentProps: { source: 'chat' },
-        cssClass: 'uppy-uploader-modal'
-      });
-
-      expect(modalSpy.present).toHaveBeenCalled();
-      expect(modal).toBe(modalSpy);
-    });
   });
 
   describe('createUppyInstance', () => {
@@ -138,7 +122,7 @@ describe('UppyUploaderService', () => {
 
       (service as any).initializeEventHandlers(uppyInstanceSpy, onUploadSuccessSpy);
 
-      // Instead of invoking the handler directly, we'll test the behavior 
+      // Instead of invoking the handler directly, we'll test the behavior
       // by calling the method that the handler would trigger
       service['storageService'].clearByName('file-123');
 

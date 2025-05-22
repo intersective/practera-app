@@ -1,7 +1,6 @@
 import { firstValueFrom } from 'rxjs';
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
@@ -60,7 +59,6 @@ export class ReviewRatingComponent implements OnInit {
 
   constructor(
     private reviewRatingService: ReviewRatingService,
-    private modalController: ModalController,
     private router: Router,
     private utils: UtilsService,
     private fastFeedbackService: FastFeedbackService,
@@ -152,7 +150,7 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   async dismissModal(): Promise<void> {
-    await this.modalController.dismiss(null, 'cancel', `review-popup-${this.reviewId}`);
+    await this.notificationsService.dismiss(null, 'cancel', `review-popup-${this.reviewId}`);
     await this.fastFeedbackOrRedirect();
   }
 }
