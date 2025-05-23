@@ -216,7 +216,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         reviewId: this.reviewId,
         submissionId: this.submissionId,
         questionId: this.question.id,
-        file: this.innerValue.answer,
+        file: this.innerValue.file,
         comment: this.innerValue.comment,
       };
     }
@@ -240,15 +240,13 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       if (!this.innerValue) {
         this.innerValue = {
           answer: {},
-          comment: ''
+          comment: '',
+          file: {},
         };
       }
-      if (type === 'comment') {
-        // just pass the value for comment since comment is always just text
-        this.innerValue.comment = value;
-      } else {
-        this.innerValue.answer = this.fileRequestFormat();
-      }
+
+      this.innerValue.file = this.fileRequestFormat();
+      this.innerValue[type] = value;
     } else { // for assessment
       this.innerValue = this.fileRequestFormat();
     }
@@ -286,6 +284,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue.comment = this.review.comment;
       this.comment = this.review.comment;
       this.innerValue.answer = this.review.answer;
+      this.innerValue.file = this.review.file;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
       this.innerValue = this.submission.answer;

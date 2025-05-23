@@ -37,7 +37,7 @@
 
 <ng-template #fileDetails>
   <app-list-item
-    [title]="file.name"
+    [title]="file.name || file.filename"
     leadingIcon="document"
     [lines]="lines"
     [endingActionBtnIcons]="endingActionBtnIcons"
