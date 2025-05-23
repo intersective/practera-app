@@ -33,13 +33,14 @@
 
 .button-container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   white-space: nowrap; // Prevent button text wrapping
   width: 100%;
 
   &.with-custom-content {
     margin-top: 0; // Remove top margin
+    justify-content: flex-end;
   }
 }
 
