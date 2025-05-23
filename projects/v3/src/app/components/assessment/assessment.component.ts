@@ -567,11 +567,16 @@ Best regards`;
       // ]
       this.utils.each(this.questionsForm.value, (answer, key) => {
         questionId = +key.replace('q-', '');
-        answers.push({
+        const save: { questionId: number; answer: any; comment: any; file?: any } = {
           questionId,
           answer: answer?.answer,
           comment: answer?.comment,
-        });
+        };
+        if (answer.file) {
+          save.file = answer.file;
+        }
+
+        answers.push(save);
       });
     }
 
