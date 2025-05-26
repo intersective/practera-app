@@ -39,7 +39,7 @@
   width: 100%;
 
   &.with-custom-content {
-    margin-top: 0; // Remove top margin
+    margin-top: 0;
     justify-content: flex-end;
   }
 }
@@ -51,9 +51,10 @@
   min-width: 120px; // Ensure minimum button width
 }
 
+// mobile responsiveness
 @media (max-width: 768px) {
   .action-container {
-    flex-direction: column; // Stack vertically on smaller screens
+    flex-direction: column; // Stack vertically
   }
 
   .custom-content {
@@ -63,7 +64,7 @@
 
   .button-container {
     width: 100%;
-    justify-content: center; // Center buttons on small screens
+    justify-content: center !important;
   }
 
   .action-button {
@@ -74,7 +75,7 @@
 }
 
 @media (max-width: 576px) {
-  .action-button {
+  .with-custom-content > .action-button {
     --padding-start: 12px;
     --padding-end: 12px;
     font-size: 14px; // Smaller font on mobile
@@ -82,16 +83,14 @@
   }
 
   .wrapper {
-    padding: 6px 0;
+    padding: 3px 0;
   }
 }
 
 // For screens that are super small (iPhone SE etc.)
 @media (max-width: 375px) {
-  .action-button {
+  .with-custom-content > .action-button {
     font-size: 14px;
-    --padding-start: 8px;
-    --padding-end: 8px;
     height: 32px;
   }
 }
