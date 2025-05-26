@@ -4,7 +4,7 @@ import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
-import { FileInput, Question, SubmitActions } from '../types/assessment';
+import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
 import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
@@ -80,12 +80,13 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
-  uploadedFile: FileInput;
+  uploadedFile: TusFileResponse;
   fileTypes = '';
   tusResponse: {
     path: string;
     bucket: string;
-    url: string;
+    cdnUrl: string;
+    directUrl: string;
   };
 
   // the value of answer
@@ -163,12 +164,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }) => {
       // eslint-disable-next-line no-console
       console.log('files added', files);
-      this.control.setValue({
-        ...this.innerValue,
-        files,
-      });
-
-      this.control.markAsTouched();
     }).on('file-removed', (file) => {
       // eslint-disable-next-line no-console
       console.log('file removed', file);
@@ -191,14 +186,16 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     // reset errors
     this.errors = [];
-    const fileInput: FileInput = {
+    const fileInput: TusFileResponse = {
       name: data.name,
       type: data.type,
       size: data.size,
       extension: data.extension,
       bucket: this.tusResponse.bucket,
       path: this.tusResponse.path,
-      url: this.tusResponse.url,
+      url: this.tusResponse.cdnUrl,
+      directUrl: this.tusResponse.directUrl,
+      cdnUrl: this.tusResponse.cdnUrl,
     };
 
     this.uploadedFile = fileInput;
@@ -219,7 +216,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         reviewId: this.reviewId,
         submissionId: this.submissionId,
         questionId: this.question.id,
-        file: this.innerValue.answer,
+        file: this.innerValue.file,
         comment: this.innerValue.comment,
       };
     }
@@ -243,21 +240,38 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       if (!this.innerValue) {
         this.innerValue = {
           answer: {},
-          comment: ''
+          comment: '',
+          file: {},
         };
       }
-      if (type === 'comment') {
-        // just pass the value for comment since comment is always just text
-        this.innerValue.comment = value;
-      } else {
-        this.innerValue.answer = this.uploadedFile;
-      }
+
+      this.innerValue.file = this.fileRequestFormat();
+      this.innerValue[type] = value;
     } else { // for assessment
-      this.innerValue = this.uploadedFile;
+      this.innerValue = this.fileRequestFormat();
     }
 
     this.control.setValue(this.innerValue);
     this.triggerSave();
+  }
+
+  fileRequestFormat(): FileInput {
+    // return empty object if uploadedFile is empty or not set
+    if (!this.uploadedFile || Object.keys(this.uploadedFile).length === 0) {
+      return {} as FileInput;
+    }
+
+    const fileInput: FileInput = {
+      name: this.uploadedFile.name,
+      type: this.uploadedFile.type,
+      size: this.uploadedFile.size,
+      extension: this.uploadedFile.extension,
+      bucket: this.uploadedFile.bucket,
+      path: this.uploadedFile.path,
+      url: this.uploadedFile.cdnUrl,
+    };
+
+    return fileInput;
   }
 
   // adding save values to from control
@@ -270,6 +284,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue.comment = this.review.comment;
       this.comment = this.review.comment;
       this.innerValue.answer = this.review.answer;
+      this.innerValue.file = this.review.file;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
       this.innerValue = this.submission.answer;
@@ -280,7 +295,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   removeSubmitFile(file?: {
     handle: string;
   }): void {
-    this.uploadedFile = null;
+    this.uploadedFile = null as TusFileResponse;
 
     if (this.doAssessment === true) {
       this.submission.answer = null;

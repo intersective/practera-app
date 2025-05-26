@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, isDevMode, SimpleChanges } from '@angular/core';
 import { getData, getAllTags } from 'exif-js';
 
 const getImageClassToFixOrientation = (orientation) => {
@@ -34,7 +34,8 @@ const swapWidthAndHeight = img => {
 })
 export class ImgComponent {
   @Input() alt: string;
-  @Input() imgSrc: any;
+  @Input() imgSrc: string;
+  proxiedImgSrc: string;
 
   constructor() {
     if (!this.alt) {
@@ -42,13 +43,36 @@ export class ImgComponent {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    // In development mode, replace the Practera file URL with a proxied URL to avoid CORS issues.
+    const hostname = window.location.hostname;
+    const isLocalhost = /(^localhost$)|(^127\.)|(^::1$)/.test(hostname);
+
+    if (
+      isDevMode() &&
+      isLocalhost &&
+      this.imgSrc?.startsWith('https://file.practera.com')
+    ) {
+      this.proxiedImgSrc = this.imgSrc.replace(
+        /^https?:\/\/file\.practera\.com(\/.*)/,
+        '/practera-proxy$1'
+      );
+    }
+  }
+
+
   imageLoaded(e) {
-    getData(e.target, function () {
-      const allMetaData = getAllTags(this);
+    const imgElement = e.target;
+    getData(imgElement, () => {
+      const allMetaData = getAllTags(imgElement);
       const orientationClassFix = getImageClassToFixOrientation(allMetaData.Orientation);
-      this.classList.add(orientationClassFix);
+
+      if (orientationClassFix) {
+        imgElement.classList.add(orientationClassFix);
+      }
+
       if (allMetaData.Orientation >= 5) {
-        swapWidthAndHeight(this);
+        swapWidthAndHeight(imgElement);
       }
     });
   }

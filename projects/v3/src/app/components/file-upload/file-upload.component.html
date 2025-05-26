@@ -59,7 +59,7 @@
     </ion-text>
 
     <app-file-display
-      [file]="uploadedFile ? uploadedFile : submission?.answer"
+      [file]="uploadedFile || submission?.answer"
       [fileType]="question.fileType || 'any'"
       [isFileComponent]="true"
       [disabled]="control.disabled"
@@ -70,7 +70,7 @@
 
 <ng-container *ngIf="doReview">
   <ng-container *ngIf="question.canAnswer">
-    <div class="uppy-container">
+    <div class="uppy-container ion-padding"  *ngIf="!uploadedFile && !review?.answer">
       <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>

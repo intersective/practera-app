@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, Subscription } from 'rxjs';
 import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -30,6 +30,7 @@ export interface ActivityBase {
   id: number;
   name: string;
   description?: string;
+  isLocked?: boolean;
   tasks: Array<TaskBase>;
 }
 
@@ -38,6 +39,7 @@ export interface Activity {
   name: string;
   description?: string;
   tasks: Array<Task>;
+  isLocked?: boolean;
   unlockConditions: Array<{
     name: string;
     action: string;
@@ -100,7 +102,7 @@ export class ActivityService {
     return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
-          id name description tasks {
+          id name description isLocked tasks {
             id name type isLocked isTeam deadline contextId assessmentType status {
               status isLocked submitterName submitterImage
             }
@@ -148,6 +150,22 @@ export class ActivityService {
 
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask)),
+      catchError(async err => {
+        console.error('Error fetching activity:', err);
+        await this.notification.alert({
+          message: $localize`Unable to fetch activity data. Please try again later.`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel',
+              handler: () => {
+                this.router.navigate(['v3', 'home']);
+              }
+            }
+          ]
+        })
+        return of(null);
+      })
     ).subscribe(_res => {
       if (callback instanceof Function) {
         return callback(_res);

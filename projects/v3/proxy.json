@@ -1,8 +1,0 @@
-{
-  "/uploads": {
-    "target": "https://tusd.test-stage.com",
-    "secure": true,
-    "changeOrigin": true,
-    "logLevel": "debug"
-  }
-}
