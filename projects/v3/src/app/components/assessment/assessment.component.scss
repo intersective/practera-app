@@ -325,13 +325,17 @@ ion-footer {
 }
 
 @media (max-width: 576px) {
-  .page-indicators {
-    max-width: 50%;
-  }
+  .pagination-container {
+    padding: 0;;
 
-  .page-indicator {
-    min-width: 22px;
-    min-height: 22px;
+    .page-indicators {
+      max-width: 50%;
+
+      .page-indicator {
+        min-width: 22px;
+        min-height: 22px;
+      }
+    }
   }
 
   .page-number {
