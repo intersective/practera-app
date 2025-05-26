@@ -330,7 +330,9 @@ Best regards`;
     this.pagesGroups = this.splitGroupsByQuestionCount();
     this.pageIndex = 0;
 
-    // Ensure we scroll the active page into view after rendering
+    this._populateFormWithAnswers();
+
+    // scroll to the active page into view after rendering
     setTimeout(() => this.scrollActivePageIntoView(), 200);
   }
 
@@ -370,8 +372,9 @@ Best regards`;
       });
     });
 
-    this.questionsForm.valueChanges.subscribe((form) => {
-      console.log('value changed', form);
+    this.questionsForm.valueChanges.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe(() => {
       this.initializePageCompletion();
       this.btnDisabled$.next(this.questionsForm.invalid);
     });
@@ -992,5 +995,38 @@ Best regards`;
         }
       }
     }, 50);
+  }
+
+  private _populateFormWithAnswers() {
+    // Populate form with submission answers
+    if (this.submission?.answers) {
+      Object.keys(this.submission.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.submission.answers[questionId]?.answer !== undefined) {
+          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
+        }
+      });
+    }
+
+    // Populate form with review answers
+    if (this.review?.answers) {
+      Object.keys(this.review.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.review.answers[questionId]) {
+          const reviewAnswer = {
+            answer: this.review.answers[questionId].answer,
+            comment: this.review.answers[questionId].comment
+          };
+          control.setValue(reviewAnswer, { emitEvent: false });
+        }
+      });
+    }
+
+    // Initialize page completion after form is populated
+    setTimeout(() => {
+      this.initializePageCompletion();
+    }, 100);
   }
 }
