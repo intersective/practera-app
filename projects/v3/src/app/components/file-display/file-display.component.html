@@ -3,7 +3,7 @@
 
   <ng-container [ngSwitch]="fileType">
     <ng-container *ngSwitchCase="'image'">
-      <app-img [imgSrc]="file.url" alt="generic image uploaded by user" i18n-alt></app-img>
+      <app-img [imgSrc]="file.directUrl || file.url" alt="generic image uploaded by user" i18n-alt></app-img>
       <ng-container *ngIf="isFileComponent">
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
       </ng-container>
@@ -11,8 +11,7 @@
 
     <ng-container *ngSwitchCase="'video'">
       <video controls preload #videoEle>
-        <source [src]="file.url">
-        {{ file.url }}
+        <source [src]="file.directUrl || file.url">
       </video>
       <ng-container *ngIf="isFileComponent">
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
@@ -38,7 +37,7 @@
 
 <ng-template #fileDetails>
   <app-list-item
-    [title]="file.name"
+    [title]="file.name || file.filename"
     leadingIcon="document"
     [lines]="lines"
     [endingActionBtnIcons]="endingActionBtnIcons"

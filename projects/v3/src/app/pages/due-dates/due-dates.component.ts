@@ -1,5 +1,5 @@
-import { BehaviorSubject, Subject, Observable } from 'rxjs';
-import { Assessment, AssessmentService } from './../../services/assessment.service';
+import { BehaviorSubject, Subject, Observable, combineLatest } from 'rxjs';
+import { Assessment, AssessmentService, DueAssessment } from '@v3/app/services/assessment.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventAttributes } from 'ics';
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 
 interface GroupedAssessments {
   month: string;
-  assessments: Assessment[];
+  assessments: DueAssessment[];
 }
 
 @Component({
@@ -18,14 +18,12 @@ interface GroupedAssessments {
   styleUrls: ['./due-dates.component.scss'],
 })
 export class DueDatesComponent implements OnDestroy, OnInit {
-  searchText: string = '';
   statusFilter: string;
-  filteredItems: Assessment[];
   assessments$: BehaviorSubject<GroupedAssessments[]> = new BehaviorSubject<GroupedAssessments[]>(null);
   filteredAssessments$: Observable<GroupedAssessments[]>;
   unsubscribe$: Subject<void> = new Subject<void>();
 
-  searchText$: Subject<string> = new Subject<string>();
+  searchText$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   isLoading = false;
 
   constructor(
@@ -36,23 +34,28 @@ export class DueDatesComponent implements OnDestroy, OnInit {
   ) {}
 
   ngOnInit() {
-    // search changes & debounce
-    this.searchText$
-      .pipe(
-        debounceTime(200),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe(searchTerm => {
-        this.filterAssessments(searchTerm);
-      });
+    // improved: no need for manual subscription, handle in observable pipeline
+    this.filteredAssessments$ = combineLatest([
+      this.assessments$,
+      this.searchText$.pipe(debounceTime(200))
+    ]).pipe(
+      map(([groups, searchText]) => {
+        const searchQuery = searchText?.target?.value || '';
 
-    this.filteredAssessments$ = this.assessments$.pipe(
-      map(groups => {
         if (!groups) return null;
-        if (!this.searchText) return groups;
-
-        // Filter assessments based on search text
-        return this.filterAssessmentGroups(groups, this.searchText);
+        if (searchQuery && !searchQuery?.trim()) return groups;
+        // filter using latest search text
+        const searchLower = searchQuery.toLowerCase();
+        // filter each group's assessments
+        const filteredGroups = groups.map(group => ({
+          ...group,
+          assessments: group.assessments.filter(assessment =>
+            assessment.name.toLowerCase().includes(searchLower) ||
+            assessment.description?.toLowerCase().includes(searchLower)
+          )
+        }));
+        // remove empty groups
+        return filteredGroups.filter(group => group.assessments.length > 0);
       })
     );
   }
@@ -88,46 +91,8 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     this.unsubscribe$.complete();
   }
 
-  /**
-   * Filter assessments
-   */
-  private filterAssessments(searchText: string) {
-    this.searchText = searchText;
-    const currentValue = this.assessments$.getValue();
-    if (currentValue) {
-      this.assessments$.next([...currentValue]);
-    }
-  }
-
-  /**
-   * Filter assessment groups
-   */
-  private filterAssessmentGroups(groups: GroupedAssessments[], searchText: string): GroupedAssessments[] {
-    if (!searchText.trim()) {
-      return groups;
-    }
-
-    const searchLower = searchText.toLowerCase();
-
-    // Filter each group's assessments
-    const filteredGroups = groups.map(group => {
-      const filteredAssessments = group.assessments.filter(assessment =>
-        assessment.name.toLowerCase().includes(searchLower) ||
-        assessment.description?.toLowerCase().includes(searchLower)
-      );
-
-      return {
-        ...group,
-        assessments: filteredAssessments
-      };
-    });
-
-    // Remove empty groups
-    return filteredGroups.filter(group => group.assessments.length > 0);
-  }
-
-  groupByDate(assessments: Assessment[]): GroupedAssessments[] {
-    const grouped: { [key: string]: Assessment[] } = {};
+  groupByDate(assessments: DueAssessment[]): GroupedAssessments[] {
+    const grouped: { [key: string]: DueAssessment[] } = {};
 
     for (const assessment of assessments) {
       let monthYear: string;
@@ -171,7 +136,7 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     return [year, month, day, hours, minutes];
   }
 
-  downloadiCal(event: Assessment) {
+  downloadiCal(event: DueAssessment) {
     try {
       // Parse the due date properly
       const dueDate = new Date(event.dueDate);
@@ -207,7 +172,7 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     }
   }
 
-  downloadGoogleCalendar(assessment: Assessment) {
+  downloadGoogleCalendar(assessment: DueAssessment) {
     try {
       // Format date in the required format for Google Calendar (YYYYMMDDTHHMMSS)
       const startDate = new Date(assessment.dueDate);
@@ -237,9 +202,7 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     }
   }
 
-  goTo(assessment) {
-    this.assessmentService.fetchAssessment(assessment.id, 'assessment', null, null).subscribe((res) => {
-      this.router.navigate(['v3', 'activity-desktop', assessment.id]);
-    });
+  goTo(assessment: DueAssessment) {
+    return this.router.navigate(['v3', 'activity-desktop', assessment.contextId, assessment.activityId, assessment.id]);
   }
 }

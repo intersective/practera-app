@@ -365,10 +365,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // show unlock guideline for locked milestone or activity
   async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
+
     let message = '';
 
     const routes = [];
     const guidelines = item.unlockConditions;
+
+    if (!guidelines) {
+      return;
+    }
 
     if (guidelines.length === 0) {
       return;
@@ -385,7 +390,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
             routes.push({
               path: isMobile
                 ? `/v3/topic-mobile/${activityId}/${topicId}`
-                : `/v3/activity-desktop/${activityId}/${topicId}?task=topic`,
+                : `/v3/activity-desktop/${activityId}/${topicId}`,
               label: `<i><b>${action}</b></i> ${guideline.name}`,
             });
           } else if (assessmentId) {
