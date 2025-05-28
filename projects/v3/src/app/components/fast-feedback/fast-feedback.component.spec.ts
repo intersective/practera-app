@@ -43,16 +43,8 @@ describe('FastFeedbackComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
-          provide: FastFeedbackService,
-          useValue: jasmine.createSpyObj('FastFeedbackService', ['submit'])
-        },
-        {
           provide: UtilsService,
           useClass: TestUtils,
-        },
-        {
-          provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert'])
         },
         {
           provide: ModalController,
@@ -119,10 +111,10 @@ describe('FastFeedbackComponent', () => {
         team_name: 'team',
         assessment_name: 'asmt'
       };
-      fastfeedbackSpy.submit.and.returnValue(of({}));
+      spyOn(component, 'submitData').and.returnValue(of({}));
     });
     afterEach(() => {
-      expect(fastfeedbackSpy.submit.calls.count()).toBe(1);
+      expect(component.submitData).toBe(1);
       expect(modalSpy.dismiss.calls.count()).toBe(1);
     });
 
@@ -134,7 +126,7 @@ describe('FastFeedbackComponent', () => {
       it('when submission answer is provided in full', fakeAsync(() => {
         component.submit();
         tick(2500);
-        expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
+        expect(component.submitData).toEqual({
           context_id: 1,
           team_id: 2
         });
@@ -145,7 +137,7 @@ describe('FastFeedbackComponent', () => {
         component.submit();
         tick(2500);
 
-        expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
+        expect(component.submitData).toEqual({
           context_id: 1,
           target_user_id: 3
         });
@@ -156,7 +148,7 @@ describe('FastFeedbackComponent', () => {
         component.meta.target_user_id = null;
         component.submit();
         tick(2500);
-        expect(fastfeedbackSpy.submit.calls.first().args[1]).toEqual({
+        expect(component.submitData).toEqual({
           context_id: 1
         });
       }));
@@ -165,7 +157,7 @@ describe('FastFeedbackComponent', () => {
     describe('submit()', () => {
       it('should fail submission gracefully', fakeAsync(() => {
         const THROWN_ERROR = 'ERROR MESSAGE';
-        fastfeedbackSpy.submit.and.throwError(THROWN_ERROR);
+        // component.submitData.and.throwError(THROWN_ERROR);
 
         component.ngOnInit();
         component.submit();

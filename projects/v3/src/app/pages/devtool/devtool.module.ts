@@ -7,13 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { DevtoolPageRoutingModule } from './devtool-routing.module';
 
 import { DevtoolPage } from './devtool.page';
+import { ComponentsModule } from '../../components/components.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DevtoolPageRoutingModule
+    DevtoolPageRoutingModule,
+    ComponentsModule,
   ],
   declarations: [DevtoolPage]
 })

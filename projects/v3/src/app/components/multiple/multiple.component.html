@@ -5,7 +5,7 @@
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
-          <div class="answer-text" [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name"></div>
+          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name"></div>
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
@@ -78,22 +78,25 @@
     <ion-item *ngFor="let choice of question.choices; let i = index"
       [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
       lines="none">
-      <ion-label class="ion-text-wrap body-2 black">
-        <span [innerHTML]="choice.name"></span>
-        <p *ngIf="submission?.answer?.includes(choice.id)">
-          <ion-chip class="label orange" i18n
-            *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's answer</ion-chip>
-        </p>
-      </ion-label>
       <ion-checkbox color="success"
-        [attr.aria-label]="choice.name"
         [checked]="review.answer ? review.answer.includes(choice.id) : false"
         [value]="choice.id"
+        justify="start"
         slot="start"
+        labelPlacement="end"
         (ionChange)="onChange(choice.id, 'answer')"
         [disabled]="control.disabled"
-      ></ion-checkbox>
+        [attr.aria-label]="choice.name"
+      >
+        <div class="ion-text-wrap body-2 black">
+          <span [innerHTML]="choice.name"></span>
+          <p *ngIf="submission?.answer?.includes(choice.id)">
+            <ion-chip class="label orange" i18n
+              *ngIf="submission?.answer?.includes(choice.id)"
+            >Learner's answer</ion-chip>
+          </p>
+        </div>
+      </ion-checkbox>
     </ion-item>
   </ion-list>
 

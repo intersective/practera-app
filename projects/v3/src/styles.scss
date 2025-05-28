@@ -131,12 +131,6 @@ ion-button {
   z-index: 20;
   height: calc(100% - 120px);
 }
-.ion-footer-absolute {
-  position: absolute;
-  height: 60px;
-  bottom: 0;
-  z-index: 30;
-}
 
 ion-chip.label {
   border-radius: 8px;
@@ -303,6 +297,7 @@ chat text editor
 .editor-class {
   border: none !important;
   .ql-editor {
+    width: 100%;
     max-height: 82px;
   }
 
@@ -408,6 +403,10 @@ quill-view {
   }
 }
 
+// textarea input
+ion-textarea {
+  overflow: visible;
+}
 
 .team-check-in-alert {
   .alert-message {
@@ -446,7 +445,6 @@ Used in achievement
   display: inline-block;
 }
 
-
 .notification-dot {
   position: absolute;
   top: -3px;
@@ -480,6 +478,10 @@ Used in achievement
  ****************/
 quill-editor .ql-toolbar.ql-snow {
   border: none !important;
+}
+
+.uppy-uploader-modal {
+  --height: 500px;
 }
 
 // Alert styles

@@ -1,7 +1,7 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
-import { AssessmentService, Question } from '@v3/services/assessment.service';
+import { Question } from '@v3/services/assessment.service';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 
@@ -23,9 +23,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   @Input() question: Question;
   @Input() submission;
-  @Input() submissionId: number;
+  @Input() submissionId?: number;
   @Input() review;
-  @Input() reviewId: number;
+  @Input() reviewId?: number;
   // this is for review status
   @Input() reviewStatus;
   // this is for assessment status
@@ -48,51 +48,53 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   // validation errors array
   errors: Array<any> = [];
 
-  constructor(
-    private assessmentService: AssessmentService,
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
+  }
+
+  triggerSave(): void {
+    const action: {
+      autoSave?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
+      autoSave: true,
+      goBack: false,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.answer,
+      };
+    }
+
+    this.submitActions$.next(action);
   }
 
   ngAfterViewInit() {
     if (this.answerRef?.ionInput) {
       this.subcriptions.push(this.answerRef.ionInput.pipe(
         map(e => (e.target as HTMLInputElement).value),
-        filter(text => text.length > 0),
-        debounceTime(1250),
+        filter(text => text.length >= 0),
+        debounceTime(800),
         distinctUntilChanged(),
-      ).subscribe(_data => {
-        const action: {
-          autoSave?: boolean;
-          goBack?: boolean;
-          questionSave?: {};
-          reviewSave?: {};
-        } = {
-          autoSave: true,
-          goBack: false,
-        };
-
-        if (this.doReview === true) {
-          action.reviewSave = {
-            reviewId: this.reviewId,
-            submissionId: this.submissionId,
-            questionId: this.question.id,
-            answer: this.innerValue.answer,
-            comment: this.innerValue.comment,
-          };
-        }
-
-        if (this.doAssessment === true) {
-          action.questionSave = {
-            submissionId: this.submissionId,
-            questionId: this.question.id,
-            answer: this.answer,
-          };
-        }
-
-        this.submitActions$.next(action);
+      ).subscribe(_answer => {
+        return this.triggerSave();
       }));
     }
   }
@@ -128,7 +130,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(type: string = null) {
+  onChange(type: 'answer' | 'comment' = null) {
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -143,9 +145,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
       this.innerValue = this.answer;
     }
 
-    // propagate value into form control using control value accessor interface
     this.propagateChange(this.innerValue);
-
 
     // 05/02/2019
     // Don't check "is required" error for now, it has some error.

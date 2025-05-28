@@ -1,3 +1,11 @@
+:host(ion-fab) {
+  --ion-safe-area-right: 5em;
+}
+
+.ion-fab-list.fab-list-active {
+  right: 0;
+}
+
 .border-left {
   border-left: 1px solid var(--practera-grey-25);
 }
@@ -22,6 +30,43 @@ ion-content {
   }
 }
 
+// mask assessment when activity is locked
+.hidden-asmt {
+  position: relative;
+
+  // semi-transparent overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.6);
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  ::ng-deep app-assessment,
+  ::ng-deep app-topic {
+    opacity: 0.6;
+    filter: blur(3px);
+    color: #999;
+
+    // disable actions
+    ion-button,
+    button,
+    input,
+    textarea,
+    ion-textarea,
+    ion-input,
+    ion-select {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+}
+
 .large-icon {
   font-size: 80px;
 }
@@ -35,4 +80,52 @@ ion-content {
   justify-content: center;
   height: 100vh;
   text-align: center;
+}
+.scrollable-fab {
+  display: block;
+  overflow-y: scroll;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  max-height: 200px;
+  ion-fab-button {
+    --box-shadow: none;
+    width: auto;
+    .button-native {
+      border: unset;
+    }
+    &:hover::before {
+      --box-shadow: none;
+      opacity: 1;
+      bottom: 0;
+    }
+  }
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),     /* Fully transparent at the top */
+    rgba(0, 0, 0, 1) 20%, /* Full visibility starting slightly below */
+    rgba(0, 0, 0, 1) 80%, /* Full visibility until slightly above the bottom */
+    rgba(0, 0, 0, 0)      /* Fully transparent at the bottom */
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 1) 20%,
+    rgba(0, 0, 0, 1) 80%,
+    rgba(0, 0, 0, 0)
+  );
+}
+
+.tooltip-container {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  z-index: 1000;
+  pointer-events: none;
+  top: 50%;
+  right: 1em;
 }

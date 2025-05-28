@@ -15,6 +15,7 @@ export interface User {
   name?: string;
   firstName?: string;
   lastName?: string;
+  avatar?: string; // user avatar pic
   apikey?: string;
   contactNumber?: string;
   email?: string;
@@ -81,7 +82,7 @@ export interface Config {
 })
 
 export class BrowserStorageService {
-  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
+  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) { }
 
   get(key: string) {
     const cached = this.storage.getItem(key);
@@ -151,7 +152,7 @@ export class BrowserStorageService {
   }
 
   setReferrer(referrer: Referrer) {
-    this.set('referrer', {...this.getReferrer(), ...referrer});
+    this.set('referrer', { ...this.getReferrer(), ...referrer });
     return true;
   }
 
@@ -272,5 +273,24 @@ export class BrowserStorageService {
     }
 
     return lastVisited[name] || null;
+  }
+
+  // clear cache by the storage index name
+  clearByName(name: string) {
+    const storages = localStorage;
+    const result: { [key: string]: any } = {};
+
+    for (let i = 0; i < storages.length; i++) {
+      const key = storages.key(i);
+      try {
+        if (key && key.includes(name)) {
+          result[key] = storages.removeItem(key);
+        }
+      } catch (error) {
+        console.error(`Error removing key: ${key}`, error);
+      }
+    }
+
+    return result;
   }
 }
