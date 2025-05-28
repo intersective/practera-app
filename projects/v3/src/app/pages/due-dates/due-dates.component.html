@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border header-border" aria-label="Due Status">
+  <h1 class="for-accessibility">Due Dates (Beta)</h1>
+  <ion-toolbar>
+    <ion-title class="headline-4 grey-75" i18n>Due Dates (Beta)</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-searchbar (ionInput)="searchText$.next($event)" [debounce]="200" placeholder="Search by assessment name"></ion-searchbar>
+
+  <ion-list *ngIf="(filteredAssessments$ | async) as assessments; else loading">
+    <ng-container *ngFor="let group of assessments">
+      <ion-item-divider class="spacer-top headline-4 duedates-group">
+        <ion-label>{{ group.month }}</ion-label>
+      </ion-item-divider>
+
+      <ion-item *ngFor="let assessment of group.assessments">
+        <ion-label>
+          <h3>{{ assessment.name }}</h3>
+          <p>{{ assessment.dueDate | date }}</p>
+        </ion-label>
+        <ion-button fill="clear" (click)="goTo(assessment)">Go to</ion-button>
+        <ion-button aria-label="export icalendar"
+          *ngIf="assessment?.dueDate"
+          [id]="'popover-button' + assessment.id"
+          color="primary">
+          <ion-icon slot="start" name="calendar"></ion-icon>
+          Add to Calendar
+        </ion-button>
+        <ion-popover [trigger]="'popover-button' + assessment.id" [dismissOnSelect]="true">
+          <ng-template>
+            <ion-content>
+              <ion-list>
+                <ion-item [button]="true" [detail]="false" (click)="downloadiCal(assessment)">iCalendar</ion-item>
+                <ion-item [button]="true" [detail]="false" (click)="downloadGoogleCalendar(assessment)">Google Calendar</ion-item>
+              </ion-list>
+            </ion-content>
+          </ng-template>
+        </ion-popover>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+</ion-content>
+
+<ng-template #loading>
+  <ion-list>
+    <ion-item-divider>
+      <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+    </ion-item-divider>
+
+    <ion-item *ngFor="let i of [1,2,3]">
+      <ion-label>
+        <h3><ion-skeleton-text animated style="width: 60%"></ion-skeleton-text></h3>
+        <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
+      </ion-label>
+      <ion-button disabled>
+        <ion-skeleton-text animated style="width: 100px; height: 20px"></ion-skeleton-text>
+      </ion-button>
+    </ion-item>
+
+    <ion-item-divider>
+      <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+    </ion-item-divider>
+
+    <ion-item *ngFor="let i of [1,2]">
+      <ion-label>
+        <h3><ion-skeleton-text animated style="width: 70%"></ion-skeleton-text></h3>
+        <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
+      </ion-label>
+      <ion-button disabled>
+        <ion-skeleton-text animated style="width: 100px; height: 20px"></ion-skeleton-text>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ng-template>
+

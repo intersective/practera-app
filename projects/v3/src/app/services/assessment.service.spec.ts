@@ -11,7 +11,6 @@ import { ApolloService } from './apollo.service';
 describe('AssessmentService', () => {
   let service: AssessmentService;
   let requestSpy: jasmine.SpyObj<RequestService>;
-  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
 
@@ -22,12 +21,6 @@ describe('AssessmentService', () => {
         {
           provide: UtilsService,
           useClass: TestUtils,
-        },
-        {
-          provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', [
-            'graphQLWatch', 'graphQLMutate'
-          ])
         },
         {
           provide: NotificationsService,
@@ -56,7 +49,6 @@ describe('AssessmentService', () => {
     });
     service = TestBed.inject(AssessmentService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utils = TestBed.inject(UtilsService);
   });
@@ -620,6 +612,301 @@ describe('AssessmentService', () => {
     it('should return the answer as is if question not found', () => {
       const result = service['_normaliseAnswer'](4, 'test'); // Assuming questionId 4 does not exist
       expect(result).toEqual('test');
+    });
+  });
+
+  describe('when testing fetchAssessment()', () => {
+    let apolloSpy: jasmine.SpyObj<ApolloService>;
+    let mockResponse;
+
+    beforeEach(() => {
+      apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+      mockResponse = {
+        data: {
+          assessment: {
+            id: 1,
+            name: 'Test Assessment',
+            type: 'quiz',
+            description: 'Test Description',
+            isTeam: false,
+            dueDate: '2023-12-31',
+            pulseCheck: false,
+            allowResubmit: true,
+            groups: [
+              {
+                name: 'Question Group 1',
+                description: 'Group Description',
+                questions: [
+                  {
+                    id: 1,
+                    name: 'Text Question',
+                    description: 'Text Description',
+                    type: 'text',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['submitter', 'reviewer'],
+                  },
+                  {
+                    id: 2,
+                    name: 'One-of Question',
+                    description: 'Oneof Description',
+                    type: 'oneof',
+                    isRequired: true,
+                    hasComment: true,
+                    audience: ['submitter', 'reviewer'],
+                    choices: [
+                      { id: 21, name: 'Choice 1', explanation: 'Explanation 1' },
+                      { id: 22, name: 'Choice 2', explanation: 'Explanation 2' }
+                    ]
+                  },
+                  {
+                    id: 3,
+                    name: 'Multiple Question',
+                    description: 'Multiple Description',
+                    type: 'multiple',
+                    isRequired: true,
+                    hasComment: false,
+                    audience: ['submitter'],
+                    choices: [
+                      { id: 31, name: 'Option A', explanation: 'Explanation A' },
+                      { id: 32, name: 'Option B', explanation: 'Explanation B' }
+                    ]
+                  },
+                  {
+                    id: 4,
+                    name: 'File Question',
+                    description: 'File Description',
+                    type: 'file',
+                    fileType: 'image',
+                    isRequired: false,
+                    hasComment: true,
+                    audience: ['submitter', 'reviewer']
+                  }
+                ]
+              }
+            ],
+            submissions: [
+              {
+                id: 101,
+                status: 'published',
+                completed: true,
+                modified: '2023-11-15',
+                locked: false,
+                submitter: {
+                  name: 'John Doe',
+                  image: 'profile.jpg',
+                  team: { name: 'Team Alpha' }
+                },
+                answers: [
+                  {
+                    questionId: 1,
+                    answer: 'This is a text answer'
+                  },
+                  {
+                    questionId: 2,
+                    answer: 21
+                  },
+                  {
+                    questionId: 3,
+                    answer: [31, 32]
+                  },
+                  {
+                    questionId: 4,
+                    file: {
+                      name: 'image.jpg',
+                      url: 'http://example.com/image.jpg',
+                      type: 'image/jpeg'
+                    }
+                  }
+                ],
+                review: {
+                  id: 201,
+                  status: 'done',
+                  modified: '2023-11-16',
+                  meta: null,
+                  reviewer: { name: 'Jane Smith' },
+                  answers: [
+                    {
+                      questionId: 1,
+                      answer: null,
+                      comment: 'Good answer'
+                    },
+                    {
+                      questionId: 2,
+                      answer: 22,
+                      comment: 'Consider the other option'
+                    },
+                    {
+                      questionId: 4,
+                      answer: null,
+                      comment: 'Clear image',
+                      file: {
+                        name: 'feedback.jpg',
+                        url: 'http://example.com/feedback.jpg',
+                        type: 'image/jpeg',
+                        size: 1024
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      };
+
+      apolloSpy.graphQLFetch.and.returnValue(of(mockResponse));
+    });
+
+    it('should fetch and normalize assessment, submission, and review data', (done) => {
+      service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
+        // Check that all three parts of the response are returned
+        expect(result).toBeTruthy();
+        expect(result.assessment).toBeTruthy();
+        expect(result.submission).toBeTruthy();
+        expect(result.review).toBeTruthy();
+
+        // Check assessment normalization
+        expect(result.assessment.id).toBe(1);
+        expect(result.assessment.name).toBe('Test Assessment');
+        expect(result.assessment.groups.length).toBe(1);
+        expect(result.assessment.groups[0].questions.length).toBe(4);
+
+        // Check if questions are properly categorized for submitter vs reviewer
+        const textQuestion = result.assessment.groups[0].questions[0];
+        expect(textQuestion.canAnswer).toBeTrue(); // submitter can answer in assessment mode
+        expect(textQuestion.submitterOnly).toBeFalse(); // both submitter and reviewer can access
+
+        const multipleQuestion = result.assessment.groups[0].questions[2];
+        expect(multipleQuestion.submitterOnly).toBeTrue(); // only submitter can access
+
+        // Check submission normalization
+        expect(result.submission.id).toBe(101);
+        expect(result.submission.status).toBe('feedback available'); // Verify status translation
+        expect(result.submission.submitterName).toBe('John Doe');
+
+        // Verify answers normalization
+        expect(result.submission.answers[1].answer).toBe('This is a text answer');
+        expect(result.submission.answers[2].answer).toBe(21); // oneof answer should be a number
+        expect(result.submission.answers[3].answer).toEqual([31, 32]); // multiple answer should be array
+        expect(result.submission.answers[4].answer).toEqual({
+          name: 'image.jpg',
+          url: 'http://example.com/image.jpg',
+          type: 'image/jpeg'
+        });
+
+        // Check review normalization
+        expect(result.review.id).toBe(201);
+        expect(result.review.status).toBe('done');
+        expect(result.review.teamName).toBe('Team Alpha');
+
+        // Verify review answers normalization
+        expect(result.review.answers[1].answer).toBeNull();
+        expect(result.review.answers[1].comment).toBe('Good answer');
+        expect(result.review.answers[2].answer).toBe(22);
+        expect(result.review.answers[2].comment).toBe('Consider the other option');
+        expect(result.review.answers[4].file).toEqual({
+          name: 'feedback.jpg',
+          url: 'http://example.com/feedback.jpg',
+          type: 'image/jpeg',
+          size: 1024
+        });
+
+        done();
+      });
+
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalledOnceWith(
+        jasmine.any(String),
+        {
+          variables: {
+            assessmentId: 1,
+            reviewer: false,
+            activityId: 5,
+            submissionId: null,
+            contextId: 10,
+          }
+        }
+      );
+    });
+
+    it('should handle review mode and normalize data differently', (done) => {
+      service.fetchAssessment(1, 'review', 5, 10).subscribe(result => {
+        // In review mode, the canAnswer property should be different
+        const questions = result.assessment.groups[0].questions;
+
+        // All questions that have reviewer in audience should be answerable in review mode
+        const textQuestion = questions[0]; // has reviewer in audience
+        expect(textQuestion.canAnswer).toBeTrue();
+
+        // Multiple question doesn't have reviewer in audience
+        const multipleQuestion = questions[2];
+        expect(multipleQuestion.canAnswer).toBeFalse();
+
+        done();
+      });
+
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalledWith(
+        jasmine.any(String),
+        {
+          variables: {
+            assessmentId: 1,
+            reviewer: true, // This is now true for review mode
+            activityId: 5,
+            submissionId: null,
+            contextId: 10,
+          }
+        }
+      );
+    });
+
+    it('should handle different types of answers in _normaliseAnswer', (done) => {
+      // Modify the mock response to test various answer formats
+      mockResponse.data.assessment.submissions[0].answers = [
+        { questionId: 1, answer: '' }, // Empty string for text
+        { questionId: 2, answer: '22' }, // String that should be converted to number for oneof
+        { questionId: 3, answer: '[]' }, // Empty array as string for multiple
+        { questionId: 3, answer: '[31]' }, // Single item array as string
+        { questionId: 3, answer: '[31, 32]' }, // Multi-item array as string
+        { questionId: 4, file: null } // Null file
+      ];
+
+      service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
+        // Text question - empty answer should remain empty string
+        expect(result.submission.answers[1].answer).toBe('');
+
+        // Oneof question - string should be converted to number
+        expect(result.submission.answers[2].answer).toBe(22);
+
+        // Multiple question - empty array string should be parsed to empty array
+        expect(result.submission.answers[3].answer).toEqual([]);
+
+        done();
+      });
+    });
+
+    it('should handle file answers correctly', (done) => {
+      // Modify the mock to include a file answer in the review
+      mockResponse.data.assessment.submissions[0].answers = [
+        {
+          questionId: 4,
+          file: {
+            name: 'submission.pdf',
+            url: 'http://example.com/submission.pdf',
+            type: 'application/pdf'
+          }
+        }
+      ];
+
+      service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
+        // File should be normalized properly in submission
+        expect(result.submission.answers[4].answer).toEqual({
+          name: 'submission.pdf',
+          url: 'http://example.com/submission.pdf',
+          type: 'application/pdf'
+        });
+
+        done();
+      });
     });
   });
 });

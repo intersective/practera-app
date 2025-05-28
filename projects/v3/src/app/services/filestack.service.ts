@@ -27,7 +27,7 @@ const api = {
   metadata: `https://www.filestackapi.com/api/file/HANDLE/metadata`
 };
 
-const FS_INTELLIGENT = true;
+const FS_INTELLIGENT = false;
 const FS_MULTIPART_CONCURRENCY = 5;
 
 @Injectable({
@@ -58,6 +58,16 @@ export class FilestackService {
       signature,
     });
 
+    // avoid silent error
+    this.filestack.on('upload.error', (error) => {
+      if (error.type === 'request') {
+        return this.notificationsService.alert({
+          header: $localize`Upload failed`,
+          message: $localize`Maybe the file is too large or the network is unstable. Please try again later. If problem persists, please contact support.`,
+        });
+      }
+    });
+
     if (!this.filestack) {
       throw new Error('Filestack module not found.');
     }
@@ -83,14 +93,12 @@ export class FilestackService {
 
   // get s3 config
   getS3Config(fileType) {
-    let location, container, region, workflows, paths;
-    ({
+    let { container, region } = environment.filestack.s3Config;
+    const {
       location,
-      container,
-      region,
       workflows,
       paths
-    } = environment.filestack.s3Config);
+    } = environment.filestack.s3Config;
 
     let path = paths.any;
     // get s3 path based on file type
@@ -193,23 +201,25 @@ export class FilestackService {
         'googledrive',
         'dropbox',
         'onedrive',
-        'box',
         'gmail',
         'video'
       ],
       uploadConfig: {
-        concurrency: this.chunksConcurrency,
         intelligent: this.intelligent,
+        partSize: 1024 * 1024 * 5, // 5MB
+        concurrency: this.chunksConcurrency,
+        retry: 2, // retry for 3 times
+        timeout: 60000, // allow chunked size upload happen for 30 seconds max
       },
       storeTo: this.getS3Config(this.getFileTypes()),
       onFileSelected: this.onFileSelectedRename,
       onFileUploadFailed: onError,
-      onFileUploadFinished: function(res) {
+      onFileUploadFinished: (res) => {
         return onSuccess(res);
       },
       onUploadDone: (res) => res,
       supportEmail: 'help@practera.com',
-      lang: currentLocale != 'en-US' ? currentLocale : 'en',
+      lang: currentLocale !== 'en-US' ? currentLocale : 'en',
     };
 
     return await this.filestack.picker(Object.assign(pickerOptions, options)).open();
@@ -228,18 +238,18 @@ export class FilestackService {
     }
 
     await this.filestack.upload(file, option, path, uploadToken)
-    .then(res => {
-      const missingAttribute = {
-        container: res.container,
-        key: res.key,
-        filename: res.filename,
-        mimetype: res.mimetype
-      };
-      return uploadOptions.onFileUploadFinished(Object.assign(res.toJSON(), missingAttribute));
-    })
-    .catch(err => {
-      return uploadOptions.onFileUploadFailed(err);
-    });
+      .then(res => {
+        const missingAttribute = {
+          container: res.container,
+          key: res.key,
+          filename: res.filename,
+          mimetype: res.mimetype
+        };
+        return uploadOptions.onFileUploadFinished(Object.assign(res.toJSON(), missingAttribute));
+      })
+      .catch(err => {
+        return uploadOptions.onFileUploadFailed(err);
+      });
   }
 
   async previewModal(url, filestackUploadedResponse?): Promise<void> {

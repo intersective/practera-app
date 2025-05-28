@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { first, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Md5 } from 'ts-md5/dist/md5';
 import {
   Validators,
   FormControl,
-  FormGroup,
-  FormBuilder
+  FormGroup
 } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from '@v3/services/utils.service';
@@ -22,7 +23,8 @@ import { HttpErrorResponse } from '@angular/common/http';
   templateUrl: './auth-registration.component.html',
   styleUrls: ['./auth-registration.component.scss']
 })
-export class AuthRegistrationComponent implements OnInit {
+export class AuthRegistrationComponent implements OnInit, OnDestroy {
+  isMobile: boolean;
   password: string;
   confirmPassword: string;
   isAgreed = false;
@@ -41,17 +43,19 @@ export class AuthRegistrationComponent implements OnInit {
   // for unregisterd users using direct link
   unRegisteredDirectLink = false;
   isLoading = false; // loading registration trigger
+  unsubscribe$: Subject<any> = new Subject<any>();
 
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private storage: BrowserStorageService,
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private modalController: ModalController,
   ) {
     this.initForm();
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
@@ -64,6 +68,11 @@ export class AuthRegistrationComponent implements OnInit {
     if (this.storage.get('unRegisteredDirectLink')) {
       this.unRegisteredDirectLink = true;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
   }
 
   initForm() {
@@ -82,7 +91,9 @@ export class AuthRegistrationComponent implements OnInit {
     redirect = ['auth', 'login'];
 
     // access query params
-    this.route.queryParamMap.subscribe(queryParams => {
+    this.route.queryParamMap
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(queryParams => {
       this.user.email = this.route.snapshot.paramMap.get('email');
       this.user.key = this.route.snapshot.paramMap.get('key');
       if (environment.demo && (this.user.key === 'unRegister')) {
@@ -93,8 +104,9 @@ export class AuthRegistrationComponent implements OnInit {
         this.authService.verifyRegistration({
             email: this.user.email,
             key: this.user.key
-          }).subscribe(
-            response => {
+        }).pipe(first())
+          .subscribe({
+            next: response => {
 
               if (response) {
                 const user = response.data.User;
@@ -111,8 +123,10 @@ export class AuthRegistrationComponent implements OnInit {
                 // get app configaration
                 this.authService.checkDomain({
                   domain: this.domain
-                }).subscribe(
-                  res => {
+                })
+                .pipe(first())
+                .subscribe({
+                  next: res => {
 
                     let data = (res.data || {}).data;
                     data = this.utils.find(data, function(datum) {
@@ -128,16 +142,18 @@ export class AuthRegistrationComponent implements OnInit {
                       }
                     }
                   },
-                  err => {
+                  error: err => {
+                    console.error('domain-check::', err);
                     this.showPopupMessages('shortMessage', $localize`Registration link invalid!`, redirect);
                   }
-                );
+                });
               }
             },
-            error => {
+            error: error => {
+              console.error('verification::', error);
               this.showPopupMessages('shortMessage', $localize`Registration link invalid!`, redirect);
             }
-          );
+          });
       } else {
         this.showPopupMessages('shortMessage', $localize`Registration link invalid!`, redirect);
       }
@@ -150,7 +166,7 @@ export class AuthRegistrationComponent implements OnInit {
     return autoPass;
   }
 
-  openLink() {
+  openLink(): void {
     const fileURL = 'https://images.practera.com/terms_and_conditions/practera_terms_conditions.pdf';
     window.open(fileURL, '_system');
   }
@@ -168,14 +184,16 @@ export class AuthRegistrationComponent implements OnInit {
           user_id: this.user.id,
           key: this.user.key
         })
+        .pipe(first())
         .subscribe(
           response => {
             this.authService
               .authenticate({
                 apikey: response.data.apikey,
               })
-              .subscribe(
-                async res => {
+              .pipe(first())
+              .subscribe({
+                next: async res => {
                   this.storage.set('isLoggedIn', true);
                   this.storage.remove('unRegisteredDirectLink');
                   await this.experienceService.switchProgram({
@@ -185,12 +203,12 @@ export class AuthRegistrationComponent implements OnInit {
                   this.isLoading = false;
                   this.showPopupMessages('shortMessage', $localize`Registration success!`, ['v3', 'home']);
                 },
-                err => {
+                error: err => {
                   this.isLoading = false;
                   console.error(err);
                   this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
                 }
-              );
+              });
           },
           async (error: HttpErrorResponse) => {
             this.isLoading = false;
@@ -207,6 +225,7 @@ export class AuthRegistrationComponent implements OnInit {
               });
             }
 
+            console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
         );
@@ -243,9 +262,9 @@ export class AuthRegistrationComponent implements OnInit {
       const pass = this.registerationForm.controls.password.value;
       const confirmPass = this.registerationForm.controls.confirmPassword.value;
       if (pass !== confirmPass) {
+        this.errors.push($localize`Your passwords don't match.`);
         this.isLoading = false;
 
-        this.errors.push($localize`Your passwords don\'t match.`);
         isValid = false;
         return isValid;
       } else if (!this.isAgreed) {
@@ -306,7 +325,7 @@ export class AuthRegistrationComponent implements OnInit {
   async termsAndConditionsPopup() {
     const modal = await this.modalController.create({
       component: TermsConditionsPreviewComponent,
-      swipeToClose: false,
+      canDismiss: false,
       backdropDismiss: false
     });
     await modal.present();
