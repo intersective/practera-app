@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, Subscription } from 'rxjs';
 import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -12,6 +12,7 @@ import { TopicService } from './topic.service';
 import { AssessmentService } from './assessment.service';
 import { SharedService } from './shared.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
+import { UnlockConditionMeta } from './home.service';
 
 export interface TaskBase {
   id: number;
@@ -29,6 +30,7 @@ export interface ActivityBase {
   id: number;
   name: string;
   description?: string;
+  isLocked?: boolean;
   tasks: Array<TaskBase>;
 }
 
@@ -37,6 +39,12 @@ export interface Activity {
   name: string;
   description?: string;
   tasks: Array<Task>;
+  isLocked?: boolean;
+  unlockConditions: Array<{
+    name: string;
+    action: string;
+    meta: UnlockConditionMeta;
+  }>;
 }
 
 export interface Task {
@@ -94,9 +102,18 @@ export class ActivityService {
     return this.apolloService.graphQLFetch(
       `query getActivity($id: Int!) {
         activity(id:$id){
-          id name description tasks{
-            id name type isLocked isTeam deadline contextId assessmentType status{
+          id name description isLocked tasks {
+            id name type isLocked isTeam deadline contextId assessmentType status {
               status isLocked submitterName submitterImage
+            }
+          }
+          unlockConditions {
+            name action
+            meta {
+              activityId
+              assessmentId
+              topicId
+              contextId
             }
           }
         }
@@ -133,6 +150,22 @@ export class ActivityService {
 
     return this.getActivityBase(id).pipe(
       map(res => this._normaliseActivity(res.data, goToNextTask, afterTask)),
+      catchError(async err => {
+        console.error('Error fetching activity:', err);
+        await this.notification.alert({
+          message: $localize`Unable to fetch activity data. Please try again later.`,
+          buttons: [
+            {
+              text: $localize`OK`,
+              role: 'cancel',
+              handler: () => {
+                this.router.navigate(['v3', 'home']);
+              }
+            }
+          ]
+        })
+        return of(null);
+      })
     ).subscribe(_res => {
       if (callback instanceof Function) {
         return callback(_res);
@@ -258,7 +291,7 @@ export class ActivityService {
     }
 
     // if there is no next task
-    if (!nextTask) {
+    if (this.utils.isEmpty(nextTask)) {
       if (afterTask) {
         return this.assessment.fetchAssessment(
           afterTask.id,
@@ -282,7 +315,10 @@ export class ActivityService {
       }
       nextTask = tasks[0]; // go to the first task
     }
-    this.goToTask(nextTask);
+
+    if (!this.utils.isEmpty(nextTask)) {
+      this.goToTask(nextTask);
+    }
 
     if (callback instanceof Function) {
       return callback();
@@ -292,7 +328,11 @@ export class ActivityService {
   // obtain latest activity to decide next task
   goToNextTask(afterTask?: Task, callback?: Function) {
     return this.getActivity(this._activity$.getValue().id, false, null, (res: Activity) => {
-      return this.calculateNextTask(res.tasks, afterTask, callback);
+      let tasks = res.tasks;
+      if (this.utils.isEmpty(tasks) || tasks.length === 0) {
+        tasks = [];
+      }
+      return this.calculateNextTask(tasks, afterTask, callback);
     });
   }
 
@@ -365,6 +405,12 @@ export class ActivityService {
         if (this.utils.isMobile()) {
           return this.router.navigate(['topic-mobile', this.activity.id, task.id]);
         }
+        this.storage.lastVisited('assessmentUrl', [
+          '/v3',
+          'activity-desktop',
+          this.activity.id,
+          task.id
+        ].join('/'));
         this.topic.getTopic(task.id);
         break;
     }

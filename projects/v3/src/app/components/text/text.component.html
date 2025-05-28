@@ -37,8 +37,9 @@
       [(ngModel)]="answer"
       #answerEle
       rows="4"
+      class="textarea"
       (ionFocus)="onFocus($event)"
-      (ionChange)="onChange()"
+      (keyup)="onChange()"
       [disabled]="control?.disabled"
       class="ion-no-margin"
       placeholder="Please add your answer here"
@@ -63,23 +64,26 @@
   </div>
 
   <div class="ion-no-padding">
-    <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
+    <ion-list class="ion-no-padding ion-padding-bottom" *ngIf="question.canAnswer">
       <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
         <ion-label class="subtitle-2 black" i18n>Your Answer is</ion-label>
       </ion-list-header>
 
-      <ion-textarea
-        [autoGrow]="true"
-        [attr.aria-label]="'expert\'s answer'"
-        *ngIf="question.canAnswer"
-        class="textarea"
-        rows="4"
-        [(ngModel)]="answer"
-        #answerEle
-        (ionFocus)="onFocus($event)"
-        (ionChange)="onChange('answer')"
-        placeholder="Please put your answer here"
-        [disabled]="control.disabled"></ion-textarea>
+      <div [class]="{'ion-padding-top': question.reviewerOnly}">
+        <ion-textarea
+          [autoGrow]="true"
+          [attr.aria-label]="'expert\'s answer'"
+          *ngIf="question.canAnswer"
+          class="textarea"
+          rows="4"
+          [(ngModel)]="answer"
+          #answerEle
+          (ionFocus)="onFocus($event)"
+          (keyup)="onChange('answer')"
+          placeholder="Please put your answer here"
+          [disabled]="control.disabled"
+        ></ion-textarea>
+      </div>
     </ion-list>
 
     <ion-list class="ion-no-padding ion-padding-bottom" *ngIf="question.canComment && submission.answer">
@@ -96,7 +100,7 @@
         #commentEle
         rows="4"
         (ionFocus)="onFocus($event)"
-        (ionChange)="onChange('comment')"
+        (keyup)="onChange('comment')"
         placeholder="Please put your feedback here"
         i18n-placeholder
         [disabled]="control.disabled"

@@ -89,8 +89,10 @@
   <div #activities id="activity-list-item" *ngIf="milestones?.length > 0; else loadingMilestones">
     <ng-container *ngFor="let milestone of milestones">
       <ion-item class="headline-4 milestone-name"
-      lines="none"
-      aria-describedby="milestone-description">
+        [ngClass]="{'locked': milestone.isLocked}"
+        lines="none"
+        (click)="showGuideline(milestone)"
+        aria-describedby="milestone-description">
         <div [innerHTML]="milestone.name"></div>
         <ion-icon *ngIf="milestone.isLocked"
           color="medium"
@@ -153,7 +155,17 @@
     [leadImageClass] = "!achievement.isEarned ? 'black-white-image' : ''"
     (keydown)="achievePopup(achievement, $event)"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
-    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"></app-list-item>
+    [endingIconColor]="achievement.isEarned ? 'success' : 'medium'" tabindex="0"
+    i18n-subtitle1></app-list-item>
+</ng-template>
+
+<ng-template #loadingMilestones>
+  <ion-item>
+    <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+  </ion-item>
+  <ion-item>
+    <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+  </ion-item>
 </ng-template>
 
 <ng-template #loadingMilestones>
