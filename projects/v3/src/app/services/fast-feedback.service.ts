@@ -56,7 +56,7 @@ export class FastFeedbackService {
   pullFastFeedback(options: {
     modalOnly?: boolean;
     skipChecking?: boolean;
-    closable?: boolean; // can skip the modal popup (closable)
+    closable?: boolean; // allow skipping modal popup (with a close button)
   } = {
     modalOnly: false,
     skipChecking: false,
@@ -76,7 +76,7 @@ export class FastFeedbackService {
 
           // if any of either slider or meta is empty or not available,
           // should just skip the modal popup
-          const { questions, meta } = res.data.pulseCheck;
+          const { questions, meta } = res.data.pulseCheck ?? {};
           if (
             (this.utils.isEmpty(questions) || this.utils.isEmpty(meta)) &&
             options.skipChecking === false // if skipChecking is true, force open the modal
@@ -109,7 +109,12 @@ export class FastFeedbackService {
           return of(res);
         } catch (error) {
           console.error("Error in switchMap:", error);
-          throw error;
+          // Return a fallback observable to allow the consumer to continue working
+          return of({
+            error: true,
+            message: "An error occurred while processing fast feedback.",
+            details: error.message
+          });
         }
       }),
       retryWhen((errors) => {
@@ -127,7 +132,7 @@ export class FastFeedbackService {
     if (environment.demo) {
       /* eslint-disable no-console */
       console.log('data', answers, 'params', params);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse() as Observable<any>;
     }
 
     return this.apolloService.graphQLMutate(

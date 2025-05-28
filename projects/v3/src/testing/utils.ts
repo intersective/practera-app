@@ -62,6 +62,7 @@ export class TestUtils extends SpyObject {
   getFutureDated;
   downloadFile;
   getCurrentLocation;
+  getCurrentLocale;
   urlQueryToObject;
   getFormatedCurrentTime;
 
@@ -98,6 +99,7 @@ export class TestUtils extends SpyObject {
     this.downloadFile = this.spy('downloadFile');
     this.getCurrentLocation = this.spy('getCurrentLocation');
     this.getFormatedCurrentTime = this.spy('getFormatedCurrentTime');
+    this.getCurrentLocale = this.spy('getCurrentLocale');
   }
 
   static createRouterSpy() {

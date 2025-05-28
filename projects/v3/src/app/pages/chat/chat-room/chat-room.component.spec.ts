@@ -16,7 +16,7 @@ import { mockMembers } from '@testingv3/fixtures';
 
 export class MockElementRef extends ElementRef {
   constructor() { super(null); }
-  nativeElement: {};
+  declare nativeElement: {};
 }
 
 describe('ChatRoomComponent', () => {
@@ -529,15 +529,15 @@ describe('ChatRoomComponent', () => {
       chatServiceSpy.markMessagesAsSeen.and.returnValue(of({}));
 
       // loadMoreMessages (1st)
-      component.loadMoreMessages({ detail: { scrollTop: 0 } });
+      component['_loadMessages']();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(2);
 
       // loadMoreMessages (2nd)
-      component.loadMoreMessages({ detail: { scrollTop: 0 } });
+      component['_loadMessages']();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(3);
 
       // loadMoreMessages (3rd)
-      component.loadMoreMessages({ detail: { scrollTop: 0 } });
+      component['_loadMessages']();
       expect(chatServiceSpy.getMessageList.calls.count()).toBe(4);
     });
   });
