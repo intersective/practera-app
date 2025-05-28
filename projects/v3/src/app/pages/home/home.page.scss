@@ -1,3 +1,12 @@
+.milestone-name {
+  &.locked {
+    cursor: pointer;
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}
+
 ion-segment-button.ion-focused {
   border: 1px solid var(--ion-color-primary);
 }
@@ -32,7 +41,6 @@ ion-segment {
     border-left: none;
     padding: 0;
   }
-
 }
 
 ion-content.scrollable-desktop {
@@ -88,3 +96,4 @@ ion-content.scrollable-desktop {
     }
   }
 }
+

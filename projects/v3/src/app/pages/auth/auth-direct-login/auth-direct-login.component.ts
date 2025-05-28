@@ -215,6 +215,7 @@ export class AuthDirectLoginComponent implements OnInit {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else { // Info: This block is only for development purpose
+      /* eslint-disable no-console */
       console.info('URL redirection::', {
         dev: route,
         prod: [`/${locale || null}`, ...route]
@@ -252,7 +253,7 @@ export class AuthDirectLoginComponent implements OnInit {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            // calling auth service logout mentod to clear user data and redirect
+            // clear login data
             this.authService.logout();
           }
         }

@@ -2,25 +2,29 @@ import { AuthService } from './auth.service';
 import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { RequestService } from 'request';
-import { TestUtils } from '@testingv3/utils';
 import { Router } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from './notifications.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { ApolloService } from './apollo.service';
+
 
 describe('AuthService', () => {
   let service: AuthService;
+  let httpTestingController: HttpTestingController;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
+  let notificationsService: NotificationsService;
 
   beforeEach(() => {
+    const notificationsSpy = jasmine.createSpyObj('NotificationsService', ['alert']);
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
+      imports: [HttpClientTestingModule],
       providers: [
         AuthService,
         {
@@ -66,6 +70,7 @@ describe('AuthService', () => {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
         },
+        { provide: NotificationsService, useValue: notificationsSpy },
       ]
     });
     service = TestBed.inject(AuthService);
@@ -74,42 +79,16 @@ describe('AuthService', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    notificationsService = TestBed.inject(NotificationsService);
+    httpTestingController = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpTestingController.verify();
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  describe('login()', () => {
-    it('should pass the correct data to API', () => {
-      requestSpy.post.and.returnValue(of({
-        success: true,
-        data: {
-          tutorial: null,
-          apikey: '123456',
-          Timelines: [
-            {
-              Program: {
-                config: {
-                  theme_color: 'abc'
-                }
-              },
-              Enrolment: {},
-              Project: {},
-              Timeline: {}
-            }
-          ]
-        }
-      }));
-      storageSpy.getConfig.and.returnValue(true);
-      utilsSpy.has.and.returnValue(true);
-
-      service.login({ email: 'test@test.com', password: '123' }).subscribe();
-      expect(requestSpy.post.calls.count()).toBe(1);
-      expect(requestSpy.post.calls.first().args[0].data).toContain('test%40test.com');
-      expect(requestSpy.post.calls.first().args[0].data).toContain('123');
-      expect(storageSpy.setUser).toHaveBeenCalledWith({ apikey: '123456' });
-    });
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
@@ -133,7 +112,7 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.directLogin({ authToken: 'abcd' }).subscribe();
+    service.authenticate({ authToken: 'abcd' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
@@ -160,7 +139,7 @@ describe('AuthService', () => {
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
-    service.globalLogin({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
+    service.authenticate({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
     expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
     expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
@@ -243,6 +222,29 @@ describe('AuthService', () => {
       expect(requestSpy.post.calls.count()).toBe(1);
       expect(storageSpy.set.calls.count()).toBe(0);
     });
+  });
+
+  it('should call getConfig with the correct parameters and handle response', () => {
+    const configParams: any = { param1: 'value1', param2: 'value2' };
+    const responseData: any = {
+      data: [
+        { id: 1, name: 'Experience 1' },
+        { id: 2, name: 'Experience 2' },
+      ],
+    };
+    spyOn(service, 'isAuthenticated').and.returnValue(true);
+
+    service.getConfig(configParams).subscribe(response => {
+      expect(response).toEqual(responseData);
+    });
+
+    const req = httpTestingController.expectOne('api/v2/plan/experience/list');
+    expect(req.request.method).toEqual('GET');
+
+    req.flush(responseData);
+
+    expect(service.isAuthenticated).not.toHaveBeenCalled();
+    expect(notificationsService.alert).not.toHaveBeenCalled();
   });
 
   it('when testing checkDomain()', () => {

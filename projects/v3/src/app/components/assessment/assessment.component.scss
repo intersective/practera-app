@@ -173,12 +173,20 @@ ion-footer {
       display: block;
     }
   }
-
 }
+
+
 
 .main-content {
   margin-left: auto;
   margin-right: auto;
+}
+
+.tick-container {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  z-index: 2;
 }
 
 // start --- highlight unanswered compulsory questions
@@ -197,3 +205,9 @@ ion-footer {
   }
 }
 // end --- highlight unanswered compulsory questions
+
+@media (min-width: 768px) {
+  .extra-padding-left form {
+    padding-left: 3em;
+  }
+}

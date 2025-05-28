@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';

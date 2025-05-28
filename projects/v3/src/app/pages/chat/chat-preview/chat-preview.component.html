@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-icon *ngIf="file.url"
+    <ion-icon *ngIf="file?.url"
       name="download"
       (click)="download()"
       (keydown)="download($event)"
@@ -26,22 +26,21 @@
     ></ion-icon>
   </ion-toolbar>
 </ion-header>
+
 <ion-content text-center>
   <div class="wrapper">
-    <ng-container *ngIf="file && file.mimetype.includes('image')">
+    <ng-container *ngIf="file?.type.includes('image')">
       <img [src]="file.url" alt="uploaded attachment preview" i18n-alt>
     </ng-container>
 
-    <ng-container *ngIf="file && file.mimetype.includes('video')">
-        <video controls>
-          <ng-container *ngIf="file.transcoded">
-            <source [src]="file.transcoded + '.mp4#t=0.5'" type="video/mp4">
-            <source [src]="file.transcoded + '.webm'" type="video/webm">
-            <source [src]="file.transcoded + '.ts'">
-          </ng-container>
-          <source [src]="file.url" [type]="file.mimetype">
+    <ng-container *ngIf="file?.type.includes('video')">
+      <video controls>
+        <ng-container *ngIf="file?.url">
+          <source [src]="file.url"
+            [type]="file.type">
           {{ file.url }}
-        </video>
+        </ng-container>
+      </video>
     </ng-container>
   </div>
 </ion-content>

@@ -3,9 +3,22 @@ import { ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
-import { Meta } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { RequestService } from 'request';
+import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+import { DemoService } from '../../services/demo.service';
+import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { HomeService } from '@v3/app/services/home.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+
+export interface Meta {
+  context_id: number;
+  team_id: number;
+  target_user_id: number;
+  team_name: string;
+  assessment_name: string;
+}
 
 @Component({
   selector: "app-fast-feedback",
@@ -29,6 +42,9 @@ export class FastFeedbackComponent implements OnInit {
     private storage: BrowserStorageService,
     private navParams: NavParams,
     private homeService: HomeService,
+    private notificationsService: NotificationsService,
+    private request: RequestService,
+    private demo: DemoService
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -42,13 +58,6 @@ export class FastFeedbackComponent implements OnInit {
     this.submissionCompleted = false;
     const modal = this.navParams.get('modal');
     this.closable = modal.closable || false;
-  }
-
-  dismiss(data) {
-    // change the flag to false
-    this.storage.set("fastFeedbackOpening", false);
-    this.modalController.dismiss(data);
-    this.homeService.getPulseCheckStatuses().subscribe();
   }
 
   async submit(): Promise<any> {
@@ -74,7 +83,6 @@ export class FastFeedbackComponent implements OnInit {
       targetUserId: null,
     };
 
-
     // for temporary, "closable = true" is an indicator of this pulsecheck is opened from the traffic light group (self-assessment)
     if (this.closable === true) {
       params.teamId = this.storage.getUser().teamId;
@@ -90,9 +98,14 @@ export class FastFeedbackComponent implements OnInit {
 
     let submissionResult;
     try {
-      submissionResult = await this.fastFeedbackService
-        .submit(answers, params)
-        .toPromise();
+      submissionResult = await firstValueFrom(this.fastFeedbackService
+        .submit(answers, params));
+
+      // Check if question 7's answer is 0
+      const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)
+      if (question7Answer === 0) { // if answer is No (where value = 0)
+        await this.notificationsService.showTeamCheckInAlert();
+      }
 
       this.submissionCompleted = true;
       return setTimeout(() => {
@@ -107,7 +120,28 @@ export class FastFeedbackComponent implements OnInit {
     }
   }
 
+  dismiss(data) {
+    // change the flag to false
+    this.storage.set("fastFeedbackOpening", false);
+    this.modalController.dismiss(data);
+    this.homeService.getPulseCheckStatuses().subscribe();
+  }
+
   get isRedColor(): boolean {
     return this.utils.isColor("red", this.storage.getUser().colors?.primary);
+  }
+
+  submitData(data, params): Observable<any> {
+    if (environment.demo) {
+      // eslint-disable-next-line no-console
+      console.log('data', data, 'params', params);
+      return this.demo.normalResponse('observable') as Observable<any>;
+    }
+    return this.request.post(
+      {
+        endPoint: 'api/v2/observation/slider/create.json',
+        data,
+        httpOptions: { params }
+      });
   }
 }

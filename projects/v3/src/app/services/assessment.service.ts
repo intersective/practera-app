@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, of, Subscription, firstValueFrom } from 'rxjs';
 import { map, shareReplay, catchError, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -10,6 +10,7 @@ import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
 import { RequestService } from 'request';
+import { FileInput, FileResponse } from '../components/types/assessment';
 
 /**
  * @name api
@@ -21,6 +22,15 @@ const api = {
     resubmit: 'api/assessment_resubmit.json'
   }
 };
+export interface DueAssessment {
+  id: number;
+  activityId: number;
+  contextId: number;
+  name: string;
+  description: string;
+  type: string;
+  dueDate: string;
+}
 
 export interface AssessmentSubmitParams {
   id: number;
@@ -84,6 +94,7 @@ export interface Submission {
   id: number;
   status: SubmissionStatuses;
   answers: any;
+  file?: FileResponse;
   submitterName: string;
   modified: string;
   isLocked: boolean;
@@ -107,7 +118,7 @@ export interface AssessmentReview {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AssessmentService {
   private _assessment$ = new BehaviorSubject<Assessment>(null);
@@ -127,7 +138,7 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private demo: DemoService,
-    private request: RequestService,
+    private request: RequestService
   ) {
     // this.assessment$.subscribe((res) => (this.assessment = res));
   }
@@ -156,7 +167,7 @@ export class AssessmentService {
         `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
           id name type description dueDate isTeam pulseCheck allowResubmit
-          groups{
+          groups {
             name description
             questions{
               id name description type isRequired hasComment audience fileType
@@ -177,13 +188,18 @@ export class AssessmentService {
               }
             }
             answers {
-              questionId answer
+              questionId answer file {
+                name url type
+              }
             }
             review {
-              id status modified
+              id status modified meta
               reviewer { name }
               answers {
                 questionId answer comment
+                file {
+                  name url type size
+                }
               }
             }
           }
@@ -192,16 +208,14 @@ export class AssessmentService {
         {
           variables: {
             assessmentId: id,
-            reviewer: action === 'review',
+            reviewer: action === "review",
             activityId: +activityId,
             submissionId: +submissionId || null,
             contextId: +contextId,
           },
-        },
+        }
       )
-      .pipe(
-        map((res) => this._handleAssessmentResponse(res, action)),
-      );
+      .pipe(map((res) => this._handleAssessmentResponse(res, action)));
   }
 
   /**
@@ -267,6 +281,7 @@ export class AssessmentService {
     if (!data.assessment) {
       return null;
     }
+
     const assessment = {
       id: data.assessment.id,
       name: data.assessment.name,
@@ -296,23 +311,23 @@ export class AssessmentService {
           isRequired: eachQuestion.isRequired,
           canComment: eachQuestion.hasComment,
           canAnswer:
-            action === 'review'
-              ? eachQuestion.audience.includes('reviewer')
-              : eachQuestion.audience.includes('submitter'),
+            action === "review"
+              ? eachQuestion.audience.includes("reviewer")
+              : eachQuestion.audience.includes("submitter"),
           audience: eachQuestion.audience,
           submitterOnly:
             eachQuestion.audience.length === 1 &&
-            eachQuestion.audience.includes('submitter'),
+            eachQuestion.audience.includes("submitter"),
           reviewerOnly:
             eachQuestion.audience.length === 1 &&
-            eachQuestion.audience.includes('reviewer'),
+            eachQuestion.audience.includes("reviewer"),
         };
         switch (eachQuestion.type) {
-          case 'oneof':
-          case 'multiple':
+          case "oneof":
+          case "multiple":
             const choices: Choice[] = [];
-            let info = '';
-            eachQuestion.choices.forEach(eachChoice => {
+            let info = "";
+            eachQuestion.choices.forEach((eachChoice) => {
               choices.push({
                 id: eachChoice.id,
                 name: eachChoice.name,
@@ -323,23 +338,32 @@ export class AssessmentService {
                   : null,
               });
               if (eachChoice.description) {
-                info += '<p>' + eachChoice.name + ' - ' + eachChoice.description + '</p>';
+                info +=
+                  "<p>" +
+                  eachChoice.name +
+                  " - " +
+                  eachChoice.description +
+                  "</p>";
               }
             });
             if (info) {
               // add the title
-              info = '<h3>Choice Description:</h3>' + info;
+              info =
+                "<h3>" +
+                $localize`:multiple choice question:Choice Description` +
+                ":</h3>" +
+                info;
             }
             question.info = info;
             question.choices = choices;
             break;
 
-          case 'file':
+          case "file":
             question.fileType = eachQuestion.fileType;
             break;
 
-          case 'team member selector':
-          case 'multi team member selector':
+          case "team member selector":
+          case "multi team member selector":
             question.teamMembers = [];
             eachQuestion.teamMembers.forEach((eachTeamMember) => {
               question.teamMembers.push({
@@ -388,12 +412,12 @@ export class AssessmentService {
     firstSubmission.answers.forEach((eachAnswer) => {
       eachAnswer.answer = this._normaliseAnswer(
         eachAnswer.questionId,
-        eachAnswer.answer
+        eachAnswer.answer || eachAnswer.file
       );
       submission.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
       };
-      if (['published', 'done'].includes(submission.status)) {
+      if (["published", "done"].includes(submission.status)) {
         submission = this._addChoiceExplanation(eachAnswer, submission);
       }
     });
@@ -403,18 +427,18 @@ export class AssessmentService {
 
   private _submissionStatus(status: SubmissionStatuses): SubmissionStatuses {
     switch (status) {
-      case 'pending approval':
-        return 'pending review';
-      case 'published':
-        return 'feedback available';
+      case "pending approval":
+        return "pending review";
+      case "published":
+        return "feedback available";
       default:
         return status;
     }
   }
 
-  private _normaliseReview(data, action: string): AssessmentReview {
+  private _normaliseReview(data, action: 'assessment' | 'review'): AssessmentReview {
     if (
-      !this.utils.has(data, 'assessment.submissions') ||
+      !this.utils.has(data, "assessment.submissions") ||
       data.assessment.submissions.length < 1
     ) {
       return null;
@@ -434,14 +458,14 @@ export class AssessmentService {
 
     // only get the review answer if the review is published, or it is for the reviewer to see the review
     // i.e. don't display the review answer if it is for submitter and review not published yet
-    if (firstSubmission.status !== 'published' && action === 'assessment') {
+    if (firstSubmission.status !== "published" && action === "assessment") {
       return review;
     }
 
     firstSubmissionReview.answers.forEach((eachAnswer) => {
       eachAnswer.answer = this._normaliseAnswer(
         eachAnswer.questionId,
-        eachAnswer.answer
+        eachAnswer.answer || eachAnswer.file, // we do this because answer could be a file
       );
       review.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
@@ -464,13 +488,16 @@ export class AssessmentService {
     if (this.utils.isEmpty(this.questions[questionId].choices)) {
       return submission;
     }
-    let explanation = '';
+    let explanation = "";
     if (Array.isArray(answer)) {
       // multiple question
       this.questions[questionId].choices.forEach((choice) => {
         // only display the explanation if it is not empty
-        if (answer.includes(choice.id) && !this.utils.isEmpty(choice.explanation)) {
-          explanation += choice.name + ' - ' + choice.explanation + '\n';
+        if (
+          answer.includes(choice.id) &&
+          !this.utils.isEmpty(choice.explanation)
+        ) {
+          explanation += choice.name + " - " + choice.explanation + "\n";
         }
       });
     } else {
@@ -499,9 +526,15 @@ export class AssessmentService {
   private _normaliseAnswer(questionId, answer) {
     if (this.questions[questionId]) {
       switch (this.questions[questionId].type) {
-        case 'oneof':
+        case "file":
+          if (this.utils.isEmpty(answer)) {
+            return null;
+          }
+          return answer;
+
+        case "oneof":
           // re-format answer from string to number
-          if (typeof answer === 'string' && answer.length === 0) {
+          if (typeof answer === "string" && answer.length === 0) {
             // Caution: let answer be null if question wasn't answered previously, 0 could be a possible answer ID
             answer = null;
           } else {
@@ -509,11 +542,11 @@ export class AssessmentService {
           }
           break;
 
-        case 'multiple':
+        case "multiple":
           // Check if answer is empty or not an array, and attempt to parse if it's a string
           if (this.utils.isEmpty(answer)) {
             answer = [];
-          } else if (typeof answer === 'string') {
+          } else if (typeof answer === "string") {
             try {
               answer = JSON.parse(answer);
             } catch (e) {
@@ -528,10 +561,10 @@ export class AssessmentService {
           }
 
           // Convert all elements to numbers
-          answer = answer.map(value => +(value || NaN));
+          answer = answer.map((value: string) => +(value || NaN));
           break;
 
-        case 'multi team member selector':
+        case "multi team member selector":
           if (this.utils.isEmpty(answer)) {
             answer = [];
           }
@@ -546,36 +579,40 @@ export class AssessmentService {
   }
 
   // store the answer to the question
-  saveQuestionAnswer(submissionId: number, questionId: number, answer: string) {
-    const paramsFormat = '$submissionId: Int!, $questionId: Int!, $answer: Any!';
-    const params = 'submissionId:$submissionId, questionId:$questionId, answer:$answer';
+  saveQuestionAnswer(submissionId: number, questionId: number, answer: string, file?: FileInput) {
+    const paramsFormat =
+      "$submissionId: Int!, $questionId: Int!, $answer: Any!, $file: FileInput";
+    const params =
+      "submissionId:$submissionId, questionId:$questionId, answer:$answer, file:$file";
     const variables = {
       submissionId,
       questionId,
       answer,
+      file,
     };
     return this.apolloService
       .continuousGraphQLMutate(
         `mutation saveSubmissionAnswer(${paramsFormat}) {
-        saveSubmissionAnswer(${params}) {
-          success
-          message
-        }
-      }`,
-      variables
-    ).pipe(
-      map(res => {
-        if (!this.isValidData('saveQuestionAnswer', res)) {
-          if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
-            this.storeInvalidAnswer({ res, submission: variables });
-            throw new Error('Invalid answer format');
+          saveSubmissionAnswer(${params}) {
+            success
+            message
           }
+        }`,
+        variables
+      )
+      .pipe(
+        map((res) => {
+          if (!this.isValidData("saveQuestionAnswer", res)) {
+            if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+              this.storeInvalidAnswer({ res, submission: variables });
+              throw new Error('Invalid answer format');
+            }
 
-          throw new Error('Autosave: Invalid API data');
-        }
-        return res;
-      })
-    );
+            throw new Error("Autosave: Invalid API data");
+          }
+          return res;
+        })
+      );
   }
 
   // store error in localStorage
@@ -610,55 +647,69 @@ export class AssessmentService {
     let success: boolean;
 
     switch (type) {
-      case 'saveQuestionAnswer':
+      case "saveQuestionAnswer":
         success = res?.data?.saveSubmissionAnswer?.success;
         break;
-      case 'saveReviewAnswer':
+      case "saveReviewAnswer":
         success = res?.data?.saveReviewAnswer?.success;
         break;
-      case 'submitAssessment':
+      case "submitAssessment":
         success = res?.data?.submitAssessment?.success;
         break;
-      case 'submitReview':
+      case "submitReview":
         success = res?.data?.submitReview?.success;
         break;
       default:
-        throw new Error('Must specify a valid type');
+        throw new Error("Must specify a valid type");
     }
 
     return success === true;
   }
 
+
   // store the answer to the question
-  saveReviewAnswer(reviewId: number, submissionId: number, questionId: number, answer: string, comment: string) {
-    const paramsFormat = '$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $comment: String!';
-    const params = 'reviewId:$reviewId, submissionId:$submissionId, questionId:$questionId, answer:$answer, comment:$comment';
+  saveReviewAnswer(
+    reviewId: number,
+    submissionId: number,
+    questionId: number,
+    comment: string,
+    answer?: string,
+    file?: FileInput,
+  ) {
+    const paramsFormat =
+      "$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $file: FileInput, $comment: String!";
+    const params =
+      "reviewId:$reviewId, submissionId:$submissionId, questionId:$questionId, answer:$answer, file:$file, comment:$comment";
     const variables = {
       reviewId,
       submissionId,
       questionId,
       answer,
+      file,
       comment,
     };
     return this.apolloService
       .continuousGraphQLMutate(
         `mutation saveReviewAnswer(${paramsFormat}) {
-        saveReviewAnswer(${params}) {
-          success
-          message
-        }
-      }`,
-      variables
-    ).pipe(map(res => {
-      if (!this.isValidData('saveReviewAnswer', res)) {
-        if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
-          this.storeInvalidAnswer({ res, submission: variables});
-          throw new Error('Invalid answer format');
-        }
-        throw new Error('Autosave: Invalid API data');
-      }
-      return res;
-    }));
+          saveReviewAnswer(${params}) {
+            success
+            message
+          }
+        }`,
+        variables
+      )
+      .pipe(
+        map((res) => {
+          if (!this.isValidData("saveReviewAnswer", res)) {
+            if (res?.data?.saveSubmissionAnswer?.message === 'Invalid answer') {
+              this.storeInvalidAnswer({ res, submission: variables });
+              throw new Error('Invalid answer format');
+            }
+            throw new Error("Autosave: Invalid API data");
+          }
+          return res;
+        })
+      );
   }
 
   // set the status of the submission to 'done' or 'pending approval'
@@ -669,9 +720,9 @@ export class AssessmentService {
     answers: Answer[]
   ) {
     const paramsFormat =
-      '$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]';
+      "$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]";
     const params =
-      'submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers';
+      "submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers";
     const variables = {
       submissionId,
       assessmentId,
@@ -681,31 +732,32 @@ export class AssessmentService {
     return this.apolloService
       .graphQLMutate(
         `mutation submitAssessment(${paramsFormat}) {
-        submitAssessment(${params})
-      }`,
-      variables
-    ).pipe(
-      map((res) => {
-        if (!this.isValidData('submitAssessment', res)) {
-          throw new Error('Submission: Invalid API data');
-        }
-        return res;
-      }),
-      catchError((error) => {
-        if (error.status === 429) {
-          // If the error is a 429, return a successful Observable
-          return of({
-            data: {
-              submitAssessment: {
-                success: true,
-                message: 'Rate limit exceeded, treated as success'
+          submitAssessment(${params})
+        }`,
+        variables
+      )
+      .pipe(
+        map((res) => {
+          if (!this.isValidData("submitAssessment", res)) {
+            throw new Error("Submission: Invalid API data");
+          }
+          return res;
+        }),
+        catchError((error) => {
+          if (error.status === 429) {
+            // If the error is a 429, return a successful Observable
+            return of({
+              data: {
+                submitAssessment: {
+                  success: true,
+                  message: "Rate limit exceeded, treated as success",
+                },
               },
-            },
-          });
-        }
-        throw error;
-      })
-    );
+            });
+          }
+          throw error;
+        })
+      );
   }
 
   /**
@@ -722,9 +774,9 @@ export class AssessmentService {
     answers: Answer[]
   ) {
     const paramsFormat =
-      '$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]';
+      "$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]";
     const params =
-      'assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers';
+      "assessmentId:$assessmentId, reviewId:$reviewId, submissionId:$submissionId, answers:$answers";
     const variables = {
       assessmentId,
       reviewId,
@@ -740,8 +792,8 @@ export class AssessmentService {
       )
       .pipe(
         map((res) => {
-          if (!this.isValidData('submitReview', res)) {
-            throw new Error('Submission: Invalid API data');
+          if (!this.isValidData("submitReview", res)) {
+            throw new Error("Submission: Invalid API data");
           }
           return res;
         })
@@ -754,31 +806,32 @@ export class AssessmentService {
     action: string,
     hasPulseCheck: boolean
   ) {
-    if (!['assessment', 'review'].includes(action)) {
+    if (!["assessment", "review"].includes(action)) {
       return of(false);
     }
     if (environment.demo) {
-      console.log('save answers', assessment, answers, action);
+      // eslint-disable-next-line no-console
+      console.log("save answers", assessment, answers, action);
       this._afterSubmit(assessment, answers, action, hasPulseCheck);
-      return this.demo.normalResponse();
+      return this.demo.normalResponse() as any;
     }
     let paramsFormat = `$assessmentId: Int!, $inProgress: Boolean, $answers: [${
-      action === 'assessment'
-        ? 'AssessmentSubmissionAnswerInput'
-        : 'AssessmentReviewAnswerInput'
+      action === "assessment"
+        ? "AssessmentSubmissionAnswerInput"
+        : "AssessmentReviewAnswerInput"
     }]`;
     let params =
-      'assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers';
+      "assessmentId:$assessmentId, inProgress:$inProgress, answers:$answers";
     const variables = {
       assessmentId: assessment.id,
       inProgress: assessment.inProgress,
       answers: answers,
     };
     [
-      { key: 'submissionId', type: 'Int' },
-      { key: 'contextId', type: 'Int!' },
-      { key: 'reviewId', type: 'Int' },
-      { key: 'unlock', type: 'Boolean' },
+      { key: "submissionId", type: "Int" },
+      { key: "contextId", type: "Int!" },
+      { key: "reviewId", type: "Int" },
+      { key: "unlock", type: "Boolean" },
     ].forEach((item) => {
       if (assessment[item.key]) {
         paramsFormat += `, $${item.key}: ${item.type}`;
@@ -790,7 +843,7 @@ export class AssessmentService {
       .graphQLMutate(
         `mutation saveAnswers(${paramsFormat}){
         ` +
-          (action === 'assessment' ? `submitAssessment` : `submitReview`) +
+          (action === "assessment" ? `submitAssessment` : `submitReview`) +
           `(${params})
       }`,
         variables
@@ -819,22 +872,29 @@ export class AssessmentService {
    * - show pulsecheck/fastfeedback at next sequence if submission successful
    */
   async pullFastFeedback() {
-    const modal = await this.fastFeedbackService
-      .pullFastFeedback({ modalOnly: true })
-      .toPromise();
-    if (modal && modal.present) {
-      await modal.present();
-      await modal.onDidDismiss();
+    try {
+      const response = await firstValueFrom(this.fastFeedbackService.pullFastFeedback({
+        modalOnly: true
+      }));
+
+      const modal = response;
+      if (modal && modal.present) {
+        await modal.present();
+        await modal.onDidDismiss();
+      }
+    } catch (err) {
+      console.error('Pulsecheck Retrieval Error::', err);
     }
   }
 
   saveFeedbackReviewed(submissionId) {
     if (environment.demo) {
-      console.log('feedback reviewed', submissionId);
+      // eslint-disable-next-line no-console
+      console.log("feedback reviewed", submissionId);
       return of(true);
     }
     return this.NotificationsService.markTodoItemAsDone({
-      identifier: 'AssessmentSubmission-' + submissionId,
+      identifier: "AssessmentSubmission-" + submissionId,
     });
   }
 
@@ -845,10 +905,7 @@ export class AssessmentService {
     return reviewer.name !== this.storage.getUser().name ? reviewer.name : null;
   }
 
-  resubmitAssessment({
-    assessment_id,
-    submission_id,
-  }): Observable<any> {
+  resubmitAssessment({ assessment_id, submission_id }): Observable<any> {
     return this.request.post({
       endPoint: api.post.resubmit,
       data: {
@@ -856,5 +913,31 @@ export class AssessmentService {
         submission_id,
       },
     });
+  }
+
+  dueStatusAssessments(): Observable<DueAssessment[]> {
+    return this.apolloService.graphQLFetch(
+      `query assessments {
+        assessments {
+          id
+          name
+          type
+          dueDate
+          contextId
+          activityId
+          description
+        }
+      }`,
+        {
+          variables: {
+            dueDateFilter: "has_due_date",
+          },
+        }
+      )
+      .pipe(
+        map((res) => {
+          return res.data?.assessments || [];
+        })
+      );
   }
 }

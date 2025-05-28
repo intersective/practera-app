@@ -9,7 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { Observable, of, Subject } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -107,7 +107,7 @@ export class NotificationsService {
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
-  private notifications: TodoItem[];
+  private notifications: TodoItem[] = [];
 
   private connection = {
     informed: false,
@@ -212,7 +212,11 @@ export class NotificationsService {
     );
     return this.modalService.addModal(modalConfig, event);
   }
-
+  /**
+   * Displays an alert dialog with the given configuration options.
+   * @param {AlertOptions} config - The options for the alert dialog.
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
@@ -234,7 +238,7 @@ export class NotificationsService {
   /**
    * show assessment submission response status toast
    *
-   * @param   {boolean}  isFail  flag to show success or fail message
+   * @param   {boolean}  option isFail/isDuplicated, default/empty is success
    *
    * @return  {Promise<void>}
    */
@@ -314,10 +318,10 @@ export class NotificationsService {
       if (environment.demo) {
         return this.demo.normalResponse();
       }
-      const identifier = "Achievement-" + achievement.id;
-      await this.markTodoItemAsDone({
-        identifier,
-      }).toPromise();
+      const identifier = 'Achievement-' + achievement.id;
+      await firstValueFrom(this.markTodoItemAsDone({
+        identifier: identifier
+      }));
 
       if (this.identifierMarkedAsDone.includes(identifier)) {
         return;
@@ -492,7 +496,7 @@ export class NotificationsService {
    */
   private _normaliseTodoItems(data): Array<TodoItem> {
     let todoItems = [];
-    let unlockedTasks: UnlockedTask[] = [];
+    const unlockedTasks: UnlockedTask[] = [];
     if (!Array.isArray(data)) {
       this.request.apiResponseFormatError("TodoItem array format error");
       return [];
@@ -800,7 +804,7 @@ export class NotificationsService {
    * and after this will update _notifications$ subject to broadcast the new update
    * @param chatTodoItem normalized Todo item for chat
    */
-  private _addChatTodoItem(chatTodoItem) {
+  private _addChatTodoItem(chatTodoItem: TodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
       if (todoItem.type === "chat") {
@@ -1046,5 +1050,25 @@ export class NotificationsService {
     });
 
     return await modal.present();
+  }
+
+  /**
+   * Show team check-in alert when there's misalignment in team status
+   */
+  async showTeamCheckInAlert() {
+    const alert = await this.alertController.create({
+      header: 'Team Check-In Time! 👥',
+      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
+        `✓ Schedule a quick team huddle\n` +
+        `✓ Review your Project plan and milestones together\n` +
+        `✓ Redistribute tasks if needed\n` +
+        `✓ Document 3 next steps forward\n\n` +
+        `Need strategies? Visit Teamwork Toolkit →\n` +
+        `We're here to help: programs@practera.com`,
+      buttons: ['OK'],
+      cssClass: 'team-check-in-alert'
+    });
+
+    await alert.present();
   }
 }
