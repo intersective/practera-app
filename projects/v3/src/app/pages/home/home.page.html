@@ -47,7 +47,26 @@
                   [displayOnly]="isParticipant !== true"
                 ></app-traffic-light-group>
                 <!-- end traffic lights -->
+
+                <div class="skill-strength-widget">
+                  <div class="skill-title">
+                    <span>Skill Strength</span>
+                    <ion-icon name="information-circle-outline" (click)="openSkillInfo()"></ion-icon>
+                  </div>
+                  <div class="skill-items">
+                    <div class="skill-item" *ngFor="let skill of skills" (click)="openSkillEvaluation(skill)">
+                      <ion-icon [name]="skill.icon"></ion-icon>
+                      <span>{{ skill.name }}</span>
+                      <span class="skill-level">
+                        <ng-container *ngFor="let i of [1,2,3,4,5]; let index = index">
+                          <ion-icon name="ellipse" [class.filled]="index < skill.level"></ion-icon>
+                        </ng-container>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
+
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
