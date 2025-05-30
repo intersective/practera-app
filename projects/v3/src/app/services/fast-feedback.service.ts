@@ -7,6 +7,7 @@ import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { ApiResponse } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,13 +21,47 @@ export class FastFeedbackService {
     private apolloService: ApolloService,
   ) {}
 
-  private _getFastFeedback(skipChecking = false): Observable<any> {
-    if (environment.demo) {
-      return this.demo.fastFeedback();
-    }
+  getPulseCheckSkills(): Observable<ApiResponse<{
+    pulseCheckSkills: { id: number; name: string; value: number }[]
+  }>> {
     return this.apolloService.graphQLFetch(
-      `query pulseCheck($skipChecking: Boolean) {
-        pulseCheck(skipChecking: $skipChecking) {
+      `query pulseCheckSkills {
+        pulseCheckSkills {
+          id
+          name
+          value
+        }
+      }`
+    );
+  }
+
+  private _getFastFeedback(skipChecking = false, type?: string): Observable<ApiResponse<{
+    pulseCheck: {
+      questions: Array<{
+        id: number;
+        name: string;
+        description?: string;
+        choices: Array<{
+          id: number;
+          name: string;
+        }>;
+      }>;
+      meta: {
+        teamId: number;
+        teamName: string;
+        targetUserId?: number;
+        contextId?: number;
+        assessmentName?: string;
+      };
+    }
+  }>> {
+    if (environment.demo) {
+      return this.demo.fastFeedback() as Observable<any>;
+    }
+
+    return this.apolloService.graphQLFetch(
+      `query pulseCheck($skipChecking: Boolean, $type: PulseCheckType) {
+        pulseCheck(skipChecking: $skipChecking, type: $type) {
           questions {
             id
             name
@@ -48,21 +83,28 @@ export class FastFeedbackService {
       {
         variables: {
           skipChecking,
+          type,
         },
       }
     );
   }
 
+  /**
+   * Pulls fast feedback data and displays it in a modal.
+   * @param options Configuration options for the modal.
+   * @returns observable of the fast feedback data.
+   */
   pullFastFeedback(options: {
     modalOnly?: boolean;
     skipChecking?: boolean;
     closable?: boolean; // allow skipping modal popup (with a close button)
+    type?: string; // some pulsecheck require type: 'skills'
   } = {
     modalOnly: false,
     skipChecking: false,
     closable: false,
   }): Observable<any> {
-    return this._getFastFeedback(options.skipChecking).pipe(
+    return this._getFastFeedback(options.skipChecking, options.type).pipe(
       switchMap((res) => {
         try {
           // don't open it again if there's one opening
