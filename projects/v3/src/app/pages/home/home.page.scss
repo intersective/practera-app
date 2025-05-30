@@ -97,3 +97,39 @@ ion-content.scrollable-desktop {
   }
 }
 
+.skill-strength-widget {
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 4px;
+  background: #f4f4f4;
+  font-size: 0.9rem;
+}
+
+.skill-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.skill-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.skill-level ion-icon {
+  font-size: 0.7rem;
+  color: #ccc;
+}
+
+.skill-level ion-icon.filled {
+  color: green;
+}

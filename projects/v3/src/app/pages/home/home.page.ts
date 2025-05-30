@@ -56,6 +56,45 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('activities', {static: false}) activities!: ElementRef;
   pulseCheckSkills: any;
 
+  skills = [
+    {
+      id: 1,
+      name: 'Communication',
+      icon: 'chatbubbles-outline',
+      level: 4
+    },
+    {
+      id: 2,
+      name: 'Teamwork',
+      icon: 'people-outline',
+      level: 3
+    },
+    {
+      id: 3,
+      name: 'Problem Solving',
+      icon: 'bulb-outline',
+      level: 5
+    },
+    {
+      id: 4,
+      name: 'Leadership',
+      icon: 'ribbon-outline',
+      level: 2
+    },
+    {
+      id: 5,
+      name: 'Time Management',
+      icon: 'time-outline',
+      level: 3
+    },
+    {
+      id: 6,
+      name: 'Critical Thinking',
+      icon: 'analytics-outline',
+      level: 4
+    }
+  ];
+
   constructor(
     private router: Router,
     private homeService: HomeService,
@@ -421,5 +460,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         routes,
       },
     );
+  }
+
+  openSkillEvaluation(skill: any) {
+    console.log('Opening skill evaluation for:', skill.name);
+    // navigate to skill evaluation page or show modal
+  }
+
+  openSkillInfo() {
+    return;
   }
 }
