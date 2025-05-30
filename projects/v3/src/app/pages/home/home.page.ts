@@ -54,6 +54,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
   @ViewChild('activities', {static: false}) activities!: ElementRef;
+  pulseCheckSkills: any;
 
   constructor(
     private router: Router,
@@ -191,6 +192,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       first(),
       takeUntil(this.unsubscribe$),
     ).subscribe();
+
+    this.fastFeedbackService.getPulseCheckSkills().pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+    ).subscribe((res) => {
+      this.pulseCheckSkills = res?.data?.pulseCheckSkills || [];
+    });
   }
 
   goBack() {
