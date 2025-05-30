@@ -3,10 +3,27 @@ form ion-button {
 }
 
 .question-title {
-  align-items: center;
+  align-items: flex-start;
   font-size: inherit;
   background: var(--ion-color-primary);
   color: var(--ion-color-primary-contrast);
+  padding-top: 12px;
+  padding-bottom: 12px;
+
+  ion-label h2 {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  ion-label p {
+    font-size: 0.9em;
+    white-space: normal;
+  }
+
+  .required-mark {
+    margin-left: 4px;
+    font-size: 1.2em;
+  }
 }
 
 ion-item {
@@ -17,4 +34,9 @@ ion-item {
       border-bottom: none;
     }
   }
+}
+
+.question-card {
+  border-radius: 8px;
+  padding: 1em;
 }
