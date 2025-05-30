@@ -9,7 +9,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Experience, HomeService, Milestone } from '@v3/services/home.service';
+import { Experience, HomeService, Milestone, PulseCheckSkill } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
@@ -47,53 +47,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   lastVisitedActivityId: number = null;
   bookmarkedActivities: {
     [key: number]: boolean;
-  } = {};
+} = {};
 
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
   @ViewChild('activities', {static: false}) activities!: ElementRef;
-  pulseCheckSkills: any;
+  pulseCheckSkills: PulseCheckSkill[] = [];
 
-  skills = [
-    {
-      id: 1,
-      name: 'Communication',
-      icon: 'chatbubbles-outline',
-      level: 4
-    },
-    {
-      id: 2,
-      name: 'Teamwork',
-      icon: 'people-outline',
-      level: 3
-    },
-    {
-      id: 3,
-      name: 'Problem Solving',
-      icon: 'bulb-outline',
-      level: 5
-    },
-    {
-      id: 4,
-      name: 'Leadership',
-      icon: 'ribbon-outline',
-      level: 2
-    },
-    {
-      id: 5,
-      name: 'Time Management',
-      icon: 'time-outline',
-      level: 3
-    },
-    {
-      id: 6,
-      name: 'Critical Thinking',
-      icon: 'analytics-outline',
-      level: 4
-    }
-  ];
 
   constructor(
     private router: Router,
@@ -199,6 +161,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.unsubscribe$.complete();
   }
 
+  openPulseCheck() {
+    this.fastFeedbackService.pullFastFeedback({
+      closable: true,
+      skipChecking: true,
+      type: 'skills'
+    }).pipe(first()).subscribe();
+  }
+
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.experience = this.storageService.get("experience");
@@ -232,11 +202,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       takeUntil(this.unsubscribe$),
     ).subscribe();
 
-    this.fastFeedbackService.getPulseCheckSkills().pipe(
-      first(),
+    this.homeService.getPulseCheckSkills().pipe(
       takeUntil(this.unsubscribe$),
     ).subscribe((res) => {
-      this.pulseCheckSkills = res?.data?.pulseCheckSkills || [];
+      this.pulseCheckSkills = res?.data?.pulseCheckSkills || null;
     });
   }
 
@@ -460,14 +429,5 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         routes,
       },
     );
-  }
-
-  openSkillEvaluation(skill: any) {
-    console.log('Opening skill evaluation for:', skill.name);
-    // navigate to skill evaluation page or show modal
-  }
-
-  openSkillInfo() {
-    return;
   }
 }
