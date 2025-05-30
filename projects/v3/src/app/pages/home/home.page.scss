@@ -133,3 +133,17 @@ ion-content.scrollable-desktop {
 .skill-level ion-icon.filled {
   color: green;
 }
+
+.clickable {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: var(--ion-color-light-shade);
+  }
+
+  &:active,
+  &.activated {
+    background-color: var(--ion-color-light-tint);
+  }
+}
