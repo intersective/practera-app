@@ -3,7 +3,7 @@ import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
-import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
+import { switchMap, delay, take, retryWhen, finalize } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
@@ -20,20 +20,6 @@ export class FastFeedbackService {
     private demo: DemoService,
     private apolloService: ApolloService,
   ) {}
-
-  getPulseCheckSkills(): Observable<ApiResponse<{
-    pulseCheckSkills: { id: number; name: string; value: number }[]
-  }>> {
-    return this.apolloService.graphQLFetch(
-      `query pulseCheckSkills {
-        pulseCheckSkills {
-          id
-          name
-          value
-        }
-      }`
-    );
-  }
 
   private _getFastFeedback(skipChecking = false, type?: string): Observable<ApiResponse<{
     pulseCheck: {
@@ -146,6 +132,10 @@ export class FastFeedbackService {
                   modalOnly: options.modalOnly,
                 }
               )
+            ).pipe(
+              finalize(() => {
+                this.storage.set("fastFeedbackOpening", false);
+              })
             );
           }
           return of(res);
