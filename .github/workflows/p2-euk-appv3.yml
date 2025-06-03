@@ -175,7 +175,7 @@ jobs:
           export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_BADGE_PROJECT_URL=https://badge.euk.practera.com
-          export CUSTOM_UPLOAD_TUS_ENDPOINT=''
+          export CUSTOM_UPLOAD_TUS_ENDPOINT=https://tusd.practera.com/uploads/
           export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
           export CUSTOM_HELPLINE=help@practera.com
           export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
