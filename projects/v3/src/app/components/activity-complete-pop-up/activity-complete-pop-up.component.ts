@@ -11,15 +11,18 @@ import { Router } from '@angular/router';
 export class ActivityCompletePopUpComponent {
   activityId: number;
   activityCompleted: boolean;
+  isMobile: boolean;
   @ViewChild('activityComplete') activityComplete;
   @ViewChild('reviewTasks') reviewTasks;
   @ViewChild('continueNextActivity') continueNextActivity;
 
   constructor(
     public modalController: ModalController,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private router: Router,
-  ) {}
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ionViewDidEnter() {
     const interactiveEl = [

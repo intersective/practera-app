@@ -65,21 +65,24 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     this.statusFilter = '';
     this.assessmentService.dueStatusAssessments()
       .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((assessments) => {
-        if (assessments?.length) {
-          const sortedAssessments = assessments.sort((a, b) => {
-            return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
-          });
+      .subscribe({
+        next: (assessments) => {
+          if (assessments?.length) {
+            const sortedAssessments = assessments.sort((a, b) => {
+              return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+            });
 
-          const groupedAssessments = this.groupByDate(sortedAssessments);
-          this.assessments$.next(groupedAssessments);
-        } else {
-          this.assessments$.next([]);
+            const groupedAssessments = this.groupByDate(sortedAssessments);
+            this.assessments$.next(groupedAssessments);
+          } else {
+            this.assessments$.next([]);
+          }
+
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
         }
-
-        this.isLoading = false;
-      }, () => {
-        this.isLoading = false;
       });
   }
 

@@ -76,7 +76,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.lastVisitedActivityId = id;
     this.cdr.detectChanges();
 
-
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
       this.scrollToElement(id);
     }
@@ -132,7 +131,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       });
 
     this.unlockIndicatorService.unlockedTasks$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$)
+      )
       .subscribe({
         next: (unlockedTasks) => {
           this.hasUnlockedTasks = {}; // reset
@@ -153,7 +155,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
 
@@ -163,6 +165,18 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
+    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+
+    if (this.pulseCheckIndicatorEnabled === true) {
+      this.homeService.getPulseCheckStatuses().pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((res) => {
+        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
+      });
+    }
+
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
 
@@ -172,14 +186,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     bookmarks.forEach((id) => {
       this.bookmarkedActivities[id] = true;
     });
-
-    if (this.pulseCheckIndicatorEnabled === true) {
-      this.homeService.getPulseCheckStatuses().pipe(
-        takeUntil(this.unsubscribe$)
-      ).subscribe((res) => {
-        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
-      });
-    }
 
     this.fastFeedbackService.pullFastFeedback().pipe(
       first(),
@@ -336,7 +342,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
       element.scrollIntoView({ behavior: 'auto', block: 'center' });
       element.classList.add('lastVisited');
-
       this.storageService.lastVisited('activityId', null);
     }
   }
@@ -360,10 +365,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // show unlock guideline for locked milestone or activity
   async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
+
     let message = '';
 
     const routes = [];
     const guidelines = item.unlockConditions;
+
+    if (!guidelines) {
+      return;
+    }
 
     if (guidelines.length === 0) {
       return;
