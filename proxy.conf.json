@@ -1,0 +1,11 @@
+{
+  "/practera-proxy": {
+    "target": "https://file.practera.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/practera-proxy": ""
+    },
+    "logLevel": "debug"
+  }
+}

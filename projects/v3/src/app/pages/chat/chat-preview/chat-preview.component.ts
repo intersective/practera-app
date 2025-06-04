@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -8,7 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['chat-preview.component.scss']
 })
 export class ChatPreviewComponent {
-  file: any = {};
+  @Input() file: any = {};
 
   constructor(
     public modalController: ModalController,

@@ -95,8 +95,8 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   beforeEach(() => {
-    authServiceSpy.directLogin.and.returnValue(of({}));
-    switcherSpy.getMyInfo.and.returnValue(of({}));
+    authServiceSpy.authenticate.and.returnValue(of({} as any));
+    authServiceSpy.getMyInfo.and.returnValue(of({} as any));
     switcherSpy.switchProgram.and.returnValue(Promise.resolve(of({})));
     storageSpy.get.and.returnValue([{ timeline: { id: 1 } }]);
     storageSpy.getConfig.and.returnValue({ logo: null });
@@ -118,14 +118,14 @@ describe('AuthDirectLoginComponent', () => {
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { authToken: 'abc' };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      authServiceSpy.directLogin.and.throwError('');
+      authServiceSpy.authenticate.and.throwError('');
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
       expect(notificationSpy.alert.calls.count()).toBe(1);
 
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button == 'string') ? button : button.handler(true);
+      (typeof button === 'string') ? button : button.handler(true);
 
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
     }));
@@ -166,11 +166,11 @@ describe('AuthDirectLoginComponent', () => {
         fixture.detectChanges();
 
         if (doAuthentication) {
-          expect(authServiceSpy.directLogin.calls.count()).toBe(1);
-          expect(switcherSpy.getMyInfo.calls.count()).toBe(1);
+          expect(authServiceSpy.authenticate.calls.count()).toBe(1);
+          expect(authServiceSpy.getMyInfo.calls.count()).toBe(1);
         } else {
-          expect(authServiceSpy.directLogin.calls.count()).toBe(0);
-          expect(switcherSpy.getMyInfo.calls.count()).toBe(0);
+          expect(authServiceSpy.authenticate.calls.count()).toBe(0);
+          expect(authServiceSpy.getMyInfo.calls.count()).toBe(0);
         }
 
         if (switchProgram) {

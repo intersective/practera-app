@@ -91,7 +91,7 @@ export class AppComponent implements OnInit, OnDestroy {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo = expConfig[0].logo;
+            let logo: string = expConfig[0].logo;
 
             const config = expConfig[0].config || {}; // let it fail gracefully
 
@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
             }
 
             // add the domain if the logo url is not a full url
-            if (!logo?.includes("http") && !this.utils.isEmpty(logo)) {
+            if (!this.utils.isEmpty(logo) && logo?.includes("http")) {
               logo = environment.APIEndpoint + logo;
             }
             const colors = {
