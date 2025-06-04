@@ -19,6 +19,7 @@ export class ChatInfoComponent implements OnInit {
   // channel member list
   memberList: ChannelMembers[] = [];
   loadingMembers: boolean;
+  isMobile: boolean;
 
   constructor(
     private chatService: ChatService,
@@ -27,7 +28,9 @@ export class ChatInfoComponent implements OnInit {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     public modalController: ModalController
-  ) {}
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnInit() {
     this.route.params.subscribe(_params => {

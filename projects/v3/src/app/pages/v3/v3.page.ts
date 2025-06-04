@@ -1,4 +1,4 @@
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, mergeMap } from 'rxjs/operators';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
@@ -6,14 +6,13 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
-import { mergeMap } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
@@ -82,7 +81,7 @@ export class V3Page implements OnInit, OnDestroy {
     'myExperience': $localize`My Experiences`
   };
   hasUnlockedTasks: boolean;
-  unsubscribe$ = new Subject();
+  unsubscribe$: Subject<void> = new Subject<void>();
 
   constructor(
     private menuController: MenuController,
@@ -174,6 +173,7 @@ export class V3Page implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.institutionLogo = this.getInstitutionLogo();
     this._initMenuItems();
 
     this.reviewService.reviews$
@@ -227,6 +227,12 @@ export class V3Page implements OnInit, OnDestroy {
         }
       });
 
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
+        this.homeService.getExperience();
+      }
+    });
+
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
     } else {
@@ -248,16 +254,12 @@ export class V3Page implements OnInit, OnDestroy {
       mergeMap(_generic => {
         return this.notificationsService.getChatMessage();
       }),
-      takeUntil(this.unsubscribe$),
+      takeUntil(this.unsubscribe$)
     ).subscribe();
 
-    // @NOTE: keep for future conflict resolve (not sure if still needed)
-    // this.notificationInitialise()
-    // .pipe(takeUntil(this.unsubscribe$))
-    // .subscribe();
-  // }
-
-    this.unlockIndicatorService.unlockedTasks$.subscribe(unlockedTasks => {
+    this.unlockIndicatorService.unlockedTasks$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(unlockedTasks => {
       this.appPages[0].hasNotification = false; // reset
       if (unlockedTasks?.length > 0) {
         this.appPages[0].hasNotification = true;

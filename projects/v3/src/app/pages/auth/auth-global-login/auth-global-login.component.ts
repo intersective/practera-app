@@ -58,6 +58,7 @@ export class AuthGlobalLoginComponent implements OnInit {
           }
         } else { // Info: This block is only for development purpose
           const locale = authed.experience.locale;
+          /* eslint-disable no-console */
           console.info('URL redirections::', {
             dev: homePath,
             prod: [`/${locale}`, ...homePath],

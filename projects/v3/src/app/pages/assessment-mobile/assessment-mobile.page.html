@@ -15,6 +15,7 @@
 <ion-content [scrollEvents]="true"
   (ionScroll)="onScroll()">
   <app-assessment
+    [task]="currentTask"
     [assessment]="assessment"
     [submission]="submission"
     [review]="review"

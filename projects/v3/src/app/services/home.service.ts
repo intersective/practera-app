@@ -1,9 +1,9 @@
 import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { first, map, shareReplay, tap } from 'rxjs/operators';
+import { first, catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -39,7 +39,7 @@ export interface Milestone {
     unlockConditions?: {
       name: string;
       action: string;
-      meta: UnlockConditionMeta
+      meta: UnlockConditionMeta;
     }[];
   }[];
   unlockConditions: {
@@ -116,32 +116,34 @@ export class HomeService {
 
     return this.authService
       .authenticate()
-      .pipe(
-        tap(async (res) => {
-          if (res?.data?.auth?.experience === null) {
-            await this.notificationsService.alert({
-              header: "Unable to access experience",
-              message: "Please re-login and try again later",
-              buttons: [
-                {
-                  text: "OK",
-                  role: "cancel",
-                  handler: () => {
-                    this.authService.logout();
-                  },
+      .pipe(tap(async (res) => {
+        if (res?.data?.auth?.experience === null) {
+          await this.notificationsService.alert({
+            header: $localize`Unable to access experience`,
+            message: $localize`Please re-login and try again later`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: "cancel",
+                handler: () => {
+                  this.authService.logout();
                 },
-              ],
-            });
-          }
-        }),
-        map((res) => this._normaliseExperience(res)),
-        first()
-      )
-      .subscribe({
-        error: async (err) => {
-          console.error("Auth:query", err);
-        },
-      });
+              },
+            ]
+          })
+        }
+      }),
+      map(res => this._normaliseExperience(res)),
+      first(),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        throw new Error(err);
+      }),
+    ).subscribe({
+      error: async (err) => {
+        console.error('Auth:query', err);
+      }
+    });
   }
 
   private _normaliseExperience(res) {
@@ -264,16 +266,16 @@ export class HomeService {
           }
         }
       }`
-      )
-      .pipe(
-        map((res) => this._handleProjectProgress(res)),
-        first(),
-      )
-      .subscribe({
-        error: async (err) => {
-          console.error("Project:query", err);
-        },
-      });
+    )
+    .pipe(
+      map((res) => this._handleProjectProgress(res)),
+      first(),
+    )
+    .subscribe({
+      error: async (err) => {
+        console.error("Project:query", err);
+      },
+    });
   }
 
   private _handleProjectProgress(data) {

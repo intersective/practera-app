@@ -32,6 +32,9 @@ max_line_length = off
 insert_final_newline = false
 trim_trailing_whitespace = false
 
+[*.xlf]
+trim_trailing_whitespace = false
+
 # Prettier & ESLint config files
 [*.{prettierrc,eslintrc,editorconfig}]
 indent_size = 2
