@@ -18,7 +18,7 @@ Run `npm start` to launch App locally
 Run `npm run i18n` to update coverage of translateable static text
 
 ### Localisation & Internationalisation
-This should applied only for `trunk` (development) or `release/live` separately. Both `messages.xlf` files in the both branches can never be the same because `trunk` has more untested code.
+This should be applied only to `trunk` (development) or `release/live` separately. Both `messages.xlf` files in the both branches can never be the same because `trunk` has more untested code.
 
 1. We need generated locales script from `./locales` and `./projects/v3/src/locales`
 1. Depend on which language you need to update, select the translated script from `./projects/v3/src/locales`
