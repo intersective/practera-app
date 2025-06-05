@@ -9,7 +9,8 @@
           <ng-content></ng-content>
         </ng-container>
 
-        <div class="button-container" [ngClass]="{'with-custom-content': hasCustomContent}">
+        <div class="button-container"
+          [ngClass]="{'with-custom-content': hasCustomContent}">
           <ion-button class="action-button"
             mode="ios"
             [disabled]="disabled$ | async"
