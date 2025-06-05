@@ -78,12 +78,16 @@
   .with-custom-content > .action-button {
     --padding-start: 12px;
     --padding-end: 12px;
-    font-size: 14px; // Smaller font on mobile
+    font-size: 14px;
     height: 36px;
   }
 
   .wrapper {
     padding: 3px 0;
+  }
+
+  .button-container:has(ion-button.button-disabled) {
+    display: none;
   }
 }
 
