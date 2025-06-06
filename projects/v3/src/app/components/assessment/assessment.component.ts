@@ -144,7 +144,6 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
-
   }
 
   pageSize = 8; // number of questions per page
@@ -438,7 +437,10 @@ Best regards`;
       takeUntil(this.unsubscribe$),
     ).subscribe(() => {
       this.initializePageCompletion();
-      this.btnDisabled$.next(this.questionsForm.invalid);
+      if ((!this.submission || this.submission.status === 'in progress' ||
+          (this.isPendingReview && this.review.status === 'in progress'))) {
+        this.btnDisabled$.next(this.questionsForm.invalid);
+      }
     });
   }
 
