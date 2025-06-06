@@ -97,7 +97,7 @@ export class BrowserStorageService {
    *
    * @param   {string}  key    index for identify a value later
    *    - directLinkRoute: string
-   *    - fastFeedbackOpening: boolean
+   *    - fastFeedbackOpening: boolean (flag to indicate if there is existing fast feedback modal opened)
    *    - authToken: string
    *    - hasMultipleStacks: boolean
    *    - experience: Experience
