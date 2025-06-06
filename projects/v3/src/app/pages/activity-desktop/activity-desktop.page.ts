@@ -208,6 +208,7 @@ export class ActivityDesktopPage {
                 contextId: this.urlParams.contextId,
                 type: targetTask.type,
                 name: targetTask.name,
+                status: targetTask.status,
               });
             }
           }
