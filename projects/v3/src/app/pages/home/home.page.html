@@ -48,10 +48,10 @@
                 ></app-traffic-light-group>
 
                 <ng-container *ngIf="pulseCheckSkills?.length > 0">
-                  <div class="skill-strength-widget clickable" (click)="openPulseCheck()" (keydown.enter)="openPulseCheck()" tabindex="0">
+                  <div class="skill-strength-widget clickable-disabled">
                     <div class="skill-title">
                       <span>Skill Strength</span>
-                      <ion-icon name="information-circle-outline"></ion-icon>
+                      <ion-icon name="information-circle-outline" *ngIf="false"></ion-icon>
                     </div>
                     <div class="skill-items">
                       <div class="skill-item" *ngFor="let skill of pulseCheckSkills">
