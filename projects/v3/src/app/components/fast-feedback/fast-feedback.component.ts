@@ -6,7 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { RequestService } from 'request';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
+import { first, Observable } from 'rxjs';
 import { DemoService } from '../../services/demo.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { HomeService } from '@v3/app/services/home.service';
@@ -125,6 +125,7 @@ export class FastFeedbackComponent implements OnInit {
     this.storage.set("fastFeedbackOpening", false);
     this.modalController.dismiss(data);
     this.homeService.getPulseCheckStatuses().subscribe();
+    this.homeService.getPulseCheckSkills().subscribe();
   }
 
   get isRedColor(): boolean {
