@@ -40,14 +40,34 @@
                   <span style="font: smaller;">On track</span>
                   <ion-icon name="help-circle-outline" (click)="onTrackInfo()"></ion-icon>
                 </div>
-                <!-- put traffic light group here -->
+
                 <app-traffic-light-group
                   *ngIf="pulseCheckStatus"
                   [lights]="pulseCheckStatus"
                   [displayOnly]="isParticipant !== true"
                 ></app-traffic-light-group>
-                <!-- end traffic lights -->
+
+                <ng-container *ngIf="pulseCheckSkills?.length > 0">
+                  <div class="skill-strength-widget clickable" (click)="openPulseCheck()" (keydown.enter)="openPulseCheck()" tabindex="0">
+                    <div class="skill-title">
+                      <span>Skill Strength</span>
+                      <ion-icon name="information-circle-outline"></ion-icon>
+                    </div>
+                    <div class="skill-items">
+                      <div class="skill-item" *ngFor="let skill of pulseCheckSkills">
+                        <ion-icon *ngIf="skill?.icon" [name]="skill.icon"></ion-icon>
+                        <span>{{ skill.name }}</span>
+                        <span class="skill-level">
+                          <ng-container *ngFor="let i of [1,2,3,4,5]; let index = index">
+                            <ion-icon name="ellipse" [class.filled]="index < skill.value"></ion-icon>
+                          </ng-container>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </ng-container>
               </div>
+
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
