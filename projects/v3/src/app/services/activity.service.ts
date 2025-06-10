@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, Subscription, firstValueFrom } from 'rxjs';
 import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -381,10 +381,10 @@ export class ActivityService {
         }
 
         try {
-          const activity = await this.getActivityBase(this.activity.id)
+          const activity = await firstValueFrom(this.getActivityBase(this.activity.id)
             .pipe(
               map(res => this._normaliseActivity(res.data, false))
-            ).toPromise();
+            ));
 
           await this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId).toPromise();
 

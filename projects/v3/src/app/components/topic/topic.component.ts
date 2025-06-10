@@ -63,6 +63,10 @@ export class TopicComponent implements OnChanges, OnDestroy {
     if (changes.topic?.currentValue?.title) {
       this.sanitizedTitle = this.sanitizer.bypassSecurityTrustHtml(changes.topic?.currentValue?.title);
     }
+
+    if (changes.topic?.currentValue) {
+      this.buttonDisabled$.next(false);
+    }
   }
 
   ngOnDestroy(): void {

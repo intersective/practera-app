@@ -4,7 +4,6 @@
   <ion-skeleton-text animated></ion-skeleton-text>
 </div>
 
-<!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
 </div>
@@ -61,6 +60,7 @@
   <div class="main-content ion-padding"
     [ngClass]="{'extra-padding-left': action === 'review' && isSinglePage}"
     style="min-height: 100%;">
+
     <div [ngClass]="{'ion-padding-horizontal padding-top': isSinglePage}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
@@ -101,7 +101,7 @@
     </div>
 
     <form [formGroup]="questionsForm" id="formgroup" #form>
-      <ng-container *ngFor="let group of assessment.groups">
+      <ng-container *ngFor="let group of pagedGroups">
         <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}">
           <h3 [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
           <ion-text color="dark" class="ion-text-left">
@@ -114,7 +114,7 @@
           </ion-text>
         </div>
 
-        <ng-container *ngFor="let question of group.questions">
+        <ng-container *ngFor="let question of group.questions; trackBy: trackById">
           <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox>
             <ion-list-header
               class="question-title headline-4"
@@ -293,6 +293,7 @@
         </ng-container>
       </ng-container>
     </form>
+
   </div>
 
   <div class="not-team ion-padding ion-text-center"
@@ -305,6 +306,7 @@
 
 <ng-container *ngIf="assessment">
   <ng-container *ngIf="preventSubmission === false; else blocked">
+
     <app-bottom-action-bar *ngIf="!(action === 'review'
         && submission?.status === 'feedback available'
         && review?.status === 'done')"
@@ -312,7 +314,48 @@
       (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
-      (handleClick)="continueToNextTask()"></app-bottom-action-bar>
+      (handleClick)="continueToNextTask()"
+      [hasCustomContent]="pageCount > 1">
+
+      <div class="pagination-container">
+        <ion-button fill="clear"
+            class="nav-button prev-button"
+            (click)="prevPage()"
+            [disabled]="pageIndex === 0">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          <span>Prev</span>
+        </ion-button>
+
+        <div class="page-indicators"
+             [class.many-pages]="pageCount > manyPages"
+             *ngIf="pageCount > 1"
+             #pageIndicatorsContainer>
+          <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
+            <div class="page-indicator"
+                [class.active]="pageIndex === page"
+                [class.incompleted]="!pageRequiredCompletion[page]"
+                [id]="'page-indicator-' + page"
+                (click)="goToPage(page)"
+                (dblclick)="findAndGoToFirstUnansweredQuestion()">
+              <span class="page-number">{{ i + 1 }}</span>
+              <ion-icon
+                *ngIf="!pageRequiredCompletion[page]"
+                name="close-circle-outline"
+                class="completion-icon">
+              </ion-icon>
+            </div>
+          </ng-container>
+        </div>
+
+        <ion-button fill="clear"
+            class="nav-button next-button"
+            (click)="nextPage()"
+            [disabled]="pageIndex >= pageCount - 1">
+          <span>Next</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </app-bottom-action-bar>
   </ng-container>
 
   <ng-template #blocked>
