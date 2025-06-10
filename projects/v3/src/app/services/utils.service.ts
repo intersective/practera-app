@@ -2,12 +2,21 @@ import { Injectable, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { ModalController, Platform } from '@ionic/angular';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import { Platform } from '@ionic/angular';
+import isEmpty from 'lodash-es/isEmpty';
+import each from 'lodash-es/each';
+import unset from 'lodash-es/unset';
+import find from 'lodash-es/find';
+import findIndex from 'lodash-es/findIndex';
+import has from 'lodash-es/has';
+import flatten from 'lodash-es/flatten';
+import indexOf from 'lodash-es/indexOf';
+import remove from 'lodash-es/remove';
+import isEqual from 'lodash-es/isEqual';
+import upperFirst from 'lodash-es/upperFirst';
+import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import * as convert from 'color-convert';
-import { SupportPopupComponent } from '@v3/components/support-popup/support-popup.component';
 import { Title } from '@angular/platform-browser';
 
 export enum ThemeColor {
@@ -16,7 +25,7 @@ export enum ThemeColor {
 }
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
-declare var window: any;
+declare const window: Window & typeof globalThis;
 
 @Injectable({
   providedIn: 'root'
@@ -35,16 +44,24 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    private readonly modalController: ModalController,
     private readonly storageService: BrowserStorageService,
     private title: Title,
     private platform: Platform,
   ) {
-    if (_) {
-      this.lodash = _;
-    } else {
-      throw new Error('Lodash not available');
-    }
+    // initialise lodash (reduce bundle size)
+    this.lodash = {
+      isEmpty,
+      each,
+      unset,
+      find,
+      findIndex,
+      has,
+      flatten,
+      indexOf,
+      remove,
+      isEqual,
+      upperFirst,
+    };
   }
 
   /**
@@ -140,15 +157,15 @@ export class UtilsService {
     return this.lodash.indexOf(values, value, fromIndex);
   }
 
-  remove(collections, callback) {
+  remove(collections: any[], callback: (value: any) => boolean) {
     return this.lodash.remove(collections, callback);
   }
 
-  isEqual(value, other) {
+  isEqual(value: any, other: any) {
     return this.lodash.isEqual(value, other);
   }
 
-  openUrl(url, options?: { target: String }) {
+  openUrl(url: string, options?: { target: string }) {
     options = options || { target: '_self' };
     return window.open(url, options.target);
   }
@@ -191,8 +208,9 @@ export class UtilsService {
   changeThemeColor(colors?: Colors): void {
     const defaultColor = '#2bbfd4';
     if (colors) {
-      if (colors.primary || colors.theme) {
-        this.setColor(colors.primary || colors.theme, ThemeColor.primary);
+      if (colors?.primary || colors?.theme) {
+        const color = colors.primary || colors.theme || defaultColor;
+        this.setColor(color, ThemeColor.primary);
       } else {
         this.setColor(defaultColor, ThemeColor.primary);
       }
@@ -268,7 +286,7 @@ export class UtilsService {
     return yiq >= 128 ? 'black' : 'white';
   }
 
-  changeCardBackgroundImage(image) {
+  changeCardBackgroundImage(image: string): void {
     this.document.documentElement.style.setProperty('--practera-card-background-image', 'url(\'' + image + '\')');
   }
 
@@ -329,10 +347,10 @@ export class UtilsService {
     if (!time) {
       return '';
     }
-    const date = moment(new Date(this.iso8601Formatter(time)));
+    const date = dayjs(new Date(this.iso8601Formatter(time)));
     // if no compareWith provided, compare with today
     // and create tomorrow and yesterday from it.
-    const compareDate = moment((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
+    const compareDate = dayjs((compareWith) ? new Date(this.iso8601Formatter(compareWith)) : new Date());
     const tomorrow = compareDate.clone().add(1, 'day').startOf('day');
     const yesterday = compareDate.clone().subtract(1, 'day').startOf('day');
 
@@ -345,7 +363,7 @@ export class UtilsService {
 
     const currentLocale = this.getCurrentLocale();
     // when in English, default to format of "en-GB" from previous code
-    let defaultLocale = currentLocale == 'en-US' ? 'en-GB' : currentLocale;
+    const defaultLocale = currentLocale === 'en-US' ? 'en-GB' : currentLocale;
 
     if (date.isSame(compareDate, 'd')) {
       return new Intl.DateTimeFormat(currentLocale, { // support en-US
@@ -401,8 +419,8 @@ export class UtilsService {
    * @param {Date} date targetted date
    */
   dateFormatter(date: Date): string {
-    const dateToFormat = moment(date);
-    const today = moment(new Date());
+    const dateToFormat = dayjs(date);
+    const today = dayjs(new Date());
     const tomorrow = today.clone().add(1, 'day').startOf('day');
     const yesterday = today.clone().subtract(1, 'day').startOf('day');
 
@@ -416,7 +434,10 @@ export class UtilsService {
       return $localize`Today`;
     }
 
-    return new Intl.DateTimeFormat('en-GB', {
+    const currentLocale = this.getCurrentLocale();
+    // when in English, default to "en-GB" format (from previous code)
+    const defaultLocale = currentLocale === 'en-US' ? 'en-GB' : currentLocale;
+    return new Intl.DateTimeFormat(defaultLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -579,6 +600,7 @@ export class UtilsService {
    * - If due date is today this will return 'Due Today'.
    * - If due date is tomorrow this will return 'Due Tomorrow'.
    * @param dueDate - due date of assessment or activity.
+   * @param plain - (optional) if true, it will return only formatted date without 'Due' or 'Overdue' prefix.
    */
   dueDateFormatter(dueDate: string, plain?: boolean) {
     if (!dueDate) {
@@ -602,7 +624,7 @@ export class UtilsService {
   }
 
   getFutureDated(date: string, dayCount: number) {
-    const currentDate = moment(this.iso8601Formatter(date));
+    const currentDate = dayjs(this.iso8601Formatter(date));
     return currentDate.clone().add(dayCount, 'day').format('YYYY-MM-DD hh:mm:ss');
   }
 
@@ -621,17 +643,18 @@ export class UtilsService {
     return date.toISOString();
   }
 
-  downloadFile(path: string) {
-    // Create a new link
+  downloadFile(path: string, filename?: string) {
+    if (!path) {
+      throw new Error('No file path provided');
+    }
+
     const anchor = document.createElement('a');
     anchor.href = path;
-    anchor.download = 'download';
-    anchor.target = "_blank";
+    anchor.download = filename || 'download';
+    anchor.target = '_blank';
 
     // Append to the DOM
     document.body.appendChild(anchor);
-
-    // Trigger `click` event
     anchor.click();
 
     // Remove element from DOM
@@ -748,26 +771,10 @@ export class UtilsService {
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 
-  async openSupportPopup(options?: { formOnly: boolean; }) {
-    const componentProps = {
-      mode: 'modal',
-      isShowFormOnly: options?.formOnly,
-    };
-
-    const modal = await this.modalController.create({
-      componentProps,
-      component: SupportPopupComponent,
-      cssClass: 'support-popup',
-      backdropDismiss: false,
-    });
-
-    return modal.present();
-  }
-
   checkIsPracteraSupportEmail() {
     const currentExperience = this.storageService.get('experience');
     if (currentExperience && currentExperience.supportEmail) {
-      let supportEmail = currentExperience.supportEmail;
+      const supportEmail = currentExperience.supportEmail;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;
@@ -777,6 +784,25 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  getSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program: any) => {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      const supportEmail = currentExperience.experience.support_email;
+      if (supportEmail) {
+        return supportEmail;
+      }
+      return null;
+    }
+    return null;
   }
 
   // set page title

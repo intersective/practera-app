@@ -31,21 +31,59 @@ export interface ChannelMembers {
   avatar: string;
 }
 
+export interface Team {
+  id: number;
+  uuid: string;
+  name: string;
+}
+
+export interface User {
+  id: number;
+  uuid: string;
+  name: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  role?: string;
+  email: string;
+  image?: string;
+  team?: Team;
+  teams?: Team[];
+  enrolmentUuid?: string;
+  timelineUuid?: string;
+  institution?: {
+    id: number;
+    uuid: string;
+    name: string;
+  };
+  userHash?: string;
+  contactNumber?: string;
+}
+
+export interface FileResponse {
+  name: string;
+  type: string;
+  url: string;
+}
+
 export interface Message {
   uuid: string;
+  sender: User;
+  isSender: boolean;
+  message: string;
+  file: FileResponse;
+  created: string;
+  scheduled: string;
+  sentAt?: string;
+
+  // TBC
+  preview?: string;
+  noAvatar?: boolean;
+  channelUuid?: string;
   senderUuid?: string;
   senderName?: string;
   senderRole?: string;
   senderAvatar?: string;
-  isSender: boolean;
-  message: string;
-  created: string;
-  file: string;
-  fileObject?: any;
-  preview?: string;
-  noAvatar?: boolean;
-  channelUuid?: string;
-  sentAt?: string;
 }
 
 export interface MessageListResult {
@@ -56,7 +94,15 @@ export interface MessageListResult {
 interface NewMessageParam {
   channelUuid: string;
   message: string;
-  file?: string;
+  file?: {
+    path: string;
+    bucket: string;
+    name: string;
+    url: string;
+    extension: string;
+    type: string;
+    size: number;
+  };
 }
 
 interface MessageListParams {
@@ -162,11 +208,15 @@ export class ChatService {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
             cursor
-            chatLogs{
+            chatLogs {
               uuid
               isSender
               message
-              file
+              file {
+                name
+                type
+                url
+              }
               created
               sentAt
               sender {
@@ -218,20 +268,26 @@ export class ChatService {
       } else {
         fileObject = message.file;
       }
+
       messageList.push({
+        fileObject,
+
         uuid: message.uuid,
+        sender: message.sender,
         isSender: message.isSender,
         message: message.message,
         file: message.file,
-        fileObject: fileObject,
         created: message.created,
+        scheduled: message.scheduled,
+        sentAt: message.sentAt,
+
         senderUuid: message.sender.uuid,
         senderName: message.sender.name,
         senderRole: message.sender.role,
         senderAvatar: message.sender.avatar,
-        sentAt: message.sentAt
       });
     });
+
     return {
       cursor: cursor,
       messages: messageList
@@ -337,32 +393,35 @@ export class ChatService {
    * @description post new text message (with text) or attachment (with file)
    */
   postNewMessage(data: NewMessageParam): Observable<any> {
-
     if (environment.demo) {
       return of(this._normalisePostMessageResponse(this.demo.createChatLog(data.message, data.file)));
     }
 
     return this.apolloService.graphQLMutate(
-      `mutation createChatLogs($channelUuid: String!, $message: String, $file: String) {
-        createChatLog(channelUuid: $channelUuid, message: $message, file: $file) {
+      `mutation createChatLogs($channelUuid: String!, $message: String, $fileObj: FileInput) {
+        createChatLog(channelUuid: $channelUuid, message: $message, fileObj: $fileObj) {
+          uuid
+          isSender
+          message
+          file {
+            name
+            type
+            url
+          }
+          created
+          sentAt
+          sender {
             uuid
-            isSender
-            message
-            file
-            created
-            sentAt
-            sender {
-              uuid
-              name
-              role
-              avatar
+            name
+            role
+            avatar
           }
         }
       }`,
       {
         channelUuid: data.channelUuid,
         message: data.message,
-        file: data.file
+        fileObj: data.file
       }
     ).pipe(
       map(response => {
@@ -393,25 +452,26 @@ export class ChatService {
     } else {
       fileObject = result.file;
     }
+
     return {
       uuid: result.uuid,
+      sender: result.sender,
       isSender: result.isSender,
       message: result.message,
       file: result.file,
-      fileObject: fileObject,
       created: result.created,
+      scheduled: result.scheduled,
+      sentAt: result.sentAt,
+
+      // TBC
       senderUuid: result.sender.uuid,
       senderName: result.sender.name,
       senderRole: result.sender.role,
       senderAvatar: result.sender.avatar,
-      sentAt: result.sentAt
     };
   }
 
-  postAttachmentMessage(data: NewMessageParam): Observable<any> {
-    if (!data.file) {
-      throw new Error('Fatal: File value must not be empty.');
-    }
-    return this.postNewMessage(data);
+  logChatError(data) {
+    return this.apolloService.logError(JSON.stringify(data)).subscribe();
   }
 }

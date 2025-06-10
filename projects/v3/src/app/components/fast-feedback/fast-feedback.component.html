@@ -15,29 +15,32 @@
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
-    <ng-container *ngFor="let question of questions">
-      <ion-list class="practera-card ion-text-left ion-no-padding"
-        [ngClass]="{'ion-padding-horizontal': !isMobile }"
-        [formGroup]="fastFeedbackForm">
-        <ion-list-header class="question-title">
-          <span [innerHTML]="question.name"></span>
-          <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
-          <ion-text>
-            <p><i [innerHTML]="question.description"></i></p>
-          </ion-text>
-        </ion-list-header>
+    <ion-list *ngFor="let question of questions"
+      class="practera-card ion-text-left ion-no-padding"
+      [ngClass]="{'ion-padding-horizontal': !isMobile }"
+      [formGroup]="fastFeedbackForm">
+      <ion-list-header class="question-title">
+        <span [innerHTML]="question.name"></span>
+        <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
+        <ion-text>
+          <p><i [innerHTML]="question.description"></i></p>
+        </ion-text>
+      </ion-list-header>
 
-        <ion-radio-group [formControlName]="question.id">
-          <ion-item class="item-bottom-border"
-            *ngFor="let choice of question.choices"
-            lines="none"
-          >
+      <ion-radio-group [formControlName]="question.id">
+        <ion-item class="item-bottom-border"
+          *ngFor="let choice of question.choices"
+          lines="none"
+        >
+          <ion-radio [value]="choice.id"
+            [ariaLabel]="choice.name"
+            labelPlacement="end"
+            slot="start" mode="md">
             <ion-label class="white-space-normal" [innerHTML]="choice.name"></ion-label>
-            <ion-radio [value]="choice.id" slot="start" mode="md"></ion-radio>
-          </ion-item>
-        </ion-radio-group>
-      </ion-list>
-    </ng-container>
+          </ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
 
     <div class="ion-text-center">
       <ion-button mode="ios" type="submit"
