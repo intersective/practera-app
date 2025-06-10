@@ -264,7 +264,6 @@ export class PusherService {
         if (this.channels.notification) {
           this.channels.notification.subscription.unbind_all();
         }
-
         this.channels.notification = {
           name: channelName,
           subscription: this.pusher.subscribe(channelName)

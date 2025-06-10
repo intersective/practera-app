@@ -27,6 +27,7 @@ export class VersionCheckService {
             this.router.navigate(['logout', { t: new Date().getTime() }]);
           }
         },
+        // eslint-disable-next-line no-console
         (err) => console.info
       );
     });

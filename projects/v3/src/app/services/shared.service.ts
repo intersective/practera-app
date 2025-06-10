@@ -4,7 +4,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, first, firstValueFrom } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
@@ -33,7 +33,7 @@ export class SharedService {
   ) { }
 
   // call this function on every page refresh and after switch program
-  onPageLoad(): void {
+  async onPageLoad(): Promise<void> {
     this.getIpLocation();
     const {
       timelineId,
@@ -72,7 +72,7 @@ export class SharedService {
         // signal to pull latest get.todoItems (new_items event) from websocket
         // Sample data: { "type": "new_items", "message": "new items", "event": "achievement", "title": "Notice", "user_id": "14058", "notification_id": null }
         if (event.type === 'new_items' && event?.event === 'achievement') {
-          await this.notification.getTodoItems().toPromise();
+          await firstValueFrom(this.notification.getTodoItems());
         }
       });
     }
@@ -127,26 +127,6 @@ export class SharedService {
   }
 
   /**
-   * This method check due dates of assessment or activity.
-   * - Check due date is today, tomorrow, upcoming date or overdue date.
-   * - If due date is upcoming one this will returns 'Due (date)' ex: 'Due 06-30-2019'.
-   * - If due date is overdue one this will returns 'Overdue (date)' ex: 'Overdue 01-10-2019'.
-   * - If due date is today this will return 'Due Today'.
-   * - If due date is tomorrow this will return 'Due Tomorrow'.
-   * @param dueDate - due date of assessment or activity.
-   */
-  dueDateFormatter(dueDate: string) {
-    if (!dueDate) {
-      return '';
-    }
-    const difference = this.utils.timeComparer(dueDate);
-    if (difference < 0) {
-      return $localize`Overdue ${this.utils.utcToLocal(dueDate)}`;
-    }
-    return $localize`Due ${this.utils.utcToLocal(dueDate)}`;
-  }
-
-  /**
    * This method get all iframe and videos from documents and stop playing videos.
    */
   stopPlayingVideos() {
@@ -168,8 +148,9 @@ export class SharedService {
    * Get the user's current location from IP
    */
   getIpLocation() {
-    this._ipAPI().subscribe(
+    this._ipAPI().pipe(first()).subscribe(
       res => this.storage.setCountry(res.country_name),
+      // eslint-disable-next-line no-console
       err => console.log(err)
     );
   }
@@ -210,7 +191,7 @@ export class SharedService {
    * @return  {Promise<any>} non-strict return value, we won't use
    */
   async refreshJWT(): Promise<any> {
-    const res: AuthEndpoint = await this.authService.authenticate().toPromise();
+    const res: AuthEndpoint = await firstValueFrom(this.authService.authenticate());
 
     const auth = res?.data?.auth;
     const latestTeamId = auth?.experience?.team?.id;

@@ -123,7 +123,7 @@ export class ContactNumberFormComponent implements OnInit {
   private _initcomponent() {
     this._setCountry(environment.defaultCountryModel);
     // if user has the contact number
-    if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber != null)) {
+    if (this.page === 'settings' && (this.storage.getUser().contactNumber && this.storage.getUser().contactNumber !== null)) {
       this._checkCurrentContactNumberOrigin();
     }
   }
