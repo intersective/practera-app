@@ -31,6 +31,12 @@ export class FastFeedbackComponent implements OnInit {
   submissionCompleted: boolean;
   isMobile: boolean;
 
+  // pagination properties
+  currentPage = 0;
+  questionsPerPage = 3;
+  totalPages = 0;
+  showPagination = true;
+
   @Input() questions = [];
   @Input() meta?: Meta;
   @Input() closable: boolean;
@@ -58,9 +64,72 @@ export class FastFeedbackComponent implements OnInit {
     this.submissionCompleted = false;
     const modal = this.navParams.get('modal');
     this.closable = modal.closable || false;
+
+    this.totalPages = Math.ceil(this.questions.length / this.questionsPerPage);
+    this.showPagination = this.totalPages > 1;
+  }
+
+  get currentPageQuestions() {
+    const startIndex = this.currentPage * this.questionsPerPage;
+    const endIndex = Math.min(startIndex + this.questionsPerPage, this.questions.length);
+    return this.questions.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+    }
+  }
+
+  goToPage(index: number) {
+    if (index >= 0 && index < this.totalPages) {
+      this.currentPage = index;
+    }
+  }
+
+  isCurrentPageValid(): boolean {
+    const questionsOnPage = this.currentPageQuestions;
+    return questionsOnPage.every(question =>
+      this.fastFeedbackForm.controls[question.id].valid);
+  }
+
+  get currentPageRange(): { start: number, end: number, total: number } {
+    const start = this.currentPage * this.questionsPerPage + 1;
+    const end = Math.min(start + this.currentPageQuestions.length - 1, this.questions.length);
+    return { start, end, total: this.questions.length };
+  }
+
+  isPageCompleted(pageIndex: number): boolean {
+    const startIndex = pageIndex * this.questionsPerPage;
+    const endIndex = Math.min(startIndex + this.questionsPerPage, this.questions.length);
+    const pageQuestions = this.questions.slice(startIndex, endIndex);
+
+    return pageQuestions.every(question =>
+      this.fastFeedbackForm.controls[question.id].valid);
+  }
+
+  get allQuestionsAnswered(): boolean {
+    return this.fastFeedbackForm.valid;
   }
 
   async submit(): Promise<any> {
+    if (!this.allQuestionsAnswered) {
+      // If not all questions are answered, navigate to the first incomplete page
+      for (let i = 0; i < this.totalPages; i++) {
+        if (!this.isPageCompleted(i)) {
+          this.goToPage(i);
+          return;
+        }
+      }
+      return;
+    }
+
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const answers = [];
@@ -121,7 +190,6 @@ export class FastFeedbackComponent implements OnInit {
   }
 
   dismiss(data) {
-    // change the flag to false
     this.storage.set("fastFeedbackOpening", false);
     this.modalController.dismiss(data);
     this.homeService.getPulseCheckStatuses().subscribe();
