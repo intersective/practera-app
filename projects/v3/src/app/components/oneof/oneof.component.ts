@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit } from '@angular/core';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-oneof',
@@ -14,7 +15,7 @@ import { Subject } from 'rxjs';
     }
   ]
 })
-export class OneofComponent implements ControlValueAccessor, OnInit {
+export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
   @Input() question;
@@ -43,10 +44,20 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
+  autosave$ = new Subject<void>();
+
   constructor() {}
 
   ngOnInit() {
     this._showSavedAnswers();
+  }
+
+  ngAfterViewInit() {
+    this.autosave$.pipe(
+      debounceTime(800),
+    ).subscribe(() => {
+      this.triggerSave();
+    });
   }
 
   // propagate changes into the form control
@@ -83,12 +94,18 @@ export class OneofComponent implements ControlValueAccessor, OnInit {
       }
     }
 
+    this.autosave$.next();
+  }
+
+  triggerSave(): void {
     const action: {
+      saveInProgress?: boolean; // git conflict (trunk-v3)
       autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
+      saveInProgress: true, // git conflict (trunk-v3)
       autoSave: true,
       goBack: false,
     };

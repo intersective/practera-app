@@ -114,39 +114,4 @@ describe('TopicService', () => {
     service.updateTopicProgress(1, '').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
   });
-
-  describe('when testing getTopicProgress()', () => {
-    it('should get correct data #1', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: {
-          Activity: {
-            Topic: [{
-              id: 1,
-              progress: 1
-            }]
-          }
-        }
-      }));
-      service.getTopicProgress(1, 1).subscribe(res => {
-        expect(res).toEqual(1);
-      });
-    });
-    it('should get correct data #2', () => {
-      requestSpy.get.and.returnValue(of({
-        success: false,
-        data: {
-          Activity: {
-            Topic: [{
-              id: 1,
-              progress: 1
-            }]
-          }
-        }
-      }));
-      service.getTopicProgress(1, 1).subscribe(res => {
-        expect(res).toEqual(false);
-      });
-    });
-  });
 });

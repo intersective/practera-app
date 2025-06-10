@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
@@ -14,6 +14,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
+import { AlertController } from '@ionic/angular';
+import { Activity } from '@v3/app/services/activity.service';
 
 @Component({
   selector: "app-home",
@@ -64,6 +66,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private unlockIndicatorService: UnlockIndicatorService,
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
+    private alertController: AlertController,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -72,7 +75,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const id = this.storageService.lastVisited('activityId') as number;
     this.lastVisitedActivityId = id;
     this.cdr.detectChanges();
-
 
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
       this.scrollToElement(id);
@@ -129,7 +131,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       });
 
     this.unlockIndicatorService.unlockedTasks$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        distinctUntilChanged(),
+        takeUntil(this.unsubscribe$)
+      )
       .subscribe({
         next: (unlockedTasks) => {
           this.hasUnlockedTasks = {}; // reset
@@ -150,7 +155,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
 
@@ -160,6 +165,18 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.homeService.getMilestones();
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
+    this.getEarnedPoints = this.achievementService.getEarnedPoints();
+
+    if (this.pulseCheckIndicatorEnabled === true) {
+      this.homeService.getPulseCheckStatuses().pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((res) => {
+        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
+      });
+    }
+
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
 
@@ -169,14 +186,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     bookmarks.forEach((id) => {
       this.bookmarkedActivities[id] = true;
     });
-
-    if (this.pulseCheckIndicatorEnabled === true) {
-      this.homeService.getPulseCheckStatuses().pipe(
-        takeUntil(this.unsubscribe$)
-      ).subscribe((res) => {
-        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
-      });
-    }
 
     this.fastFeedbackService.pullFastFeedback().pipe(
       first(),
@@ -248,8 +257,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
+    // show guideline if locked
     if (activity.isLocked) {
-      return;
+      return this.showGuideline(activity, 'activity');
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
@@ -298,8 +308,19 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  onTrackInfo() {
-    this.notification.trackInfo();
+  async onTrackInfo() {
+    const alert = await this.alertController.create({
+      header: 'Traffic Light System',
+      message: `This traffic light system helps visualise your project's progress:\n\n` +
+        `• <span class='txt-green'>Green</span>: Project is flowing smoothly and meeting expectations - great work!\n` +
+        `• <span class='txt-orange'>Orange</span>: Different perspectives exist that create an opportunity for valuable team discussion\n` +
+        `• <span class='txt-red'>Red</span>: The project appears to be facing challenges that need attention - a perfect time to bring the team together to realign and find solutions\n\n` +
+        `Remember, identifying when adjustments are needed is a strength that leads to better outcomes!`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
@@ -321,14 +342,76 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
       element.scrollIntoView({ behavior: 'auto', block: 'center' });
       element.classList.add('lastVisited');
-
       this.storageService.lastVisited('activityId', null);
     }
   }
 
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    try {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      const style = window.getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    } catch (e) {
+      console.error(e);
+      if (isDevMode()) {
+        this.storageService.append('errors', e);
+      }
+    }
+  }
+
+  // show unlock guideline for locked milestone or activity
+  async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
+
+    let message = '';
+
+    const routes = [];
+    const guidelines = item.unlockConditions;
+
+    if (!guidelines) {
+      return;
+    }
+
+    if (guidelines.length === 0) {
+      return;
+    } else if (guidelines.length >= 1) {
+      message += `Please follow the steps below to unlock this ${type}:`;
+
+      guidelines.forEach((guideline, index) => {
+        if (guideline.meta) {
+          const { activityId, assessmentId, topicId, contextId } = guideline.meta;
+
+          const action = this.utils.ucfirst(guideline.action);
+          const isMobile = this.utils.isMobile();
+          if (topicId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/topic-mobile/${activityId}/${topicId}`
+                : `/v3/activity-desktop/${activityId}/${topicId}`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          } else if (assessmentId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
+                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          }
+        }
+      });
+    }
+
+    await this.notification.popUp(
+      "guidelines",
+      {
+        logo: 'lock-open',
+        message,
+        routes,
+      },
+    );
   }
 }

@@ -1,20 +1,44 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, throwError } from 'rxjs';
-import { concatMap, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { trigger, state, style, animate, transition } from '@angular/animations';
+import { TextComponent } from '../text/text.component';
+import { OneofComponent } from '../oneof/oneof.component';
+import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
+import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
+import { MultipleComponent } from '../multiple/multiple.component';
+import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
+import { FileInput, SubmitActions } from '../types/assessment';
+import { FileUploadComponent } from '../file-upload/file-upload.component';
 
-// const SAVE_PROGRESS_TIMEOUT = 10000; - AV2-1326
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
+  animations: [
+    trigger('tickAnimation', [
+      state('visible', style({
+        transform: 'scale(1)',
+        opacity: 1,
+        willChange: 'transform, opacity'
+      })),
+      state('hidden', style({
+        transform: 'scale(0)',
+        opacity: 0,
+        willChange: 'transform, opacity'
+      })),
+      transition('hidden => visible', animate('200ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
+      transition('visible => hidden', animate('100ms cubic-bezier(0.4, 0.0, 1, 1)')),
+    ]),
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
@@ -30,12 +54,13 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * current user is the user who should "review" this assessment
    */
   @Input() action: string;
+  @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
   @Input() activityId?: number;
-  @Input() submission: Submission;
+  @Input() submission?: Submission;
   @Input() review: AssessmentReview;
-  @Input() isMobile?: boolean = false;
+  @Input() isSinglePage?: boolean = false;
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -49,28 +74,28 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
+  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
+
+  autosaving = signal<{ [key: number]: boolean }>({});
+  saved = signal<{ [key: number]: boolean }>({});
+  failed = signal<{ [key: number]: boolean }>({});
+
+  onAnimationEnd(event, questionId: number) {
+    if (event.toState === 'visible') {
+      // Animation has ended with the tick being visible, now toggle the saved flag after a short delay
+      timer(1000).pipe(take(1)).subscribe(() => {
+        const currentValues = this.autosaving();
+        this.autosaving.set({ ...currentValues, [questionId]: false });
+      });
+    }
+  }
 
   // used to resubscribe to the assessment service
-  resubscribe$ = new Subject();
+  resubscribe$ = new Subject<void>();
   // used to save the assessment/review answers
-  submitActions = new Subject<{
-    autoSave: boolean;
-    goBack: boolean;
-    questionSave?: {
-      submissionId: number;
-      questionId: number;
-      answer: string;
-    };
-    reviewSave?: {
-      reviewId: number;
-      submissionId: number;
-      questionId: number;
-      answer: string;
-      comment: string;
-    };
-  }>();
+  submitActions = new Subject<SubmitActions>();
   subscriptions: Subscription[] = [];
-  unsubscribe$ = new Subject();
+  unsubscribe$ = new Subject<void>();
 
   // if doAssessment is true, it means this user is actually doing assessment, meaning it is not started or is in progress
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
@@ -89,9 +114,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // to hide assessment content if user not is a team.
   isNotInATeam = false;
 
-  questionsForm: FormGroup;
+  questionsForm?: FormGroup = new FormGroup({});
 
-  @ViewChild('form') form: HTMLFormElement;
+  @ViewChild('form') form?: HTMLFormElement;
   @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
 
   // prevent non participants from submitting team assessment
@@ -112,12 +137,16 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+
   }
 
   ngOnInit(): void {
     this.subscribeSaveSubmission();
   }
 
+  getQuestionBoxById(id) {
+    return this.questionBoxes.find(boxes => boxes.el.id === id);
+  }
   getQuestionBoxes() {
     return this.questionBoxes;
   }
@@ -127,15 +156,21 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       filter(() => !this._preventSubmission()), // skip when false
       concatMap(request => {
         if (request?.reviewSave) {
+          this.saved[request.reviewSave.questionId] = true;
           return this.saveReviewAnswer(request.reviewSave);
         }
+
         if (request?.questionSave) {
+          const currentValues = this.autosaving();
+          this.autosaving.set({ ...currentValues, [request.questionSave.questionId]: true });
+          this.saved[request.questionSave.questionId] = false;
+          this.failed[request.questionSave.questionId] = false;
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);
       }),
-    ).subscribe(
-      (data: {
+    ).subscribe({
+      next: (data: {
         autoSave: boolean; // true: this request is for autosave; false: request is for submission (manual submission);
         goBack: boolean;
         questionSave?: {
@@ -145,19 +180,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         };
         error?: any;
       }): void | Promise<void> => {
-        if (!this.utils.isEmpty(data.error)) {
-          return this.notifications.assessmentSubmittedToast({
-            isFail: true,
-            label: $localize`Save failed. Please try again.`,
-          });
-        }
-
         if (data.autoSave === false) {
           return this._submitAnswer(data);
         }
       },
       // save/submission error handling http 500
-      async (error) => {
+      error: async (error: any) => {
         if (error.message.includes('Autosave')) {
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
@@ -194,7 +222,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
           }
         }
       }
-    );
+    });
   }
 
   private invalidAnswerEmailContent(rawData) {
@@ -222,6 +250,16 @@ Best regards`;
     return result;
   }
 
+  retrySave(question): void {
+    const currentValues = this.autosaving();
+    this.autosaving.set({ ...currentValues, [question.id]: true });
+    this.questionComponents?.forEach((questionComponent) => {
+      if (questionComponent?.question?.id === question?.id) {
+        questionComponent.triggerSave();
+      }
+    });
+  }
+
   /**
    * Saves the answer for a given question within a submission.
    *
@@ -235,15 +273,37 @@ Best regards`;
   saveQuestionAnswer(questionInput: {
     submissionId: number;
     questionId: number;
-    answer: string;
+    answer?: string;
+    file?: FileInput;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
       answer,
+      questionInput.file,
     ).pipe(
-      delay(800)
+      tap({
+        next: (_res) => {
+          const currentValues = this.autosaving();
+          this.autosaving.set({ ...currentValues, [questionInput.questionId]: false });
+
+          const savedValues = this.saved();
+          this.saved.set({ ...savedValues, [questionInput.questionId]: true });
+        },
+        error: (error: unknown) => {
+          const currentValues = this.autosaving();
+          this.autosaving.set({ ...currentValues, [questionInput.questionId]: false });
+
+          const savedValues = this.saved();
+          this.saved.set({ ...savedValues, [questionInput.questionId]: false });
+
+          const failedValues = this.failed();
+          this.failed.set({ ...failedValues, [questionInput.questionId]: true });
+        }
+      }),
+      delay(800),
     );
   }
 
@@ -251,20 +311,23 @@ Best regards`;
     reviewId: number;
     submissionId: number;
     questionId: number;
-    answer: string;
+    answer?: string;
     comment: string;
+    file?: FileInput;
   }): Observable<any> {
     const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
     const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
+
+    const savedValues = this.saved();
+    this.saved.set({ ...savedValues, [questionInput.questionId]: true });
+
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
       questionInput.submissionId,
       questionInput.questionId,
-      answer,
       comment,
-    ).pipe(
-      delay(800),
-      tap((res) => { console.log(res) })
+      answer,
+      questionInput.file,
     );
   }
 
@@ -301,15 +364,14 @@ Best regards`;
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    let validator = [];
+    // question groups
     this.assessment.groups.forEach(group => {
+      // questions in each group
       group.questions.forEach(question => {
+        let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question)) {
-          // put 'required' validator in FormControl
+        if (this._isRequired(question) === true) {
           validator = [Validators.required];
-        } else {
-          validator = [];
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
@@ -379,7 +441,7 @@ Best regards`;
    * a consistent comparison logic to ensure mandatory status
    * @param {question} question
    */
-  private _isRequired(question) {
+  private _isRequired(question: Question): boolean {
     let role = 'submitter';
 
     if (this.action === 'review') {
@@ -505,11 +567,16 @@ Best regards`;
       // ]
       this.utils.each(this.questionsForm.value, (answer, key) => {
         questionId = +key.replace('q-', '');
-        answers.push({
+        const save: { questionId: number; answer: any; comment: any; file?: any } = {
           questionId,
           answer: answer?.answer,
           comment: answer?.comment,
-        });
+        };
+        if (answer.file) {
+          save.file = answer.file;
+        }
+
+        answers.push(save);
       });
     }
 
@@ -595,12 +662,12 @@ Best regards`;
 
     if (this.submission) {
       // condition: Published && feedbackReview is true
-      if (this.submission.status == 'published' && !this.feedbackReviewed) {
+      if (this.submission.status === 'published' && !this.feedbackReviewed) {
         return 'readFeedback';
       }
 
       // condition: status not always = "Published", so we need to check by the submission status (completed = true means completed)
-      if (this.submission.status == 'feedback available' && this.submission.completed === false) {
+      if (this.submission.status === 'feedback available' && this.submission.completed === false) {
         return 'readFeedback';
       }
     }

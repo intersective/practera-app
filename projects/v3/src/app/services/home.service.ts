@@ -1,8 +1,9 @@
+import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { first, map, shareReplay, tap } from 'rxjs/operators';
+import { first, catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
@@ -17,6 +18,13 @@ export interface Experience {
   cardUrl?: string;
 }
 
+export interface UnlockConditionMeta {
+  activityId: number;
+  assessmentId: number;
+  topicId: number;
+  contextId: number;
+}
+
 export interface Milestone {
   id: number;
   name: string;
@@ -28,6 +36,16 @@ export interface Milestone {
     isLocked: boolean;
     leadImage: string;
     progress?: number;
+    unlockConditions?: {
+      name: string;
+      action: string;
+      meta: UnlockConditionMeta;
+    }[];
+  }[];
+  unlockConditions: {
+    name: string;
+    action: string;
+    meta: UnlockConditionMeta;
   }[];
 }
 
@@ -98,32 +116,34 @@ export class HomeService {
 
     return this.authService
       .authenticate()
-      .pipe(
-        tap(async (res) => {
-          if (res?.data?.auth?.experience === null) {
-            await this.notificationsService.alert({
-              header: "Unable to access experience",
-              message: "Please re-login and try again later",
-              buttons: [
-                {
-                  text: "OK",
-                  role: "cancel",
-                  handler: () => {
-                    this.authService.logout();
-                  },
+      .pipe(tap(async (res) => {
+        if (res?.data?.auth?.experience === null) {
+          await this.notificationsService.alert({
+            header: $localize`Unable to access experience`,
+            message: $localize`Please re-login and try again later`,
+            buttons: [
+              {
+                text: $localize`OK`,
+                role: "cancel",
+                handler: () => {
+                  this.authService.logout();
                 },
-              ],
-            });
-          }
-        }),
-        map((res) => this._normaliseExperience(res)),
-        first()
-      )
-      .subscribe({
-        error: async (err) => {
-          console.error("Auth:query", err);
-        },
-      });
+              },
+            ]
+          })
+        }
+      }),
+      map(res => this._normaliseExperience(res)),
+      first(),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        throw new Error(err);
+      }),
+    ).subscribe({
+      error: async (err) => {
+        console.error('Auth:query', err);
+      }
+    });
   }
 
   private _normaliseExperience(res) {
@@ -151,8 +171,28 @@ export class HomeService {
           name
           description
           isLocked
-          activities{
+          activities {
             id name isLocked leadImage
+            unlockConditions {
+              name
+              action
+              meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
+            }
+          }
+          unlockConditions {
+            name
+            action
+            meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
           }
         }
       }`
@@ -213,25 +253,29 @@ export class HomeService {
         `query {
         project {
           progress
-          milestones{
+          milestones {
             id
             progress
-            activities{
+            activities {
               id progress
+            }
+            unlockConditions {
+              name
+              action
             }
           }
         }
       }`
-      )
-      .pipe(
-        map((res) => this._handleProjectProgress(res)),
-        first(),
-      )
-      .subscribe({
-        error: async (err) => {
-          console.error("Project:query", err);
-        },
-      });
+    )
+    .pipe(
+      map((res) => this._handleProjectProgress(res)),
+      first(),
+    )
+    .subscribe({
+      error: async (err) => {
+        console.error("Project:query", err);
+      },
+    });
   }
 
   private _handleProjectProgress(data) {
@@ -293,12 +337,19 @@ export class HomeService {
 
   // traffic light indicator
   getPulseCheckStatuses() {
+    if (environment.demo) {
+      return of(this.demo.getPulseCheckStatus(this.storageService.getUser().role));
+    }
     return this.apolloService.graphQLWatch(
       `query pulseCheckStatus {
           pulseCheckStatus {
             self
             team
             expert
+            teams {
+              teamName
+              average
+            }
           }
         }`
     );

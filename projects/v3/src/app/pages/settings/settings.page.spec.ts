@@ -9,20 +9,24 @@ import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { FilestackService } from '@v3/services/filestack.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-
 import { SettingsPage } from './settings.page';
-import { of } from 'rxjs';
+import { HubspotService } from '../../services/hubspot.service';
 
 describe('SettingsPage', () => {
   let component: SettingsPage;
   let fixture: ComponentFixture<SettingsPage>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
+  let hubspotServiceSpy: jasmine.SpyObj<HubspotService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SettingsPage ],
       imports: [IonicModule.forRoot()],
       providers: [
+        {
+          provide: HubspotService,
+          useValue: jasmine.createSpyObj('HubspotService', ['openSupportPopup']),
+        },
         {
           provide: Router,
           useClass: MockRouter
@@ -74,12 +78,12 @@ describe('SettingsPage', () => {
 
   it('should not call openSupportPopup on a KeyboardEvent that is not Enter or Space', () => {
     component.openSupportPopup(new KeyboardEvent('keydown', { key: 'a' }));
-    expect(utilsSpy.openSupportPopup).not.toHaveBeenCalled();
+    expect(hubspotServiceSpy.openSupportPopup).not.toHaveBeenCalled();
   });
 
   it('should call openSupportPopup when hubspotActivated is true', () => {
     component.hubspotActivated = true;
     component.openSupportPopup(new Event('click'));
-    expect(utilsSpy.openSupportPopup).toHaveBeenCalledWith({ formOnly: true });
+    expect(hubspotServiceSpy.openSupportPopup).toHaveBeenCalledWith({ formOnly: true });
   });
 });

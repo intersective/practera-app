@@ -105,6 +105,46 @@ export class DemoService {
     }).pipe(delay(1000));
   }
 
+  getPulseCheckStatus(role: string) {
+    if (role === 'participant') {
+      return {
+        data: {
+          pulseCheckStatus: {
+            self: Math.random() > 0.5 ? 1 : 0,
+            team: Math.random(),
+            expert: Math.random(),
+            teams: null
+          }
+        }
+      };
+    } else if (role === 'mentor') {
+      return {
+        data: {
+          pulseCheckStatus: {
+            self: null,
+            team: null,
+            expert: null,
+            teams: [
+              { teamName: 'Team A', average: Math.random() },
+              { teamName: 'Team B', average: Math.random() },
+              { teamName: 'Team C', average: Math.random() }
+            ]
+          }
+        }
+      };
+    }
+    return {
+      data: {
+        pulseCheckStatus: {
+          self: null,
+          team: null,
+          expert: null,
+          teams: null
+        }
+      }
+    };
+  }
+
   projectProgress() {
     return of({
       data: {
@@ -1042,8 +1082,12 @@ export class DemoService {
     return of(response).pipe(delay(1000));
   }
 
-  normalResponse() {
-    return of({}).pipe(delay(1000));
+  normalResponse(type?) {
+    if (type === 'observable') {
+      return of({}).pipe(delay(1000));
+    }
+
+    return of({}).pipe(delay(1000)).subscribe();
   }
 
   fastFeedback() {
