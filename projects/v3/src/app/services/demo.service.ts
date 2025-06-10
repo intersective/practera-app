@@ -1082,8 +1082,12 @@ export class DemoService {
     return of(response).pipe(delay(1000));
   }
 
-  normalResponse() {
-    return of({}).pipe(delay(1000));
+  normalResponse(type?) {
+    if (type === 'observable') {
+      return of({}).pipe(delay(1000));
+    }
+
+    return of({}).pipe(delay(1000)).subscribe();
   }
 
   fastFeedback() {

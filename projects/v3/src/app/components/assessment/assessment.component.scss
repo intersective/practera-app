@@ -182,6 +182,13 @@ ion-footer {
   margin-right: auto;
 }
 
+.tick-container {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  z-index: 2;
+}
+
 // start --- highlight unanswered compulsory questions
 .blink > * {
   animation: blink-animation 1s steps(5, start) infinite;

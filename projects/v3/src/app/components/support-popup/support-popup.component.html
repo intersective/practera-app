@@ -63,7 +63,7 @@
         (click)="uploadFile()"
       >Choose file</ion-button>
 
-      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile.filename : 'No file chosen' }}</p>
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.filename : 'No file chosen' }}</p>
       <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon>
       </p>
     </div>
