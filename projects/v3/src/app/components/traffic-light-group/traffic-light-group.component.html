@@ -1,16 +1,34 @@
 <div class="traffic-light-group">
-  <ng-container *ngFor="let group of ['self', 'team', 'expert']">
+  <!-- Learner view -->
+  <ng-container *ngIf="!isMentor">
     <ion-chip
+      *ngFor="let group of learnerGroups"
       class="traffic-light-labels"
       [ngClass]="{ 'self': group === 'self' && displayOnly === false }"
       color="medium"
-      (click)="navigateToPulseCheck(group)"
+      (click)="handleTrafficLightClick(group, lights[group])"
     >
       <ion-label class="spacing-right">{{ group | titlecase }}</ion-label>
       <ion-spinner name="bubbles" *ngIf="loading[group] === true"></ion-spinner>
       <app-traffic-light *ngIf="!loading[group]"
         [value]="lights[group]"
         [icon]="group === 'self' && displayOnly === false ? 'pencil-sharp' : null"
+      ></app-traffic-light>
+    </ion-chip>
+  </ng-container>
+
+  <!-- Mentor view -->
+  <ng-container *ngIf="isMentor">
+    <ion-chip
+      *ngFor="let team of teamGroups"
+      class="traffic-light-labels"
+      color="medium"
+      (click)="handleTrafficLightClick('team', team.average)"
+    >
+      <ion-label class="spacing-right">{{ team.teamName }}</ion-label>
+      <ion-spinner name="bubbles" *ngIf="loading[team.teamName] === true"></ion-spinner>
+      <app-traffic-light *ngIf="!loading[team.teamName]"
+        [value]="team.average"
       ></app-traffic-light>
     </ion-chip>
   </ng-container>

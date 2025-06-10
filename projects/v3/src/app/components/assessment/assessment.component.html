@@ -1,4 +1,3 @@
-
 <div *ngIf="!assessment" class="ion-padding-horizontal">
   <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
   <ion-skeleton-text animated></ion-skeleton-text>
@@ -30,7 +29,7 @@
 
 <ng-container *ngIf="action === 'review'">
   <ion-list *ngIf="submission"
-  class="ion-no-margin ion-no-padding ion-padding-horizontal main-content">
+  class="ion-no-margin ion-padding ion-padding-horizontal main-content">
     <ion-item-group>
       <ion-item-divider>
         <ion-label color="primary" i18n>Submission Details</ion-label>
@@ -59,9 +58,10 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div [ngClass]="{'ion-padding': !isMobile}"
-    class="main-content" style="min-height: 100%;">
-    <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
+  <div class="main-content ion-padding"
+    [ngClass]="{'extra-padding-left': action === 'review' && isSinglePage}"
+    style="min-height: 100%;">
+    <div [ngClass]="{'ion-padding-horizontal padding-top': isSinglePage}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
         role="heading"
@@ -102,7 +102,7 @@
 
     <form [formGroup]="questionsForm" id="formgroup" #form>
       <ng-container *ngFor="let group of assessment.groups">
-        <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
+        <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}">
           <h3 [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
           <ion-text color="dark" class="ion-text-left">
             <div
@@ -150,6 +150,27 @@
             </ion-item>
 
             <ng-container *ngIf="question" [ngSwitch]="question.type">
+              <div class="tick-container">
+                <ion-spinner name="dots" class="tick-icon"
+                  style="max-width: 16px; max-height: 16px;"
+                  *ngIf="autosaving()[question.id]"
+                  [@tickAnimation]="autosaving()[question.id] ? 'visible' : 'hidden'"
+                  (@tickAnimation.done)="onAnimationEnd($event, question.id)"
+                ></ion-spinner>
+
+                <ion-icon name="checkmark-circle-outline"
+                  class="tick-icon"
+                  *ngIf="saved()[question.id]"
+                  [@tickAnimation]="saved()[question.id] ? 'visible' : 'hidden'"
+                ></ion-icon>
+
+                <ion-icon name="reload-circle-outline" class="tick-icon"
+                  *ngIf="failed()[question.id]"
+                  (click)="retrySave(question)"
+                  [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
+                ></ion-icon>
+              </div>
+
               <ion-item *ngIf="!doAssessment && (
                 (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
@@ -159,6 +180,7 @@
               </ion-item>
 
               <app-text *ngSwitchCase="'text'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -173,6 +195,7 @@
                 [submitActions$]="submitActions"></app-text>
 
               <app-oneof *ngSwitchCase="'oneof'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -187,6 +210,7 @@
                 [submitActions$]="submitActions"></app-oneof>
 
               <app-multiple *ngSwitchCase="'multiple'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -200,7 +224,9 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multiple>
 
-              <app-file *ngSwitchCase="'video'"
+              <app-file-upload *ngSwitchCase="'video'"
+                #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -210,12 +236,13 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
-              <app-file *ngSwitchCase="'file'"
+              <app-file-upload *ngSwitchCase="'file'"
+                #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -225,11 +252,11 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -244,6 +271,7 @@
                 [submitActions$]="submitActions"></app-team-member-selector>
 
               <app-multi-team-member-selector *ngSwitchCase="'multi team member selector'"
+                #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -267,25 +295,27 @@
     </form>
   </div>
 
+  <div class="not-team ion-padding ion-text-center"
+    *ngIf="isNotInATeam">
+    <p class="black subtitle-1"
+      i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
+      proceed with next steps.</p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="assessment">
   <ng-container *ngIf="preventSubmission === false; else blocked">
-    <app-bottom-action-bar
-      *ngIf="!(action === 'review'
-      && submission?.status === 'feedback available'
-      && review?.status === 'done')"
+    <app-bottom-action-bar *ngIf="!(action === 'review'
+        && submission?.status === 'feedback available'
+        && review?.status === 'done')"
       [showResubmit]="action !== 'review' && assessment?.allowResubmit === true && submission?.status !== 'in progress'"
       (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
-      (handleClick)="continueToNextTask()"
-    ></app-bottom-action-bar>
+      (handleClick)="continueToNextTask()"></app-bottom-action-bar>
   </ng-container>
 
   <ng-template #blocked>
     <app-bottom-action-bar buttonType="blocked-role"></app-bottom-action-bar>
   </ng-template>
-
-  <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
-    <p class="black subtitle-1" i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
-      proceed with next steps.</p>
-  </div>
 </ng-container>

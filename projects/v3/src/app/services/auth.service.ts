@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { ApolloService } from './apollo.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
 import { DemoService } from './demo.service';
+import { Response } from './types';
 
 /**
  * @name api
@@ -34,8 +35,18 @@ interface VerifyParams {
   key: string;
 }
 
+interface ProfileAvatar {
+  bucket: string;
+  path: string;
+  name: string;
+  url: string;
+  extension: string;
+  type: string;
+  size: number;
+}
+
 interface RegisterData {
-  password: string;
+  password?: string;
   user_id: number;
   key: string;
 }
@@ -122,6 +133,8 @@ interface AuthQuery {
 })
 export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
+  private authCache: any;
+  private authObservable$: Observable<AuthEndpoint>;
 
   constructor(
     private demo: DemoService,
@@ -257,18 +270,15 @@ export class AuthService {
         return res;
       }),
       catchError(err => {
+        // When logout get call from here user get redirect without showing any error messages.
+        // so from here need to throw the error. and handel from the components.
+        // then we can show error message and add logout as call back of notification popup.
+        // Kepping this in case some error happen. logic moved
+        //this.logout(); // clear user's information
         this.storage.remove('lastAuthFetchTime');
         this.storage.remove('authCache');
         this.logout(); // clear user's information
-
-        // When logout get call from here user get redirect without showing any error messages.
-        // so from here need to throw the error. and handle from the components.
-        // then we can show error message and add logout as call back of notification popup.
-        // Kepping this in case some error happen. logic moved
-        // this.logout(); // clear user's information
-        this.storage.remove('lastAuthFetchTime');
-        this.storage.remove('authCache');
-        return throwError(err);
+        throw err;
       })
     );
   }
@@ -438,7 +448,29 @@ export class AuthService {
   getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
     return this.request.get(API.getConfig, {
       params: data
-    });
+    })/* comment out until BACKEND is resolved
+    .pipe(tap((response) => {
+      if (environment.production === false) {
+        return;
+      }
+
+      if (this.isAuthenticated() && response.data?.length === 0) {
+        this.notificationsService.alert({
+          header: $localize`It looks like there's a glitch!`,
+          message: $localize`We regret to inform you that there appears to be a technical issue preventing your enrollment in any programs at the moment. Please log in again and try once more.`,
+          backdropDismiss: false,
+          buttons: [
+            {
+              text: $localize`Login`,
+              handler: () => {
+                this.logout({}, true);
+              },
+            }
+          ]
+        });
+        throw new Error('Tech Error: No experience config found!');
+      }
+    })) */;
   }
 
   /**
@@ -462,6 +494,8 @@ export class AuthService {
       }
     );
   }
+
+
 
   saveRegistration(data: RegisterData): Observable<any> {
     if (environment.demo) {
@@ -509,7 +543,6 @@ export class AuthService {
       }
     });
   }
-
 
   updateProfileImage(data) {
     return this.request.post(
@@ -585,6 +618,7 @@ export class AuthService {
           name
           firstName
           lastName
+          avatar
           email
           image
           role
@@ -601,6 +635,7 @@ export class AuthService {
           name: thisUser.name,
           firstName: thisUser.firstName,
           lastName: thisUser.lastName,
+          avatar: thisUser.avatar,
           email: thisUser.email,
           image: thisUser.image,
           role: thisUser.role,
@@ -610,5 +645,28 @@ export class AuthService {
       }
       return response;
     }));
+  }
+
+  /**
+   * @name updateUserProfile
+   * @description update user profile picture
+   *
+   * @param   {ProfileAvatar}  avatar
+   *
+   * @return  {}          [return description]
+   */
+  updateUserProfile(avatar: ProfileAvatar): Observable<Response> {
+    return this.apolloService.graphQLFetch(`
+      mutation updateUserProfile($avatar: FileInput) {
+        updateUserProfile(avatar: $avatar) {
+          success
+          message
+        }
+      }
+    `, {
+      variables: {
+        avatar
+      }
+    });
   }
 }
