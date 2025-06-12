@@ -3,10 +3,27 @@ form ion-button {
 }
 
 .question-title {
-  align-items: center;
+  align-items: flex-start;
   font-size: inherit;
   background: var(--ion-color-primary);
   color: var(--ion-color-primary-contrast);
+  padding-top: 12px;
+  padding-bottom: 12px;
+
+  ion-label h2 {
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  ion-label p {
+    font-size: 0.9em;
+    white-space: normal;
+  }
+
+  .required-mark {
+    margin-left: 4px;
+    font-size: 1.2em;
+  }
 }
 
 ion-item {
@@ -16,5 +33,87 @@ ion-item {
     .item-lines- {
       border-bottom: none;
     }
+  }
+}
+
+.question-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// pagination
+.progress-indicator {
+  margin-bottom: 20px;
+
+  span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+
+  ion-progress-bar {
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+}
+
+.navigation-buttons {
+  ion-button {
+    min-width: 110px;
+  }
+}
+
+.dot-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+  flex-wrap: wrap;
+
+  .dot-button {
+    width: 40px;
+    height: 40px;
+    --padding-start: 0;
+    --padding-end: 0;
+    margin: 0 5px;
+
+    &.active ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
+
+    &.completed ion-icon {
+      color: var(--ion-color-success);
+      font-size: 18px;
+    }
+
+    ion-icon {
+      font-size: 16px;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+.submit-button {
+  min-width: 110px;
+}
+
+.questions-container {
+  position: relative;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
