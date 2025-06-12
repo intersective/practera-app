@@ -73,6 +73,21 @@ const UPPY_PROPS = {
   doneButtonHandler: null,
 };
 
+export const ALLOWED_FILE_TYPES = [
+  'image/*',
+  'video/*',
+  '.jpeg',
+  '.png',
+  'application/pdf',
+  'text/csv', // .csv
+  'application/msword', // .doc
+  'application/vnd.ms-excel', // .xls
+  'application/vnd.ms-powerpoint', // .ppt
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+];
+
 @Injectable({
   providedIn: 'root'
 })
