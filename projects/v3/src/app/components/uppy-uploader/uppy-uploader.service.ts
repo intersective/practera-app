@@ -79,6 +79,7 @@ export const ALLOWED_FILE_TYPES = [
   '.jpeg',
   '.png',
   'application/pdf',
+  'text/plain', // .txt
   'text/csv', // .csv
   'application/msword', // .doc
   'application/vnd.ms-excel', // .xls
