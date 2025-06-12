@@ -1,4 +1,4 @@
-import { UppyUploaderService } from './../uppy-uploader/uppy-uploader.service';
+import { UppyUploaderService, ALLOWED_FILE_TYPES } from './../uppy-uploader/uppy-uploader.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -9,14 +9,6 @@ import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
-
-const ALLOWED_FILE_TYPES = [
-  'image/*',
-  'video/*',
-  '.jpeg',
-  '.png',
-  'application/pdf',
-];
 
 const UPPY_PROPS: DashboardOptions<any, any> = {
   inline: true,
