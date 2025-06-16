@@ -14,6 +14,7 @@ export class BottomActionBarComponent {
   @Output() handleClick = new EventEmitter();
   @Output() handleResubmit = new EventEmitter();
   @Input() buttonType: string = '';
+  @Input() hasCustomContent: boolean = false;
 
   constructor() {}
 
