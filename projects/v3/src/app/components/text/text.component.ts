@@ -26,22 +26,17 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   @Input() submissionId?: number;
   @Input() review;
   @Input() reviewId?: number;
-  // this is for review status
   @Input() reviewStatus;
-  // this is for assessment status
   @Input() submissionStatus;
-  // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
-  // this is for doing review or not
   @Input() doReview: Boolean;
-  // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
+
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: IonTextarea;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
-  // the value of answer &| comment
   innerValue: any;
   answer: FormControl;
   comment: FormControl;
