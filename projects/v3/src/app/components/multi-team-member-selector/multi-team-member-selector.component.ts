@@ -90,10 +90,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type?: string) {
-    // innerValue should be either array or object, if it is a string, parse it
-    if (typeof this.innerValue === 'string') {
-      this.innerValue = JSON.parse(this.innerValue);
-    }
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -136,7 +132,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
-      this.innerValue = JSON.stringify(value);
+      this.innerValue = typeof value === 'string' ? JSON.parse(value) : value;
     }
   }
 
@@ -152,18 +148,18 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
       this.innerValue = {
         answer: this.review.answer,
         comment: this.review.comment
       };
       this.comment = this.review.comment;
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+    if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
+
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
