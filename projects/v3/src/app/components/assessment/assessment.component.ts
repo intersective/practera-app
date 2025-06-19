@@ -6,7 +6,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
@@ -435,6 +435,7 @@ Best regards`;
 
     this.questionsForm.valueChanges.pipe(
       takeUntil(this.unsubscribe$),
+      debounceTime(300),
     ).subscribe(() => {
       this.initializePageCompletion();
       if ((!this.submission || this.submission.status === 'in progress' ||
