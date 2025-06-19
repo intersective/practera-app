@@ -79,7 +79,7 @@
           [(ngModel)]="answer"
           #answerEle
           (ionFocus)="onFocus($event)"
-          (keyup)="onChange('answer')"
+          (keyup)="onChange()"
           placeholder="Please put your answer here"
           [disabled]="control.disabled"
         ></ion-textarea>
@@ -100,7 +100,7 @@
         #commentEle
         rows="4"
         (ionFocus)="onFocus($event)"
-        (keyup)="onChange('comment')"
+        (keyup)="onChange()"
         placeholder="Please put your feedback here"
         i18n-placeholder
         [disabled]="control.disabled"
