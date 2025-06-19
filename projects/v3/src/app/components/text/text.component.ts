@@ -192,12 +192,14 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
       this.innerValue.answer = this.review.answer;
       this.answer = this.review.answer;
     }
+
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
       this.innerValue = this.submission.answer;
       this.answer = this.submission.answer;
     }
-    this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
+
+    this.propagateChange(this.control.value || this.innerValue);
+    this.control.setValue(this.control.value || this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
