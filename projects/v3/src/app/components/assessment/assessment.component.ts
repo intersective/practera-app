@@ -525,7 +525,19 @@ Best regards`;
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         if (this._isRequired(question)) {
-          if (this.utils.isEmpty(answered[question.id]) || this.utils.isEmpty(answered[question.id].answer)) {
+          let isEmpty = false;
+          const thisQuestion = answered[question.id];
+
+          // for review: answer & file separated
+          if (this.action === 'review' && this.utils.isEmpty(thisQuestion.answer) && this.utils.isEmpty(thisQuestion.file)) {
+            isEmpty = true;
+
+          // for assessment: file is part of the answer
+          } else if (this.action === 'assessment' && (this.utils.isEmpty(thisQuestion) || this.utils.isEmpty(thisQuestion.answer))) {
+            isEmpty = true;
+          }
+
+          if (isEmpty) {
             missing.push(question);
 
             // add highlight effect to the question
