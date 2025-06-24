@@ -60,7 +60,6 @@
           </ng-container>
 
           <ng-container *ngIf="message.message || !message.file">
-            <!-- Quill read only view/ use to render html content -->
             <quill-view-html id="message-content"
               [content]="message?.message"
               [sanitize]="true"

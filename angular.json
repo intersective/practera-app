@@ -73,15 +73,15 @@
             ],
             "styles": [
               {
-                "input": "projects/v3/src/styles.scss",
-                "inject": true
-              },
-              {
                 "input": "projects/v3/src/theme/variables.scss",
                 "inject": true
               },
               {
                 "input": "projects/v3/src/global.scss",
+                "inject": true
+              },
+              {
+                "input": "projects/v3/src/styles.scss",
                 "inject": true
               }
             ],
