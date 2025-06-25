@@ -276,7 +276,18 @@ Best regards`;
     answer?: string;
     file?: FileInput;
   }): Observable<any> {
-    const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+    const answer = this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
+
+    this.filledAnswers().forEach(answerObj => {
+      if (answerObj.questionId === questionInput.questionId) {
+        // if the answer is empty, we need to set it to null
+        if (this.utils.isEmpty(answer)) {
+          answerObj.answer = null;
+        } else {
+          answerObj.answer = answer;
+        }
+      }
+    });
 
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
@@ -315,7 +326,7 @@ Best regards`;
     comment: string;
     file?: FileInput;
   }): Observable<any> {
-    const answer = (!this.utils.isEmpty(questionInput.answer)) ? questionInput.answer : '';
+    const answer = this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
     const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
 
     const savedValues = this.saved();
@@ -541,31 +552,14 @@ Best regards`;
       }
       this.utils.each(this.questionsForm.value, (value, key) => {
         questionId = +key.replace('q-', '');
-        let answer;
-        if (value) {
-          answer = value;
-        } else {
-          this.assessment.groups.forEach(group => {
-            const currentQuestion = group.questions.find(question => {
-              return question.id === questionId;
-            });
-            if (currentQuestion && currentQuestion.type === 'multiple') {
-              answer = [];
-            } else {
-              answer = null;
-            }
-          });
-        }
         answers.push({
           questionId: questionId,
-          answer: answer
+          answer: this._getAnswerValueForQuestion(questionId, value)
         });
       });
-    }
-
-    // In review we also have comments for a question. and questionsForm value have both
-    // answer and comment. need to add them as separately
-    if (this.isPendingReview) {
+    } else if (this.isPendingReview) {
+      // In review we also have comments for a question. and questionsForm value have both
+      // answer and comment. need to add them as separately
       assessment = Object.assign(assessment, {
         reviewId: this.review.id
       });
@@ -581,7 +575,7 @@ Best regards`;
         questionId = +key.replace('q-', '');
         const save: { questionId: number; answer: any; comment: any; file?: any } = {
           questionId,
-          answer: answer?.answer,
+          answer: this._getAnswerValueForQuestion(questionId, answer.answer),
           comment: answer?.comment,
         };
         if (answer.file) {
@@ -593,6 +587,31 @@ Best regards`;
     }
 
     return answers;
+  }
+
+  private _getAnswerValueForQuestion(questionId: number, value: any): any {
+    if (value || (Array.isArray(value) && value.length === 0)) {
+      return value;
+    }
+
+    let answer = null; // null for one off / default value
+    this.assessment.groups.forEach(group => {
+      const currentQuestion = group.questions.find(question => question.id === questionId);
+      if (currentQuestion) {
+        switch (currentQuestion.type) {
+          case 'multiple':
+            answer = [];
+            break;
+          case 'text':
+          case 'file':
+          case 'team-member-selector':
+          case 'multi-team-member-selector':
+            answer = '';
+            break;
+        }
+      }
+    });
+    return answer;
   }
 
   async _submitAnswer({autoSave = false, goBack = false}) {
