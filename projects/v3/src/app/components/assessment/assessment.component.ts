@@ -6,7 +6,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
@@ -361,6 +361,22 @@ Best regards`;
     this.isPendingReview = false;
   }
 
+  /**
+   * Validator to check if an answer is required.
+   * @param control The form control to validate.
+   * @returns An object with the validation error or null if valid.
+   */
+  private _answerRequiredValidator(control: FormControl) {
+    const value = control.value;
+    if (value == null) return { required: true };
+    if (typeof value === 'object' && value !== null) {
+      if (!value.answer || value.answer.length === 0) return { required: true };
+    } else if (typeof value === 'string') {
+      if (value.length === 0) return { required: true };
+    }
+    return null;
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
@@ -370,12 +386,29 @@ Best regards`;
       group.questions.forEach(question => {
         let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question) === true) {
-          validator = [Validators.required];
+        const isRequired = this._isRequired(question);
+        if (isRequired === true) {
+          if (this.action === 'review' && question.type === 'text') {
+            validator = [this._answerRequiredValidator];
+          } else {
+            validator = [Validators.required];
+          }
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
+    });
+
+    this.questionsForm.valueChanges.pipe(
+      debounceTime(200),
+      takeUntil(this.unsubscribe$)
+    ).subscribe(() => {
+      // allow button only when form valid
+      if (this.questionsForm.invalid && this.btnDisabled$.getValue() === false) {
+        this.btnDisabled$.next(true);
+      } else if (this.questionsForm.valid && this.btnDisabled$.getValue() === true) {
+        this.btnDisabled$.next(false);
+      }
     });
   }
 
