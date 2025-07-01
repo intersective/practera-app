@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -388,22 +388,23 @@ Best regards`;
     );
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(simpleChanges: SimpleChanges): void {
     if (!this.assessment) {
       return;
     }
 
     this._initialise();
-    this._populateQuestionsForm();
-    this._handleSubmissionData();
-    this._handleReviewData();
-    this._preventSubmission();
+
+    if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
+      this._populateQuestionsForm();
+      this._handleSubmissionData();
+      this._handleReviewData();
+      this._populateFormWithAnswers();
+    }
 
     // split by question count every time assessment changes
     this.pagesGroups = this.splitGroupsByQuestionCount();
     this.pageIndex = 0;
-
-    this._populateFormWithAnswers();
 
     // scroll to the active page into view after rendering
     setTimeout(() => this.scrollActivePageIntoView(), 200);
@@ -427,6 +428,22 @@ Best regards`;
     this.isPendingReview = false;
   }
 
+  /**
+   * Validator to check if an answer is required.
+   * @param control The form control to validate.
+   * @returns An object with the validation error or null if valid.
+   */
+  private _answerRequiredValidator(control: FormControl) {
+    const value = control.value;
+    if (value == null) return { required: true };
+    if (typeof value === 'object' && value !== null) {
+      if (!value.answer || value.answer.length === 0) return { required: true };
+    } else if (typeof value === 'string') {
+      if (value.length === 0) return { required: true };
+    }
+    return null;
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
@@ -436,22 +453,35 @@ Best regards`;
       group.questions.forEach(question => {
         let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question) === true) {
-          validator = [Validators.required];
+        const isRequired = this._isRequired(question);
+        if (isRequired === true) {
+          if (this.action === 'review' && question.type === 'text') {
+            validator = [this._answerRequiredValidator];
+          } else {
+            validator = [Validators.required];
+          }
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
     });
 
+    // when no questions in the assessment, disable the button
+    if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
+      return this.btnDisabled$.next(true);
+    }
+
     this.questionsForm.valueChanges.pipe(
       takeUntil(this.unsubscribe$),
-      debounceTime(300),
+      debounceTime(200),
     ).subscribe(() => {
       this.initializePageCompletion();
-      if ((!this.submission || this.submission.status === 'in progress' ||
-          (this.isPendingReview && this.review.status === 'in progress'))) {
-        this.btnDisabled$.next(this.questionsForm.invalid);
+
+      // allow button only when form valid
+      if (this.questionsForm.invalid && this.btnDisabled$.getValue() === false) {
+        this.btnDisabled$.next(true);
+      } else if (this.questionsForm.valid && this.btnDisabled$.getValue() === true) {
+        this.btnDisabled$.next(false);
       }
     });
   }

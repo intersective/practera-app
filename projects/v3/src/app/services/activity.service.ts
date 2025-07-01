@@ -386,7 +386,7 @@ export class ActivityService {
               map(res => this._normaliseActivity(res.data, false))
             ));
 
-          await this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId).toPromise();
+          await firstValueFrom(this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId));
 
           // store last visited assessment url during visit
           this.storage.lastVisited('assessmentUrl', [
