@@ -54,7 +54,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * 'reivew' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
-  @Input() action: string;
+  @Input() action: 'assessment' | 'review';
   @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
@@ -455,7 +455,8 @@ Best regards`;
         let validator = [];
         // check if the compulsory is mean for current user's role
         const isRequired = this._isRequired(question);
-        if (isRequired === true) {
+        // only apply required validators when user can actually edit (doAssessment or isPendingReview)
+        if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
           if (this.action === 'review' && question.type === 'text') {
             validator = [this._answerRequiredValidator];
           } else {
@@ -478,11 +479,14 @@ Best regards`;
     ).subscribe(() => {
       this.initializePageCompletion();
 
-      // allow button only when form valid
-      if (this.questionsForm.invalid && this.btnDisabled$.getValue() === false) {
-        this.btnDisabled$.next(true);
-      } else if (this.questionsForm.valid && this.btnDisabled$.getValue() === true) {
-        this.btnDisabled$.next(false);
+      // only enforce form validation when user can actually edit (doAssessment or isPendingReview)
+      if (this.doAssessment || this.isPendingReview) {
+        // allow button only when form valid
+        if (this.questionsForm.invalid && this.btnDisabled$.getValue() === false) {
+          this.btnDisabled$.next(true);
+        } else if (this.questionsForm.valid && this.btnDisabled$.getValue() === true) {
+          this.btnDisabled$.next(false);
+        }
       }
 
       // if ((!this.submission || this.submission.status === 'in progress' ||
@@ -1167,5 +1171,13 @@ Best regards`;
     setTimeout(() => {
       this.initializePageCompletion();
     }, 100);
+  }
+
+  /**
+   * determine if required indicators should be shown for a question
+   * only show required indicators when user can actually edit the form
+   */
+  shouldShowRequiredIndicator(question: Question): boolean {
+    return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
   }
 }
