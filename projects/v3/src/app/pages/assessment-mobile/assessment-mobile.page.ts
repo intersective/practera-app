@@ -25,7 +25,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
   activityId: number;
   contextId: number;
   submissionId: number;
-  action: string;
+  action: 'assessment' | 'review';
   fromPage: string; // referral source page
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
