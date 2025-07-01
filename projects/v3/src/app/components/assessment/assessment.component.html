@@ -118,14 +118,14 @@
           <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox>
             <ion-list-header
               class="question-title headline-4"
-              [ngClass]="{'fade-70': questionsForm?.controls['q-' + question.id]?.errors?.required}"
+              [ngClass]="{'fade-70': shouldShowRequiredIndicator(question) && questionsForm?.controls['q-' + question.id]?.errors?.required}"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
               <ion-label class="ion-margin-vertical">
                 <span [innerHTML]="question.name"></span>
                 <span class="required-mark"
                   [ngClass]="{'contrast': isRedColor}"
-                  *ngIf="question.isRequired"
+                  *ngIf="shouldShowRequiredIndicator(question)"
                 >&nbsp;*</span>
               </ion-label>
 
