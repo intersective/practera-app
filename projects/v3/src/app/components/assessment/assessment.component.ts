@@ -396,8 +396,8 @@ Best regards`;
     this._initialise();
 
     if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
-      this._populateQuestionsForm();
       this._handleSubmissionData();
+      this._populateQuestionsForm();
       this._handleReviewData();
       this._populateFormWithAnswers();
     }
