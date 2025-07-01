@@ -435,7 +435,7 @@ Best regards`;
    */
   private _answerRequiredValidator(control: FormControl) {
     const value = control.value;
-    if (value == null) return { required: true };
+    if (value === null) return { required: true };
     if (typeof value === 'object' && value !== null) {
       if (!value.answer || value.answer.length === 0) return { required: true };
     } else if (typeof value === 'string') {
@@ -473,7 +473,7 @@ Best regards`;
 
     this.questionsForm.valueChanges.pipe(
       takeUntil(this.unsubscribe$),
-      debounceTime(200),
+      debounceTime(150),
     ).subscribe(() => {
       this.initializePageCompletion();
 
