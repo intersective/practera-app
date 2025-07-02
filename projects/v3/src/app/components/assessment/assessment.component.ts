@@ -437,7 +437,7 @@ Best regards`;
     const value = control.value;
     if (value === null) return { required: true };
     if (typeof value === 'object' && value !== null) {
-      if (!value.answer || value.answer.length === 0) return { required: true };
+      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) return { required: true };
     } else if (typeof value === 'string') {
       if (value.length === 0) return { required: true };
     }
@@ -456,7 +456,7 @@ Best regards`;
         const isRequired = this._isRequired(question);
         // only apply required validators when user can actually edit (doAssessment or isPendingReview)
         if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
-          if (this.action === 'review' && question.type === 'text') {
+          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
             validator = [this._answerRequiredValidator];
           } else {
             validator = [Validators.required];
@@ -477,16 +477,7 @@ Best regards`;
       debounceTime(150),
     ).subscribe(() => {
       this.initializePageCompletion();
-
-      // only enforce form validation when user can actually edit (doAssessment or isPendingReview)
-      if (this.doAssessment || this.isPendingReview) {
-        // allow button only when form valid
-        if (this.questionsForm.invalid && this.btnDisabled$.getValue() === false) {
-          this.btnDisabled$.next(true);
-        } else if (this.questionsForm.valid && this.btnDisabled$.getValue() === true) {
-          this.btnDisabled$.next(false);
-        }
-      }
+      this.setSubmissionDisabled();
     });
   }
 
@@ -1134,7 +1125,7 @@ Best regards`;
 
   private _populateFormWithAnswers() {
     // Populate form with submission answers
-    if (this.submission?.answers) {
+    if (this.submission?.answers && this.action === 'assessment') {
       Object.keys(this.submission.answers).forEach(questionId => {
         const controlName = 'q-' + questionId;
         const control = this.questionsForm.get(controlName);
@@ -1145,7 +1136,7 @@ Best regards`;
     }
 
     // Populate form with review answers
-    if (this.review?.answers) {
+    if (this.review?.answers && this.action === 'review') {
       Object.keys(this.review.answers).forEach(questionId => {
         const controlName = 'q-' + questionId;
         const control = this.questionsForm.get(controlName);
@@ -1159,10 +1150,31 @@ Best regards`;
       });
     }
 
+    if (this.utils.isEmpty(this.submission?.answers) && this.utils.isEmpty(this.review?.answers) && this.questionsForm?.invalid) {
+      this.setSubmissionDisabled();
+    }
+
     // Initialize page completion after form is populated
     setTimeout(() => {
       this.initializePageCompletion();
     }, 100);
+  }
+
+  setSubmissionDisabled() {
+    // only enforce form validation when user can actually edit
+    if (!this.doAssessment && !this.isPendingReview) {
+      return;
+    }
+
+    const isFormValid = this.questionsForm?.valid ?? false;
+    const isCurrentlyDisabled = this.btnDisabled$.getValue();
+
+    // Update button state only if it needs to change
+    if (!isFormValid && !isCurrentlyDisabled) {
+      this.btnDisabled$.next(true);
+    } else if (isFormValid && isCurrentlyDisabled) {
+      this.btnDisabled$.next(false);
+    }
   }
 
   /**
