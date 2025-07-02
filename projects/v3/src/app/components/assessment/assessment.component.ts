@@ -455,6 +455,22 @@ Best regards`;
     this.isPendingReview = false;
   }
 
+  /**
+   * Validator to check if an answer is required.
+   * @param control The form control to validate.
+   * @returns An object with the validation error or null if valid.
+   */
+  private _answerRequiredValidator(control: FormControl) {
+    const value = control.value;
+    if (value === null) return { required: true };
+    if (typeof value === 'object' && value !== null) {
+      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) return { required: true };
+    } else if (typeof value === 'string') {
+      if (value.length === 0) return { required: true };
+    }
+    return null;
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
@@ -464,8 +480,14 @@ Best regards`;
       group.questions.forEach(question => {
         let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question) === true) {
-          validator = [Validators.required];
+        const isRequired = this._isRequired(question);
+        // only apply required validators when user can actually edit (doAssessment or isPendingReview)
+        if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
+          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
+            validator = [this._answerRequiredValidator];
+          } else {
+            validator = [Validators.required];
+          }
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
@@ -477,7 +499,8 @@ Best regards`;
       debounceTime(300),
     ).subscribe(() => {
       this.initializePageCompletion();
-      this.btnDisabled$.next(this.questionsForm.invalid);
+      // this.btnDisabled$.next(this.questionsForm.invalid);
+      this.setSubmissionDisabled();
     });
   }
 
@@ -1152,7 +1175,7 @@ Best regards`;
 
   private _populateFormWithAnswers() {
     // Populate form with submission answers
-    if (this.submission?.answers) {
+    if (this.submission?.answers && this.action === 'assessment') {
       Object.keys(this.submission.answers).forEach(questionId => {
         const controlName = 'q-' + questionId;
         const control = this.questionsForm.get(controlName);
@@ -1163,7 +1186,7 @@ Best regards`;
     }
 
     // Populate form with review answers
-    if (this.review?.answers) {
+    if (this.review?.answers && this.action === 'review') {
       Object.keys(this.review.answers).forEach(questionId => {
         const controlName = 'q-' + questionId;
         const control = this.questionsForm.get(controlName);
@@ -1177,9 +1200,38 @@ Best regards`;
       });
     }
 
+    if (this.utils.isEmpty(this.submission?.answers) && this.utils.isEmpty(this.review?.answers) && this.questionsForm?.invalid) {
+      this.setSubmissionDisabled();
+    }
+
     // Initialize page completion after form is populated
     setTimeout(() => {
       this.initializePageCompletion();
     }, 100);
+  }
+
+  setSubmissionDisabled() {
+    // only enforce form validation when user can actually edit
+    if (!this.doAssessment && !this.isPendingReview) {
+      return;
+    }
+
+    const isFormValid = this.questionsForm?.valid ?? false;
+    const isCurrentlyDisabled = this.btnDisabled$.getValue();
+
+    // Update button state only if it needs to change
+    if (!isFormValid && !isCurrentlyDisabled) {
+      this.btnDisabled$.next(true);
+    } else if (isFormValid && isCurrentlyDisabled) {
+      this.btnDisabled$.next(false);
+    }
+  }
+
+  /**
+   * determine if required indicators should be shown for a question
+   * only show required indicators when user can actually edit the form
+   */
+  shouldShowRequiredIndicator(question: Question): boolean {
+    return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
   }
 }
