@@ -48,7 +48,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   lastVisitedActivityId: number = null;
   bookmarkedActivities: {
     [key: number]: boolean;
-} = {};
+  } = {};
 
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
