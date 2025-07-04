@@ -16,6 +16,7 @@ import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
+import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 
 @Component({
   selector: "app-home",
@@ -47,7 +48,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   lastVisitedActivityId: number = null;
   bookmarkedActivities: {
     [key: number]: boolean;
-} = {};
+  } = {};
 
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
@@ -55,6 +56,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
   @ViewChild('activities', {static: false}) activities!: ElementRef;
   pulseCheckSkills: PulseCheckSkill[] = [];
+
+  // Expose Math to template
+  Math = Math;
 
 
   constructor(
@@ -69,6 +73,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
+    private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -209,7 +214,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.homeService.getPulseCheckSkills().pipe(
       takeUntil(this.unsubscribe$),
     ).subscribe((res) => {
-      this.pulseCheckSkills = res?.data?.pulseCheckSkills || null;
+      const newSkills = res?.data?.pulseCheckSkills || [];
+      if (newSkills.length > 0) {
+        this.pulseCheckSkills = newSkills;
+      }
     });
   }
 
@@ -381,6 +389,35 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.storageService.append('errors', e);
       }
     }
+  }
+
+  // generate aria-label for skill dot
+  // each circle announces its state
+  // eg. "Level X achieved", "Level X half achieved", "Level X not achieved"
+  getSkillDotAriaLabel(level: number, skillValue: number): string {
+    if (level <= Math.floor(skillValue)) {
+      return `Level ${level} achieved`;
+    } else if (level === Math.floor(skillValue) + 1 && skillValue % 1 === 0.5) {
+      return `Level ${level} half achieved`;
+    } else {
+      return `Level ${level} not achieved`;
+    }
+  }
+
+  /**
+   * Get formatted percentage change string with appropriate styling
+   * @param skillId - The ID of the skill
+   * @param currentValue - Current skill value
+   * @param changeValue - Change value from API
+   * @returns Object with change text and CSS class
+   */
+  getSkillChangeDisplay(skillId: number, currentValue: number, changeValue?: number): { text: string; cssClass: string } | null {
+    // Use change value from API if available
+    if (changeValue !== undefined) {
+      return this.pulsecheckService.getSkillChangeDisplayFromValue(changeValue);
+    }
+    // Return null if no change value provided
+    return null;
   }
 
   // show unlock guideline for locked milestone or activity
