@@ -9,6 +9,15 @@ import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
+import { ApiResponse } from '../models/api.model';
+
+export interface PulseCheckSkill {
+  id: number;
+  name: string;
+  value: number;
+  change?: number; // change from previous value
+  icon?: string;
+}
 
 export interface Experience {
   leadImage: string;
@@ -352,6 +361,21 @@ export class HomeService {
             }
           }
         }`
+    );
+  }
+
+  getPulseCheckSkills(): Observable<ApiResponse<{
+    pulseCheckSkills: PulseCheckSkill[]
+  }>> {
+    return this.apolloService.graphQLWatch(
+      `query pulseCheckSkills {
+        pulseCheckSkills {
+          id
+          name
+          value
+          change
+        }
+      }`
     );
   }
 }
