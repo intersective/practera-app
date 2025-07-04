@@ -76,11 +76,134 @@ ion-content.scrollable-desktop {
   display: block;
 }
 
-.ontrack-group {
+
+
+.ontrack-header {
+  margin-bottom: 16px;
+}
+
+.ontrack-title-section {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.ontrack-title {
+  margin: 0;
+  color: var(--ion-color-primary);
+  font-weight: 600;
+}
+
+.ontrack-help-icon {
+  cursor: pointer;
+  color: var(--ion-color-medium);
+  font-size: 20px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: var(--ion-color-primary);
+    transform: scale(1.1);
+  }
+}
+
+.ontrack-subtitle {
+  span {
+    color: var(--ion-color-medium);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+}
+
+
+
+.ontrack-content-container {
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.traffic-light-enhanced {
+  width: 100%;
+
+  // Override the traffic light group component styles for better spacing
+  ::ng-deep .traffic-light-group {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    .traffic-light-labels {
+      margin: 4px 8px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid var(--ion-color-primary-shade);
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      min-height: 40px;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      ion-label {
+        font-weight: 600;
+        color: var(--ion-color-dark);
+        font-size: 0.9rem;
+      }
+    }
+
+    .traffic-light-dot {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #333;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+// Mobile optimization
+@media (max-width: 768px) {
+  .ontrack-content-container {
+    padding: 16px 12px;
+  }
+
+  .traffic-light-enhanced {
+    ::ng-deep .traffic-light-group {
+      gap: 12px;
+
+      .traffic-light-labels {
+        margin: 2px 4px;
+        min-height: 36px;
+
+        ion-label {
+          font-size: 0.8rem;
+        }
+      }
+
+      .traffic-light-dot {
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+}
+
+.traffic-light-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .ontrack-title {
@@ -97,3 +220,203 @@ ion-content.scrollable-desktop {
   }
 }
 
+.skill-strength-widget {
+  padding: 8px;
+  margin-top: 8px;
+  border-radius: 4px;
+  background: #f4f4f4;
+  font-size: 0.9rem;
+}
+
+.skill-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.skill-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.skill-level ion-icon {
+  font-size: 0.7rem;
+  color: #ccc;
+}
+
+.skill-level ion-icon.filled {
+  color: green;
+}
+
+// New improved skill strength styles
+
+.ontrack-section, .skill-strength-section {
+  margin-top: 20px;
+  width: 100%;
+}
+
+.skill-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 0 4px;
+
+  h4 {
+    margin: 0;
+    color: var(--ion-color-primary);
+  }
+
+  ion-icon {
+    cursor: pointer;
+    opacity: 0.7;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.skill-grid {
+  padding: 0;
+}
+
+.skill-card {
+  margin: 0;
+  height: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.skill-card-content {
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.skill-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.skill-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.skill-name-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.skill-name {
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ion-color-dark);
+  &.no-change-padding {
+    padding-bottom: 1.5em;
+  }
+}
+
+.skill-change {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+
+  &.skill-change-positive {
+    color: var(--ion-color-success);
+  }
+
+  &.skill-change-negative {
+    color: var(--ion-color-danger);
+  }
+}
+
+.skill-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-level-dots {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.skill-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--ion-color-light-shade);
+  border: 2px solid var(--ion-color-medium);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &.filled {
+    background-color: var(--ion-color-success);
+    border-color: var(--ion-color-success);
+    transform: scale(1.1);
+  }
+
+  &.half-filled {
+    border-color: var(--ion-color-success);
+    transform: scale(1.1);
+
+    .dot-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 50%;
+      height: 100%;
+      background-color: var(--ion-color-success);
+      border-radius: 50% 0 0 50%;
+    }
+  }
+}
+
+.skill-level-text {
+  text-align: center;
+
+  span {
+    color: var(--ion-color-medium);
+    font-size: 0.875rem;
+  }
+}
+
+.clickable {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: var(--ion-color-light-shade);
+  }
+
+  &:active,
+  &.activated {
+    background-color: var(--ion-color-light-tint);
+  }
+}
