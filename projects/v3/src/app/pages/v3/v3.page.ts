@@ -1,5 +1,5 @@
 import { takeUntil, mergeMap } from 'rxjs/operators';
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, isDevMode, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
 import { Review, ReviewService } from '@v3/app/services/review.service';
@@ -160,14 +160,17 @@ export class V3Page implements OnInit, OnDestroy {
         code: 'Messages',
         badges: 0,
       },
-      {
-        title: $localize`Due Status`,
-        url: '/v3/due-dates',
-        icon: 'alarm',
-        code: 'DueDates',
-        badges: 0,
-      },
     ];
+
+    if (isDevMode()) {
+      this.appPages.push({
+        title: $localize`Due Status`,
+          url: '/v3/due-dates',
+          icon: 'alarm',
+          code: 'DueDates',
+          badges: 0,
+      });
+    }
 
     this.institutionName = this.storageService.getUser().institutionName || 'Practera';
   }
