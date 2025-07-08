@@ -147,10 +147,9 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
       this.innerValue.answer = this.review.answer;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
