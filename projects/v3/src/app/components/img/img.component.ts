@@ -1,4 +1,4 @@
-import { Component, Input, isDevMode, SimpleChanges } from '@angular/core';
+import { Component, Input, isDevMode, OnChanges } from '@angular/core';
 import { getData, getAllTags } from 'exif-js';
 
 const getImageClassToFixOrientation = (orientation) => {
@@ -32,7 +32,7 @@ const swapWidthAndHeight = img => {
   templateUrl: './img.component.html',
   styleUrls: ['./img.component.scss']
 })
-export class ImgComponent {
+export class ImgComponent implements OnChanges {
   @Input() alt: string;
   @Input() imgSrc: string;
   proxiedImgSrc: string;
@@ -43,7 +43,7 @@ export class ImgComponent {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     // In development mode, replace the Practera file URL with a proxied URL to avoid CORS issues.
     const hostname = window.location.hostname;
     const isLocalhost = /(^localhost$)|(^127\.)|(^::1$)/.test(hostname);

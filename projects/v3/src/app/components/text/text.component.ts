@@ -1,5 +1,5 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, FormControl, AbstractControl, ControlValueAccessor } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Question } from '@v3/services/assessment.service';
 import { Subject, Subscription } from 'rxjs';
@@ -146,21 +146,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
     }
 
     this.propagateChange(this.innerValue);
-
-    // 05/02/2019
-    // Don't check "is required" error for now, it has some error.
-    // Since we are checking required answer when submit, it's OK to just return here.
     return ;
-    // reset errors
-    // this.errors = [];
-    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    // for (const key in this.control.errors) {
-    //   if (key === 'required') {
-    //     this.errors.push('This question is required');
-    //   } else {
-    //     this.errors.push(this.control.errors[key]);
-    //   }
-    // }
   }
 
   // From ControlValueAccessor interface
@@ -182,7 +168,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if (['in progress', 'not start'].includes(this.reviewStatus) && (this.doReview)) {
+    if (['in progress', 'not start'].includes(this.reviewStatus) && this.doReview) {
       this.innerValue = {
         answer: [],
         comment: ''
@@ -191,13 +177,13 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
       this.comment = this.review.comment;
       this.innerValue.answer = this.review.answer;
       this.answer = this.review.answer;
+    } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      this.answer = this.control.pristine ? this.submission.answer : this.control.value;
+      this.innerValue = this.answer;
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
-      this.answer = this.submission.answer;
-    }
-    this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
+
+    this.propagateChange(this.control.value || this.innerValue);
+    this.control.setValue(this.control.value || this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.

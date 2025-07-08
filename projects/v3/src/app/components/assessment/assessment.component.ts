@@ -1,12 +1,12 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
@@ -19,6 +19,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 
+const MIN_SCROLLING_PAGES = 6; // minimum number of pages to show pagination scrolling
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -53,7 +54,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * 'reivew' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
-  @Input() action: string;
+  @Input() action: 'assessment' | 'review';
   @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
@@ -117,7 +118,13 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   questionsForm?: FormGroup = new FormGroup({});
 
   @ViewChild('form') form?: HTMLFormElement;
+
+  // pagination
+  pageRequiredCompletion: boolean[] = []; // indicator for required questions
+  readonly manyPages = MIN_SCROLLING_PAGES;
+
   @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+  @ViewChild('pageIndicatorsContainer') pageIndicatorsContainer: ElementRef;
 
   // prevent non participants from submitting team assessment
   get preventSubmission() {
@@ -137,7 +144,46 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+  }
 
+  pageSize = 8; // number of questions per page
+  pageIndex = 0;
+
+  // each entry is a page: an array of (partial) groups
+  pagesGroups: { name: string; description?: string; questions: Question[] }[][] = [];
+
+  // override to use question‑based pages
+  get pageCount() {
+    return this.pagesGroups.length;
+  }
+
+  get pagedGroups() {
+    return this.pagesGroups[this.pageIndex] || [];
+  }
+
+  prevPage() {
+    if (this.pageIndex > 0) {
+      this.pageIndex--;
+      this.scrollActivePageIntoView();
+    }
+  }
+
+  nextPage() {
+    if (this.pageIndex < this.pageCount - 1) {
+      this.pageIndex++;
+      this.scrollActivePageIntoView();
+    }
+  }
+
+  get pages(): number[] {
+    return Array(this.pageCount).fill(0).map((_, i) => i);
+  }
+
+  goToPage(i: number) {
+    if (i >= 0 && i < this.pageCount) {
+      this.pageIndex = i;
+      this.scrollActivePageIntoView();
+    }
   }
 
   ngOnInit(): void {
@@ -342,16 +388,26 @@ Best regards`;
     );
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(simpleChanges: SimpleChanges): void {
     if (!this.assessment) {
       return;
     }
 
     this._initialise();
-    this._populateQuestionsForm();
-    this._handleSubmissionData();
-    this._handleReviewData();
-    this._preventSubmission();
+
+    if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
+      this._handleSubmissionData();
+      this._populateQuestionsForm();
+      this._handleReviewData();
+      this._populateFormWithAnswers();
+    }
+
+    // split by question count every time assessment changes
+    this.pagesGroups = this.splitGroupsByQuestionCount();
+    this.pageIndex = 0;
+
+    // scroll to the active page into view after rendering
+    setTimeout(() => this.scrollActivePageIntoView(), 200);
   }
 
   ngOnDestroy() {
@@ -372,6 +428,22 @@ Best regards`;
     this.isPendingReview = false;
   }
 
+  /**
+   * Validator to check if an answer is required.
+   * @param control The form control to validate.
+   * @returns An object with the validation error or null if valid.
+   */
+  private _answerRequiredValidator(control: FormControl) {
+    const value = control.value;
+    if (value === null) return { required: true };
+    if (typeof value === 'object' && value !== null) {
+      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) return { required: true };
+    } else if (typeof value === 'string') {
+      if (value.length === 0) return { required: true };
+    }
+    return null;
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
@@ -381,12 +453,31 @@ Best regards`;
       group.questions.forEach(question => {
         let validator = [];
         // check if the compulsory is mean for current user's role
-        if (this._isRequired(question) === true) {
-          validator = [Validators.required];
+        const isRequired = this._isRequired(question);
+        // only apply required validators when user can actually edit (doAssessment or isPendingReview)
+        if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
+          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
+            validator = [this._answerRequiredValidator];
+          } else {
+            validator = [Validators.required];
+          }
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
+    });
+
+    // when no questions in the assessment, disable the button
+    if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
+      return this.btnDisabled$.next(true);
+    }
+
+    this.questionsForm.valueChanges.pipe(
+      takeUntil(this.unsubscribe$),
+      debounceTime(150),
+    ).subscribe(() => {
+      this.initializePageCompletion();
+      this.setSubmissionDisabled();
     });
   }
 
@@ -841,5 +932,256 @@ Best regards`;
       this.utils.scrollToElement(element);
       this.flashBlink(element);
     }
+  }
+
+  /**
+   * Breaks original groups into pages, each containing ≤ pageSize questions.
+   * If a single group has more questions than pageSize, it gets sliced.
+   */
+  private splitGroupsByQuestionCount() {
+    const pages = [];
+    let currentPage = [];
+    let count = 0;
+
+    for (const group of this.assessment.groups) {
+      const qCount = group.questions.length;
+
+      if (count + qCount <= this.pageSize) {
+        currentPage.push(group);
+        count += qCount;
+
+      } else {
+        // flush current page
+        if (currentPage.length) {
+          pages.push(currentPage);
+        }
+        currentPage = [];
+        count = 0;
+
+        // if group itself is too big, slice it across multiple pages
+        if (qCount > this.pageSize) {
+          let start = 0;
+          while (start < qCount) {
+            const slice = {
+              ...group,
+              questions: group.questions.slice(start, start + this.pageSize)
+            };
+            pages.push([slice]);
+            start += this.pageSize;
+          }
+        } else {
+          currentPage.push(group);
+          count = qCount;
+        }
+      }
+    }
+
+    if (currentPage.length) {
+      pages.push(currentPage);
+    }
+    return pages;
+  }
+
+  trackById(index: number, item: any) {
+    return item.id || index;
+  }
+
+  initializePageCompletion() {
+    this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+
+    this.pages.forEach((page, index) => {
+      const pageQuestions = this.getAllQuestionsForPage(index);
+      this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
+    });
+
+    // Update the scroll position when page completion status changes
+    setTimeout(() => this.scrollActivePageIntoView(), 100);
+  }
+
+  private getAllQuestionsForPage(pageIndex: number): Question[] {
+    if (!this.pagesGroups[pageIndex]) {
+      return [];
+    }
+
+    const allQuestionsOnPage: Question[] = [];
+    this.pagesGroups[pageIndex].forEach(group => {
+      if (group.questions && group.questions.length) {
+        allQuestionsOnPage.push(...group.questions);
+      }
+    });
+
+    return allQuestionsOnPage;
+  }
+
+  private areAllRequiredQuestionsAnswered(questions: Question[]): boolean {
+    if (!questions.length) {
+      return true; // If no questions, consider it complete
+    }
+
+    // Only check required questions
+    const requiredQuestions = questions.filter(question => this._isRequired(question));
+
+    // If no required questions, page is considered complete
+    if (requiredQuestions.length === 0) {
+      return true;
+    }
+
+    // Check each required question if it has a valid answer
+    return requiredQuestions.every(question => {
+      const control = this.questionsForm?.controls[`q-${question.id}`];
+
+      if (!control || control.invalid) {
+        return false;
+      }
+
+      const value = control.value;
+      if (Array.isArray(value)) {
+        // multi choice questions
+        return value.length > 0;
+      } else if (typeof value === 'object' && value !== null) {
+        // review questions with answer and comment fields
+        return value.answer !== undefined && value.answer !== null && value.answer !== '';
+      } else {
+        // text / one off questions
+        return value !== undefined && value !== null && value !== '';
+      }
+    });
+  }
+
+  /**
+   * Find the first unanswered required question and navigate to it.
+   * @returns {boolean}
+   *    true: if an unanswered question was found and navigated to
+   *    false: if all required questions are answered.
+   */
+  findAndGoToFirstUnansweredQuestion(): boolean {
+    // Get all questions for the current page
+    const currentPageQuestions = this.getAllQuestionsForPage(this.pageIndex);
+
+    // Filter only the required questions
+    const requiredQuestions = currentPageQuestions.filter(question => this._isRequired(question));
+
+    // Find the first unanswered required question
+    const unansweredQuestion = requiredQuestions.find(question => {
+      const control = this.questionsForm?.controls[`q-${question.id}`];
+      if (!control || control.invalid) {
+        return true; // This question is unanswered
+      }
+
+      const value = control.value;
+      if (Array.isArray(value)) {
+        return value.length === 0; // Multi-choice question with no selections
+      } else if (typeof value === 'object' && value !== null) {
+        return !value.answer || value.answer === ''; // Review question with empty answer
+      } else {
+        return !value || value === ''; // Text/one-off question with empty value
+      }
+    });
+
+    // If found an unanswered question, navigate to it
+    if (unansweredQuestion) {
+      const questionIndex = currentPageQuestions.findIndex(q => q.id === unansweredQuestion.id);
+      if (questionIndex >= 0) {
+        this.goToQuestion(questionIndex);
+        return true; // Indicates we found and navigated to an unanswered question
+      }
+    }
+
+    return false;
+  }
+
+  goToQuestion(index: number) {
+    const questionBoxes = this.getQuestionBoxes();
+    if (questionBoxes && questionBoxes.length > 0) {
+      const questionBox = questionBoxes.toArray()[index];
+      if (questionBox) {
+        this.utils.scrollToElement(questionBox.el);
+        this.flashBlink(questionBox.el);
+      }
+    }
+  }
+
+  /**
+   * Scrolls the active page indicator into view within the pagination container
+   */
+  scrollActivePageIntoView() {
+    setTimeout(() => {
+      if (this.pageIndicatorsContainer && this.pageCount > this.manyPages) {
+        const container = this.pageIndicatorsContainer.nativeElement;
+        const activeIndicator = document.getElementById(`page-indicator-${this.pageIndex}`);
+
+        if (activeIndicator && container) {
+          // Calculate the scroll position to center the active indicator
+          const containerWidth = container.offsetWidth;
+          const indicatorWidth = activeIndicator.offsetWidth;
+          const indicatorLeft = activeIndicator.offsetLeft;
+
+          // Scroll to position the active indicator in the center
+          container.scrollLeft = indicatorLeft - (containerWidth / 2) + (indicatorWidth / 2);
+        }
+      }
+    }, 50);
+  }
+
+  private _populateFormWithAnswers() {
+    // Populate form with submission answers
+    if (this.submission?.answers && this.action === 'assessment') {
+      Object.keys(this.submission.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.submission.answers[questionId]?.answer !== undefined) {
+          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
+        }
+      });
+    }
+
+    // Populate form with review answers
+    if (this.review?.answers && this.action === 'review') {
+      Object.keys(this.review.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.review.answers[questionId]) {
+          const reviewAnswer = {
+            answer: this.review.answers[questionId].answer,
+            comment: this.review.answers[questionId].comment
+          };
+          control.setValue(reviewAnswer, { emitEvent: false });
+        }
+      });
+    }
+
+    if (this.utils.isEmpty(this.submission?.answers) && this.utils.isEmpty(this.review?.answers) && this.questionsForm?.invalid) {
+      this.setSubmissionDisabled();
+    }
+
+    // Initialize page completion after form is populated
+    setTimeout(() => {
+      this.initializePageCompletion();
+    }, 100);
+  }
+
+  setSubmissionDisabled() {
+    // only enforce form validation when user can actually edit
+    if (!this.doAssessment && !this.isPendingReview) {
+      return;
+    }
+
+    const isFormValid = this.questionsForm?.valid ?? false;
+    const isCurrentlyDisabled = this.btnDisabled$.getValue();
+
+    // Update button state only if it needs to change
+    if (!isFormValid && !isCurrentlyDisabled) {
+      this.btnDisabled$.next(true);
+    } else if (isFormValid && isCurrentlyDisabled) {
+      this.btnDisabled$.next(false);
+    }
+  }
+
+  /**
+   * determine if required indicators should be shown for a question
+   * only show required indicators when user can actually edit the form
+   */
+  shouldShowRequiredIndicator(question: Question): boolean {
+    return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
   }
 }
