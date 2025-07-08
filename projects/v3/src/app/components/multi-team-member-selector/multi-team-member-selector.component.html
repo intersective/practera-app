@@ -37,7 +37,7 @@
       <ion-checkbox
         [attr.aria-label]="teamMember.userName"
         color="success"
-        [checked]="submission.answer ? submission.answer.includes(teamMember.key) : false"
+        [checked]="(innerValue || submission.answer).includes(teamMember.key)"
         [value]="teamMember.key"
         slot="start"
         (ionChange)="onChange(teamMember.key)"
