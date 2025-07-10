@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 4200
 
-CMD ["npm", "run", "v3"]
+CMD ["npm", "run", "v3:local"]
