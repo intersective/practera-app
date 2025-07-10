@@ -29,14 +29,16 @@ export interface CustomTostOptions {
 
 export interface Choice {
   id: number;
-  title: string;
+  title?: string;
+  name?: string;
 }
 
 export interface Question {
   id: number;
-  title: string;
-  description: string;
-  choices: Array<Choice>;
+  name?: string;
+  title?: string;
+  description?: string;
+  choices: Choice[];
 }
 
 export interface Meta {
@@ -444,7 +446,7 @@ export class NotificationsService {
    */
   fastFeedbackModal(
     props: {
-      questions?: Array<Question>;
+      questions?: Question[];
       meta?: Meta | Object;
     },
     options: {
