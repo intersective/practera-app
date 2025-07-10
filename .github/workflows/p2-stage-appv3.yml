@@ -49,9 +49,7 @@ jobs:
       REASON: ${{ github.event.inputs.REASON }}
       ENDPOINT: app.p2-stage.practera.com
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-      # CUSTOMPLAIN_PRDMODEFLAG: false # for devtools
-      CUSTOMPLAIN_PRDMODEFLAG: true
-
+      CUSTOMPLAIN_PRDMODEFLAG: false # for devtools
     steps:
 
 ################################################
