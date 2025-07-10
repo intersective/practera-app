@@ -15,6 +15,7 @@ export interface PulseCheckSkill {
   id: number;
   name: string;
   value: number;
+  change?: number; // change from previous value
   icon?: string;
 }
 
@@ -372,6 +373,7 @@ export class HomeService {
           id
           name
           value
+          change
         }
       }`
     );
