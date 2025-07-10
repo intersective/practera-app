@@ -48,7 +48,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   lastVisitedActivityId: number = null;
   bookmarkedActivities: {
     [key: number]: boolean;
-  } = {};
+} = {};
 
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
@@ -164,6 +164,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
+  }
+
+  openPulseCheck() {
+    this.fastFeedbackService.pullFastFeedback({
+      closable: true,
+      skipChecking: true,
+      type: 'skills'
+    }).pipe(first()).subscribe();
   }
 
   async updateDashboard() {

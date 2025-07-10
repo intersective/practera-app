@@ -9,25 +9,24 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div class="ion-text-center ion-margin">
-    <p class="body-1 ion-margin" i18n>Please help us to improve your experience.<br>We want to know how are you doing.</p>
+<ion-content class="ion-padding">
+  <div class="ion-text-center ion-margin-bottom">
+    <p class="body-1" i18n>Please help us to improve your experience.<br>We want to know how are you doing.</p>
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
-    <ion-list *ngFor="let question of questions"
-      class="practera-card ion-text-left ion-no-padding"
-      [ngClass]="{'ion-padding-horizontal': !isMobile }"
-      [formGroup]="fastFeedbackForm">
+    <ion-card *ngFor="let question of questions"
+      class="ion-text-left ion-no-margin ion-margin-bottom ion-padding question-card"
+      [ngClass]="{'ion-padding-horizontal': !isMobile }">
       <ion-list-header class="question-title">
-        <span [innerHTML]="question.name"></span>
-        <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
-        <ion-text>
+        <ion-label>
+          <h2 [innerHTML]="question.name"></h2>
           <p><i [innerHTML]="question.description"></i></p>
-        </ion-text>
+        </ion-label>
+        <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
       </ion-list-header>
 
-      <ion-radio-group [formControlName]="question.id">
+      <ion-radio-group [formControlName]="question.id" class="ion-padding-start ion-padding-end ion-padding-bottom">
         <ion-item class="item-bottom-border"
           *ngFor="let choice of question.choices"
           lines="none"
@@ -40,9 +39,9 @@
           </ion-radio>
         </ion-item>
       </ion-radio-group>
-    </ion-list>
+    </ion-card>
 
-    <div class="ion-text-center">
+    <div class="ion-text-center ion-margin-top">
       <ion-button mode="ios" type="submit"
         [disabled]="fastFeedbackForm.invalid || loading"
         shape="round"
