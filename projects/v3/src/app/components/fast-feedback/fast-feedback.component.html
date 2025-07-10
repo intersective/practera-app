@@ -15,46 +15,136 @@
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
-    <ion-card *ngFor="let question of questions"
-      class="ion-text-left ion-no-margin ion-margin-bottom ion-padding question-card"
-      [ngClass]="{'ion-padding-horizontal': !isMobile }">
-      <ion-list-header class="question-title">
-        <ion-label>
-          <h2 [innerHTML]="question.name"></h2>
-          <p><i [innerHTML]="question.description"></i></p>
-        </ion-label>
-        <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
-      </ion-list-header>
+    <div *ngIf="showPagination" class="progress-indicator ion-text-center ion-margin-bottom">
+      <span>Questions {{ currentPageRange.start }}-{{ currentPageRange.end }} of {{ currentPageRange.total }}</span>
+      <ion-progress-bar [value]="(currentPage + 1) / totalPages"></ion-progress-bar>
+    </div>
 
-      <ion-radio-group [formControlName]="question.id" class="ion-padding-start ion-padding-end ion-padding-bottom">
-        <ion-item class="item-bottom-border"
-          *ngFor="let choice of question.choices"
-          lines="none"
+    <div class="questions-container">
+      <ion-card *ngFor="let question of currentPageQuestions"
+        class="ion-text-left ion-no-margin ion-margin-bottom ion-padding question-card"
+        [ngClass]="{'ion-padding-horizontal': !isMobile }">
+        <ion-list-header class="question-title">
+          <ion-label>
+            <h2 [innerHTML]="question.name"></h2>
+            <p><i [innerHTML]="question.description"></i></p>
+          </ion-label>
+          <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
+        </ion-list-header>
+
+        <ion-radio-group [formControlName]="question.id" class="ion-padding-start ion-padding-end ion-padding-bottom">
+          <ion-item class="item-bottom-border choice-item"
+            *ngFor="let choice of question.choices"
+            lines="none"
+            [ngClass]="{'mobile-choice': isMobile}"
+            (mouseenter)="onChoiceHover(question.id, choice.id)"
+            (mouseleave)="onChoiceLeave()"
+            (focus)="onChoiceHover(question.id, choice.id)"
+            (blur)="onChoiceLeave()"
+          >
+            <ion-radio [value]="choice.id"
+              [ariaLabel]="choice.name"
+              labelPlacement="end"
+              slot="start" mode="md">
+              <ion-label class="white-space-normal">
+                <div class="choice-title-container">
+                  <span [innerHTML]="choice.name"></span>
+                  <ion-button *ngIf="isMobile && choice.description"
+                             fill="clear"
+                             size="small"
+                             class="description-toggle-btn inline-toggle"
+                             [ngClass]="{'description-visible': isChoiceDescriptionVisible(question.id, choice.id)}"
+                             [attr.aria-label]="isChoiceDescriptionVisible(question.id, choice.id) ? 'Hide description' : 'Show description'"
+                             (click)="onChoiceToggle(question.id, choice.id); $event.stopPropagation()">
+                    <ion-icon [name]="isChoiceDescriptionVisible(question.id, choice.id) ? 'chevron-up' : 'information-circle'"
+                             slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+                <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
+                   class="choice-description body-3 ion-margin-top animate-fade-in"
+                   [innerHTML]="choice.description"></p>
+              </ion-label>
+            </ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-card>
+
+      <div *ngIf="showPagination" class="navigation-buttons ion-margin-top">
+        <ion-row>
+          <ion-col size="6" class="ion-text-left">
+            <ion-button
+              fill="outline"
+              [disabled]="currentPage === 0"
+              (click)="previousPage()"
+              mode="ios"
+            >
+              <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+              Previous
+            </ion-button>
+          </ion-col>
+          <ion-col size="6" class="ion-text-right">
+            <ion-button
+              fill="outline"
+              *ngIf="currentPage < totalPages - 1"
+              [disabled]="!isCurrentPageValid()"
+              (click)="nextPage()"
+              mode="ios"
+            >
+              Next
+              <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+            </ion-button>
+            <ion-button
+              mode="ios"
+              type="submit"
+              shape="round"
+              class="submit-button"
+              *ngIf="currentPage === totalPages - 1"
+              [disabled]="fastFeedbackForm.invalid || loading"
+            >
+              <ng-container *ngIf="!loading" i18n>Submit</ng-container>
+              <ng-container *ngIf="loading && !submissionCompleted">
+                <ion-spinner name="dots"></ion-spinner>
+              </ng-container>
+              <ng-container *ngIf="loading && submissionCompleted">
+                <ion-icon src="./assets/checkmark.svg"></ion-icon>
+              </ng-container>
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </div>
+
+      <div *ngIf="!showPagination" class="ion-text-center ion-margin-top">
+        <ion-button
+          mode="ios"
+          type="submit"
+          shape="round"
+          class="submit-button"
+          [disabled]="fastFeedbackForm.invalid || loading"
         >
-          <ion-radio [value]="choice.id"
-            [ariaLabel]="choice.name"
-            labelPlacement="end"
-            slot="start" mode="md">
-            <ion-label class="white-space-normal" [innerHTML]="choice.name"></ion-label>
-          </ion-radio>
-        </ion-item>
-      </ion-radio-group>
-    </ion-card>
+          <ng-container *ngIf="!loading" i18n>Submit</ng-container>
+          <ng-container *ngIf="loading && !submissionCompleted">
+            <ion-spinner name="dots"></ion-spinner>
+          </ng-container>
+          <ng-container *ngIf="loading && submissionCompleted">
+            <ion-icon src="./assets/checkmark.svg"></ion-icon>
+          </ng-container>
+        </ion-button>
+      </div>
 
-    <div class="ion-text-center ion-margin-top">
-      <ion-button mode="ios" type="submit"
-        [disabled]="fastFeedbackForm.invalid || loading"
-        shape="round"
-        class="btn-cta"
-      >
-        <ng-container *ngIf="!loading" i18n>Submit</ng-container>
-        <ng-container *ngIf="loading && !submissionCompleted">
-          <ion-spinner name="dots"></ion-spinner>
-        </ng-container>
-        <ng-container *ngIf="loading && submissionCompleted">
-          <ion-icon src="./assets/checkmark.svg"></ion-icon>
-        </ng-container>
-      </ion-button>
+      <div *ngIf="showPagination" class="dot-indicators ion-text-center ion-margin-top">
+        <ion-button
+          *ngFor="let i of [].constructor(totalPages); let pageIndex = index"
+          fill="clear"
+          size="small"
+          class="dot-button"
+          [ngClass]="{'active': currentPage === pageIndex, 'completed': isPageCompleted(pageIndex)}"
+          (click)="goToPage(pageIndex)"
+        >
+          <ion-icon name="ellipse" *ngIf="currentPage === pageIndex"></ion-icon>
+          <ion-icon name="checkmark-circle" *ngIf="currentPage !== pageIndex && isPageCompleted(pageIndex)"></ion-icon>
+          <ion-icon name="ellipse-outline" *ngIf="currentPage !== pageIndex && !isPageCompleted(pageIndex)"></ion-icon>
+        </ion-button>
+      </div>
     </div>
   </form>
 
