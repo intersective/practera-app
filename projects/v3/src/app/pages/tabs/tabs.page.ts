@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
@@ -40,6 +40,18 @@ export class TabsPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private activityService: ActivityService,
   ) {
+  }
+
+  /**
+   * Check if a feature is enabled in developer mode only
+   * @param featureName The name of the feature to check
+   * @returns True if the feature is enabled in developer mode, false otherwise
+   */
+  forDeveloperMode(featureName: 'dueStatus'): boolean {
+    if (isDevMode() && featureName === 'dueStatus') {
+      return true;
+    }
+    return false;
   }
 
   ngOnInit() {
