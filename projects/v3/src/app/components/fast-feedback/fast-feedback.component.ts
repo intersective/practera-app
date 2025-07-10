@@ -37,6 +37,11 @@ export class FastFeedbackComponent implements OnInit {
   totalPages = 0;
   showPagination = true;
 
+  // hover tracking for choice descriptions
+  hoveredChoice: string | null = null;
+  // toggle tracking for choice descriptions (mobile-friendly)
+  toggledDescriptions = new Set<string>();
+
   @Input() questions = [];
   @Input() meta?: Meta;
   @Input() closable: boolean;
@@ -90,6 +95,37 @@ export class FastFeedbackComponent implements OnInit {
   goToPage(index: number) {
     if (index >= 0 && index < this.totalPages) {
       this.currentPage = index;
+    }
+  }
+
+  onChoiceHover(questionId: number, choiceId: number) {
+    if (!this.isMobile) {
+      this.hoveredChoice = `${questionId}-${choiceId}`;
+    }
+  }
+
+  onChoiceLeave() {
+    if (!this.isMobile) {
+      this.hoveredChoice = null;
+    }
+  }
+
+  onChoiceToggle(questionId: number, choiceId: number) {
+    const key = `${questionId}-${choiceId}`;
+    if (this.toggledDescriptions.has(key)) {
+      this.toggledDescriptions.delete(key);
+    } else {
+      this.toggledDescriptions.add(key);
+    }
+  }
+
+  isChoiceDescriptionVisible(questionId: number, choiceId: number): boolean {
+    const key = `${questionId}-${choiceId}`;
+
+    if (this.isMobile) {
+      return this.toggledDescriptions.has(key);
+    } else {
+      return this.hoveredChoice === key;
     }
   }
 
