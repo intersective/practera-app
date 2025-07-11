@@ -57,7 +57,9 @@ ion-item {
   line-height: 1.3;
   word-wrap: break-word;
   overflow-wrap: break-word;
+  white-space: break-spaces;
   hyphens: auto;
+  overflow: visible !important;
 
   &.animate-fade-in {
     animation: descriptionFadeIn 0.3s ease-in-out;
