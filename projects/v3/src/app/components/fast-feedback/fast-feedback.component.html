@@ -43,27 +43,25 @@
             (blur)="onChoiceLeave()"
           >
             <ion-radio [value]="choice.id"
-              [ariaLabel]="choice.name"
+              [attr.aria-label]="choice.name"
               labelPlacement="end"
               slot="start" mode="md">
-              <ion-label class="white-space-normal">
-                <div class="choice-title-container">
-                  <span [innerHTML]="choice.name"></span>
-                  <ion-button *ngIf="isMobile && choice.description"
-                             fill="clear"
-                             size="small"
-                             class="description-toggle-btn inline-toggle"
-                             [ngClass]="{'description-visible': isChoiceDescriptionVisible(question.id, choice.id)}"
-                             [attr.aria-label]="isChoiceDescriptionVisible(question.id, choice.id) ? 'Hide description' : 'Show description'"
-                             (click)="onChoiceToggle(question.id, choice.id); $event.stopPropagation()">
-                    <ion-icon [name]="isChoiceDescriptionVisible(question.id, choice.id) ? 'chevron-up' : 'information-circle'"
-                             slot="icon-only"></ion-icon>
-                  </ion-button>
-                </div>
-                <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
-                   class="choice-description body-3 ion-margin-top animate-fade-in"
-                   [innerHTML]="choice.description"></p>
-              </ion-label>
+              <div class="choice-title-container">
+                <span [innerHTML]="choice.name"></span>
+                <ion-button *ngIf="isMobile && choice.description"
+                           fill="clear"
+                           size="small"
+                           class="description-toggle-btn inline-toggle"
+                           [ngClass]="{'description-visible': isChoiceDescriptionVisible(question.id, choice.id)}"
+                           [attr.aria-label]="isChoiceDescriptionVisible(question.id, choice.id) ? 'Hide description' : 'Show description'"
+                           (click)="onChoiceToggle(question.id, choice.id); $event.stopPropagation()">
+                  <ion-icon [name]="isChoiceDescriptionVisible(question.id, choice.id) ? 'chevron-up' : 'information-circle'"
+                           slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+              <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
+                 class="choice-description body-3 ion-margin-top animate-fade-in"
+                 [innerHTML]="choice.description"></p>
             </ion-radio>
           </ion-item>
         </ion-radio-group>
@@ -140,9 +138,13 @@
           [ngClass]="{'active': currentPage === pageIndex, 'completed': isPageCompleted(pageIndex)}"
           (click)="goToPage(pageIndex)"
         >
-          <ion-icon name="ellipse" *ngIf="currentPage === pageIndex"></ion-icon>
-          <ion-icon name="checkmark-circle" *ngIf="currentPage !== pageIndex && isPageCompleted(pageIndex)"></ion-icon>
-          <ion-icon name="ellipse-outline" *ngIf="currentPage !== pageIndex && !isPageCompleted(pageIndex)"></ion-icon>
+          <span class="page-number">
+            <ng-container *ngIf="currentPage === pageIndex">{{ pageIndex + 1 }}</ng-container>
+            <ng-container *ngIf="currentPage !== pageIndex && isPageCompleted(pageIndex)">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </ng-container>
+            <ng-container *ngIf="currentPage !== pageIndex && !isPageCompleted(pageIndex)">{{ pageIndex + 1 }}</ng-container>
+          </span>
         </ion-button>
       </div>
     </div>
