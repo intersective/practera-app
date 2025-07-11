@@ -35,7 +35,6 @@
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
               </ion-text>
-
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
@@ -58,7 +57,7 @@
               <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
             </ion-segment-button>
             <ion-segment-button value="pulse-checks" mode="ios" *ngIf="pulseCheckIndicatorEnabled === true">
-              <ion-label i18n>Pulse Checks</ion-label>
+              <ion-label i18n>Skill & Progress Surveys</ion-label>
             </ion-segment-button>
           </ion-segment>
 
@@ -199,7 +198,7 @@
   <ng-container *ngIf="pulseCheckSkills?.length > 0">
     <div class="skill-strength-section">
       <div class="skill-section-header">
-        <h4 class="headline-4" (click)="openPulseCheck()">Skill Strength</h4>
+        <h4 class="headline-4">Skill Strength</h4>
         <ion-icon name="information-circle-outline" *ngIf="false"></ion-icon>
       </div>
 
