@@ -30,6 +30,7 @@ export class FastFeedbackService {
         choices: Array<{
           id: number;
           name: string;
+          description?: string;
         }>;
       }>;
       meta: {
@@ -55,6 +56,7 @@ export class FastFeedbackService {
             choices {
               id
               name
+              description
             }
           }
           meta {
