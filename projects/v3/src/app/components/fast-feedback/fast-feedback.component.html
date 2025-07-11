@@ -140,9 +140,13 @@
           [ngClass]="{'active': currentPage === pageIndex, 'completed': isPageCompleted(pageIndex)}"
           (click)="goToPage(pageIndex)"
         >
-          <ion-icon name="ellipse" *ngIf="currentPage === pageIndex"></ion-icon>
-          <ion-icon name="checkmark-circle" *ngIf="currentPage !== pageIndex && isPageCompleted(pageIndex)"></ion-icon>
-          <ion-icon name="ellipse-outline" *ngIf="currentPage !== pageIndex && !isPageCompleted(pageIndex)"></ion-icon>
+          <span class="page-number">
+            <ng-container *ngIf="currentPage === pageIndex">{{ pageIndex + 1 }}</ng-container>
+            <ng-container *ngIf="currentPage !== pageIndex && isPageCompleted(pageIndex)">
+              <ion-icon name="checkmark-circle"></ion-icon>
+            </ng-container>
+            <ng-container *ngIf="currentPage !== pageIndex && !isPageCompleted(pageIndex)">{{ pageIndex + 1 }}</ng-container>
+          </span>
         </ion-button>
       </div>
     </div>
