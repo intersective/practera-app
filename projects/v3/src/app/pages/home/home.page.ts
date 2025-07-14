@@ -351,6 +351,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     await alert.present();
   }
 
+  async showGlobalSkillsInfo() {
+    const alert = await this.alertController.create({
+      header: 'Global Skills Assessment',
+      message: `You'll regularly complete self-assessments of your Global Skills throughout this program. These assessments help you identify key areas for growth and development, while tracking your progress along the way. The Skills Strength section helps visualise your progress, making it easier to see your development over time. For detailed guidance on completing these assessments, refer to the 'How to Self-Assess Your Global Skills' topic.`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
