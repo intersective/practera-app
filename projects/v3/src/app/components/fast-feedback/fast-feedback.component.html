@@ -11,7 +11,15 @@
 
 <ion-content class="ion-padding">
   <div class="ion-text-center ion-margin-bottom">
-    <p class="body-1" i18n>Please help us to improve your experience.<br>We want to know how are you doing.</p>
+    <ng-container *ngIf="isSkillsPulseCheck; else defaultPulseCheck">
+      <p class="body-1" i18n>Select the skill level that best describes you right now.</p>
+    </ng-container>
+    <ng-template #defaultPulseCheck>
+      <p class="body-1" i18n>
+        Please help us to improve your experience.<br>
+        We want to know how are you doing.
+      </p>
+    </ng-template>
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
@@ -48,16 +56,6 @@
               slot="start" mode="md">
               <div class="choice-title-container">
                 <span [innerHTML]="choice.name"></span>
-                <ion-button *ngIf="isMobile && choice.description"
-                           fill="clear"
-                           size="small"
-                           class="description-toggle-btn inline-toggle"
-                           [ngClass]="{'description-visible': isChoiceDescriptionVisible(question.id, choice.id)}"
-                           [attr.aria-label]="isChoiceDescriptionVisible(question.id, choice.id) ? 'Hide description' : 'Show description'"
-                           (click)="onChoiceToggle(question.id, choice.id); $event.stopPropagation()">
-                  <ion-icon [name]="isChoiceDescriptionVisible(question.id, choice.id) ? 'chevron-up' : 'information-circle'"
-                           slot="icon-only"></ion-icon>
-                </ion-button>
               </div>
               <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
                  class="choice-description body-3 ion-margin-top animate-fade-in"
