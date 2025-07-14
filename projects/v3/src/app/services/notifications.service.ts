@@ -448,6 +448,7 @@ export class NotificationsService {
     props: {
       questions?: Question[];
       meta?: Meta | Object;
+      isSkillsPulseCheck?: boolean;
     },
     options: {
       closable?: boolean;

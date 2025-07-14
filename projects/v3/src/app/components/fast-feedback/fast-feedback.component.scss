@@ -117,10 +117,6 @@ ion-item {
       transform: scale(0.95);
     }
 
-    &.description-visible {
-      animation: subtle-pulse 2s infinite;
-    }
-
     @media (max-width: 768px) {
       --padding-start: 8px;
       --padding-end: 8px;
