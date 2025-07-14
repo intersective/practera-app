@@ -39,8 +39,7 @@ export class FastFeedbackComponent implements OnInit {
 
   // hover tracking for choice descriptions
   hoveredChoice: string | null = null;
-  // toggle tracking for choice descriptions (mobile-friendly)
-  toggledDescriptions = new Set<string>();
+  isSkillsPulseCheck: boolean = false;
 
   @Input() questions = [];
   @Input() meta?: Meta;
@@ -110,20 +109,11 @@ export class FastFeedbackComponent implements OnInit {
     }
   }
 
-  onChoiceToggle(questionId: number, choiceId: number) {
-    const key = `${questionId}-${choiceId}`;
-    if (this.toggledDescriptions.has(key)) {
-      this.toggledDescriptions.delete(key);
-    } else {
-      this.toggledDescriptions.add(key);
-    }
-  }
-
   isChoiceDescriptionVisible(questionId: number, choiceId: number): boolean {
     const key = `${questionId}-${choiceId}`;
 
     if (this.isMobile) {
-      return this.toggledDescriptions.has(key);
+      return this.fastFeedbackForm.get(questionId.toString())?.value === choiceId;
     } else {
       return this.hoveredChoice === key;
     }
