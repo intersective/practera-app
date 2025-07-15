@@ -214,6 +214,7 @@ export class NotificationsService {
     );
     return this.modalService.addModal(modalConfig, event);
   }
+
   /**
    * Displays an alert dialog with the given configuration options.
    * @param {AlertOptions} config - The options for the alert dialog.
