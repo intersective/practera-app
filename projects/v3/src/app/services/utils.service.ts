@@ -805,9 +805,25 @@ export class UtilsService {
     return null;
   }
 
+  /**
+   * decode HTML entities in a string
+   * @param input string containing HTML entities
+   * @returns decoded string
+   */
+  decodeHtmlEntities(input: string): string {
+    if (!input) {
+      return '';
+    }
+
+    const textarea = this.document.createElement('textarea');
+    textarea.innerHTML = input;
+    return textarea.value;
+  }
+
   // set page title
   setPageTitle(title: string) {
-    this.title.setTitle(title);
+    const decodedTitle = this.decodeHtmlEntities(title);
+    this.title.setTitle(decodedTitle);
   }
 
   scrollToElement(element: HTMLElement) {
