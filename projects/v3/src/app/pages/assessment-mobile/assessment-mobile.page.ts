@@ -89,7 +89,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
 
     const assessmentSub = this.assessmentService.assessment$.
     pipe(
-      filter(_res => this.assessmentDataLoaded), // only proceed if assessment data is loaded
+      filter(res => res && this.assessmentDataLoaded), // only proceed if assessment data is loaded
     ).subscribe(res => {
       if (!res) {
         this.goBack();
