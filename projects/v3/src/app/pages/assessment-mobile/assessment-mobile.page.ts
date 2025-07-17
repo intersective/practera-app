@@ -6,7 +6,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, firstValueFrom, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, filter, firstValueFrom, Subject, Subscription } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
 import { AssessmentComponent } from '@v3/app/components/assessment/assessment.component';
 import { debounceTime } from 'rxjs/operators';
@@ -87,8 +87,11 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     });
     this.subscriptions.add(paramsSub);
 
-    const assessmentSub = this.assessmentService.assessment$.subscribe(res => {
-      if (!res && this.assessmentDataLoaded) {
+    const assessmentSub = this.assessmentService.assessment$.
+    pipe(
+      filter(_res => this.assessmentDataLoaded), // only proceed if assessment data is loaded
+    ).subscribe(res => {
+      if (!res) {
         this.goBack();
         return;
       }
