@@ -22,7 +22,7 @@
       <ion-list-header class="question-title">
         <span [innerHTML]="question.name"></span>
         <ion-text class="required-mark" [ngClass]="{'contrast': isRedColor}" *ngIf="question.isRequired">*</ion-text>
-        <ion-text>
+        <ion-text class="ion-margin-end">
           <p><i [innerHTML]="question.description"></i></p>
         </ion-text>
       </ion-list-header>
