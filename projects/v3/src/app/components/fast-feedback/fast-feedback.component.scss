@@ -18,6 +18,8 @@ form ion-button {
   ion-label p {
     font-size: 0.9em;
     white-space: normal;
+    color: var(--ion-color-primary-contrast) !important;
+    opacity: 0.9;
   }
 
   .required-mark {
@@ -34,9 +36,164 @@ ion-item {
       border-bottom: none;
     }
   }
+
+  ion-radio {
+    align-items: flex-start;
+
+    ion-label {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: unset !important;
+      margin-right: 8px;
+    }
+  }
+}
+
+.choice-description {
+  color: var(--ion-color-medium);
+  font-style: italic;
+  margin-top: 4px;
+  margin-bottom: 0;
+  line-height: 1.3;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: break-spaces;
+  hyphens: auto;
+  overflow: visible !important;
+
+  &.animate-fade-in {
+    animation: descriptionFadeIn 0.3s ease-in-out;
+  }
+}
+
+.choice-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  span {
+    flex: 1;
+    margin-right: 8px;
+  }
+}
+
+.description-toggle-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+// mobile-view friendly description toggle button
+.description-toggle-btn {
+  align-self: flex-end;
+  margin: 4px 0;
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  min-height: 28px;
+  opacity: 0.8;
+
+  &:hover, &:focus {
+    opacity: 1;
+  }
+
+  &.inline-toggle {
+    margin: 0;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    --padding-top: 6px;
+    --padding-bottom: 6px;
+    min-height: 44px; // larger touch target for mobile
+    min-width: 44px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+
+    &:active {
+      opacity: 1;
+      transform: scale(0.95);
+    }
+
+    @media (max-width: 768px) {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      --padding-top: 8px;
+      --padding-bottom: 8px;
+      min-height: 48px;
+      min-width: 48px;
+      margin-left: 8px;
+
+      --background: rgba(var(--ion-color-primary-rgb), 0.1);
+      --background-activated: rgba(var(--ion-color-primary-rgb), 0.2);
+      --background-focused: rgba(var(--ion-color-primary-rgb), 0.15);
+
+      --ripple-color: var(--ion-color-primary);
+
+      &:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease-in-out;
+      }
+    }
+  }
+
+  ion-icon {
+    font-size: 18px;
+    color: var(--ion-color-primary);
+
+    // mobile icon styling to ensure visibility
+    @media (max-width: 768px) {
+      font-size: 20px;
+      font-weight: 500;
+    }
+  }
+}
+
+.mobile-choice {
+  .choice-title-container {
+    padding: 4px 0;
+    min-height: 48px;
+    align-items: center;
+  }
 }
 
 .question-card {
   border-radius: 8px;
   padding: 1em;
+}
+
+@keyframes descriptionFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+    max-height: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.1);
+  }
+}
+
+@keyframes touch-feedback {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
