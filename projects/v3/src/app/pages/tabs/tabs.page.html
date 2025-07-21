@@ -1,5 +1,5 @@
 <ion-tabs #tabs (ionTabsDidChange)="setCurrentTab()">
-  <ion-tab-bar slot="bottom" *ngIf="isMobile">
+  <ion-tab-bar slot="bottom" *ngIf="hasLeftSidebar !== true">
     <ion-tab-button class="tab-item" tab="home"
       [ngClass]="{'selected': selectedTab === 'home'}">
       <ion-icon name="home"></ion-icon>
@@ -22,7 +22,7 @@
       <ion-badge color="danger" *ngIf="badges.chat > 0">{{ badges.chat }}</ion-badge>
     </ion-tab-button>
 
-    <ion-tab-button class="tab-item" tab="due-dates"
+    <ion-tab-button *ngIf="forDeveloperMode('dueStatus')" class="tab-item" tab="due-dates"
       [ngClass]="{'selected': selectedTab === 'dueStatus'}">
       <ion-icon name="alarm"></ion-icon>
     </ion-tab-button>

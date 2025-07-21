@@ -2,13 +2,99 @@
   position: sticky;
   bottom: 0;
   width: 100%;
-  display: flex;
+  display: block;
   justify-content: center;
-  border-top: 1px solid var(--practera-grey-25);
-  background: white;
+  border-top: 1px solid var(--ion-color-light-shade);
+  background: var(--ion-color-light);
+  color: var(--ion-color-dark);
+  padding: 8px 0;
 
   ion-button.ion-focused {
     border: 1px solid black;
     border-radius: 8px;
+  }
+}
+
+.action-container {
+  display: flex;
+  flex-direction: row; // Changed from column to row
+  align-items: center; // Center items vertically
+  width: 100%;
+  justify-content: space-between; // Space between pagination and buttons
+}
+
+.custom-content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex: 1; // Take available space
+  margin-right: 10px; // Add some space between pagination and button
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap; // Prevent button text wrapping
+  width: 100%;
+
+  &.with-custom-content {
+    margin-top: 0;
+    justify-content: flex-end;
+  }
+}
+
+.action-button {
+  margin: 0 8px; // Reduce side margins
+  --padding-start: 16px;
+  --padding-end: 16px;
+  min-width: 120px; // Ensure minimum button width
+}
+
+// mobile responsiveness
+@media (max-width: 768px) {
+  .action-container {
+    flex-direction: column; // Stack vertically
+  }
+
+  .custom-content {
+    margin-right: 0;
+    margin-bottom: 8px;
+  }
+
+  .button-container {
+    width: 100%;
+    justify-content: center !important;
+  }
+
+  .action-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .with-custom-content > .action-button {
+    --padding-start: 12px;
+    --padding-end: 12px;
+    font-size: 14px;
+    height: 36px;
+  }
+
+  .wrapper {
+    padding: 3px 0;
+  }
+
+  .button-container:has(ion-button.button-disabled) {
+    display: none;
+  }
+}
+
+// For screens that are super small (iPhone SE etc.)
+@media (max-width: 375px) {
+  .with-custom-content > .action-button {
+    font-size: 14px;
+    height: 32px;
   }
 }

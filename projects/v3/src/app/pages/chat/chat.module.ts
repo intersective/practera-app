@@ -26,9 +26,10 @@ Quill.register('modules/magicUrl', MagicUrl);
       debug: 'log',
       modules: {
         magicUrl: true,
+        pasteSmart: true,
         keyboard: true
       },
-    })
+    }),
   ],
   declarations: [
     ChatPage,
@@ -42,4 +43,4 @@ Quill.register('modules/magicUrl', MagicUrl);
   providers: [],
   exports: [ChatRoomComponent],
 })
-export class ChatModule {}
+export class ChatModule { }

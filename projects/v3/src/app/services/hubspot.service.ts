@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { RequestService } from 'request';
-import { map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { Experience } from './experience.service';
+import { SupportPopupComponent } from '../components/support-popup/support-popup.component';
+import { ModalController } from '@ionic/angular';
 /*
 * @name api
 * @description list of api endpoint involved in this service
@@ -30,9 +31,9 @@ export class HubspotService {
 
   constructor(
     private request: RequestService,
-    private utils: UtilsService,
     private demo: DemoService,
     private storage: BrowserStorageService,
+    private modalController: ModalController,
   ) { }
 
   submitDataToHubspot(params: HubspotFormParams): Observable<any> {
@@ -51,9 +52,12 @@ export class HubspotService {
       map(res => console.log(res)),
     );
   }
+  isNotEmptyObject(value) {
+    return value !== null && typeof value === 'object' && Object.keys(value).length > 0;
+  }
 
   generateParams(params: HubspotFormParams) {
-    if (!this.utils.isEmpty(this.storage.getUser())) {
+    if (this.isNotEmptyObject(this.storage.getUser())) {
       // legalConsentOptions is a required param for the hubspot API
       const submitParam = {
         fields: [],
@@ -176,4 +180,19 @@ export class HubspotService {
     }
   }
 
+  async openSupportPopup(options?: { formOnly: boolean; }) {
+    const componentProps = {
+      mode: 'modal',
+      isShowFormOnly: options?.formOnly,
+    };
+
+    const modal = await this.modalController.create({
+      componentProps,
+      component: SupportPopupComponent,
+      cssClass: 'support-popup',
+      backdropDismiss: false,
+    });
+
+    return modal.present();
+  }
 }

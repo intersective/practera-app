@@ -2,11 +2,12 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "outDir": "../../out-tsc/app",
     "types": [],
     "lib": [
-      "es2020",
+      "es2022",
       "dom"
     ],
     "paths": {
@@ -47,7 +48,6 @@
     "./src/**/*.ts"
   ],
   "exclude": [
-    "src/test.ts",
     "src/testing/**/*.ts",
     "**/*.spec.ts",
     "src/environments/environment.*.ts",

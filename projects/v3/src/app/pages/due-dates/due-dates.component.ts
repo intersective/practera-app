@@ -1,23 +1,15 @@
-import { debounce } from 'lodash';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { Assessment, AssessmentService } from './../../services/assessment.service';
-import { Component, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Subject, Observable, combineLatest } from 'rxjs';
+import { Assessment, AssessmentService, DueAssessment } from '@v3/app/services/assessment.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { EventAttributes, convertTimestampToArray } from 'ics';
+import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
-import { debounceTime, first, takeUntil } from 'rxjs/operators';
+import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
-interface CalendarEvent {
-  dueDate: Date;
-  name: string;
-  description: string;
-  location?: string;
-}
 
 interface GroupedAssessments {
   month: string;
-  assessments: Assessment[];
+  assessments: DueAssessment[];
 }
 
 @Component({
@@ -25,14 +17,13 @@ interface GroupedAssessments {
   templateUrl: './due-dates.component.html',
   styleUrls: ['./due-dates.component.scss'],
 })
-export class DueDatesComponent implements OnDestroy {
-  searchText: string;
+export class DueDatesComponent implements OnDestroy, OnInit {
   statusFilter: string;
-  filteredItems: Assessment[];
   assessments$: BehaviorSubject<GroupedAssessments[]> = new BehaviorSubject<GroupedAssessments[]>(null);
+  filteredAssessments$: Observable<GroupedAssessments[]>;
   unsubscribe$: Subject<void> = new Subject<void>();
 
-  searchText$: Subject<string> = new Subject<string>();
+  searchText$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   isLoading = false;
 
   constructor(
@@ -41,6 +32,33 @@ export class DueDatesComponent implements OnDestroy {
     private assessmentService: AssessmentService,
     private router: Router,
   ) {}
+
+  ngOnInit() {
+    // improved: no need for manual subscription, handle in observable pipeline
+    this.filteredAssessments$ = combineLatest([
+      this.assessments$,
+      this.searchText$.pipe(debounceTime(200))
+    ]).pipe(
+      map(([groups, searchText]) => {
+        const searchQuery = searchText?.target?.value || '';
+
+        if (!groups) return null;
+        if (searchQuery && !searchQuery?.trim()) return groups;
+        // filter using latest search text
+        const searchLower = searchQuery.toLowerCase();
+        // filter each group's assessments
+        const filteredGroups = groups.map(group => ({
+          ...group,
+          assessments: group.assessments.filter(assessment =>
+            assessment.name.toLowerCase().includes(searchLower) ||
+            assessment.description?.toLowerCase().includes(searchLower)
+          )
+        }));
+        // remove empty groups
+        return filteredGroups.filter(group => group.assessments.length > 0);
+      })
+    );
+  }
 
   ionViewDidEnter() {
     this.isLoading = true;
@@ -73,32 +91,39 @@ export class DueDatesComponent implements OnDestroy {
     this.unsubscribe$.complete();
   }
 
-  groupByDate(assessments: Assessment[]): GroupedAssessments[] {
-    const grouped = assessments.reduce((groups, assessment) => {
-      const date = new Date(assessment.dueDate);
-      const month = date.toLocaleString('default', { month: 'long' });
-      const year = date.getFullYear();
-      const monthYear = assessment.dueDate ? `${month} ${year}` : 'No due date';  // Group by Month Year (e.g., "September 2024")
+  groupByDate(assessments: DueAssessment[]): GroupedAssessments[] {
+    const grouped: { [key: string]: DueAssessment[] } = {};
 
-      if (!groups[monthYear]) {
-        groups[monthYear] = [];
+    for (const assessment of assessments) {
+      let monthYear: string;
+      if (assessment.dueDate) {
+        const date = new Date(assessment.dueDate);
+        const month = date.toLocaleString('default', { month: 'long' });
+        const year = date.getFullYear();
+        monthYear = `${month} ${year}`;
+      } else {
+        monthYear = 'No due date';
       }
 
-      groups[monthYear].push(assessment);
-      return groups;
-    }, {});
+      if (!grouped[monthYear]) {
+        grouped[monthYear] = [];
+      }
+      grouped[monthYear].push(assessment);
+    }
 
-    // Convert grouped object to an array of { month, assessments }
     const groupedArray = Object.keys(grouped).map(month => ({
       month,
       assessments: grouped[month]
     }));
 
-    // Sort the array to ensure "No due date" is always the last group
+    // Sort by date, "No due date" last
     groupedArray.sort((a, b) => {
       if (a.month === 'No due date') return 1;
       if (b.month === 'No due date') return -1;
-      return 0;
+      // Optional: sort by actual date if desired
+      const aDate = new Date(a.assessments[0].dueDate);
+      const bDate = new Date(b.assessments[0].dueDate);
+      return aDate.getTime() - bDate.getTime();
     });
 
     return groupedArray;
@@ -111,43 +136,58 @@ export class DueDatesComponent implements OnDestroy {
     return [year, month, day, hours, minutes];
   }
 
-  downloadiCal(event: Assessment) {
+  downloadiCal(event: DueAssessment) {
     try {
-      const [year, month, day, hour, minutes] = this.convertDateTimeString(event.dueDate);
+      // Parse the due date properly
+      const dueDate = new Date(event.dueDate);
+
+      // Convert to expected format for ics library [year, month, day, hour, minute]
+      // Note: ics library expects month to be 1-12 (JavaScript Date uses 0-11)
+      // The ics library's start property requires number[] with 5 elements
+      const dateArray: [number, number, number, number, number] = [
+        dueDate.getFullYear(),
+        dueDate.getMonth() + 1, // Month is 0-based in JS, but ics expects 1-12
+        dueDate.getDate(),
+        dueDate.getHours(),
+        dueDate.getMinutes()
+      ];
+
       const eventData: EventAttributes = {
-        start: [year, month, day, hour, minutes],
-        // start: dateArray,
-        duration: { hours: 1, minutes: 30 },
+        start: dateArray,
+        duration: { hours: 1 }, // Consistent 1 hour duration, same as Google Calendar
         title: event.name,
-        description: event.description,
-        // location: event.location || 'Sydney',
+        description: event.description || `Complete assessment: ${event.name}`,
         location: '',
-        // url: /* event.url || */ '',
-        // status: event.status,
         busyStatus: 'BUSY',
         organizer: { name: 'Practera', email: 'contact@practera.com' },
+        alarms: [{ action: 'display', trigger: { minutes: 60, before: true } }] // Add reminder 60 min before
       };
 
       this.dueDatesService.createCalendarEvent(eventData);
     } catch (error) {
       console.error('Failed to create calendar event', error);
       this.notificationsService.alert({
-        message: 'Failed to create calendar event',
+        message: 'Failed to create iCalendar event: ' + (error.message || 'Unknown error')
       });
     }
   }
 
-  downloadGoogleCalendar(assessment: Assessment) {
+  downloadGoogleCalendar(assessment: DueAssessment) {
     try {
+      // Format date in the required format for Google Calendar (YYYYMMDDTHHMMSS)
+      const startDate = new Date(assessment.dueDate);
+      const endDate = new Date(startDate);
+      endDate.setHours(endDate.getHours() + 1); // Add 1 hour duration by default
+
       const googleCalendarUrl = this.dueDatesService.generateGoogleCalendarUrl({
-        start: new Date(assessment.dueDate),
-        // duration: 90,
+        start: startDate,
+        end: endDate,
         title: assessment.name,
-        description: assessment.description,
-        // location: assessment?.location || 'Sydney',
+        description: assessment.description || `Complete assessment: ${assessment.name}`,
+        reminder: 60, // Add a reminder 60 minutes before
         organizer: { name: 'Practera', email: 'contact@practera.com' },
       });
-
+      // Open the Google Calendar URL in a new tab
       const newWindow = window.open(googleCalendarUrl, '_blank');
       if (!newWindow) {
         this.notificationsService.alert({
@@ -162,36 +202,7 @@ export class DueDatesComponent implements OnDestroy {
     }
   }
 
-  /* filterItems() {
-    this.filteredItems = this.assessments$.getValue().filter(item => {
-      if (this.searchText && !item.name.toLowerCase().includes(this.searchText.toLowerCase())) {
-        return false;
-      }
-
-      if (this.statusFilter && item.name !== this.statusFilter) {
-        return false;
-      }
-
-      return true;
-    });
-  } */
-
-  // @TODO: implement goTo method
-  // current API data is not sufficient to implement this method
-  goTo(assessment) {
-    this.assessmentService.fetchAssessment(assessment.id, 'assessment', null, null).subscribe((res) => {
-      this.router.navigate(['v3', 'activity-desktop', assessment.id]);
-    });
-  }
-
-  addToCalendar() {
-    // this.modalCtrl.create({
-    //   component: AddToCalendarComponent,
-    //   componentProps: {
-    //     assessments: this.assessments$.getValue(),
-    //   },
-    // }).then(modal => {
-    //   modal.present();
-    // });
+  goTo(assessment: DueAssessment) {
+    return this.router.navigate(['v3', 'activity-desktop', assessment.contextId, assessment.activityId, assessment.id]);
   }
 }

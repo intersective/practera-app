@@ -275,12 +275,12 @@ describe('AssessmentComponent', () => {
 
   describe('ngOnChanges()', () => {
     it('should straightaway return when assessment not loaded', () => {
-      expect(component.ngOnChanges()).toBeFalsy();
+      expect(component.ngOnChanges({})).toBeFalsy();
     });
 
     it('should update assessment with latest data', () => {
       component.assessment = mockAssessment;
-      component.ngOnChanges();
+      component.ngOnChanges({});
 
       expect(component.doAssessment).toEqual(true);
       expect(component.feedbackReviewed).toEqual(false);
@@ -293,7 +293,7 @@ describe('AssessmentComponent', () => {
       component.assessment = mockAssessment;
       component.submission = mockSubmission as any;
       component.submission.isLocked = true;
-      component.ngOnChanges();
+      component.ngOnChanges({});
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -305,7 +305,7 @@ describe('AssessmentComponent', () => {
       component.assessment = mockAssessment;
       component.submission = mockSubmission as any;
       component.submission.isLocked = true;
-      component.ngOnChanges();
+      component.ngOnChanges({});
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -320,7 +320,7 @@ describe('AssessmentComponent', () => {
       component.submission.status = 'in progress';
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
-      component.ngOnChanges();
+      component.ngOnChanges({});
 
       tick();
       expect(component.doAssessment).toBeTrue();
@@ -342,7 +342,7 @@ describe('AssessmentComponent', () => {
       const spy = spyOn(component.savingMessage$, 'next');
 
       component.action = 'review';
-      component.ngOnChanges();
+      component.ngOnChanges({});
 
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
@@ -357,7 +357,7 @@ describe('AssessmentComponent', () => {
       component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'done';
-      component.ngOnChanges();
+      component.ngOnChanges({});
 
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
@@ -717,5 +717,182 @@ describe('AssessmentComponent', () => {
 
       document.body.removeChild(element);
     }));
+  });
+
+  describe('_compulsoryQuestionsAnswered', () => {
+    it('should return empty array when all required questions are answered', () => {
+      // Set up mock assessment with required questions
+      component.assessment = {
+        id: 1,
+        type: 'default',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Question 1',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              },
+              {
+                id: 2,
+                name: 'Question 2',
+                type: 'multiple',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      // Set up mock answers
+      const answers = [
+        { questionId: 1, answer: 'Answer to question 1' },
+        { questionId: 2, answer: ['Option 1', 'Option 2'] }
+      ];
+
+      // Test the function
+      const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
+
+      // Expect no missing questions
+      expect(missingQuestions.length).toBe(0);
+    });
+
+    it('should return questions that are required but not answered', () => {
+      // Set up mock assessment with required questions
+      component.assessment = {
+        id: 1,
+        type: 'default',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Question 1',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              },
+              {
+                id: 2,
+                name: 'Question 2',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      // Set up mock answers with one missing
+      const answers = [
+        { questionId: 1, answer: 'Answer to question 1' }
+        // Question 2 is missing
+      ];
+
+      // Mock form element
+      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
+        classList: {
+          add: jasmine.createSpy('add')
+        }
+      });
+
+      // Test the function
+      const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
+
+      // Expect one missing question
+      expect(missingQuestions.length).toBe(1);
+      expect(missingQuestions[0].id).toBe(2);
+      expect(component.form.nativeElement.querySelector).toHaveBeenCalledWith('#q-2');
+    });
+
+    it('should return empty array when either answer or file is provided for required question in review mode', () => {
+      // Set action to review
+      component.action = 'review';
+
+      // Set up mock assessment with required questions for reviewer
+      component.assessment = {
+        id: 1,
+        type: 'default',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Question 1',
+                type: 'text',
+                isRequired: true,
+                audience: ['reviewer']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      // Mock answers for review (both answer and file are provided)
+      const answers = [
+        { questionId: 1, answer: 'Some answer', file: null }
+      ];
+
+      // Test the function
+      const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
+
+      // Expect no missing questions
+      expect(missingQuestions.length).toBe(0);
+    });
+
+    it('should handle review action properly', () => {
+      // Set action to review
+      component.action = 'review';
+
+      // Set up mock assessment with required questions for reviewer
+      component.assessment = {
+        id: 1,
+        type: 'default',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Question 1',
+                type: 'text',
+                isRequired: true,
+                audience: ['reviewer']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      // Mock answers for review (both answer and file are empty)
+      const answers = [
+        { questionId: 1, answer: '', file: null }
+      ];
+
+      // Mock form element
+      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
+        classList: {
+          add: jasmine.createSpy('add')
+        }
+      });
+
+      // Test the function
+      const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
+
+      // Expect one missing question
+      expect(missingQuestions.length).toBe(1);
+      expect(missingQuestions[0].id).toBe(1);
+    });
   });
 });

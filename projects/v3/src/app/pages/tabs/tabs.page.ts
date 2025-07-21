@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonTabs, Platform } from '@ionic/angular';
+import { Component, HostListener, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { IonTabs } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -29,8 +29,9 @@ export class TabsPage implements OnInit, OnDestroy {
     chat: 0,
   };
 
+  hasLeftSidebar: boolean;
+
   constructor(
-    private platform: Platform,
     private reviewService: ReviewService,
     private storageService: BrowserStorageService,
     private chatService: ChatService,
@@ -38,9 +39,25 @@ export class TabsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private route: ActivatedRoute,
     private activityService: ActivityService,
-  ) {}
+  ) {
+  }
+
+  /**
+   * Check if a feature is enabled in developer mode only
+   * @param featureName The name of the feature to check
+   * @returns True if the feature is enabled in developer mode, false otherwise
+   */
+  forDeveloperMode(featureName: 'dueStatus'): boolean {
+    if (isDevMode() && featureName === 'dueStatus') {
+      return true;
+    }
+    return false;
+  }
 
   ngOnInit() {
+    this.utils.screenStatus$.subscribe((res) => {
+      this.hasLeftSidebar = res.leftSidebarExpanded;
+    });
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -95,10 +112,6 @@ export class TabsPage implements OnInit, OnDestroy {
       });
       this.badges.chat = chat?.unreadMessages || 0;
     });
-  }
-
-  get isMobile() {
-    return this.utils.isMobile();
   }
 
   ngOnDestroy(): void {

@@ -17,14 +17,18 @@ export class EventDetailComponent implements OnInit {
   @Output() checkin = new EventEmitter();
   // CTA button is acting or not
   ctaIsActing = false;
+  isMobile: boolean;
+
   constructor(
     private router: Router,
     public modalController: ModalController,
     public eventService: EventService,
     private NotificationsService: NotificationsService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private storage: BrowserStorageService,
-  ) {}
+  ) {
+    this.isMobile = this.utils.isMobile();
+  }
 
   ngOnInit() {
     this.ctaIsActing = false;

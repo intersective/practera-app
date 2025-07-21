@@ -24,6 +24,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./auth-registration.component.scss']
 })
 export class AuthRegistrationComponent implements OnInit, OnDestroy {
+  isMobile: boolean;
   password: string;
   confirmPassword: string;
   isAgreed = false;
@@ -47,13 +48,14 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
-    public utils: UtilsService,
+    private utils: UtilsService,
     private storage: BrowserStorageService,
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private modalController: ModalController,
   ) {
     this.initForm();
+    this.isMobile = this.utils.isMobile();
   }
 
   ngOnInit() {
@@ -183,8 +185,8 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
           key: this.user.key
         })
         .pipe(first())
-        .subscribe(
-          response => {
+        .subscribe({
+          next: response => {
             this.authService
               .authenticate({
                 apikey: response.data.apikey,
@@ -208,7 +210,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
                 }
               });
           },
-          async (error: HttpErrorResponse) => {
+          error: async (error: HttpErrorResponse) => {
             this.isLoading = false;
             const errorData = error?.error?.data;
             if (errorData?.type === 'password_compromised') {
@@ -226,7 +228,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
             console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
-        );
+        });
     }
   }
 
@@ -333,5 +335,4 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 }

@@ -1,6 +1,7 @@
 import { FastFeedbackService } from "@v3/services/fast-feedback.service";
 import { Component, Input } from "@angular/core";
 import { BrowserStorageService } from "@v3/app/services/storage.service";
+import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
   selector: "app-traffic-light-group",
@@ -13,7 +14,9 @@ export class TrafficLightGroupComponent {
     self: any;
     expert: any;
     team: any;
+    teams: { teamName: string, average: number }[];
   };
+  @Input() displayOnly: boolean = false;
   loading: {
     [key: string]: boolean;
   } = {};
@@ -21,29 +24,46 @@ export class TrafficLightGroupComponent {
   constructor(
     private fastFeedbackService: FastFeedbackService,
     private storageService: BrowserStorageService,
+    private notificationsService: NotificationsService
   ) {}
 
-  navigateToPulseCheck(type: string) {
-    if (!this.loading[type]) {
-      this.loading[type] = true;
-      this.fastFeedbackService.pullFastFeedback({
-        closable: true,
-        skipChecking: true
-      }).subscribe({
-        next: (response) => {
-          if (response) {
-            /* eslint-disable no-console */
-            console.log(`Pulled fast feedback for type ${type}:`, response);
-          }
-        },
-        error: (error) => {
-          console.error(`Error pulling fast feedback for type ${type}:`, error);
-        },
-        complete: () => {
-          this.storageService.set('fastFeedbackOpening', false);
-          this.loading[type] = false;
-        },
-      });
-    }
+  get isMentor(): boolean {
+    return this.storageService.getUser().role === 'mentor';
   }
+
+  get learnerGroups(): string[] {
+    return ['self', 'team', 'expert'];
+  }
+
+  get teamGroups(): { teamName: string, average: number }[] {
+    return this.lights?.teams || [];
+  }
+
+  async navigateToPulseCheck(type: string) {
+    if (this.displayOnly) {
+      return;
+    }
+
+    this.loading[type] = true;
+    await this.fastFeedbackService.pullFastFeedback({
+      skipChecking: true,
+      closable: true
+    }).subscribe();
+    this.storageService.set('fastFeedbackOpening', false);
+    this.loading[type] = false;
+  }
+
+  async handleTrafficLightClick(group: string, value: number) {
+    if (group === 'self') {
+      await this.navigateToPulseCheck(group);
+      return;
+    }
+
+    if (value === null || value === undefined || value > 0.65) {
+      return;
+    }
+
+    await this.notificationsService.showTeamCheckInAlert();
+  }
+
 }

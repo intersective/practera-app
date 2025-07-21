@@ -52,7 +52,7 @@
                           [attr.alt]="experience.name + ' experience selection'">
                         </div>
                         <ion-card-content>
-                          <p class="m-0 headline-3 exp-title black">{{ experience.name }}</p>
+                          <p class="m-0 headline-3 exp-title black" [innerHTML]="experience.name"></p>
                           <div class="exp-info subtitle-3 grey-50"
                              *ngIf="progresses[experience.projectId]">
                             <p class="m-0 subtitle-3 grey-50" i18n>{{progresses[experience.projectId]}}% Progress</p>

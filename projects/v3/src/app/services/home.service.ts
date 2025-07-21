@@ -1,3 +1,4 @@
+import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
@@ -8,6 +9,15 @@ import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
+import { ApiResponse } from '../models/api.model';
+
+export interface PulseCheckSkill {
+  id: number;
+  name: string;
+  value: number;
+  change?: number; // change from previous value
+  icon?: string;
+}
 
 export interface Experience {
   leadImage: string;
@@ -15,6 +25,13 @@ export interface Experience {
   description: string;
   locale: string;
   cardUrl?: string;
+}
+
+export interface UnlockConditionMeta {
+  activityId: number;
+  assessmentId: number;
+  topicId: number;
+  contextId: number;
 }
 
 export interface Milestone {
@@ -28,6 +45,16 @@ export interface Milestone {
     isLocked: boolean;
     leadImage: string;
     progress?: number;
+    unlockConditions?: {
+      name: string;
+      action: string;
+      meta: UnlockConditionMeta;
+    }[];
+  }[];
+  unlockConditions: {
+    name: string;
+    action: string;
+    meta: UnlockConditionMeta;
   }[];
 }
 
@@ -101,11 +128,11 @@ export class HomeService {
       .pipe(tap(async (res) => {
         if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
-            header: "Unable to access experience",
-            message: "Please re-login and try again later",
+            header: $localize`Unable to access experience`,
+            message: $localize`Please re-login and try again later`,
             buttons: [
               {
-                text: "OK",
+                text: $localize`OK`,
                 role: "cancel",
                 handler: () => {
                   this.authService.logout();
@@ -153,8 +180,28 @@ export class HomeService {
           name
           description
           isLocked
-          activities{
+          activities {
             id name isLocked leadImage
+            unlockConditions {
+              name
+              action
+              meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
+            }
+          }
+          unlockConditions {
+            name
+            action
+            meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
           }
         }
       }`
@@ -203,7 +250,10 @@ export class HomeService {
     if (environment.demo) {
       return this.demo
         .projectProgress()
-        .pipe(map((res) => this._handleProjectProgress(res)))
+        .pipe(
+          map((res) => this._handleProjectProgress(res)),
+          first()
+        )
         .subscribe();
     }
 
@@ -212,21 +262,28 @@ export class HomeService {
         `query {
         project {
           progress
-          milestones{
+          milestones {
             id
             progress
-            activities{
+            activities {
               id progress
+            }
+            unlockConditions {
+              name
+              action
             }
           }
         }
-      }`,
-    ).pipe(
-      map(res => this._handleProjectProgress(res)),
-    ).subscribe({
-      error: err => {
-        console.error('milestone Progress::', err);
-      }
+      }`
+    )
+    .pipe(
+      map((res) => this._handleProjectProgress(res)),
+      first(),
+    )
+    .subscribe({
+      error: async (err) => {
+        console.error("Project:query", err);
+      },
     });
   }
 
@@ -289,35 +346,36 @@ export class HomeService {
 
   // traffic light indicator
   getPulseCheckStatuses() {
-    return this.apolloService.graphQLFetch(
+    if (environment.demo) {
+      return of(this.demo.getPulseCheckStatus(this.storageService.getUser().role));
+    }
+    return this.apolloService.graphQLWatch(
       `query pulseCheckStatus {
           pulseCheckStatus {
             self
             team
             expert
+            teams {
+              teamName
+              average
+            }
           }
         }`
     );
   }
 
-  submitPulseCheckStatuses(
-    teamId: number,
-    targetUserId: number,
-    contextId: number,
-    answer: { questionId: number; choiceId: number }
-  ): Observable<any> {
-    return this.apolloService.graphQLMutate(
-      `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answer: [PulseCheckAnswerInput]) {
-        submitPulseCheck(teamId: $teamId, targetUserId: $targetUserId, contextId: $contextId, answer: $answer) {
-          success
+  getPulseCheckSkills(): Observable<ApiResponse<{
+    pulseCheckSkills: PulseCheckSkill[]
+  }>> {
+    return this.apolloService.graphQLWatch(
+      `query pulseCheckSkills {
+        pulseCheckSkills {
+          id
+          name
+          value
+          change
         }
-      }`,
-      {
-        teamId,
-        targetUserId,
-        contextId,
-        answer,
-      }
+      }`
     );
   }
 }

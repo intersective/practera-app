@@ -1,10 +1,9 @@
 <div *ngIf="!assessment" class="ion-padding-horizontal">
   <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
-  <ion-skeleton-text animated ></ion-skeleton-text>
-  <ion-skeleton-text animated ></ion-skeleton-text>
+  <ion-skeleton-text animated></ion-skeleton-text>
+  <ion-skeleton-text animated></ion-skeleton-text>
 </div>
 
-<!-- Manual Save -->
 <div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
 </div>
@@ -19,7 +18,7 @@
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
             <ion-col size="6" class="ion-align-self-center" i18n>Expert</ion-col>
-            <ion-col size="6" class="ion-align-self-center">{{ submission.reviewerName }}</ion-col>
+            <ion-col size="6" class="ion-align-self-center" [innerHTML]="submission.reviewerName"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -29,7 +28,7 @@
 
 <ng-container *ngIf="action === 'review'">
   <ion-list *ngIf="submission"
-  class="ion-no-margin ion-no-padding ion-padding-horizontal main-content">
+  class="ion-no-margin ion-padding ion-padding-horizontal main-content">
     <ion-item-group>
       <ion-item-divider>
         <ion-label color="primary" i18n>Submission Details</ion-label>
@@ -38,7 +37,8 @@
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
             <ion-col size="6" class="ion-align-self-center" i18n>Learner</ion-col>
-            <ion-col size="6" class="ion-align-self-center">{{ submission.submitterName }}</ion-col>
+            <ion-col size="6" class="ion-align-self-center"
+            [innerHTML]="submission.submitterName"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -47,7 +47,8 @@
         <ion-grid class="ion-padding-horizontal">
           <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
             <ion-col size="6" class="ion-align-self-center" i18n>Team</ion-col>
-            <ion-col size="6" class="ion-align-self-center">{{ review.teamName }}</ion-col>
+            <ion-col size="6" class="ion-align-self-center"
+            [innerHTML]="review.teamName"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -56,15 +57,20 @@
 </ng-container>
 
 <ng-container *ngIf="assessment">
-  <div [ngClass]="{'ion-padding': !isMobile}"
-    class="main-content" style="min-height: 100%;">
-    <div [ngClass]="{'ion-padding-horizontal padding-top': isMobile}">
+  <div class="main-content ion-padding"
+    [ngClass]="{'extra-padding-left': action === 'review' && isSinglePage}"
+    style="min-height: 100%;">
+
+    <div [ngClass]="{'ion-padding-horizontal padding-top': isSinglePage}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
-        role="heading" aria-level="2">{{ assessment.name }}</div>
+        role="heading"
+        aria-level="2"
+        [innerHTML]="assessment.name"
+      ></div>
 
       <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label">
-        <ion-label>{{ label }}</ion-label>
+        <ion-label [innerHTML]="label"></ion-label>
       </ion-chip>
 
       <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
@@ -87,7 +93,7 @@
           </ion-avatar>
 
           <ion-label>
-            <p class="subtitle-1" i18n="indicator of a team member is working on the same assessment">Locked by {{ submission.submitterName }}</p>
+            <p class="subtitle-1" i18n="indicator of a team member is working on the same assessment">Locked by <span [innerHTML]="submission.submitterName"></span></p>
             <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
@@ -95,9 +101,9 @@
     </div>
 
     <form [formGroup]="questionsForm" id="formgroup" #form>
-      <ng-container *ngFor="let group of assessment.groups">
-        <div [ngClass]="{'ion-padding': isMobile, 'ion-padding-top': !isMobile}">
-          <h3 [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
+      <ng-container *ngFor="let group of pagedGroups">
+        <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}">
+          <h3 [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
           <ion-text color="dark" class="ion-text-left">
             <div
               *ngIf="group.description"
@@ -108,17 +114,18 @@
           </ion-text>
         </div>
 
-        <ng-container *ngFor="let question of group.questions">
+        <ng-container *ngFor="let question of group.questions; trackBy: trackById">
           <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox>
             <ion-list-header
               class="question-title headline-4"
+              [ngClass]="{'fade-70': shouldShowRequiredIndicator(question) && questionsForm?.controls['q-' + question.id]?.errors?.required}"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
               <ion-label class="ion-margin-vertical">
-                {{ question.name }}
+                <span [innerHTML]="question.name"></span>
                 <span class="required-mark"
                   [ngClass]="{'contrast': isRedColor}"
-                  *ngIf="question.isRequired"
+                  *ngIf="shouldShowRequiredIndicator(question)"
                 >&nbsp;*</span>
               </ion-label>
 
@@ -147,19 +154,22 @@
               <div class="tick-container">
                 <ion-spinner name="dots" class="tick-icon"
                   style="max-width: 16px; max-height: 16px;"
-                  *ngIf="autosaving[question.id]"
-                  [@tickAnimation]="autosaving[question.id] ? 'visible' : 'hidden'"
+                  *ngIf="autosaving()[question.id]"
+                  [@tickAnimation]="autosaving()[question.id] ? 'visible' : 'hidden'"
                   (@tickAnimation.done)="onAnimationEnd($event, question.id)"
                 ></ion-spinner>
 
                 <ion-icon name="checkmark-circle-outline"
                   class="tick-icon"
-                  *ngIf="saved[question.id]"
-                  [@tickAnimation]="saved[question.id] ? 'visible' : 'hidden'"
+                  *ngIf="saved()[question.id]"
+                  [@tickAnimation]="saved()[question.id] ? 'visible' : 'hidden'"
                 ></ion-icon>
 
-                <ion-icon name="reload-circle-outline" class="tick-icon" *ngIf="failed[question.id]" (click)="retrySave(question)"
-                  [@tickAnimation]="failed[question.id] ? 'visible' : 'hidden'"></ion-icon>
+                <ion-icon name="reload-circle-outline" class="tick-icon"
+                  *ngIf="failed()[question.id]"
+                  (click)="retrySave(question)"
+                  [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
+                ></ion-icon>
               </div>
 
               <ion-item *ngIf="!doAssessment && (
@@ -215,8 +225,9 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multiple>
 
-              <app-file *ngSwitchCase="'video'"
+              <app-file-upload *ngSwitchCase="'video'"
                 #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -226,13 +237,13 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
-              <app-file *ngSwitchCase="'file'"
+              <app-file-upload *ngSwitchCase="'file'"
                 #questionField
+                source="assessment"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -242,9 +253,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
-                [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
-                [submitActions$]="submitActions"></app-file>
+                [submitActions$]="submitActions"></app-file-upload>
 
               <app-team-member-selector *ngSwitchCase="'team member selector'"
                 #questionField
@@ -284,27 +294,72 @@
         </ng-container>
       </ng-container>
     </form>
+
   </div>
 
+  <div class="not-team ion-padding ion-text-center"
+    *ngIf="isNotInATeam">
+    <p class="black subtitle-1"
+      i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
+      proceed with next steps.</p>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="assessment">
   <ng-container *ngIf="preventSubmission === false; else blocked">
-    <app-bottom-action-bar
-      *ngIf="!(action === 'review'
-      && submission?.status === 'feedback available'
-      && review?.status === 'done')"
+
+    <app-bottom-action-bar *ngIf="!(action === 'review'
+        && submission?.status === 'feedback available'
+        && review?.status === 'done')"
       [showResubmit]="action !== 'review' && assessment?.allowResubmit === true && submission?.status !== 'in progress'"
       (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
       (handleClick)="continueToNextTask()"
-    ></app-bottom-action-bar>
+      [hasCustomContent]="pageCount > 1">
+
+      <div class="pagination-container">
+        <ion-button fill="clear"
+            class="nav-button prev-button"
+            (click)="prevPage()"
+            [disabled]="pageIndex === 0">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          <span>Prev</span>
+        </ion-button>
+
+        <div class="page-indicators"
+             [class.many-pages]="pageCount > manyPages"
+             *ngIf="pageCount > 1"
+             #pageIndicatorsContainer>
+          <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
+            <div class="page-indicator"
+                [class.active]="pageIndex === page"
+                [class.incompleted]="!pageRequiredCompletion[page]"
+                [id]="'page-indicator-' + page"
+                (click)="goToPage(page)"
+                (dblclick)="findAndGoToFirstUnansweredQuestion()">
+              <span class="page-number">{{ i + 1 }}</span>
+              <ion-icon
+                *ngIf="!pageRequiredCompletion[page]"
+                name="close-circle-outline"
+                class="completion-icon">
+              </ion-icon>
+            </div>
+          </ng-container>
+        </div>
+
+        <ion-button fill="clear"
+            class="nav-button next-button"
+            (click)="nextPage()"
+            [disabled]="pageIndex >= pageCount - 1">
+          <span>Next</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </app-bottom-action-bar>
   </ng-container>
 
   <ng-template #blocked>
     <app-bottom-action-bar buttonType="blocked-role"></app-bottom-action-bar>
   </ng-template>
-
-  <div class="not-team ion-padding ion-text-center" *ngIf="isNotInATeam">
-    <p class="black subtitle-1" i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
-      proceed with next steps.</p>
-  </div>
 </ng-container>

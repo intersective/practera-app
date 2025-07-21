@@ -15,10 +15,11 @@ export interface User {
   name?: string;
   firstName?: string;
   lastName?: string;
+  avatar?: string; // user avatar pic
   apikey?: string;
   contactNumber?: string;
   email?: string;
-  role?: string;
+  role?: string; // mentor, participant
   image?: string;
   programId?: number;
   programName?: string;
@@ -51,6 +52,9 @@ export interface User {
     activityId: number; // last visited activity id
     homeBookmarks: number[]; // last visited home bookmarks (activity ids)
   },
+
+  // error handling
+  saveAssessmentErrors?: [],
 }
 
 export interface Referrer {
@@ -78,7 +82,7 @@ export interface Config {
 })
 
 export class BrowserStorageService {
-  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) {}
+  constructor(@Inject(BROWSER_STORAGE) public storage: Storage) { }
 
   get(key: string) {
     const cached = this.storage.getItem(key);
@@ -93,7 +97,7 @@ export class BrowserStorageService {
    *
    * @param   {string}  key    index for identify a value later
    *    - directLinkRoute: string
-   *    - fastFeedbackOpening: boolean
+   *    - fastFeedbackOpening: boolean (flag to indicate if there is existing fast feedback modal opened)
    *    - authToken: string
    *    - hasMultipleStacks: boolean
    *    - experience: Experience
@@ -133,12 +137,22 @@ export class BrowserStorageService {
     return true;
   }
 
+  /**
+   * Retrieves the status of a specified feature toggle. (controlled by the backend)
+   *
+   * @param name - The name of the feature toggle to check. Currently supports 'pulseCheckIndicator'.
+   * @returns A boolean indicating whether the specified feature toggle is enabled.
+   */
+  getFeature(name: 'pulseCheckIndicator'): boolean {
+    return this.get('experience')?.featureToggle?.[name] || false;
+  }
+
   getReferrer() {
     return this.get('referrer') || {};
   }
 
   setReferrer(referrer: Referrer) {
-    this.set('referrer', {...this.getReferrer(), ...referrer});
+    this.set('referrer', { ...this.getReferrer(), ...referrer });
     return true;
   }
 
@@ -259,5 +273,24 @@ export class BrowserStorageService {
     }
 
     return lastVisited[name] || null;
+  }
+
+  // clear cache by the storage index name
+  clearByName(name: string) {
+    const storages = localStorage;
+    const result: { [key: string]: any } = {};
+
+    for (let i = 0; i < storages.length; i++) {
+      const key = storages.key(i);
+      try {
+        if (key && key.includes(name)) {
+          result[key] = storages.removeItem(key);
+        }
+      } catch (error) {
+        console.error(`Error removing key: ${key}`, error);
+      }
+    }
+
+    return result;
   }
 }

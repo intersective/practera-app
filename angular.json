@@ -65,19 +65,25 @@
                 "output": "./svg"
               },
               "projects/v3/src/manifest.webmanifest",
-              "projects/v3/src/firebase-messaging-sw.js"
+              "projects/v3/src/firebase-messaging-sw.js",
+              {
+                "glob": "**/*",
+                "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+                "output": "./assets/ffmpeg"
+              },
+              "projects/v3/src/assets/ffmpeg"
             ],
             "styles": [
-              {
-                "input": "projects/v3/src/styles.scss",
-                "inject": true
-              },
               {
                 "input": "projects/v3/src/theme/variables.scss",
                 "inject": true
               },
               {
                 "input": "projects/v3/src/global.scss",
+                "inject": true
+              },
+              {
+                "input": "projects/v3/src/styles.scss",
                 "inject": true
               }
             ],
@@ -94,6 +100,16 @@
           "configurations": {
             "ms": {
               "localize": ["ms"]
+            },
+            "ja": {
+              "localize": [
+                "ja"
+              ]
+            },
+            "es": {
+              "localize": [
+                "es"
+              ]
             },
             "custom": {
               "budgets": [
@@ -200,9 +216,15 @@
             },
             "development": {
               "buildTarget": "v3:build:development"
+            },
+            "ja": {
+              "buildTarget": "v3:build:ja"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -217,7 +239,7 @@
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["projects/v3/src/favicon.ico", "projects/v3/src/assets", "projects/v3/src/manifest.webmanifest"],
+            "assets": ["./projects/v3/src/assets/icon/favicon.ico", "projects/v3/src/assets", "projects/v3/src/manifest.webmanifest"],
             "styles": ["projects/v3/src/styles.scss"],
             "scripts": []
           }
@@ -266,14 +288,6 @@
             "main": "projects/request/src/test.ts",
             "karmaConfig": "projects/request/karma.conf.js",
             "tsConfig": "projects/request/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "projects/v3/src/favicon.ico",
-              "projects/v3/src/assets"
-            ],
-            "styles": [
-              "projects/v3/src/styles.scss"
-            ],
             "scripts": []
           }
         }

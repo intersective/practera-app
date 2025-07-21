@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
@@ -9,11 +9,15 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Experience, HomeService, Milestone } from '@v3/services/home.service';
+import { Experience, HomeService, Milestone, PulseCheckSkill } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
 import { MessagingService } from '../../services/messaging.service';
+import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
+import { AlertController } from '@ionic/angular';
+import { Activity } from '@v3/app/services/activity.service';
+import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 
 @Component({
   selector: "app-home",
@@ -31,6 +35,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   experience: Experience;
 
   isMobile: boolean;
+  isParticipant: boolean;
+  pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
   getIsPointsConfigured: boolean = false;
@@ -50,6 +56,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
   @ViewChild('activities', {static: false}) activities!: ElementRef;
+  pulseCheckSkills: PulseCheckSkill[] = [];
+
+  // Expose Math to template
+  Math = Math;
+
 
   constructor(
     private router: Router,
@@ -62,6 +73,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private unlockIndicatorService: UnlockIndicatorService,
     private messagingService: MessagingService,
     private cdr: ChangeDetectorRef,
+    private fastFeedbackService: FastFeedbackService,
+    private alertController: AlertController,
+    private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -78,6 +92,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit() {
     this.messagingService.requestPermission();
+    const role = this.storageService.getUser().role;
+    this.isParticipant = role === 'participant';
+    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
       .pipe(
@@ -144,11 +161,24 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           });
         },
       });
+
   }
 
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
+  }
+
+  /**
+   * @name openPulseCheck
+   * @description This method pulls the fast feedback service (with type 'skills') to open the pulse check modal.
+   */
+  openPulseCheck() {
+    this.fastFeedbackService.pullFastFeedback({
+      closable: true,
+      skipChecking: true,
+      type: 'skills'
+    }).pipe(first()).subscribe();
   }
 
   async updateDashboard() {
@@ -161,9 +191,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
 
-    this.homeService.getPulseCheckStatuses().subscribe((res) => {
-      this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
-    });
+    if (this.pulseCheckIndicatorEnabled === true) {
+      this.homeService.getPulseCheckStatuses().pipe(
+        takeUntil(this.unsubscribe$)
+      ).subscribe((res) => {
+        this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
+      });
+    }
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || '';
@@ -173,6 +207,20 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const bookmarks = this.storageService.lastVisited('homeBookmarks') as number[] || [];
     bookmarks.forEach((id) => {
       this.bookmarkedActivities[id] = true;
+    });
+
+    this.fastFeedbackService.pullFastFeedback().pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+    ).subscribe();
+
+    this.homeService.getPulseCheckSkills().pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe((res) => {
+      const newSkills = res?.data?.pulseCheckSkills || [];
+      if (newSkills.length > 0) {
+        this.pulseCheckSkills = newSkills;
+      }
     });
   }
 
@@ -240,8 +288,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
+    // show guideline if locked
     if (activity.isLocked) {
-      return;
+      return this.showGuideline(activity, 'activity');
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
@@ -290,8 +339,30 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
-  onTrackInfo() {
-    this.notification.trackInfo();
+  async onTrackInfo() {
+    const alert = await this.alertController.create({
+      header: 'Traffic Light System',
+      message: `This traffic light system helps visualise your project's progress:\n\n` +
+        `• <span class='txt-green'>Green</span>: Project is flowing smoothly and meeting expectations - great work!\n` +
+        `• <span class='txt-orange'>Orange</span>: Different perspectives exist that create an opportunity for valuable team discussion\n` +
+        `• <span class='txt-red'>Red</span>: The project appears to be facing challenges that need attention - a perfect time to bring the team together to realign and find solutions\n\n` +
+        `Remember, identifying when adjustments are needed is a strength that leads to better outcomes!`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
+  }
+
+  async showGlobalSkillsInfo() {
+    const alert = await this.alertController.create({
+      header: 'Global Skills Assessment',
+      message: `You'll regularly complete self-assessments of your Global Skills throughout this program. These assessments help you identify key areas for growth and development, while tracking your progress along the way. The Skills Strength section helps visualise your progress, making it easier to see your development over time. For detailed guidance on completing these assessments, refer to the 'How to Self-Assess Your Global Skills' topic.`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
@@ -313,14 +384,105 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     if (activitiesEle && this.isElementVisible(element) && element?.scrollIntoView) {
       element.scrollIntoView({ behavior: 'auto', block: 'center' });
       element.classList.add('lastVisited');
-
       this.storageService.lastVisited('activityId', null);
     }
   }
 
   // make sure the element is visible in viewport
   private isElementVisible(element: HTMLElement): boolean {
-    const style = window.getComputedStyle(element);
-    return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    try {
+      if (!(element instanceof HTMLElement)) {
+        return false;
+      }
+
+      const style = window.getComputedStyle(element);
+      return style.display !== 'none' && style.visibility !== 'hidden' && element.offsetHeight > 0;
+    } catch (e) {
+      console.error(e);
+      if (isDevMode()) {
+        this.storageService.append('errors', e);
+      }
+    }
+  }
+
+  // generate aria-label for skill dot
+  // each circle announces its state
+  // eg. "Level X achieved", "Level X half achieved", "Level X not achieved"
+  getSkillDotAriaLabel(level: number, skillValue: number): string {
+    if (level <= Math.floor(skillValue)) {
+      return `Level ${level} achieved`;
+    } else if (level === Math.floor(skillValue) + 1 && skillValue % 1 === 0.5) {
+      return `Level ${level} half achieved`;
+    } else {
+      return `Level ${level} not achieved`;
+    }
+  }
+
+  /**
+   * Get formatted percentage change string with appropriate styling
+   * @param skillId - The ID of the skill
+   * @param currentValue - Current skill value
+   * @param changeValue - Change value from API
+   * @returns Object with change text and CSS class
+   */
+  getSkillChangeDisplay(skillId: number, currentValue: number, changeValue?: number): { text: string; cssClass: string } | null {
+    // Use change value from API if available
+    if (changeValue !== undefined) {
+      return this.pulsecheckService.getSkillChangeDisplayFromValue(changeValue);
+    }
+    // Return null if no change value provided
+    return null;
+  }
+
+  // show unlock guideline for locked milestone or activity
+  async showGuideline(item: Milestone | Activity, type: 'milestone' | 'activity' = 'milestone') {
+
+    let message = '';
+
+    const routes = [];
+    const guidelines = item.unlockConditions;
+
+    if (!guidelines) {
+      return;
+    }
+
+    if (guidelines.length === 0) {
+      return;
+    } else if (guidelines.length >= 1) {
+      message += `Please follow the steps below to unlock this ${type}:`;
+
+      guidelines.forEach((guideline, index) => {
+        if (guideline.meta) {
+          const { activityId, assessmentId, topicId, contextId } = guideline.meta;
+
+          const action = this.utils.ucfirst(guideline.action);
+          const isMobile = this.utils.isMobile();
+          if (topicId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/topic-mobile/${activityId}/${topicId}`
+                : `/v3/activity-desktop/${activityId}/${topicId}`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          } else if (assessmentId) {
+            routes.push({
+              path: isMobile
+                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
+                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
+              label: `<i><b>${action}</b></i> ${guideline.name}`,
+            });
+          }
+        }
+      });
+    }
+
+    await this.notification.popUp(
+      "guidelines",
+      {
+        logo: 'lock-open',
+        message,
+        routes,
+      },
+    );
   }
 }

@@ -29,21 +29,12 @@
               aria-hidden="true"></ion-progress-bar>
 
             <div class="exp-content">
-              <h1 class="headline-2">{{ experience.name }}</h1>
+              <h1 class="headline-2" [innerHTML]="experience.name"></h1>
               <ion-text class="subtitle-3" color="grey-75">
                 <ng-container *ngIf="(activityCount$ | async) as count; else loadingProgress" i18n>{{ count }} Activities</ng-container>
                 <span style="margin: 0 10px">|</span>
                 <ng-container *ngIf="experienceProgress >= 0; else loadingProgress" i18n>{{ experienceProgress }}% Progress</ng-container>
               </ion-text>
-              <div class="ontrack-group">
-                <div class="ontrack-title">
-                  <span style="font: smaller;">On track</span>
-                  <ion-icon name="help-circle-outline" (click)="onTrackInfo()"></ion-icon>
-                </div>
-                <!-- put traffic light group here -->
-                <app-traffic-light-group *ngIf="pulseCheckStatus" [lights]="pulseCheckStatus"></app-traffic-light-group>
-                <!-- end traffic lights -->
-              </div>
               <ng-container #experienceDescription *ngIf="experience?.description">
                 <p *ngIf="!isMobile && experience.description" class="body-2" [innerHTML]="experience.description"></p>
                 <app-description *ngIf="isMobile && experience.description" [content]="experience.description"></app-description>
@@ -65,9 +56,22 @@
             <ion-segment-button value="badges" mode="ios">
               <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
             </ion-segment-button>
+            <ion-segment-button value="pulse-checks" mode="ios" *ngIf="pulseCheckIndicatorEnabled === true">
+              <ion-label i18n>Skill & Progress Surveys</ion-label>
+            </ion-segment-button>
           </ion-segment>
 
-          <ng-container *ngIf="display === 'activities'; then activityList; else badgePoints"></ng-container>
+          <ng-container [ngSwitch]="display">
+            <ng-container *ngSwitchCase="'activities'">
+              <ng-container *ngTemplateOutlet="activityList"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'badges'">
+              <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'pulse-checks'">
+              <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
+            </ng-container>
+          </ng-container>
         </ion-col>
 
       </ion-row>
@@ -84,10 +88,18 @@
   <h3 class="for-accessibility" i18n>Activity list</h3>
   <div #activities id="activity-list-item" *ngIf="milestones?.length > 0; else loadingMilestones">
     <ng-container *ngFor="let milestone of milestones">
-      <ion-item class="headline-4 milestone-name" lines="none"
+      <ion-item class="headline-4 milestone-name"
+        [ngClass]="{'locked': milestone.isLocked}"
+        lines="none"
+        (click)="showGuideline(milestone)"
         aria-describedby="milestone-description">
-        <div>{{ milestone.name }}</div>
-        <ion-icon *ngIf="milestone.isLocked" color="medium" name="lock-closed" slot="end" aria-label="milestone locked"></ion-icon>
+        <div [innerHTML]="milestone.name"></div>
+        <ion-icon *ngIf="milestone.isLocked"
+          color="medium"
+          name="lock-closed"
+          slot="end"
+          aria-label="milestone locked"
+        ></ion-icon>
       </ion-item>
 
       <ion-item id="milestone-description"
@@ -156,11 +168,97 @@
   </ion-item>
 </ng-template>
 
-<ng-template #loadingMilestones>
-  <ion-item>
-    <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
-  </ion-item>
-  <ion-item>
-    <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
-  </ion-item>
+<ng-template #pulseChecks>
+  <h3 class="for-accessibility" i18n>Pulse checks and skills</h3>
+  <div class="ontrack-section">
+    <div class="ontrack-header">
+      <div class="ontrack-title-section">
+        <h4 class="ontrack-title headline-4">On Track</h4>
+        <ion-icon
+          name="help-circle-outline"
+          class="ontrack-help-icon"
+          (click)="onTrackInfo()">
+        </ion-icon>
+      </div>
+      <div class="ontrack-subtitle">
+        <span class="body-3 color-medium">Track your progress across key areas</span>
+      </div>
+    </div>
+
+    <div class="ontrack-content-container">
+      <app-traffic-light-group
+        *ngIf="pulseCheckStatus"
+        [lights]="pulseCheckStatus"
+        [displayOnly]="isParticipant !== true"
+        class="traffic-light-enhanced"
+      ></app-traffic-light-group>
+    </div>
+  </div>
+
+  <ng-container *ngIf="pulseCheckSkills?.length > 0">
+    <div class="skill-strength-section">
+      <div class="skill-section-header">
+        <h4 class="headline-4" (click)="openPulseCheck()">Skill Strength</h4>
+        <ion-icon
+          name="help-circle-outline"
+          class="ontrack-help-icon"
+          (click)="showGlobalSkillsInfo()">
+        </ion-icon>
+        <ion-icon name="information-circle-outline" *ngIf="false"></ion-icon>
+      </div>
+
+      <ion-grid class="skill-grid">
+        <ion-row>
+          <ion-col
+            size="12"
+            size-md="6"
+            size-lg="4"
+            *ngFor="let skill of pulseCheckSkills">
+            <ion-card class="skill-card">
+              <ion-card-content class="skill-card-content">
+                <div class="skill-header">
+                  <ion-icon
+                    *ngIf="skill?.icon"
+                    [name]="skill.icon"
+                    class="skill-icon"
+                    color="primary">
+                  </ion-icon>
+                  <div class="skill-name-section">
+                    <span
+                      class="skill-name subtitle-2"
+                      [class.no-change-padding]="!getSkillChangeDisplay(skill.id, skill.value, skill.change)">
+                      {{ skill.name }}
+                    </span>
+                    <span
+                      *ngIf="getSkillChangeDisplay(skill.id, skill.value, skill.change) as changeDisplay"
+                      class="skill-change caption"
+                      [ngClass]="changeDisplay.cssClass">
+                      {{ changeDisplay.text }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="skill-progress">
+                  <div class="skill-level-dots">
+                    <ng-container *ngFor="let i of [1,2,3,4,5]; let index = index">
+                      <div
+                        class="skill-dot"
+                        [class.filled]="index < Math.floor(skill.value)"
+                        [class.half-filled]="index === Math.floor(skill.value) && skill.value % 1 > 0"
+                        [attr.aria-label]="getSkillDotAriaLabel(index + 1, skill.value)">
+                        <div class="dot-fill" *ngIf="index === Math.floor(skill.value) && skill.value % 1 > 0"></div>
+                      </div>
+                    </ng-container>
+                  </div>
+                  <div class="skill-level-text">
+                    <span class="body-3" color="medium">{{ skill.value }} of 5</span>
+                  </div>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </ng-container>
 </ng-template>

@@ -5,7 +5,7 @@
       [ngClass]="{ 'subtitle-2': !isMobile }"
       aria-live="polite"
       [attr.aria-label]="memberList.length + ' members'">
-      {{ chatChannel.name }}
+      <span [innerHTML]="chatChannel.name"></span>
       <div class="ion-text-center sub-title caption gray-1 saving-msg" i18n>
         {{ memberList.length }} members
       </div>
@@ -46,39 +46,36 @@
       </ng-container>
 
       <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
-        <div *ngIf="checkToShowMessageTime(message)" class="time caption gray-2">
+        <div *ngIf="checkToShowMessageTime(message)" class="time caption">
           <p>{{ getMessageDate(message.sentAt) }}</p>
         </div>
 
         <div class="message-body"
-          [ngClass]="getClassForMessageBody(message)"
+          [ngClass]="getClassForMessageBody(message.file)"
           aria-describedby="message-content">
 
           <ng-container *ngIf="!message.isSender">
-            <p class="seen-text subtitle-1 black">{{message.senderName}}</p>
+            <p class="seen-text subtitle-1 black">{{ message.senderName }}</p>
             <p class="seen-text caption gray-2">{{ utils.getUserRolesForUI(message.senderRole) }}</p>
           </ng-container>
 
-          <ng-container *ngIf="message.message || !message.fileObject;">
-            <!-- Quill read only view/ use to render html content -->
-            <quill-view id="message-content"
-              [content]="message.message"
-              [strict]="true"
+          <ng-container *ngIf="message.message || !message.file">
+            <quill-view-html id="message-content"
+              [content]="message?.message"
+              [sanitize]="true"
               tabindex="0"
-            ></quill-view>
+            ></quill-view-html>
           </ng-container>
 
-          <ng-container *ngIf="message.fileObject">
-            <ng-container *ngIf="message?.fileObject?.mimetype?.includes('video')">
-              <ng-container *ngIf="message?.fileObject?.mimetype === 'video/mp4'; else nonMp4Format">
+          <ng-container *ngIf="message?.file?.type">
+            <ng-container *ngIf="message?.file?.type?.includes('video')">
+              <ng-container *ngIf="message?.file?.type === 'video/mp4'; else nonMp4Format">
                 <div id="message-content" class="label"
-                  (click)="preview(message.fileObject)"
-                  (keydown)="preview(message.fileObject, $event)"
+                  (click)="preview(message.file)"
+                  (keydown)="preview(message.file, $event)"
                   tabindex="0"
                   role="button">
-                  <p class="label">
-                    {{ message.fileObject.filename }}
-                  </p>
+                  <p class="label" [innerHTML]="message.file.name"></p>
                   <div id="inner-box">
                     <p>
                       <ion-icon name="play-circle"></ion-icon>
@@ -92,30 +89,33 @@
               </ng-template>
             </ng-container>
 
-            <ng-container *ngIf="message?.fileObject?.mimetype?.includes('image')">
+            <ng-container *ngIf="message?.file?.type?.includes('image')">
               <div [innerHTML]="message.preview"
-                (click)="preview(message.fileObject)"
-                (keydown)="preview(message.fileObject, $event)"
+                (click)="preview(message.file)"
+                (keydown)="preview(message.file, $event)"
                 tabindex="0"
                 role="button"
               ></div>
             </ng-container>
 
-            <ng-container *ngIf="(message.fileObject && !message.fileObject.mimetype) || (message.fileObject && (
-              !message.fileObject.mimetype.includes('image') && !message.fileObject.mimetype.includes('video')))">
-              <ion-item class="general-attachment" (click)="previewFile(message.fileObject)">
-                <ion-ripple-effect></ion-ripple-effect>
-                <ion-icon name="document-outline" slot="start"></ion-icon>
-                <ion-label color="primary">
-                  {{ message.fileObject.filename }}
-                </ion-label>
-                <ion-note *ngIf="getTypeByMime(message.fileObject.mimetype)">
-                  {{ getTypeByMime(message.fileObject.mimetype) }}
-                </ion-note>
+            <ng-container *ngIf="(message.file && !message.file.type) || (message.file && (
+              !message.file.type.includes('image') && !message.file.type.includes('video')))">
+              <ion-item class="general-attachment"
+                (click)="download(message.file)">
+                <ng-container>
+                  <ion-ripple-effect></ion-ripple-effect>
+                  <ion-icon name="document-outline"
+                    slot="start"></ion-icon>
+                  <ion-label>
+                    {{ message.file.name }}
+                  </ion-label>
+                  <ion-note *ngIf="getTypeByMime(message.file.type)">
+                    {{ getTypeByMime(message.file.type) }}
+                  </ion-note>
+                </ng-container>
               </ion-item>
             </ng-container>
           </ng-container>
-
         </div>
 
       </ion-label>
@@ -139,12 +139,12 @@
   </ng-container>
 </ion-content>
 
-<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer" [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}">
-  <div *ngIf="whoIsTyping" style="position: absolute;
-    z-index: 9999;
-    top: -2em;
-    margin: 0 1em;
-    width: 100%;">
+<ion-footer *ngIf="!chatChannel.readonly && !chatChannel.isAnnouncement" class="footer"
+  [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}"
+>
+  <div *ngIf="whoIsTyping"
+    style="position: absolute; z-index: 9999; top: -2em; margin: 0 1em; width: 100%;"
+  >
     <ion-label class="received-messages no-avatar" color="medium">
       <p class="message-typing">
         <i>{{ whoIsTyping }}</i>
@@ -160,6 +160,7 @@
           customToolbarPosition="top"
           [modules]="editorModules"
           [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
+          [trimOnValidation]="true"
           [required]="true"
           class="message-text-editor"
           placeholder="Enter your message"
@@ -174,36 +175,36 @@
       <ion-row nowrap class="ion-no-padding ion-align-items-left ion-justify-content-start attach-preview">
         <ng-container *ngFor="let attachment of selectedAttachments; let i = index">
           <!-- Image preview -->
-          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('image')">
+          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment?.type?.includes('image')">
             <div class="image" [ngClass]="{'mobile': isMobile}">
-              <img [src]="getResizedImageUrl(attachment, 80)" (click)="preview(attachment)">
-              <div class="overlay" (click)="preview(attachment)"></div>
+              <img [src]="attachment?.preview"
+                alt="attachment preview"
+                (click)="preview(attachment)">
               <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
                 <ion-icon name="close"></ion-icon>
               </span>
             </div>
           </ion-col>
           <!-- video preview -->
-          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.mimetype && attachment.mimetype.includes('video')">
+          <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.type && attachment.type.includes('video')">
             <div class="video" [ngClass]="{'mobile': isMobile}">
               <div class="play-icon" (click)="preview(attachment)">
                 <ion-icon name="play" color="ocean"></ion-icon>
               </div>
-              <div class="overlay" (click)="preview(attachment)"></div>
               <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
                 <ion-icon name="close"></ion-icon>
               </span>
             </div>
           </ion-col>
           <!-- File preview -->
-          <ion-col size="10" size-lg="6" class="ion-no-padding ion-text-center" *ngIf="!attachment.mimetype || !attachment.mimetype.includes('image') && !attachment.mimetype.includes('video')">
+          <ion-col size="10" size-lg="6" class="ion-no-padding ion-text-center" *ngIf="!attachment.type || !attachment.type.includes('image') && !attachment.type.includes('video')">
             <div class="file-preview" [ngClass]="{'mobile': isMobile}">
               <ion-item lines="none" class="general-attachment" (click)="preview(attachment)">
                 <ion-ripple-effect></ion-ripple-effect>
                 <ion-icon name="document" slot="start"></ion-icon>
                 <ion-label color="black">
-                  <p>{{ attachment.filename }}</p>
-                  <p class="mimetype" *ngIf="getTypeByMime(attachment.mimetype)">{{ getTypeByMime(attachment.mimetype) }}</p>
+                  <p [innerHTML]="attachment.name"></p>
+                  <p class="mimetype" *ngIf="getTypeByMime(attachment.type)">{{ getTypeByMime(attachment.type) }}</p>
                 </ion-label>
               </ion-item>
               <div class="overlay" (click)="preview(attachment)"></div>

@@ -29,14 +29,16 @@ export interface CustomTostOptions {
 
 export interface Choice {
   id: number;
-  title: string;
+  title?: string;
+  name?: string;
 }
 
 export interface Question {
   id: number;
-  title: string;
-  description: string;
-  choices: Array<Choice>;
+  name?: string;
+  title?: string;
+  description?: string;
+  choices: Choice[];
 }
 
 export interface Meta {
@@ -201,17 +203,18 @@ export class NotificationsService {
     return modal;
   }
 
-  async modal(component, componentProps, options?, event?): Promise<void> {
+  async modal(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
     return this.modalOnly(component, componentProps, options, event);
   }
 
-  async modalOnly(component, componentProps, options?, event?): Promise<void> {
+  async modalOnly(component, componentProps, options?, event?): Promise<any> {
     const modalConfig = this.modalConfig(
       { component, componentProps },
       options
     );
     return this.modalService.addModal(modalConfig, event);
   }
+
   /**
    * Displays an alert dialog with the given configuration options.
    * @param {AlertOptions} config - The options for the alert dialog.
@@ -388,7 +391,7 @@ export class NotificationsService {
   async activityCompletePopUp(
     activityId: number,
     activityCompleted: boolean
-  ): Promise<void> {
+  ): Promise<HTMLIonModalElement> {
     let cssClass = "practera-popup activity-complete-popup";
     if (this.utils.isMobile()) {
       cssClass += " mobile-view";
@@ -444,8 +447,9 @@ export class NotificationsService {
    */
   fastFeedbackModal(
     props: {
-      questions?: Array<Question>;
+      questions?: Question[];
       meta?: Meta | Object;
+      isSkillsPulseCheck?: boolean;
     },
     options: {
       closable?: boolean;
@@ -455,7 +459,11 @@ export class NotificationsService {
       modalOnly: false,
     }
   ): Promise<HTMLIonModalElement | void> {
-    const modalConfig = options;
+    const modalConfig = {
+      backdropDismiss: options?.closable === true,
+      showBackdrop: false,
+      ...options
+    };
     if (options.modalOnly) {
       return this.modalOnly(FastFeedbackComponent, props, modalConfig);
     }
@@ -1046,5 +1054,25 @@ export class NotificationsService {
     });
 
     return await modal.present();
+  }
+
+  /**
+   * Show team check-in alert when there's misalignment in team status
+   */
+  async showTeamCheckInAlert() {
+    const alert = await this.alertController.create({
+      header: 'Team Check-In Time! 👥',
+      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
+        `✓ Schedule a quick team huddle\n` +
+        `✓ Review your Project plan and milestones together\n` +
+        `✓ Redistribute tasks if needed\n` +
+        `✓ Document 3 next steps forward\n\n` +
+        `Need strategies? Visit Teamwork Toolkit →\n` +
+        `We're here to help: programs@practera.com`,
+      buttons: ['OK'],
+      cssClass: 'team-check-in-alert'
+    });
+
+    await alert.present();
   }
 }

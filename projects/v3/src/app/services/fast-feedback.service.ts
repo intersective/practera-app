@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
-import { RequestService } from 'request';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { of, from, Observable } from 'rxjs';
-import { switchMap, delay, take, retryWhen } from 'rxjs/operators';
+import { switchMap, delay, take, retryWhen, finalize } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { ApiResponse } from '../models/api.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FastFeedbackService {
   constructor(
-    private request: RequestService,
     private notificationsService: NotificationsService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
@@ -22,13 +21,34 @@ export class FastFeedbackService {
     private apolloService: ApolloService,
   ) {}
 
-  private _getFastFeedback(skipChecking = false): Observable<any> {
-    if (environment.demo) {
-      return this.demo.fastFeedback();
+  private _getFastFeedback(skipChecking = false, type?: string): Observable<ApiResponse<{
+    pulseCheck: {
+      questions: Array<{
+        id: number;
+        name: string;
+        description?: string;
+        choices: Array<{
+          id: number;
+          name: string;
+          description?: string;
+        }>;
+      }>;
+      meta: {
+        teamId: number;
+        teamName: string;
+        targetUserId?: number;
+        contextId?: number;
+        assessmentName?: string;
+      };
     }
+  }>> {
+    if (environment.demo) {
+      return this.demo.fastFeedback() as Observable<any>;
+    }
+
     return this.apolloService.graphQLFetch(
-      `query pulseCheck($skipChecking: Boolean) {
-        pulseCheck(skipChecking: $skipChecking) {
+      `query pulseCheck($skipChecking: Boolean, $type: PulseCheckType) {
+        pulseCheck(skipChecking: $skipChecking, type: $type) {
           questions {
             id
             name
@@ -36,6 +56,7 @@ export class FastFeedbackService {
             choices {
               id
               name
+              description
             }
           }
           meta {
@@ -50,25 +71,38 @@ export class FastFeedbackService {
       {
         variables: {
           skipChecking,
+          type,
         },
       }
     );
   }
 
+  /**
+   * Pulls fast feedback data and displays it in a modal.
+   * @param options Configuration options for the modal.
+   * @returns observable of the fast feedback data.
+   */
   pullFastFeedback(options: {
     modalOnly?: boolean;
     skipChecking?: boolean;
-    closable?: boolean; // can skip the modal popup (closable)
+    closable?: boolean; // allow skipping modal popup (with a close button)
+    type?: string; // some pulsecheck require type: 'skills'
   } = {
     modalOnly: false,
     skipChecking: false,
     closable: false,
   }): Observable<any> {
-    return this._getFastFeedback(options.skipChecking).pipe(
+    return this._getFastFeedback(options.skipChecking, options.type).pipe(
       switchMap((res) => {
         try {
           // don't open it again if there's one opening
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
+
+          // no need to alert user, just display as error on console
+          if (this.utils.isEmpty(res.data?.pulseCheck)) {
+            console.error('No pulse check data found');
+            return of(res);
+          }
 
           // if any of either slider or meta is empty or not available,
           // should just skip the modal popup
@@ -94,18 +128,28 @@ export class FastFeedbackService {
                 {
                   questions,
                   meta,
+                  isSkillsPulseCheck: options.type === 'skills',
                 },
                 {
                   closable: options.closable,
                   modalOnly: options.modalOnly,
                 }
               )
+            ).pipe(
+              finalize(() => {
+                this.storage.set("fastFeedbackOpening", false);
+              })
             );
           }
           return of(res);
         } catch (error) {
           console.error("Error in switchMap:", error);
-          throw error;
+          // Return a fallback observable to allow the consumer to continue working
+          return of({
+            error: true,
+            message: "An error occurred while processing fast feedback.",
+            details: error.message
+          });
         }
       }),
       retryWhen((errors) => {

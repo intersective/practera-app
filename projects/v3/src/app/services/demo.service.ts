@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+import { Experience } from './experience.service';
 
 @Injectable({
   providedIn: 'root'
@@ -102,6 +103,46 @@ export class DemoService {
         }
       }
     }).pipe(delay(1000));
+  }
+
+  getPulseCheckStatus(role: string) {
+    if (role === 'participant') {
+      return {
+        data: {
+          pulseCheckStatus: {
+            self: Math.random() > 0.5 ? 1 : 0,
+            team: Math.random(),
+            expert: Math.random(),
+            teams: null
+          }
+        }
+      };
+    } else if (role === 'mentor') {
+      return {
+        data: {
+          pulseCheckStatus: {
+            self: null,
+            team: null,
+            expert: null,
+            teams: [
+              { teamName: 'Team A', average: Math.random() },
+              { teamName: 'Team B', average: Math.random() },
+              { teamName: 'Team C', average: Math.random() }
+            ]
+          }
+        }
+      };
+    }
+    return {
+      data: {
+        pulseCheckStatus: {
+          self: null,
+          team: null,
+          expert: null,
+          teams: null
+        }
+      }
+    };
   }
 
   projectProgress() {
@@ -1036,7 +1077,8 @@ export class DemoService {
   }
 
   topic() {
-    const response = {"success":true,"status":"success","cache":false,"data":[{"Story":{"id":37623,"program_id":0,"title":"Newcrest identifies gold-copper targets and high-priority soil","summary":null,"content":"<div><p><span style=\"font-family: Verdana;\"><br><\/span><\/p><\/div><hr><div><p><span style=\"font-family: Verdana;\">\ufeff<\/span><span style=\"font-size: 12px;\">\ufeff<\/span>Newcrest Mining said it has identified gold-copper targets and high-priority soil. The IGO Paterson Farm-in project detected seven copper and gold anomalies, three air core anomalies and four soil anomalies.<\/p><div><br><\/div><div>The announcement was part of Antipa Minerals update on the Paterson Farm\u2010in project and Wilki Farm\u2010in project exploration programmes where IGO and Newcrest are fully funding ongoing exploration activities.<\/div><div><br><\/div><div>Both projects involve diamond drilling.<\/div><div><br><\/div><div>\u201cThe Paterson Farm\u2010in Project\u2019s exciting new soil and air core targets are located within the highly prospective El Paso Structural Corridor, which extends from Havieron in the southeast, past Winu in the northwest,\u201d said Antipa managing director Roger Mason.<\/div><div><br><\/div><div>\u201cSeveral of these new targets are adjacent to the northern border of our 100 per cent owned Minyari Dome Project. Our tenure has just enough shallow cover to conceal, but also detect (via geophysics and soil sampling), potential world\u2010class gold\u2010copper deposits. The project\u2010scale, systematic exploration approach by the Paterson Farm\u2010in Project partners is designed to target any potential giants lurking under this shallow cover.<\/div><div><br><\/div><div>\u201cLast year\u2019s exploration results, whilst early stage, provided great encouragement, defining a number of early stage, but high priority exploration targets that have the potential to deliver a major greenfield discovery.\u201dN<\/div><\/div>\t\t\t\t\t","videolink":"https:\/\/cdn.filestackcontent.com\/0wa2ctVQfmuu7KPsZSdf","created":"2022-05-27 01:27:49.383468","modified":"2022-05-27 01:36:40","story_type":"topic","feature_image_id":null,"author_id":13566,"has_comments":false,"tags":"","slug":null,"collaboration_id":null,"comments":0,"experience_id":939,"assessment_id":null,"visibility":30,"view_time":null,"parent_id":null,"project_id":1659,"meta":"[]","deleted":false,"deleted_date":null},"Filestore":[{"name":"combinatorial.pdf","extension":".pdf","path":"s3:\/\/practera\/institution\/d2e9543d-961b-417b-9ca1-ca8f82719a56\/experience\/6602615a-2f00-4ab0-85be-81ea5826c1c9\/hI9gfybhQRObm4rSA9Dj_combinatorial.pdf","type":"application\/pdf","size":96415,"visibility":"experience"," experience_id":939,"program_id":1296,"slug":"https:\/\/cdn.filestackcontent.com\/yHipZf63S86hX1JX8GyK","model":"Story.Topic","institution_id":52,"foreign_key":37623}]}]};
+    const response = {"success":true,"status":"success","cache":false,"data":[{"Story":{"meta": { "audio_content": { "language": "en", "status": "", "audio_url": ""} },"audiolink":"", "id":37623,"program_id":0,"title":"Newcrest identifies gold-copper targets and high-priority soil","summary":null,"content":"<div><p><span style=\"font-family: Verdana;\"><br><\/span><\/p><\/div><hr><div><p><span style=\"font-family: Verdana;\">\ufeff<\/span><span style=\"font-size: 12px;\">\ufeff<\/span>Newcrest Mining said it has identified gold-copper targets and high-priority soil. The IGO Paterson Farm-in project detected seven copper and gold anomalies, three air core anomalies and four soil anomalies.<\/p><div><br><\/div><div>The announcement was part of Antipa Minerals update on the Paterson Farm\u2010in project and Wilki Farm\u2010in project exploration programmes where IGO and Newcrest are fully funding ongoing exploration activities.<\/div><div><br><\/div><div>Both projects involve diamond drilling.<\/div><div><br><\/div><div>\u201cThe Paterson Farm\u2010in Project\u2019s exciting new soil and air core targets are located within the highly prospective El Paso Structural Corridor, which extends from Havieron in the southeast, past Winu in the northwest,\u201d said Antipa managing director Roger Mason.<\/div><div><br><\/div><div>\u201cSeveral of these new targets are adjacent to the northern border of our 100 per cent owned Minyari Dome Project. Our tenure has just enough shallow cover to conceal, but also detect (via geophysics and soil sampling), potential world\u2010class gold\u2010copper deposits. The project\u2010scale, systematic exploration approach by the Paterson Farm\u2010in Project partners is designed to target any potential giants lurking under this shallow cover.<\/div><div><br><\/div><div>\u201cLast year\u2019s exploration results, whilst early stage, provided great encouragement, defining a number of early stage, but high priority exploration targets that have the potential to deliver a major greenfield discovery.\u201dN<\/div><\/div>\t\t\t\t\t","videolink":"https:\/\/cdn.filestackcontent.com\/0wa2ctVQfmuu7KPsZSdf","created":"2022-05-27 01:27:49.383468","modified":"2022-05-27 01:36:40","story_type":"topic","feature_image_id":null,"author_id":13566,"has_comments":false,"tags":"","slug":null,"collaboration_id":null,"comments":0,"experience_id":939,"assessment_id":null,"visibility":30,"view_time":null,"parent_id":null,"project_id":1659,"deleted":false,"deleted_date":null},"Filestore":[{"name":"combinatorial.pdf","extension":".pdf","path":"s3:\/\/practera\/institution\/d2e9543d-961b-417b-9ca1-ca8f82719a56\/experience\/6602615a-2f00-4ab0-85be-81ea5826c1c9\/hI9gfybhQRObm4rSA9Dj_combinatorial.pdf","type":"application\/pdf","size":96415,"visibility":"experience"," experience_id":939,"program_id":1296,"slug":"https:\/\/cdn.filestackcontent.com\/yHipZf63S86hX1JX8GyK","model":"Story.Topic","institution_id":52,"foreign_key":37623}]}]};
+
     return of(response).pipe(delay(1000));
   }
 
@@ -1643,7 +1685,7 @@ export class DemoService {
     ]
   }
 
-  get deletedExperience() {
+  get deletedExperience(): Experience {
     return {
       "id": 1933,
       "uuid": "ff96d1bc-a8aa-4f76-a048-f583c95fd013",
@@ -1653,7 +1695,7 @@ export class DemoService {
       "type": "Other",
       "leadImage": "https://cdn.filestackcontent.com/DX2DHY73QRuZvn7yUukP",
       "status": null,
-      "setupStep": null,
+      // "setupStep": null,
       "color": "#ff9c01",
       "secondaryColor": "#ffd966",
       "todoItemCount": 0,
@@ -1668,7 +1710,12 @@ export class DemoService {
       "iconUrl": "https://cdn.filestackcontent.com/oJBGJGbBRNq4TIKt2AGz",
       "reviewRating": true,
       "truncateDescription": true,
-      "__typename": "Experience"
+      "config": {},
+      "progress": 0,
+      "featureToggle": {
+        "pulseCheckIndicator": true,
+      },
+      "projectId": 1,
     };
   }
 }

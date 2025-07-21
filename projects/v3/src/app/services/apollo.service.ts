@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { RequestService } from 'request';
-import { catchError, concatMap, map } from 'rxjs/operators';
+import { catchError, concatMap, first, map } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({
@@ -93,19 +93,19 @@ export class ApolloService {
    * Valid options:
    * noCache: Boolean default false. If set to false, will not cache the result
    */
-  graphQLWatch(query: string, variables?: any, options?: any): Observable<any> {
+  graphQLWatch<T>(query: string, variables?: any, options?: any): Observable<any> {
     options = { ...{ noCache: false }, ...options };
-    const watch = this.apollo.watchQuery({
+    const watch = this.apollo.watchQuery<T>({
       query: gql(query),
       variables: variables || {},
-      fetchPolicy: options.noCache ? 'no-cache' : 'cache-and-network'
+      fetchPolicy: options?.noCache ? 'no-cache' : 'cache-and-network'
     });
     return watch.valueChanges
-      .pipe(map(response => {
-        return response;
-      }))
       .pipe(
-        catchError((error) => this.requestService.handleError(error))
+        catchError((error) => {
+          console.error('GraphQL watchQuery error:', error);
+          return this.requestService.handleError(error);
+        })
       );
   }
 
@@ -175,5 +175,30 @@ export class ApolloService {
       data,
       fragment: gql`${fragment}`,
     });
+  }
+
+  logError(message: string): Observable<{
+    success: boolean;
+    message: string;
+  }> {
+    if (environment.production !== true) {
+      return of(null);
+    }
+
+    if (typeof message !== 'string') {
+      message = JSON.stringify(message);
+    }
+
+    const from = 'app';
+    return this.graphQLMutate(`
+      mutation logError($from: String!, $message: String!) {
+        logError(from: $from, message: $message) {
+          success
+          message
+        }
+      }`, {
+      from,
+      message
+    }).pipe(first());
   }
 }

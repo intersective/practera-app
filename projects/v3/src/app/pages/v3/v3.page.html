@@ -1,6 +1,7 @@
-<ion-split-pane contentId="main-content" [when]="isMobile? 'lg' : '(min-width: 0px)'">
+<ion-split-pane contentId="main-content" [when]="splitpaneEnabled">
   <ion-menu contentId="main-content"
-    [ngClass]="{'collapsed': !isMobile && !openMenu}"
+    swipeGesture="false"
+    [ngClass]="{'collapsed': isMenuOpen === false}"
     [@openClose]="collapsibleMenu"
     (@openClose.done)="direction()">
 
@@ -54,7 +55,7 @@
         </ion-item>
       </ion-list>
 
-      <ion-item *ngIf="!isMobile"
+      <ion-item
         class="footer"
         lines="none"
         detail="false"

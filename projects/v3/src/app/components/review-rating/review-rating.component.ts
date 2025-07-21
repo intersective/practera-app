@@ -1,10 +1,11 @@
+import { firstValueFrom } from 'rxjs';
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { NotificationsService } from '@v3/services/notifications.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
+import { NotificationsService } from '../../services/notifications.service';
 
 @Component({
   selector: 'app-review-rating',
@@ -62,8 +63,8 @@ export class ReviewRatingComponent implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private utils: UtilsService,
+    private fastFeedbackService: FastFeedbackService,
     private notificationsService: NotificationsService,
-    readonly fastFeedbackService: FastFeedbackService,
   ) {}
 
   ngOnInit(): void {
@@ -75,7 +76,7 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   async submitReviewRating() {
-    if (this.ratingData?.rating === undefined || this.moodSelected === undefined) {
+    if (this.ratingData?.rating === undefined || this.moodSelected === undefined || this.isSubmitting === true) {
       return;
     }
 
@@ -84,15 +85,22 @@ export class ReviewRatingComponent implements OnInit {
     this.ratingData.rating = +(this.ratingData.rating.toFixed(2));
 
     try {
-      await this.reviewRatingService.submitRating(this.ratingData).toPromise();
+      await firstValueFrom(this.reviewRatingService.submitRating(this.ratingData));
       this.isSubmitting = false;
       this.ratingSessionEnd = true;
     } catch (err) {
+      this.isSubmitting = false;
+
+      const error = err?.error;
+      if (error && error?.msg.includes('already rated this review') && error.success === false) {
+        return this.dismissModal();
+      }
+
       await this.notificationsService.alert({
         header: $localize`Error submitting rating`,
-        message: err.msg ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.msg}` : JSON.stringify(err),
+        subHeader: $localize`Apologies for the inconvenience caused. Something went wrong.`,
+        message: err.msg || error.msg || JSON.stringify(error),
       });
-      this.isSubmitting = false;
 
       throw new Error(err);
     }

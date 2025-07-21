@@ -27,8 +27,7 @@ export class AppComponent implements OnInit {
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public sanitizer: DomSanitizer,
-    // private splashScreen: SplashScreen,
-    // private statusBar: StatusBar
+    private cleanupService: ComponentCleanupService
   ) {
     this.customHeader = null;
     this.initializeApp();

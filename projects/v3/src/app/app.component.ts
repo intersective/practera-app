@@ -5,7 +5,7 @@ import {
   HostListener,
   OnDestroy,
 } from "@angular/core";
-import { NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, NavigationStart, Router } from "@angular/router";
 import { Platform } from "@ionic/angular";
 import { SharedService } from "@v3/services/shared.service";
 import { environment } from "@v3/environments/environment";
@@ -17,6 +17,7 @@ import { VersionCheckService } from "@v3/services/version-check.service";
 import { MessagingService } from '@v3/services/messaging.service';
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
   selector: "app-root",
@@ -36,6 +37,11 @@ export class AppComponent implements OnInit, OnDestroy {
     'register',
     'forgot_password',
     'reset_password',
+    'global_login',
+    'direct_login',
+    'do=secure',
+    'auth/secure',
+    'undefined',
   ];
 
   constructor(
@@ -49,9 +55,16 @@ export class AppComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private versionCheckService: VersionCheckService,
     private messagingService: MessagingService,
+    private cleanupService: ComponentCleanupService,
   ) {
     this.customHeader = null;
     this.initializeApp();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.cleanupService.triggerCleanup();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -85,7 +98,7 @@ export class AppComponent implements OnInit, OnDestroy {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo = expConfig[0].logo;
+            let logo: string = expConfig[0].logo;
 
             const config = expConfig[0].config || {}; // let it fail gracefully
 
@@ -99,7 +112,7 @@ export class AppComponent implements OnInit, OnDestroy {
             }
 
             // add the domain if the logo url is not a full url
-            if (!logo?.includes("http") && !this.utils.isEmpty(logo)) {
+            if (!this.utils.isEmpty(logo) && logo?.includes("http")) {
               logo = environment.APIEndpoint + logo;
             }
             const colors = {
@@ -199,6 +212,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   // redirect to the last visited url/assessment if available
   redirectToLastVisitedUrl(): Promise<boolean> {
+    if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
+      return this.navigate(window.location.href);
+    }
+
     const lastVisitedUrl = this.storage.lastVisited("url") as string;
     if (lastVisitedUrl) {
       const lastVisitedAssessmentUrl = this.storage.lastVisited("assessmentUrl");

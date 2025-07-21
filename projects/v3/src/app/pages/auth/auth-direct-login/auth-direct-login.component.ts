@@ -211,14 +211,14 @@ export class AuthDirectLoginComponent implements OnInit {
   }): void | Promise<boolean> {
     const currentLocation = window.location.href;
     const locale = options?.experience?.locale;
-    if (currentLocation.indexOf('localhost') === -1 && currentLocation.indexOf(locale) === -1) {
+    if (currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else { // Info: This block is only for development purpose
       /* eslint-disable no-console */
       console.info('URL redirection::', {
         dev: route,
-        prod: [`/${locale || null}`, ...route]
+        prod: [locale ? `/${locale}` : '', ...route].filter(Boolean)
       });
     }
 
@@ -253,7 +253,7 @@ export class AuthDirectLoginComponent implements OnInit {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            // calling auth service logout mentod to clear user data and redirect
+            // clear login data
             this.authService.logout();
           }
         }
