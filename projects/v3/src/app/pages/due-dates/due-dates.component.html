@@ -16,7 +16,7 @@
 
       <ion-item *ngFor="let assessment of group.assessments">
         <ion-label>
-          <h3>{{ assessment.name }}</h3>
+          <h3 [innerHTML]="assessment.name"></h3>
           <p>{{ assessment.dueDate | date }}</p>
         </ion-label>
         <ion-button fill="clear" (click)="goTo(assessment)">Go to</ion-button>
