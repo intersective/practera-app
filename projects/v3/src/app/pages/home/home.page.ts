@@ -53,8 +53,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
-  @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
-  @ViewChild('activities', {static: false}) activities!: ElementRef;
+  @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
+  @ViewChild('activities', { static: false }) activities!: ElementRef;
   pulseCheckSkills: PulseCheckSkill[] = [];
 
   // Expose Math to template
