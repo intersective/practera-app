@@ -164,14 +164,14 @@ export class SharedService {
    */
   markTopicStopOnNavigating() {
     if (this.storage.get('startReadTopic')) {
-      this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
-        _response => {
+      this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe({
+        next: _response => {
           this.storage.remove('startReadTopic');
         },
-        err => {
+        error: err => {
           console.error('error in mark Topic Stop On Navigating - ', err);
         }
-      );
+      });
     }
   }
 
