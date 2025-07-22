@@ -204,12 +204,17 @@ export class FastFeedbackComponent implements OnInit {
     }
   }
 
-  dismiss(data) {
-    // change the flag to false
+  async dismiss(data): Promise<void> {
     this.storage.set("fastFeedbackOpening", false);
-    this.modalController.dismiss(data);
-    this.homeService.getPulseCheckStatuses().subscribe();
-    this.homeService.getPulseCheckSkills().subscribe();
+    await this.modalController.dismiss(data);
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    try {
+      await firstValueFrom(this.homeService.getPulseCheckStatuses());
+      await firstValueFrom(this.homeService.getPulseCheckSkills());
+    } catch (error) {
+      console.error('Error refreshing pulse check data:', error);
+    }
   }
 
   get isRedColor(): boolean {
