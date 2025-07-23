@@ -123,7 +123,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   pageRequiredCompletion: boolean[] = []; // indicator for required questions
   readonly manyPages = MIN_SCROLLING_PAGES;
 
-  @ViewChildren('questionBox') questionBoxes!: QueryList<{el: HTMLElement}>;
+  @ViewChildren('questionBox') questionBoxes!: QueryList<{ el: HTMLElement }>;
   @ViewChild('pageIndicatorsContainer') pageIndicatorsContainer: ElementRef;
 
   // prevent non participants from submitting team assessment
@@ -144,6 +144,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+  }
+
+  // make sure video is stopped when user leave the page
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingVideos();
   }
 
   pageSize = 8; // number of questions per page
@@ -193,6 +198,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   getQuestionBoxById(id) {
     return this.questionBoxes.find(boxes => boxes.el.id === id);
   }
+
   getQuestionBoxes() {
     return this.questionBoxes;
   }
@@ -271,6 +277,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // Email content for repeated invalid answer error
   private invalidAnswerEmailContent(rawData) {
     const body = `Hi Team,\n
 I am experiencing issues with submitting my assessment answers.\n
@@ -447,12 +454,12 @@ Best regards`;
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    // question groups
+    // questions in multiple groups
     this.assessment.groups.forEach(group => {
-      // questions in each group
       group.questions.forEach(question => {
         let validator = [];
-        // check if the compulsory is mean for current user's role
+        // check if the compulsory is role-specific
+        // e.g. compulsory for submitter, but not for reviewer
         const isRequired = this._isRequired(question);
         // only apply required validators when user can actually edit (doAssessment or isPendingReview)
         if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
@@ -509,7 +516,7 @@ Best regards`;
     ) {
       this.doAssessment = true;
       if (this.submission) {
-        this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
+        this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.submission.modified)}`);
       }
       return;
     }
@@ -529,14 +536,9 @@ Best regards`;
 
   private _handleReviewData() {
     if (this.isPendingReview && this.review.status === 'in progress') {
-      this.savingMessage$.next($localize `Last saved ${this.utils.timeFormatter(this.review.modified)}`);
+      this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
-  }
-
-  // make sure video is stopped when user leave the page
-  ionViewWillLeave() {
-    this.sharedService.stopPlayingVideos();
   }
 
   /**
@@ -575,7 +577,7 @@ Best regards`;
           if (this.action === 'review' && this.utils.isEmpty(thisQuestion.answer) && this.utils.isEmpty(thisQuestion.file)) {
             isEmpty = true;
 
-          // for assessment: file is part of the answer
+            // for assessment: file is part of the answer
           } else if (this.action === 'assessment' && (this.utils.isEmpty(thisQuestion) || this.utils.isEmpty(thisQuestion.answer))) {
             isEmpty = true;
           }
@@ -705,7 +707,7 @@ Best regards`;
     return answer;
   }
 
-  async _submitAnswer({autoSave = false, goBack = false}) {
+  async _submitAnswer({ autoSave = false, goBack = false }) {
     const answers = this.filledAnswers();
     // check if all required questions have answer when assessment done
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
