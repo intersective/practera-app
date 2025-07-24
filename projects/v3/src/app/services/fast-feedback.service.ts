@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { of, from, Observable } from 'rxjs';
-import { switchMap, delay, take, retryWhen, finalize } from 'rxjs/operators';
+import { of, from, Observable, retry } from 'rxjs';
+import { switchMap, finalize } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
@@ -19,7 +19,7 @@ export class FastFeedbackService {
     private utils: UtilsService,
     private demo: DemoService,
     private apolloService: ApolloService,
-  ) {}
+  ) { }
 
   private _getFastFeedback(skipChecking = false, type?: string): Observable<ApiResponse<{
     pulseCheck: {
@@ -88,10 +88,11 @@ export class FastFeedbackService {
     closable?: boolean; // allow skipping modal popup (with a close button)
     type?: string; // some pulsecheck require type: 'skills'
   } = {
-    modalOnly: false,
-    skipChecking: false,
-    closable: false,
-  }): Observable<any> {
+      modalOnly: false,
+      skipChecking: false,
+      closable: false
+    }
+  ): Observable<any> {
     return this._getFastFeedback(options.skipChecking, options.type).pipe(
       switchMap((res) => {
         try {
@@ -152,9 +153,9 @@ export class FastFeedbackService {
           });
         }
       }),
-      retryWhen((errors) => {
-        // retry for 3 times if API go wrong
-        return errors.pipe(delay(1000), take(3));
+      retry({
+        count: 3,
+        delay: 1000
       })
     );
   }
