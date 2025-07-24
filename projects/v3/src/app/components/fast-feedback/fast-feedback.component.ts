@@ -37,6 +37,10 @@ export class FastFeedbackComponent implements OnInit {
   totalPages = 0;
   showPagination = true;
 
+  // hover tracking for choice descriptions
+  hoveredChoice: string | null = null;
+  isSkillsPulseCheck: boolean = false;
+
   @Input() questions = [];
   @Input() meta?: Meta;
   @Input() closable: boolean;
@@ -90,6 +94,28 @@ export class FastFeedbackComponent implements OnInit {
   goToPage(index: number) {
     if (index >= 0 && index < this.totalPages) {
       this.currentPage = index;
+    }
+  }
+
+  onChoiceHover(questionId: number, choiceId: number) {
+    if (!this.isMobile) {
+      this.hoveredChoice = `${questionId}-${choiceId}`;
+    }
+  }
+
+  onChoiceLeave() {
+    if (!this.isMobile) {
+      this.hoveredChoice = null;
+    }
+  }
+
+  isChoiceDescriptionVisible(questionId: number, choiceId: number): boolean {
+    const key = `${questionId}-${choiceId}`;
+
+    if (this.isMobile) {
+      return this.fastFeedbackForm.get(questionId.toString())?.value === choiceId;
+    } else {
+      return this.hoveredChoice === key;
     }
   }
 
