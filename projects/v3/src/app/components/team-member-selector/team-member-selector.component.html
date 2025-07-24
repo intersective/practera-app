@@ -34,7 +34,7 @@
   <ion-list class="no-bg">
     <ion-radio-group
       [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-      [value]="submission.answer"
+      [value]="innerValue"
       #answerEle
       (ionChange)="onChange(answerEle.value)">
       <ion-item lines="none"
