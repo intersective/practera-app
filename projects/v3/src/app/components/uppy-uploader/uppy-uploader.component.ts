@@ -1,11 +1,10 @@
-import { UppyFileData, UppyUploaderService } from './uppy-uploader.service';
+import { UppyFileData, UppyUploaderService, ALLOWED_FILE_TYPES } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
-import { UtilsService } from '../../services/utils.service';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -18,13 +17,6 @@ type FileBody = { [key: string]: any };
 export class UppyUploaderComponent implements OnInit, OnDestroy {
   @Input() source!: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image";
   @Input() tusEndpoint?: string = environment.uppyConfig.tusUrl; // tusUrl
-  @Input() allowedFileTypes: string[] = [
-    "image/*",
-    "video/*",
-    ".jpeg",
-    ".png",
-    "application/pdf",
-  ];
   @Output() uploadComplete = new EventEmitter<any>();
 
   uploadedFile: UppyFile<any, any> | null = null;
@@ -44,7 +36,6 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private modalController: ModalController,
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
-    private utils: UtilsService,
   ) {
     this.uppyProps.height = '500px';
     this.uppyProps.note = "Upload a file here";
@@ -59,13 +50,11 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       throw new Error("source is required.");
     }
 
-    this.allowedFileTypes = this.loadAllowedFileTypes();
-
     this.uppy = this.uppyUploaderService.createUppyInstance(this.source, this.tusEndpoint, {
       onAfterResponse: this.onAfterResponse.bind(this),
       onUploadSuccess: this.onUploadSuccess.bind(this),
     }, {
-      allowedFileTypes: this.allowedFileTypes,
+      allowedFileTypes: this.loadAllowedFileTypes(),
     });
   }
 
@@ -85,11 +74,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       case "chat":
       case "any":
       default:
-        return [
-          "image/*",
-          "video/*",
-          "application/*"
-        ];
+        return ALLOWED_FILE_TYPES;
     }
   }
 
