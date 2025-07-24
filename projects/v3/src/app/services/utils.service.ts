@@ -805,9 +805,25 @@ export class UtilsService {
     return null;
   }
 
+  /**
+   * decode HTML entities in a string
+   * @param input string containing HTML entities
+   * @returns decoded string
+   */
+  decodeHtmlEntities(input: string): string {
+    if (!input) {
+      return '';
+    }
+
+    const tempDiv = this.document.createElement('div');
+    tempDiv.innerHTML = input;
+    return tempDiv.textContent || '';
+  }
+
   // set page title
   setPageTitle(title: string) {
-    this.title.setTitle(title);
+    const decodedTitle = this.decodeHtmlEntities(title);
+    this.title.setTitle(decodedTitle);
   }
 
   scrollToElement(element: HTMLElement) {
