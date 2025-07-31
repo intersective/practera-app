@@ -78,6 +78,7 @@ export class TopicComponent implements OnInit, OnChanges, OnDestroy {
         this._setVideoUrlElelemts();
       }
       this._initVideoPlayer();
+      this.buttonDisabled$.next(false);
     }
 
     if (changes.topic?.currentValue?.title) {

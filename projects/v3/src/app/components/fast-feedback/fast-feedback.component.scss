@@ -161,7 +161,118 @@ ion-item {
 
 .question-card {
   border-radius: 8px;
-  padding: 1em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin-bottom: 16px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+// pagination
+.progress-indicator {
+  margin-bottom: 20px;
+
+  span {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--ion-color-medium);
+  }
+
+  ion-progress-bar {
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+}
+
+.navigation-buttons {
+  ion-button {
+    min-width: 110px;
+  }
+}
+
+.dot-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 15px 0;
+  flex-wrap: wrap;
+
+  .dot-button {
+    width: 40px;
+    height: 40px;
+    --padding-start: 0;
+    --padding-end: 0;
+    margin: 0 5px;
+
+    &.active ion-icon {
+      font-size: 20px;
+      color: var(--ion-color-primary);
+    }
+
+    &.completed ion-icon {
+      color: var(--ion-color-success);
+      font-size: 18px;
+    }
+
+    ion-icon {
+      font-size: 16px;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+.submit-button {
+  min-width: 110px;
+}
+
+.questions-container {
+  position: relative;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes descriptionFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(5px);
+    max-height: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+  }
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--ion-color-primary-rgb), 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(var(--ion-color-primary-rgb), 0.1);
+  }
+}
+
+@keyframes touch-feedback {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes descriptionFadeIn {

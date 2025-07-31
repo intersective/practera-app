@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { of, from, Observable, retry } from 'rxjs';
-import { switchMap, finalize } from 'rxjs/operators';
+import { of, from, Observable } from 'rxjs';
+import { switchMap, retry, finalize } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
@@ -129,7 +129,6 @@ export class FastFeedbackService {
                 {
                   questions,
                   meta,
-                  isSkillsPulseCheck: options.type === 'skills',
                 },
                 {
                   closable: options.closable,

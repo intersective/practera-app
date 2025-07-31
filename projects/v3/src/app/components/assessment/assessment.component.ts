@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -62,7 +62,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * 'reivew' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
-  @Input() action: string;
+  @Input() action: 'assessment' | 'review';
   @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
@@ -154,6 +154,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // make sure video is stopped when user leave the page
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingVideos();
+  }
+
   pageSize = 8; // number of questions per page
   pageIndex = 0;
 
@@ -214,6 +219,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   getQuestionBoxById(id) {
     return this.questionBoxes.find(boxes => boxes.el.id === id);
   }
+
   getQuestionBoxes() {
     return this.questionBoxes;
   }
@@ -292,6 +298,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // Email content for repeated invalid answer error
   private invalidAnswerEmailContent(rawData) {
     const body = `Hi Team,\n
 I am experiencing issues with submitting my assessment answers.\n
@@ -409,16 +416,19 @@ Best regards`;
     );
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(simpleChanges: SimpleChanges): void {
     if (!this.assessment) {
       return;
     }
 
     this._initialise();
-    this._populateQuestionsForm();
-    this._handleSubmissionData();
-    this._handleReviewData();
-    this._preventSubmission();
+
+    if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
+      this._handleSubmissionData();
+      this._populateQuestionsForm();
+      this._handleReviewData();
+      this._populateFormWithAnswers();
+    }
 
     // split by question count every time assessment changes - only if pagination is enabled
     if (this.isPaginationEnabled) {
@@ -429,8 +439,6 @@ Best regards`;
       this.pagesGroups = [];
       this.pageIndex = 0;
     }
-
-    this._populateFormWithAnswers();
 
     // scroll to the active page into view after rendering
     setTimeout(() => this.scrollActivePageIntoView(), 200);
@@ -454,32 +462,56 @@ Best regards`;
     this.isPendingReview = false;
   }
 
+  /**
+   * Validator to check if an answer is required.
+   * @param control The form control to validate.
+   * @returns An object with the validation error or null if valid.
+   */
+  private _answerRequiredValidator(control: FormControl) {
+    const value = control.value;
+    if (value === null) return { required: true };
+    if (typeof value === 'object' && value !== null) {
+      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) return { required: true };
+    } else if (typeof value === 'string') {
+      if (value.length === 0) return { required: true };
+    }
+    return null;
+  }
+
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    // question groups
+    // questions in multiple groups
     this.assessment.groups.forEach(group => {
-      // questions in each group
       group.questions.forEach(question => {
         let validator = [];
-        // check if the compulsory is mean for current user's role
-        if (this._isRequired(question) === true) {
-          validator = [Validators.required];
+        // check if the compulsory is role-specific
+        // e.g. compulsory for submitter, but not for reviewer
+        const isRequired = this._isRequired(question);
+        // only apply required validators when user can actually edit (doAssessment or isPendingReview)
+        if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
+          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
+            validator = [this._answerRequiredValidator];
+          } else {
+            validator = [Validators.required];
+          }
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
       });
     });
 
+    // when no questions in the assessment, disable the button
+    if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
+      return this.btnDisabled$.next(true);
+    }
+
     this.questionsForm.valueChanges.pipe(
       takeUntil(this.unsubscribe$),
       debounceTime(300),
     ).subscribe(() => {
       this.initializePageCompletion();
-      if ((!this.submission || this.submission.status === 'in progress' ||
-          (this.isPendingReview && this.review.status === 'in progress'))) {
-        this.btnDisabled$.next(this.questionsForm.invalid);
-      }
+      this.setSubmissionDisabled();
     });
   }
 
@@ -534,11 +566,6 @@ Best regards`;
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
-  }
-
-  // make sure video is stopped when user leave the page
-  ionViewWillLeave() {
-    this.sharedService.stopPlayingVideos();
   }
 
   /**
@@ -1154,7 +1181,7 @@ Best regards`;
 
   private _populateFormWithAnswers() {
     // Populate form with submission answers
-    if (this.submission?.answers) {
+    if (this.submission?.answers && this.action === 'assessment') {
       Object.keys(this.submission.answers).forEach(questionId => {
         const controlName = 'q-' + questionId;
         const control = this.questionsForm.get(controlName);
@@ -1165,7 +1192,7 @@ Best regards`;
     }
 
     // Populate form with review answers
-    if (this.review?.answers) {
+    if (this.review?.answers && this.action === 'review') {
       Object.keys(this.review.answers).forEach(questionId => {
         const controlName = 'q-' + questionId;
         const control = this.questionsForm.get(controlName);
@@ -1179,9 +1206,38 @@ Best regards`;
       });
     }
 
+    if (this.utils.isEmpty(this.submission?.answers) && this.utils.isEmpty(this.review?.answers) && this.questionsForm?.invalid) {
+      this.setSubmissionDisabled();
+    }
+
     // Initialize page completion after form is populated
     setTimeout(() => {
       this.initializePageCompletion();
     }, 100);
+  }
+
+  setSubmissionDisabled() {
+    // only enforce form validation when user can actually edit
+    if (!this.doAssessment && !this.isPendingReview) {
+      return;
+    }
+
+    const isFormValid = this.questionsForm?.valid ?? false;
+    const isCurrentlyDisabled = this.btnDisabled$.getValue();
+
+    // Update button state only if it needs to change
+    if (!isFormValid && !isCurrentlyDisabled) {
+      this.btnDisabled$.next(true);
+    } else if (isFormValid && isCurrentlyDisabled) {
+      this.btnDisabled$.next(false);
+    }
+  }
+
+  /**
+   * determine if required indicators should be shown for a question
+   * only show required indicators when user can actually edit the form
+   */
+  shouldShowRequiredIndicator(question: Question): boolean {
+    return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
   }
 }
