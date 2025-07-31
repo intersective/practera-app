@@ -4,10 +4,10 @@ import { ModalController } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
-import { environment } from '../../../environments/environment';
 import { UppyUploaderComponent } from './uppy-uploader.component';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Dashboard } from 'uppy';
+import { environment } from '../../../environments/environment';
 
 export interface UppyUploaderResponse {
   path: string;
