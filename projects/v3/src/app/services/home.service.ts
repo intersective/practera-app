@@ -154,11 +154,13 @@ export class HomeService {
     return res.data.experience;
   }
 
-  getMilestones() {
+  getMilestones(options: { forceRefresh?: boolean } = {}) {
+    const { forceRefresh = false } = options;
+
     if (environment.demo) {
       return this.demo
         .milestones()
-        .pipe(map((res) => this._normaliseProject(res)))
+        .pipe(map((res) => this._normaliseProject(res, forceRefresh)))
         .subscribe();
     }
 
@@ -197,11 +199,11 @@ export class HomeService {
         }
       }`
       )
-      .pipe(map((res) => this._normaliseProject(res)))
+      .pipe(map((res) => this._normaliseProject(res, forceRefresh)))
       .subscribe();
   }
 
-  private _normaliseProject(data): Array<Milestone> {
+  private _normaliseProject(data, forceRefresh: boolean = false): Array<Milestone> {
     if (!data) {
       return null;
     }
@@ -217,8 +219,8 @@ export class HomeService {
 
     this._activityCount$.next(activityCount);
 
-    // only update if the milestones are different
-    if (!this.utilsService.isEqual(this._milestones$.getValue(), milestones)) {
+    // only update if the milestones are different, or if force refresh is requested
+    if (forceRefresh || !this.utilsService.isEqual(this._milestones$.getValue(), milestones)) {
       this._milestones$.next(milestones);
     }
 
