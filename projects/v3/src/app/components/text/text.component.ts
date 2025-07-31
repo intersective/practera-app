@@ -1,5 +1,5 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl } from '@angular/forms';
+import { NG_VALUE_ACCESSOR, FormControl, AbstractControl, ControlValueAccessor } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Question } from '@v3/services/assessment.service';
 import { Subject, Subscription } from 'rxjs';
@@ -26,22 +26,17 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   @Input() submissionId?: number;
   @Input() review;
   @Input() reviewId?: number;
-  // this is for review status
   @Input() reviewStatus;
-  // this is for assessment status
   @Input() submissionStatus;
-  // this is for doing an assessment or not
   @Input() doAssessment: Boolean;
-  // this is for doing review or not
   @Input() doReview: Boolean;
-  // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
+
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: IonTextarea;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
-  // the value of answer &| comment
   innerValue: any;
   answer: FormControl;
   comment: FormControl;
@@ -128,42 +123,24 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
     }
   }
 
-  // event fired when input/textarea value is changed. propagate the change up to the form control using the custom value accessor interface
-  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(type: 'answer' | 'comment' = null) {
-    // set changed value (answer or comment)
-    if (type) {
-      // initialise innerValue if not set
+  onChange(type?: 'answer' | 'comment') {
+    if (this.doReview === true) { // review has both answer and comment
       if (!this.innerValue) {
         this.innerValue = {
           answer: '',
           comment: ''
         };
       }
+
       this.innerValue[type] = this[type];
-    } else {
+    } else { // assessment has only answer
       this.innerValue = this.answer;
     }
 
     this.propagateChange(this.innerValue);
-
-    // 05/02/2019
-    // Don't check "is required" error for now, it has some error.
-    // Since we are checking required answer when submit, it's OK to just return here.
-    return ;
-    // reset errors
-    // this.errors = [];
-    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    // for (const key in this.control.errors) {
-    //   if (key === 'required') {
-    //     this.errors.push('This question is required');
-    //   } else {
-    //     this.errors.push(this.control.errors[key]);
-    //   }
-    // }
+    return;
   }
 
-  // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
@@ -182,20 +159,24 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if (['in progress', 'not start'].includes(this.reviewStatus) && (this.doReview)) {
+    if (['in progress', 'not start'].includes(this.reviewStatus) && this.doReview) {
       this.innerValue = {
-        answer: [],
-        comment: ''
+        answer: this.review.answer,
+        comment: this.review.comment
       };
-      this.innerValue.comment = this.review.comment;
-      this.comment = this.review.comment;
-      this.innerValue.answer = this.review.answer;
-      this.answer = this.review.answer;
+
+      if (this.control.pristine) {
+        this.comment = this.review.comment;
+        this.answer = this.review.answer;
+      } else {
+        this.comment = this.control?.value?.comment || this.review.comment;
+        this.answer = this.control?.value?.answer || this.review.answer;
+      }
+    } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      this.answer = this.control.pristine ? this.submission.answer : this.control.value;
+      this.innerValue = this.answer;
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
-      this.answer = this.submission.answer;
-    }
+
     this.propagateChange(this.innerValue);
     this.control.setValue(this.innerValue);
   }
@@ -204,6 +185,10 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   // then will identify it as a student and mentor answering in the same question and
   // border need to add only for mentor section not for full question
   audienceContainReviewer() {
+    if (!this.question || !this.question.audience) {
+      return false;
+    }
+
     return this.question.audience.length > 1 && this.question.audience.includes('reviewer');
   }
 
