@@ -63,6 +63,9 @@ export const environment = {
   newrelic: false,
   goMobile: false,
   helpline: 'help@practera.com',
+  featureToggles: {
+    assessmentPagination: true,
+  },
 };
 
 /*
