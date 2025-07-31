@@ -9,13 +9,14 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Experience, HomeService, Milestone } from '@v3/services/home.service';
+import { Experience, HomeService, Milestone, PulseCheckSkill } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
+import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 
 @Component({
   selector: "app-home",
@@ -54,6 +55,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
   @ViewChild('activities', { static: false }) activities!: ElementRef;
+  pulseCheckSkills: PulseCheckSkill[] = [];
+
+  // Expose Math to template
+  Math = Math;
 
   constructor(
     private router: Router,
@@ -67,6 +72,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
+    private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -183,6 +189,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.unsubscribe$.complete();
   }
 
+  openPulseCheck() {
+    this.fastFeedbackService.pullFastFeedback({
+      closable: true,
+      skipChecking: true,
+      type: 'skills'
+    }).pipe(first()).subscribe();
+  }
+
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.experience = this.storageService.get("experience");
@@ -223,6 +237,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         return of(null);
       })
     ).subscribe();
+
+    this.homeService.getPulseCheckSkills().pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe((res) => {
+      const newSkills = res?.data?.pulseCheckSkills || [];
+      if (newSkills.length > 0) {
+        this.pulseCheckSkills = newSkills;
+      }
+    });
   }
 
   goBack() {
@@ -355,6 +378,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     await alert.present();
   }
 
+  async showGlobalSkillsInfo() {
+    const alert = await this.alertController.create({
+      header: 'Global Skills Assessment',
+      message: `You'll regularly complete self-assessments of your Global Skills throughout this program. These assessments help you identify key areas for growth and development, while tracking your progress along the way. The Skills Strength section helps visualise your progress, making it easier to see your development over time. For detailed guidance on completing these assessments, refer to the 'How to Self-Assess Your Global Skills' topic.`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
@@ -393,6 +427,35 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.storageService.append('errors', e);
       }
     }
+  }
+
+  // generate aria-label for skill dot
+  // each circle announces its state
+  // eg. "Level X achieved", "Level X half achieved", "Level X not achieved"
+  getSkillDotAriaLabel(level: number, skillValue: number): string {
+    if (level <= Math.floor(skillValue)) {
+      return `Level ${level} achieved`;
+    } else if (level === Math.floor(skillValue) + 1 && skillValue % 1 === 0.5) {
+      return `Level ${level} half achieved`;
+    } else {
+      return `Level ${level} not achieved`;
+    }
+  }
+
+  /**
+   * Get formatted percentage change string with appropriate styling
+   * @param skillId - The ID of the skill
+   * @param currentValue - Current skill value
+   * @param changeValue - Change value from API
+   * @returns Object with change text and CSS class
+   */
+  getSkillChangeDisplay(skillId: number, currentValue: number, changeValue?: number): { text: string; cssClass: string } | null {
+    // Use change value from API if available
+    if (changeValue !== undefined) {
+      return this.pulsecheckService.getSkillChangeDisplayFromValue(changeValue);
+    }
+    // Return null if no change value provided
+    return null;
   }
 
   // show unlock guideline for locked milestone or activity
