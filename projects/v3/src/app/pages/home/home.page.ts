@@ -11,8 +11,8 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Experience, HomeService, Milestone } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
+import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
@@ -28,7 +28,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   activityCount$: Observable<number>;
   experienceProgress: number;
   pulseCheckStatus: TrafficLightGroupComponent["lights"];
-  milestones: Milestone[];
+  milestones: Milestone[] = null; // Initialize as null to differentiate between not loaded and empty
   achievements: Achievement[];
   experience: Experience;
 
@@ -52,8 +52,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
-  @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
-  @ViewChild('activities', {static: false}) activities!: ElementRef;
+  @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
+  @ViewChild('activities', { static: false }) activities!: ElementRef;
 
   constructor(
     private router: Router,
@@ -91,6 +91,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         distinctUntilChanged(),
         filter((milestones) => milestones !== null),
         takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading milestones:', error);
+          return of([]);
+        })
       ).subscribe(
         (milestones) => {
           this.milestones = milestones;
@@ -98,13 +102,25 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       );
 
     this.achievementService.achievements$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading achievements:', error);
+          return of([]);
+        })
+      )
       .subscribe((res) => {
         this.achievements = res;
       });
 
     this.homeService.experienceProgress$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading experience progress:', error);
+          return of(-1); // Use -1 to indicate error state
+        })
+      )
       .subscribe((res) => {
         this.experienceProgress = res;
       });
@@ -112,7 +128,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.homeService.projectProgress$
       .pipe(
         filter((progress) => progress !== null),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading project progress:', error);
+          return of(null);
+        })
       )
       .subscribe((progress) => {
         progress?.milestones?.forEach((m) => {
@@ -133,7 +153,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.unlockIndicatorService.unlockedTasks$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading unlocked tasks:', error);
+          return of([]);
+        })
       )
       .subscribe({
         next: (unlockedTasks) => {
@@ -162,7 +186,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.experience = this.storageService.get("experience");
-    this.homeService.getMilestones();
+    this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
@@ -171,7 +195,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     if (this.pulseCheckIndicatorEnabled === true) {
       this.homeService.getPulseCheckStatuses().pipe(
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading pulse check statuses:', error);
+          return of({ data: { pulseCheckStatus: {} } });
+        })
       ).subscribe((res) => {
         this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
       });
@@ -190,6 +218,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.fastFeedbackService.pullFastFeedback().pipe(
       first(),
       takeUntil(this.unsubscribe$),
+      catchError((error) => {
+        console.error('Error loading fast feedback:', error);
+        return of(null);
+      })
     ).subscribe();
   }
 
