@@ -11,15 +11,21 @@
 
 <ion-content class="ion-padding">
   <div class="ion-text-center ion-margin-bottom">
-    <ng-container *ngIf="isSkillsPulseCheck; else defaultPulseCheck">
-      <p class="body-1" i18n>Select the skill level that best describes you right now.</p>
-    </ng-container>
-    <ng-template #defaultPulseCheck>
-      <p class="body-1" i18n>
+    <ng-container [ngSwitch]="pulseCheckType">
+      <p class="body-1" *ngSwitchCase="'skills'" i18n>Select the skill level that best describes you right now.</p>
+      <p class="body-1" *ngSwitchCase="'onTrack'" i18n>
         Please help us to improve your experience.<br>
         We want to know how are you doing.
       </p>
-    </ng-template>
+      <p class="body-1" *ngSwitchCase="'both'" i18n>
+        Please help us to improve your experience.<br>
+        We want to know how are you doing and your skill levels.
+      </p>
+      <p class="body-1" *ngSwitchDefault i18n>
+        Please help us to improve your experience.<br>
+        We want to know how are you doing.
+      </p>
+    </ng-container>
   </div>
 
   <form (ngSubmit)="submit()" [formGroup]="fastFeedbackForm">
