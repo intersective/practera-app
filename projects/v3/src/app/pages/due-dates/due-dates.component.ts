@@ -6,6 +6,7 @@ import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
 import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { UtilsService } from '../../services/utils.service';
 
 interface GroupedAssessments {
   month: string;
@@ -30,8 +31,9 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     private dueDatesService: DueDatesService,
     private notificationsService: NotificationsService,
     private assessmentService: AssessmentService,
+    private utilsService: UtilsService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit() {
     // improved: no need for manual subscription, handle in observable pipeline
@@ -64,7 +66,15 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     this.isLoading = true;
     this.statusFilter = '';
     this.assessmentService.dueStatusAssessments()
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        map(assessments => {
+          return assessments.map(assessment => {
+            assessment.name = this.utilsService.decodeHtmlEntities(assessment.name);
+            return assessment;
+          });
+        })
+      )
       .subscribe({
         next: (assessments) => {
           if (assessments?.length) {
