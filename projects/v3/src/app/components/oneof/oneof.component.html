@@ -39,33 +39,59 @@
 </ng-container>
 
 <ng-container *ngIf="doAssessment">
-  <div class="ion-no-padding">
-    <ion-list class="ion-no-padding">
-      <ion-radio-group [value]="innerValue" #answerEle
-        (ionChange)="onChange(answerEle.value)"
-        [attr.aria-labelledby]="'oneof-question-' + question.id">
-        <ng-container *ngFor="let choice of question.choices; let i = index">
-          <ion-item lines="none"
-            [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
-            <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></ion-label>
-            <ion-radio color="success"
-              [ariaLabel]="choice.name"
-              [value]="choice.id"
-              [disabled]="control.disabled"
-              slot="start"
-              mode="md"
-            ></ion-radio>
-          </ion-item>
-          <ng-container
-          *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
-            <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
-              <ion-icon slot="start" name="information-circle"></ion-icon>
-              <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
-            </ion-item>
-          </ng-container>
-        </ng-container>
-      </ion-radio-group>
-    </ion-list>
+  <div class="likert-slider-container ion-padding">
+    <!-- Slider with discrete steps -->
+    <ion-range
+      #rangeEle
+      [min]="0"
+      [max]="question.choices.length - 1"
+      [step]="1"
+      [snaps]="true"
+      [ticks]="true"
+      [pin]="true"
+      [pinFormatter]="pinFormatter"
+      [value]="getSliderValue()"
+      (ionInput)="onSliderChange($event)"
+      [disabled]="control.disabled"
+      [attr.aria-labelledby]="'oneof-question-' + question.id"
+      color="success"
+      class="likert-range">
+    </ion-range>
+
+    <!-- Choice labels positioned below slider -->
+    <div class="choice-labels">
+      <div
+        *ngFor="let choice of question.choices; let i = index"
+        class="choice-label"
+        [ngClass]="{'selected': checkInnerValue(choice.id)}"
+        (click)="onLabelClick(i)">
+        <span [innerHTML]="choice.name"></span>
+      </div>
+    </div>
+
+    <!-- Selected choice display -->
+    <div class="selected-choice" *ngIf="innerValue">
+      <ion-chip color="success" class="selection-indicator">
+        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+        <ion-label>Selected: {{ getSelectedChoiceLabel() }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <!-- Explanation for selected choice (when disabled/readonly) -->
+    <ng-container *ngFor="let choice of question.choices">
+      <div *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)"
+           class="explanation-container">
+        <ion-card class="explanation-card">
+          <ion-card-content>
+            <div class="explanation-header">
+              <ion-icon name="information-circle" color="primary"></ion-icon>
+              <ion-label class="explanation-title">Explanation</ion-label>
+            </div>
+            <div class="explanation-text" [innerHTML]="choice.explanation"></div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ng-container>
   </div>
 </ng-container>
 

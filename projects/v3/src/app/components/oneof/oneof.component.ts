@@ -195,4 +195,39 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
+
+  // Add these methods for Likert slider functionality
+  getSliderValue(): number {
+    if (!this.innerValue) return 0;
+    const index = this.question.choices.findIndex(choice => choice.id === this.innerValue);
+    return index >= 0 ? index : 0;
+  }
+
+  onSliderChange(event: any): void {
+    const sliderValue = event.detail.value;
+    const selectedChoice = this.question.choices[sliderValue];
+    if (selectedChoice) {
+      this.onChange(selectedChoice.id);
+    }
+  }
+
+  onLabelClick(index: number): void {
+    if (!this.control.disabled) {
+      const selectedChoice = this.question.choices[index];
+      if (selectedChoice) {
+        this.onChange(selectedChoice.id);
+      }
+    }
+  }
+
+  getSelectedChoiceLabel(): string {
+    if (!this.innerValue) return '';
+    const selectedChoice = this.question.choices.find(choice => choice.id === this.innerValue);
+    return selectedChoice ? selectedChoice.name : '';
+  }
+
+  pinFormatter = (value: number): string => {
+    const choice = this.question.choices[value];
+    return choice ? choice.name : '';
+  };
 }
