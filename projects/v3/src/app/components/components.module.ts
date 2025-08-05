@@ -43,6 +43,7 @@ import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
 import { FilePopupComponent } from './file-popup/file-popup.component';
+import { SliderComponent } from './slider/slider.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -97,6 +98,7 @@ const largeCircleDefaultConfig = {
     PopUpComponent,
     ReviewListComponent,
     ReviewRatingComponent,
+    SliderComponent,
     TeamMemberSelectorComponent,
     TextComponent,
     TodoCardComponent,
