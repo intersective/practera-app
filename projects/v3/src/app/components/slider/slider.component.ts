@@ -4,18 +4,18 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-oneof',
-  templateUrl: 'oneof.component.html',
-  styleUrls: ['./oneof.component.scss'],
+  selector: 'app-slider',
+  templateUrl: 'slider.component.html',
+  styleUrls: ['./slider.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => OneofComponent),
+      useExisting: forwardRef(() => SliderComponent),
     }
   ]
 })
-export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnInit {
+export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
   @Input() question;
@@ -33,10 +33,6 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
-  // answer field for submitter & reviewer
-  @ViewChild('answerEle') answerRef: ElementRef;
-  // comment field for reviewer
-  @ViewChild('commentEle') commentRef: ElementRef;
 
   // the value of answer
   innerValue: any;
@@ -63,7 +59,7 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
-  // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
+  // event fired when slider value changes. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type?: string) {
     // set changed value (answer or comment)
@@ -99,13 +95,13 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
   triggerSave(): void {
     const action: {
-      saveInProgress?: boolean; // git conflict (trunk-v3)
+      saveInProgress?: boolean;
       autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
-      saveInProgress: true, // git conflict (trunk-v3)
+      saveInProgress: true,
       autoSave: true,
       goBack: false,
     };
@@ -163,6 +159,7 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     if ((this.submissionStatus === 'in progress') && this.doAssessment) {
       this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
+
     this.propagateChange(this.innerValue);
   }
 
@@ -194,4 +191,87 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
+
+  // Likert slider functionality methods
+  getSliderValue(): number {
+    if (!this.innerValue) return 0;
+    const index = this.question.choices.findIndex(choice => choice.id === this.innerValue);
+    return index >= 0 ? index : 0;
+  }
+
+  onSliderChange(event: any): void {
+    const sliderValue = event.detail.value;
+    const selectedChoice = this.question.choices[sliderValue];
+    if (selectedChoice) {
+      this.onChange(selectedChoice.id);
+    }
+  }
+
+  onLabelClick(index: number): void {
+    if (!this.control.disabled) {
+      const selectedChoice = this.question.choices[index];
+      if (selectedChoice) {
+        this.onChange(selectedChoice.id);
+      }
+    }
+  }
+
+  getSelectedChoiceLabel(choiceId?: any): string {
+    const targetValue = choiceId || this.innerValue;
+    if (!targetValue) return '';
+    const selectedChoice = this.question.choices.find(choice => choice.id === targetValue);
+    return selectedChoice ? selectedChoice.name : '';
+  }
+
+  getChoiceNameById(choiceId: any): string {
+    if (!choiceId) return '';
+    const choice = this.question.choices.find(c => c.id === choiceId);
+    return choice ? choice.name : '';
+  }
+
+  // Get slider value for submission (learner's answer)
+  getSubmissionSliderValue(): number {
+    if (!this.submission?.answer) return 0;
+    const index = this.question.choices.findIndex(choice => choice.id === this.submission.answer);
+    return index >= 0 ? index : 0;
+  }
+
+  // Get slider value for review (expert's answer)
+  getReviewSliderValue(): number {
+    if (!this.innerValue?.answer) return 0;
+    const index = this.question.choices.findIndex(choice => choice.id === this.innerValue.answer);
+    return index >= 0 ? index : 0;
+  }
+
+  // Handle review slider changes
+  onReviewSliderChange(event: any): void {
+    const sliderValue = event.detail.value;
+    const selectedChoice = this.question.choices[sliderValue];
+    if (selectedChoice) {
+      this.onChange(selectedChoice.id, 'answer');
+    }
+  }
+
+  // Handle review label clicks
+  onReviewLabelClick(index: number): void {
+    if (!this.control.disabled) {
+      const selectedChoice = this.question.choices[index];
+      if (selectedChoice) {
+        this.onChange(selectedChoice.id, 'answer');
+      }
+    }
+  }
+
+  // Check if choice is selected in review mode
+  checkReviewValue(choiceId: any): boolean {
+    if (!choiceId || !this.innerValue?.answer) {
+      return false;
+    }
+    return choiceId === this.innerValue.answer;
+  }
+
+  pinFormatter = (value: number): string => {
+    const choice = this.question.choices[value];
+    return choice ? choice.name : '';
+  };
 }
