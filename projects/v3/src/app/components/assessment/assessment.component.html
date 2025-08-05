@@ -194,6 +194,21 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-text>
 
+              <app-slider *ngSwitchCase="'slider'"
+                #questionField
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="isPendingReview"
+                [submissionId]="submission?.id"
+                [reviewId]="review?.id"
+                [submission]="submission?.answers[question.id] || {}"
+                [review]="review?.answers[question.id] || {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm?.controls['q-' + question.id]"
+                [submitActions$]="submitActions"></app-slider>
+
               <app-oneof *ngSwitchCase="'oneof'"
                 #questionField
                 [question]="question"
