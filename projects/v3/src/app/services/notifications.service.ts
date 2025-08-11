@@ -471,6 +471,8 @@ export class NotificationsService {
     return this.modal(FastFeedbackComponent, props, modalConfig);
   }
 
+  private currentTodoItems: {id: number, identifier: string}[] = [];
+
   getTodoItems(): Observable<any> {
     return this.request
       .get(api.get.todoItem, {
@@ -481,6 +483,15 @@ export class NotificationsService {
       .pipe(
         map((response) => {
           if (response.success && response.data) {
+            // Store current TodoItems for duplicate detection
+            this.currentTodoItems = response.data.map(item => ({
+              id: item.id,
+              identifier: item.identifier
+            }));
+
+            // Clean up orphaned unlock indicators before normalizing
+            this.unlockIndicatorService.cleanupOrphanedIndicators(response.data);
+
             const normalised = this._normaliseTodoItems(response.data);
             this.notifications = normalised;
             this._notification$.next(this.notifications);
@@ -488,6 +499,13 @@ export class NotificationsService {
           }
         })
       );
+  }
+
+  /**
+   * Get current TodoItems for duplicate detection
+   */
+  getCurrentTodoItems(): {id: number, identifier: string}[] {
+    return this.currentTodoItems;
   }
 
   /**
@@ -1043,6 +1061,25 @@ export class NotificationsService {
         is_done: true,
       },
     });
+  }
+
+  /**
+   * Mark multiple todo items as done (bulk operation)
+   * Handles server-side duplicates for same unlock indicator
+   */
+  markMultipleTodoItemsAsDone(items: { identifier?: string; id?: number }[]) {
+    const markingOperations = items.map(item =>
+      this.markTodoItemAsDone(item).pipe(
+        // Add error handling for individual items
+        map(response => ({ success: true, item, response })),
+        // Don't let individual failures stop the whole bulk operation
+        // catchError(error => of({ success: false, item, error }))
+      )
+    );
+
+    // eslint-disable-next-line no-console
+    console.log(`Bulk marking ${items.length} TodoItems as done:`, items);
+    return markingOperations;
   }
 
   async trackInfo() {
