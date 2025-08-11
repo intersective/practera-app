@@ -302,10 +302,75 @@ export class ActivityDesktopPage {
           }
         });
       }
+      // Clear pure activity-level unlock indicators on page enter/update
+      this._clearPureActivityIndicator(res.id);
       return;
     }
 
     this.activity = res;
+    // Clear pure activity-level unlock indicators on initial set
+    this._clearPureActivityIndicator(res.id);
+  }
+
+  /**
+   * clears activity-level unlock indicators on page enter
+   */
+  private _clearPureActivityIndicator(activityId: number): void {
+    if (!activityId) { return; }
+
+    try {
+      // First try the enhanced approach that handles duplicates
+      const currentTodoItems = this.notificationsService.getCurrentTodoItems();
+      const entries = this.unlockIndicatorService.getTasksByActivityId(activityId);
+
+      if (entries?.length > 0 && entries.every(e => e.taskId === undefined)) {
+        // handles server-side duplicates and hierarchy
+        const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activityId, currentTodoItems);
+
+        // Mark all duplicate TodoItems as done (bulk operation)
+        if (result.duplicatesToMark.length > 0) {
+          const markingOps = this.notificationsService.markMultipleTodoItemsAsDone(result.duplicatesToMark);
+          markingOps.forEach(op => op.subscribe({
+            next: (response) => console.log('Marked duplicate activity TodoItem as done:', response),
+            error: (error) => console.error('Failed to mark activity TodoItem as done:', error)
+          }));
+        }
+
+        // handles cascade milestone clearing
+        result.cascadeMilestones.forEach(milestoneData => {
+          if (milestoneData.duplicatesToMark.length > 0) {
+            console.log(`Cascade clearing milestone ${milestoneData.milestoneId} with ${milestoneData.duplicatesToMark.length} duplicates`);
+            const milestoneMarkingOps = this.notificationsService.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
+            milestoneMarkingOps.forEach(op => op.subscribe({
+              next: (response) => console.log('Marked cascade milestone TodoItem as done:', response),
+              error: (error) => console.error('Failed to mark cascade milestone TodoItem as done:', error)
+            }));
+          }
+        });
+
+        // Fallback: mark cleared localStorage items as done (for backward compatibility)
+        result.clearedUnlocks?.forEach(todo => {
+          this.notificationsService.markTodoItemAsDone(todo).subscribe();
+        });
+        return;
+      }
+
+      // If standard approach didn't find anything, try robust clearing for inaccurate data
+      const relatedIndicators = this.unlockIndicatorService.findRelatedIndicators('activity', activityId);
+      if (relatedIndicators?.length > 0) {
+        // Only clear if they are pure activity-level (no task-specific entries)
+        const pureActivityIndicators = relatedIndicators.filter(r => r.taskId === undefined);
+        if (pureActivityIndicators.length > 0) {
+          const cleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activityId);
+          cleared?.forEach(todo => {
+            this.notificationsService.markTodoItemAsDone(todo).subscribe();
+          });
+        }
+      }
+    } catch (e) {
+      // swallow to avoid breaking page enter; optional logging can be added under dev flag
+      console.debug('[unlock-indicator] cleanup skipped for activity', activityId, e);
+    }
   }
 
   /**
@@ -396,25 +461,25 @@ export class ActivityDesktopPage {
     try {
       // handle unexpected submission: do final status check before saving
       let hasSubmssion = false;
-      const { submission } = await this.assessmentService
-        .fetchAssessment(
+      const { submission } = await firstValueFrom(
+        this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
         )
-        .toPromise();
+      );
 
       if (submission?.status === 'in progress') {
-        const saved = await this.assessmentService
-          .submitAssessment(
+        const saved = await firstValueFrom(
+          this.assessmentService.submitAssessment(
             event.submissionId,
             event.assessmentId,
             event.contextId,
             event.answers
           )
-          .toPromise();
+        );
 
         // http 200 but error
         if (
