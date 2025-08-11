@@ -116,7 +116,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
         this.resetTaskIndicator(unlockedTasks);
         if (unlockedTasks.length === 0) {
-          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
+          // handle inaccurate unlock indicators
+          const clearedActivities = this.unlockIndicatorService.clearRelatedIndicators('activity', this.activity.id);
           clearedActivities.forEach((activity) => {
             this.notificationsService
               .markTodoItemAsDone(activity)
