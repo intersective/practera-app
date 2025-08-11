@@ -323,18 +323,36 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
-      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(
-        activity.id
-      );
-      clearedActivityTodo?.forEach((todo) => {
-        this.notification
-          .markTodoItemAsDone(todo)
-          .pipe(first())
-          .subscribe(() => {
-            // eslint-disable-next-line no-console
-            console.log("Marked activity as done", todo);
-          });
+      // handles server-side duplicates and hierarchy
+      const currentTodoItems = this.notification.getCurrentTodoItems();
+      const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activity.id, currentTodoItems);
+
+      // Mark all duplicate TodoItems as done (bulk operation)
+      if (result.duplicatesToMark.length > 0) {
+        const markingOps = this.notification.markMultipleTodoItemsAsDone(result.duplicatesToMark);
+      }
+
+      // Handle cascade milestone clearing
+      result.cascadeMilestones.forEach(milestoneData => {
+        if (milestoneData.duplicatesToMark.length > 0) {
+          // Cascade clearing milestone with duplicates
+          const milestoneMarkingOps = this.notification.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
+        }
       });
+
+      // Fallback: if no duplicates found, try robust clearing for inaccurate data
+      if (result.duplicatesToMark.length === 0) {
+        const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activity.id);
+        fallbackCleared?.forEach((todo) => {
+          this.notification
+            .markTodoItemAsDone(todo)
+            .pipe(first())
+            .subscribe(() => {
+              // eslint-disable-next-line no-console
+              console.info("Marked activity as done (fallback)", todo);
+            });
+        });
+      }
     }
 
     if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
@@ -354,18 +372,28 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @return  {void}
    */
   verifyUnlockedMilestoneValidity(milestoneId: number): void {
-    // check & update unlocked milestones
-    const unlockedMilestones =
-      this.unlockIndicatorService.clearActivity(milestoneId);
-    unlockedMilestones.forEach((unlockedMilestone) => {
-      this.notification
-        .markTodoItemAsDone(unlockedMilestone)
-        .pipe(first())
-        .subscribe(() => {
-          // eslint-disable-next-line no-console
-          console.log("Marked milestone as done", unlockedMilestone);
-        });
-    });
+    // Use enhanced clearing that handles server-side duplicates
+    const currentTodoItems = this.notification.getCurrentTodoItems();
+    const result = this.unlockIndicatorService.clearByMilestoneIdWithDuplicates(milestoneId, currentTodoItems);
+
+    // Mark all duplicate TodoItems as done (bulk operation)
+    if (result.duplicatesToMark.length > 0) {
+      const markingOps = this.notification.markMultipleTodoItemsAsDone(result.duplicatesToMark);
+    }
+
+    // Fallback: if no duplicates found, try robust clearing for inaccurate data
+    if (result.duplicatesToMark.length === 0) {
+      const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('milestone', milestoneId);
+      fallbackCleared.forEach((unlockedMilestone) => {
+        this.notification
+          .markTodoItemAsDone(unlockedMilestone)
+          .pipe(first())
+          .subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.info("Marked milestone as done (fallback)", unlockedMilestone);
+          });
+      });
+    }
   }
 
   async onTrackInfo() {
