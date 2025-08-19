@@ -180,7 +180,8 @@ jobs:
           export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-prerelease.practera.com
           export CUSTOM_UPLOAD_TUS_ENDPOINT=https://tusd.practera.com/uploads/
           export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
-          export CUSTOM_HELPLINE=help@practera.com
+          export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=false
+          export CUSTOM_HELPLINE=programs@practera.com
           export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
 
           printf "Angular environment variable creation  complete\n\n"
