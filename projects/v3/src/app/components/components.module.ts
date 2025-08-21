@@ -144,6 +144,7 @@ const largeCircleDefaultConfig = {
     PopUpComponent,
     ReviewListComponent,
     ReviewRatingComponent,
+    SliderComponent,
     TeamMemberSelectorComponent,
     TextComponent,
     TodoCardComponent,

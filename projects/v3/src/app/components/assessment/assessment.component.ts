@@ -14,6 +14,7 @@ import { OneofComponent } from '../oneof/oneof.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
+import { SliderComponent } from '../slider/slider.component';
 import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, SubmitActions } from '../types/assessment';
@@ -74,7 +75,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
-  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
+  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent | SliderComponent>;
 
   autosaving = signal<{ [key: number]: boolean }>({});
   saved = signal<{ [key: number]: boolean }>({});
@@ -607,6 +608,9 @@ Best regards`;
           case 'team-member-selector':
           case 'multi-team-member-selector':
             answer = '';
+            break;
+          case 'slider':
+            answer = null;
             break;
         }
       }
