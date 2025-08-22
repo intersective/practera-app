@@ -3,9 +3,31 @@
 This document explains how the “unlock indicator” (red dot) is implemented, how it’s stored and updated, and how it appears in the UI across the Home page and list items.
 
 ## Files involved
+- Service: `projects/v- `activity.component.ts`
+  - Subscribes to `unlockIndicatorService.unlockedTasks$` and builds a `newTasks` map keyed by `taskId` to flag per-task "new/unlocked" state inside the activity view.
+  - Uses `distinctUntilChanged` to prevent unnecessary updates when unlock data hasn't actually changed.
+  - Only updates visual indicators without triggering any clearing logic when new unlocks arrive.
+  - Preserves newly unlocked task indicators until user explicitly clicks on them.
+
+- `activity-desktop.page.ts` & `activity-mobile.page.ts`
+  - Include page-enter cleanup logic (`_clearActivityLevelIndicators`) that respects hierarchical clearing rules.
+  - Only clear activity-level indicators when no task-level children remain (`isActivityClearable()`).
+  - Use enhanced duplicate detection and bulk TodoItem marking for reliable clearing.
+  - Handle both navigation from Home and direct activity entry scenarios.
+
+- `navigation-state.service.ts`
+  - **NEW**: Provides persistent navigation source tracking across routing boundaries.
+  - Solves the routing hierarchy issue where `router.getCurrentNavigation()` returns `null` after navigation completes.
+  - Used by Home page to set navigation source before navigation, and Activity pages to check source after navigation.
+  - Simple set/check/clear pattern: `setNavigationSource('home')` → `isFromSource('home')` → `clearNavigationSource()`.
+
+## Files involved
 - Service: `projects/v3/src/app/services/unlock-indicator.service.ts`
+- Service: `projects/v3/src/app/services/navigation-state.service.ts` *(NEW - navigation state tracking)*
 - Home page (TS): `projects/v3/src/app/pages/home/home.page.ts`
 - Home page (HTML): `projects/v3/src/app/pages/home/home.page.html`
+- Activity component (TS): `projects/v3/src/app/components/activity/activity.component.ts`
+- Activity pages: `projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts`
 - List item component (HTML): `projects/v3/src/app/components/list-item/list-item.component.html`
 
 ## Concept overview
@@ -93,15 +115,15 @@ findDuplicateTodoItems(currentTodoItems, unlockedTask) {
   return currentTodoItems.filter(item => {
     // Exact identifier match
     if (item.identifier === unlockedTask.identifier) return true;
-    
+
     // Base identifier pattern matching (handles variations)
     const baseIdentifier = unlockedTask.identifier.replace(/-\d+$/, '');
     const itemBaseIdentifier = item.identifier.replace(/-\d+$/, '');
     if (itemBaseIdentifier === baseIdentifier) return true;
-    
+
     // Prefix matching for same unlock event
     if (item.identifier.startsWith(baseIdentifier)) return true;
-    
+
     return false;
   });
 }
@@ -115,11 +137,11 @@ clearByActivityIdWithDuplicates(activityId, currentTodoItems) {
   // 1. Clear activity and find all duplicates
   const activityResult = this.clearActivity(activityId);
   const duplicates = this.findAllDuplicates(activityResult);
-  
+
   // 2. Check affected parent milestones
   const affectedMilestones = new Set(activityResult.map(t => t.milestoneId));
   const cascadeMilestones = [];
-  
+
   affectedMilestones.forEach(milestoneId => {
     if (this.isMilestoneClearable(milestoneId)) {
       // 3. Auto-clear parent milestone if it becomes clearable
@@ -127,7 +149,7 @@ clearByActivityIdWithDuplicates(activityId, currentTodoItems) {
       cascadeMilestones.push(milestoneResult);
     }
   });
-  
+
   return { duplicates, cascadeMilestones };
 }
 ```
@@ -145,7 +167,7 @@ localStorage: [
 ```
 
 **When user visits activity 26686**:
-1. **Activity Clearing**: 
+1. **Activity Clearing**:
    - Finds duplicates: `[25480, 25479]` for "NewItem-17434"
    - Marks both as done via bulk API calls
    - Removes activity entry from localStorage
@@ -155,7 +177,7 @@ localStorage: [
    - Auto-triggers milestone clearing
 
 3. **Milestone Clearing**:
-   - Finds duplicates: `[25473, 25475, 25474]` for "NewItem-17432" 
+   - Finds duplicates: `[25473, 25475, 25474]` for "NewItem-17432"
    - Marks all as done via bulk API calls
    - Removes milestone entry from localStorage
 
@@ -178,7 +200,7 @@ getTodoItems() {
     map(response => {
       // Clean up stale localStorage entries before processing
       this.unlockIndicatorService.cleanupOrphanedIndicators(response.data);
-      
+
       const normalised = this._normaliseTodoItems(response.data);
       return normalised;
     })
@@ -302,7 +324,7 @@ No additional logic is required in the list item; it purely reflects the `redDot
 private _clearPureActivityIndicator() {
   const activityLevelEntries = this.unlockIndicatorService.getTasksByActivityId(this.activity.id)
     .filter(task => task.taskId === undefined); // Only pure activity entries
-  
+
   if (activityLevelEntries.length > 0 && this.unlockIndicatorService.isActivityClearable(this.activity.id)) {
     const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(this.activity.id, this.currentTodoItems);
     // Mark duplicates as done via bulk API calls
@@ -336,15 +358,75 @@ if (entry.taskId && !entry.activityId) {
 - `markMultipleTodoItemsAsDone()` handles bulk API marking
 - `cleanupOrphanedIndicators()` removes stale localStorage entries
 
+#### 5. Navigation State Loss in Activity Pages
+**Problem**: `router.getCurrentNavigation()` returns `null` after navigation completes, preventing proper clearing decision.
+
+**Solution**: NavigationStateService for persistent navigation tracking:
+```typescript
+// Home page - before navigation
+this.navigationStateService.setNavigationSource('home');
+this.router.navigate(['v3', 'activity-desktop', activityId]);
+
+// Activity page - after navigation
+const fromHome = this.navigationStateService.isFromSource('home');
+this.navigationStateService.clearNavigationSource();
+```
+
+#### 6. Task-Level Indicators Not Showing When User Already in Activity
+**Problem**: When user is viewing an activity and new tasks get unlocked, the red dots don't appear.
+
+**Solution**: Activity component reactive updates:
+- Subscribe to `unlockedTasks$` with `distinctUntilChanged()`
+- Update visual indicators without triggering clearing logic
+- Preserve new task indicators until user clicks on them
+```typescript
+// activity.component.ts
+ngOnInit() {
+  this.unlockIndicatorService.unlockedTasks$
+    .pipe(distinctUntilChanged(), takeUntil(this.unsubscribe$))
+    .subscribe(res => {
+      // Only update visual indicators, don't clear anything
+      if (this.activity?.id) {
+        const activityUnlocks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+        this.resetTaskIndicator(activityUnlocks);
+      }
+    });
+}
+```
+
+#### 7. Activity-Level Indicators Not Clearing Due to Strict Hierarchy
+**Problem**: Activity-level indicators persist because the condition `entries.every(e => e.taskId === undefined)` is too restrictive.
+
+**Solution**: Separate handling of activity-level vs task-level entries:
+```typescript
+const activityLevelEntries = entries.filter(e => e.taskId === undefined);
+const taskLevelEntries = entries.filter(e => e.taskId !== undefined);
+
+// Only clear activity-level when no task-level children exist
+if (activityLevelEntries.length > 0 && taskLevelEntries.length === 0) {
+  // Safe to clear activity-level indicators
+}
+```
+
 ### Implementation Checklist for Robustness
 
-- [ ] **Activity Pages**: Add page-enter cleanup for activity-level-only entries
+- [x] **NavigationStateService**: Persistent navigation source tracking across routing boundaries
+  - File: `projects/v3/src/app/services/navigation-state.service.ts`
+  - Resolves navigation state loss issues with `router.getCurrentNavigation()`
+- [x] **Activity Component Reactive Updates**: Preserve newly unlocked task indicators
+  - File: `projects/v3/src/app/components/activity/activity.component.ts`
+  - Uses `distinctUntilChanged()` and only updates visual indicators
+- [x] **Activity Pages**: Add page-enter cleanup for activity-level-only entries
   - Desktop: `projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts`
   - Mobile: Equivalent activity page files
+  - Implements hierarchical clearing with `_clearActivityLevelIndicators()`
+- [x] **Enhanced Hierarchy Logic**: Separate activity-level and task-level entry handling
+  - Prevents overly restrictive clearing conditions
+  - Only clears activity-level when no task-level children remain
 - [ ] **Service Methods**: Replace ambiguous `clearActivity` with explicit methods
   - `clearByActivityId(activityId: number)`
   - `clearByMilestoneId(milestoneId: number)`
-- [ ] **Data Validation**: Enforce `activityId` presence for task entries
+- [x] **Data Validation**: Enforce `activityId` presence for task entries
   - File: `projects/v3/src/app/services/notifications.service.ts`
 - [ ] **Route Guards**: Optional resolver-based cleanup on activity routes
 - [ ] **Testing**: Unit tests for new methods and e2e tests for deep links
@@ -371,12 +453,71 @@ Enhanced methods provide detailed console output:
 3. **Deep Link to Task**: Ensure task and parent clearing works
 4. **Milestone Clearing**: Verify cascade clearing when all children visited
 5. **Experience Switch**: Confirm `clearAllTasks()` resets all state
+6. **User Already in Activity**: Test that newly unlocked tasks show red dots immediately
+7. **Navigation State Persistence**: Verify NavigationStateService works across routing boundaries
+8. **Hierarchical Clearing**: Test that activity-level indicators only clear when no task children remain
+9. **Server Duplicate Handling**: Verify bulk TodoItem marking clears all duplicates
+10. **Activity Updates While Viewing**: Ensure new unlocks appear without false clearing
 
 ### Performance Considerations
 - **Bulk Operations**: Parallel TodoItem marking reduces API overhead
 - **Automatic Cleanup**: Orphaned data removal prevents localStorage bloat
 - **Cascade Logic**: Smart parent clearing reduces manual intervention
 - **Pattern Matching**: Efficient duplicate detection with regex patterns
+
+## Routing Hierarchy and Navigation State Issues
+
+### Problem: Navigation State Loss
+Angular's `router.getCurrentNavigation()` only returns navigation data **during** the navigation process. Once navigation completes and components load, it returns `null`. This creates issues when Activity pages need to determine their navigation source for clearing decisions.
+
+**Symptom**: Activity-level unlock indicators don't clear when navigating from Home because the navigation state is lost by the time the Activity page's `ionViewDidEnter()` executes.
+
+### Routing Structure Complexity
+```
+/v3/tabs
+├── /home (Home page)
+└── /activity-desktop/:id (Activity page)
+```
+
+The Home and Activity pages are siblings under the tabs router, not parent-child. This means navigation state passed via `router.navigate(['path'], { state: {...} })` gets lost during the tab routing process.
+
+### Solution: NavigationStateService
+A persistent service that tracks navigation source across routing boundaries:
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class NavigationStateService {
+  private navigationSource$ = new BehaviorSubject<string | null>(null);
+
+  setNavigationSource(source: string) { /* ... */ }
+  isFromSource(source: string): boolean { /* ... */ }
+  clearNavigationSource() { /* ... */ }
+}
+```
+
+**Implementation Pattern**:
+1. **Home page** (before navigation): `navigationStateService.setNavigationSource('home')`
+2. **Activity page** (after navigation): `isFromHome = navigationStateService.isFromSource('home')`
+3. **Activity page** (after reading): `navigationStateService.clearNavigationSource()`
+
+**Benefits**:
+- Works across any routing configuration (tabs, lazy-loaded modules, etc.)
+- Independent of Angular's navigation lifecycle timing
+- Simple and predictable behavior
+- Reliable alternative to transient navigation objects
+
+### Activity Page Entry Points
+Activity pages can be entered via multiple paths:
+- **Home → Activity**: Should clear activity-level indicators (if clearable)
+- **Direct URL/Deep Link**: Should clear activity-level indicators (if clearable)
+- **Task → Back → Activity**: Should not re-clear already cleared indicators
+- **Notification → Activity**: Should clear activity-level indicators (if clearable)
+
+The `_clearActivityLevelIndicators()` method handles all entry points by:
+1. Checking if activity has activity-level entries to clear
+2. Verifying no task-level children remain (`isActivityClearable()`)
+3. Using enhanced duplicate detection for reliable clearing
+4. Auto-cascading to parent milestones when they become clearable
 
 ## Edge cases and notes
 - **Hierarchy enforcement**: Activity-level clearing is intentionally conservative - it only happens when there are no task-level unlocks (`isActivityClearable` returns `true`). If any task under the activity remains unlocked, the red dot persists.
