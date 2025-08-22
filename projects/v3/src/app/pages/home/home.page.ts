@@ -5,6 +5,7 @@ import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
+import { NavigationStateService } from '@v3/app/services/navigation-state.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -69,6 +70,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private navigationStateService: NavigationStateService,
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
@@ -325,8 +327,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       // Handle marking duplicate TodoItems as done using centralized method
       this.unlockIndicatorService.markDuplicatesAsDone(result, this.notification, 'activity');
 
-      // Fallback: if no duplicates found, try robust clearing for inaccurate data
-      if (result.duplicatesToMark.length === 0) {
+      // Fallback: if no duplicates found, try to clear inaccurate data
+      if (result.duplicatesToMark.length === 0 && result.clearedUnlocks.length === 0) {
         const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activity.id);
         fallbackCleared?.forEach((todo) => {
           this.notification
@@ -345,6 +347,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     if (!this.isMobile) {
+      // manually set navigation source
+      this.navigationStateService.setNavigationSource('home');
       return this.router.navigate(["v3", "activity-desktop", activity.id]);
     }
 
