@@ -5,6 +5,7 @@ import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
+import { NavigationStateService } from '@v3/app/services/navigation-state.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -70,6 +71,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private navigationStateService: NavigationStateService,
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
@@ -327,6 +329,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       const currentTodoItems = this.notification.getCurrentTodoItems();
       const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activity.id, currentTodoItems);
 
+      // Mark the original cleared activity-level indicators as done
+      result.clearedUnlocks?.forEach((todo) => {
+        this.notification
+          .markTodoItemAsDone(todo)
+          .pipe(first())
+          .subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.info("Marked activity indicator as done", todo);
+          });
+      });
+
       // Mark all duplicate TodoItems as done (bulk operation)
       if (result.duplicatesToMark.length > 0) {
         const markingOps = this.notification.markMultipleTodoItemsAsDone(result.duplicatesToMark);
@@ -340,8 +353,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         }
       });
 
-      // Fallback: if no duplicates found, try robust clearing for inaccurate data
-      if (result.duplicatesToMark.length === 0) {
+      // Fallback: if no duplicates found, try to clear inaccurate data
+      if (result.duplicatesToMark.length === 0 && result.clearedUnlocks.length === 0) {
         const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activity.id);
         fallbackCleared?.forEach((todo) => {
           this.notification
@@ -360,6 +373,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     if (!this.isMobile) {
+      // manually set navigation source
+      this.navigationStateService.setNavigationSource('home');
       return this.router.navigate(["v3", "activity-desktop", activity.id]);
     }
 
@@ -376,13 +391,24 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const currentTodoItems = this.notification.getCurrentTodoItems();
     const result = this.unlockIndicatorService.clearByMilestoneIdWithDuplicates(milestoneId, currentTodoItems);
 
+    // Mark the original cleared milestone-level indicators as done
+    result.clearedUnlocks?.forEach((todo) => {
+      this.notification
+        .markTodoItemAsDone(todo)
+        .pipe(first())
+        .subscribe(() => {
+          // eslint-disable-next-line no-console
+          console.info("Marked milestone indicator as done", todo);
+        });
+    });
+
     // Mark all duplicate TodoItems as done (bulk operation)
     if (result.duplicatesToMark.length > 0) {
       const markingOps = this.notification.markMultipleTodoItemsAsDone(result.duplicatesToMark);
     }
 
     // Fallback: if no duplicates found, try robust clearing for inaccurate data
-    if (result.duplicatesToMark.length === 0) {
+    if (result.duplicatesToMark.length === 0 && result.clearedUnlocks.length === 0) {
       const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('milestone', milestoneId);
       fallbackCleared.forEach((unlockedMilestone) => {
         this.notification
