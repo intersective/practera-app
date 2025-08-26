@@ -61,7 +61,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // Expose Math to template
   Math = Math;
 
-
   constructor(
     private router: Router,
     private homeService: HomeService,
