@@ -1,6 +1,6 @@
 import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -17,7 +17,7 @@ import { MultipleComponent } from '../multiple/multiple.component';
 import { SliderComponent } from '../slider/slider.component';
 import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
-import { FileInput, SubmitActions } from '../types/assessment';
+import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 
 const MIN_SCROLLING_PAGES = 6; // minimum number of pages to show pagination scrolling

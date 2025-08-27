@@ -39,13 +39,37 @@ export interface SubmitActions {
   };
 }
 
-export interface Question {
+export interface Choice {
   id: number;
   name: string;
-  description: string;
-  isRequired: boolean;
-  fileType?: any,
-  audience: any[],
+  explanation?: string | any;
+}
+
+export interface TeamMember {
+  key: string;
+  userName: string;
+}
+
+export interface Question {
+  audience: string[];
   canAnswer: boolean;
   canComment: boolean;
+  choices?: Array<Choice>;
+  description: string;
+  fileType?: string;
+  hasComment?: boolean;
+  id: number;
+  info?: string;
+  isRequired: boolean;
+  meta?: {
+    slider?: {
+      min: number;
+      max: number;
+    };
+  };
+  name: string;
+  reviewerOnly?: boolean; // question meant for reviewer only
+  submitterOnly?: boolean;
+  teamMembers?: Array<TeamMember>;
+  type?: string; // 'text' | 'file' | 'multi' | 'slider' | 'one-of' | 'team-member';
 }
