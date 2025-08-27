@@ -2,23 +2,24 @@ import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewI
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { Question } from '../types/assessment';
 
 @Component({
-  selector: 'app-oneof',
-  templateUrl: 'oneof.component.html',
-  styleUrls: ['./oneof.component.scss'],
+  selector: 'app-slider',
+  templateUrl: 'slider.component.html',
+  styleUrls: ['./slider.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: forwardRef(() => OneofComponent),
+      useExisting: forwardRef(() => SliderComponent),
     }
   ]
 })
-export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnInit {
+export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
-  @Input() question;
+  @Input() question: Question;
   @Input() submission;
   @Input() submissionId: number;
   @Input() review;
@@ -33,10 +34,6 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
-  // answer field for submitter & reviewer
-  @ViewChild('answerEle') answerRef: ElementRef;
-  // comment field for reviewer
-  @ViewChild('commentEle') commentRef: ElementRef;
 
   // the value of answer
   innerValue: any;
@@ -46,9 +43,28 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
   autosave$ = new Subject<void>();
 
+  // Properties for slider support
+  sliderMin = 0;
+  sliderMax = 100;
+  generatedChoices: Array<{id: number, name: string}> = [];
+
   constructor() {}
 
   ngOnInit() {
+    if (this.question.meta?.slider) {
+      this.sliderMin = Number(this.question.meta.slider.min);
+      this.sliderMax = Number(this.question.meta.slider.max);
+
+      // Generate choices from min/max range
+      this.generatedChoices = [];
+      for (let i = this.sliderMin; i <= this.sliderMax; i++) {
+        this.generatedChoices.push({
+          id: i,
+          name: i.toString()
+        });
+      }
+    }
+
     this._showSavedAnswers();
   }
 
@@ -63,7 +79,7 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
-  // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
+  // event fired when slider value changes. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type?: string) {
     // set changed value (answer or comment)
@@ -99,13 +115,13 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
   triggerSave(): void {
     const action: {
-      saveInProgress?: boolean; // git conflict (trunk-v3)
+      saveInProgress?: boolean;
       autoSave?: boolean;
       goBack?: boolean;
       questionSave?: {};
       reviewSave?: {};
     } = {
-      saveInProgress: true, // git conflict (trunk-v3)
+      saveInProgress: true,
       autoSave: true,
       goBack: false,
     };
@@ -163,6 +179,7 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     if ((this.submissionStatus === 'in progress') && this.doAssessment) {
       this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
+
     this.propagateChange(this.innerValue);
   }
 
@@ -194,4 +211,79 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
+
+  // Likert slider functionality methods
+  getSliderValue(): number {
+    if (!this.innerValue) return this.sliderMin;
+
+    return typeof this.innerValue === 'number' ? this.innerValue : this.sliderMin;
+  }
+
+  onSliderChange(event: any): void {
+    const sliderValue = event.detail.value;
+    this.onChange(sliderValue);
+  }
+
+  onLabelClick(index: number): void {
+    if (!this.control.disabled && this.generatedChoices.length) {
+      const selectedChoice = this.generatedChoices[index];
+      if (selectedChoice) {
+        this.onChange(selectedChoice.id);
+      }
+    }
+  }
+
+  getSelectedChoiceLabel(choiceId?: any): string {
+    const targetValue = choiceId || this.innerValue;
+    if (!targetValue) return '';
+
+    return targetValue.toString();
+  }
+
+  getChoiceNameById(choiceId: any): string {
+    if (!choiceId) return '';
+
+    return choiceId.toString();
+  }
+
+  // Get slider value for submission (learner's answer)
+  getSubmissionSliderValue(): number {
+    if (!this.submission?.answer) return this.sliderMin;
+
+    return typeof this.submission.answer === 'number' ? this.submission.answer : this.sliderMin;
+  }
+
+  // Get slider value for review (expert's answer)
+  getReviewSliderValue(): number {
+    if (!this.innerValue?.answer) return this.sliderMin;
+
+    return typeof this.innerValue.answer === 'number' ? this.innerValue.answer : this.sliderMin;
+  }
+
+  // Handle review slider changes
+  onReviewSliderChange(event: any): void {
+    const sliderValue = event.detail.value;
+    this.onChange(sliderValue, 'answer');
+  }
+
+  onReviewLabelClick(index: number): void {
+    if (!this.control.disabled && this.generatedChoices.length) {
+      const selectedChoice = this.generatedChoices[index];
+      if (selectedChoice) {
+        this.onChange(selectedChoice.id, 'answer');
+      }
+    }
+  }
+
+  // Check if choice is selected in review mode
+  checkReviewValue(choiceId: any): boolean {
+    if (!choiceId || !this.innerValue?.answer) {
+      return false;
+    }
+    return choiceId === this.innerValue.answer;
+  }
+
+  pinFormatter = (value: number): string => {
+    return value.toString();
+  };
 }
