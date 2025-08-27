@@ -2,6 +2,7 @@ import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewI
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { Question } from '../types/assessment';
 
 @Component({
   selector: 'app-slider',
@@ -18,7 +19,7 @@ import { debounceTime } from 'rxjs/operators';
 export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
-  @Input() question;
+  @Input() question: Question;
   @Input() submission;
   @Input() submissionId: number;
   @Input() review;
@@ -42,9 +43,28 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
 
   autosave$ = new Subject<void>();
 
+  // Properties for slider support
+  sliderMin = 0;
+  sliderMax = 100;
+  generatedChoices: Array<{id: number, name: string}> = [];
+
   constructor() {}
 
   ngOnInit() {
+    if (this.question.meta?.slider) {
+      this.sliderMin = Number(this.question.meta.slider.min);
+      this.sliderMax = Number(this.question.meta.slider.max);
+
+      // Generate choices from min/max range
+      this.generatedChoices = [];
+      for (let i = this.sliderMin; i <= this.sliderMax; i++) {
+        this.generatedChoices.push({
+          id: i,
+          name: i.toString()
+        });
+      }
+    }
+
     this._showSavedAnswers();
   }
 
@@ -194,22 +214,19 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
 
   // Likert slider functionality methods
   getSliderValue(): number {
-    if (!this.innerValue) return 0;
-    const index = this.question.choices.findIndex(choice => choice.id === this.innerValue);
-    return index >= 0 ? index : 0;
+    if (!this.innerValue) return this.sliderMin;
+
+    return typeof this.innerValue === 'number' ? this.innerValue : this.sliderMin;
   }
 
   onSliderChange(event: any): void {
     const sliderValue = event.detail.value;
-    const selectedChoice = this.question.choices[sliderValue];
-    if (selectedChoice) {
-      this.onChange(selectedChoice.id);
-    }
+    this.onChange(sliderValue);
   }
 
   onLabelClick(index: number): void {
-    if (!this.control.disabled) {
-      const selectedChoice = this.question.choices[index];
+    if (!this.control.disabled && this.generatedChoices.length) {
+      const selectedChoice = this.generatedChoices[index];
       if (selectedChoice) {
         this.onChange(selectedChoice.id);
       }
@@ -219,43 +236,39 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   getSelectedChoiceLabel(choiceId?: any): string {
     const targetValue = choiceId || this.innerValue;
     if (!targetValue) return '';
-    const selectedChoice = this.question.choices.find(choice => choice.id === targetValue);
-    return selectedChoice ? selectedChoice.name : '';
+
+    return targetValue.toString();
   }
 
   getChoiceNameById(choiceId: any): string {
     if (!choiceId) return '';
-    const choice = this.question.choices.find(c => c.id === choiceId);
-    return choice ? choice.name : '';
+
+    return choiceId.toString();
   }
 
   // Get slider value for submission (learner's answer)
   getSubmissionSliderValue(): number {
-    if (!this.submission?.answer) return 0;
-    const index = this.question.choices.findIndex(choice => choice.id === this.submission.answer);
-    return index >= 0 ? index : 0;
+    if (!this.submission?.answer) return this.sliderMin;
+
+    return typeof this.submission.answer === 'number' ? this.submission.answer : this.sliderMin;
   }
 
   // Get slider value for review (expert's answer)
   getReviewSliderValue(): number {
-    if (!this.innerValue?.answer) return 0;
-    const index = this.question.choices.findIndex(choice => choice.id === this.innerValue.answer);
-    return index >= 0 ? index : 0;
+    if (!this.innerValue?.answer) return this.sliderMin;
+
+    return typeof this.innerValue.answer === 'number' ? this.innerValue.answer : this.sliderMin;
   }
 
   // Handle review slider changes
   onReviewSliderChange(event: any): void {
     const sliderValue = event.detail.value;
-    const selectedChoice = this.question.choices[sliderValue];
-    if (selectedChoice) {
-      this.onChange(selectedChoice.id, 'answer');
-    }
+    this.onChange(sliderValue, 'answer');
   }
 
-  // Handle review label clicks
   onReviewLabelClick(index: number): void {
-    if (!this.control.disabled) {
-      const selectedChoice = this.question.choices[index];
+    if (!this.control.disabled && this.generatedChoices.length) {
+      const selectedChoice = this.generatedChoices[index];
       if (selectedChoice) {
         this.onChange(selectedChoice.id, 'answer');
       }
@@ -271,7 +284,6 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   }
 
   pinFormatter = (value: number): string => {
-    const choice = this.question.choices[value];
-    return choice ? choice.name : '';
+    return value.toString();
   };
 }
