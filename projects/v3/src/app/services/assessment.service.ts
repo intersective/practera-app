@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
 import { RequestService } from 'request';
 import { FileInput, FileResponse } from '../components/types/assessment';
+import { Choice, Question } from '@v3/components/types/assessment';
 
 /**
  * @name api
@@ -58,34 +59,6 @@ export interface Group {
   name: string;
   description: string;
   questions: Array<Question>;
-}
-
-export interface Question {
-  id: number;
-  name: string;
-  type: string;
-  fileType?: string;
-  description: string;
-  info?: string;
-  isRequired: boolean;
-  canComment: boolean;
-  canAnswer: boolean;
-  choices?: Array<Choice>;
-  teamMembers?: Array<TeamMember>;
-  audience: string[];
-  submitterOnly?: boolean;
-  reviewerOnly?: boolean; // question meant for reviewer only
-}
-
-export interface Choice {
-  id: number;
-  name: string;
-  explanation?: string | any;
-}
-
-export interface TeamMember {
-  key: string;
-  userName: string;
 }
 
 export type SubmissionStatuses = 'in progress' | 'pending review' | 'published' | 'pending approval' | 'feedback available' | 'done';
@@ -140,7 +113,6 @@ export class AssessmentService {
     private demo: DemoService,
     private request: RequestService
   ) {
-    // this.assessment$.subscribe((res) => (this.assessment = res));
   }
 
   get assessment() {
@@ -170,7 +142,7 @@ export class AssessmentService {
           groups {
             name description
             questions{
-              id name description type isRequired hasComment audience fileType
+              id name description type isRequired hasComment audience fileType meta
               choices{
                 id name explanation description
               }
@@ -296,11 +268,15 @@ export class AssessmentService {
       allowResubmit: data.assessment.allowResubmit,
       groups: [],
     };
+
+    // group
     data.assessment.groups.forEach((eachGroup) => {
       const questions: Question[] = [];
       if (!eachGroup.questions) {
         return;
       }
+
+      // question
       eachGroup.questions.forEach((eachQuestion) => {
         this.questions[eachQuestion.id] = eachQuestion;
         const question: Question = {
@@ -315,6 +291,7 @@ export class AssessmentService {
               ? eachQuestion.audience.includes("reviewer")
               : eachQuestion.audience.includes("submitter"),
           audience: eachQuestion.audience,
+          meta: eachQuestion.meta,
           submitterOnly:
             eachQuestion.audience.length === 1 &&
             eachQuestion.audience.includes("submitter"),
