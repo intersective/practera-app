@@ -2,16 +2,15 @@
 
 <ng-container *ngIf="isDisplayOnly">
   <div class="likert-slider-container ion-padding display-only">
-    <!-- Disabled slider for display only -->
     <ion-range
-      [min]="0"
-      [max]="question.choices.length - 1"
+      [min]="sliderMin"
+      [max]="sliderMax"
       [step]="1"
       [snaps]="true"
       [ticks]="true"
       [pin]="true"
       [pinFormatter]="pinFormatter"
-      [value]="getSliderValue()"
+      [value]="submission?.answer"
       disabled
       [attr.aria-labelledby]="'slider-question-' + question.id"
       color="medium"
@@ -19,11 +18,11 @@
     </ion-range>
 
     <!-- Choice labels for display only -->
-    <div class="choice-labels display-only">
+    <div class="choice-labels display-only" *ngIf="generatedChoices.length">
       <div
-        *ngFor="let choice of question.choices; let i = index"
+        *ngFor="let choice of generatedChoices"
         class="choice-label"
-        [ngClass]="{'selected': checkInnerValue(choice.id)}">
+        [ngClass]="{'selected': submission?.answer === choice.id}">
         <span [innerHTML]="choice.name"></span>
       </div>
     </div>
@@ -39,22 +38,6 @@
         Expert's answer: {{ getChoiceNameById(review.answer) }}
       </ion-chip>
     </div>
-
-    <!-- Explanation for selected choice -->
-    <ng-container *ngFor="let choice of question.choices">
-      <div *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && (submission?.answer === choice.id || review?.answer === choice.id)"
-           class="explanation-container">
-        <ion-card class="explanation-card">
-          <ion-card-content>
-            <div class="explanation-header">
-              <ion-icon name="information-circle" color="primary"></ion-icon>
-              <ion-label class="explanation-title">Explanation</ion-label>
-            </div>
-            <div class="explanation-text" [innerHTML]="choice.explanation"></div>
-          </ion-card-content>
-        </ion-card>
-      </div>
-    </ng-container>
 
     <!-- Review feedback -->
     <ng-container *ngIf="review?.comment">
@@ -75,11 +58,10 @@
 
 <ng-container *ngIf="doAssessment">
   <div class="likert-slider-container ion-padding">
-    <!-- Slider with discrete steps -->
     <ion-range
       #rangeEle
-      [min]="0"
-      [max]="question.choices.length - 1"
+      [min]="sliderMin"
+      [max]="sliderMax"
       [step]="1"
       [snaps]="true"
       [ticks]="true"
@@ -94,9 +76,9 @@
     </ion-range>
 
     <!-- Choice labels positioned below slider -->
-    <div class="choice-labels">
+    <div class="choice-labels" *ngIf="generatedChoices.length">
       <div
-        *ngFor="let choice of question.choices; let i = index"
+        *ngFor="let choice of generatedChoices; let i = index"
         class="choice-label"
         [ngClass]="{'selected': checkInnerValue(choice.id)}"
         (click)="onLabelClick(i)">
@@ -111,22 +93,6 @@
         <ion-label>Selected: {{ getSelectedChoiceLabel() }}</ion-label>
       </ion-chip>
     </div>
-
-    <!-- Explanation for selected choice (when disabled/readonly) -->
-    <ng-container *ngFor="let choice of question.choices">
-      <div *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)"
-           class="explanation-container">
-        <ion-card class="explanation-card">
-          <ion-card-content>
-            <div class="explanation-header">
-              <ion-icon name="information-circle" color="primary"></ion-icon>
-              <ion-label class="explanation-title">Explanation</ion-label>
-            </div>
-            <div class="explanation-text" [innerHTML]="choice.explanation"></div>
-          </ion-card-content>
-        </ion-card>
-      </div>
-    </ng-container>
 
     <!-- Validation errors -->
     <div class="validation-errors" *ngIf="errors.length > 0">
@@ -152,8 +118,8 @@
         <ion-card-content>
           <div class="readonly-slider-container">
             <ion-range
-              [min]="0"
-              [max]="question.choices.length - 1"
+              [min]="sliderMin"
+              [max]="sliderMax"
               [step]="1"
               [snaps]="true"
               [ticks]="true"
@@ -164,14 +130,16 @@
               color="warning"
               class="likert-range readonly-slider">
             </ion-range>
-            <div class="choice-labels readonly">
+
+            <div class="choice-labels readonly" *ngIf="generatedChoices.length">
               <div
-                *ngFor="let choice of question.choices; let i = index"
+                *ngFor="let choice of generatedChoices; let i = index"
                 class="choice-label"
                 [ngClass]="{'selected': submission?.answer === choice.id}">
                 <span [innerHTML]="choice.name"></span>
               </div>
             </div>
+
             <div class="selected-choice">
               <ion-chip color="warning" class="selection-indicator">
                 <ion-icon name="checkmark-circle" slot="start"></ion-icon>
@@ -193,8 +161,8 @@
       <!-- Interactive slider for reviewer -->
       <ion-range
         #reviewerRangeEle
-        [min]="0"
-        [max]="question.choices.length - 1"
+        [min]="sliderMin"
+        [max]="sliderMax"
         [step]="1"
         [snaps]="true"
         [ticks]="true"
@@ -209,9 +177,9 @@
       </ion-range>
 
       <!-- Choice labels for reviewer -->
-      <div class="choice-labels">
+      <div class="choice-labels" *ngIf="generatedChoices.length">
         <div
-          *ngFor="let choice of question.choices; let i = index"
+          *ngFor="let choice of generatedChoices; let i = index"
           class="choice-label"
           [ngClass]="{'selected': checkReviewValue(choice.id)}"
           (click)="onReviewLabelClick(i)">
