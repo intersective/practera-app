@@ -86,14 +86,6 @@
       </div>
     </div>
 
-    <!-- Selected choice display -->
-    <div class="selected-choice" *ngIf="innerValue">
-      <ion-chip color="primary" class="selection-indicator">
-        <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-        <ion-label>Selected: {{ getSelectedChoiceLabel() }}</ion-label>
-      </ion-chip>
-    </div>
-
     <!-- Validation errors -->
     <div class="validation-errors" *ngIf="errors.length > 0">
       <ion-item *ngFor="let error of errors" lines="none" class="error-item">
@@ -139,13 +131,6 @@
                 <span [innerHTML]="choice.name"></span>
               </div>
             </div>
-
-            <div class="selected-choice">
-              <ion-chip color="warning" class="selection-indicator">
-                <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-                <ion-label>Learner selected: {{ getSelectedChoiceLabel(submission?.answer) }}</ion-label>
-              </ion-chip>
-            </div>
           </div>
         </ion-card-content>
       </ion-card>
@@ -185,14 +170,6 @@
           (click)="onReviewLabelClick(i)">
           <span [innerHTML]="choice.name"></span>
         </div>
-      </div>
-
-      <!-- Selected choice display for reviewer -->
-      <div class="selected-choice" *ngIf="innerValue?.answer">
-        <ion-chip color="primary" class="selection-indicator">
-          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
-          <ion-label>Expert selected: {{ getSelectedChoiceLabel(innerValue?.answer) }}</ion-label>
-        </ion-chip>
       </div>
     </div>
 
