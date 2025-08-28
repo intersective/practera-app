@@ -61,8 +61,8 @@ export interface Question {
   id: number;
   info?: string;
   isRequired: boolean;
-  meta?: {
-    slider?: {
+  meta?: { // meta field is added for more dynamic question types
+    slider?: { // slider type requires min and max values to dynamically generate choices
       min: number;
       max: number;
     };
