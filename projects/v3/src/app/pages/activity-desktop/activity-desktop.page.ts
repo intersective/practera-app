@@ -327,36 +327,7 @@ export class ActivityDesktopPage {
         // handles server-side duplicates and hierarchy
         const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activityId, currentTodoItems);
 
-        // Mark all duplicate TodoItems as done (bulk operation)
-        if (result.duplicatesToMark.length > 0) {
-          const markingOps = this.notificationsService.markMultipleTodoItemsAsDone(result.duplicatesToMark);
-          markingOps.forEach(op => op.subscribe({
-            // eslint-disable-next-line no-console
-            next: (response) => console.log('Marked duplicate activity TodoItem as done:', response),
-            // eslint-disable-next-line no-console
-            error: (error) => console.error('Failed to mark activity TodoItem as done:', error)
-          }));
-        }
-
-        // handles cascade milestone clearing
-        result.cascadeMilestones.forEach(milestoneData => {
-          if (milestoneData.duplicatesToMark.length > 0) {
-            // eslint-disable-next-line no-console
-            console.log(`Cascade clearing milestone ${milestoneData.milestoneId} with ${milestoneData.duplicatesToMark.length} duplicates`);
-            const milestoneMarkingOps = this.notificationsService.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
-            milestoneMarkingOps.forEach(op => op.subscribe({
-              // eslint-disable-next-line no-console
-              next: (response) => console.log('Marked cascade milestone TodoItem as done:', response),
-              // eslint-disable-next-line no-console
-              error: (error) => console.error('Failed to mark cascade milestone TodoItem as done:', error)
-            }));
-          }
-        });
-
-        // Fallback: mark cleared localStorage items as done (for backward compatibility)
-        result.clearedUnlocks?.forEach(todo => {
-          this.notificationsService.markTodoItemAsDone(todo).subscribe();
-        });
+        this.unlockIndicatorService.markDuplicatesAsDone(result, this.notificationsService, 'activity');
         return;
       }
 

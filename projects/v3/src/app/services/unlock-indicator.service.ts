@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { BrowserStorageService } from './storage.service';
-import { Activity } from './activity.service';
+import { Activity, ActivityService } from './activity.service';
+import { NotificationsService } from './notifications.service';
 
 export interface UnlockedTask {
   id?: number;
@@ -28,9 +30,7 @@ export enum UnlockIndicatorModel {
   providedIn: 'root'
 })
 export class UnlockIndicatorService {
-  // Initialize with an empty array
   private _unlockedTasksSubject = new BehaviorSubject<UnlockedTask[]>([]);
-  // Expose as an observable for components to subscribe
   public unlockedTasks$ = this._unlockedTasksSubject.asObservable();
 
   constructor(
@@ -148,7 +148,9 @@ export class UnlockIndicatorService {
       duplicatesToMark: allDuplicatesToMark,
       cascadeMilestones: cascadeMilestones
     };
-  }  /**
+  }
+
+  /**
    * Clear all tasks related to a particular milestone (explicit)
    * @param milestoneId
    */
@@ -301,49 +303,45 @@ export class UnlockIndicatorService {
     });
   }
 
-  /**
-   * Bulk clear all duplicate TodoItems for a given unlock indicator
-   * Returns array of TodoItems that need to be marked as done externally
-   */
-  bulkClearDuplicates(unlockedTask: UnlockedTask, allDuplicates: {id: number, identifier: string}[]): {id: number, identifier: string}[] {
-    if (allDuplicates.length > 0) {
-      // eslint-disable-next-line no-console
-      console.log(`Found ${allDuplicates.length} duplicate TodoItems for unlock:`, unlockedTask, allDuplicates);
+  // fuzzy matching of unlock indicator todoItems
+  private _isTaskInActivity(taskId: number, activityId: number): boolean {
+    // Since we can't directly access the current activity synchronously,
+    // we'll rely on the relationships stored in unlocked tasks (localstorage)
+    const tasks = this._unlockedTasksSubject.getValue();
+
+    // 1st: Check if direct relationship exists
+    const hasDirectRelationship = tasks.some(t => t.taskId === taskId && t.activityId === activityId);
+    if (hasDirectRelationship) {
+      return true;
     }
 
-    return allDuplicates;
-  }
-
-  /**
-   * Deprecated: use clearByActivityId or clearByMilestoneId
-   */
-  clearActivity(id: number): UnlockedTask[] {
-    const currentTasks = this._unlockedTasksSubject.getValue();
-
-    const clearedActivities = currentTasks.filter(task => task.activityId === id || task.milestoneId === id);
-    const latestTasks = currentTasks.filter(task => task.activityId !== id && task.milestoneId !== id);
-
-    this.storageService.set('unlockedTasks', latestTasks);
-    this._unlockedTasksSubject.next(latestTasks);
-
-    return clearedActivities;
-  }
-
-  // Helper methods for fuzzy matching (these would need actual implementation based on your data relationships)
-  private _isTaskInActivity(taskId: number, activityId: number): boolean {
-    // This would need to check if taskId belongs to activityId
-    // Could be implemented by checking against current activity data or making a lookup
-    return false; // Placeholder - implement based on your data structure
+    // 2nd approach: check if there are any tasks from this activity
+    // and if this taskId appears in the same activity context
+    const tasksInActivity = tasks.filter(t => t.activityId === activityId);
+    return tasksInActivity.some(t => t.taskId === taskId);
   }
 
   private _isActivityInMilestone(activityId: number, milestoneId: number): boolean {
-    // This would check if activityId belongs to milestoneId
-    return false; // Placeholder - implement based on your data structure
+    const existingTasks = this._unlockedTasksSubject.getValue();
+    return existingTasks.some(t => t.activityId === activityId && t.milestoneId === milestoneId);
   }
 
   private _isTaskInMilestone(taskId: number, milestoneId: number): boolean {
-    // This would check if taskId belongs to milestoneId through its activity
-    return false; // Placeholder - implement based on your data structure
+    const existingTasks = this._unlockedTasksSubject.getValue();
+
+    // Method 1: Direct task-milestone relationship (if it exists)
+    const directRelationship = existingTasks.some(t => t.taskId === taskId && t.milestoneId === milestoneId);
+    if (directRelationship) {
+      return true;
+    }
+
+    // Method 2: Task belongs to an activity that belongs to this milestone
+    // Find tasks that have all three: taskId, activityId, and milestoneId
+    const taskWithFullHierarchy = existingTasks.find(t =>
+      t.taskId === taskId && t.activityId !== undefined && t.milestoneId === milestoneId
+    );
+
+    return !!taskWithFullHierarchy;
   }
 
   private _isRelatedToTask(unlockedTask: UnlockedTask, taskId: number): boolean {
@@ -351,6 +349,55 @@ export class UnlockIndicatorService {
     // This could check identifier patterns, meta data, etc.
     return unlockedTask.identifier?.includes(`Task-${taskId}`) ||
            unlockedTask.meta?.task_id === taskId;
+  }
+
+  /**
+   * Mark multiple duplicated TodoItems as done for clearing results
+   */
+  markDuplicatesAsDone(
+    result: {
+      duplicatesToMark: {id: number, identifier: string}[],
+      cascadeMilestones?: {milestoneId: number, duplicatesToMark: {id: number, identifier: string}[]}[],
+      clearedUnlocks?: UnlockedTask[]
+    },
+    notificationsService: NotificationsService, // pass in service to avoid circular dependency
+    context: string = 'activity'
+  ): void {
+    // mark duplicated TodoItems as done (bulk operation)
+    if (result.duplicatesToMark.length > 0) {
+      const markingOps = notificationsService.markMultipleTodoItemsAsDone(result.duplicatesToMark);
+      markingOps.forEach(op => op.pipe(first()).subscribe({
+        // eslint-disable-next-line no-console
+        next: (response) => console.log(`Marked duplicate ${context} TodoItem as done:`, response),
+        // eslint-disable-next-line no-console
+        error: (error) => console.error(`Failed to mark ${context} TodoItem as done:`, error)
+      }));
+    }
+
+    // cascade to milestone clearing
+    result.cascadeMilestones?.forEach(milestoneData => {
+      if (milestoneData.duplicatesToMark.length > 0) {
+        // eslint-disable-next-line no-console
+        console.log(`Cascade clearing milestone ${milestoneData.milestoneId} with ${milestoneData.duplicatesToMark.length} duplicates`);
+        const milestoneMarkingOps = notificationsService.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
+        milestoneMarkingOps.forEach(op => op.pipe(first()).subscribe({
+          // eslint-disable-next-line no-console
+          next: (response) => console.log('Marked cascade milestone TodoItem as done:', response),
+          // eslint-disable-next-line no-console
+          error: (error) => console.error('Failed to mark cascade milestone TodoItem as done:', error)
+        }));
+      }
+    });
+
+    // Fallback: mark cleared localStorage items as done (for backward compatibility)
+    result.clearedUnlocks?.forEach(todo => {
+      notificationsService.markTodoItemAsDone(todo).pipe(first()).subscribe({
+        // eslint-disable-next-line no-console
+        next: (response) => console.log('Marked fallback TodoItem as done:', response),
+        // eslint-disable-next-line no-console
+        error: (error) => console.error('Failed to mark fallback TodoItem as done:', error)
+      });
+    });
   }
 
   getTasksByMilestoneId(milestoneId: number): UnlockedTask[] {
@@ -383,16 +430,7 @@ export class UnlockIndicatorService {
     this._unlockedTasksSubject.next(uniquelatestTasks);
   }
 
-  // Method to remove an accessed tasks
-  // (some tasks are repeatable due to unlock from different level of trigger eg. by milestone, activity, task)
-  // removeTasks(taskId?: number): UnlockedTask[] {
-  //   const currentTasks = this._unlockedTasksSubject.getValue();
-  //   const removedTask = currentTasks.filter(task => task.taskId === taskId);
-  //   const latestTasks = currentTasks.filter(task => task.taskId !== taskId);
-  //   this.storageService.set('unlockedTasks', latestTasks);
-  //   this._unlockedTasksSubject.next(latestTasks);
-  //   return removedTask;
-  // }
+
   removeTasks(taskId?: number): UnlockedTask[] {
     const currentTasks = this._unlockedTasksSubject.getValue();
 
@@ -440,7 +478,7 @@ export class UnlockIndicatorService {
     return removedTasks;
   }
 
-  // Method to transform and deduplicate the data
+  // transform and deduplicate the data
   transformAndDeduplicate(data) {
     const uniqueEntries = new Map();
 
@@ -456,7 +494,7 @@ export class UnlockIndicatorService {
       }
     });
 
-    // Convert the map values to an array
+    // Convert to array
     return Array.from(uniqueEntries.values());
   }
 }
