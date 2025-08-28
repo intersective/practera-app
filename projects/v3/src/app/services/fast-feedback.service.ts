@@ -128,7 +128,6 @@ export class FastFeedbackService {
                 {
                   questions,
                   meta,
-                  isSkillsPulseCheck: options.type === 'skills',
                 },
                 {
                   closable: options.closable,
