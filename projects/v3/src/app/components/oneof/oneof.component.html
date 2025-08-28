@@ -33,7 +33,7 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-no-padding">
     <ion-list class="ion-no-padding">
-      <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)" [attr.aria-labelledby]="'oneof-question-' + question.id">
+      <ion-radio-group [value]="innerValue" #answerEle (ionChange)="onChange(answerEle.value)" [attr.aria-labelledby]="'oneof-question-' + question.id">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item lines="none" [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
             <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></ion-label>
