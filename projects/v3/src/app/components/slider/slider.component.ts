@@ -51,9 +51,9 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   constructor() {}
 
   ngOnInit() {
-    if (this.question.meta?.slider) {
-      this.sliderMin = Number(this.question.meta.slider.min);
-      this.sliderMax = Number(this.question.meta.slider.max);
+    if (this.question.type === 'slider' && (this.question.min !== undefined || this.question.max !== undefined)) {
+      this.sliderMin = Number(this.question.min);
+      this.sliderMax = Number(this.question.max);
 
       // Generate choices from min/max range
       this.generatedChoices = [];

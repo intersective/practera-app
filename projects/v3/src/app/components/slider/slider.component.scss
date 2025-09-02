@@ -182,17 +182,6 @@ ion-item {
     }
   }
 
-  .selected-choice {
-    display: flex;
-    justify-content: center;
-    margin-top: 16px;
-
-    .selection-indicator {
-      --background: var(--ion-color-primary-tint);
-      --color: var(--ion-color-primary-contrast);
-    }
-  }
-
   .explanation-container {
     margin-top: 20px;
 
