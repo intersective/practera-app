@@ -328,29 +328,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       const currentTodoItems = this.notification.getCurrentTodoItems();
       const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activity.id, currentTodoItems);
 
-      // Mark the original cleared activity-level indicators as done
-      result.clearedUnlocks?.forEach((todo) => {
-        this.notification
-          .markTodoItemAsDone(todo)
-          .pipe(first())
-          .subscribe(() => {
-            // eslint-disable-next-line no-console
-            console.info("Marked activity indicator as done", todo);
-          });
-      });
-
-      // Mark all duplicate TodoItems as done (bulk operation)
-      if (result.duplicatesToMark.length > 0) {
-        const markingOps = this.notification.markMultipleTodoItemsAsDone(result.duplicatesToMark);
-      }
-
-      // Handle cascade milestone clearing
-      result.cascadeMilestones.forEach(milestoneData => {
-        if (milestoneData.duplicatesToMark.length > 0) {
-          // Cascade clearing milestone with duplicates
-          const milestoneMarkingOps = this.notification.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
-        }
-      });
+      // Handle marking duplicate TodoItems as done using centralized method
+      this.unlockIndicatorService.markDuplicatesAsDone(result, this.notification, 'activity');
 
       // Fallback: if no duplicates found, try to clear inaccurate data
       if (result.duplicatesToMark.length === 0 && result.clearedUnlocks.length === 0) {
@@ -386,28 +365,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @return  {void}
    */
   verifyUnlockedMilestoneValidity(milestoneId: number): void {
-    // Use enhanced clearing that handles server-side duplicates
+    // handles server-side duplicates clearing
     const currentTodoItems = this.notification.getCurrentTodoItems();
     const result = this.unlockIndicatorService.clearByMilestoneIdWithDuplicates(milestoneId, currentTodoItems);
 
-    // Mark the original cleared milestone-level indicators as done
-    result.clearedUnlocks?.forEach((todo) => {
-      this.notification
-        .markTodoItemAsDone(todo)
-        .pipe(first())
-        .subscribe(() => {
-          // eslint-disable-next-line no-console
-          console.info("Marked milestone indicator as done", todo);
-        });
-    });
+    // mark all duplicated TodoItems as done
+    this.unlockIndicatorService.markDuplicatesAsDone(result, this.notification, 'milestone');
 
-    // Mark all duplicate TodoItems as done (bulk operation)
-    if (result.duplicatesToMark.length > 0) {
-      const markingOps = this.notification.markMultipleTodoItemsAsDone(result.duplicatesToMark);
-    }
-
-    // Fallback: if no duplicates found, try robust clearing for inaccurate data
-    if (result.duplicatesToMark.length === 0 && result.clearedUnlocks.length === 0) {
+    // Fallback: if no duplicates found, try clearing for inaccurate unlock indicator todoItems
+    if (result.duplicatesToMark.length === 0) {
       const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('milestone', milestoneId);
       fallbackCleared.forEach((unlockedMilestone) => {
         this.notification
