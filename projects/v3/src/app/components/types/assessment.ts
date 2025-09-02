@@ -60,13 +60,9 @@ export interface Question {
   hasComment?: boolean;
   id: number;
   info?: string;
+  min?: number;
+  max?: number;
   isRequired: boolean;
-  meta?: {
-    slider?: {
-      min: number;
-      max: number;
-    };
-  };
   name: string;
   reviewerOnly?: boolean; // question meant for reviewer only
   submitterOnly?: boolean;
