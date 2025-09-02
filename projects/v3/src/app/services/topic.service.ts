@@ -104,14 +104,14 @@ export class TopicService {
     if (environment.demo) {
       return this.demo.topic().subscribe(res => this._normaliseTopic(res.data));
     }
-    return this.request.get(api.get.stories, {params: { model_id: id }})
-      .pipe(map((response: ApiResponse<TopicData[]>) => {
-        if (response.success && response.data) {
-          return this._normaliseTopic(response.data);
-        }
 
-      })
-    ).subscribe();
+    return this.request.get(api.get.stories, {
+      params: { model_id: id }
+    }).pipe(map((response: ApiResponse<TopicData[]>) => {
+      if (response.success && response.data) {
+        return this._normaliseTopic(response.data);
+      }
+    })).subscribe();
   }
 
   private _normaliseTopic(data: TopicData[]) {
@@ -156,12 +156,14 @@ export class TopicService {
       };
     }
 
-    topic.files = thisTopic.Filestore.map(item => ({url: item.slug || item.url, name: item.name}));
+    topic.files = thisTopic.Filestore.map(item => ({
+      url: item.slug || item.url, name: item.name
+    }));
     this._topic$.next(topic);
     return topic;
   }
 
-  updateTopicProgress(id, state): Observable<any> {
+  updateTopicProgress(id, state): Observable<ApiResponse<any>> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
       console.log('mark topic as ', state);
@@ -172,6 +174,7 @@ export class TopicService {
       model_id: +id,
       state: state
     };
+
     return this.request.post({
       endPoint: api.post.updateProgress,
       data: postData,
