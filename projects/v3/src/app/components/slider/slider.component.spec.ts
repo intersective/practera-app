@@ -26,17 +26,14 @@ describe('SliderComponent', () => {
       id: 1,
       name: 'Test Slider Question',
       description: 'Test description',
+      type: 'slider',
       isRequired: false,
       canAnswer: true,
       canComment: false,
-      choices: null, // No longer used
+      choices: null,
       audience: ['submitter'],
-      meta: {
-        slider: {
-          min: 1,
-          max: 5
-        }
-      }
+      min: 1,
+      max: 5
     };
 
     component.control = new FormControl();
@@ -50,7 +47,7 @@ describe('SliderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize slider properties from question meta', () => {
+  it('should initialize slider properties from question min/max', () => {
     component.ngOnInit();
 
     expect(component.sliderMin).toBe(1);
@@ -60,14 +57,10 @@ describe('SliderComponent', () => {
     expect(component.generatedChoices[4]).toEqual({ id: 5, name: '5' });
   });
 
-  it('should handle string values in meta.slider from API', () => {
+  it('should handle string values in min/max from API', () => {
     // Test the actual API response scenario where max is a string "10"
-    component.question.meta = {
-      slider: {
-        min: 1,
-        max: '10' as any // API returns string values sometimes
-      }
-    };
+    component.question.min = 1;
+    component.question.max = '10' as any; // API returns string values sometimes
 
     component.ngOnInit();
 
@@ -166,8 +159,9 @@ describe('SliderComponent', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle missing meta.slider gracefully', () => {
-      component.question.meta = undefined;
+    it('should handle missing min/max gracefully', () => {
+      component.question.min = undefined;
+      component.question.max = undefined;
 
       component.ngOnInit();
 
