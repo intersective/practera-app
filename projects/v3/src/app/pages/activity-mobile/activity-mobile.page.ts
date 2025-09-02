@@ -66,7 +66,8 @@ export class ActivityMobilePage implements OnInit {
         }
       }
     } catch (e) {
-      console.error('[unlock-indicator] cleanup skipped for activity', activityId, e);
+      // eslint-disable-next-line no-console
+      console.debug('[unlock-indicator] cleanup skipped for activity', activityId, e);
     }
   }
 

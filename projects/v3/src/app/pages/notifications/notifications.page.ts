@@ -299,6 +299,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
         index === self.findIndex(t => t.id === item.id)
       );
 
+      // eslint-disable-next-line no-console
       console.info(`Found ${uniqueDuplicates.length} TodoItems to mark as done for ${allUnlockedTasks.length} unlock indicators`);
 
       if (uniqueDuplicates.length > 0) {
@@ -322,6 +323,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
         { duration: 2000, color: 'success' }
       );
 
+      // eslint-disable-next-line no-console
       console.info(`Successfully marked ${uniqueDuplicates.length} TodoItems and cleared ${allUnlockedTasks.length} unlock indicators`);
 
     } catch (error) {
