@@ -142,7 +142,7 @@ export class AssessmentService {
           groups {
             name description
             questions{
-              id name description type isRequired hasComment audience fileType meta
+              id name description type isRequired hasComment audience fileType min max
               choices{
                 id name explanation description
               }
@@ -291,7 +291,8 @@ export class AssessmentService {
               ? eachQuestion.audience.includes("reviewer")
               : eachQuestion.audience.includes("submitter"),
           audience: eachQuestion.audience,
-          meta: eachQuestion.meta,
+          min: eachQuestion.type === 'slider' && eachQuestion.min !== undefined ? Number(eachQuestion.min) : undefined,
+          max: eachQuestion.type === 'slider' && eachQuestion.max !== undefined ? Number(eachQuestion.max) : undefined,
           submitterOnly:
             eachQuestion.audience.length === 1 &&
             eachQuestion.audience.includes("submitter"),

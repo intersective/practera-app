@@ -60,13 +60,9 @@ export interface Question {
   hasComment?: boolean;
   id: number;
   info?: string;
+  min?: number;
+  max?: number;
   isRequired: boolean;
-  meta?: { // meta field is added for more dynamic question types
-    slider?: { // slider type requires min and max values to dynamically generate choices
-      min: number;
-      max: number;
-    };
-  };
   name: string;
   reviewerOnly?: boolean; // question meant for reviewer only
   submitterOnly?: boolean;
