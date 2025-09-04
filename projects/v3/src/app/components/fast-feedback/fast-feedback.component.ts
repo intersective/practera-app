@@ -178,6 +178,17 @@ export class FastFeedbackComponent implements OnInit {
   }
 
   async submit(): Promise<any> {
+    if (!this.allQuestionsAnswered) {
+      // If not all questions are answered, navigate to the first incomplete page
+      for (let i = 0; i < this.totalPages; i++) {
+        if (!this.isPageCompleted(i)) {
+          this.goToPage(i);
+          return;
+        }
+      }
+      return;
+    }
+
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const answers = [];
