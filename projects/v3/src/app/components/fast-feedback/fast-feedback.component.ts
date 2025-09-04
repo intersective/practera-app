@@ -39,7 +39,7 @@ export class FastFeedbackComponent implements OnInit {
 
   // hover tracking for choice descriptions
   hoveredChoice: string | null = null;
-  isSkillsPulseCheck: boolean = false;
+  pulseCheckType: 'onTrack' | 'skills' | 'both' | 'unknown' = 'unknown';
 
   @Input() questions = [];
   @Input() meta?: Meta;
@@ -71,6 +71,39 @@ export class FastFeedbackComponent implements OnInit {
 
     this.totalPages = Math.ceil(this.questions.length / this.questionsPerPage);
     this.showPagination = this.totalPages > 1;
+
+    // Determine pulse check type based on question IDs
+    this.pulseCheckType = this.determinePulseCheckType();
+  }
+
+  /**
+   * Determines the pulse check type based on question IDs
+   * onTrack: [7, 8, 9, 10]
+   * skills: [20, 21, 22, 23, 24, 25]
+   * both: contains questions from both sets
+   * @link https://intersective.atlassian.net/browse/CORE-7981?focusedCommentId=57127
+   */
+  private determinePulseCheckType(): 'onTrack' | 'skills' | 'both' | 'unknown' {
+    const onTrackIds = [7, 8, 9, 10];
+    const skillsIds = [20, 21, 22, 23, 24, 25];
+    const questionIds = this.questions.map(q => q.id);
+
+    const hasOnTrackQuestions = questionIds.some(id => onTrackIds.includes(id));
+    const hasSkillsQuestions = questionIds.some(id => skillsIds.includes(id));
+
+    if (hasOnTrackQuestions && hasSkillsQuestions) {
+      return 'both';
+    } else if (hasSkillsQuestions) {
+      return 'skills';
+    } else if (hasOnTrackQuestions) {
+      return 'onTrack';
+    }
+
+    return 'unknown';
+  }
+
+  get isSkillsPulseCheck(): boolean {
+    return this.pulseCheckType === 'skills' || this.pulseCheckType === 'both';
   }
 
   get currentPageQuestions() {
