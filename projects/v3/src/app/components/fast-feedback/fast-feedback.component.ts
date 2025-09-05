@@ -6,7 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { RequestService } from 'request';
 import { environment } from '../../../environments/environment';
-import { Observable } from 'rxjs';
+import { first, Observable } from 'rxjs';
 import { DemoService } from '../../services/demo.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { HomeService } from '@v3/app/services/home.service';
@@ -30,6 +30,16 @@ export class FastFeedbackComponent implements OnInit {
   loading = false;
   submissionCompleted: boolean;
   isMobile: boolean;
+
+  // pagination properties
+  currentPage = 0;
+  questionsPerPage = 3;
+  totalPages = 0;
+  showPagination = true;
+
+  // hover tracking for choice descriptions
+  hoveredChoice: string | null = null;
+  pulseCheckType: 'onTrack' | 'skills' | 'both' | 'unknown' = 'unknown';
 
   @Input() questions = [];
   @Input() meta?: Meta;
@@ -58,9 +68,127 @@ export class FastFeedbackComponent implements OnInit {
     this.submissionCompleted = false;
     const modal = this.navParams.get('modal');
     this.closable = modal.closable || false;
+
+    this.totalPages = Math.ceil(this.questions.length / this.questionsPerPage);
+    this.showPagination = this.totalPages > 1;
+
+    // Determine pulse check type based on question IDs
+    this.pulseCheckType = this.determinePulseCheckType();
+  }
+
+  /**
+   * Determines the pulse check type based on question IDs
+   * onTrack: [7, 8, 9, 10]
+   * skills: [20, 21, 22, 23, 24, 25]
+   * both: contains questions from both sets
+   * @link https://intersective.atlassian.net/browse/CORE-7981?focusedCommentId=57127
+   */
+  private determinePulseCheckType(): 'onTrack' | 'skills' | 'both' | 'unknown' {
+    const onTrackIds = [7, 8, 9, 10];
+    const skillsIds = [20, 21, 22, 23, 24, 25];
+    const questionIds = this.questions.map(q => q.id);
+
+    const hasOnTrackQuestions = questionIds.some(id => onTrackIds.includes(id));
+    const hasSkillsQuestions = questionIds.some(id => skillsIds.includes(id));
+
+    if (hasOnTrackQuestions && hasSkillsQuestions) {
+      return 'both';
+    } else if (hasSkillsQuestions) {
+      return 'skills';
+    } else if (hasOnTrackQuestions) {
+      return 'onTrack';
+    }
+
+    return 'unknown';
+  }
+
+  get isSkillsPulseCheck(): boolean {
+    return this.pulseCheckType === 'skills' || this.pulseCheckType === 'both';
+  }
+
+  get currentPageQuestions() {
+    const startIndex = this.currentPage * this.questionsPerPage;
+    const endIndex = Math.min(startIndex + this.questionsPerPage, this.questions.length);
+    return this.questions.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+    }
+  }
+
+  goToPage(index: number) {
+    if (index >= 0 && index < this.totalPages) {
+      this.currentPage = index;
+    }
+  }
+
+  onChoiceHover(questionId: number, choiceId: number) {
+    if (!this.isMobile) {
+      this.hoveredChoice = `${questionId}-${choiceId}`;
+    }
+  }
+
+  onChoiceLeave() {
+    if (!this.isMobile) {
+      this.hoveredChoice = null;
+    }
+  }
+
+  isChoiceDescriptionVisible(questionId: number, choiceId: number): boolean {
+    const key = `${questionId}-${choiceId}`;
+
+    if (this.isMobile) {
+      return this.fastFeedbackForm.get(questionId.toString())?.value === choiceId;
+    } else {
+      return this.hoveredChoice === key;
+    }
+  }
+
+  isCurrentPageValid(): boolean {
+    const questionsOnPage = this.currentPageQuestions;
+    return questionsOnPage.every(question =>
+      this.fastFeedbackForm.controls[question.id].valid);
+  }
+
+  get currentPageRange(): { start: number, end: number, total: number } {
+    const start = this.currentPage * this.questionsPerPage + 1;
+    const end = Math.min(start + this.currentPageQuestions.length - 1, this.questions.length);
+    return { start, end, total: this.questions.length };
+  }
+
+  isPageCompleted(pageIndex: number): boolean {
+    const startIndex = pageIndex * this.questionsPerPage;
+    const endIndex = Math.min(startIndex + this.questionsPerPage, this.questions.length);
+    const pageQuestions = this.questions.slice(startIndex, endIndex);
+
+    return pageQuestions.every(question =>
+      this.fastFeedbackForm.controls[question.id].valid);
+  }
+
+  get allQuestionsAnswered(): boolean {
+    return this.fastFeedbackForm.valid;
   }
 
   async submit(): Promise<any> {
+    if (!this.allQuestionsAnswered) {
+      // If not all questions are answered, navigate to the first incomplete page
+      for (let i = 0; i < this.totalPages; i++) {
+        if (!this.isPageCompleted(i)) {
+          this.goToPage(i);
+          return;
+        }
+      }
+      return;
+    }
+
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const answers = [];
@@ -120,11 +248,17 @@ export class FastFeedbackComponent implements OnInit {
     }
   }
 
-  dismiss(data) {
-    // change the flag to false
+  async dismiss(data): Promise<void> {
     this.storage.set("fastFeedbackOpening", false);
-    this.modalController.dismiss(data);
-    this.homeService.getPulseCheckStatuses().subscribe();
+    await this.modalController.dismiss(data);
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    try {
+      await firstValueFrom(this.homeService.getPulseCheckStatuses());
+      await firstValueFrom(this.homeService.getPulseCheckSkills());
+    } catch (error) {
+      console.error('Error refreshing pulse check data:', error);
+    }
   }
 
   get isRedColor(): boolean {
