@@ -815,9 +815,9 @@ export class UtilsService {
       return '';
     }
 
-    const textarea = this.document.createElement('textarea');
-    textarea.innerHTML = input;
-    return textarea.value;
+    const tempDiv = this.document.createElement('div');
+    tempDiv.innerHTML = input;
+    return tempDiv.textContent || '';
   }
 
   // set page title

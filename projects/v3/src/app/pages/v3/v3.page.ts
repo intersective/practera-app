@@ -160,16 +160,18 @@ export class V3Page implements OnInit, OnDestroy {
         code: 'Messages',
         badges: 0,
       },
+      {
+        title: $localize`Due Status`,
+        url: '/v3/due-dates',
+        icon: 'alarm',
+        code: 'DueDates',
+        badges: 0,
+      }
     ];
 
-    if (isDevMode()) {
-      this.appPages.push({
-        title: $localize`Due Status`,
-          url: '/v3/due-dates',
-          icon: 'alarm',
-          code: 'DueDates',
-          badges: 0,
-      });
+    // Disabled and kept for future development-only features
+    if (false && isDevMode()) {
+      this.appPages.push();
     }
 
     this.institutionName = this.storageService.getUser().institutionName || 'Practera';
