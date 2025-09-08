@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
+import { ApiResponse } from '@v3/app/models/api.model';
 
 export interface Topic {
   id: number;
@@ -18,13 +19,6 @@ export interface Topic {
     language?: string;
     status?: string;
   };
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  status: string;
-  cache: boolean;
-  data: T;
 }
 
 export interface TopicData {
