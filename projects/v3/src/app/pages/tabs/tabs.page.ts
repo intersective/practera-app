@@ -47,8 +47,10 @@ export class TabsPage implements OnInit, OnDestroy {
    * @param featureName The name of the feature to check
    * @returns True if the feature is enabled in developer mode, false otherwise
    */
-  forDeveloperMode(featureName: 'dueStatus'): boolean {
-    if (isDevMode() && featureName === 'dueStatus') {
+  forDeveloperMode(featureName: string): boolean {
+    // List of features to enable in developer mode
+    const betaFeatures = [];
+    if (isDevMode() && betaFeatures.includes(featureName)) {
       return true;
     }
     return false;
