@@ -1,5 +1,7 @@
-<div *ngIf="!assessment" class="ion-padding-horizontal">
-  <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+<div *ngIf="!assessment"
+  class="ion-padding-horizontal">
+  <ion-skeleton-text animated
+    style="width: 50%;"></ion-skeleton-text>
   <ion-skeleton-text animated></ion-skeleton-text>
   <ion-skeleton-text animated></ion-skeleton-text>
 </div>
@@ -9,16 +11,23 @@
 </div>
 
 <ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
-  <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission.reviewerName">
+  <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal"
+    *ngIf="submission.reviewerName">
     <ion-item-group>
       <ion-item-divider>
-        <ion-label color="primary" i18n>Reviewer Details</ion-label>
+        <ion-label color="primary"
+          i18n>Reviewer Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
         <ion-grid class="ion-padding-horizontal">
-          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center" i18n>Expert</ion-col>
-            <ion-col size="6" class="ion-align-self-center" [innerHTML]="submission.reviewerName"></ion-col>
+          <ion-row size="12"
+            class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="6"
+              class="ion-align-self-center"
+              i18n>Expert</ion-col>
+            <ion-col size="6"
+              class="ion-align-self-center"
+              [innerHTML]="submission.reviewerName"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -28,27 +37,37 @@
 
 <ng-container *ngIf="action === 'review'">
   <ion-list *ngIf="submission"
-  class="ion-no-margin ion-padding ion-padding-horizontal main-content">
+    class="ion-no-margin ion-padding ion-padding-horizontal main-content">
     <ion-item-group>
       <ion-item-divider>
-        <ion-label color="primary" i18n>Submission Details</ion-label>
+        <ion-label color="primary"
+          i18n>Submission Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
         <ion-grid class="ion-padding-horizontal">
-          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center" i18n>Learner</ion-col>
-            <ion-col size="6" class="ion-align-self-center"
-            [innerHTML]="submission.submitterName"></ion-col>
+          <ion-row size="12"
+            class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="6"
+              class="ion-align-self-center"
+              i18n>Learner</ion-col>
+            <ion-col size="6"
+              class="ion-align-self-center"
+              [innerHTML]="submission.submitterName"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
 
-      <ion-item class="ion-no-padding" *ngIf="review?.teamName">
+      <ion-item class="ion-no-padding"
+        *ngIf="review?.teamName">
         <ion-grid class="ion-padding-horizontal">
-          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center" i18n>Team</ion-col>
-            <ion-col size="6" class="ion-align-self-center"
-            [innerHTML]="review.teamName"></ion-col>
+          <ion-row size="12"
+            class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="6"
+              class="ion-align-self-center"
+              i18n>Team</ion-col>
+            <ion-col size="6"
+              class="ion-align-self-center"
+              [innerHTML]="review.teamName"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -66,26 +85,31 @@
         [attr.aria-describedby]="randomCode(assessment.name)"
         role="heading"
         aria-level="2"
-        [innerHTML]="assessment.name"
-      ></div>
+        [innerHTML]="assessment.name"></div>
 
-      <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label">
+      <ion-chip [class]="'label body-3 '+ labelColor"
+        *ngIf="label">
         <ion-label [innerHTML]="label"></ion-label>
       </ion-chip>
 
-      <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;">
+      <p class="assessment subtitle-1 due-date"
+        *ngIf="assessment.dueDate"
+        style="margin: 10px 0;">
         <strong i18n>Due Date</strong>: {{ utils.utcToLocal(assessment.dueDate, 'timeZone') }}
       </p>
 
       <ion-text class="ion-text-left">
         <app-description *ngIf="assessment.description"
           [name]="randomCode(assessment.name)"
-          [content]="assessment.description" id="asmt-des" class="body-2 black"
-          [attr.aria-describedby]="randomCode(assessment.name)"
-        ></app-description>
+          [content]="assessment.description"
+          id="asmt-des"
+          class="body-2 black"
+          [attr.aria-describedby]="randomCode(assessment.name)"></app-description>
       </ion-text>
 
-      <ion-list *ngIf="submission?.isLocked" class="member-detail-container no-bg" lines="none">
+      <ion-list *ngIf="submission?.isLocked"
+        class="member-detail-container no-bg"
+        lines="none">
         <ion-item lines="none">
           <ion-avatar slot="start">
             <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
@@ -93,20 +117,25 @@
           </ion-avatar>
 
           <ion-label>
-            <p class="subtitle-1" i18n="indicator of a team member is working on the same assessment">Locked by <span [innerHTML]="submission.submitterName"></span></p>
-            <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
+            <p class="subtitle-1"
+              i18n="indicator of a team member is working on the same assessment">Locked by <span [innerHTML]="submission.submitterName"></span></p>
+            <p class="caption gray-2"
+              i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
       </ion-list>
     </div>
 
-    <form [formGroup]="questionsForm" id="formgroup" #form>
+    <form [formGroup]="questionsForm"
+      id="formgroup"
+      #form>
       <ng-container *ngFor="let group of pagedGroups">
         <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}">
-          <h3 [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
-          <ion-text color="dark" class="ion-text-left">
-            <div
-              *ngIf="group.description"
+          <h3 [attr.aria-describedby]="randomCode(group.name)"
+            [innerHTML]="group.name"></h3>
+          <ion-text color="dark"
+            class="ion-text-left">
+            <div *ngIf="group.description"
               class="g-descriptiond body-2"
               [id]="randomCode(group.name)"
               [innerHtml]="group.description">
@@ -141,43 +170,50 @@
               </ion-button>
             </ion-list-header>
 
-            <ion-item lines="none" *ngIf="question.description" class="explanation">
-              <div
-                *ngIf="question.description"
+            <ion-item lines="none"
+              *ngIf="question.description"
+              class="explanation">
+              <div *ngIf="question.description"
                 class="q-description paragraph body-3 ion-text-left gray-2"
                 [id]="randomCode('reviewer-' + question.name)"
                 [innerHtml]="question.description">
               </div>
             </ion-item>
 
-            <ng-container *ngIf="question" [ngSwitch]="question.type">
+            <ng-container *ngIf="question"
+              [ngSwitch]="question.type">
               <div class="tick-container">
-                <ion-spinner name="dots" class="tick-icon"
+                <ion-spinner name="dots"
+                  class="tick-icon"
                   style="max-width: 16px; max-height: 16px;"
                   *ngIf="autosaving()[question.id]"
                   [@tickAnimation]="autosaving()[question.id] ? 'visible' : 'hidden'"
-                  (@tickAnimation.done)="onAnimationEnd($event, question.id)"
-                ></ion-spinner>
+                  (@tickAnimation.done)="onAnimationEnd($event, question.id)"></ion-spinner>
 
                 <ion-icon name="checkmark-circle-outline"
                   class="tick-icon"
                   *ngIf="saved()[question.id]"
-                  [@tickAnimation]="saved()[question.id] ? 'visible' : 'hidden'"
-                ></ion-icon>
+                  [@tickAnimation]="saved()[question.id] ? 'visible' : 'hidden'"></ion-icon>
 
-                <ion-icon name="reload-circle-outline" class="tick-icon"
+                <ion-icon name="reload-circle-outline"
+                  class="tick-icon"
                   *ngIf="failed()[question.id]"
                   (click)="retrySave(question)"
-                  [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
-                ></ion-icon>
+                  [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"></ion-icon>
               </div>
 
               <ion-item *ngIf="!doAssessment && (
                 (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                 (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
-              )" class="no-answers item-bottom-border" lines="none">
-                <ion-icon slot="start" color="orange" name="information-circle-outline" class="ion-margin-end"></ion-icon>
-                <ion-label size="small" i18n>No answer for this question.</ion-label>
+              )"
+                class="no-answers item-bottom-border"
+                lines="none">
+                <ion-icon slot="start"
+                  color="orange"
+                  name="information-circle-outline"
+                  class="ion-margin-end"></ion-icon>
+                <ion-label size="small"
+                  i18n>No answer for this question.</ion-label>
               </ion-item>
 
               <app-text *ngSwitchCase="'text'"
@@ -194,6 +230,21 @@
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-text>
+
+              <app-slider *ngSwitchCase="'slider'"
+                #questionField
+                [question]="question"
+                [doAssessment]="doAssessment"
+                [doReview]="isPendingReview"
+                [submissionId]="submission?.id"
+                [reviewId]="review?.id"
+                [submission]="submission?.answers[question.id] || {}"
+                [review]="review?.answers[question.id] || {}"
+                [reviewStatus]="review ? review.status : ''"
+                [submissionStatus]="submission ? submission.status : ''"
+                [formControlName]="'q-' + question.id"
+                [control]="questionsForm?.controls['q-' + question.id]"
+                [submitActions$]="submitActions"></app-slider>
 
               <app-oneof *ngSwitchCase="'oneof'"
                 #questionField
@@ -287,7 +338,9 @@
                 [submitActions$]="submitActions"></app-multi-team-member-selector>
 
               <div *ngSwitchDefault>
-                <p class="ion-padding-horizontal" style="color:red;" i18n>Unsupported question type: {{ question.type }}</p>
+                <p class="ion-padding-horizontal"
+                  style="color:red;"
+                  i18n>Unsupported question type: {{ question.type }}</p>
               </div>
             </ng-container>
           </ion-list>
@@ -316,31 +369,31 @@
       [text]="btnText"
       [disabled$]="btnDisabled$"
       (handleClick)="continueToNextTask()"
-      [hasCustomContent]="pageCount > 1">
+      [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
-      <div class="pagination-container">
+      <div class="pagination-container"
+        *ngIf="isPaginationEnabled">
         <ion-button fill="clear"
-            class="nav-button prev-button"
-            (click)="prevPage()"
-            [disabled]="pageIndex === 0">
+          class="nav-button prev-button"
+          (click)="prevPage()"
+          [disabled]="pageIndex === 0">
           <ion-icon name="chevron-back-outline"></ion-icon>
           <span>Prev</span>
         </ion-button>
 
         <div class="page-indicators"
-             [class.many-pages]="pageCount > manyPages"
-             *ngIf="pageCount > 1"
-             #pageIndicatorsContainer>
+          [class.many-pages]="pageCount > manyPages"
+          *ngIf="pageCount > 1"
+          #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
             <div class="page-indicator"
-                [class.active]="pageIndex === page"
-                [class.incompleted]="!pageRequiredCompletion[page]"
-                [id]="'page-indicator-' + page"
-                (click)="goToPage(page)"
-                (dblclick)="findAndGoToFirstUnansweredQuestion()">
+              [class.active]="pageIndex === page"
+              [class.incompleted]="!pageRequiredCompletion[page]"
+              [id]="'page-indicator-' + page"
+              (click)="goToPage(page)"
+              (dblclick)="findAndGoToFirstUnansweredQuestion()">
               <span class="page-number">{{ i + 1 }}</span>
-              <ion-icon
-                *ngIf="!pageRequiredCompletion[page]"
+              <ion-icon *ngIf="!pageRequiredCompletion[page]"
                 name="close-circle-outline"
                 class="completion-icon">
               </ion-icon>
@@ -349,9 +402,9 @@
         </div>
 
         <ion-button fill="clear"
-            class="nav-button next-button"
-            (click)="nextPage()"
-            [disabled]="pageIndex >= pageCount - 1">
+          class="nav-button next-button"
+          (click)="nextPage()"
+          [disabled]="pageIndex >= pageCount - 1">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>

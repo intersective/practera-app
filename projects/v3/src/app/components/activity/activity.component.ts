@@ -8,7 +8,7 @@ import { Submission } from '@v3/services/assessment.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-activity',
@@ -58,9 +58,20 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.leadImage = this.storageService.getUser().programImage;
     this.unlockIndicatorService.unlockedTasks$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr))
+      )
       .subscribe({
-        next: res => this.resetTaskIndicator(res)
+        next: res => {
+          // only update the visual indicators, don't clear anything
+          if (this.activity?.id) {
+            const activityUnlocks = this.unlockIndicatorService.getTasksByActivity(this.activity);
+            this.resetTaskIndicator(activityUnlocks);
+          } else {
+            this.resetTaskIndicator(res);
+          }
+        }
       });
   }
 
@@ -112,18 +123,9 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
             this.cannotAccessTeamActivity.emit(this.isForTeamOnly);
           });
 
-        // clear viewed unlocked indicator
+        // update unlock indicators when activity changes, but don't clear
         const unlockedTasks = this.unlockIndicatorService.getTasksByActivity(this.activity);
         this.resetTaskIndicator(unlockedTasks);
-        if (unlockedTasks.length === 0) {
-          const clearedActivities = this.unlockIndicatorService.clearActivity(this.activity.id);
-          clearedActivities.forEach((activity) => {
-            this.notificationsService
-              .markTodoItemAsDone(activity)
-              .pipe(takeUntil(this.unsubscribe$))
-              .subscribe();
-          });
-        }
       }
     }
   }
