@@ -396,25 +396,25 @@ export class ActivityDesktopPage {
     try {
       // handle unexpected submission: do final status check before saving
       let hasSubmssion = false;
-      const { submission } = await this.assessmentService
-        .fetchAssessment(
+      const { submission } = await firstValueFrom(
+        this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
         )
-        .toPromise();
+      );
 
       if (submission?.status === 'in progress') {
-        const saved = await this.assessmentService
-          .submitAssessment(
+        const saved = await firstValueFrom(
+          this.assessmentService.submitAssessment(
             event.submissionId,
             event.assessmentId,
             event.contextId,
             event.answers
           )
-          .toPromise();
+        );
 
         // http 200 but error
         if (
