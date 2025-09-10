@@ -1,6 +1,6 @@
 import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, Question, AssessmentService } from '@v3/services/assessment.service';
+import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -14,12 +14,21 @@ import { OneofComponent } from '../oneof/oneof.component';
 import { TeamMemberSelectorComponent } from '../team-member-selector/team-member-selector.component';
 import { MultiTeamMemberSelectorComponent } from '../multi-team-member-selector/multi-team-member-selector.component';
 import { MultipleComponent } from '../multiple/multiple.component';
+import { SliderComponent } from '../slider/slider.component';
 import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
-import { FileInput, SubmitActions } from '../types/assessment';
+import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 
 const MIN_SCROLLING_PAGES = 6; // minimum number of pages to show pagination scrolling
+
+/**
+ * Assessment Component with optional pagination feature
+ *
+ * Pagination can be enabled/disabled via environment.featureToggles.assessmentPagination
+ * When disabled, all assessment questions will be displayed on a single page
+ * When enabled, questions are split across multiple pages based on pageSize
+ */
 @Component({
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
@@ -75,7 +84,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Output() readFeedback = new EventEmitter();
   // continue to the next task
   @Output() continue = new EventEmitter();
-  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent>;
+  @ViewChildren('questionField') questionComponents: QueryList<TextComponent | OneofComponent | FileUploadComponent | TeamMemberSelectorComponent | MultiTeamMemberSelectorComponent | MultipleComponent | SliderComponent>;
 
   autosaving = signal<{ [key: number]: boolean }>({});
   saved = signal<{ [key: number]: boolean }>({});
@@ -157,16 +166,26 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // each entry is a page: an array of (partial) groups
   pagesGroups: { name: string; description?: string; questions: Question[] }[][] = [];
 
+  // Feature toggle for pagination
+  get isPaginationEnabled(): boolean {
+    return environment.featureToggles?.assessmentPagination ?? true;
+  }
+
   // override to use question‑based pages
   get pageCount() {
-    return this.pagesGroups.length;
+    return this.isPaginationEnabled ? this.pagesGroups.length : 1;
   }
 
   get pagedGroups() {
+    if (!this.isPaginationEnabled) {
+      // Return all groups as a single page when pagination is disabled
+      return this.assessment?.groups || [];
+    }
     return this.pagesGroups[this.pageIndex] || [];
   }
 
   prevPage() {
+    if (!this.isPaginationEnabled) return;
     if (this.pageIndex > 0) {
       this.pageIndex--;
       this.scrollActivePageIntoView();
@@ -174,6 +193,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   nextPage() {
+    if (!this.isPaginationEnabled) return;
     if (this.pageIndex < this.pageCount - 1) {
       this.pageIndex++;
       this.scrollActivePageIntoView();
@@ -181,10 +201,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   get pages(): number[] {
+    if (!this.isPaginationEnabled) return [0];
     return Array(this.pageCount).fill(0).map((_, i) => i);
   }
 
   goToPage(i: number) {
+    if (!this.isPaginationEnabled) return;
     if (i >= 0 && i < this.pageCount) {
       this.pageIndex = i;
       this.scrollActivePageIntoView();
@@ -409,9 +431,15 @@ Best regards`;
       this._populateFormWithAnswers();
     }
 
-    // split by question count every time assessment changes
-    this.pagesGroups = this.splitGroupsByQuestionCount();
-    this.pageIndex = 0;
+    // split by question count every time assessment changes - only if pagination is enabled
+    if (this.isPaginationEnabled) {
+      this.pagesGroups = this.splitGroupsByQuestionCount();
+      this.pageIndex = 0;
+    } else {
+      // Reset pagination data when disabled
+      this.pagesGroups = [];
+      this.pageIndex = 0;
+    }
 
     // scroll to the active page into view after rendering
     setTimeout(() => this.scrollActivePageIntoView(), 200);
@@ -481,7 +509,7 @@ Best regards`;
 
     this.questionsForm.valueChanges.pipe(
       takeUntil(this.unsubscribe$),
-      debounceTime(150),
+      debounceTime(300),
     ).subscribe(() => {
       this.initializePageCompletion();
       this.setSubmissionDisabled();
@@ -700,6 +728,9 @@ Best regards`;
           case 'team-member-selector':
           case 'multi-team-member-selector':
             answer = '';
+            break;
+          case 'slider':
+            answer = null;
             break;
         }
       }
@@ -989,6 +1020,8 @@ Best regards`;
   }
 
   initializePageCompletion() {
+    if (!this.isPaginationEnabled) return;
+
     this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
 
     this.pages.forEach((page, index) => {
@@ -1001,6 +1034,17 @@ Best regards`;
   }
 
   private getAllQuestionsForPage(pageIndex: number): Question[] {
+    if (!this.isPaginationEnabled) {
+      // If pagination is disabled, return all questions from all groups
+      const allQuestions: Question[] = [];
+      this.assessment?.groups?.forEach(group => {
+        if (group.questions && group.questions.length) {
+          allQuestions.push(...group.questions);
+        }
+      });
+      return allQuestions;
+    }
+
     if (!this.pagesGroups[pageIndex]) {
       return [];
     }
@@ -1057,8 +1101,20 @@ Best regards`;
    *    false: if all required questions are answered.
    */
   findAndGoToFirstUnansweredQuestion(): boolean {
-    // Get all questions for the current page
-    const currentPageQuestions = this.getAllQuestionsForPage(this.pageIndex);
+    let currentPageQuestions: Question[];
+
+    if (!this.isPaginationEnabled) {
+      // If pagination is disabled, check all questions across all groups
+      currentPageQuestions = [];
+      this.assessment?.groups?.forEach(group => {
+        if (group.questions && group.questions.length) {
+          currentPageQuestions.push(...group.questions);
+        }
+      });
+    } else {
+      // Get all questions for the current page
+      currentPageQuestions = this.getAllQuestionsForPage(this.pageIndex);
+    }
 
     // Filter only the required questions
     const requiredQuestions = currentPageQuestions.filter(question => this._isRequired(question));
@@ -1107,6 +1163,8 @@ Best regards`;
    * Scrolls the active page indicator into view within the pagination container
    */
   scrollActivePageIntoView() {
+    if (!this.isPaginationEnabled) return;
+
     setTimeout(() => {
       if (this.pageIndicatorsContainer && this.pageCount > this.manyPages) {
         const container = this.pageIndicatorsContainer.nativeElement;
