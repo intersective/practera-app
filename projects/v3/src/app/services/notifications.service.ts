@@ -226,16 +226,16 @@ export class NotificationsService {
     return modal;
   }
 
-  async modal(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
-    return this.modalOnly(component, componentProps, options, event);
+  async modal(component, componentProps, options?, event?, modalId?: string): Promise<HTMLIonModalElement> {
+    return this.modalOnly(component, componentProps, options, event, modalId);
   }
 
-  async modalOnly(component, componentProps, options?, event?): Promise<any> {
+  async modalOnly(component, componentProps, options?, event?, modalId?: string): Promise<any> {
     const modalConfig = this.modalConfig(
       { component, componentProps },
       options
     );
-    return this.modalService.addModal(modalConfig, event);
+    return this.modalService.addModal(modalConfig, event, modalId);
   }
 
   /**
@@ -472,6 +472,7 @@ export class NotificationsService {
     props: {
       questions?: Question[];
       meta?: Meta | Object;
+      pulseCheckId?: string;
     },
     options: {
       closable?: boolean;
@@ -486,11 +487,15 @@ export class NotificationsService {
       showBackdrop: false,
       ...options
     };
+
+    // use pulseCheckId to identify each modal instance to prevent duplicate
+    const modalId = props.pulseCheckId ? `pulse-check-${props.pulseCheckId}` : null;
+
     if (options.modalOnly) {
-      return this.modalOnly(FastFeedbackComponent, props, modalConfig);
+      return this.modalOnly(FastFeedbackComponent, props, modalConfig, null, modalId);
     }
 
-    return this.modal(FastFeedbackComponent, props, modalConfig);
+    return this.modal(FastFeedbackComponent, props, modalConfig, null, modalId);
   }
 
   private currentTodoItems: {id: number, identifier: string}[] = [];
