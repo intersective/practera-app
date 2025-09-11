@@ -429,6 +429,7 @@ Best regards`;
       this._populateQuestionsForm();
       this._handleReviewData();
       this._populateFormWithAnswers();
+      this._preventSubmission();
     }
 
     // split by question count every time assessment changes - only if pagination is enabled
@@ -471,10 +472,15 @@ Best regards`;
   private _answerRequiredValidator(control: FormControl) {
     const value = control.value;
     if (value === null) return { required: true };
+
     if (typeof value === 'object' && value !== null) {
-      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) return { required: true };
+      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) {
+        return { required: true };
+      }
     } else if (typeof value === 'string') {
-      if (value.length === 0) return { required: true };
+      if (value.length === 0) {
+        return { required: true };
+      }
     }
     return null;
   }
@@ -489,10 +495,12 @@ Best regards`;
         // check if the compulsory is mean for current user's role
         const isRequired = this._isRequired(question);
         // only apply required validators when user can actually edit (doAssessment or isPendingReview)
-        if (isRequired === true && (this.doAssessment || this.isPendingReview || (this.action === 'review' && ['text', 'file'].includes(question.type)))) {
-          validator = [this._answerRequiredValidator];
-        } else {
-          validator = [Validators.required];
+        if (isRequired === true && (this.doAssessment || this.isPendingReview )) {
+          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
+            validator = [this._answerRequiredValidator];
+          } else {
+            validator = [Validators.required];
+          }
         }
 
         this.questionsForm.addControl('q-' + question.id, new FormControl({
