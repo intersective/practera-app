@@ -469,18 +469,34 @@ Best regards`;
    * @param control The form control to validate.
    * @returns An object with the validation error or null if valid.
    */
-  private _answerRequiredValidator(control: FormControl) {
+  private _answerRequiredValidatorForReviewer(control: FormControl) {
     const value = control.value;
     if (value === null) return { required: true };
 
     if (typeof value === 'object' && value !== null) {
-      if ((!value.answer || value.answer.length === 0) && (!value.file || this.utils.isEmpty(value.file))) {
+      if ((!value.answer || value.answer.length === 0) && (!value.file || (Object.keys(value.file).length === 0))) {
         return { required: true };
       }
     } else if (typeof value === 'string') {
       if (value.length === 0) {
         return { required: true };
       }
+    }
+    return null;
+  }
+
+  private _fileRequiredValidatorForLearner(control: FormControl) {
+    const value: FileInput = control.value;
+
+    if (value === null || value === undefined) return { required: true };
+
+    if (typeof value === 'object' && value !== null) {
+      // check if file object has a url property (uploaded file)
+      if (Object.entries(value).length === 0 || !value.url || value.url.length === 0) {
+        return { required: true };
+      }
+    } else if (typeof value === 'string') {
+      return { required: true };
     }
     return null;
   }
@@ -497,7 +513,9 @@ Best regards`;
         // only apply required validators when user can actually edit (doAssessment or isPendingReview)
         if (isRequired === true && (this.doAssessment || this.isPendingReview )) {
           if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
-            validator = [this._answerRequiredValidator];
+            validator = [this._answerRequiredValidatorForReviewer];
+          } else if (question.type === 'file' && this.action === 'assessment') {
+            validator = [this._fileRequiredValidatorForLearner];
           } else {
             validator = [Validators.required];
           }
@@ -734,7 +752,7 @@ Best regards`;
             answer = [];
             break;
           case 'text':
-          case 'file':
+          case 'file': // answer is for text/oneof/multiple/slider only, file is always ''
           case 'team-member-selector':
           case 'multi-team-member-selector':
             answer = '';
