@@ -486,19 +486,20 @@ Best regards`;
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         let validator = [];
-        // check if the compulsory is role-specific
-        // e.g. compulsory for submitter, but not for reviewer
+        // check if the compulsory is mean for current user's role
         const isRequired = this._isRequired(question);
         // only apply required validators when user can actually edit (doAssessment or isPendingReview)
-        if (isRequired === true && (this.doAssessment || this.isPendingReview)) {
-          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
-            validator = [this._answerRequiredValidator];
-          } else {
-            validator = [Validators.required];
-          }
+        if (isRequired === true && (this.doAssessment || this.isPendingReview || (this.action === 'review' && ['text', 'file'].includes(question.type)))) {
+          validator = [this._answerRequiredValidator];
+        } else {
+          validator = [Validators.required];
         }
 
-        this.questionsForm.addControl('q-' + question.id, new FormControl('', validator));
+        this.questionsForm.addControl('q-' + question.id, new FormControl({
+          answer: '',
+          comment: '',
+          file: null,
+        }, validator));
       });
     });
 
@@ -512,6 +513,7 @@ Best regards`;
       debounceTime(300),
     ).subscribe(() => {
       this.initializePageCompletion();
+      // this.btnDisabled$.next(this.questionsForm.invalid);
       this.setSubmissionDisabled();
     });
   }
@@ -1203,7 +1205,8 @@ Best regards`;
         if (control && this.review.answers[questionId]) {
           const reviewAnswer = {
             answer: this.review.answers[questionId].answer,
-            comment: this.review.answers[questionId].comment
+            comment: this.review.answers[questionId].comment,
+            file: this.review.answers[questionId].file || null,
           };
           control.setValue(reviewAnswer, { emitEvent: false });
         }
