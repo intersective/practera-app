@@ -1,5 +1,5 @@
 
-# Practera Appv2 Documentation
+# Practera App Documentation
 This is practera documentation with more informations.
 
 ### Services
