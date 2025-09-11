@@ -244,6 +244,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }
 
     this.control.setValue(this.innerValue);
+    this.control.markAsTouched();
     this.triggerSave();
   }
 
@@ -292,9 +293,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if (this.doAssessment === true) {
       this.submission.answer = null;
       this.onChange('');
-    }
-
-    if (this.doReview === true) {
+    } else if (this.doReview === true) {
       this.review.answer = null;
       this.onChange('', 'answer');
     }
