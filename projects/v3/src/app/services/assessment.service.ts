@@ -546,7 +546,7 @@ export class AssessmentService {
           if (this.utils.isEmpty(answer)) {
             answer = [];
           }
-          if (!Array.isArray(answer)) {
+          if (!Array.isArray(answer) && typeof answer === "string" && answer.length > 0) {
             // re-format json string to array
             answer = JSON.parse(answer);
           }

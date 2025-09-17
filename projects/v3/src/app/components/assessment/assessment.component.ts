@@ -521,8 +521,14 @@ Best regards`;
           }
         }
 
+        // multiple initial answer
+        let answer: string | object | any[] = '';
+        if (question.type === 'multi team member selector') {
+          answer = [];
+        }
+
         this.questionsForm.addControl('q-' + question.id, new FormControl({
-          answer: '',
+          answer,
           comment: '',
           file: null,
         }, validator));
