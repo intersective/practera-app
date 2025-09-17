@@ -44,15 +44,19 @@
       <ng-container *ngFor="let choice of question.choices; let i = index">
         <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
           lines='none'>
-          <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></ion-label>
+
           <ion-checkbox color="success"
             [checked]="innerValue?.includes(choice.id)"
             [value]="choice.id"
+            labelPlacement="end"
+            justify="start"
             slot="start"
             (ionChange)="onChange(choice.id)"
             [disabled]="control.disabled"
             [attr.aria-label]="choice.name"
-          ></ion-checkbox>
+          >
+            <span class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></span>
+          </ion-checkbox>
         </ion-item>
 
         <ng-container
