@@ -33,7 +33,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // this is for doing review or not
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
-  @Input() control: AbstractControl;
+  @Input() control: AbstractControl<{answer: string[], comment: string}>;
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
@@ -80,7 +80,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       action.questionSave = {
         submissionId: this.submissionId,
         questionId: this.question.id,
-        answer: this.innerValue,
+        answer: this.innerValue.answer,
       };
     }
 
@@ -113,6 +113,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
           comment: ''
         };
       }
+
       this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
     }
 
@@ -135,9 +136,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    if (value) {
-      this.innerValue = typeof value === 'string' ? JSON.parse(value) : value;
-    }
   }
 
   // From ControlValueAccessor interface
@@ -158,9 +156,13 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
         comment: this.review.comment
       };
       this.comment = this.review.comment;
-    }
-    if ((this.submissionStatus === 'in progress') && this.doAssessment) {
-      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
+    } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: this.submission.answer || [],
+        };
+      }
+      this.innerValue.answer = this.control.pristine ? this.submission.answer : this.control.value;
     }
 
     this.propagateChange(this.innerValue);
@@ -180,5 +182,56 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
+  }
+
+  isSelected(teamMember: any): boolean {
+    if (!this.innerValue?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.innerValue.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  isSelectedInSubmission(teamMember: any): boolean {
+    if (!this.submission?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.submission.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  isSelectedInReview(teamMember: any): boolean {
+    if (!this.review?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.review.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
   }
 }

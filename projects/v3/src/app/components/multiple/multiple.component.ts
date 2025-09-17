@@ -161,9 +161,6 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    if (value) {
-      this.innerValue = JSON.stringify(value);
-    }
   }
 
   // From ControlValueAccessor interface
