@@ -585,7 +585,7 @@ Best regards`;
   }
 
   private _handleReviewData() {
-    if (this.isPendingReview && this.review.status === 'in progress') {
+    if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
