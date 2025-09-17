@@ -29,15 +29,17 @@
 
 <ng-container *ngIf="doAssessment">
   <ion-list class="no-bg ion-no-padding">
+
     <ion-item
       lines="none"
       *ngFor="let teamMember of question.teamMembers;let i = index"
       [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
       <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+
       <ion-checkbox
         [attr.aria-label]="teamMember.userName"
         color="success"
-        [checked]="(innerValue || submission?.answer)?.includes(teamMember.key)"
+        [checked]="innerValue?.answer.includes(teamMember.key)"
         [value]="teamMember.key"
         slot="start"
         (ionChange)="onChange(teamMember.key)"

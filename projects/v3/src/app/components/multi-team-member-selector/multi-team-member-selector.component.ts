@@ -2,6 +2,7 @@ import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit } from '@an
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { Subject } from 'rxjs';
+import { Question } from '../types/assessment';
 
 @Component({
   selector: 'app-multi-team-member-selector',
@@ -18,7 +19,7 @@ import { Subject } from 'rxjs';
 export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
-  @Input() question;
+  @Input() question: Question;
   @Input() submission;
   @Input() submissionId: number;
   @Input() review;
@@ -107,9 +108,12 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       }
     } else {
       if (!this.innerValue) {
-        this.innerValue = [];
+        this.innerValue = {
+          answer: [],
+          comment: ''
+        };
       }
-      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
+      this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
     }
 
     // propagate value into form control using control value accessor interface
@@ -150,7 +154,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   private _showSavedAnswers() {
     if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
       this.innerValue = {
-        answer: this.review.answer,
+        answer: this.review.answer || [],
         comment: this.review.comment
       };
       this.comment = this.review.comment;
