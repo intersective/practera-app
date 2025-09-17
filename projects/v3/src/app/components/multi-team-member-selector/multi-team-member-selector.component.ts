@@ -2,6 +2,7 @@ import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit } from '@an
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { Subject } from 'rxjs';
+import { Question } from '../types/assessment';
 
 @Component({
   selector: 'app-multi-team-member-selector',
@@ -18,7 +19,7 @@ import { Subject } from 'rxjs';
 export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
-  @Input() question;
+  @Input() question: Question;
   @Input() submission;
   @Input() submissionId: number;
   @Input() review;
@@ -32,7 +33,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // this is for doing review or not
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
-  @Input() control: AbstractControl;
+  @Input() control: AbstractControl<{answer: string[], comment: string}>;
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
@@ -79,7 +80,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       action.questionSave = {
         submissionId: this.submissionId,
         questionId: this.question.id,
-        answer: this.innerValue,
+        answer: this.innerValue.answer,
       };
     }
 
@@ -107,9 +108,13 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       }
     } else {
       if (!this.innerValue) {
-        this.innerValue = [];
+        this.innerValue = {
+          answer: [],
+          comment: ''
+        };
       }
-      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
+
+      this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
     }
 
     // propagate value into form control using control value accessor interface
@@ -131,9 +136,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    if (value) {
-      this.innerValue = typeof value === 'string' ? JSON.parse(value) : value;
-    }
   }
 
   // From ControlValueAccessor interface
@@ -150,13 +152,17 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   private _showSavedAnswers() {
     if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
       this.innerValue = {
-        answer: this.review.answer,
+        answer: this.review.answer || [],
         comment: this.review.comment
       };
       this.comment = this.review.comment;
-    }
-    if ((this.submissionStatus === 'in progress') && this.doAssessment) {
-      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
+    } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: this.submission.answer || [],
+        };
+      }
+      this.innerValue.answer = this.control.pristine ? this.submission.answer : this.control.value;
     }
 
     this.propagateChange(this.innerValue);
@@ -176,5 +182,56 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
+  }
+
+  isSelected(teamMember: any): boolean {
+    if (!this.innerValue?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.innerValue.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  isSelectedInSubmission(teamMember: any): boolean {
+    if (!this.submission?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.submission.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  isSelectedInReview(teamMember: any): boolean {
+    if (!this.review?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.review.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
   }
 }
