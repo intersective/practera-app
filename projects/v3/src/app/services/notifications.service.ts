@@ -49,6 +49,49 @@ export interface Meta {
   assessment_name: string;
 }
 
+export interface TodoItemMeta {
+  // feedback/assessment related properties
+  timeline_id?: number;
+  assessment_id?: number | string; // can be number or string in some cases
+  submission_id?: number;
+  context_id?: number;
+  activity_id?: number;
+  submitter_name?: string;
+  assessment_name?: string;
+  published_date?: string; // iso date string
+  reviewer_name?: string;
+
+  // achievement related properties
+  id?: number;
+  name?: string;
+  description?: string | null;
+  badge?: string; // url to badge image
+  points?: number;
+  program_id?: number;
+  experience_id?: number;
+  new_items?: any[]; // array of new items unlocked
+
+  // chat/fast feedback related properties
+  team_id?: number | null;
+  team_name?: string;
+  target_user_id?: number;
+
+  // reminder related properties
+  due_date?: string | null; // iso date string or null
+
+  // unlock/hierarchy related properties
+  parent_milestone?: number;
+  parent_activity?: number;
+  task_type?: string; // "Story.Topic", "Assess.Assessment", etc.
+  task_id?: number | null;
+
+  // legacy/unknown properties
+  participants_only?: boolean;
+  team_member_id?: number;
+  Unlock?: any; // legacy property, type unclear
+  assessment_submission_id?: number;
+}
+
 /**
  * TodoItem interface
  * @description: this object can be very dynamic. It acts as a notification object for the user.
@@ -64,27 +107,7 @@ export interface TodoItem {
   is_done?: boolean;
   foreign_key?: number; // milestoneId/activitySequenceId/activityId
   model?: string;
-  meta?: {
-    id?: number;
-    name?: string;
-    description?: string;
-    points?: number;
-    badge?: string;
-    activity_id?: number;
-    context_id?: number;
-    assessment_id?: number;
-    assessment_submission_id?: number;
-    assessment_name?: string;
-    reviewer_name?: string;
-    team_id?: number;
-    team_member_id?: number;
-    participants_only?: boolean;
-    due_date?: string;
-    task_id?: number;
-    task_type?: string;
-    parent_activity?: number; // a referrence to the parent activity id for task
-    parent_milestone?: number; // a referrence to the parent activity id for task
-  };
+  meta?: TodoItemMeta;
   project_id?: number;
   timeline_id?: number;
 }
@@ -203,16 +226,16 @@ export class NotificationsService {
     return modal;
   }
 
-  async modal(component, componentProps, options?, event?): Promise<HTMLIonModalElement> {
-    return this.modalOnly(component, componentProps, options, event);
+  async modal(component, componentProps, options?, event?, modalId?: string): Promise<HTMLIonModalElement> {
+    return this.modalOnly(component, componentProps, options, event, modalId);
   }
 
-  async modalOnly(component, componentProps, options?, event?): Promise<any> {
+  async modalOnly(component, componentProps, options?, event?, modalId?: string): Promise<any> {
     const modalConfig = this.modalConfig(
       { component, componentProps },
       options
     );
-    return this.modalService.addModal(modalConfig, event);
+    return this.modalService.addModal(modalConfig, event, modalId);
   }
 
   /**
@@ -449,6 +472,7 @@ export class NotificationsService {
     props: {
       questions?: Question[];
       meta?: Meta | Object;
+      pulseCheckId?: string;
     },
     options: {
       closable?: boolean;
@@ -463,12 +487,18 @@ export class NotificationsService {
       showBackdrop: false,
       ...options
     };
+
+    // use pulseCheckId to identify each modal instance to prevent duplicate
+    const modalId = props.pulseCheckId ? `pulse-check-${props.pulseCheckId}` : null;
+
     if (options.modalOnly) {
-      return this.modalOnly(FastFeedbackComponent, props, modalConfig);
+      return this.modalOnly(FastFeedbackComponent, props, modalConfig, null, modalId);
     }
 
-    return this.modal(FastFeedbackComponent, props, modalConfig);
+    return this.modal(FastFeedbackComponent, props, modalConfig, null, modalId);
   }
+
+  private currentTodoItems: {id: number, identifier: string}[] = [];
 
   getTodoItems(): Observable<any> {
     return this.request
@@ -480,6 +510,20 @@ export class NotificationsService {
       .pipe(
         map((response) => {
           if (response.success && response.data) {
+            const todoItems: TodoItem[] = response.data;
+
+            // Store current TodoItems for duplicate detection
+            this.currentTodoItems = todoItems
+            .filter(item => item.is_done === false)
+            .map(item => ({
+              id: item.id,
+              identifier: item.identifier,
+              is_done: item.is_done
+            }));
+
+            // Clean up orphaned unlock indicators before normalizing
+            this.unlockIndicatorService.cleanupOrphanedIndicators(response.data);
+
             const normalised = this._normaliseTodoItems(response.data);
             this.notifications = normalised;
             this._notification$.next(this.notifications);
@@ -487,6 +531,13 @@ export class NotificationsService {
           }
         })
       );
+  }
+
+  /**
+   * Get current TodoItems for duplicate detection
+   */
+  getCurrentTodoItems(): {id: number, identifier: string}[] {
+    return this.currentTodoItems;
   }
 
   /**
@@ -1042,6 +1093,22 @@ export class NotificationsService {
         is_done: true,
       },
     });
+  }
+
+  /**
+   * Mark multiple todo items as done (bulk operation)
+   * Handles server-side duplicates for same unlock indicator
+   */
+  markMultipleTodoItemsAsDone(items: { identifier?: string; id?: number }[]) {
+    const markingOperations = items.map(item =>
+      this.markTodoItemAsDone(item).pipe(
+        map(response => ({ success: true, item, response })),
+      )
+    );
+
+    // eslint-disable-next-line no-console
+    console.log(`Bulk marking ${items.length} TodoItems as done:`, items);
+    return markingOperations;
   }
 
   async trackInfo() {

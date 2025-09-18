@@ -5,6 +5,7 @@ import {
   Achievement,
   AchievementService,
 } from '@v3/app/services/achievement.service';
+import { NavigationStateService } from '@v3/app/services/navigation-state.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -69,6 +70,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private sharedService: SharedService,
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private navigationStateService: NavigationStateService,
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
@@ -187,18 +189,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
-  }
-
-  /**
-   * @name openPulseCheck
-   * @description This method pulls the fast feedback service (with type 'skills') to open the pulse check modal.
-   */
-  openPulseCheck() {
-    this.fastFeedbackService.pullFastFeedback({
-      closable: true,
-      skipChecking: true,
-      type: 'skills'
-    }).pipe(first()).subscribe();
   }
 
   async updateDashboard() {
@@ -322,18 +312,26 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     if (this.unlockIndicatorService.isActivityClearable(activity.id)) {
-      const clearedActivityTodo = this.unlockIndicatorService.clearActivity(
-        activity.id
-      );
-      clearedActivityTodo?.forEach((todo) => {
-        this.notification
-          .markTodoItemAsDone(todo)
-          .pipe(first())
-          .subscribe(() => {
-            // eslint-disable-next-line no-console
-            console.log("Marked activity as done", todo);
-          });
-      });
+      // handles server-side duplicates and hierarchy
+      const currentTodoItems = this.notification.getCurrentTodoItems();
+      const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activity.id, currentTodoItems);
+
+      // Handle marking duplicate TodoItems as done using centralized method
+      this.unlockIndicatorService.markDuplicatesAsDone(result, this.notification, 'activity');
+
+      // Fallback: if no duplicates found, try to clear inaccurate data
+      if (result.duplicatesToMark.length === 0 && result.clearedUnlocks.length === 0) {
+        const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activity.id);
+        fallbackCleared?.forEach((todo) => {
+          this.notification
+            .markTodoItemAsDone(todo)
+            .pipe(first())
+            .subscribe(() => {
+              // eslint-disable-next-line no-console
+              console.info("Marked activity as done (fallback)", todo);
+            });
+        });
+      }
     }
 
     if (this.unlockIndicatorService.isMilestoneClearable(milestone.id)) {
@@ -341,6 +339,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     if (!this.isMobile) {
+      // manually set navigation source
+      this.navigationStateService.setNavigationSource('home');
       return this.router.navigate(["v3", "activity-desktop", activity.id]);
     }
 
@@ -353,18 +353,26 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @return  {void}
    */
   verifyUnlockedMilestoneValidity(milestoneId: number): void {
-    // check & update unlocked milestones
-    const unlockedMilestones =
-      this.unlockIndicatorService.clearActivity(milestoneId);
-    unlockedMilestones.forEach((unlockedMilestone) => {
-      this.notification
-        .markTodoItemAsDone(unlockedMilestone)
-        .pipe(first())
-        .subscribe(() => {
-          // eslint-disable-next-line no-console
-          console.log("Marked milestone as done", unlockedMilestone);
-        });
-    });
+    // handles server-side duplicates clearing
+    const currentTodoItems = this.notification.getCurrentTodoItems();
+    const result = this.unlockIndicatorService.clearByMilestoneIdWithDuplicates(milestoneId, currentTodoItems);
+
+    // mark all duplicated TodoItems as done
+    this.unlockIndicatorService.markDuplicatesAsDone(result, this.notification, 'milestone');
+
+    // Fallback: if no duplicates found, try clearing for inaccurate unlock indicator todoItems
+    if (result.duplicatesToMark.length === 0) {
+      const fallbackCleared = this.unlockIndicatorService.clearRelatedIndicators('milestone', milestoneId);
+      fallbackCleared.forEach((unlockedMilestone) => {
+        this.notification
+          .markTodoItemAsDone(unlockedMilestone)
+          .pipe(first())
+          .subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.info("Marked milestone as done (fallback)", unlockedMilestone);
+          });
+      });
+    }
   }
 
   async onTrackInfo() {

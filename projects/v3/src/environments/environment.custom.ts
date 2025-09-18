@@ -60,6 +60,6 @@ export const environment = {
   goMobile: false,
   helpline: '<CUSTOM_HELPLINE>',
   featureToggles: {
-    assessmentPagination: true,
+    assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
   },
 };

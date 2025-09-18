@@ -209,23 +209,6 @@
     i18n-subtitle1></app-list-item>
 </ng-template>
 
-<ng-template #emptyMilestones>
-  <ion-item lines="none"
-    class="ion-text-center">
-    <ion-label>
-      <p class="body-1"
-        i18n>No activities available at the moment.</p>
-      <ion-button (click)="updateDashboard()"
-        fill="clear"
-        size="small">
-        <ion-icon name="refresh"
-          slot="start"></ion-icon>
-        <span i18n>Retry</span>
-      </ion-button>
-    </ion-label>
-  </ion-item>
-</ng-template>
-
 <ng-template #pulseChecks>
   <h3 class="for-accessibility"
     i18n>Pulse checks and skills</h3>
@@ -313,6 +296,18 @@
       </ion-grid>
     </div>
   </ng-container>
+</ng-template>
+
+<ng-template #emptyMilestones>
+  <ion-item lines="none" class="ion-text-center">
+    <ion-label>
+      <p class="body-1" i18n>No activities available at the moment.</p>
+      <ion-button (click)="updateDashboard()" fill="clear" size="small">
+        <ion-icon name="refresh" slot="start"></ion-icon>
+        <span i18n>Retry</span>
+      </ion-button>
+    </ion-label>
+  </ion-item>
 </ng-template>
 
 <ng-template #loadingMilestones>
