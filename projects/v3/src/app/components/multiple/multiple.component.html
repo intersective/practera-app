@@ -55,7 +55,14 @@
             [disabled]="control.disabled"
             [attr.aria-label]="choice.name"
           >
-            <span class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></span>
+            <span class="ion-text-wrap body-2 black"
+              [innerHTML]="choice.name"
+              [appToggleLabel]="onLabelToggle"
+              [toggleId]="choice.id"
+              [toggleDisabled]="control.disabled"
+              role="button"
+              tabindex="0">
+            </span>
           </ion-checkbox>
         </ion-item>
 
@@ -93,7 +100,13 @@
         [attr.aria-label]="choice.name"
       >
         <div class="ion-text-wrap body-2 black">
-          <span [innerHTML]="choice.name"></span>
+          <span [innerHTML]="choice.name"
+            [appToggleLabel]="onLabelToggle"
+            [toggleId]="choice.id"
+            [toggleDisabled]="control.disabled"
+            role="button"
+            tabindex="0">
+          </span>
           <p *ngIf="submission?.answer?.includes(choice.id)">
             <ion-chip class="label orange" i18n
               *ngIf="submission?.answer?.includes(choice.id)"

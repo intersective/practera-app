@@ -38,6 +38,7 @@ import { VideoConversionComponent } from './video-conversion/video-conversion.co
 import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
+import { ToggleLabelDirective } from '../directives/toggle-label/toggle-label.directive';
 import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
@@ -67,6 +68,7 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    ToggleLabelDirective,
     UppyAngularDashboardModalModule,
     UppyAngularDashboardModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
@@ -152,6 +154,7 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     BottomActionBarComponent,
     SupportPopupComponent,
+    ToggleLabelDirective,
     TrafficLightComponent,
     TrafficLightGroupComponent,
     UppyUploaderComponent,

@@ -286,4 +286,17 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   pinFormatter = (value: number): string => {
     return value.toString();
   };
+
+  // helper methods to check if answers exist
+  hasSubmissionAnswer(): boolean {
+    return this.submission?.answer !== null && this.submission?.answer !== undefined;
+  }
+
+  hasReviewAnswer(): boolean {
+    return this.review?.answer !== null && this.review?.answer !== undefined;
+  }
+
+  hasAnyAnswer(): boolean {
+    return this.hasSubmissionAnswer() || this.hasReviewAnswer();
+  }
 }
