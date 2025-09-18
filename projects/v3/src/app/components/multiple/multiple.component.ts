@@ -215,4 +215,9 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
+
+  // innerHTML text toggle
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
 }

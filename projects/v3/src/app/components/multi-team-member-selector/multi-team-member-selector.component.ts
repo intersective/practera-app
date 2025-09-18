@@ -234,4 +234,13 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       return false;
     }
   }
+
+  // innerHTML toggle label click handler
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
+  }
 }
