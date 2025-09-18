@@ -40,7 +40,14 @@
       lines="none"
       *ngFor="let teamMember of question.teamMembers;let i = index"
       [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-      <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+      <ion-label class="white-space-normal body-2 black"
+        [innerHTML]="teamMember.userName"
+        [toggleLabel]="onLabelToggle"
+        [toggleId]="teamMember.key"
+        [toggleDisabled]="control.disabled"
+        role="button"
+        tabindex="0">
+      </ion-label>
 
       <ion-checkbox
         [attr.aria-label]="teamMember.userName"
@@ -76,7 +83,13 @@
         (ionChange)="onChange(teamMember.key, 'answer')"
         [disabled]="control.disabled">
         <div class="white-space-normal body-2 black">
-          <span [innerHTML]="teamMember.userName"></span>
+          <span [innerHTML]="teamMember.userName"
+            [toggleLabel]="onLabelToggleReview"
+            [toggleId]="teamMember.key"
+            [toggleDisabled]="control.disabled"
+            role="button"
+            tabindex="0">
+          </span>
           <p *ngIf="isSelectedInSubmission(teamMember)" style="margin: 0; padding: 0;">
             <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
           </p>
