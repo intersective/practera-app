@@ -63,7 +63,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * 'reivew' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
-  @Input() action: string;
+  @Input() action: 'assessment' | 'review';
   @Input() task: Task; // current task needed for dueDate (CORE-6343)
   @Input() assessment: Assessment = null;
   @Input() contextId: number;
@@ -153,7 +153,11 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe(() => {
       this.subscribeSaveSubmission();
     });
+  }
 
+  // make sure video is stopped when user leave the page
+  ionViewWillLeave() {
+    this.sharedService.stopPlayingVideos();
   }
 
   pageSize = 8; // number of questions per page
@@ -216,6 +220,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   getQuestionBoxById(id) {
     return this.questionBoxes.find(boxes => boxes.el.id === id);
   }
+
   getQuestionBoxes() {
     return this.questionBoxes;
   }
@@ -294,6 +299,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
+  // Email content for repeated invalid answer error
   private invalidAnswerEmailContent(rawData) {
     const body = `Hi Team,\n
 I am experiencing issues with submitting my assessment answers.\n
@@ -411,16 +417,20 @@ Best regards`;
     );
   }
 
-  ngOnChanges(): void {
+  ngOnChanges(simpleChanges: SimpleChanges): void {
     if (!this.assessment) {
       return;
     }
 
     this._initialise();
-    this._handleSubmissionData();
-    this._populateQuestionsForm();
-    this._handleReviewData();
-    this._preventSubmission();
+
+    if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
+      this._handleSubmissionData();
+      this._populateQuestionsForm();
+      this._handleReviewData();
+      this._populateFormWithAnswers();
+      this._preventSubmission();
+    }
 
     // split by question count every time assessment changes - only if pagination is enabled
     if (this.isPaginationEnabled) {
@@ -431,8 +441,6 @@ Best regards`;
       this.pagesGroups = [];
       this.pageIndex = 0;
     }
-
-    this._populateFormWithAnswers();
 
     // scroll to the active page into view after rendering
     setTimeout(() => this.scrollActivePageIntoView(), 200);
@@ -496,9 +504,8 @@ Best regards`;
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    // question groups
+    // questions in multiple groups
     this.assessment.groups.forEach(group => {
-      // questions in each group
       group.questions.forEach(question => {
         let validator = [];
         // check if the compulsory is mean for current user's role
@@ -536,6 +543,11 @@ Best regards`;
         this.questionsForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
       });
     });
+
+    // when no questions in the assessment, disable the button
+    if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
+      return this.btnDisabled$.next(true);
+    }
 
     this.questionsForm.valueChanges.pipe(
       takeUntil(this.unsubscribe$),
@@ -598,11 +610,6 @@ Best regards`;
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
-  }
-
-  // make sure video is stopped when user leave the page
-  ionViewWillLeave() {
-    this.sharedService.stopPlayingVideos();
   }
 
   /**

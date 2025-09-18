@@ -44,6 +44,9 @@ export class ActivityDesktopPage {
   };
   scrolSubject = new BehaviorSubject(null);
 
+  // track navigation state for unlock indicator clearing
+  private fromHome: boolean = false;
+
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
   @ViewChild(TopicComponent) topicComponent: TopicComponent;
@@ -109,6 +112,10 @@ export class ActivityDesktopPage {
   ionViewDidEnter() {
     // cleanup previous session
     this.componentCleanupService.triggerCleanup();
+
+    // capture navigation state early before it's lost
+    const navigation = this.router.getCurrentNavigation();
+    this.fromHome = navigation?.extras?.state?.fromHome || false;
 
     this.activityService.activity$
       .pipe(
@@ -208,6 +215,7 @@ export class ActivityDesktopPage {
                 contextId: this.urlParams.contextId,
                 type: targetTask.type,
                 name: targetTask.name,
+                status: targetTask.status,
               });
             }
           }
@@ -308,6 +316,109 @@ export class ActivityDesktopPage {
     }
 
     this.activity = res;
+    // only clear pure activity-level unlock indicators onLoad of activity when navigating from Home
+    this._clearPureActivityIndicatorIfFromHome(res.id);
+  }
+
+  /**
+   * clears activity-level unlock indicators only when navigating from Home page
+   */
+  private _clearPureActivityIndicatorIfFromHome(activityId: number): void {
+    if (!activityId) { return; }
+
+    // check if user is navigating from Home page using stored state
+    if (!this.fromHome) {
+      return;
+    }
+
+    this._clearActivityLevelIndicators(activityId);
+  }
+
+  /**
+   * checks if activity-level indicators should be cleared after task completion
+   * called when user completes tasks within the activity
+   */
+  private _checkActivityLevelClearingAfterTaskCompletion(): void {
+    if (!this.activity?.id) {
+      return;
+    }
+
+    // use timeout to allow unlock indicator service to update after task completion
+    setTimeout(() => {
+      this._clearActivityLevelIndicators(this.activity.id);
+    }, 500);
+  }
+
+  private async _clearActivityLevelIndicators(activityId: number): Promise<void> {
+    if (!activityId) { return; }
+
+    try {
+      const currentTodoItems = this.notificationsService.getCurrentTodoItems();
+      let entries = this.unlockIndicatorService.getTasksByActivityId(activityId);
+
+      // retry fetching todo items if no entries found
+      if (entries?.length === 0) {
+        await firstValueFrom(this.notificationsService.getTodoItems());
+        entries = this.unlockIndicatorService.getTasksByActivityId(activityId);
+      }
+
+      // Double confirmed, no indicators for this activity
+      if (!entries || entries.length === 0) {
+        return;
+      }
+
+      // Separate activity-level and task-level indicators
+      const activityLevelEntries = entries.filter(e => e.taskId === undefined);
+      const taskLevelEntries = entries.filter(e => e.taskId !== undefined);
+
+      // Only clear activity-level indicators if:
+      // 1. There are activity-level entries to clear
+      // 2. The activity is clearable (no task-level children)
+      if (activityLevelEntries.length > 0 && taskLevelEntries.length === 0) {
+        // Activity is clearable - no task children remain
+        const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activityId, currentTodoItems);
+
+        // Mark the original cleared activity-level indicators as done
+        result.clearedUnlocks?.forEach(todo => {
+          this.notificationsService.markTodoItemAsDone(todo).subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.info("Marked activity indicator as done (activity page)", todo);
+          });
+        });
+
+        // Mark all duplicate TodoItems as done (bulk operation)
+        if (result.duplicatesToMark.length > 0) {
+          this.notificationsService.markMultipleTodoItemsAsDone(result.duplicatesToMark);
+        }
+
+        // Handle cascade milestone clearing
+        result.cascadeMilestones.forEach(milestoneData => {
+          if (milestoneData.duplicatesToMark.length > 0) {
+            const milestoneMarkingOps = this.notificationsService.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
+          }
+        });
+
+        // Note: The fallback at line 364-367 was already handling this, but only as a fallback
+        return;
+      }
+
+      // If we couldn't clear via standard approach, try robust clearing
+      // This handles inaccurate data where relationships might be broken
+      if (activityLevelEntries.length > 0) {
+        const relatedIndicators = this.unlockIndicatorService.findRelatedIndicators('activity', activityId);
+        const pureActivityIndicators = relatedIndicators.filter(r => r.taskId === undefined);
+
+        // Only clear if activity is truly clearable (no tasks)
+        if (pureActivityIndicators.length > 0 && taskLevelEntries.length === 0) {
+          const cleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activityId);
+          cleared?.forEach(todo => {
+            this.notificationsService.markTodoItemAsDone(todo).subscribe();
+          });
+        }
+      }
+    } catch (e) {
+      console.error('[unlock-indicator] cleanup failed for activity', activityId, e);
+    }
   }
 
   /**
@@ -342,6 +453,7 @@ export class ActivityDesktopPage {
       }
 
       await this.activityService.goToTask(task);
+      this._checkActivityLevelClearingAfterTaskCompletion();
       this.isLoadingAssessment = false;
     } catch (error) {
       this.isLoadingAssessment = false;
@@ -398,25 +510,25 @@ export class ActivityDesktopPage {
     try {
       // handle unexpected submission: do final status check before saving
       let hasSubmssion = false;
-      const { submission } = await this.assessmentService
-        .fetchAssessment(
+      const { submission } = await firstValueFrom(
+        this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
         )
-        .toPromise();
+      );
 
       if (submission?.status === 'in progress') {
-        const saved = await this.assessmentService
-          .submitAssessment(
+        const saved = await firstValueFrom(
+          this.assessmentService.submitAssessment(
             event.submissionId,
             event.assessmentId,
             event.contextId,
             event.answers
           )
-          .toPromise();
+        );
 
         // http 200 but error
         if (
@@ -492,7 +604,7 @@ export class ActivityDesktopPage {
         delay(400)
       ));
       await this.reviewRatingPopUp();
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+      await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
       this.loading = false;
       this.btnDisabled$.next(false);

@@ -6,9 +6,7 @@
   <ion-skeleton-text animated></ion-skeleton-text>
 </div>
 
-<!-- Manual Save -->
-<div class="save-info"
-  *ngIf="assessment && (doAssessment || isPendingReview)">
+<div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
 </div>
 
@@ -146,17 +144,18 @@
         </div>
 
         <ng-container *ngFor="let question of group.questions; trackBy: trackById">
-          <ion-list class="ion-no-padding"
-            [id]="'q-' + question.id"
-            #questionBox>
-            <ion-list-header class="question-title headline-4"
+          <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox>
+            <ion-list-header
+              class="question-title headline-4"
+              [ngClass]="{'fade-70': shouldShowRequiredIndicator(question) && questionsForm?.controls['q-' + question.id]?.errors?.required}"
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
               <ion-label class="ion-margin-vertical">
                 <span [innerHTML]="question.name"></span>
                 <span class="required-mark"
                   [ngClass]="{'contrast': isRedColor}"
-                  *ngIf="question.isRequired">&nbsp;*</span>
+                  *ngIf="shouldShowRequiredIndicator(question)"
+                >&nbsp;*</span>
               </ion-label>
 
               <ion-button mode="ios"

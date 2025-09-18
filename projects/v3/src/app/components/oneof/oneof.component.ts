@@ -163,7 +163,6 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     if ((this.submissionStatus === 'in progress') && this.doAssessment) {
       this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
-
     this.propagateChange(this.innerValue);
   }
 
