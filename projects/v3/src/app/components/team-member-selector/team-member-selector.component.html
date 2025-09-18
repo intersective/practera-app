@@ -49,7 +49,7 @@
         ></ion-radio>
         <ion-label class="white-space-normal body-2 black"
           [innerHTML]="teamMember.userName"
-          [toggleLabel]="onLabelToggle"
+          [appToggleLabel]="onLabelToggle"
           [toggleId]="teamMember.key"
           [toggleDisabled]="control.disabled"
           role="button"
@@ -80,7 +80,7 @@
           [disabled]="control.disabled">
           <ion-label class="white-space-normal body-2 black">
             <span [innerHTML]="teamMember.userName"
-              [toggleLabel]="onLabelToggleReview"
+              [appToggleLabel]="onLabelToggleReview"
               [toggleId]="teamMember.key"
               [toggleDisabled]="control.disabled"
               role="button"
