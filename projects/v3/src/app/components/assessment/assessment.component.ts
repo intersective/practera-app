@@ -521,17 +521,26 @@ Best regards`;
           }
         }
 
+
+        let quesCtrl: { answer: any; comment?: string; file?: any } | any = null;
+
         // multiple initial answer
-        let answer: string | object | any[] = '';
         if (question.type === 'multi team member selector') {
-          answer = [];
+          quesCtrl = { answer: [] };
         }
 
-        this.questionsForm.addControl('q-' + question.id, new FormControl({
-          answer,
-          comment: '',
-          file: null,
-        }, validator));
+        if (this.action === 'review') {
+          quesCtrl.comment = '';
+          quesCtrl.answer = '';
+          quesCtrl.file = null;
+
+          // multiple initial answer
+          if (question.type === 'multi team member selector') {
+            quesCtrl.answer = [];
+          }
+        }
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
       });
     });
 

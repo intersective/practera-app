@@ -110,7 +110,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       if (!this.innerValue) {
         this.innerValue = {
           answer: [],
-          comment: ''
         };
       }
 
@@ -233,5 +232,14 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     } catch {
       return false;
     }
+  }
+
+  // innerHTML toggle label click handler
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
   }
 }
