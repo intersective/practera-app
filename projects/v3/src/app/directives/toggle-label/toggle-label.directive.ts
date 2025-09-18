@@ -1,11 +1,11 @@
 import { Directive, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: '[toggleLabel]',
+  selector: '[appToggleLabel]',
   standalone: true
 })
 export class ToggleLabelDirective {
-  @Input('toggleLabel') toggleFn!: (id: string) => void;
+  @Input('appToggleLabel') toggleFn!: (id: string) => void;
   @Input() toggleId!: string;
   @Input() toggleDisabled = false;
 
