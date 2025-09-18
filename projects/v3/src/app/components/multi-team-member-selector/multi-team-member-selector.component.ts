@@ -110,7 +110,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       if (!this.innerValue) {
         this.innerValue = {
           answer: [],
-          comment: ''
         };
       }
 
