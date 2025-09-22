@@ -80,7 +80,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
       action.questionSave = {
         submissionId: this.submissionId,
         questionId: this.question.id,
-        answer: this.innerValue.answer,
+        answer: this.innerValue,
       };
     }
 
@@ -107,13 +107,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
         this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
       }
     } else {
-      if (!this.innerValue) {
-        this.innerValue = {
-          answer: [],
-        };
-      }
-
-      this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
+      this.innerValue = this.utils.addOrRemove(this.innerValue, value);
     }
 
     // propagate value into form control using control value accessor interface
@@ -135,6 +129,9 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
+    if (value) {
+      this.innerValue = value;
+    }
   }
 
   // From ControlValueAccessor interface
@@ -184,10 +181,14 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   }
 
   isSelected(teamMember: any): boolean {
-    if (!this.innerValue?.answer) return false;
+    if (!this.innerValue) return false;
+    if (this.doReview && !this.innerValue.answer) return false;
+    if (this.doAssessment && !this.innerValue) return false;
+
     try {
+      const answer = this.doReview ? this.innerValue.answer : this.innerValue;
       const memberObj = JSON.parse(teamMember.key);
-      return this.innerValue.answer.some((ans: string) => {
+      return answer.some((ans: string) => {
         try {
           const ansObj = JSON.parse(ans);
           return ansObj.userId === memberObj.userId;
