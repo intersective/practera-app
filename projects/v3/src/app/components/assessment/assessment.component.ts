@@ -754,7 +754,7 @@ Best regards`;
             break;
           case 'text':
           case 'file': // answer is for text/oneof/multiple/slider only, file is always ''
-          case 'team-member-selector':
+          case 'team member selector':
           case 'multi team member selector':
             answer = '';
             break;
