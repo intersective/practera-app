@@ -1,5 +1,4 @@
 <div class="traffic-light-group">
-  <!-- Learner view -->
   <ng-container *ngIf="!isMentor">
     <ion-chip
       *ngFor="let group of learnerGroups"
@@ -17,7 +16,6 @@
     </ion-chip>
   </ng-container>
 
-  <!-- Mentor view -->
   <ng-container *ngIf="isMentor">
     <ion-chip
       *ngFor="let team of teamGroups"
