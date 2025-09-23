@@ -167,4 +167,14 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
   }
+
+  // innerHTML text toggle - submission
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  // innerHTML text toggle - review
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
+  }
 }
