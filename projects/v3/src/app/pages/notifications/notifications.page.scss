@@ -1,3 +1,16 @@
 :host {
   --ion-padding: 8px;
 }
+
+.mark-all-button {
+  --color: var(--ion-color-primary);
+
+  ion-icon {
+    margin-right: 4px;
+  }
+}
+
+.mark-all-button:disabled {
+  --color: var(--ion-color-medium);
+  pointer-events: none;
+}

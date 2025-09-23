@@ -8,8 +8,8 @@
           <ion-label>
             <span [innerHTML]="teamMember.userName"></span>
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner's answer</ion-chip>
-              <ion-chip class="label yellow black" *ngIf="teamMember.key === review.answer" i18n>Expert's answer</ion-chip>
+              <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner answer</ion-chip>
+              <ion-chip class="label yellow black" *ngIf="teamMember.key === review.answer" i18n>Reviewer answer</ion-chip>
             </p>
           </ion-label>
         </ion-item>
@@ -47,7 +47,14 @@
           [value]="teamMember.key"
           [disabled]="control.disabled"
         ></ion-radio>
-        <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+        <ion-label class="white-space-normal body-2 black"
+          [innerHTML]="teamMember.userName"
+          [appToggleLabel]="onLabelToggle"
+          [toggleId]="teamMember.key"
+          [toggleDisabled]="control.disabled"
+          role="button"
+          tabindex="0">
+        </ion-label>
       </ion-item>
     </ion-radio-group>
   </ion-list>
@@ -72,10 +79,16 @@
           [value]="teamMember.key"
           [disabled]="control.disabled">
           <ion-label class="white-space-normal body-2 black">
-            <span [innerHTML]="teamMember.userName"></span>
+            <span [innerHTML]="teamMember.userName"
+              [appToggleLabel]="onLabelToggleReview"
+              [toggleId]="teamMember.key"
+              [toggleDisabled]="control.disabled"
+              role="button"
+              tabindex="0">
+            </span>
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
               <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>
-                Learner's answer
+                Learner answer
               </ion-chip>
             </p>
           </ion-label>

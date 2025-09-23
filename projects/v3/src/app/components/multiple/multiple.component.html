@@ -9,11 +9,11 @@
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's answer</ion-chip>
+          >Learner answer</ion-chip>
           <ion-chip i18n
             class="label yellow black"
             *ngIf="review?.answer?.includes(choice.id)"
-          >Expert's answer</ion-chip>
+          >Reviewer answer</ion-chip>
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
@@ -44,15 +44,26 @@
       <ng-container *ngFor="let choice of question.choices; let i = index">
         <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
           lines='none'>
-          <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></ion-label>
+
           <ion-checkbox color="success"
             [checked]="innerValue?.includes(choice.id)"
             [value]="choice.id"
+            labelPlacement="end"
+            justify="start"
             slot="start"
             (ionChange)="onChange(choice.id)"
             [disabled]="control.disabled"
             [attr.aria-label]="choice.name"
-          ></ion-checkbox>
+          >
+            <span class="ion-text-wrap body-2 black"
+              [innerHTML]="choice.name"
+              [appToggleLabel]="onLabelToggle"
+              [toggleId]="choice.id"
+              [toggleDisabled]="control.disabled"
+              role="button"
+              tabindex="0">
+            </span>
+          </ion-checkbox>
         </ion-item>
 
         <ng-container
@@ -89,11 +100,17 @@
         [attr.aria-label]="choice.name"
       >
         <div class="ion-text-wrap body-2 black">
-          <span [innerHTML]="choice.name"></span>
+          <span [innerHTML]="choice.name"
+            [appToggleLabel]="onLabelToggle"
+            [toggleId]="choice.id"
+            [toggleDisabled]="control.disabled"
+            role="button"
+            tabindex="0">
+          </span>
           <p *ngIf="submission?.answer?.includes(choice.id)">
             <ion-chip class="label orange" i18n
               *ngIf="submission?.answer?.includes(choice.id)"
-            >Learner's answer</ion-chip>
+            >Learner answer</ion-chip>
           </p>
         </div>
       </ion-checkbox>

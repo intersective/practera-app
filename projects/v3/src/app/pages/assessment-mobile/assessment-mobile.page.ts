@@ -88,19 +88,19 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     this.subscriptions.add(paramsSub);
 
     const assessmentSub = this.assessmentService.assessment$.
-    pipe(
-      filter(res => res && this.assessmentDataLoaded), // only proceed if assessment data is loaded
-    ).subscribe(res => {
-      if (!res) {
-        this.goBack();
-        return;
-      }
+      pipe(
+        filter(res => res && this.assessmentDataLoaded), // only proceed if assessment data is loaded
+      ).subscribe(res => {
+        if (!res) {
+          this.goBack();
+          return;
+        }
 
-      if (res) {
-        this.assessment = res;
-        this.utils.setPageTitle(this.assessment?.name);
-      }
-    });
+        if (res) {
+          this.assessment = res;
+          this.utils.setPageTitle(this.assessment?.name);
+        }
+      });
     this.subscriptions.add(assessmentSub);
 
     const taskSub = this.activityService.currentTask$.subscribe(res => this.currentTask = res);
@@ -172,10 +172,6 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
           console.error('Asmt submission error:', saved);
           throw new Error("Error submitting assessment");
         }
-
-        if (this.assessment.pulseCheck === true && event.autoSave === false) {
-          await this.assessmentService.pullFastFeedback();
-        }
       } else if (this.action === 'review' && submission.status === 'pending review') {
         const saved = await firstValueFrom(this.assessmentService.submitReview(
           event.assessmentId,
@@ -200,13 +196,13 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
         await this.assessmentService.pullFastFeedback();
       }
 
-      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         // show toast message
         if (hasSubmission === true) {
           this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
         } else {
-          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review'});
+          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review' });
         }
 
         await this.assessmentService.fetchAssessment(
@@ -235,7 +231,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     } catch (err) {
       this.btnDisabled$.next(false);
       this.saving = false;
-      this.notificationsService.assessmentSubmittedToast({isFail: true});
+      this.notificationsService.assessmentSubmittedToast({ isFail: true });
     }
   }
 
@@ -249,7 +245,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
       return this.activityService.getActivity(this.activityId, true, this.task, () => {
         this.btnDisabled$.next(false);
       });
-    } catch(err) {
+    } catch (err) {
       this.btnDisabled$.next(false);
       console.error(err);
     }

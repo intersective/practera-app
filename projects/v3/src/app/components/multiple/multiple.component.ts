@@ -161,9 +161,6 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    if (value) {
-      this.innerValue = JSON.stringify(value);
-    }
   }
 
   // From ControlValueAccessor interface
@@ -217,5 +214,10 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
+  }
+
+  // innerHTML text toggle
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
   }
 }

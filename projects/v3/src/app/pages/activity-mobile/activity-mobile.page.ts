@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/services/activity.service';
 import { AssessmentService, Submission } from '@v3/services/assessment.service';
 import { filter } from 'rxjs/operators';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
   selector: 'app-activity-mobile',
@@ -18,16 +20,55 @@ export class ActivityMobilePage implements OnInit {
     private router: Router,
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
+    private unlockIndicatorService: UnlockIndicatorService,
+    private notificationsService: NotificationsService,
   ) { }
 
   ngOnInit() {
     this.activityService.activity$
       .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
-      .subscribe(res => this.activity = res);
+      .subscribe(res => {
+        this.activity = res;
+        if (res?.id) {
+          this.clearPureActivityIndicator(res.id);
+        }
+      });
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, false);
     });
+  }
+
+  /**
+   * Clear activity-level-only unlock indicators when entering the activity page.
+   * Uses robust clearing to handle inaccurate unlock indicator data.
+   */
+  private clearPureActivityIndicator(activityId: number) {
+    if (!activityId) { return; }
+
+    try {
+      // First try the standard approach
+      const entries = this.unlockIndicatorService.getTasksByActivityId(activityId);
+      if (entries?.length > 0 && entries.every(e => e.taskId === undefined)) {
+        const cleared = this.unlockIndicatorService.clearByActivityId(activityId);
+        cleared?.forEach(todo => this.notificationsService.markTodoItemAsDone(todo).subscribe());
+        return;
+      }
+
+      // If standard approach didn't find anything, try robust clearing for inaccurate data
+      const relatedIndicators = this.unlockIndicatorService.findRelatedIndicators('activity', activityId);
+      if (relatedIndicators?.length > 0) {
+        // Only clear if they are pure activity-level (no task-specific entries)
+        const pureActivityIndicators = relatedIndicators.filter(r => r.taskId === undefined);
+        if (pureActivityIndicators.length > 0) {
+          const cleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activityId);
+          cleared?.forEach(todo => this.notificationsService.markTodoItemAsDone(todo).subscribe());
+        }
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.debug('[unlock-indicator] cleanup skipped for activity', activityId, e);
+    }
   }
 
   goToTask(task: Task) {

@@ -66,4 +66,7 @@ export const environment = {
     appId: '',
   },
   helpline: '<CUSTOM_HELPLINE>',
+  featureToggles: {
+    assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
+  },
 };
