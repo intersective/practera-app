@@ -9,11 +9,11 @@
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's answer</ion-chip>
+          >Learner answer</ion-chip>
           <ion-chip i18n
             class="label yellow black"
             *ngIf="review?.answer?.includes(choice.id)"
-          >Expert's answer</ion-chip>
+          >Reviewer answer</ion-chip>
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
@@ -110,7 +110,7 @@
           <p *ngIf="submission?.answer?.includes(choice.id)">
             <ion-chip class="label orange" i18n
               *ngIf="submission?.answer?.includes(choice.id)"
-            >Learner's answer</ion-chip>
+            >Learner answer</ion-chip>
           </p>
         </div>
       </ion-checkbox>
