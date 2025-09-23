@@ -347,17 +347,6 @@ Best regards`;
   }): Observable<any> {
     const answer = this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
 
-    this.filledAnswers().forEach(answerObj => {
-      if (answerObj.questionId === questionInput.questionId) {
-        // if the answer is empty, we need to set it to null
-        if (this.utils.isEmpty(answer)) {
-          answerObj.answer = null;
-        } else {
-          answerObj.answer = answer;
-        }
-      }
-    });
-
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
@@ -514,11 +503,23 @@ Best regards`;
           }
         }
 
-        this.questionsForm.addControl('q-' + question.id, new FormControl({
-          answer: '',
-          comment: '',
-          file: null,
-        }, validator));
+
+        let quesCtrl: { answer: any; comment?: string; file?: any } | any = null;
+
+        if (this.action === 'review') {
+          quesCtrl = {
+            comment: '',
+            answer: question.type === 'multi team member selector' ? [] : '',
+            file: null
+          };
+        } else {
+          // For assessment mode, initialize multi team member selector with proper structure
+          if (question.type === 'multi team member selector') {
+            quesCtrl = { answer: [] };
+          }
+        }
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
       });
     });
 
@@ -579,7 +580,7 @@ Best regards`;
   }
 
   private _handleReviewData() {
-    if (this.isPendingReview && this.review.status === 'in progress') {
+    if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
@@ -746,8 +747,8 @@ Best regards`;
             break;
           case 'text':
           case 'file': // answer is for text/oneof/multiple/slider only, file is always ''
-          case 'team-member-selector':
-          case 'multi-team-member-selector':
+          case 'team member selector':
+          case 'multi team member selector':
             answer = '';
             break;
           case 'slider':
