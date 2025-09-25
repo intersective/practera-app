@@ -60,7 +60,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * reading a submission or feedback. This actually
    * means the current user is the user who should "do" this assessment
    *
-   * 'reivew' is for user to do review for this assessment. This means the
+   * 'review' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
   @Input() action: 'assessment' | 'review';
@@ -70,7 +70,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() activityId?: number;
   @Input() submission?: Submission;
   @Input() review: AssessmentReview;
-  @Input() isSinglePage?: boolean = false;
+  @Input() isSinglePage?: boolean = false; // forces single page display for mobile view or restricted access mode (review action)
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -189,6 +189,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.pageIndex > 0) {
       this.pageIndex--;
       this.scrollActivePageIntoView();
+      this.setSubmissionDisabled();
     }
   }
 
@@ -197,6 +198,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.pageIndex < this.pageCount - 1) {
       this.pageIndex++;
       this.scrollActivePageIntoView();
+      this.setSubmissionDisabled();
     }
   }
 
@@ -210,6 +212,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (i >= 0 && i < this.pageCount) {
       this.pageIndex = i;
       this.scrollActivePageIntoView();
+      this.setSubmissionDisabled();
     }
   }
 
@@ -406,18 +409,23 @@ Best regards`;
     );
   }
 
-  ngOnChanges(simpleChanges: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (!this.assessment) {
       return;
     }
 
     this._initialise();
 
-    if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
+    if (changes.assessment || changes.submission || changes.review) {
+      // reset button state when assessment changes
+      this.btnDisabled$.next(false);
+      this.pageRequiredCompletion = [];
+
       this._handleSubmissionData();
       this._populateQuestionsForm();
       this._handleReviewData();
-      this._populateFormWithAnswers();
+      this._prefillForm();
+      // this._populateFormWithAnswers(); // deprecated
       this._preventSubmission();
     }
 
@@ -1212,6 +1220,7 @@ Best regards`;
     }, 50);
   }
 
+  /* deprecated, but keep for reference */
   private _populateFormWithAnswers() {
     // Populate form with submission answers
     if (this.submission?.answers && this.action === 'assessment') {
@@ -1249,6 +1258,57 @@ Best regards`;
       this.initializePageCompletion();
     }, 100);
   }
+
+  /**
+   * prefill form with answers and check validation state
+   * replaces the old _populateFormWithAnswers() method
+   */
+  private _prefillForm(): void {
+    // populate form with submission answers (for assessment action)
+    if (this.submission?.answers && this.action === 'assessment') {
+      Object.keys(this.submission.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.submission.answers[questionId]?.answer !== undefined) {
+          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
+        }
+      });
+    }
+
+    // populate form with review answers (for review action)
+    if (this.review?.answers && this.action === 'review') {
+      Object.keys(this.review.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.review.answers[questionId]) {
+          const reviewAnswer = {
+            answer: this.review.answers[questionId].answer,
+            comment: this.review.answers[questionId].comment,
+            file: this.review.answers[questionId].file || null,
+          };
+          control.setValue(reviewAnswer, { emitEvent: false });
+        }
+      });
+    }
+
+    // revalidate form after setting values
+    this.questionsForm.updateValueAndValidity();
+
+    // check validation state and update button accordingly
+    if (this.doAssessment || this.isPendingReview) {
+      // in edit mode, check form validation
+      this.setSubmissionDisabled();
+    } else {
+      // in read-only mode, ensure button is enabled
+      this.btnDisabled$.next(false);
+    }
+
+    // initialize page completion tracking after form is populated
+    setTimeout(() => {
+      this.initializePageCompletion();
+    }, 100);
+  }
+
 
   setSubmissionDisabled() {
     // only enforce form validation when user can actually edit
