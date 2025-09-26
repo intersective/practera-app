@@ -12,10 +12,24 @@ The assessment system follows a hierarchical component structure with clear sepa
 Activity Pages (Desktop/Mobile)
     ↓
 Assessment Component (Central Hub)
+    ↓ (with Pagination enabled)
+Page Indicators ←→ Question Groups (Split into Pages) ←→ Navigation Controls
     ↓
 Question Components (Text, File, Multiple Choice, etc.)
     ↓
-Bottom Action Bar (Submit/Continue Button)
+Bottom Action Bar (Submit/Continue Button + Pagination Controls)
+```
+
+### Pagination Flow
+When pagination is enabled (`environment.featureToggles.assessmentPagination = true` - environment variable file):
+
+```
+1. Assessment loads → splitGroupsByQuestionCount()
+2. Groups divided into pages (≤8 questions per page)
+3. Page indicators show completion status
+4. Users navigate: Prev/Next buttons or click page indicators
+5. Form validation tracks completion per page
+6. Submit button integrates with pagination controls
 ```
 
 ## Core Components
@@ -122,33 +136,49 @@ questionsForm: FormGroup = new FormGroup({});
 
 #### Form Population Logic
 
+The form population has been refactored to ensure proper timing and validation state management.
+
 **Assessment Answers (`this.action === 'assessment'`):**
 ```typescript
-// Populate with submission answers
-if (this.submission?.answers) {
-  Object.keys(this.submission.answers).forEach(questionId => {
-    const control = this.questionsForm.get('q-' + questionId);
-    if (control && this.submission.answers[questionId]?.answer !== undefined) {
-      control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
-    }
-  });
-}
-```
+private _prefillForm(): void {
+  // populate form with submission answers (for assessment action)
+  if (this.submission?.answers && this.action === 'assessment') {
+    Object.keys(this.submission.answers).forEach(questionId => {
+      const controlName = 'q-' + questionId;
+      const control = this.questionsForm.get(controlName);
+      if (control && this.submission.answers[questionId]?.answer !== undefined) {
+        control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
+      }
+    });
+  }
 
-**Review Answers (`this.action === 'review'`):**
-```typescript
-// Populate with review answers (answer + comment structure)
-if (this.review?.answers) {
-  Object.keys(this.review.answers).forEach(questionId => {
-    const control = this.questionsForm.get('q-' + questionId);
-    if (control && this.review.answers[questionId]) {
-      const reviewAnswer = {
-        answer: this.review.answers[questionId].answer,
-        comment: this.review.answers[questionId].comment
-      };
-      control.setValue(reviewAnswer, { emitEvent: false });
-    }
-  });
+  // populate form with review answers (for review action)
+  if (this.review?.answers && this.action === 'review') {
+    Object.keys(this.review.answers).forEach(questionId => {
+      const controlName = 'q-' + questionId;
+      const control = this.questionsForm.get(controlName);
+      if (control && this.review.answers[questionId]) {
+        const reviewAnswer = {
+          answer: this.review.answers[questionId].answer,
+          comment: this.review.answers[questionId].comment,
+          file: this.review.answers[questionId].file || null,
+        };
+        control.setValue(reviewAnswer, { emitEvent: false });
+      }
+    });
+  }
+
+  // revalidate form after setting values
+  this.questionsForm.updateValueAndValidity();
+
+  // check validation state and update button accordingly
+  if (this.doAssessment || this.isPendingReview) {
+    // in edit mode, check form validation
+    this.setSubmissionDisabled();
+  } else {
+    // in read-only mode, ensure button is enabled
+    this.btnDisabled$.next(false);
+  }
 }
 ```
 
@@ -347,16 +377,25 @@ private _isRequired(question: Question): boolean {
 
 **Button State Management:**
 ```typescript
-this.questionsForm.valueChanges.pipe(
-  debounceTime(300),
-  takeUntil(this.unsubscribe$)
-).subscribe(() => {
-  // Update button disabled state based on form validity
-  this.btnDisabled$.next(this.questionsForm.invalid);
+// Delayed subscription to avoid race conditions during initialization
+setTimeout(() => {
+  this.questionsForm.valueChanges.pipe(
+    takeUntil(this.unsubscribe$),
+    debounceTime(300),
+  ).subscribe(() => {
+    this.initializePageCompletion();
+    this.setSubmissionDisabled();
+  });
+}, 300);
+
+setSubmissionDisabled() {
+  // only enforce form validation when user can actually edit
+  if (!this.doAssessment && !this.isPendingReview) {
+    return;
+  }
   
-  // Update page completion tracking for pagination
-  this.initializePageCompletion();
-});
+  this.btnDisabled$.next(this.questionsForm.invalid);
+}
 ```
 
 ### Validation Flow for Required File Questions
@@ -417,15 +456,123 @@ goToPage(i: number)     // Jump to specific page with validation
 ```
 
 ### Completion Tracking
+
+The completion tracking system has been improved to handle proper initialization timing and avoid the "incompleted" class showing incorrectly on first load.
+
 ```typescript
+ngOnChanges(changes: SimpleChanges): void {
+  if (!this.assessment) {
+    return;
+  }
+
+  this._initialise();
+
+  if (changes.assessment || changes.submission || changes.review) {
+    // reset button state when assessment changes
+    this.btnDisabled$.next(false);
+    this.pageRequiredCompletion = [];
+
+    this._handleSubmissionData();
+    this._populateQuestionsForm();
+    this._handleReviewData();
+    this._prefillForm();
+  }
+
+  // split by question count every time assessment changes - only if pagination is enabled
+  if (this.isPaginationEnabled) {
+    this.pagesGroups = this.splitGroupsByQuestionCount();
+    this.pageIndex = 0;
+
+    // initialize page completion after form is fully set up
+    // use delay to ensure form values are populated
+    setTimeout(() => {
+      this.initializePageCompletion();
+    }, 200);
+  } else {
+    // Reset pagination data when disabled
+    this.pagesGroups = [];
+    this.pageIndex = 0;
+  }
+
+  // scroll to the active page into view after rendering
+  setTimeout(() => this.scrollActivePageIntoView(), 250);
+}
+
 initializePageCompletion() {
-  // Updates status array for required questions
-  this.pageRequiredCompletion = this.pagesGroups.map(pageGroups => {
-    const questions = this.getAllQuestionsForPage(pageIndex);
-    return this.areAllRequiredQuestionsAnswered(questions);
+  if (!this.isPaginationEnabled) return;
+
+  this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+
+  this.pages.forEach((page, index) => {
+    const pageQuestions = this.getAllQuestionsForPage(index);
+    this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
   });
+
+  // trigger change detection to update the view
+  this.cdr.detectChanges();
+
+  // Update the scroll position when page completion status changes
+  setTimeout(() => this.scrollActivePageIntoView(), 100);
 }
 ```
+
+**Key Improvements for First Load Issue:**
+1. **Timing Fix**: `initializePageCompletion()` is now called in `ngOnChanges()` after pagination setup with a 200ms delay
+2. **Change Detection**: Added `this.cdr.detectChanges()` to ensure the view updates when completion status changes
+3. **Form Population Order**: Form values are populated via `_prefillForm()` before completion tracking runs
+4. **Race Condition Prevention**: Delayed form valueChanges subscription to avoid interference during initialization
+
+## Pagination Issue Fixes
+
+### Problem: "Incompleted" Class on First Load
+
+**Issue Description:**
+Page indicators showed up with the "incompleted" class on first load of assessments, even when questions were already answered. This occurred due to a timing mismatch between form population and completion tracking initialization.
+
+**Root Cause:**
+The `initializePageCompletion()` method was being called before form values were fully populated, causing `areAllRequiredQuestionsAnswered()` to return false for completed questions.
+
+**Solution Implemented:**
+
+1. **Moved completion initialization to proper lifecycle hook:**
+   ```typescript
+   // In ngOnChanges(), after pagination setup
+   setTimeout(() => {
+     this.initializePageCompletion();
+   }, 200);
+   ```
+
+2. **Added change detection trigger:**
+   ```typescript
+   initializePageCompletion() {
+     // ... completion logic ...
+     this.cdr.detectChanges(); // Ensure view updates
+   }
+   ```
+
+3. **Separated form population logic:**
+   ```typescript
+   private _prefillForm(): void {
+     // Form population with proper validation state management
+     // Called before completion tracking
+   }
+   ```
+
+4. **Delayed form valueChanges subscription:**
+   ```typescript
+   setTimeout(() => {
+     this.questionsForm.valueChanges.pipe(
+       takeUntil(this.unsubscribe$),
+       debounceTime(300),
+     ).subscribe(() => {
+       this.initializePageCompletion();
+       this.setSubmissionDisabled();
+     });
+   }, 300);
+   ```
+
+**Result:**
+Page indicators now correctly show completion status on first load, with proper visual feedback for answered and unanswered required questions.
 
 ## Error Handling
 
@@ -475,6 +622,26 @@ shareReplay(1)                // Cache service responses
 - Assessment data fetched when needed
 - Pagination reduces DOM complexity
 
+## Troubleshooting
+
+### Common Pagination Issues
+
+1. **Page indicators show as incomplete on first load:**
+   - **Cause**: `initializePageCompletion()` called before form values are set
+   - **Solution**: Ensure proper timing in `ngOnChanges()` with delays
+
+2. **Form validation not working correctly:**
+   - **Cause**: Race condition between form population and validation setup
+   - **Solution**: Use `_prefillForm()` method with proper sequencing
+
+3. **Change detection not triggering:**
+   - **Cause**: OnPush change detection strategy requires manual triggering
+   - **Solution**: Call `this.cdr.detectChanges()` after completion updates
+
+4. **Button state incorrect on load:**
+   - **Cause**: Button state set before form is properly initialized
+   - **Solution**: Use `setSubmissionDisabled()` method with proper conditions
+
 ## Testing Considerations
 
 ### Unit Tests
@@ -482,6 +649,7 @@ shareReplay(1)                // Cache service responses
 - Test form validation logic
 - Verify button state changes
 - Component interaction testing
+- Test pagination initialization timing
 
 ### Integration Tests
 - End-to-end assessment submission flow
@@ -569,3 +737,12 @@ Key strengths:
 - Robust error handling and network resilience
 - Performance optimizations for large assessments
 - Comprehensive pagination system for long assessments
+- **Improved initialization timing** to prevent incorrect "incompleted" status on first load
+- **Proper change detection management** with OnPush strategy
+- **Race condition prevention** through strategic delays and sequencing
+
+Recent improvements have specifically addressed timing issues that could cause pagination indicators to display incorrectly on first load, ensuring a more reliable and user-friendly assessment experience.
+
+
+## References
+- [Button Disabled State Flow](assessment-btndisabled-flow.md) - btnDisabled$ BehaviorSubject flow diagram across assessment component lifecycle
