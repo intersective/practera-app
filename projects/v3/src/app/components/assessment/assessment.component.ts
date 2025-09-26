@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -147,6 +147,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -433,6 +434,10 @@ Best regards`;
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
       this.pageIndex = 0;
+
+      setTimeout(() => {
+        this.initializePageCompletion();
+      }, 200);
     } else {
       // Reset pagination data when disabled
       this.pagesGroups = [];
@@ -440,7 +445,7 @@ Best regards`;
     }
 
     // scroll to the active page into view after rendering
-    setTimeout(() => this.scrollActivePageIntoView(), 200);
+    setTimeout(() => this.scrollActivePageIntoView(), 250);
   }
 
   ngOnDestroy() {
@@ -543,14 +548,16 @@ Best regards`;
       return this.btnDisabled$.next(true);
     }
 
-    this.questionsForm.valueChanges.pipe(
-      takeUntil(this.unsubscribe$),
-      debounceTime(300),
-    ).subscribe(() => {
-      this.initializePageCompletion();
-      // this.btnDisabled$.next(this.questionsForm.invalid);
-      this.setSubmissionDisabled();
-    });
+    // delay the subscription to avoid race conditions during initialization
+    setTimeout(() => {
+      this.questionsForm.valueChanges.pipe(
+        takeUntil(this.unsubscribe$),
+        debounceTime(300),
+      ).subscribe(() => {
+        this.initializePageCompletion();
+        this.setSubmissionDisabled();
+      });
+    }, 300);
   }
 
   /**
@@ -1066,6 +1073,8 @@ Best regards`;
       this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
     });
 
+    this.cdr.detectChanges();
+
     // Update the scroll position when page completion status changes
     setTimeout(() => this.scrollActivePageIntoView(), 100);
   }
@@ -1302,11 +1311,6 @@ Best regards`;
       // in read-only mode, ensure button is enabled
       this.btnDisabled$.next(false);
     }
-
-    // initialize page completion tracking after form is populated
-    setTimeout(() => {
-      this.initializePageCompletion();
-    }, 100);
   }
 
 
