@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -147,6 +147,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -415,6 +416,10 @@ Best regards`;
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
       this.pageIndex = 0;
+
+      setTimeout(() => {
+        this.initializePageCompletion();
+      }, 200);
     } else {
       // Reset pagination data when disabled
       this.pagesGroups = [];
@@ -424,7 +429,7 @@ Best regards`;
     this._populateFormWithAnswers();
 
     // scroll to the active page into view after rendering
-    setTimeout(() => this.scrollActivePageIntoView(), 200);
+    setTimeout(() => this.scrollActivePageIntoView(), 250);
   }
 
   ngOnDestroy() {
@@ -523,14 +528,21 @@ Best regards`;
       });
     });
 
-    this.questionsForm.valueChanges.pipe(
-      takeUntil(this.unsubscribe$),
-      debounceTime(300),
-    ).subscribe(() => {
-      this.initializePageCompletion();
-      // this.btnDisabled$.next(this.questionsForm.invalid);
-      this.setSubmissionDisabled();
-    });
+    // when no questions in the assessment, disable the button
+    if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
+      return this.btnDisabled$.next(true);
+    }
+
+    // delay the subscription to avoid race conditions during initialization
+    setTimeout(() => {
+      this.questionsForm.valueChanges.pipe(
+        takeUntil(this.unsubscribe$),
+        debounceTime(300),
+      ).subscribe(() => {
+        this.initializePageCompletion();
+        this.setSubmissionDisabled();
+      });
+    }, 300);
   }
 
   /**
@@ -1051,6 +1063,8 @@ Best regards`;
       this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
     });
 
+    this.cdr.detectChanges();
+
     // Update the scroll position when page completion status changes
     setTimeout(() => this.scrollActivePageIntoView(), 100);
   }
@@ -1242,6 +1256,52 @@ Best regards`;
       this.initializePageCompletion();
     }, 100);
   }
+
+  /**
+   * prefill form with answers and check validation state
+   * replaces the old _populateFormWithAnswers() method
+   */
+  private _prefillForm(): void {
+    // populate form with submission answers (for assessment action)
+    if (this.submission?.answers && this.action === 'assessment') {
+      Object.keys(this.submission.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.submission.answers[questionId]?.answer !== undefined) {
+          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
+        }
+      });
+    }
+
+    // populate form with review answers (for review action)
+    if (this.review?.answers && this.action === 'review') {
+      Object.keys(this.review.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.review.answers[questionId]) {
+          const reviewAnswer = {
+            answer: this.review.answers[questionId].answer,
+            comment: this.review.answers[questionId].comment,
+            file: this.review.answers[questionId].file || null,
+          };
+          control.setValue(reviewAnswer, { emitEvent: false });
+        }
+      });
+    }
+
+    // revalidate form after setting values
+    this.questionsForm.updateValueAndValidity();
+
+    // check validation state and update button accordingly
+    if (this.doAssessment || this.isPendingReview) {
+      // in edit mode, check form validation
+      this.setSubmissionDisabled();
+    } else {
+      // in read-only mode, ensure button is enabled
+      this.btnDisabled$.next(false);
+    }
+  }
+
 
   setSubmissionDisabled() {
     // only enforce form validation when user can actually edit
