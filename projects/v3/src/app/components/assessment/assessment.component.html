@@ -374,6 +374,7 @@
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
       <div class="pagination-container"
+        [class.few-pages]="pageCount < 8"
         *ngIf="isPaginationEnabled">
         <ion-button fill="clear"
           class="nav-button prev-button"
