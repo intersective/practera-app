@@ -223,9 +223,13 @@ ion-footer {
   justify-content: space-between;
   width: 100%;
   min-width: 70%;
-  padding: 8px 4px;
+  padding: 8px 0px;
   background-color: transparent;
   box-shadow: none;
+
+  &.few-pages {
+    justify-content: space-evenly;
+  }
 }
 
 .nav-button {
@@ -236,7 +240,7 @@ ion-footer {
   min-width: 60px;
   z-index: 2;
   font-size: 14px;
-  padding: 0 4px;
+  padding: 0 5px;
 }
 
 .prev-button ion-icon {
@@ -258,6 +262,7 @@ ion-footer {
   overflow-x: visible;
   max-width: 60%;
   padding: 4px 0;
+  margin: 0 -5px;
   scrollbar-width: none;
   scroll-behavior: smooth;
   position: relative;
