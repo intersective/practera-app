@@ -375,7 +375,7 @@
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
       <div class="pagination-container"
-        [class.few-pages]="pageCount < 8"
+        [class.few-pages]="pageCount < manyPages"
         *ngIf="isPaginationEnabled">
         <ion-button fill="clear"
           class="nav-button prev-button"
@@ -396,7 +396,16 @@
               [id]="'page-indicator-' + page"
               (click)="goToPage(page)"
               (dblclick)="findAndGoToFirstUnansweredQuestion()">
-              <span class="page-number">{{ i + 1 }}</span>
+
+              <div class="progress-ring">
+                <span class="page-number">{{ i + 1 }}</span>
+                <span class="question-count">{{ getPageQuestionCount(page) }}</span>
+              </div>
+
+              <ion-icon *ngIf="pageRequiredCompletion[page]"
+                name="checkmark-circle"
+                class="completion-icon completed">
+              </ion-icon>
               <ion-icon *ngIf="!pageRequiredCompletion[page]"
                 name="close-circle-outline"
                 class="completion-icon">
