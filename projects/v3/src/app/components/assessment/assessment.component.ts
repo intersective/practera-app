@@ -20,7 +20,8 @@ import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 
-const MIN_SCROLLING_PAGES = 6; // minimum number of pages to show pagination scrolling
+const MIN_SCROLLING_PAGES = 8; // minimum number of pages to show pagination scrolling
+const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per paginated view (controls pagination granularity)
 
 /**
  * Assessment Component with optional pagination feature
@@ -161,7 +162,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     this.sharedService.stopPlayingVideos();
   }
 
-  pageSize = 8; // number of questions per page
+  pageSize = MAX_QUESTIONS_PER_PAGE; // number of questions per page
   pageIndex = 0;
 
   // each entry is a page: an array of (partial) groups
@@ -1337,5 +1338,14 @@ Best regards`;
    */
   shouldShowRequiredIndicator(question: Question): boolean {
     return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
+  }
+
+  /**
+   * Get the total number of questions on a specific page
+   * @param pageIndex - The index of the page
+   * @returns The number of questions on that page
+   */
+  getPageQuestionCount(pageIndex: number): number {
+    return this.getAllQuestionsForPage(pageIndex).length;
   }
 }

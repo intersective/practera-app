@@ -258,10 +258,10 @@ ion-footer {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center; // center items by design
-  gap: 6px;
+  gap: 8px;
   overflow-x: visible;
-  max-width: 60%;
-  padding: 4px 0;
+  max-width: 65%;
+  padding: 6px 0;
   margin: 0 -5px;
   scrollbar-width: none;
   scroll-behavior: smooth;
@@ -271,8 +271,8 @@ ion-footer {
   &.many-pages {
     overflow-x: auto;
     justify-content: flex-start; // Align to start when scrolling
-    mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10px, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 15px, black 85%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black 85%, transparent);
   }
 }
 
@@ -284,24 +284,27 @@ ion-footer {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  min-height: 24px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
   background-color: #f5f5f5;
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  border: 2px solid transparent;
 }
 
 .page-indicator:hover {
   background-color: #e0e0e0;
+  transform: scale(1.05);
 }
 
 .page-indicator.active {
   background-color: var(--ion-color-primary);
-  transform: scale(1.1);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: scale(1.2);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  border-color: var(--ion-color-primary);
 }
 
 .page-indicator.active .page-number {
@@ -311,51 +314,128 @@ ion-footer {
 
 .page-indicator.completed {
   background-color: #e8f5e9;
-  border: 1px solid #81c784;
+  border-color: #81c784;
 }
 
 .page-indicator.incompleted {
   background-color: rgba(255, 0, 0, 0.05);
-  border: 1px solid var(--ion-color-danger);
+  border-color: var(--ion-color-danger);
 }
 
 .page-indicator.incompleted .page-number {
   color: var(--ion-color-danger);
 }
 
+.progress-ring {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.progress-ring-svg {
+  width: 36px;
+  height: 36px;
+  transform: rotate(-90deg);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+.progress-ring-bg {
+  fill: none;
+  stroke: #e0e0e0;
+  stroke-width: 2;
+}
+
+.progress-ring-fill {
+  fill: none;
+  stroke: var(--ion-color-success);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+.page-indicator.active .progress-ring-fill {
+  stroke: white;
+  stroke-width: 4;
+}
+
+.page-indicator.incompleted .progress-ring-fill {
+  stroke: var(--ion-color-danger);
+}
+
 .page-number {
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: #555555;
+  z-index: 2;
+  margin-bottom: 2px;
+}
+
+.question-count {
+  font-size: 8px;
+  font-weight: 500;
+  color: #888888;
+  z-index: 2;
+  line-height: 1;
+}
+
+.page-indicator.active .question-count {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .completion-icon {
   position: absolute;
-  font-size: 10px;
-  color: var(--ion-color-danger);
-  bottom: -3px;
-  right: -3px;
+  font-size: 12px;
+  color: var(--ion-color-success);
+  bottom: -2px;
+  right: -2px;
   background: white;
   border-radius: 50%;
-  z-index: 1;
+  z-index: 3;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.completion-icon:not(.completed) {
+  color: var(--ion-color-danger);
 }
 
 @media (max-width: 576px) {
   .pagination-container {
-    padding: 0;;
+    padding: 0;
 
     .page-indicators {
-      max-width: 50%;
+      max-width: 55%;
+      gap: 4px;
 
       .page-indicator {
-        min-width: 22px;
-        min-height: 22px;
+        min-width: 32px;
+        min-height: 32px;
       }
     }
   }
 
   .page-number {
-    font-size: 11px;
+    font-size: 12px;
+  }
+
+  .question-count {
+    font-size: 7px;
+  }
+
+  .completion-icon {
+    font-size: 10px;
+    width: 14px;
+    height: 14px;
   }
 
   .nav-button {
