@@ -1328,13 +1328,4 @@ Best regards`;
   shouldShowRequiredIndicator(question: Question): boolean {
     return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
   }
-
-  /**
-   * Get the total number of questions on a specific page
-   * @param pageIndex - The index of the page
-   * @returns The number of questions on that page
-   */
-  getPageQuestionCount(pageIndex: number): number {
-    return this.getAllQuestionsForPage(pageIndex).length;
-  }
 }
