@@ -501,6 +501,16 @@ ngOnChanges(changes: SimpleChanges): void {
 initializePageCompletion() {
   if (!this.isPaginationEnabled) return;
 
+  // Only track completion status when user can actually edit the form
+  // In read-only mode (viewing feedback or completed submissions), completion tracking is not relevant
+  if (!this.doAssessment && !this.isPendingReview) {
+    // Set all pages as completed for read-only mode to avoid showing incomplete indicators
+    this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+    this.cdr.detectChanges();
+    setTimeout(() => this.scrollActivePageIntoView(), 100);
+    return;
+  }
+
   this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
 
   this.pages.forEach((page, index) => {
@@ -521,6 +531,7 @@ initializePageCompletion() {
 2. **Change Detection**: Added `this.cdr.detectChanges()` to ensure the view updates when completion status changes
 3. **Form Population Order**: Form values are populated via `_prefillForm()` before completion tracking runs
 4. **Race Condition Prevention**: Delayed form valueChanges subscription to avoid interference during initialization
+5. **Read-Only Mode Handling**: Completion tracking is disabled when users are viewing feedback or completed submissions (`!doAssessment && !isPendingReview`), showing all pages as completed instead
 
 ## Pagination Issue Fixes
 
@@ -641,6 +652,11 @@ shareReplay(1)                // Cache service responses
 4. **Button state incorrect on load:**
    - **Cause**: Button state set before form is properly initialized
    - **Solution**: Use `setSubmissionDisabled()` method with proper conditions
+
+5. **Completion indicators showing in read-only mode:**
+   - **Cause**: Completion tracking running when user is viewing feedback/completed submissions
+   - **Solution**: Check `doAssessment` and `isPendingReview` flags before running completion logic
+
 
 ## Testing Considerations
 
