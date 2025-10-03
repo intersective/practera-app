@@ -1067,6 +1067,14 @@ Best regards`;
   initializePageCompletion() {
     if (!this.isPaginationEnabled) return;
 
+    // read-only mode (viewing feedback or completed submissions), completion tracking is not relevant
+    if (!this.doAssessment && !this.isPendingReview) {
+      this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+      this.cdr.detectChanges();
+      setTimeout(() => this.scrollActivePageIntoView(), 100);
+      return;
+    }
+
     this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
 
     this.pages.forEach((page, index) => {
