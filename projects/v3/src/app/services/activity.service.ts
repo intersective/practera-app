@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, of, Subscription, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, catchError, firstValueFrom, Observable, of, Subscription } from 'rxjs';
 import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -247,10 +247,11 @@ export class ActivityService {
   /**
    * Go to the first unfinished task inside this activity,
    * or go to the next task after a specific task
-   * @param tasks The list of tasks
-   * @param afterTask Find the next task after this task
+   * @param tasks the list of tasks
+   * @param afterTask find the next task after this task
+   * @param activityId the activity id for task navigation
    */
-  calculateNextTask(tasks: Task[], afterTask?: Task, callback?: Function) {
+  calculateNextTask(tasks: Task[], afterTask?: Task, activityId?: number, callback?: Function) {
     // find the first accessible task that is not "done" or "pending review"
     let skipTask: boolean = !!afterTask;
     let nextTask: Task;
@@ -293,10 +294,12 @@ export class ActivityService {
     // if there is no next task
     if (this.utils.isEmpty(nextTask)) {
       if (afterTask) {
+        const finalActivityId = activityId || this._activity$.getValue()?.id;
+
         return this.assessment.fetchAssessment(
           afterTask.id,
           'assessment',
-          this.activity.id,
+          finalActivityId,
           afterTask.contextId
         ).subscribe({
           next: () => {
@@ -314,10 +317,8 @@ export class ActivityService {
         });
       }
       nextTask = tasks[0]; // go to the first task
-    }
-
-    if (!this.utils.isEmpty(nextTask)) {
-      this.goToTask(nextTask);
+    } else if (!this.utils.isEmpty(nextTask)) {
+      this.goToTask(nextTask, activityId);
     }
 
     if (callback instanceof Function) {
@@ -327,12 +328,15 @@ export class ActivityService {
 
   // obtain latest activity to decide next task
   goToNextTask(afterTask?: Task, callback?: Function) {
-    return this.getActivity(this._activity$.getValue().id, false, null, (res: Activity) => {
+    const activityId = this._activity$.getValue().id;
+
+    return this.getActivity(activityId, false, null, (res: Activity) => {
       let tasks = res.tasks;
       if (this.utils.isEmpty(tasks) || tasks.length === 0) {
         tasks = [];
       }
-      return this.calculateNextTask(tasks, afterTask, callback);
+
+      return this.calculateNextTask(tasks, afterTask, activityId, callback);
     });
   }
 
@@ -351,7 +355,57 @@ export class ActivityService {
     return this.router.navigate(['v3', 'home']);
   }
 
-  async goToTask(task: Task, getData = true): Promise<void | Subscription | boolean> {
+  /**
+   * Navigate to and prepare a given task (assessment or topic).
+   *
+   * This method handles an overloaded second parameter for backward compatibility:
+   * if `activityIdOrGetData` is a boolean, it is treated as `getData` and the current
+   * activity id is resolved from `this.activity` or `this._activity$`. Otherwise it
+   * is treated as an `activityId` (number) and falls back to the current activity id
+   * when not provided.
+   *
+   * Workflow and side effects:
+   * - Ensures team information is loaded via `sharedService.getTeamInfo()`.
+   * - Sets the current task subject observable (`this._currentTask$`).
+   * - Clears the task from the unlock indicator and marks any cleared tasks as done
+   *   via `notification.markTodoItemAsDone`.
+   * - If `getData` is false, the method returns early (no further task navigation/fetch).
+   * - Sets the page title to the task name.
+   * - For task.type === 'Assessment':
+   *   - On mobile: navigates to the mobile assessment route and returns the router navigation result.
+   *   - On desktop: fetches the activity base, normalises it, fetches the assessment data,
+   *     and stores a last-visited assessment URL in storage.
+   * - For task.type === 'Topic':
+   *   - On mobile: navigates to the mobile topic route and returns the router navigation result.
+   *   - On desktop: stores a last-visited URL and triggers loading of the topic via `topic.getTopic`.
+   *
+   * Notes:
+   * - This method produces several side effects (navigation, storage updates, observable updates,
+   *   HTTP/observable fetches and subscriptions).
+   * - Errors encountered while fetching activity/assessment on the desktop assessment flow
+   *   are rethrown as an Error.
+   *
+   * @param task - The Task to navigate to and/or fetch data for.
+   * @param activityIdOrGetData - Either the numeric activity id to use, or a boolean used
+   *                              for backward compatibility to indicate `getData`.
+   * @param getData - Whether to fetch related data and perform the route-specific workflow.
+   *                  Defaults to true.
+   * @returns A Promise that resolves to:
+   *  - boolean when a Router.navigate call is returned (navigation result),
+   *  - void when the method completes without returning a navigation result,
+   *  - or a Subscription in cases where an observable subscription might be returned by legacy code paths.
+   * @throws Error When desktop assessment fetching fails (the underlying error is wrapped/rethrown).
+   */
+  async goToTask(task: Task, activityIdOrGetData?: number | boolean, getData = true): Promise<void | Subscription | boolean> {
+    // handle overloaded parameters for backward compatibility
+    let activityId: number;
+    if (typeof activityIdOrGetData === 'boolean') {
+      getData = activityIdOrGetData;
+      activityId = this.activity?.id || this._activity$.getValue()?.id;
+    } else {
+      activityId = activityIdOrGetData || this.activity?.id || this._activity$.getValue()?.id;
+    }
+
     // update teamId
     await this.sharedService.getTeamInfo().toPromise();
 
@@ -374,26 +428,29 @@ export class ActivityService {
           return this.router.navigate([
             'assessment-mobile',
             'assessment',
-            this.activity.id,
+            activityId,
             task.contextId,
             task.id
           ]);
         }
 
         try {
-          const activity = await firstValueFrom(this.getActivityBase(this.activity.id)
-            .pipe(
+          const activity = await firstValueFrom(
+            this.getActivityBase(activityId).pipe(
               map(res => this._normaliseActivity(res.data, false))
-            ));
+            )
+          );
 
-          await firstValueFrom(this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId));
+          await firstValueFrom(
+            this.assessment.fetchAssessment(task.id, 'assessment', activity.id, task.contextId)
+          );
 
           // store last visited assessment url during visit
           this.storage.lastVisited('assessmentUrl', [
             '/v3',
             'activity-desktop',
             task.contextId,
-            this.activity.id,
+            activityId,
             task.id
           ].join('/'));
         } catch (error) {
@@ -403,12 +460,12 @@ export class ActivityService {
 
       case 'Topic':
         if (this.utils.isMobile()) {
-          return this.router.navigate(['topic-mobile', this.activity.id, task.id]);
+          return this.router.navigate(['topic-mobile', activityId, task.id]);
         }
         this.storage.lastVisited('assessmentUrl', [
           '/v3',
           'activity-desktop',
-          this.activity.id,
+          activityId,
           task.id
         ].join('/'));
         this.topic.getTopic(task.id);
