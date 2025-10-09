@@ -314,9 +314,7 @@ export class ActivityService {
         });
       }
       nextTask = tasks[0]; // go to the first task
-    }
-
-    if (!this.utils.isEmpty(nextTask)) {
+    } else if (!this.utils.isEmpty(nextTask)) {
       this.goToTask(nextTask);
     }
 
@@ -332,6 +330,12 @@ export class ActivityService {
       if (this.utils.isEmpty(tasks) || tasks.length === 0) {
         tasks = [];
       }
+
+      // @TECHNICALDEBT - required by goToTask(), should be refactored as the task doesn't has activityId property
+      if (!this.activity) {
+        this.activity = this._activity$.getValue();
+      }
+
       return this.calculateNextTask(tasks, afterTask, callback);
     });
   }
