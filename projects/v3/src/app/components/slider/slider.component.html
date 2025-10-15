@@ -17,7 +17,6 @@
       class="likert-range display-only-slider">
     </ion-range>
 
-    <!-- Choice labels for display only -->
     <div class="choice-labels display-only" *ngIf="generatedChoices.length">
       <div
         *ngFor="let choice of generatedChoices"
@@ -27,19 +26,17 @@
       </div>
     </div>
 
-    <!-- Answer indicators -->
     <div class="answer-indicators" *ngIf="submission?.answer || review?.answer">
       <ion-chip class="label orange" *ngIf="submission?.answer" i18n>
         <ion-icon name="person" slot="start"></ion-icon>
-        Learner's answer: {{ getChoiceNameById(submission.answer) }}
+        Learner answer: {{ getChoiceNameById(submission.answer) }}
       </ion-chip>
       <ion-chip class="label yellow black" *ngIf="review?.answer" i18n>
         <ion-icon name="school" slot="start"></ion-icon>
-        Expert's answer: {{ getChoiceNameById(review.answer) }}
+        Reviewer answer: {{ getChoiceNameById(review.answer) }}
       </ion-chip>
     </div>
 
-    <!-- Review feedback -->
     <ng-container *ngIf="review?.comment">
       <ion-card class="feedback-card">
         <ion-card-header>
@@ -75,7 +72,6 @@
       class="likert-range">
     </ion-range>
 
-    <!-- Choice labels positioned below slider -->
     <div class="choice-labels" *ngIf="generatedChoices.length">
       <div
         *ngFor="let choice of generatedChoices; let i = index"
@@ -86,7 +82,6 @@
       </div>
     </div>
 
-    <!-- Validation errors -->
     <div class="validation-errors" *ngIf="errors.length > 0">
       <ion-item *ngFor="let error of errors" lines="none" class="error-item">
         <ion-icon name="alert-circle" color="danger" slot="start"></ion-icon>
@@ -98,7 +93,6 @@
 
 <ng-container *ngIf="doReview">
   <div class="likert-slider-container ion-padding review-mode">
-    <!-- Show participant's submission (read-only) -->
     <div class="participant-submission" *ngIf="submission?.answer && !question.reviewerOnly">
       <ion-card class="submission-card">
         <ion-card-header>
@@ -136,14 +130,11 @@
       </ion-card>
     </div>
 
-    <!-- Reviewer's answer section (interactive slider) -->
     <div class="reviewer-answer" *ngIf="question.canAnswer">
-      <!-- Reviewer section header -->
       <ion-item class="review-header reviewer-section-header" lines="none" *ngIf="!question.reviewerOnly">
         <ion-label class="subtitle-2 black" i18n>Your Answer is</ion-label>
       </ion-item>
 
-      <!-- Interactive slider for reviewer -->
       <ion-range
         #reviewerRangeEle
         [min]="sliderMin"
@@ -161,7 +152,6 @@
         class="likert-range">
       </ion-range>
 
-      <!-- Choice labels for reviewer -->
       <div class="choice-labels" *ngIf="generatedChoices.length">
         <div
           *ngFor="let choice of generatedChoices; let i = index"
@@ -173,7 +163,6 @@
       </div>
     </div>
 
-    <!-- Reviewer's comment section -->
     <div class="reviewer-comment" *ngIf="question.canComment && submission.answer">
       <ion-item class="comment-header" lines="none">
         <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
@@ -191,7 +180,6 @@
       </ion-textarea>
     </div>
 
-    <!-- Validation errors -->
     <div class="validation-errors" *ngIf="errors.length > 0">
       <ion-item *ngFor="let error of errors" lines="none" class="error-item">
         <ion-icon name="alert-circle" color="danger" slot="start"></ion-icon>
