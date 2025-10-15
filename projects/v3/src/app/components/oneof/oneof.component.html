@@ -9,10 +9,10 @@
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name"></div>
             <ion-chip class="label orange"
               *ngIf="submission?.answer === choice.id" i18n
-            >Learner's answer</ion-chip>
+            >Learner answer</ion-chip>
             <ion-chip class="label yellow black"
               *ngIf="review?.answer === choice.id" i18n
-            >Expert's answer</ion-chip>
+            >Reviewer answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
@@ -90,7 +90,7 @@
             <div class="body-2 black">
               <span [innerHTML]="choice.name"></span>
               <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id" style="margin: 0; padding: 0;">
-                <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's answer</ion-chip>
+                <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner answer</ion-chip>
               </p>
             </div>
           </ion-radio>
