@@ -30,6 +30,7 @@ export class FastFeedbackComponent implements OnInit {
   loading = false;
   submissionCompleted: boolean;
   isMobile: boolean;
+  pulseCheckId: string;
 
   // pagination properties
   currentPage = 0;
@@ -71,6 +72,8 @@ export class FastFeedbackComponent implements OnInit {
 
     this.totalPages = Math.ceil(this.questions.length / this.questionsPerPage);
     this.showPagination = this.totalPages > 1;
+
+    this.pulseCheckId = this.navParams.get('modal')?.componentProps?.pulseCheckId;
 
     // Determine pulse check type based on question IDs
     this.pulseCheckType = this.determinePulseCheckType();
@@ -178,6 +181,17 @@ export class FastFeedbackComponent implements OnInit {
   }
 
   async submit(): Promise<any> {
+    if (!this.allQuestionsAnswered) {
+      // If not all questions are answered, navigate to the first incomplete page
+      for (let i = 0; i < this.totalPages; i++) {
+        if (!this.isPageCompleted(i)) {
+          this.goToPage(i);
+          return;
+        }
+      }
+      return;
+    }
+
     this.loading = true;
     const formData = this.fastFeedbackForm.value;
     const answers = [];
@@ -216,7 +230,7 @@ export class FastFeedbackComponent implements OnInit {
     let submissionResult;
     try {
       submissionResult = await firstValueFrom(this.fastFeedbackService
-        .submit(answers, params));
+        .submit(answers, params, this.pulseCheckId));
 
       // Check if question 7's answer is 0
       const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)

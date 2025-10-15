@@ -191,14 +191,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.unsubscribe$.complete();
   }
 
-  openPulseCheck() {
-    this.fastFeedbackService.pullFastFeedback({
-      closable: true,
-      skipChecking: true,
-      type: 'skills'
-    }).pipe(first()).subscribe();
-  }
-
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.experience = this.storageService.get("experience");
