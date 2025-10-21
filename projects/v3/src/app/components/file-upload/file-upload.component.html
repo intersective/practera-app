@@ -34,7 +34,7 @@
     ></app-file-display>
   </ng-container>
 
-  <ng-container *ngIf="review?.comment">
+  <ng-container *ngIf="review?.comment && question.canComment === true">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
