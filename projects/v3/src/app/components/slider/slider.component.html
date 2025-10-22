@@ -39,8 +39,7 @@
       </ion-chip>
     </div>
 
-    <!-- Review feedback -->
-    <ng-container *ngIf="review?.comment">
+    <ng-container *ngIf="review?.comment && question.canComment === true">
       <ion-card class="feedback-card">
         <ion-card-header>
           <ion-card-title class="feedback-title">
