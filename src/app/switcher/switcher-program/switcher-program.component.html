@@ -10,7 +10,7 @@
       <ion-col size="12" size-sm="12" size-md="6" size-lg="4" size-xl="3" *ngFor="let program of programs; let i = index">
         <ion-card class="practera-card experience-card" (click)="switch(i)"  role="link" [attr.aria-label]="program.program.name">
           <div class="image-container">
-            <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" alt="{{ program.program.name }}"/>
+            <img [src]="program.project.lead_image ? program.project.lead_image : '../../../assets/default-experience-image.svg'" [attr.alt]="program.program.name + ' experience image'"/>
           </div>
           <ion-card-content>
             <clickable-item color="light" [lines]="'none'" [backgroundColor]="program.program.config.theme_color" [isSwitcherCard]="true">
@@ -19,7 +19,7 @@
                 <!-- <ion-progress-bar *ngIf="program.progress !== undefined" [value]="program.progress"></ion-progress-bar> -->
               </ion-label>
               <!-- <ion-badge *ngIf="program.todoItems !== undefined" slot="end">{{ program.todoItems }}</ion-badge> -->
-              <ion-icon name="chevron-forward" slot="end"></ion-icon>
+              <ion-icon name="chevron-forward" slot="end" aria-hidden="true"></ion-icon>
             </clickable-item>
           </ion-card-content>
         </ion-card>

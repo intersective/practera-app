@@ -113,7 +113,9 @@
   --practera-surface: #F5F6FA;
   --practera-30-Percent-gray: rgba(0, 0, 0, 0.3);
   --practera-40-Percent-gray: rgba(0, 0, 0, 0.4);
-  --practera-60-Percent-gray: rgba(0, 0, 0, 0.6);
+  /* WCAG AA compliant: 60% gray meets 4.5:1 contrast for normal text on white */
+  --practera-60-Percent-gray: rgba(0, 0, 0, 0.7);
+  /* WCAG AA compliant: 80% gray meets 4.5:1 contrast for normal text on white */
   --practera-80-Percent-gray: rgba(0, 0, 0, 0.8);
 
   /** Event Video Conference **/

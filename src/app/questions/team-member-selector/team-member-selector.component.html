@@ -39,8 +39,16 @@
 
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding-horizontal ion-padding-bottom">
-      <ion-list class="no-bg">
-          <ion-radio-group [value]="submission.answer" #answerEle (ionChange)="onChange(answerEle.value)">
+      <fieldset [attr.aria-labelledby]="'question-' + question.id" [attr.aria-describedby]="errors && errors.length > 0 ? 'team-member-error-' + question.id : null">
+        <legend class="for-accessibility" [id]="'question-' + question.id">{{ question.name }}</legend>
+        <ion-list class="no-bg">
+          <ion-radio-group 
+            [value]="submission.answer" 
+            #answerEle 
+            (ionChange)="onChange(answerEle.value)"
+            role="radiogroup"
+            [attr.aria-labelledby]="'question-' + question.id"
+            [attr.aria-invalid]="errors && errors.length > 0 ? 'true' : null">
             <ion-item class="choice-item" *ngFor="let teamMember of question.teamMembers;let i = index"
               [lines]="i == question.teamMembers.length - 1 ? 'none' : ''">
               <ion-label class="white-space-normal body-2 black">{{ teamMember.userName }}</ion-label>
@@ -48,6 +56,12 @@
             </ion-item>
           </ion-radio-group>
         </ion-list>
+      </fieldset>
+      <ng-container *ngIf="errors && errors.length > 0">
+        <ion-text *ngFor="let error of errors; let i = index" [id]="'team-member-error-' + question.id" color="danger" role="alert" aria-live="polite">
+          <p>{{error}}</p>
+        </ion-text>
+      </ng-container>
   </div>
 </ng-container>
 

@@ -17,15 +17,19 @@
 
   <ng-container *ngIf="doAssessment">
     <div class="ion-padding-horizontal ion-padding-bottom">
+        <ion-label position="stacked" [attr.for]="'text-answer-' + question.id" class="for-accessibility">{{ question.name }}</ion-label>
         <ion-textarea
+        [id]="'text-answer-' + question.id"
         class="background-white ion-margin-top textarea"
         [(ngModel)]="answer"
         #answerEle
         rows="4"
         (ionFocus)="onFocus()"
         (ionChange)="onChange()"
-        [disabled]="control.disabled"></ion-textarea>
-      <ion-text *ngFor="let error of errors" color="danger">
+        [disabled]="control.disabled"
+        [attr.aria-describedby]="errors.length > 0 ? 'text-error-' + question.id : null"
+        [attr.aria-invalid]="errors.length > 0 ? 'true' : null"></ion-textarea>
+      <ion-text *ngFor="let error of errors; let i = index" [id]="'text-error-' + question.id" color="danger" role="alert" aria-live="polite">
         <p>{{error}}</p>
       </ion-text>
     </div>
@@ -33,8 +37,10 @@
 
   <ng-container *ngIf="doReview">
     <div class="ion-padding" [ngClass]="{ 'audience-mentor': audienceContainReviewer()}">
+        <ion-label position="stacked" [attr.for]="'text-review-answer-' + question.id" *ngIf="question.canAnswer" class="for-accessibility">Your answer</ion-label>
         <ion-textarea
         *ngIf="question.canAnswer"
+        [id]="'text-review-answer-' + question.id"
         class="textarea"
         rows="4"
         [(ngModel)]="answer"
@@ -43,8 +49,10 @@
         (ionChange)="onChange('answer')"
         placeholder="Please put your answer here"
         [disabled]="control.disabled"></ion-textarea>
+        <ion-label position="stacked" [attr.for]="'text-review-comment-' + question.id" *ngIf="question.canComment && submission.answer" class="for-accessibility">Your feedback</ion-label>
       <ion-textarea
         *ngIf="question.canComment && submission.answer"
+        [id]="'text-review-comment-' + question.id"
         class="textarea"
         [(ngModel)]="comment"
         #commentEle
