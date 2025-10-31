@@ -1,5 +1,6 @@
 <ion-split-pane contentId="main-content" [when]="splitpaneEnabled">
-  <ion-menu contentId="main-content"
+  <ion-menu id="main-navigation"
+    contentId="main-content"
     swipeGesture="false"
     [ngClass]="{'collapsed': isMenuOpen === false}"
     [@openClose]="collapsibleMenu"

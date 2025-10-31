@@ -40,82 +40,91 @@
 
 <ng-container *ngIf="doAssessment">
   <div>
-    <ion-list class="ion-no-padding">
-      <ng-container *ngFor="let choice of question.choices; let i = index">
-        <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
-          lines='none'>
+    <fieldset [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
+      <legend class="for-accessibility" [id]="'multiple-choice-legend-' + question.id">{{ question.name }}</legend>
+      <ion-list class="ion-no-padding"
+        role="group"
+        [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
+        <ng-container *ngFor="let choice of question.choices; let i = index">
+          <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
+            lines='none'>
+            <ion-checkbox color="success"
+              [checked]="innerValue?.includes(choice.id)"
+              [value]="choice.id"
+              labelPlacement="end"
+              justify="start"
+              slot="start"
+              (ionChange)="onChange(choice.id)"
+              [disabled]="control.disabled"
+              [attr.aria-label]="choice.name"
+            >
+              <span class="ion-text-wrap body-2 black"
+                [innerHTML]="choice.name"
+                [appToggleLabel]="onLabelToggle"
+                [toggleId]="choice.id"
+                [toggleDisabled]="control.disabled"
+                role="button"
+                tabindex="0">
+              </span>
+            </ion-checkbox>
+          </ion-item>
 
-          <ion-checkbox color="success"
-            [checked]="innerValue?.includes(choice.id)"
-            [value]="choice.id"
-            labelPlacement="end"
-            justify="start"
-            slot="start"
-            (ionChange)="onChange(choice.id)"
-            [disabled]="control.disabled"
-            [attr.aria-label]="choice.name"
-          >
-            <span class="ion-text-wrap body-2 black"
-              [innerHTML]="choice.name"
+          <ng-container
+            *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
+            <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
+              <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
+              <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+            </ion-item>
+          </ng-container>
+        </ng-container>
+      </ion-list>
+    </fieldset>
+    <ion-text *ngFor="let error of errors" color="danger">
+      <p role="alert" aria-live="polite">{{error}}</p>
+    </ion-text>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="doReview">
+  <fieldset [attr.aria-labelledby]="'multiple-choice-question-' + question.id" *ngIf="question.canAnswer">
+    <legend class="for-accessibility" [id]="'multiple-choice-review-legend-' + question.id">{{ question.name }}</legend>
+    <ion-list class="ion-no-padding"  *ngIf="question.canAnswer"
+      role="group"
+      [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
+      <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
+        <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let choice of question.choices; let i = index"
+        [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
+        lines="none">
+        <ion-checkbox color="success"
+          [checked]="review.answer ? review.answer.includes(choice.id) : false"
+          [value]="choice.id"
+          justify="start"
+          slot="start"
+          labelPlacement="end"
+          (ionChange)="onChange(choice.id, 'answer')"
+          [disabled]="control.disabled"
+          [attr.aria-label]="choice.name"
+        >
+          <div class="ion-text-wrap body-2 black">
+            <span [innerHTML]="choice.name"
               [appToggleLabel]="onLabelToggle"
               [toggleId]="choice.id"
               [toggleDisabled]="control.disabled"
               role="button"
               tabindex="0">
             </span>
-          </ion-checkbox>
-        </ion-item>
-
-        <ng-container
-          *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
-          <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
-            <ion-icon slot="start" name="information-circle"></ion-icon>
-            <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
-          </ion-item>
-        </ng-container>
-      </ng-container>
+            <p *ngIf="submission?.answer?.includes(choice.id)">
+              <ion-chip class="label orange" i18n
+                *ngIf="submission?.answer?.includes(choice.id)"
+              >Learner's answer</ion-chip>
+            </p>
+          </div>
+        </ion-checkbox>
+      </ion-item>
     </ion-list>
-    <ion-text *ngFor="let error of errors" color="danger">
-      <p aria-live="polite">{{error}}</p>
-    </ion-text>
-  </div>
-</ng-container>
-
-<ng-container *ngIf="doReview">
-  <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
-    <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
-      <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let choice of question.choices; let i = index"
-      [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
-      lines="none">
-      <ion-checkbox color="success"
-        [checked]="review.answer ? review.answer.includes(choice.id) : false"
-        [value]="choice.id"
-        justify="start"
-        slot="start"
-        labelPlacement="end"
-        (ionChange)="onChange(choice.id, 'answer')"
-        [disabled]="control.disabled"
-        [attr.aria-label]="choice.name"
-      >
-        <div class="ion-text-wrap body-2 black">
-          <span [innerHTML]="choice.name"
-            [appToggleLabel]="onLabelToggle"
-            [toggleId]="choice.id"
-            [toggleDisabled]="control.disabled"
-            role="button"
-            tabindex="0">
-          </span>
-          <p *ngIf="submission?.answer?.includes(choice.id)">
-            <ion-chip class="label orange" i18n
-              *ngIf="submission?.answer?.includes(choice.id)"
-            >Learner answer</ion-chip>
-          </p>
-        </div>
-      </ion-checkbox>
-    </ion-item>
-  </ion-list>
+  </fieldset>
 
   <ion-list class="ion-no-padding ion-padding-bottom"
     *ngIf="question.canComment && submission.answer">
