@@ -565,3 +565,42 @@ use for custom header (*Study perth)
   position: absolute;
   width: 1px;
 }
+
+/******************
+  Focus Styles for WCAG 2.4.7
+******************/
+*:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+ion-button:focus-visible,
+a:focus-visible,
+ion-item:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Ensure focus is visible even when box-shadow is removed */
+ion-button[--box-shadow="none"]:focus-visible,
+.no-box-shadow:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Skip links - visually hidden until focused */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ion-color-primary);
+  color: var(--ion-color-primary-contrast);
+  padding: 8px;
+  text-decoration: none;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 0;
+}

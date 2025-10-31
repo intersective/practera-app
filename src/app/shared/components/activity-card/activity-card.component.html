@@ -1,4 +1,8 @@
-<button class="accessible-activity-card">
+<button 
+  class="accessible-activity-card"
+  [attr.aria-label]="activity.name + (activity.isLocked ? ' (locked)' : '')"
+  (keydown.enter)="$event.target.click()"
+  (keydown.space)="$event.target.click(); $event.preventDefault()">
   <ion-card
     *ngIf="!loading"
     color="primary"
@@ -9,7 +13,7 @@
       'default-image-card': !activity.leadImage
     }"
     [ngStyle]="{'background-image': backgroundImageStyle , height: 'auto'}"
-  >
+    [attr.aria-hidden]="true">
     <ion-card-content>
       <p color="primary-contrast" class="caption">Activity</p>
       <p color="primary-contrast" class="activity-name headline-6">{{activity.name}}</p>

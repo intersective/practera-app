@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { NotificationService } from '@shared/notification/notification.service';
 import { UtilsService } from '@services/utils.service';
 import { AuthService } from '../auth.service';
@@ -9,17 +10,22 @@ import { NewRelicService } from '@shared/new-relic/new-relic.service';
   templateUrl: 'auth-forgot-password.component.html',
   styleUrls: ['auth-forgot-password.component.scss']
 })
-export class AuthForgotPasswordComponent {
+export class AuthForgotPasswordComponent implements OnInit {
   email = '';
   // variable to control the label of the button
   isSending = false;
 
   constructor(
+    private title: Title,
     private notificationService: NotificationService,
     private authService: AuthService,
     private utils: UtilsService,
     private newRelic: NewRelicService
   ) {}
+
+  ngOnInit() {
+    this.title.setTitle('Forgot Password - Practera');
+  }
 
   async send() {
     // basic validation

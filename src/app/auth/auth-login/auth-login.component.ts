@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AuthService } from '../auth.service';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -12,7 +13,7 @@ import { PusherService } from '@shared/pusher/pusher.service';
   templateUrl: 'auth-login.component.html',
   styleUrls: ['auth-login.component.scss']
 })
-export class AuthLoginComponent {
+export class AuthLoginComponent implements OnInit {
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
@@ -22,12 +23,17 @@ export class AuthLoginComponent {
 
   constructor(
     private router: Router,
+    private title: Title,
     private authService: AuthService,
     private notificationService: NotificationService,
     private utils: UtilsService,
     private switcherService: SwitcherService,
     private pusherService: PusherService,
   ) {}
+
+  ngOnInit() {
+    this.title.setTitle('Login - Practera');
+  }
 
   login() {
     if (this.utils.isEmpty(this.loginForm.value.email) || this.utils.isEmpty(this.loginForm.value.password)) {

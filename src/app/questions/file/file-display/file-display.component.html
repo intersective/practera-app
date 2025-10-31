@@ -2,14 +2,14 @@
   <ng-container [ngSwitch]="fileType">
 
     <ng-container *ngSwitchCase="'image'">
-      <app-img [imgSrc]="file.url" alt="filestack image"></app-img>
+      <app-img [imgSrc]="file.url" [alt]="file.filename || 'Uploaded image'"></app-img>
       <ng-container *ngIf="isFileComponent">
           <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
       </ng-container>
     </ng-container>
 
     <ng-container *ngSwitchCase="'video'">
-      <video controls preload #videoEle>
+      <video controls preload #videoEle [attr.aria-label]="file.filename || 'Uploaded video'">
         <ng-container *ngIf="file.transcoded">
           <source [src]="file.transcoded + '.mp4#t=0.5'" type="video/mp4">
           <source [src]="file.transcoded + '.webm'" type="video/webm">
@@ -29,15 +29,24 @@
               <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
           </ng-container>
           <ng-template #onlyfilename>
-            <a [href]="file.url" target="_blank" class="subtitle-1">
-              <ion-icon name="document"></ion-icon>&nbsp;{{ file.filename }}
+            <a [href]="file.url" target="_blank" class="subtitle-1" [attr.aria-label]="'Open ' + file.filename">
+              <ion-icon name="document" aria-hidden="true"></ion-icon>&nbsp;{{ file.filename }}
             </a>
-            <ion-icon *ngIf="file.url.length > 0" name="search" (click)="previewFile(file)" color="primary" class="ion-padding-left ion-float-right"></ion-icon>
+            <button 
+              *ngIf="file.url.length > 0" 
+              type="button"
+              class="icon-button"
+              (click)="previewFile(file)"
+              (keydown.enter)="previewFile(file)"
+              (keydown.space)="previewFile(file); $event.preventDefault()"
+              [attr.aria-label]="'Preview ' + file.filename">
+              <ion-icon name="search" color="primary" class="ion-padding-left ion-float-right" aria-hidden="true"></ion-icon>
+            </button>
           </ng-template>
       </div>
       <ng-template #virusDetected>
-        <ion-item lines="none" color="transparent">
-          <ion-icon name="alert" color="danger" slot="start"></ion-icon>
+        <ion-item lines="none" color="transparent" role="alert" aria-live="assertive">
+          <ion-icon name="alert" color="danger" slot="start" aria-hidden="true"></ion-icon>
           <ion-label class="warning">
             The file you have uploaded contains a virus and is potentially harmful. Please contact your program coordinator
           </ion-label>
@@ -55,13 +64,13 @@
         <ion-col size-xs="2" size-sm="2" size-md="1" size-lg="1" size-xl="1">
           <ng-container [ngSwitch]="fileType">
             <ng-container *ngSwitchCase="'video'">
-              <ion-icon name="film-outline"></ion-icon>&nbsp;
+              <ion-icon name="film-outline" aria-hidden="true"></ion-icon>&nbsp;
             </ng-container>
             <ng-container *ngSwitchCase="'image'">
-              <ion-icon name="image-outline"></ion-icon>&nbsp;
+              <ion-icon name="image-outline" aria-hidden="true"></ion-icon>&nbsp;
             </ng-container>
             <ng-container *ngSwitchDefault>
-              <ion-icon name="document-outline"></ion-icon>&nbsp;
+              <ion-icon name="document-outline" aria-hidden="true"></ion-icon>&nbsp;
             </ng-container>
           </ng-container>
         </ion-col>
@@ -78,9 +87,26 @@
         <ion-col size-xs="3" size-sm="3" size-md="1" size-lg="1" size-xl="1">
           <div class="action-buttons-container">
             <ng-container *ngIf="fileType === 'any'">
-              <ion-icon name="search-outline" color="primary" (click)="previewFile(file)"></ion-icon>&nbsp;
+              <button 
+                type="button"
+                class="icon-button"
+                (click)="previewFile(file)"
+                (keydown.enter)="previewFile(file)"
+                (keydown.space)="previewFile(file); $event.preventDefault()"
+                [attr.aria-label]="'Preview ' + file.filename">
+                <ion-icon name="search-outline" color="primary" aria-hidden="true"></ion-icon>
+              </button>
             </ng-container>
-            <ion-icon *ngIf="removeFile.observers.length > 0 && !disabled" name="trash-outline" color="primary" class="ion-float-right" (click)="removeUploadedFile()"></ion-icon>
+            <button 
+              *ngIf="removeFile.observers.length > 0 && !disabled" 
+              type="button"
+              class="icon-button"
+              (click)="removeUploadedFile()"
+              (keydown.enter)="removeUploadedFile()"
+              (keydown.space)="removeUploadedFile(); $event.preventDefault()"
+              [attr.aria-label]="'Remove ' + file.filename">
+              <ion-icon name="trash-outline" color="primary" class="ion-float-right" aria-hidden="true"></ion-icon>
+            </button>
           </div>
         </ion-col>
       </ion-row>

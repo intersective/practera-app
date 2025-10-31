@@ -6,13 +6,19 @@
   </ion-card-header>
 
   <ion-card-content class="q-content ion-padding-horizontal">
-  <ion-list>
-    <ion-radio-group [formControlName]="question.id">
-      <ion-item *ngFor="let choice of question.choices" color="light">
-        <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
-        <ion-radio [value]="choice.id" mode="md"></ion-radio>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
+    <fieldset [attr.aria-labelledby]="'fast-feedback-' + question.id">
+      <legend class="for-accessibility" [id]="'fast-feedback-' + question.id">{{ question.title }}</legend>
+      <ion-list>
+        <ion-radio-group 
+          [formControlName]="question.id"
+          role="radiogroup"
+          [attr.aria-labelledby]="'fast-feedback-' + question.id">
+          <ion-item *ngFor="let choice of question.choices" color="light">
+            <ion-label class="white-space-normal">{{ choice.title }}</ion-label>
+            <ion-radio [value]="choice.id" mode="md"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+    </fieldset>
   </ion-card-content>
 </ion-card>

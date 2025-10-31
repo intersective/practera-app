@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { UtilsService } from '@services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
 import { Md5 } from 'ts-md5/dist/md5';
@@ -42,6 +43,7 @@ export class AuthRegistrationComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private title: Title,
     private authService: AuthService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
@@ -54,6 +56,7 @@ export class AuthRegistrationComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.title.setTitle('Registration - Practera');
     this.domain =
       this.domain.indexOf('127.0.0.1') !== -1 ||
       this.domain.indexOf('localhost') !== -1

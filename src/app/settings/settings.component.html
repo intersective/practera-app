@@ -7,8 +7,8 @@
   <ng-container *ngIf="utils.isMobile() || mode === 'embed'">
     <ion-item class="profile-info no-bg" lines="none" tabindex="0">
       <ion-avatar class="profile-image" slot="start">
-        <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
-        <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+        <img *ngIf="!imageUpdating" [src]="profile.image" [attr.alt]="(profile.name || 'User') + ' profile image'">
+        <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles" role="status" aria-live="polite" aria-label="Uploading profile image"></ion-spinner></p>
         <file-stack
           [accept]="acceptFileTypes"
           [fileType]="'image'"
@@ -45,8 +45,8 @@
         <ion-col size="3" class="support">
           <div class="profile-info" tabindex="0">
             <ion-avatar class="profile-image" slot="start">
-              <img *ngIf="!imageUpdating" [src]="profile.image" alt="Profile Image">
-              <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles"></ion-spinner></p>
+              <img *ngIf="!imageUpdating" [src]="profile.image" [attr.alt]="(profile.name || 'User') + ' profile image'">
+              <p *ngIf="imageUpdating" class="loading-icon"><ion-spinner name="bubbles" role="status" aria-live="polite" aria-label="Uploading profile image"></ion-spinner></p>
               <file-stack
                 [accept]="acceptFileTypes"
                 [fileType]="'image'"
@@ -87,7 +87,7 @@
             <ion-col size="5" *ngIf="isInMultiplePrograms() || returnLtiUrl" class="ion-no-padding switch-card-container">
               <ion-card class="practera-card experience-card" (click)="switchProgram($event)" tabindex="0" role="button" (keydown)="switchProgram($event)">
                 <div class="div-icon-swap">
-                  <ion-icon name="swap-horizontal" color="primary"></ion-icon>
+                  <ion-icon name="swap-horizontal" color="primary" aria-hidden="true"></ion-icon>
                 </div>
                 <ion-card-content>
                   <clickable-item color="light" [lines]="'none'" [isSwitcherCard]="true">
@@ -106,15 +106,15 @@
 <ng-template #supportContentTpl>
   <ion-label class="subtitle-2 gray-2">Support</ion-label>
   <ion-button class="accessible-btn" role="button" aria-label="Email help" tabindex="0" (click)="mailTo($event)" (keydown)="mailTo($event)">
-    <ion-icon class="ion-padding-end" color="primary" name="mail-outline"></ion-icon>
+    <ion-icon class="ion-padding-end" color="primary" name="mail-outline" aria-hidden="true"></ion-icon>
     <ion-label class="subtitle-1"> Email Help </ion-label>
   </ion-button>
   <ion-button class="accessible-btn" role="button" aria-label="Terms of use" (click)="openLink($event)" (keydown)="openLink($event)" tabindex="0">
-    <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline"></ion-icon>
+    <ion-icon class="ion-padding-end" color="primary" name="clipboard-outline" aria-hidden="true"></ion-icon>
     <ion-label class="subtitle-1">Terms of Use</ion-label>
   </ion-button>
   <ion-button class="accessible-btn" role="button" [attr.aria-label]="hasMultipleStacks ? 'Logout or Switch Environment' : 'logout'" (click)="logout($event)" (keydown)="logout($event)" tabindex="0">
-    <ion-icon class="ion-padding-end" color="primary" name="log-out-outline"></ion-icon>
+    <ion-icon class="ion-padding-end" color="primary" name="log-out-outline" aria-hidden="true"></ion-icon>
     <ion-label *ngIf="hasMultipleStacks" class="subtitle-1">Logout or Switch Environment</ion-label>
     <ion-label *ngIf="!hasMultipleStacks" class="subtitle-1">Logout</ion-label>
   </ion-button>

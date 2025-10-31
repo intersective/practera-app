@@ -5,7 +5,7 @@
         <ion-col *ngIf="!utils.isMobile() && programInfo.image" class="image-col ion-justify-content-center ion-align-items-center">
           <ion-card class="practera-card experience-card">
             <div class="image-container">
-              <img [src]="programInfo.image" alt="{{ programInfo.name }}"/>
+              <img [src]="programInfo.image" [attr.alt]="programInfo.name + ' experience image'"/>
             </div>
           </ion-card>
         </ion-col>
@@ -70,7 +70,7 @@
 </ng-template>
 
 <ng-template #notificationsDesktop>
-  <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-lable="notifications">Notifications</ion-label>
+  <ion-label class="subtitle-2 gray-2 ion-padding-start ion-padding-end" tabindex="0" aria-label="notifications">Notifications</ion-label>
   <ion-list class="todo-list" lines="none">
     <ng-container *ngIf="loadingTodoItems; else todoItemsTpl">
       <app-todo-card class="ion-padding-bottom" [loading]="true" [todoItem]="false"></app-todo-card>
