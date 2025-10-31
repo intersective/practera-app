@@ -97,6 +97,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Settings - Practera');
     this._retrieveUserInfo();
     this.utils.getEvent('support-email-checked')
     .pipe(takeUntil(this.unsubscribe$))

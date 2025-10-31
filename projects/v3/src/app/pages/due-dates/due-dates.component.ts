@@ -2,11 +2,11 @@ import { BehaviorSubject, Subject, Observable, combineLatest } from 'rxjs';
 import { Assessment, AssessmentService, DueAssessment } from '@v3/app/services/assessment.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
 import { debounceTime, takeUntil, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { UtilsService } from '../../services/utils.service';
 
 interface GroupedAssessments {
   month: string;
@@ -36,6 +36,7 @@ export class DueDatesComponent implements OnDestroy, OnInit {
   ) { }
 
   ngOnInit() {
+    this.utilsService.setPageTitle('Due Dates - Practera');
     // improved: no need for manual subscription, handle in observable pipeline
     this.filteredAssessments$ = combineLatest([
       this.assessments$,
