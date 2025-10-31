@@ -1,5 +1,6 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AssessmentService, Assessment, Submission, Review, AssessmentSubmitParams } from './assessment.service';
 import { UtilsService } from '../services/utils.service';
 import { NotificationService } from '@shared/notification/notification.service';
@@ -97,6 +98,7 @@ export class AssessmentComponent extends RouterEnter {
     public router: Router,
     private route: ActivatedRoute,
     private assessmentService: AssessmentService,
+    private title: Title,
     readonly utils: UtilsService,
     private notificationService: NotificationService,
     public storage: BrowserStorageService,
@@ -299,6 +301,7 @@ export class AssessmentComponent extends RouterEnter {
     // - submission.status is 'in progress'
     if (this.utils.isEmpty(this.submission) || this.submission.status === 'in progress') {
       this.pageTitle = 'Submit your work';
+      this.title.setTitle('Submit your work - Practera');
       this.doAssessment = true;
       this.doReview = false;
       if (this.submission && this.submission.status === 'in progress') {
@@ -309,6 +312,7 @@ export class AssessmentComponent extends RouterEnter {
     }
 
     this.pageTitle = 'View submission';
+    this.title.setTitle('View submission - Practera');
 
     if (this.assessment.type === 'moderated') {
       // this component become a page for doing review, if
@@ -316,11 +320,13 @@ export class AssessmentComponent extends RouterEnter {
       // - this.action is review
       if (this.submission.status === 'pending review' && this.action === 'review') {
         this.pageTitle = 'Provide feedback';
+        this.title.setTitle('Provide feedback - Practera');
         this.doReview = true;
       }
 
       if (this.submission.status === 'published') {
         this.pageTitle = 'View feedback';
+        this.title.setTitle('View feedback - Practera');
       }
     }
 
