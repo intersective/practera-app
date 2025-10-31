@@ -73,31 +73,48 @@
           <h2 class="for-accessibility"
             i18n>Activities</h2>
           <ion-segment (ionChange)="switchContent($event)"
-            [value]="display">
+            [value]="display"
+            role="tablist"
+            aria-label="Content navigation tabs" i18n-aria-label>
             <ion-segment-button value="activities"
-              mode="ios">
+              mode="ios"
+              role="tab"
+              [attr.aria-selected]="display === 'activities'"
+              [attr.aria-controls]="'activities-panel'">
               <ion-label i18n>Activities</ion-label>
             </ion-segment-button>
             <ion-segment-button value="badges"
-              mode="ios">
+              mode="ios"
+              role="tab"
+              [attr.aria-selected]="display === 'badges'"
+              [attr.aria-controls]="'badges-panel'">
               <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
             </ion-segment-button>
             <ion-segment-button value="pulse-checks"
               mode="ios"
-              *ngIf="pulseCheckIndicatorEnabled === true">
+              role="tab"
+              *ngIf="pulseCheckIndicatorEnabled === true"
+              [attr.aria-selected]="display === 'pulse-checks'"
+              [attr.aria-controls]="'pulse-checks-panel'">
               <ion-label i18n>Skill & Progress Surveys</ion-label>
             </ion-segment-button>
           </ion-segment>
 
           <ng-container [ngSwitch]="display">
             <ng-container *ngSwitchCase="'activities'">
-              <ng-container *ngTemplateOutlet="activityList"></ng-container>
+              <div role="tabpanel" id="activities-panel" [attr.aria-labelledby]="'activities-tab'">
+                <ng-container *ngTemplateOutlet="activityList"></ng-container>
+              </div>
             </ng-container>
             <ng-container *ngSwitchCase="'badges'">
-              <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
+              <div role="tabpanel" id="badges-panel" [attr.aria-labelledby]="'badges-tab'">
+                <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
+              </div>
             </ng-container>
             <ng-container *ngSwitchCase="'pulse-checks'">
-              <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
+              <div role="tabpanel" id="pulse-checks-panel" [attr.aria-labelledby]="'pulse-checks-tab'">
+                <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
+              </div>
             </ng-container>
           </ng-container>
         </ion-col>
@@ -110,7 +127,9 @@
 
 <ng-template #loadingProgress>
   <ion-skeleton-text animated
-    style="width: 50px; display: inline;"></ion-skeleton-text>
+    style="width: 50px; display: inline;"
+    role="status"
+    aria-label="Loading" i18n-aria-label></ion-skeleton-text>
 </ng-template>
 
 <ng-template #activityList>
@@ -125,13 +144,18 @@
           [ngClass]="{'locked': milestone.isLocked}"
           lines="none"
           (click)="showGuideline(milestone)"
+          (keydown.enter)="showGuideline(milestone)"
+          (keydown.space)="showGuideline(milestone); $event.preventDefault()"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="milestone.name + (milestone.isLocked ? ' (locked)' : '')"
           aria-describedby="milestone-description">
           <div [innerHTML]="milestone.name"></div>
           <ion-icon *ngIf="milestone.isLocked"
             color="medium"
             name="lock-closed"
             slot="end"
-            aria-label="milestone locked"></ion-icon>
+            aria-hidden="true"></ion-icon>
         </ion-item>
 
         <ion-item id="milestone-description"
@@ -149,7 +173,8 @@
           [fallbackLeadImage]="defaultLeadImage"
           [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
           (click)="gotoActivity({activity, milestone})"
-          (keydown)="gotoActivity({activity, milestone}, $event)"
+          (keydown.enter)="gotoActivity({activity, milestone}, $event)"
+          (keydown.space)="gotoActivity({activity, milestone}, $event); $event.preventDefault()"
           [endingIcon]="endingIcon(activity)"
           [endingIconColor]="endingIconColor(activity)"
           [endingProgress]="activityProgresses[activity.id]"
@@ -158,7 +183,8 @@
           [bookmarked]="bookmarkedActivities[activity.id]"
           class="focusable"
           tabindex="0"
-          role="button">
+          role="button"
+          [attr.aria-label]="activity.name + (lastVisitedActivityId === activity.id ? ' (last visited)' : '') + (bookmarkedActivities[activity.id] ? ' (bookmarked)' : '')">
         </app-list-item>
       </ng-container>
     </ng-container>
@@ -169,25 +195,28 @@
   <h3 class="for-accessibility"
     i18n>Badges awarded</h3>
   <div *ngIf="achievements.length === 0"
-    class="ion-text-center no-achievement">
-    <h1 class="for-accessibility"
-      [attr.aria-describedby]="'nobadges'"></h1>
+    class="ion-text-center no-achievement"
+    role="status"
+    aria-live="polite">
+    <h4 class="for-accessibility"
+      id="nobadges-heading" i18n>No badges status</h4>
     <ion-icon class="large-icon"
       color="primary"
       name="ribbon-outline"
-      alt="empty badge indicator"></ion-icon>
+      aria-hidden="true"
+      role="img"></ion-icon>
     <p id="nobadges"
       class="body-1"
-      aria-live="polite"
+      aria-labelledby="nobadges-heading"
       i18n>You have no badges yet!</p>
     <ion-text class="subtitle-2"
       color="grey-75"
-      aria-live="polite"
       i18n>Experience badge will show up here.</ion-text>
   </div>
   <ion-item *ngIf="getIsPointsConfigured && achievements.length > 0"
     lines="full"
-    class="total-points">
+    class="total-points"
+    role="status">
     <ion-label class="headline-4"
       i18n>
       Total Points Earned: {{getEarnedPoints}}
@@ -202,24 +231,31 @@
     lines="full"
     (click)="achievePopup(achievement)"
     [leadImageClass]="!achievement.isEarned ? 'black-white-image' : ''"
-    (keydown)="achievePopup(achievement, $event)"
+    (keydown.enter)="achievePopup(achievement, $event)"
+    (keydown.space)="achievePopup(achievement, $event); $event.preventDefault()"
     [endingIcon]="achievement.isEarned ? 'checkmark-circle' : 'lock-closed'"
     [endingIconColor]="achievement.isEarned ? 'success' : 'medium'"
     tabindex="0"
+    role="button"
+    [attr.aria-label]="achievement.name + (achievement.isEarned ? ' (earned)' : ' (locked)') + (achievement.points ? ', ' + achievement.points + ' points' : '')"
     i18n-subtitle1></app-list-item>
 </ng-template>
 
 <ng-template #emptyMilestones>
   <ion-item lines="none"
-    class="ion-text-center">
+    class="ion-text-center"
+    role="status"
+    aria-live="polite">
     <ion-label>
       <p class="body-1"
         i18n>No activities available at the moment.</p>
       <ion-button (click)="updateDashboard()"
         fill="clear"
-        size="small">
+        size="small"
+        aria-label="Retry loading activities" i18n-aria-label>
         <ion-icon name="refresh"
-          slot="start"></ion-icon>
+          slot="start"
+          aria-hidden="true"></ion-icon>
         <span i18n>Retry</span>
       </ion-button>
     </ion-label>
@@ -229,17 +265,22 @@
 <ng-template #pulseChecks>
   <h3 class="for-accessibility"
     i18n>Pulse checks and skills</h3>
-  <div class="ontrack-section">
+  <div class="ontrack-section" role="region" aria-label="On track status" i18n-aria-label>
     <div class="ontrack-header">
       <div class="ontrack-title-section">
-        <h4 class="ontrack-title headline-4">On Track</h4>
+        <h4 class="ontrack-title headline-4" i18n>On Track</h4>
         <ion-icon name="help-circle-outline"
           class="ontrack-help-icon"
-          (click)="onTrackInfo()">
+          (click)="onTrackInfo()"
+          (keydown.enter)="onTrackInfo()"
+          (keydown.space)="onTrackInfo(); $event.preventDefault()"
+          tabindex="0"
+          role="button"
+          aria-label="Show on track information" i18n-aria-label>
         </ion-icon>
       </div>
       <div class="ontrack-subtitle">
-        <span class="body-3 color-medium">Track your progress across key areas</span>
+        <span class="body-3 color-medium" i18n>Track your progress across key areas</span>
       </div>
     </div>
 
@@ -252,13 +293,18 @@
   </div>
 
   <ng-container *ngIf="pulseCheckSkills?.length > 0">
-    <div class="skill-strength-section">
+    <div class="skill-strength-section" role="region" aria-label="Skill strength" i18n-aria-label>
       <div class="skill-section-header">
-        <h4 class="headline-4">Skill Strength</h4>
+        <h4 class="headline-4" i18n>Skill Strength</h4>
         <ion-icon
           name="help-circle-outline"
           class="ontrack-help-icon"
-          (click)="showGlobalSkillsInfo()">
+          (click)="showGlobalSkillsInfo()"
+          (keydown.enter)="showGlobalSkillsInfo()"
+          (keydown.space)="showGlobalSkillsInfo(); $event.preventDefault()"
+          tabindex="0"
+          role="button"
+          aria-label="Show skill strength information" i18n-aria-label>
         </ion-icon>
       </div>
 
@@ -316,38 +362,40 @@
 </ng-template>
 
 <ng-template #loadingMilestones>
-  <ion-item class="headline-4 milestone-name" lines="none">
-    <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
-  </ion-item>
-  <ion-item class="body-3" lines="none" color="light">
-    <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
-  </ion-item>
-  <ion-item lines="full">
-    <ion-thumbnail slot="start">
-      <ion-skeleton-text animated></ion-skeleton-text>
-    </ion-thumbnail>
-    <ion-label>
-      <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
-    </ion-label>
-  </ion-item>
-  <ion-item lines="full">
-    <ion-thumbnail slot="start">
-      <ion-skeleton-text animated></ion-skeleton-text>
-    </ion-thumbnail>
-    <ion-label>
-      <ion-skeleton-text animated style="width: 85%;"></ion-skeleton-text>
-    </ion-label>
-  </ion-item>
+  <div role="status" aria-label="Loading activities" i18n-aria-label>
+    <ion-item class="headline-4 milestone-name" lines="none">
+      <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+    </ion-item>
+    <ion-item class="body-3" lines="none" color="light">
+      <ion-skeleton-text animated style="width: 80%;"></ion-skeleton-text>
+    </ion-item>
+    <ion-item lines="full">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 70%;"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+    <ion-item lines="full">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 85%;"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
 
-  <ion-item class="headline-4 milestone-name" lines="none">
-    <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
-  </ion-item>
-  <ion-item lines="none">
-    <ion-thumbnail slot="start">
-      <ion-skeleton-text animated></ion-skeleton-text>
-    </ion-thumbnail>
-    <ion-label>
-      <ion-skeleton-text animated style="width: 65%;"></ion-skeleton-text>
-    </ion-label>
-  </ion-item>
+    <ion-item class="headline-4 milestone-name" lines="none">
+      <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-thumbnail slot="start">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-thumbnail>
+      <ion-label>
+        <ion-skeleton-text animated style="width: 65%;"></ion-skeleton-text>
+      </ion-label>
+    </ion-item>
+  </div>
 </ng-template>
