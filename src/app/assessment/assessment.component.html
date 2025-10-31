@@ -2,7 +2,7 @@
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
     <ion-buttons slot="start" *ngIf="!restrictedAccess && isMobile">
       <ion-button (click)="back()" id="btn-back">
-        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only" ></ion-icon>
+        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary" slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
 
@@ -10,8 +10,16 @@
       'subtitle-2': !isMobile
     }">{{pageTitle}}</ion-title>
     <ng-container *ngIf="doAssessment || doReview">
-      <div class="ion-text-center sub-title caption gray-2 saving-msg">{{savingMessage}}</div>
-      <ion-button [disabled]="savingButtonDisabled || submitted" (click)="submit(true, false, true)" class="text-button subtitle-1" color="primary" slot="end" fill="clear" size="small">Save</ion-button>
+      <div class="ion-text-center sub-title caption gray-2 saving-msg" role="status" aria-live="polite" aria-atomic="true">{{savingMessage}}</div>
+      <ion-button 
+        [disabled]="savingButtonDisabled || submitted" 
+        (click)="submit(true, false, true)" 
+        class="text-button subtitle-1" 
+        color="primary" 
+        slot="end" 
+        fill="clear" 
+        size="small"
+        aria-label="Save progress">Save</ion-button>
     </ng-container>
   </ion-toolbar>
 </ion-header>
@@ -40,7 +48,7 @@
   <ion-list *ngIf="submission && submission.isLocked" class="member-detail-container no-bg" lines="none">
     <ion-item lines="none">
       <ion-avatar slot="start">
-        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'" alt="submitter indicator">
+        <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'" [attr.alt]="submission.submitterName ? submission.submitterName + ' avatar' : 'Submitter avatar'">
       </ion-avatar>
       <ion-label>
         <p class="subtitle-1">Locked by {{ submission.submitterName }}</p>
@@ -51,7 +59,7 @@
 
   <form [formGroup]="questionsForm">
     <ng-container *ngIf="loadingAssessment">
-      <ion-spinner></ion-spinner>
+      <ion-spinner role="status" aria-live="polite" aria-label="Loading assessment"></ion-spinner>
     </ng-container>
     <ng-container *ngFor="let group of assessment.groups">
       <h3 class="headline-6" tabindex="0" [attr.aria-describedby]="randomCode(group.name)">{{ group.name }}</h3>
@@ -65,17 +73,26 @@
             <ion-card-subtitle *ngIf="(review && review.status === 'done') && question.reviewerOnly" class="caption gray-2">
               Reviewer’s feedback
             </ion-card-subtitle>
-            <ion-card-title class="body-1 black" [attr.aria-label]="question.name" aria-describedby="randomCode('reviewer-' + question.name)">
+            <ion-card-title class="body-1 black" [attr.aria-label]="question.name + (question.isRequired ? ' required' : '')" [attr.aria-describedby]="randomCode('reviewer-' + question.name)">
               {{ question.name }}
-              <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired">*</ion-text>
+              <ion-text class="required-indicator" color="danger" *ngIf="question.isRequired" aria-label="required">*</ion-text>
             </ion-card-title>
-            <ion-icon *ngIf="question.info" color="primary" class="icon-info vertical-middle" (click)="showQuestionInfo(question.info)" name="information-circle-outline"></ion-icon>
+            <button 
+              *ngIf="question.info" 
+              type="button"
+              class="icon-button icon-info vertical-middle"
+              (click)="showQuestionInfo(question.info)"
+              (keydown.enter)="showQuestionInfo(question.info)"
+              (keydown.space)="showQuestionInfo(question.info); $event.preventDefault()"
+              [attr.aria-label]="'Show information for ' + question.name">
+              <ion-icon color="primary" name="information-circle-outline" aria-hidden="true"></ion-icon>
+            </button>
             <ion-text class="paragraph ion-text-left gray-2">
               <app-description [name]="randomCode('reviewer-' + question.name)" class="q-description" *ngIf="question.description" [content]="question.description"></app-description>
             </ion-text>
           </ion-card-header>
           <div class="ion-text-center ion-margin-bottom" *ngIf="loadingAssessment; else submissionTpl">
-            <ion-spinner></ion-spinner>
+            <ion-spinner role="status" aria-live="polite" aria-label="Loading question"></ion-spinner>
           </div>
           <ng-template #submissionTpl>
             <ion-card-content [ngSwitch]="question.type" class="q-content ion-margin-top ion-no-padding" color="light">
@@ -83,7 +100,7 @@
               (
                 (!question.reviewerOnly && submission && !submission.answers[question.id]) ||
                 (!doReview && question.reviewerOnly && review && !review.answers[question.id])
-              )"><i>No Answer Submitted</i></p>
+              )" aria-live="polite"><i>No Answer Submitted</i></p>
 
               <app-text
                 *ngSwitchCase="'text'"
@@ -169,14 +186,16 @@
   class="ion-footer-absolute"
   *ngIf="hasFooter() && !isNotInATeam">
   <ion-toolbar class="ion-text-center" style="height: 100%">
-    <ion-spinner
+      <ion-spinner
       *ngIf="loadingAssessment"
       name="dots"
       class="vertical-middle ion-text-center"
       style="width: 100%"
-    ></ion-spinner>
+      role="status"
+      aria-live="polite"
+      aria-label="Loading assessment"></ion-spinner>
     <ng-container *ngIf="!loadingAssessment">
-      <img *ngIf="savingButtonDisabled; else submitTmp" class="footer-action" src="/assets/loading.gif" alt="loading">
+      <img *ngIf="savingButtonDisabled; else submitTmp" class="footer-action" src="/assets/loading.gif" alt="" role="status" aria-live="polite" aria-label="Saving">
       <ng-template #submitTmp>
         <ion-button
         *ngIf="(doAssessment || doReview) && !submitting && !submitted"
@@ -191,7 +210,7 @@
 
       <ng-container *ngIf="footerText()">
         <span class="footer-text ion-float-left">{{ footerText() }}</span>
-        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif" alt="loading">
+        <img *ngIf="continueBtnLoading || submitting; else continueTmp" class="footer-action ion-float-right" src="/assets/loading.gif" alt="" role="status" aria-live="polite" aria-label="Processing">
         <ng-template #continueTmp>
           <ion-button
             *ngIf="!restrictedAccess"

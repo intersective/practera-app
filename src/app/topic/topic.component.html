@@ -1,9 +1,9 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
     <ion-buttons slot="start" *ngIf="utils.isMobile()">
-      <ion-button (click)="back()" id="btn-back">
-        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" (click)="back()" color="primary"
-          slot="icon-only"></ion-icon>
+      <ion-button (click)="back()" id="btn-back" aria-label="Go back">
+        <ion-icon class="icon-backward ion-margin-start" name="arrow-back" color="primary"
+          slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
 
@@ -14,7 +14,7 @@
 </ion-header>
 <ion-content class="ion-padding" color="light" [ngClass]="{'ion-content-absolute-with-footer': !utils.isMobile()}">
   <div class="ion-text-center ion-margin-top" *ngIf="loadingTopic">
-    <ion-spinner></ion-spinner>
+    <ion-spinner role="status" aria-live="polite" aria-label="Loading topic"></ion-spinner>
   </div>
   <h3 class="headline-4 ion-text-center" tabindex="0">{{topic.title}}</h3>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center">
@@ -43,10 +43,24 @@
               </p>
             </ion-col>
             <ion-col size="2">
-              <ion-icon class="vertical-middle hover-pointer" *ngIf="file.url.length > 0" name="search"
-                (click)="previewFile(file)" color="primary"></ion-icon>
-              <a *ngIf="file.url.length > 0" [href]="file.url" download class="text-right" target="_blank">
-                <ion-icon name="download-outline" class="float-right"></ion-icon>
+              <button 
+                *ngIf="file.url.length > 0" 
+                type="button"
+                class="icon-button"
+                (click)="previewFile(file)"
+                (keydown.enter)="previewFile(file)"
+                (keydown.space)="previewFile(file); $event.preventDefault()"
+                [attr.aria-label]="'Preview ' + file.name">
+                <ion-icon name="search" color="primary" aria-hidden="true"></ion-icon>
+              </button>
+              <a 
+                *ngIf="file.url.length > 0" 
+                [href]="file.url" 
+                download 
+                class="text-right" 
+                target="_blank"
+                [attr.aria-label]="'Download ' + file.name">
+                <ion-icon name="download-outline" class="float-right" aria-hidden="true"></ion-icon>
               </a>
             </ion-col>
           </ion-row>
@@ -58,10 +72,16 @@
 
 <ion-footer color="light" [ngClass]="{'ion-footer-absolute': !utils.isMobile()}">
   <ion-toolbar class="ion-text-center" style="height: 100%">
-    <ion-spinner *ngIf="loadingMarkedDone || loadingTopic" style="width: 100%;" name="dots"
-      class="vertical-middle text-center"></ion-spinner>
+    <ion-spinner 
+      *ngIf="loadingMarkedDone || loadingTopic" 
+      style="width: 100%;" 
+      name="dots"
+      class="vertical-middle text-center"
+      role="status"
+      aria-live="polite"
+      aria-label="Processing"></ion-spinner>
 
-    <img *ngIf="redirecting" class="footer-action" src="/assets/loading.gif" alt="loading" />
+    <img *ngIf="redirecting" class="footer-action" src="/assets/loading.gif" alt="" role="status" aria-live="polite" aria-label="Redirecting" />
 
     <ion-button *ngIf="!loadingMarkedDone && !loadingTopic && !redirecting" (click)="continue()" shape="round"
       fill="clear">

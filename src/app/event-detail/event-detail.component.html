@@ -1,6 +1,8 @@
 <ion-header mode="ios">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !utils.isMobile()}">
-    <ion-icon *ngIf="utils.isMobile()" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+    <ion-button *ngIf="utils.isMobile()" fill="clear" (click)="close()" aria-label="Close event" slot="end">
+      <ion-icon name="close-circle-outline" class="close-icon" color="primary" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
     <ion-title class="ion-text-center" [ngClass]="{
       'subtitle-2': !utils.isMobile()
     }" tabindex="0" aria-label="event">Event</ion-title>
@@ -16,29 +18,36 @@
 
   <ion-list lines="full">
     <ion-item>
-      <ion-icon class="leading-icon gray-2" name="calendar-outline"></ion-icon>
+      <ion-icon class="leading-icon gray-2" name="calendar-outline" aria-hidden="true"></ion-icon>
       <div id="date" class="subtitle-1">{{ getEventDate() }}</div>
     </ion-item>
     <ng-container *ngIf="event.videoConference">
       <ion-item *ngIf="!event.isBooked" class="zoom-meeting">
-        <img src="../../assets/icon_zoom_24.svg" alt="booked zoom meeting">
+        <img src="../../assets/icon_zoom_24.svg" [attr.alt]="event.videoConference.provider + ' meeting icon'" aria-hidden="true">
         <div class="subtitle-1 ion-text-capitalize"> {{ event.videoConference.provider }} Meeting </div>
       </ion-item>
-      <ion-item *ngIf="event.isBooked" class="zoom-meeting" (click)="openMeetingLink(event.videoConference.url)">
-        <img src="../../assets/icon_zoom_24.svg" alt="open zoom meeting">
+      <ion-item 
+        *ngIf="event.isBooked" 
+        class="zoom-meeting" 
+        (click)="openMeetingLink(event.videoConference.url)"
+        (keydown.enter)="openMeetingLink(event.videoConference.url)"
+        (keydown.space)="openMeetingLink(event.videoConference.url); $event.preventDefault()"
+        role="button"
+        tabindex="0">
+        <img src="../../assets/icon_zoom_24.svg" [attr.alt]="event.videoConference.provider + ' meeting icon'" aria-hidden="true">
         <div class="item-content">
           <p class="subtitle-1"> Join {{ event.videoConference.provider }} meeting </p>
           <p class="caption gray-2"> ID: {{ event.videoConference.meetingId }} </p>
         </div>
-        <ion-icon slot="end" name="chevron-forward-outline"></ion-icon>
+        <ion-icon slot="end" name="chevron-forward-outline" aria-hidden="true"></ion-icon>
       </ion-item>
     </ng-container>
     <ion-item *ngIf="event.location">
-      <ion-icon class="leading-icon gray-2" name="location-outline"></ion-icon>
+      <ion-icon class="leading-icon gray-2" name="location-outline" aria-hidden="true"></ion-icon>
       <div id="location" class="subtitle-1">{{ event.location }}</div>
     </ion-item>
     <ion-item lines="none" *ngIf="event.capacity">
-      <ion-icon class="leading-icon gray-2" name="people-outline"></ion-icon>
+      <ion-icon class="leading-icon gray-2" name="people-outline" aria-hidden="true"></ion-icon>
       <div id="capacity" class="subtitle-1">{{ event.remainingCapacity }} Seats Available Out of {{ event.capacity }}</div>
     </ion-item>
   </ion-list>

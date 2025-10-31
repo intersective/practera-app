@@ -25,14 +25,16 @@
 
   <ng-container *ngIf="doAssessment">
     <div class="ion-padding-horizontal ion-padding-bottom">
-        <file-stack *ngIf="!uploadedFile && !submission.answer"
-        [accept]="fileTypes"
-        [fileType]="question.fileType"
-        (complete)="onFileUploadCompleted($event)"
-        [disabled]="control.disabled"
-      >
-      </file-stack>
-      <ion-text *ngFor="let error of errors" color="danger">
+        <file-stack 
+          *ngIf="!uploadedFile && !submission.answer"
+          [accept]="fileTypes"
+          [fileType]="question.fileType"
+          (complete)="onFileUploadCompleted($event)"
+          [disabled]="control.disabled"
+          [attr.aria-describedby]="errors.length > 0 ? 'file-error-' + question.id : null"
+          [attr.aria-invalid]="errors.length > 0 ? 'true' : null">
+        </file-stack>
+      <ion-text *ngFor="let error of errors; let i = index" [id]="'file-error-' + question.id" color="danger" role="alert" aria-live="polite">
         <p>{{error}}</p>
       </ion-text>
       <app-file-display

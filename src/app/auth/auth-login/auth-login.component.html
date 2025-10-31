@@ -6,27 +6,35 @@
     <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
       <ion-list class="ion-margin">
         <ion-item>
+          <ion-label position="stacked" for="login-email">Email</ion-label>
           <ion-input
+            id="login-email"
             name="email"
             formControlName="email"
             required
-            autocomplete="on"
+            autocomplete="email"
             inputmode="email"
             type="email"
             placeholder="Email"
             ></ion-input>
         </ion-item>
         <ion-item lines="none">
+          <ion-label position="stacked" for="login-password">Password</ion-label>
           <ion-input
+            id="login-password"
             name="password"
             formControlName="password"
-            autocomplete="on"
+            autocomplete="current-password"
             inputmode="password"
             required
             [type]="showPassword ? 'text' : 'password'"
             placeholder="Password"
             ></ion-input>
-            <ion-button (click)="showPassword = !showPassword" fill="clear">
+            <ion-button 
+              (click)="showPassword = !showPassword" 
+              fill="clear"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              type="button">
               <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'"></ion-icon>
             </ion-button>
         </ion-item>

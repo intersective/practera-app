@@ -1,26 +1,30 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-icon
+    <ion-button
       *ngIf="file.url"
-      name="download-outline"
+      fill="clear"
       (click)="download()"
-      color="primary"
-      size="large"
+      (keydown.enter)="download()"
+      (keydown.space)="download(); $event.preventDefault()"
+      aria-label="Download file"
       slot="end"
-      class="ion-margin-start"
-    ></ion-icon>
+      class="ion-margin-start">
+      <ion-icon name="download-outline" color="primary" size="large" aria-hidden="true"></ion-icon>
+    </ion-button>
 
-    <ion-icon
-      name="close-circle-outline"
+    <ion-button
+      fill="clear"
       (click)="close()"
-      color="primary"
-      size="large"
+      (keydown.enter)="close()"
+      (keydown.space)="close(); $event.preventDefault()"
+      aria-label="Close preview"
       slot="end"
-      class="ion-margin-start"
-    ></ion-icon>
+      class="ion-margin-start">
+      <ion-icon name="close-circle-outline" color="primary" size="large" aria-hidden="true"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content color="light" class="ion-text-center">
-  <iframe [src]="sanitizer.bypassSecurityTrustResourceUrl(url)" width="100%" height="100%"></iframe>
+  <iframe [src]="sanitizer.bypassSecurityTrustResourceUrl(url)" width="100%" height="100%" [attr.title]="file?.filename || 'File preview'"></iframe>
 </ion-content>

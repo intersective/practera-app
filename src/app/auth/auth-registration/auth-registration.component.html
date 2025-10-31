@@ -19,30 +19,48 @@
         <p class="body-1">{{user.contact}}</p>
       </ng-container>
       <form [formGroup]="registerationForm">
+        <p class="body-2 gray-2 ion-margin-bottom" aria-live="polite">
+          Fields marked with <span class="required-indicator" aria-label="required">*</span> are required.
+        </p>
         <ion-input name="email" formControlName="email" type="hidden" value="{{user.email}}" aria-hidden="true" aria-label="email address">
         </ion-input>
         <ion-list margin>
           <ion-item *ngIf="!hide_password">
-            <ion-input name="password" [(ngModel)]="password" inputmode="password" formControlName="password"
-              autocomplete="on" required [type]="showPassword ? 'text' : 'password'"
-              placeholder="Set up Practera password*" [attr.aria-labelledby]="setup-password">
-              <p id="setup-password" class="for-accessibility">setup practera password</p>
-            </ion-input>
-            <ion-button (click)="showPassword = !showPassword" fill="clear">
-              <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
+            <ion-label position="stacked" for="register-password">Set up Practera password <span class="required-indicator" aria-label="required">*</span></ion-label>
+            <ion-input 
+              id="register-password"
+              name="password" 
+              [(ngModel)]="password" 
+              inputmode="password" 
+              formControlName="password"
+              autocomplete="new-password" 
+              required 
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Set up Practera password*"
+              [attr.aria-describedby]="registerationForm.get('password')?.invalid && registerationForm.get('password')?.touched ? 'register-password-error' : null"
+              [attr.aria-invalid]="registerationForm.get('password')?.invalid && registerationForm.get('password')?.touched ? 'true' : null"></ion-input>
+            <ion-button 
+              (click)="showPassword = !showPassword" 
+              fill="clear"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+              type="button">
+              <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
             </ion-button>
           </ion-item>
           <ion-item *ngIf="!hide_password" lines="none">
-            <ion-input name="confirmPassword"
+            <ion-label position="stacked" for="register-confirm-password">Confirm password <span class="required-indicator" aria-label="required">*</span></ion-label>
+            <ion-input 
+              id="register-confirm-password"
+              name="confirmPassword"
               [(ngModel)]="confirmPassword"
               inputmode="password"
               formControlName="confirmPassword"
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Confirm password*"
-              autocomplete="on"
-              required [attr.aria-labelledby]="confirm-password">
-              <p id="confirm-password" class="for-accessibility">confirm password</p>
-            </ion-input>
+              autocomplete="new-password"
+              required
+              [attr.aria-describedby]="registerationForm.get('confirmPassword')?.invalid && registerationForm.get('confirmPassword')?.touched ? 'register-confirm-password-error' : null"
+              [attr.aria-invalid]="registerationForm.get('confirmPassword')?.invalid && registerationForm.get('confirmPassword')?.touched ? 'true' : null"></ion-input>
           </ion-item>
         </ion-list>
         <div class="list-terms">
@@ -53,8 +71,14 @@
           </ion-label>
         </div>
 
-        <ion-text *ngFor="let error of errors" color="danger">
-          <p class="text-error" role="alert" aria-live="polite">{{error}}</p>
+        <ion-text id="register-password-error" *ngIf="registerationForm.get('password')?.invalid && registerationForm.get('password')?.touched" color="danger" role="alert" aria-live="polite">
+          <p class="text-error">Password is required</p>
+        </ion-text>
+        <ion-text id="register-confirm-password-error" *ngIf="registerationForm.get('confirmPassword')?.invalid && registerationForm.get('confirmPassword')?.touched" color="danger" role="alert" aria-live="polite">
+          <p class="text-error">Please confirm your password</p>
+        </ion-text>
+        <ion-text *ngFor="let error of errors" color="danger" role="alert" aria-live="assertive">
+          <p class="text-error">{{error}}</p>
         </ion-text>
         <ion-button id="btn-register" shape="round" expand="full" (click)="register()" color="primary">REGISTER</ion-button>
       </form>

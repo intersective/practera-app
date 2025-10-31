@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { NotificationService } from '../../shared/notification/notification.service';
 import { AuthService } from '../auth.service';
@@ -24,6 +25,7 @@ export class AuthResetPasswordComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private title: Title,
     private notificationService: NotificationService,
     private authService: AuthService,
     private utils: UtilsService,
@@ -46,6 +48,7 @@ export class AuthResetPasswordComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.title.setTitle('Reset Password - Practera');
     this.key = this.route.snapshot.paramMap.get('key');
     this.email = this.route.snapshot.paramMap.get('email');
 
