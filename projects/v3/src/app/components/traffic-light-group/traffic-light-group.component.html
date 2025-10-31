@@ -8,7 +8,7 @@
       (click)="handleTrafficLightClick(group, lights[group])"
     >
       <ion-label class="spacing-right">{{ group | titlecase }}</ion-label>
-      <ion-spinner name="bubbles" *ngIf="loading[group] === true"></ion-spinner>
+      <ion-spinner name="bubbles" *ngIf="loading[group] === true" role="status"></ion-spinner>
       <app-traffic-light *ngIf="!loading[group]"
         [value]="lights[group]"
         [icon]="group === 'self' && displayOnly === false ? 'pencil-sharp' : null"
@@ -24,7 +24,7 @@
       (click)="handleTrafficLightClick('team', team.average)"
     >
       <ion-label class="spacing-right">{{ team.teamName }}</ion-label>
-      <ion-spinner name="bubbles" *ngIf="loading[team.teamName] === true"></ion-spinner>
+      <ion-spinner name="bubbles" *ngIf="loading[team.teamName] === true" role="status"></ion-spinner>
       <app-traffic-light *ngIf="!loading[team.teamName]"
         [value]="team.average"
       ></app-traffic-light>
