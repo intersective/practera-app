@@ -39,6 +39,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Experiences - Practera');
     this.activatedRoute.params
     .pipe(takeUntil(this.unsubscribe$))
     .subscribe(_params => {

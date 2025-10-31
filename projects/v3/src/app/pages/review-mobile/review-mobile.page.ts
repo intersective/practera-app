@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Review, ReviewService } from '@v3/app/services/review.service';
+import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
   selector: 'app-review-mobile',
@@ -13,9 +14,11 @@ export class ReviewMobilePage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private reviewService: ReviewService,
+    private utils: UtilsService,
   ) { }
 
   ngOnInit(): void {
+    this.utils.setPageTitle('Reviews - Practera');
     this.reviewService.reviews$.subscribe(res => this.reviews = res);
     this.route.queryParams.subscribe(_params => {
       this.reviewService.getReviews();

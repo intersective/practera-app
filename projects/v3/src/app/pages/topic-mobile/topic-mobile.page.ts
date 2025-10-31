@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task } from '@v3/app/services/activity.service';
 import { TopicService, Topic } from '@v3/app/services/topic.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
 @Component({
@@ -21,11 +22,17 @@ export class TopicMobilePage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private topicService: TopicService,
-    private activityService: ActivityService
+    private activityService: ActivityService,
+    private utils: UtilsService
   ) { }
 
   ngOnInit() {
-    this.topic$.subscribe(res => this.topic = res);
+    this.topic$.subscribe(res => {
+      this.topic = res;
+      if (res?.title) {
+        this.utils.setPageTitle(`${res.title} - Practera`);
+      }
+    });
     this.activityService.currentTask$.subscribe(res => this.currentTask = res);
     this.route.params.subscribe(params => {
       this.topicService.getTopic(params.id);
