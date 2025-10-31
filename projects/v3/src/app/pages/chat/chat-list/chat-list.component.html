@@ -1,7 +1,7 @@
 <ion-content>
   <ng-container *ngIf="loadingChatList">
     <div class="ion-text-center">
-      <ion-spinner></ion-spinner>
+      <ion-spinner role="status" aria-live="polite" aria-label="Loading chat list"></ion-spinner>
     </div>
   </ng-container>
   <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !isMobile}">
