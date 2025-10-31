@@ -2,6 +2,7 @@ import { TopicService, Topic } from './topic.service';
 import { Component, NgZone, Input, Output, EventEmitter, Inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { FilestackService } from '@shared/filestack/filestack.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { UtilsService } from '@services/utils.service';
@@ -58,7 +59,8 @@ export class TopicComponent extends RouterEnter {
     private sharedService: SharedService,
     private ngZone: NgZone,
     private newRelic: NewRelicService,
-    @Inject(DOCUMENT) private readonly document: Document
+    @Inject(DOCUMENT) private readonly document: Document,
+    private title: Title
   ) {
     super(router);
   }
@@ -118,6 +120,7 @@ export class TopicComponent extends RouterEnter {
           this._markAsStartStop('started');
           this._initVideoPlayer();
           this.newRelic.setPageViewName(`Topic ${this.topic.title} ID: ${this.topic.id}`);
+          this.title.setTitle(`${this.topic.title} - Practera`);
         },
         err => {
           this.newRelic.noticeError(`${JSON.stringify(err)}`);

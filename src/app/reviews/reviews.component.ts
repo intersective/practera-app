@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 
@@ -19,6 +20,7 @@ export class ReviewsComponent extends RouterEnter {
     readonly utils: UtilsService,
     public router: Router,
     private route: ActivatedRoute,
+    private title: Title
   ) {
     super(router);
   }
@@ -28,6 +30,7 @@ export class ReviewsComponent extends RouterEnter {
   }
 
   onEnter() {
+    this.title.setTitle('Reviews - Practera');
     this.submissionId = +this.route.snapshot.paramMap.get('submissionId');
     // trigger onEnter after the element get generated
     setTimeout(() => {

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { HomeService, TodoItem } from './home.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { Achievement, AchievementsService } from '@app/achievements/achievements.service';
@@ -52,6 +53,7 @@ export class HomeComponent implements OnDestroy, OnInit {
     public achievementService: AchievementsService,
     private eventsService: EventListService,
     readonly newRelic: NewRelicService,
+    private title: Title,
   ) {
     const role = this.storage.getUser().role;
     this.utils.getEvent('notification').subscribe(event => {
@@ -101,6 +103,8 @@ export class HomeComponent implements OnDestroy, OnInit {
 
   onEnter() {
     this._initialise();
+    const programName = this.storage.getUser().programName || 'Practera';
+    this.title.setTitle(`Home - ${programName}`);
     this.programInfo = {
       image: this.storage.getUser().programImage,
       name: this.storage.getUser().programName
