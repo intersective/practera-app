@@ -9,12 +9,13 @@
       <form (ngSubmit)="login()" [formGroup]="loginForm" (keyup.enter)="login()">
         <ion-list class="ion-margin">
           <ion-item>
+            <ion-label position="stacked" for="login-email">Email</ion-label>
             <ion-input
-              aria-label="email"
+              id="login-email"
               name="email"
               formControlName="email"
               required
-              autocomplete="on"
+              autocomplete="email"
               inputmode="email"
               type="email"
               placeholder="Email"
@@ -23,19 +24,19 @@
               ></ion-input>
           </ion-item>
           <ion-item lines="none">
+            <ion-label position="stacked" for="login-password">Password</ion-label>
             <ion-input
-              aria-label="password"
+              id="login-password"
               name="password"
               formControlName="password"
-              autocomplete="on"
-              inputmode="password"
+              autocomplete="current-password"
               required
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Password"
               i18n-placeholder
               ></ion-input>
-              <ion-button (click)="showPassword = !showPassword" fill="clear">
-                <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'"></ion-icon>
+              <ion-button (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
               </ion-button>
           </ion-item>
         </ion-list>

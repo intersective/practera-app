@@ -1,6 +1,8 @@
 <ion-header mode="ios" *ngIf="isMobile" aria-label="event details">
   <ion-toolbar>
-    <ion-icon *ngIf="isMobile" name="close-circle-outline" class="close-icon" (click)="close()" color="primary" slot="end"></ion-icon>
+    <ion-button *ngIf="isMobile" fill="clear" (click)="close()" slot="end" aria-label="Close event details">
+      <ion-icon name="close-circle-outline" class="close-icon" color="primary" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
     <ion-title *ngIf="isMobile" class="ion-text-center" aria-label="event" i18n>Event</ion-title>
   </ion-toolbar>
 </ion-header>
