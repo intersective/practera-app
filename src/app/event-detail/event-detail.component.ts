@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UtilsService } from '@services/utils.service';
@@ -27,11 +28,14 @@ export class EventDetailComponent implements OnInit {
     public utils: UtilsService,
     private newRelic: NewRelicService,
     private storage: BrowserStorageService,
+    private title: Title
   ) {}
 
   ngOnInit() {
     this.ctaIsActing = false;
     this.newRelic.setPageViewName('event-detail');
+    const eventName = this.event?.name || 'Event';
+    this.title.setTitle(`${eventName} - Practera`);
   }
 
   confirmed(event) {

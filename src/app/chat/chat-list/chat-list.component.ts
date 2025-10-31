@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
 import { FastFeedbackService } from '../../fast-feedback/fast-feedback.service';
@@ -30,9 +31,11 @@ export class ChatListComponent {
     public fastFeedbackService: FastFeedbackService,
     private newrelic: NewRelicService,
     private ngZone: NgZone,
-    public pusherService: PusherService
+    public pusherService: PusherService,
+    private title: Title
   ) {
     this.newrelic.setPageViewName('Chat list');
+    this.title.setTitle('Chat - Practera');
     this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
     this.utils.getEvent('chat:info-update').subscribe(event => this._loadChatData());
     if (!this.utils.isMobile()) {

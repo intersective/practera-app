@@ -1,5 +1,6 @@
 import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { IonContent, ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '@services/storage.service';
 import { RouterEnter } from '@services/router-enter.service';
@@ -61,7 +62,8 @@ export class ChatRoomComponent extends RouterEnter {
     private modalController: ModalController,
     private ngZone: NgZone,
     public element: ElementRef,
-    private newrelic: NewRelicService
+    private newrelic: NewRelicService,
+    private title: Title
   ) {
     super(router);
     this.newrelic.setPageViewName(`Chat room`);
@@ -95,6 +97,8 @@ export class ChatRoomComponent extends RouterEnter {
 
   onEnter() {
     this._initialise();
+    const chatName = this.chatChannel?.name || 'Chat';
+    this.title.setTitle(`${chatName} - Practera`);
     this._subscribeToTypingEvent();
     this._loadMessages();
     this._loadMembers();

@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { UtilsService } from '@services/utils.service';
 import { RouterEnter } from '@services/router-enter.service';
 import { Event, EventGroup } from '@app/event-list/event-list.service';
@@ -33,12 +34,14 @@ export class EventsComponent extends RouterEnter {
   constructor(
     public router: Router,
     private route: ActivatedRoute,
-    public utils: UtilsService
+    public utils: UtilsService,
+    private title: Title
   ) {
     super(router);
   }
 
   onEnter() {
+    this.title.setTitle('Events - Practera');
     // get activity and event id from route
     this.activityId = +this.route.snapshot.paramMap.get('activity_id');
     this.eventId = +this.route.snapshot.paramMap.get('event_id');

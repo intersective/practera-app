@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { SharedService } from '@app/services/shared.service';
 import { BrowserStorageService } from '@services/storage.service';
 import { UtilsService } from '@services/utils.service';
@@ -23,7 +24,8 @@ export class OverviewComponent implements OnInit {
     private route: ActivatedRoute,
     private fastFeedbackService: FastFeedbackService,
     readonly sharedService: SharedService,
-    private overviewService: OverviewService
+    private overviewService: OverviewService,
+    private title: Title
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -31,7 +33,8 @@ export class OverviewComponent implements OnInit {
   ngOnInit() {
     this.initiator$.subscribe(async () => {
       await this.sharedService.getTeamInfo().toPromise(); // update team info
-      this.programName = this.storage.getUser().programName;
+      this.programName = this.storage.getUser().programName || 'Practera';
+      this.title.setTitle(`Overview - ${this.programName}`);
       this.fastFeedbackService.pullFastFeedback().subscribe();
       this.overviewService.getProgress().subscribe();
     });

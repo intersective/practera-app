@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AuthService } from '../auth/auth.service';
 import { SettingService } from './setting.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -52,6 +53,7 @@ export class SettingsComponent extends RouterEnter {
     private filestackService: FilestackService,
     public fastFeedbackService: FastFeedbackService,
     private newRelic: NewRelicService,
+    private title: Title,
 
   ) {
     super(router);
@@ -59,6 +61,7 @@ export class SettingsComponent extends RouterEnter {
 
   onEnter() {
     this.newRelic.setPageViewName('Settings');
+    this.title.setTitle('Settings - Practera');
     this.mode = this.route.snapshot.data.mode;
     // get contact number and email from local storage
     this.profile.email = this.storage.getUser().email;

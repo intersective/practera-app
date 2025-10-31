@@ -1,5 +1,6 @@
 import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { ActivityService, Activity } from './activity.service';
 import { UtilsService } from '../services/utils.service';
@@ -47,6 +48,7 @@ export class ActivityComponent {
     private apolloService: ApolloService,
     readonly sharedService: SharedService,
     readonly utils: UtilsService,
+    private title: Title
   ) {
 
     // update event list after book/cancel an event
@@ -120,6 +122,7 @@ export class ActivityComponent {
           this.activity = activity;
           this.loadingActivity = false;
           this.newRelic.setPageViewName(`Activity ${this.activity.name}, ID: ${this.id}`);
+          this.title.setTitle(`${this.activity.name} - Practera`);
           this.tasksReady.emit(activity.tasks);
         },
         (error) => {

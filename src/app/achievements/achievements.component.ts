@@ -1,5 +1,6 @@
 import { AfterContentChecked, Component, Input, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 import { AchievementsService, Achievement } from './achievements.service';
 import { UtilsService } from '@services/utils.service';
 import { BrowserStorageService } from '@services/storage.service';
@@ -27,11 +28,13 @@ export class AchievementsComponent extends RouterEnter implements AfterContentCh
     private ngZone: NgZone,
     private newRelic: NewRelicService,
     public storage: BrowserStorageService,
+    private title: Title
   ) {
     super(router);
   }
 
   onEnter() {
+    this.title.setTitle('Achievements - Practera');
     this.userInfo = {
       image: this.storage.get('me').image,
       name: this.storage.get('me').name
