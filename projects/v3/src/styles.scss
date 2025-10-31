@@ -234,6 +234,25 @@ ion-chip.label {
 }
 
 /******************
+  Skip navigation links for WCAG 2.4.1
+******************/
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ion-color-primary);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 10000;
+  border-radius: 0 0 4px 0;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/******************
   list empty message
 ******************/
 .list-empty-message {

@@ -59,6 +59,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Registration - Practera');
     this.domain =
       this.domain.indexOf('127.0.0.1') !== -1 ||
       this.domain.indexOf('localhost') !== -1
