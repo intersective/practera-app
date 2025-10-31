@@ -57,6 +57,7 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Practera');
     this.utils.screenStatus$.subscribe((res) => {
       this.hasLeftSidebar = res.leftSidebarExpanded;
     });
