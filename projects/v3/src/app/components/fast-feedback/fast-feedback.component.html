@@ -45,40 +45,46 @@
       <ion-card *ngFor="let question of currentPageQuestions"
         class="ion-text-left ion-no-margin ion-margin-bottom ion-padding question-card"
         [ngClass]="{'ion-padding-horizontal': !isMobile }">
-        <ion-list-header class="question-title">
-          <ion-label class="ion-margin-end">
-            <h2 [innerHTML]="question.name"></h2>
-            <p><i [innerHTML]="question.description"></i></p>
-          </ion-label>
-          <ion-text class="required-mark"
-            [ngClass]="{'contrast': isRedColor}"
-            *ngIf="question.isRequired">*</ion-text>
-        </ion-list-header>
+        <fieldset [attr.aria-labelledby]="'fast-feedback-question-' + question.id">
+          <legend class="for-accessibility" [id]="'fast-feedback-question-' + question.id">{{ question.name }}</legend>
+          <ion-list-header class="question-title">
+            <ion-label class="ion-margin-end">
+              <h2 [innerHTML]="question.name" [id]="'fast-feedback-question-title-' + question.id"></h2>
+              <p><i [innerHTML]="question.description"></i></p>
+            </ion-label>
+            <ion-text class="required-mark"
+              [ngClass]="{'contrast': isRedColor}"
+              *ngIf="question.isRequired" aria-label="required">*</ion-text>
+          </ion-list-header>
 
-        <ion-radio-group [formControlName]="question.id"
-          class="ion-padding-start ion-padding-end ion-padding-bottom">
-          <ion-item class="item-bottom-border choice-item"
-            *ngFor="let choice of question.choices"
-            lines="none"
-            [ngClass]="{'mobile-choice': isMobile}"
-            (mouseenter)="onChoiceHover(question.id, choice.id)"
-            (mouseleave)="onChoiceLeave()"
-            (focus)="onChoiceHover(question.id, choice.id)"
-            (blur)="onChoiceLeave()">
-            <ion-radio [value]="choice.id"
-              [attr.aria-label]="choice.name"
-              labelPlacement="end"
-              slot="start"
-              mode="md">
-              <div class="choice-title-container">
-                <span [innerHTML]="choice.name"></span>
-              </div>
-              <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
-                class="choice-description body-3 ion-margin-top animate-fade-in"
-                [innerHTML]="choice.description"></p>
-            </ion-radio>
-          </ion-item>
-        </ion-radio-group>
+          <ion-radio-group
+            [formControlName]="question.id"
+            role="radiogroup"
+            [attr.aria-labelledby]="'fast-feedback-question-' + question.id"
+            class="ion-padding-start ion-padding-end ion-padding-bottom">
+            <ion-item class="item-bottom-border choice-item"
+              *ngFor="let choice of question.choices"
+              lines="none"
+              [ngClass]="{'mobile-choice': isMobile}"
+              (mouseenter)="onChoiceHover(question.id, choice.id)"
+              (mouseleave)="onChoiceLeave()"
+              (focus)="onChoiceHover(question.id, choice.id)"
+              (blur)="onChoiceLeave()">
+              <ion-radio [value]="choice.id"
+                [attr.aria-label]="choice.name"
+                labelPlacement="end"
+                slot="start"
+                mode="md">
+                <div class="choice-title-container">
+                  <span [innerHTML]="choice.name"></span>
+                </div>
+                <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
+                  class="choice-description body-3 ion-margin-top animate-fade-in"
+                  [innerHTML]="choice.description"></p>
+              </ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </fieldset>
       </ion-card>
 
       <div *ngIf="showPagination"

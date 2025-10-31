@@ -35,7 +35,7 @@
     <p class="subtitle-1 gray-2" i18n>{{ memberList.length }} Members</p>
     <ng-container *ngIf="loadingMembers">
       <div class="ion-text-center">
-        <ion-spinner></ion-spinner>
+        <ion-spinner role="status" aria-live="polite" aria-label="Loading members"></ion-spinner>
       </div>
     </ng-container>
     <ng-container *ngIf="!loadingMembers">
@@ -44,7 +44,7 @@
           <ng-container *ngFor="let member of memberList">
             <ion-item *ngIf="member">
               <ion-avatar slot="start">
-                <img [src]="member.avatar" [alt]="member.name">
+                <img [src]="member.avatar" [attr.alt]="member.name + ' avatar'">
               </ion-avatar>
               <ion-label>
                 <p class="subtitle-1 black" [innerHTML]="member.name"></p>

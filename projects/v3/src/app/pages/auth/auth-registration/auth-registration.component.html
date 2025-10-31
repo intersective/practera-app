@@ -26,33 +26,34 @@
         </ion-input>
         <ion-list margin>
           <ion-item *ngIf="!hide_password">
-            <ion-input name="password"
-              aria-label="password"
+            <ion-label position="stacked" for="register-password">Set up Practera password *</ion-label>
+            <ion-input
+              id="register-password"
+              name="password"
               [(ngModel)]="password"
-              inputmode="password"
               formControlName="password"
-              autocomplete="on" required
+              autocomplete="new-password"
+              required
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Set up Practera password*"
               i18n-placeholder>
-              <p id="setup-password" class="for-accessibility" i18n>setup practera password</p>
             </ion-input>
-            <ion-button mode="ios" (click)="showPassword = !showPassword" fill="clear">
-              <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
+            <ion-button mode="ios" (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+              <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
             </ion-button>
           </ion-item>
           <ion-item *ngIf="!hide_password" lines="none">
-            <ion-input name="confirmPassword"
-              aria-label="confirm password"
+            <ion-label position="stacked" for="register-confirm-password">Confirm password *</ion-label>
+            <ion-input
+              id="register-confirm-password"
+              name="confirmPassword"
               [(ngModel)]="confirmPassword"
-              inputmode="password"
               formControlName="confirmPassword"
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Confirm password"
               i18n-placeholder
-              autocomplete="on"
+              autocomplete="new-password"
               required>
-              <p id="confirm-password" class="for-accessibility" i18n>confirm password</p>
             </ion-input>
           </ion-item>
         </ion-list>
@@ -103,15 +104,16 @@
           <ion-list margin lines="none">
             <ion-item>
               <ion-label class="body-2" position="fixed" i18n>Password</ion-label>
-              <ion-input name="password"
-                aria-label="password"
+              <ion-input
+                id="directlink-password"
+                name="password"
                 [(ngModel)]="password"
-                inputmode="password"
-                autocomplete="on"
-                [type]="showPassword ? 'text' : 'password'" placeholder="Optional">
+                autocomplete="new-password"
+                [type]="showPassword ? 'text' : 'password'"
+                placeholder="Optional">
               </ion-input>
-              <ion-button (click)="showPassword = !showPassword" fill="clear">
-                <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" [attr.aria-label]="showPassword ? 'Password shown in plaintext' : 'Password hidden'"></ion-icon>
+              <ion-button (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
               </ion-button>
             </ion-item>
           </ion-list>
