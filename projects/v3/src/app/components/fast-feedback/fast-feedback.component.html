@@ -121,7 +121,7 @@
               <ng-container *ngIf="!loading"
                 i18n>Submit</ng-container>
               <ng-container *ngIf="loading && !submissionCompleted">
-                <ion-spinner name="dots"></ion-spinner>
+                <ion-spinner name="dots" role="status"></ion-spinner>
               </ng-container>
               <ng-container *ngIf="loading && submissionCompleted">
                 <ion-icon src="./assets/checkmark.svg"></ion-icon>
@@ -141,7 +141,7 @@
           <ng-container *ngIf="!loading"
             i18n>Submit</ng-container>
           <ng-container *ngIf="loading && !submissionCompleted">
-            <ion-spinner name="dots"></ion-spinner>
+            <ion-spinner name="dots" role="status"></ion-spinner>
           </ng-container>
           <ng-container *ngIf="loading && submissionCompleted">
             <ion-icon src="./assets/checkmark.svg"></ion-icon>

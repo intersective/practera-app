@@ -155,6 +155,7 @@
                 <span class="required-mark"
                   [ngClass]="{'contrast': isRedColor}"
                   *ngIf="shouldShowRequiredIndicator(question)"
+                  aria-label="required"
                 >&nbsp;*</span>
               </ion-label>
 
@@ -183,7 +184,7 @@
             <ng-container *ngIf="question"
               [ngSwitch]="question.type">
               <div class="tick-container">
-                <ion-spinner name="dots"
+                <ion-spinner name="dots" role="status"
                   class="tick-icon"
                   style="max-width: 16px; max-height: 16px;"
                   *ngIf="autosaving()[question.id]"

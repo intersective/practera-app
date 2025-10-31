@@ -113,7 +113,8 @@
                   [appToggleLabel]="onLabelToggleReview"
                   [toggleId]="choice.id"
                   [toggleDisabled]="control.disabled"
-                  >
+                  role="button"
+                  tabindex="0">
                 </span>
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id" style="margin: 0; padding: 0;">
                   <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>
