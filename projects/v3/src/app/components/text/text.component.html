@@ -46,7 +46,7 @@
       i18n-placeholder
     ></ion-textarea>
     <ion-text *ngFor="let error of errors" color="danger">
-      <p>{{error}}</p>
+      <p role="alert" aria-live="polite">{{error}}</p>
     </ion-text>
   </div>
 </ng-container>
