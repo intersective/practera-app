@@ -306,6 +306,10 @@ export class ActivityDesktopPage {
     }
 
     this.activity = res;
+    // Set page title when activity is loaded
+    if (res?.name) {
+      this.utils.setPageTitle(`${res.name} - Practera`);
+    }
   }
 
   /**
