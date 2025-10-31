@@ -255,6 +255,7 @@ export class AssessmentComponent extends RouterEnter {
         result => {
           this.assessment = result.assessment;
           this.newRelic.setPageViewName(`Assessment: ${this.assessment.name} ID: ${this.id}`);
+          this.title.setTitle(`${this.assessment.name} - Practera`);
           this.populateQuestionsForm();
           this.loadingAssessment = false;
           this._handleSubmissionData(result.submission);
