@@ -107,7 +107,7 @@
     </div>
 
     <form [formGroup]="questionsForm" id="formgroup" #form aria-label="Assessment form" i18n-aria-label novalidate>
-      <ng-container *ngFor="let group of assessment.groups; let groupIndex = index">
+      <ng-container *ngFor="let group of pagedGroups; let groupIndex = index">
         <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}" role="group" [attr.aria-labelledby]="'group-heading-' + groupIndex">
           <h3 [id]="'group-heading-' + groupIndex" [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
           <ion-text color="dark" class="ion-text-left">
@@ -133,7 +133,7 @@
                 <span [innerHTML]="question.name"></span>
                 <span class="required-mark"
                   [ngClass]="{'contrast': isRedColor}"
-                  *ngIf="question.isRequired"
+                  *ngIf="shouldShowRequiredIndicator(question)"
                   aria-label="required" i18n-aria-label
                 >&nbsp;*</span>
               </ion-label>

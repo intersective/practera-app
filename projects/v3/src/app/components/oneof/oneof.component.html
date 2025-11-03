@@ -85,7 +85,7 @@
 
 <ng-container *ngIf="doReview">
   <div class="ion-no-padding">
-    <fieldset [attr.aria-labelledby]="'oneof-question-review-legend-' + question.id" *ngIf="question.canAnswer">
+    <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id" *ngIf="question.canAnswer">
       <legend class="for-accessibility" [id]="'oneof-question-review-legend-' + question.id">{{ question.name }}</legend>
       <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
         <ion-radio-group
