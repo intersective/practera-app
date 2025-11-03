@@ -2,7 +2,6 @@
   role="group"
   [attr.aria-label]="isMentor ? 'Team progress indicators' : 'Progress indicators'"
   i18n-aria-label>
-  <!-- Learner view -->
   <ng-container *ngIf="!isMentor">
     <ion-chip
       *ngFor="let group of learnerGroups"

@@ -1,5 +1,3 @@
-<h3 class="for-accessibility" [id]="'oneof-question-' + question.id">{{question.name}}</h3>
-
 <ng-container *ngIf="isDisplayOnly">
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
@@ -95,7 +93,7 @@
           [value]="review.answer"
           (ionChange)="onChange(answerEle.value, 'answer')"
           role="radiogroup"
-          [attr.aria-labelledby]="'oneof-question-' + question.id">
+          [attr.aria-labelledby]="'oneof-question-review-legend-' + question.id">
           <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
             <ion-label class="subtitle-2 black" i18n>Your Answer is</ion-label>
           </ion-list-header>

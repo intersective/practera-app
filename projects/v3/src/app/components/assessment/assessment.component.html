@@ -197,9 +197,18 @@
                 <ion-item *ngIf="!doAssessment && (
                   (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
                   (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
-                )" class="no-answers item-bottom-border" lines="none" role="note">
-                  <ion-icon slot="start" color="orange" name="information-circle-outline" class="ion-margin-end" aria-hidden="true"></ion-icon>
-                  <ion-label size="small" i18n>No answer for this question.</ion-label>
+                )"
+                  class="no-answers item-bottom-border"
+                  lines="none"
+                  role="note">
+                  <ion-icon slot="start"
+                    color="orange"
+                    name="information-circle-outline"
+                    class="ion-margin-end"
+                    aria-hidden="true"
+                  ></ion-icon>
+                  <ion-label size="small"
+                    i18n>No answer for this question.</ion-label>
                 </ion-item>
               </ng-container>
 
