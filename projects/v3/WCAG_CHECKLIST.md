@@ -58,8 +58,8 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [ ] **TODO**: Verify no single key shortcuts that aren't configurable or can be turned off
 
 #### 2.4.1 Bypass Blocks (Level A)
-- [x] Skip navigation links to main content and navigation implemented (app.component.html)
-- [x] Main content has id="main-content" (ion-router-outlet)
+- [!] Skip navigation links to main content and navigation implemented (app.component.html) - Current implementation: Conflicts with Angular routing’s hash handling.
+- [!] Main content has id="main-content" (ion-router-outlet) - Current implementation: Conflicts with Angular routing’s hash handling.
 
 #### 2.4.2 Page Titled (Level A)
 - [x] Home page sets title via utils.setPageTitle()
