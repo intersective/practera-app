@@ -88,6 +88,46 @@ ion-item-divider {
   }
 }
 
+// WCAG 2.4.13 Focus Appearance (Minimum) - Level AA
+// Focus indicators must be at least 2px and meet 3:1 contrast ratio
+*:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+// Ensure focus is visible on all interactive elements
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible,
+ion-button:focus-visible,
+ion-item:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+// Focus styles for Ionic components
+ion-button:focus-visible {
+  --background-focused: var(--ion-color-primary);
+  --color-focused: var(--ion-color-primary-contrast);
+}
+
+// Ensure focus is not obscured (WCAG 2.4.11)
+ion-modal {
+  --backdrop-opacity: 0.4;
+}
+
+// Ensure focus indicators meet contrast requirements
+.focusable:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
 .icon-button {
   background: none;
   border: none;
@@ -95,6 +135,8 @@ ion-item-divider {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  min-height: 24px; // WCAG 2.5.8 Target Size
+  min-width: 24px;
 
   &:focus {
     outline: 2px solid var(--ion-color-primary);

@@ -34,7 +34,7 @@
             i18n>Experience Details</h2>
           <ng-container *ngIf="experience">
             <img [src]="experience.leadImage"
-              [alt]="experience.name" />
+              [alt]="experience.name || 'Experience lead image'" />
             <ion-progress-bar *ngIf="experienceProgress >= 0"
               color="primary"
               [value]="experienceProgress / 100"

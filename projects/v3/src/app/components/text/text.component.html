@@ -25,7 +25,7 @@
       [autoGrow]="true"
       [value]="review.comment"
       [disabled]="true"
-      aria-label="Expert feedback" i18n-aria-label
+      aria-label="Reviewer feedback" i18n-aria-label
       readonly
     ></ion-textarea>
   </ng-container>
@@ -78,7 +78,7 @@
       <div [class]="{'ion-padding-top': question.reviewerOnly}">
         <ion-textarea
           [autoGrow]="true"
-          [attr.aria-label]="'Expert answer'" i18n-aria-label
+          [attr.aria-label]="'Reviewer answer'" i18n-aria-label
           *ngIf="question.canAnswer"
           class="textarea"
           rows="4"
@@ -102,7 +102,7 @@
 
       <ion-textarea
         [autoGrow]="true"
-        [attr.aria-label]="'Expert review feedback'" i18n-aria-label
+        [attr.aria-label]="'Reviewer feedback'" i18n-aria-label
         *ngIf="question.canComment && submission?.answer"
         class="textarea"
         [(ngModel)]="comment"
