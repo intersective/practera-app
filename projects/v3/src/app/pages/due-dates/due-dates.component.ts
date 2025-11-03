@@ -36,7 +36,7 @@ export class DueDatesComponent implements OnDestroy, OnInit {
   ) { }
 
   ngOnInit() {
-    this.utils.setPageTitle('Due Dates - Practera');
+    this.utilsService.setPageTitle('Due Dates - Practera');
     // improved: no need for manual subscription, handle in observable pipeline
     this.filteredAssessments$ = combineLatest([
       this.assessments$,
