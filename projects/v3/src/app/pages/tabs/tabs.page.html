@@ -1,35 +1,41 @@
 <ion-tabs #tabs (ionTabsDidChange)="setCurrentTab()">
   <ion-tab-bar slot="bottom" *ngIf="hasLeftSidebar !== true">
     <ion-tab-button class="tab-item" tab="home"
-      [ngClass]="{'selected': selectedTab === 'home'}">
-      <ion-icon name="home"></ion-icon>
+      [ngClass]="{'selected': selectedTab === 'home'}"
+      aria-label="Home" i18n-aria-label>
+      <ion-icon name="home" aria-hidden="true"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="events"
-      [ngClass]="{'selected': selectedTab === 'events'}" *ngIf="showEvents">
-      <ion-icon name="today"></ion-icon>
+      [ngClass]="{'selected': selectedTab === 'events'}" *ngIf="showEvents"
+      aria-label="Events" i18n-aria-label>
+      <ion-icon name="today" aria-hidden="true"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="reviews"
-      [ngClass]="{'selected': selectedTab === 'reviews'}" *ngIf="reviews && reviews.length">
-      <ion-icon name="eye"></ion-icon>
-      <ion-badge color="danger" *ngIf="badges.review > 0">{{ badges.review }}</ion-badge>
+      [ngClass]="{'selected': selectedTab === 'reviews'}" *ngIf="reviews && reviews.length"
+      [attr.aria-label]="'Reviews' + (badges.review > 0 ? ', ' + badges.review + ' unread' : '')" i18n-aria-label>
+      <ion-icon name="eye" aria-hidden="true"></ion-icon>
+      <ion-badge color="danger" *ngIf="badges.review > 0" aria-hidden="true">{{ badges.review }}</ion-badge>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="messages" *ngIf="showMessages === true"
-      [ngClass]="{'selected': selectedTab === 'messages'}" >
-      <ion-icon name="mail"></ion-icon>
-      <ion-badge color="danger" *ngIf="badges.chat > 0">{{ badges.chat }}</ion-badge>
+      [ngClass]="{'selected': selectedTab === 'messages'}"
+      [attr.aria-label]="'Messages' + (badges.chat > 0 ? ', ' + badges.chat + ' unread' : '')" i18n-aria-label>
+      <ion-icon name="mail" aria-hidden="true"></ion-icon>
+      <ion-badge color="danger" *ngIf="badges.chat > 0" aria-hidden="true">{{ badges.chat }}</ion-badge>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="due-dates"
-      [ngClass]="{'selected': selectedTab === 'dueStatus'}">
-      <ion-icon name="alarm"></ion-icon>
+      [ngClass]="{'selected': selectedTab === 'dueStatus'}"
+      aria-label="Due Status" i18n-aria-label>
+      <ion-icon name="alarm" aria-hidden="true"></ion-icon>
     </ion-tab-button>
 
     <ion-tab-button class="tab-item" tab="settings"
-      [ngClass]="{'selected': selectedTab === 'settings'}">
-      <ion-icon name="settings"></ion-icon>
+      [ngClass]="{'selected': selectedTab === 'settings'}"
+      aria-label="Settings" i18n-aria-label>
+      <ion-icon name="settings" aria-hidden="true"></ion-icon>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
