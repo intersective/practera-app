@@ -170,12 +170,14 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
 
 #### 2.4.4 Link Purpose (In Context) (Level A)
 - **Conformance Level:** Supports
-- **Remarks:** The purpose of each link can be determined from the link text or context. All links have descriptive text or aria-label. Icon-only links have aria-label. Fixed "Powered by" link to have aria-label in auth-login component. Added aria-labels to fast-feedback pagination buttons ("Go to page X").
+- **Remarks:** The purpose of each link can be determined from the link text or context. All links have descriptive text or aria-label. Icon-only links have aria-label. Fixed "Powered by" link to have aria-label in auth-login component. Added aria-labels to fast-feedback pagination buttons ("Go to page X"). Fixed navigation menu to use proper semantic `<a>` tags instead of `ion-item` with `routerLink` directive - this ensures links are properly announced to screen readers. Added aria-labels to navigation links with badge counts (e.g., "Messages, 3 unread").
 - **Supporting Features:**
   - All links have descriptive text or aria-label (verified in auth pages, navigation)
   - Icon-only links have aria-label (verified in chat, home page, and other components)
   - Fixed "Powered by" link to have aria-label
   - Added aria-labels to fast-feedback pagination buttons
+  - Navigation menu uses semantic `<a>` tags with proper ARIA labels
+  - Navigation links include badge information in aria-labels for screen reader users
 
 ### Guideline 3.1: Readable
 
@@ -217,18 +219,19 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
 
 #### 4.1.1 Parsing (Level A)
 - **Conformance Level:** Supports
-- **Remarks:** Use valid, error-free HTML, including unique (non-duplicate) element IDs. Fixed all duplicate IDs: experiences-heading (renamed mobile version to experiences-heading-mobile), message-content (now uses dynamic IDs: message-content-${message.uuid}), login-desc (consolidated into single span), task-content (renamed to task-content-assessment and task-content-topic), main-content (renamed v3.page.html router-outlet to main-content-router). All IDs are now unique across pages. Verified via browser testing - duplicate ID fix confirmed in code (staging site will reflect fix after deployment).
+- **Remarks:** Use valid, error-free HTML, including unique (non-duplicate) element IDs. Fixed all duplicate IDs: experiences-heading (renamed mobile version to experiences-heading-mobile), message-content (now uses dynamic IDs: message-content-${message.uuid}), login-desc (consolidated into single span), task-content (renamed to task-content-assessment and task-content-topic), main-content (renamed v3.page.html router-outlet to main-content-router), chatroom-name (now uses dynamic IDs: chatroom-name-${i}). All IDs are now unique across pages. Verified via browser testing - duplicate ID fix confirmed in code (staging site will reflect fix after deployment).
 - **Supporting Features:**
   - Fixed duplicate heading IDs
   - Fixed message-content duplicate IDs (using dynamic UUIDs)
   - Fixed login-desc duplicate
   - Fixed task-content duplicate
   - Fixed main-content duplicate (renamed nested router-outlet)
+  - Fixed chatroom-name duplicate IDs in chat-list component (using dynamic index-based IDs)
 - **Verification:** Browser testing on staging shows duplicate exists (expected - fix not yet deployed). Code verified - all duplicates resolved.
 
 #### 4.1.2 Name, Role, Value (Level A)
 - **Conformance Level:** Supports
-- **Remarks:** For all UI components, the name, value, and role can be programmatically determined. Form inputs have proper labels (ion-label with for attribute). ARIA attributes used where appropriate (aria-label, aria-live, role). Fast-feedback modal has proper role="dialog", aria-label on header. Tooltips have role="tooltip" and aria-live="polite". Error messages use role="alert" and aria-live="assertive". Verified via browser testing - all 21 interactive elements on home page have accessible names.
+- **Remarks:** For all UI components, the name, value, and role can be programmatically determined. Form inputs have proper labels (ion-label with for attribute). ARIA attributes used where appropriate (aria-label, aria-live, role). Fast-feedback modal has proper role="dialog", aria-label on header. Tooltips have role="tooltip" and aria-live="polite". Error messages use role="alert" and aria-live="assertive". Verified via browser testing - all 21 interactive elements on home page have accessible names. Fixed navigation menu links to use semantic `<a>` tags instead of `ion-item` with `routerLink` - this ensures proper role announcement by screen readers (links announced as "link" not "button"). Added proper focus styles to navigation links (2px outline on focus-visible).
 - **Supporting Features:**
   - Form inputs have proper labels (ion-label with for attribute)
   - ARIA attributes used where appropriate (aria-label, aria-live, role)
@@ -236,6 +239,8 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
   - Tooltips have role="tooltip" and aria-live="polite"
   - Error messages use role="alert" and aria-live="assertive"
   - All interactive elements have accessible names (verified via browser testing)
+  - Navigation links use semantic HTML (`<a>` tags) with proper roles and ARIA labels
+  - Focus styles implemented for navigation links (2px outline with offset)
 - **Verification:** Browser testing confirmed all interactive elements have accessible names (0 elements without names found on home page).
 
 ---

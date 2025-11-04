@@ -131,7 +131,28 @@ ion-item-divider {
 }
 
 .menu-item {
-  --padding-start: 20px;
+  --padding-start: 0px;
+
+  // Menu link styling for accessibility
+  a.menu-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:focus {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: -2px;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: -2px;
+    }
+  }
 
   ion-icon {
     // margin-left: 4px;
@@ -140,9 +161,14 @@ ion-item-divider {
   }
 
   &.selected {
-    --padding-start: 17px;
+    --padding-start: 0px;
     border-left: 3px solid;
     border-left-color: var(--ion-color-primary);
+    
+    a.menu-link {
+      padding-left: 17px;
+    }
+
     ion-icon {
       color: var(--ion-color-primary);
     }
