@@ -22,8 +22,8 @@
         aria-hidden="true">
         <img [src]="chat.avatar" alt="chat room avatar">
       </ion-avatar>
-      <ion-label class="chat-item-label" aria-describedby="chatroom-name">
-        <div class="chat-name-container caption" id="chatroom-name"
+      <ion-label class="chat-item-label" [attr.aria-describedby]="'chatroom-name-' + i">
+        <div class="chat-name-container caption" [attr.id]="'chatroom-name-' + i"
           [attr.aria-label]="'chatroom: ' + chat.name">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}" [innerHTML]="chat.name"></p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">

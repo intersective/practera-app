@@ -5,9 +5,9 @@
   tabindex="0"
   role="button">
   <p class="label" [title]="video?.fileObject?.filename" [innerHTML]="video?.fileObject?.filename"></p>
-  <div id="inner-box">
+  <div [attr.id]="'inner-box-video-' + video?.fileObject?.uuid">
     <p>
-      <ion-icon name="play-circle"></ion-icon>
+      <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
     </p>
   </div>
 </div>
