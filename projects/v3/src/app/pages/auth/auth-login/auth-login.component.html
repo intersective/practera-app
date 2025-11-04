@@ -50,8 +50,10 @@
           [attr.aria-describedby]="'login-desc'"
           (keydown)="login($event)"
           >
-          <ng-container *ngIf="!isLoggingIn" id="login-desc" i18n>LOGIN</ng-container>
-          <ng-container *ngIf="isLoggingIn" id="login-desc" i18n>LOGGING IN...</ng-container>
+          <span id="login-desc" [attr.aria-live]="'polite'">
+            <ng-container *ngIf="!isLoggingIn" i18n>LOGIN</ng-container>
+            <ng-container *ngIf="isLoggingIn" i18n>LOGGING IN...</ng-container>
+          </span>
         </ion-button>
       </form>
     </div>
@@ -59,7 +61,7 @@
       <a routerLink="/auth/forgot_password" class="subtitle-2" i18n>Problem signing in?</a>
     </div>
     <div>
-      <a i18n>Powered by</a><img src="./assets/logo.svg" height="25" class="img-inline" alt="Practera">
+      <a aria-label="Practera - powered by Practera" i18n-aria-label i18n>Powered by</a><img src="./assets/logo.svg" height="25" class="img-inline" alt="Practera">
     </div>
   </main>
 </ion-content>
