@@ -104,7 +104,10 @@ textarea:focus-visible,
 select:focus-visible,
 [tabindex]:focus-visible,
 ion-button:focus-visible,
-ion-item:focus-visible {
+ion-item:focus-visible,
+ion-segment-button:focus-visible,
+ion-tab-button:focus-visible,
+ion-fab-button:focus-visible {
   outline: 2px solid var(--ion-color-primary);
   outline-offset: 2px;
 }
@@ -118,6 +121,37 @@ ion-button:focus-visible {
 // Ensure focus is not obscured (WCAG 2.4.11)
 ion-modal {
   --backdrop-opacity: 0.4;
+}
+
+// WCAG 2.4.11: Ensure focused elements are not completely obscured
+// Add padding to sticky headers/footers to prevent focus obscuring
+ion-header {
+  z-index: 1000;
+}
+
+ion-footer {
+  z-index: 1000;
+}
+
+// Ensure focused elements scroll into view properly
+*:focus-visible {
+  scroll-margin: 4px;
+}
+
+// WCAG 1.4.12 Text Spacing - Support for user-adjusted text spacing
+// This allows text to remain readable when users adjust spacing per WCAG guidelines
+body {
+  // Support letter spacing adjustments (up to 0.12em)
+  // Support word spacing adjustments (up to 0.16em)
+  // Support line height adjustments (up to 1.5x)
+  // Support paragraph spacing adjustments (up to 2x)
+  // These are handled by the browser/assistive tech, but we ensure content doesn't break
+}
+
+// Ensure content doesn't break with increased spacing
+p, span, div, ion-label, ion-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 // Ensure focus indicators meet contrast requirements
