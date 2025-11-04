@@ -62,7 +62,7 @@
           </ng-container>
 
           <ng-container *ngIf="message.message || !message.file">
-            <quill-view-html id="message-content"
+            <quill-view-html [id]="'message-content-' + message.uuid"
               [content]="message?.message"
               [sanitize]="true"
               tabindex="0"
@@ -72,15 +72,15 @@
           <ng-container *ngIf="message?.file?.type">
             <ng-container *ngIf="message?.file?.type?.includes('video')">
               <ng-container *ngIf="message?.file?.type === 'video/mp4'; else nonMp4Format">
-                <div id="message-content" class="label"
+                <div [id]="'message-content-file-' + message.uuid" class="label"
                   (click)="preview(message.file)"
                   (keydown)="preview(message.file, $event)"
                   tabindex="0"
                   role="button">
                   <p class="label" [innerHTML]="message.file.name"></p>
-                  <div id="inner-box">
+                  <div [attr.id]="'inner-box-' + message.uuid">
                     <p>
-                      <ion-icon name="play-circle"></ion-icon>
+                      <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
                     </p>
                   </div>
                 </div>
@@ -97,6 +97,7 @@
                 (keydown)="preview(message.file, $event)"
                 tabindex="0"
                 role="button"
+                [attr.aria-label]="'Preview image: ' + (message.file?.name || 'image')"
               ></div>
             </ng-container>
 
@@ -134,8 +135,9 @@
 
   <ng-container *ngIf="hasUnreadMessages">
     <ion-fab class="scroll-to-bottom" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="autoScrollToBottom()">
-        <ion-icon name="arrow-down"></ion-icon>
+      <ion-fab-button (click)="autoScrollToBottom()"
+        aria-label="Scroll to bottom" i18n-aria-label>
+        <ion-icon name="arrow-down" aria-hidden="true"></ion-icon>
       </ion-fab-button>
     </ion-fab>
   </ng-container>
