@@ -17,21 +17,25 @@
           *ngFor="let p of appPages; let i = index">
           <ion-item class="menu-item tooltip"
             *ngIf="isVisible(p.code)"
-            (keydown)="keyboardNavigate(p.url, $event)"
-            [routerLink]="p.url"
             routerLinkActive="selected"
-            routerDirection="root"
             detail="false"
-            [title]="p.title">
-            <div class="badge-wrapper icon-container">
-              <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
-              <ion-badge color="danger" class="hint" *ngIf="p.badges > 0">{{p.badges}}</ion-badge>
-              <span class="notification-dot" [class.hidden]="!p.hasNotification"></span>
-            </div>
+            [title]="p.title"
+            lines="none">
+            <a [routerLink]="p.url"
+               routerDirection="root"
+               (keydown)="keyboardNavigate(p.url, $event)"
+               [attr.aria-label]="p.title + (p.badges > 0 ? ', ' + p.badges + ' unread' : '')"
+               class="menu-link">
+              <div class="badge-wrapper icon-container">
+                <ion-icon slot="start" [name]="p.icon" aria-hidden="true" class="indicator"></ion-icon>
+                <ion-badge color="danger" class="hint" *ngIf="p.badges > 0" aria-hidden="true">{{p.badges}}</ion-badge>
+                <span class="notification-dot" [class.hidden]="!p.hasNotification"></span>
+              </div>
 
-            <ion-label class="body-2 black">
-              {{p.title}}
-            </ion-label>
+              <ion-label class="body-2 black">
+                {{p.title}}
+              </ion-label>
+            </a>
           </ion-item>
         </ion-menu-toggle>
 
@@ -47,12 +51,17 @@
         <ion-item-divider mode="md"></ion-item-divider>
 
         <ion-item class="menu-item tooltip"
-          (keydown)="keyboardNavigate('/experiences', $event)"
-          routerLink="/experiences"
-          routerDirection="root"
-          detail="false" [title]="i18nText.myExperience">
-          <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
-          <ion-label class="body-2 black">{{i18nText.myExperience}}</ion-label>
+          detail="false" 
+          [title]="i18nText.myExperience"
+          lines="none">
+          <a routerLink="/experiences"
+             routerDirection="root"
+             (keydown)="keyboardNavigate('/experiences', $event)"
+             [attr.aria-label]="i18nText.myExperience"
+             class="menu-link">
+            <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
+            <ion-label class="body-2 black">{{i18nText.myExperience}}</ion-label>
+          </a>
         </ion-item>
       </ion-list>
 
