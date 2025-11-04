@@ -219,7 +219,7 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
 
 #### 4.1.1 Parsing (Level A)
 - **Conformance Level:** Supports
-- **Remarks:** Use valid, error-free HTML, including unique (non-duplicate) element IDs. Fixed all duplicate IDs: experiences-heading (renamed mobile version to experiences-heading-mobile), message-content (now uses dynamic IDs: message-content-${message.uuid}), login-desc (consolidated into single span), task-content (renamed to task-content-assessment and task-content-topic), main-content (renamed v3.page.html router-outlet to main-content-router), chatroom-name (now uses dynamic IDs: chatroom-name-${i}). All IDs are now unique across pages. Verified via browser testing - duplicate ID fix confirmed in code (staging site will reflect fix after deployment).
+- **Remarks:** Use valid, error-free HTML, including unique (non-duplicate) element IDs. Fixed all duplicate IDs: experiences-heading (renamed mobile version to experiences-heading-mobile), message-content (now uses dynamic IDs: message-content-${message.uuid}), login-desc (consolidated into single span), task-content (renamed to task-content-assessment and task-content-topic), main-content (renamed v3.page.html router-outlet to main-content-router), chatroom-name (now uses dynamic IDs: chatroom-name-${i}), inner-box (now uses dynamic IDs: inner-box-${message.uuid} and inner-box-video-${video.uuid}). All IDs are now unique across pages. CSS updated to use attribute selectors `[id^="inner-box"]` instead of ID selectors to support dynamic IDs. Verified via browser testing - duplicate IDs found on staging (12 chatroom-name, 2 inner-box) and fixed in code.
 - **Supporting Features:**
   - Fixed duplicate heading IDs
   - Fixed message-content duplicate IDs (using dynamic UUIDs)
@@ -227,7 +227,9 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
   - Fixed task-content duplicate
   - Fixed main-content duplicate (renamed nested router-outlet)
   - Fixed chatroom-name duplicate IDs in chat-list component (using dynamic index-based IDs)
-- **Verification:** Browser testing on staging shows duplicate exists (expected - fix not yet deployed). Code verified - all duplicates resolved.
+  - Fixed inner-box duplicate IDs in video components (using dynamic UUID-based IDs)
+  - Updated CSS to use attribute selectors for dynamic IDs
+- **Verification:** Browser testing on staging found duplicate IDs (12 chatroom-name, 2 inner-box). Code verified - all duplicates resolved.
 
 #### 4.1.2 Name, Role, Value (Level A)
 - **Conformance Level:** Supports
