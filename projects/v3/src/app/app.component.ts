@@ -250,4 +250,55 @@ export class AppComponent implements OnInit, OnDestroy {
       this.storage.set("fastFeedbackOpening", false);
     }
   }
+
+  /**
+   * Handle skip link clicks for WCAG 2.4.1 compliance
+   * Moves focus to the target element or first focusable element within it
+   */
+  handleSkipLink(event: Event, targetId: string): void {
+    event.preventDefault();
+    const target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+
+    // Try to find first focusable element within target
+    const focusableSelectors = [
+      'a[href]',
+      'button:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+      '[contenteditable="true"]'
+    ].join(', ');
+
+    const focusableElements = target.querySelectorAll(focusableSelectors);
+    const firstFocusable = Array.from(focusableElements).find(
+      (el: any) => {
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      }
+    ) as HTMLElement;
+
+    // Focus first focusable element, or the target itself if it can receive focus
+    if (firstFocusable) {
+      firstFocusable.focus();
+      firstFocusable.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (target instanceof HTMLElement) {
+      // Make target focusable temporarily and focus it
+      const originalTabIndex = target.getAttribute('tabindex');
+      target.setAttribute('tabindex', '-1');
+      target.focus();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Restore original tabindex after a brief delay
+      setTimeout(() => {
+        if (originalTabIndex !== null) {
+          target.setAttribute('tabindex', originalTabIndex);
+        } else {
+          target.removeAttribute('tabindex');
+        }
+      }, 100);
+    }
+  }
 }
