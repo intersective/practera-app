@@ -595,6 +595,6 @@ For questions or concerns regarding accessibility, please contact:
 ---
 
 **Document Version:** 1.0  
-**Last Updated:** January 2025  
-**Next Review Date:** July 2025
+**Last Updated:** November 2025  
+**Next Review Date:** November 2026
 
