@@ -1,8 +1,8 @@
 # WCAG 2.2 Remediation Plan
-## Practera App V3
+## Practera App
 
 **Document Version:** 1.0  
-**Date:** January 2025  
+**Date:** November 2025  
 **Status:** Active Remediation Required
 
 ---
@@ -665,6 +665,6 @@ For questions about this remediation plan, contact:
 
 ---
 
-**Last Updated:** January 2025  
-**Next Review:** February 2025
+**Last Updated:** November 2025  
+**Next Review:** November 2026
 
