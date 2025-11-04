@@ -89,6 +89,8 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] All links have descriptive text or aria-label (verified in auth pages, navigation)
 - [x] Icon-only links have aria-label (verified in chat, home page, and other components)
 - [x] **COMPLETED**: Added aria-labels to fast-feedback pagination buttons ("Go to page X")
+- [x] **COMPLETED**: Fixed navigation menu links to use proper `<a>` tags instead of `ion-item` with `routerLink` (v3.page.html)
+- [x] **COMPLETED**: Added aria-labels to navigation links with badge counts (e.g., "Messages, 3 unread")
 
 #### 2.4.5 Multiple Ways (Level AA)
 - [x] Navigation menu provides multiple ways to access content
@@ -203,6 +205,7 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
   - Fixed `login-desc` duplicate in auth-login (consolidated into single span)
   - Fixed `task-content` duplicate in activity-desktop (renamed to `task-content-assessment` and `task-content-topic`)
   - Fixed `main-content` duplicate (renamed v3.page.html router-outlet to `main-content-router`)
+  - Fixed `chatroom-name` duplicate in chat-list (now uses dynamic IDs: `chatroom-name-${i}`)
 - [x] All IDs are now unique across pages
 
 #### 4.1.2 Name, Role, Value (Level A)
@@ -211,11 +214,14 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **VERIFIED**: Fast-feedback modal has proper role="dialog", aria-label on header
 - [x] **VERIFIED**: Tooltips have role="tooltip" and aria-live="polite"
 - [x] **VERIFIED**: Error messages use role="alert" and aria-live="assertive"
+- [x] **COMPLETED**: Fixed navigation links to use semantic `<a>` tags instead of `ion-item` with `routerLink`
+- [x] **COMPLETED**: Added proper focus styles to navigation links (2px outline on focus-visible)
 - [ ] **RETEST**: After merge, verify:
   1. All modals have role="dialog" and aria-label
   2. All custom components announce correct roles to screen readers
   3. All interactive elements have accessible names (text content, aria-label, or aria-labelledby)
   4. Test with screen reader - verify roles and names are announced correctly
+  5. Verify navigation links are properly announced by screen readers as links (not just buttons)
 
 #### 4.1.3 Status Messages (Level AA)
 - [x] Loading states have role="status" and aria-live="polite" (assessment component)
