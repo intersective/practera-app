@@ -166,12 +166,40 @@ ion-item-divider {
     * {
       pointer-events: none;
     }
+
+    // Hide ion-label visually but keep it accessible to screen readers
+    ion-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
   }
 
   ion-icon {
     // margin-left: 4px;
     margin-right: 20px;
     color: var(--ion-color-primary);
+  }
+
+  // For menu items without a.menu-link (like Settings), hide ion-label for screen readers only
+  &:not(:has(a.menu-link)) {
+    ion-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
   }
 
   &.selected {
