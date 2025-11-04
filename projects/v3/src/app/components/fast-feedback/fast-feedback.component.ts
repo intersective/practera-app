@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -25,7 +25,7 @@ export interface Meta {
   templateUrl: "./fast-feedback.component.html",
   styleUrls: ["./fast-feedback.component.scss"],
 })
-export class FastFeedbackComponent implements OnInit {
+export class FastFeedbackComponent implements OnInit, OnDestroy {
   fastFeedbackForm: FormGroup;
   loading = false;
   submissionCompleted: boolean;
@@ -77,7 +77,20 @@ export class FastFeedbackComponent implements OnInit {
 
     // Determine pulse check type based on question IDs
     this.pulseCheckType = this.determinePulseCheckType();
+
+    // WCAG 2.1.1: Add ESC key support to dismiss modal (even when closable=false)
+    document.addEventListener('keydown', this.handleKeyDown);
   }
+
+  private handleKeyDown = (event: KeyboardEvent): void => {
+    // WCAG 2.1.1: Allow ESC key to dismiss modal
+    if (event.key === 'Escape') {
+      // Only dismiss if modal is not submitting/completing
+      if (!this.loading || this.submissionCompleted) {
+        this.dismiss({ from: 'keyboard' });
+      }
+    }
+  };
 
   /**
    * Determines the pulse check type based on question IDs
@@ -252,6 +265,8 @@ export class FastFeedbackComponent implements OnInit {
   }
 
   async dismiss(data): Promise<void> {
+    // Remove ESC key listener (WCAG 2.1.1)
+    document.removeEventListener('keydown', this.handleKeyDown);
     this.storage.set("fastFeedbackOpening", false);
     await this.modalController.dismiss(data);
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -262,6 +277,11 @@ export class FastFeedbackComponent implements OnInit {
     } catch (error) {
       console.error('Error refreshing pulse check data:', error);
     }
+  }
+
+  ngOnDestroy(): void {
+    // Clean up ESC key listener
+    document.removeEventListener('keydown', this.handleKeyDown);
   }
 
   get isRedColor(): boolean {

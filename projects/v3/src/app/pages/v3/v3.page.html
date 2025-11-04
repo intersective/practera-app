@@ -1,6 +1,6 @@
-<ion-split-pane contentId="main-content" [when]="splitpaneEnabled">
+<ion-split-pane contentId="main-content-router" [when]="splitpaneEnabled">
   <ion-menu id="main-navigation"
-    contentId="main-content"
+    contentId="main-content-router"
     swipeGesture="false"
     [ngClass]="{'collapsed': isMenuOpen === false}"
     [@openClose]="collapsibleMenu"
@@ -70,5 +70,5 @@
     </ion-content>
   </ion-menu>
 
-  <ion-router-outlet id="main-content"></ion-router-outlet>
+  <ion-router-outlet id="main-content-router"></ion-router-outlet>
 </ion-split-pane>
