@@ -133,6 +133,15 @@ ion-item-divider {
 .menu-item {
   --padding-start: 0px;
 
+  // Prevent ion-item from intercepting clicks when it contains a menu-link
+  &:has(a.menu-link) {
+    pointer-events: none;
+    
+    a.menu-link {
+      pointer-events: auto;
+    }
+  }
+
   // Menu link styling for accessibility
   a.menu-link {
     display: flex;
@@ -151,6 +160,11 @@ ion-item-divider {
     &:focus-visible {
       outline: 2px solid var(--ion-color-primary);
       outline-offset: -2px;
+    }
+    
+    // Prevent child elements from intercepting clicks
+    * {
+      pointer-events: none;
     }
   }
 

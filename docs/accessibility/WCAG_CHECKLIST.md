@@ -206,7 +206,9 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
   - Fixed `task-content` duplicate in activity-desktop (renamed to `task-content-assessment` and `task-content-topic`)
   - Fixed `main-content` duplicate (renamed v3.page.html router-outlet to `main-content-router`)
   - Fixed `chatroom-name` duplicate in chat-list (now uses dynamic IDs: `chatroom-name-${i}`)
+  - Fixed `inner-box` duplicate in video components (now uses dynamic IDs: `inner-box-${message.uuid}` and `inner-box-video-${video.uuid}`)
 - [x] All IDs are now unique across pages
+- [x] CSS updated to use attribute selectors `[id^="inner-box"]` instead of ID selectors
 
 #### 4.1.2 Name, Role, Value (Level A)
 - [x] Form inputs have proper labels (ion-label with for attribute)
@@ -216,12 +218,16 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **VERIFIED**: Error messages use role="alert" and aria-live="assertive"
 - [x] **COMPLETED**: Fixed navigation links to use semantic `<a>` tags instead of `ion-item` with `routerLink`
 - [x] **COMPLETED**: Added proper focus styles to navigation links (2px outline on focus-visible)
+- [x] **COMPLETED**: Fixed image preview buttons in chat messages to have aria-labels
+- [x] **COMPLETED**: Fixed Quill editor toolbar elements (preview, action, remove links, and input fields) to have aria-labels
 - [ ] **RETEST**: After merge, verify:
   1. All modals have role="dialog" and aria-label
   2. All custom components announce correct roles to screen readers
   3. All interactive elements have accessible names (text content, aria-label, or aria-labelledby)
   4. Test with screen reader - verify roles and names are announced correctly
   5. Verify navigation links are properly announced by screen readers as links (not just buttons)
+  6. Verify image preview buttons announce correctly (e.g., "Preview image: filename.jpg")
+  7. Verify Quill toolbar elements have accessible names
 
 #### 4.1.3 Status Messages (Level AA)
 - [x] Loading states have role="status" and aria-live="polite" (assessment component)
