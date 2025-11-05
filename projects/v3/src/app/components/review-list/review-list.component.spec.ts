@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { ReviewListComponent } from './review-list.component';
@@ -10,7 +12,8 @@ describe('ReviewListComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ReviewListComponent ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), FormsModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReviewListComponent);
@@ -52,15 +55,26 @@ describe('ReviewListComponent', () => {
 
   describe('switchStatus()', () => {
     it('should switch status', () => {
-      component.reviews = [{
-        isDone: true,
-      } as any];
-      component.showDone = false;
+      component.reviews = [
+        { isDone: false, name: 'Pending review', submissionId: 1 } as any,
+        { isDone: true, name: 'Completed review', submissionId: 2 } as any,
+      ];
+      component.currentReview = component.reviews[0];
+      component.ngOnChanges({
+        reviews: new SimpleChange(null, component.reviews, true),
+        currentReview: new SimpleChange(null, component.currentReview, true),
+      });
       component.goToFirstOnSwitch = true;
       const spy = spyOn(component.navigate, 'emit');
-      component.switchStatus();
-      expect(spy).toHaveBeenCalled();
+      component.switchStatus({
+        detail: {
+          value: 'completed',
+        },
+      } as any);
+      expect(spy).toHaveBeenCalledWith(component.reviews[1]);
       expect(component.showDone).toBeTrue();
+      expect(component.segmentValue).toBe('completed');
+      expect(component.resultsAnnouncement).toContain('completed');
     });
   });
 
@@ -73,6 +87,7 @@ describe('ReviewListComponent', () => {
       component.reviews = [{
         isDone: true,
       } as any];
+      component.ngOnChanges({ reviews: new SimpleChange(null, component.reviews, false) });
       expect(component.noReviews).toEqual('');
     });
 
@@ -81,6 +96,7 @@ describe('ReviewListComponent', () => {
         { isDone: false } as any
       ];
       component.showDone = true;
+      component.ngOnChanges({ reviews: new SimpleChange(null, component.reviews, false) });
       expect(component.noReviews).toEqual('completed');
     });
 
@@ -89,7 +105,37 @@ describe('ReviewListComponent', () => {
         { isDone: true } as any
       ];
       component.showDone = false;
+      component.ngOnChanges({ reviews: new SimpleChange(null, component.reviews, false) });
       expect(component.noReviews).toEqual('pending');
+    });
+
+    it('should hide default message when searching', () => {
+      component.reviews = [
+        { isDone: true, name: 'Completed review', submissionId: 2 } as any,
+      ];
+      component.showDone = true;
+      component.ngOnChanges({ reviews: new SimpleChange(null, component.reviews, false) });
+      component.onSearchTermChange('');
+      component.onSearchTermChange('missing');
+      expect(component.noReviews).toEqual('');
+      expect(component.hasSearchWithoutResults).toBeTrue();
+      expect(component.resultsAnnouncement).toContain('No');
+    });
+  });
+
+  describe('onSearchTermChange()', () => {
+    it('should filter reviews by title', () => {
+      component.reviews = [
+        { isDone: false, name: 'First review', submissionId: 1 } as any,
+        { isDone: false, name: 'Second', submissionId: 2 } as any,
+      ];
+      component.showDone = false;
+      component.ngOnChanges({ reviews: new SimpleChange(null, component.reviews, false) });
+      component.onSearchTermChange('');
+      component.onSearchTermChange('second');
+      expect(component.filteredReviews.length).toBe(1);
+      expect(component.filteredReviews[0].name).toBe('Second');
+      expect(component.resultsAnnouncement).toContain('1');
     });
   });
 });
