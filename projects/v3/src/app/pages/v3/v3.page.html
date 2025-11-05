@@ -39,6 +39,7 @@
           </ion-item>
         </ion-menu-toggle>
 
+<<<<<<< HEAD
         <ion-item class="menu-item tooltip"
           (keydown)="presentModal($event)"
           (click)="presentModal()"
@@ -49,11 +50,33 @@
           <ion-label class="body-2 black">{{i18nText.setting}}</ion-label>
           <ion-spinner slot="end" *ngIf="wait" role="status" [attr.aria-label]="'Loading'"></ion-spinner>
         </ion-item>
+=======
+        <ion-menu-toggle autoHide="false">
+          <ion-item class="menu-item tooltip"
+            detail="false"
+            [title]="i18nText.setting"
+            lines="none">
+            <a (click)="presentModal()"
+               (keydown)="presentModal($event)"
+               [attr.aria-label]="i18nText.setting"
+               tabindex="0"
+               role="button"
+               class="menu-link">
+              <div class="badge-wrapper icon-container">
+                <ion-icon slot="start" name="settings" aria-hidden="true"></ion-icon>
+              </div>
+
+              <ion-label class="body-2 black">{{i18nText.setting}}</ion-label>
+              <ion-spinner slot="end" *ngIf="wait" role="status" [attr.aria-label]="'Loading'"></ion-spinner>
+            </a>
+          </ion-item>
+        </ion-menu-toggle>
+>>>>>>> 2.4.y.z/WCAG-2.2-AA
 
         <ion-item-divider mode="md"></ion-item-divider>
 
         <ion-item class="menu-item tooltip"
-          detail="false" 
+          detail="false"
           [title]="i18nText.myExperience"
           lines="none">
           <a routerLink="/experiences"
@@ -61,7 +84,10 @@
              (keydown)="keyboardNavigate('/experiences', $event)"
              [attr.aria-label]="i18nText.myExperience"
              class="menu-link">
-            <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
+            <div class="badge-wrapper icon-container">
+              <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
+            </div>
+
             <ion-label class="body-2 black">{{i18nText.myExperience}}</ion-label>
           </a>
         </ion-item>
