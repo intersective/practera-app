@@ -161,23 +161,11 @@ ion-item-divider {
       outline: 2px solid var(--ion-color-primary);
       outline-offset: -2px;
     }
-    
-    // Prevent child elements from intercepting clicks
-    * {
-      pointer-events: none;
-    }
 
     // Hide ion-label visually but keep it accessible to screen readers
+    // Using display: none is OK here because aria-label on the link provides the accessible name
     ion-label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
+      display: none;
     }
   }
 
@@ -187,18 +175,11 @@ ion-item-divider {
     color: var(--ion-color-primary);
   }
 
-  // For menu items without a.menu-link (like Settings), hide ion-label for screen readers only
+  // For menu items without a.menu-link (like Settings), hide ion-label
+  // Using display: none is OK here because aria-label on the button provides the accessible name
   &:not(:has(a.menu-link)) {
     ion-label {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
+      display: none;
     }
   }
 
