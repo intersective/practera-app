@@ -58,6 +58,7 @@ export class AuthGlobalLoginComponent implements OnInit {
           }
         } else { // Info: This block is only for development purpose
           const locale = authed.experience.locale;
+          /* eslint-disable no-console */
           console.info('URL redirections::', {
             dev: homePath,
             prod: [`/${locale}`, ...homePath],
@@ -79,7 +80,6 @@ export class AuthGlobalLoginComponent implements OnInit {
   }
 
   private _error(res?): Promise<any> {
-
     const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({

@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, QueryList, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
+import { IonCheckbox } from '@ionic/angular';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { Subject } from 'rxjs';
+import { from, fromEvent, merge, Subject, Subscription } from 'rxjs';
+import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-multiple',
@@ -15,7 +17,7 @@ import { Subject } from 'rxjs';
     }
   ]
 })
-export class MultipleComponent implements ControlValueAccessor, OnInit {
+export class MultipleComponent implements AfterViewInit, ControlValueAccessor, OnInit, OnDestroy {
   @Input() submitActions$: Subject<any>;
 
   @Input() question;
@@ -33,10 +35,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
-  // answer field for submitter & reviewer
-  @ViewChild('answer') answerRef: ElementRef;
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
+
+  autosave$ = new Subject<void>();
 
   // the value of answer
   innerValue: any;
@@ -44,16 +46,64 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   // validation errors array
   errors: Array<any> = [];
 
+  subscriptions: Subscription[] = [];
+
   constructor(
     private utils: UtilsService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this._showSavedAnswers();
   }
 
+  triggerSave(): void {
+    const action: {
+      saveInProgress?: boolean; // git conflict (trunk-v3)
+      autoSave?: boolean;
+      goBack?: boolean;
+      questionSave?: {};
+      reviewSave?: {};
+    } = {
+      saveInProgress: true, // git conflict (trunk-v3)
+      autoSave: true,
+      goBack: false,
+    };
+
+    if (this.doReview === true) {
+      action.reviewSave = {
+        reviewId: this.reviewId,
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue.answer,
+        comment: this.innerValue.comment,
+      };
+    }
+
+    if (this.doAssessment === true) {
+      action.questionSave = {
+        submissionId: this.submissionId,
+        questionId: this.question.id,
+        answer: this.innerValue,
+      };
+    }
+
+    this.submitActions$.next(action);
+  }
+
+  ngAfterViewInit() {
+    this.autosave$.pipe(
+      debounceTime(800),
+    ).subscribe(() => {
+      this.triggerSave();
+    });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
   // propagate changes into the form control
-  propagateChange = (_: any) => {};
+  propagateChange = (_: any) => { };
 
   /**
    * event fired when checkbox is toggled. propagate the change up to the form control using the custom value accessor interface
@@ -106,42 +156,11 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
       }
     }
 
-    const action: {
-      autoSave?: boolean;
-      goBack?: boolean;
-      questionSave?: {};
-      reviewSave?: {};
-    } = {
-      autoSave: true,
-      goBack: false,
-    };
-
-    if (this.doReview === true) {
-      action.reviewSave = {
-        reviewId: this.reviewId,
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue.answer,
-        comment: this.innerValue.comment,
-      };
-    }
-
-    if (this.doAssessment === true) {
-      action.questionSave = {
-        submissionId: this.submissionId,
-        questionId: this.question.id,
-        answer: this.innerValue,
-      };
-    }
-
-    this.submitActions$.next(action);
+    this.autosave$.next();
   }
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    if (value) {
-      this.innerValue = JSON.stringify(value);
-    }
   }
 
   // From ControlValueAccessor interface
@@ -155,18 +174,17 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
   }
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
       this.innerValue = {
         answer: this.review.answer,
         comment: this.review.comment
       };
       this.comment = this.review.comment;
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+    if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
@@ -196,5 +214,10 @@ export class MultipleComponent implements ControlValueAccessor, OnInit {
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
+  }
+
+  // innerHTML text toggle
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
   }
 }

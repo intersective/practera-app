@@ -27,3 +27,18 @@ www/*
 .env
 projects/v3/src/environments/environment.ts
 projects/v3/src/environments/environment.prod.ts
+
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+logs_49068925926
+
+WORKFLOW_OPTIMIZATION_PLAN.md
+
+# Quick deploy script temporary files (safety - should never be created in repo)
+**/secret-*.json
+**/cf-exports.json
+quick-deploy-*.json
+*.secret.json
+
+

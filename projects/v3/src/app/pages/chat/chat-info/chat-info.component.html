@@ -1,12 +1,12 @@
 <ion-header mode="ios" aria-label="chat room info">
   <ion-toolbar class="ion-toolbar-absolute">
-    <ion-icon *ngIf="utils.isMobile()" name="arrow-back"
+    <ion-icon *ngIf="isMobile" name="arrow-back"
       (click)="close()" color="primary" slot="start" margin-start
     ></ion-icon>
     <ion-title class="heading-6 black" aria-label="channel details" i18n>
       Channel details
     </ion-title>
-    <ion-button mode="ios" *ngIf="!utils.isMobile()"
+    <ion-button mode="ios" *ngIf="!isMobile"
       slot="end" fill="clear"
       size="small" (click)="close()"
       tabindex="0" (keydown)="close($event)"
@@ -19,9 +19,9 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding" [ngClass]="{'border': !utils.isMobile()}">
+<ion-content class="ion-padding" [ngClass]="{'border': !isMobile}">
   <div class="who-in-chat-container channel-name">
-    <ion-label class="subtitle-1 black">{{ selectedChat.name }}</ion-label>
+    <ion-label class="subtitle-1 black" [innerHTML]="selectedChat.name"></ion-label>
   </div>
   <div class="who-in-chat-container">
     <ion-label class="subtitle-1 gray-2" i18n>Who is in this chat</ion-label>
@@ -35,7 +35,7 @@
     <p class="subtitle-1 gray-2" i18n>{{ memberList.length }} Members</p>
     <ng-container *ngIf="loadingMembers">
       <div class="ion-text-center">
-        <ion-spinner></ion-spinner>
+        <ion-spinner role="status" aria-live="polite" aria-label="Loading members"></ion-spinner>
       </div>
     </ng-container>
     <ng-container *ngIf="!loadingMembers">
@@ -44,10 +44,10 @@
           <ng-container *ngFor="let member of memberList">
             <ion-item *ngIf="member">
               <ion-avatar slot="start">
-                <img [src]="member.avatar" [alt]="member.name">
+                <img [src]="member.avatar" [attr.alt]="member.name + ' avatar'">
               </ion-avatar>
               <ion-label>
-                <p class="subtitle-1 black">{{member.name}}</p>
+                <p class="subtitle-1 black" [innerHTML]="member.name"></p>
                 <p class="caption gray-2" *ngIf="member.role !== 'participant'">{{ utils.getUserRolesForUI(member.role) }}</p>
               </ion-label>
             </ion-item>

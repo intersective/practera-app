@@ -1,7 +1,7 @@
 import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -9,9 +9,10 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, fromEvent, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
-import { IonCol } from '@ionic/angular';
+import { TopicComponent } from '@v3/app/components/topic/topic.component';
+import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -34,19 +35,28 @@ export class ActivityDesktopPage {
   // loading overlay for assessment
   isLoadingAssessment: boolean = false;
 
+  longAsmtNavigator: boolean = false; // disable fab navigator on long assessment
+
   // grabs from URL parameter
   urlParams = {
     action: null,
     contextId: null,
   };
-  unsubscribe$ = new Subject();
-  scrolSubject = new Subject();
+  scrolSubject = new BehaviorSubject(null);
+
+  // track navigation state for unlock indicator clearing
+  private fromHome: boolean = false;
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   @ViewChild('scrollableTaskContent', { static: false }) scrollableTaskContent: {el: HTMLIonColElement};
+  @ViewChild(TopicComponent) topicComponent: TopicComponent;
 
   // UI-purpose only variables
-  flahesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  flashesIndicated: { [key: string]: boolean } = {}; // prevent multiple flashes on the same question
+  tooltipText: string;
+  tooltipVisible: boolean;
+  tooltipStyle: { top: string; right: string };
+  activityLockShown: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -58,12 +68,13 @@ export class ActivityDesktopPage {
     private storageService: BrowserStorageService,
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private componentCleanupService: ComponentCleanupService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
     // slow down the scroll event trigger
     this.scrolSubject
       .pipe(debounceTime(300))
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(takeUntil(this.componentCleanupService.cleanup$))
       .subscribe(() => this.flashHighlight());
   }
 
@@ -77,64 +88,89 @@ export class ActivityDesktopPage {
     }
 
     const questionBoxes = this.assessmentComponent.getQuestionBoxes();
-    questionBoxes.filter(questionBox => {
-      return questionBox.el.classList.contains('flash-highlight');
-    }).forEach((questionBox: any) => {
-      const rect = questionBox.el.getBoundingClientRect();
-      if (!this.flahesIndicated[questionBox.el.id] && rect.top >= 0 && rect.bottom <= window.innerHeight) {
-        this.flahesIndicated[questionBox.el.id] = true;
-        this.assessmentComponent.flashBlink(questionBox.el);
-      }
-    });
+    questionBoxes
+      .filter((questionBox) => {
+        return questionBox.el.classList.contains('flash-highlight');
+      })
+      .forEach((questionBox: any) => {
+        const rect = questionBox.el.getBoundingClientRect();
+        if (
+          !this.flashesIndicated[questionBox.el.id] &&
+          rect.top >= 0 &&
+          rect.bottom <= window.innerHeight
+        ) {
+          this.flashesIndicated[questionBox.el.id] = true;
+          this.assessmentComponent.flashBlink(questionBox.el);
+        }
+      });
   }
 
   onScroll(): void {
-    this.scrolSubject.next();
+    this.scrolSubject.next(null);
   }
 
   ionViewDidEnter() {
+    // cleanup previous session
+    this.componentCleanupService.triggerCleanup();
+
+    // capture navigation state early before it's lost
+    const navigation = this.router.getCurrentNavigation();
+    this.fromHome = navigation?.extras?.state?.fromHome || false;
+
     this.activityService.activity$
       .pipe(
-        filter((res) => res?.id === +this.route.snapshot.paramMap.get("id")),
-        takeUntil(this.unsubscribe$),
-      ).subscribe(res => this._setActivity(res));
+        filter((res) => res?.id === +this.route.snapshot.paramMap.get('id')),
+        takeUntil(this.componentCleanupService.cleanup$)
+      )
+      .subscribe((res) => {
+        this._setActivity(res);
+      });
 
     this.activityService.currentTask$
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe(res => this.currentTask = res);
+      .pipe(
+        // stop update currentTask if activity is locked
+        filter(() => !this.activityLockShown),
+        takeUntil(this.componentCleanupService.cleanup$)
+      )
+      .subscribe((res) => (this.currentTask = res));
 
     this.assessmentService.submission$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       )
       .subscribe((res) => (this.submission = res));
 
     this.assessmentService.review$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       ).subscribe((res) => (this.review = res));
 
     this.topicService.topic$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$),
+        takeUntil(this.componentCleanupService.cleanup$)
       ).subscribe((res) => (this.topic = res));
 
     this.route.paramMap.pipe(
-      takeUntil(this.unsubscribe$)
+      takeUntil(this.componentCleanupService.cleanup$)
     ).subscribe(params => {
-
       // from route
       const activityId = +params.get('id');
-      const contextId = +params.get('contextId'); // optional
-      const assessmentId = +params.get('assessmentId');  // optional
+      // optional
+      const contextId = +params.get('contextId');
+      const assessmentId = +params.get('assessmentId');
+      const topicId = +params.get('topicId');
 
       // directlink params (optional)
       const taskId: number = +params.get('task_id');
-      const taskType: string = params.get('task') as 'assessment' | 'topic' | null;
-      const isTopicDirectlink = taskType === 'topic' && taskId > 0;
+      const taskType: string = params.get('task') as
+        | 'assessment'
+        | 'topic'
+        | null;
+      const isTopicDirectlink = (taskType === 'topic' && taskId > 0) || topicId > 0;
+      const directTaskId = (topicId > 0) ? topicId : taskId;
 
       // if assessmentId or taskId is provided, don't proceed to next task
       const proceedToNextTask = !(assessmentId > 0 || isTopicDirectlink);
@@ -144,56 +180,84 @@ export class ActivityDesktopPage {
         action: this.route.snapshot.data.action,
       };
 
+      this.storageService.lastVisited('activityId', activityId);
       this.storageService.lastVisited('homeBookmarks', activityId);
 
-      this.activityService.getActivity(activityId, proceedToNextTask, undefined, async (data) => {
-        // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
-        if (!proceedToNextTask && (assessmentId > 0 || isTopicDirectlink === true)) {
-          const filtered: Task = this.utils.find(this.activity.tasks, {
-            id: assessmentId || taskId,  // assessmentId or taskId
-          });
-
-          // if API not returning any related activity, handle bad API response gracefully
-          if (filtered === undefined) {
-            await this.notificationsService.alert({
-              header: $localize`Activity not found`,
-              message: $localize`The activity you are looking for is not found or hasn't been unlocked for your access yet.`,
+      this.activityService.getActivity(
+        activityId,
+        proceedToNextTask,
+        undefined,
+        async (activity) => {
+          // show current Assessment task (usually navigate from external URL, eg magiclink/notification/directlink)
+          if (
+            !proceedToNextTask &&
+            (assessmentId > 0 || isTopicDirectlink === true)
+          ) {
+            const targetTask: Task = this.utils.find(this.activity.tasks, {
+              id: assessmentId || directTaskId, // assessmentId or topicId/taskId
             });
-            return this.goBack();
-          }
 
-          this.goToTask({
-            id: assessmentId || taskId,
-            contextId: this.urlParams.contextId,
-            type: filtered.type,
-            name: filtered.name
-          });
+            // if task is not found, show alert
+            // if activity is locked, do nothing, as we are already showing the alert from:
+            // 1. checkActivityLocked() method - for locked activity
+            // 2. activityService.getActivity() - for missing activity
+            if (!targetTask && this.activity.isLocked === false) {
+              await this.notificationsService.alert({
+                header: $localize`Task Not Found`,
+                message: $localize`The task you are trying to access is not available. Please check back later or contact your coordinator for assistance.`,
+              });
+              return this.goBack();
+            }
+
+            if (targetTask) {
+              this.goToTask({
+                id: assessmentId || directTaskId,
+                contextId: this.urlParams.contextId,
+                type: targetTask.type,
+                name: targetTask.name,
+                status: targetTask.status,
+              });
+            }
+          }
         }
-      });
+      );
     });
 
     // refresh when review is available (AI review, peer review, etc.)
-    this.utils.getEvent('notification')
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe(event => {
-      const review = event?.meta?.AssessmentReview;
-      if (event.type === 'assessment_review_published' && review?.assessment_id) {
-        if (this.currentTask.id === review.assessment_id) {
-          this.assessmentService.getAssessment(review.assessment_id, 'assessment', review.activity_id, review.context_id);
+    this.utils
+      .getEvent('notification')
+      .pipe(
+        takeUntil(this.componentCleanupService.cleanup$)
+      )
+      .subscribe((event) => {
+        const review = event?.meta?.AssessmentReview;
+        if (
+          event.type === 'assessment_review_published' &&
+          review?.assessment_id
+        ) {
+          if (this.currentTask.id === review.assessment_id) {
+            this.assessmentService.getAssessment(
+              review.assessment_id,
+              'assessment',
+              review.activity_id,
+              review.context_id
+            );
+          }
         }
-      }
-    });
+      });
 
     // check new unlock indicator to refresh
     this.unlockIndicatorService.unlockedTasks$
-    .pipe(takeUntil(this.unsubscribe$))
-    .subscribe(unlockedTasks => {
-      if (this.activity) {
-        if (unlockedTasks.some(task => task.activityId === this.activity.id)) {
-          this.activityService.getActivity(this.activity.id);
+      .pipe(takeUntil(this.componentCleanupService.cleanup$))
+      .subscribe((unlockedTasks) => {
+        if (this.activity) {
+          if (
+            unlockedTasks.some((task) => task.activityId === this.activity.id)
+          ) {
+            this.activityService.getActivity(this.activity.id);
+          }
         }
-      }
-    });
+      });
   }
 
   ionViewWillLeave() {
@@ -201,14 +265,18 @@ export class ActivityDesktopPage {
   }
 
   ionViewDidLeave() {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
     this.assessmentService.clearAssessment();
   }
 
   // set activity data (avoid jumpy UI task list - CORE-6693)
   private _setActivity(res: Activity) {
-    if (this.activity !== undefined && this.activity?.tasks.length === res.tasks.length) {
+    // check if activity is locked
+    this.checkActivityLocked(res);
+
+    if (
+      this.activity !== undefined &&
+      this.activity?.tasks.length === res.tasks.length
+    ) {
       // Check if the tasks have changed (usually when a new task is unlocked/locked/reviewed)
       if (!this.utils.isEqual(this.activity?.tasks, res?.tasks)) {
         // Collect new tasks with id as key
@@ -222,19 +290,23 @@ export class ActivityDesktopPage {
         const tasksToRemove = [];
 
         this.activity.tasks.forEach((task, index) => {
-          if (task.id === 0) {  // Locked/hidden task
+          if (task.id === 0) {
+            // Locked/hidden task
             const newTask = res.tasks[index];
             if (newTask.id !== 0) {
               this.activity.tasks[index] = { ...task, ...newTask };
               tasksToRemove.push(index); // Mark this task for removal
             }
-          } else if (newTasks[task.id] && task.status !== newTasks[task.id]?.status) {
+          } else if (
+            newTasks[task.id] &&
+            task.status !== newTasks[task.id]?.status
+          ) {
             this.activity.tasks[index].status = newTasks[task.id].status;
           }
         });
 
         // Remove the locked tasks (id = 0) that were updated
-        tasksToRemove.reverse().forEach(index => {
+        tasksToRemove.reverse().forEach((index) => {
           if (this.activity.tasks[index].id === 0) {
             this.activity.tasks.splice(index, 1);
           }
@@ -244,6 +316,136 @@ export class ActivityDesktopPage {
     }
 
     this.activity = res;
+    // only clear pure activity-level unlock indicators onLoad of activity when navigating from Home
+    this._clearPureActivityIndicatorIfFromHome(res.id);
+    // Set page title when activity is loaded
+    if (res?.name) {
+      this.utils.setPageTitle(`${res.name} - Practera`);
+    }
+  }
+
+  /**
+   * clears activity-level unlock indicators only when navigating from Home page
+   */
+  private _clearPureActivityIndicatorIfFromHome(activityId: number): void {
+    if (!activityId) { return; }
+
+    // check if user is navigating from Home page using stored state
+    if (!this.fromHome) {
+      return;
+    }
+
+    this._clearActivityLevelIndicators(activityId);
+  }
+
+  /**
+   * checks if activity-level indicators should be cleared after task completion
+   * called when user completes tasks within the activity
+   */
+  private _checkActivityLevelClearingAfterTaskCompletion(): void {
+    if (!this.activity?.id) {
+      return;
+    }
+
+    // use timeout to allow unlock indicator service to update after task completion
+    setTimeout(() => {
+      this._clearActivityLevelIndicators(this.activity.id);
+    }, 500);
+  }
+
+  private async _clearActivityLevelIndicators(activityId: number): Promise<void> {
+    if (!activityId) { return; }
+
+    try {
+      const currentTodoItems = this.notificationsService.getCurrentTodoItems();
+      let entries = this.unlockIndicatorService.getTasksByActivityId(activityId);
+
+      // retry fetching todo items if no entries found
+      if (entries?.length === 0) {
+        await firstValueFrom(this.notificationsService.getTodoItems());
+        entries = this.unlockIndicatorService.getTasksByActivityId(activityId);
+      }
+
+      // Double confirmed, no indicators for this activity
+      if (!entries || entries.length === 0) {
+        return;
+      }
+
+      // Separate activity-level and task-level indicators
+      const activityLevelEntries = entries.filter(e => e.taskId === undefined);
+      const taskLevelEntries = entries.filter(e => e.taskId !== undefined);
+
+      // Only clear activity-level indicators if:
+      // 1. There are activity-level entries to clear
+      // 2. The activity is clearable (no task-level children)
+      if (activityLevelEntries.length > 0 && taskLevelEntries.length === 0) {
+        // Activity is clearable - no task children remain
+        const result = this.unlockIndicatorService.clearByActivityIdWithDuplicates(activityId, currentTodoItems);
+
+        // Mark the original cleared activity-level indicators as done
+        result.clearedUnlocks?.forEach(todo => {
+          this.notificationsService.markTodoItemAsDone(todo).subscribe(() => {
+            // eslint-disable-next-line no-console
+            console.info("Marked activity indicator as done (activity page)", todo);
+          });
+        });
+
+        // Mark all duplicate TodoItems as done (bulk operation)
+        if (result.duplicatesToMark.length > 0) {
+          this.notificationsService.markMultipleTodoItemsAsDone(result.duplicatesToMark);
+        }
+
+        // Handle cascade milestone clearing
+        result.cascadeMilestones.forEach(milestoneData => {
+          if (milestoneData.duplicatesToMark.length > 0) {
+            const milestoneMarkingOps = this.notificationsService.markMultipleTodoItemsAsDone(milestoneData.duplicatesToMark);
+          }
+        });
+
+        // Note: The fallback at line 364-367 was already handling this, but only as a fallback
+        return;
+      }
+
+      // If we couldn't clear via standard approach, try robust clearing
+      // This handles inaccurate data where relationships might be broken
+      if (activityLevelEntries.length > 0) {
+        const relatedIndicators = this.unlockIndicatorService.findRelatedIndicators('activity', activityId);
+        const pureActivityIndicators = relatedIndicators.filter(r => r.taskId === undefined);
+
+        // Only clear if activity is truly clearable (no tasks)
+        if (pureActivityIndicators.length > 0 && taskLevelEntries.length === 0) {
+          const cleared = this.unlockIndicatorService.clearRelatedIndicators('activity', activityId);
+          cleared?.forEach(todo => {
+            this.notificationsService.markTodoItemAsDone(todo).subscribe();
+          });
+        }
+      }
+    } catch (e) {
+      console.error('[unlock-indicator] cleanup failed for activity', activityId, e);
+    }
+  }
+
+  /**
+   * checks if activity is locked and shows popup to inform user
+   * @param activity activity object
+   * @return  {Promise<void>}  void
+   */
+  private async checkActivityLocked(activity: Activity): Promise<void> {
+    if (activity?.isLocked === true && !this.activityLockShown) {
+      this.activityLockShown = true;
+      await this.notificationsService.alert({
+        header: $localize`Activity Locked`,
+        message: $localize`This activity is currently locked and not available. Please check back later or contact your coordinator for assistance.`,
+        backdropDismiss: false,
+        buttons: [{
+          text: $localize`OK`,
+          handler: () => {
+            this.activityLockShown = false;
+            this.goBack();
+          }
+        }]
+      });
+    }
   }
 
   async goToTask(task: Task): Promise<any> {
@@ -255,6 +457,7 @@ export class ActivityDesktopPage {
       }
 
       await this.activityService.goToTask(task);
+      this._checkActivityLevelClearingAfterTaskCompletion();
       this.isLoadingAssessment = false;
     } catch (error) {
       this.isLoadingAssessment = false;
@@ -273,13 +476,19 @@ export class ActivityDesktopPage {
       });
     }
     // mark the topic as complete
-    await this.topicService.updateTopicProgress(task.id, 'completed').toPromise();
+    await firstValueFrom(this.topicService
+      .updateTopicProgress(task.id, 'completed'));
 
     // get the latest activity tasks and navigate to the next task
-    return this.activityService.getActivity(this.activity.id, true, task, () => {
-      this.loading = false;
-      this.btnDisabled$.next(false);
-    });
+    return this.activityService.getActivity(
+      this.activity.id,
+      true,
+      task,
+      () => {
+        this.loading = false;
+        this.btnDisabled$.next(false);
+      }
+    );
   }
 
   /**
@@ -305,35 +514,38 @@ export class ActivityDesktopPage {
     try {
       // handle unexpected submission: do final status check before saving
       let hasSubmssion = false;
-      const { submission } = await this.assessmentService
-        .fetchAssessment(
+      const { submission } = await firstValueFrom(
+        this.assessmentService.fetchAssessment(
           event.assessmentId,
-          "assessment",
+          'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
         )
-        .toPromise();
+      );
 
       if (submission?.status === 'in progress') {
-        const saved = await this.assessmentService
-          .submitAssessment(
+        const saved = await firstValueFrom(
+          this.assessmentService.submitAssessment(
             event.submissionId,
             event.assessmentId,
             event.contextId,
             event.answers
           )
-          .toPromise();
+        );
 
         // http 200 but error
         if (
           saved?.data?.submitAssessment?.success !== true ||
           this.utils.isEmpty(saved)
         ) {
-          throw new Error("Error submitting assessment");
+          throw new Error('Error submitting assessment');
         }
 
-        if (this.assessmentService.assessment?.pulseCheck === true && event.autoSave === false) {
+        if (
+          this.assessmentService.assessment?.pulseCheck === true &&
+          event.autoSave === false
+        ) {
           await this.assessmentService.pullFastFeedback();
         }
       } else {
@@ -346,24 +558,31 @@ export class ActivityDesktopPage {
 
       if (!event.autoSave) {
         if (hasSubmssion === true) {
-          this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
+          this.notificationsService.assessmentSubmittedToast({
+            isDuplicated: true,
+          });
         } else {
           this.notificationsService.assessmentSubmittedToast();
         }
 
-        await this.assessmentService.fetchAssessment(
+        await firstValueFrom(this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
-        ).toPromise();
+        ));
 
         // get the latest activity tasks
-        return this.activityService.getActivity(this.activity.id, false, task, () => {
-          this.loading = false;
-          this.btnDisabled$.next(false);
-        });
+        return this.activityService.getActivity(
+          this.activity.id,
+          false,
+          task,
+          () => {
+            this.loading = false;
+            this.btnDisabled$.next(false);
+          }
+        );
       } else {
         setTimeout(() => {
           this.btnDisabled$.next(false);
@@ -382,19 +601,19 @@ export class ActivityDesktopPage {
     try {
       this.loading = true;
       const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
-      await savedReview.pipe(
+      await firstValueFrom(savedReview.pipe(
         // get the latest activity tasks and navigate to the next task
         // wait for a while for the server to save the "read feedback" status
         tap(() => this.activityService.getActivity(this.activity.id, true, currentTask)),
         delay(400)
-      ).toPromise();
+      ));
       await this.reviewRatingPopUp();
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+      await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
       this.loading = false;
       this.btnDisabled$.next(false);
       return true;
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       this.loading = false;
       this.btnDisabled$.next(false);
@@ -417,7 +636,10 @@ export class ActivityDesktopPage {
     }
 
     // display review rating modal
-    return await this.notificationsService.popUpReviewRating(this.review.id, false);
+    return await this.notificationsService.popUpReviewRating(
+      this.review.id,
+      false
+    );
   }
 
   goBack() {
@@ -428,5 +650,41 @@ export class ActivityDesktopPage {
 
   allTeamTasks(forTeamOnlyWarning: boolean) {
     this.notInATeamAndForTeamOnly = forTeamOnlyWarning;
+  }
+
+  // UI-purpose only functions (ion-fab-button actions)
+  scrollTo(question) {
+    const questionBoxes = this.assessmentComponent.getQuestionBoxById(`q-${question.id}`);
+    const element = document.getElementById(`#q-${question}`) as HTMLElement;
+    this.utils.scrollToElement(element || questionBoxes.el);
+  }
+
+  // Obtain the continuous index of the question (Question number)
+  getContinuousIndex(groupIndex: number, questionIndex: number): number {
+    const asmt = this.assessmentService.assessment;
+    let totalQuestions = 0;
+    for (let i = 0; i < groupIndex; i++) {
+      totalQuestions += asmt.groups[i].questions.length;
+    }
+    return totalQuestions + questionIndex + 1;
+  }
+
+  // UI-purpose only functions (show tooltip)
+  showTooltip(event, title: string) {
+    this.tooltipText = title;
+    this.tooltipVisible = true;
+  }
+
+  // UI-purpose only functions (hide tooltip)
+  hideTooltip() {
+    this.tooltipVisible = false;
+  }
+
+  // UI-purpose only functions (get total questions for decision of showing the ion-fab)
+  totalQuestions(): number {
+    return this.assessmentService.assessment?.groups.reduce(
+      (acc, group) => acc + group.questions.length,
+      0
+    );
   }
 }

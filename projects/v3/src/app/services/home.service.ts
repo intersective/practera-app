@@ -1,13 +1,23 @@
+import { Assessment } from '@v3/app/services/assessment.service';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { first, map, shareReplay, tap } from 'rxjs/operators';
+import { first, catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { NotificationsService } from './notifications.service';
 import { AuthService } from './auth.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
+import { ApiResponse } from '../models/api.model';
+
+export interface PulseCheckSkill {
+  id: number;
+  name: string;
+  value: number;
+  change?: number; // change from previous value
+  icon?: string;
+}
 
 export interface Experience {
   leadImage: string;
@@ -15,6 +25,13 @@ export interface Experience {
   description: string;
   locale: string;
   cardUrl?: string;
+}
+
+export interface UnlockConditionMeta {
+  activityId: number;
+  assessmentId: number;
+  topicId: number;
+  contextId: number;
 }
 
 export interface Milestone {
@@ -28,6 +45,16 @@ export interface Milestone {
     isLocked: boolean;
     leadImage: string;
     progress?: number;
+    unlockConditions?: {
+      name: string;
+      action: string;
+      meta: UnlockConditionMeta;
+    }[];
+  }[];
+  unlockConditions: {
+    name: string;
+    action: string;
+    meta: UnlockConditionMeta;
   }[];
 }
 
@@ -43,7 +70,7 @@ export interface ProjectProgress {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class HomeService {
   private _experience$ = new BehaviorSubject<Experience>(null);
@@ -51,6 +78,15 @@ export class HomeService {
 
   private _experienceProgress$ = new BehaviorSubject<number>(null);
   experienceProgress$ = this._experienceProgress$.pipe(shareReplay(1));
+
+  private _pulseCheck$ = new BehaviorSubject<{
+    groupLabel: string;
+    group: {
+      value: number;
+      label: string;
+    }[];
+  }>(null);
+  pulseCheck$ = this._pulseCheck$.pipe(shareReplay(1));
 
   private _activityCount$ = new BehaviorSubject<number>(null);
   activityCount$ = this._activityCount$.asObservable();
@@ -68,8 +104,8 @@ export class HomeService {
     private notificationsService: NotificationsService,
     private authService: AuthService,
     private storageService: BrowserStorageService,
-    private utilsService: UtilsService,
-  ) { }
+    private utilsService: UtilsService
+  ) {}
 
   clearExperience() {
     return of([
@@ -81,19 +117,23 @@ export class HomeService {
 
   getExperience() {
     if (environment.demo) {
-      return this.demo.experience().pipe(map(res => this._normaliseExperience(res))).subscribe();
+      return this.demo
+        .experience()
+        .pipe(map((res) => this._normaliseExperience(res)))
+        .subscribe();
     }
 
-    return this.authService.authenticate().pipe(
-      tap(async res => {
+    return this.authService
+      .authenticate()
+      .pipe(tap(async (res) => {
         if (res?.data?.auth?.experience === null) {
           await this.notificationsService.alert({
-            header: 'Unable to access experience',
-            message: 'Please re-login and try again later',
+            header: $localize`Unable to access experience`,
+            message: $localize`Please re-login and try again later`,
             buttons: [
               {
-                text: 'OK',
-                role: 'cancel',
+                text: $localize`OK`,
+                role: "cancel",
                 handler: () => {
                   this.authService.logout();
                 },
@@ -104,6 +144,10 @@ export class HomeService {
       }),
       map(res => this._normaliseExperience(res)),
       first(),
+      catchError(err => {
+        console.error('error getting experience info from core-graphql');
+        throw new Error(err);
+      }),
     ).subscribe({
       error: async (err) => {
         console.error('Auth:query', err);
@@ -119,46 +163,73 @@ export class HomeService {
     return res.data.experience;
   }
 
-  getMilestones() {
+  getMilestones(options: { forceRefresh?: boolean } = {}) {
+    const { forceRefresh = false } = options;
+
     if (environment.demo) {
-      return this.demo.milestones().pipe(map(res => this._normaliseProject(res))).subscribe();
+      return this.demo
+        .milestones()
+        .pipe(map((res) => this._normaliseProject(res, forceRefresh)))
+        .subscribe();
     }
 
-    return this.apolloService.graphQLFetch(`
+    return this.apolloService
+      .graphQLFetch(
+        `
       {
         milestones {
           id
           name
           description
           isLocked
-          activities{
+          activities {
             id name isLocked leadImage
+            unlockConditions {
+              name
+              action
+              meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
+            }
+          }
+          unlockConditions {
+            name
+            action
+            meta {
+                activityId
+                assessmentId
+                topicId
+                contextId
+              }
           }
         }
-      }`,
-    ).pipe(
-      map(res => this._normaliseProject(res)),
-    ).subscribe();
+      }`
+      )
+      .pipe(map((res) => this._normaliseProject(res, forceRefresh)))
+      .subscribe();
   }
 
-  private _normaliseProject(data): Array<Milestone> {
+  private _normaliseProject(data, forceRefresh: boolean = false): Array<Milestone> {
     if (!data) {
       return null;
     }
     const milestones = data.data.milestones;
     let activityCount = 0;
-    milestones.forEach(m => {
+    milestones.forEach((m) => {
       if (m.activities && m.activities.length) {
         activityCount += m.activities.length;
       }
     });
 
-    this.storageService.set('activities', this.aggregateActivities(milestones));
+    this.storageService.set("activities", this.aggregateActivities(milestones));
 
     this._activityCount$.next(activityCount);
 
-    // only update if the milestones are different
-    if (!this.utilsService.isEqual(this._milestones$.getValue(), milestones)) {
+    // only update if the milestones are different, or if force refresh is requested
+    if (forceRefresh || !this.utilsService.isEqual(this._milestones$.getValue(), milestones)) {
       this._milestones$.next(milestones);
     }
 
@@ -168,8 +239,8 @@ export class HomeService {
   aggregateActivities(milestones) {
     const activities = {};
 
-    milestones?.forEach(milestone => {
-      milestone.activities?.forEach(activity => {
+    milestones?.forEach((milestone) => {
+      milestone.activities?.forEach((activity) => {
         activities[activity.id] = activity;
       });
     });
@@ -179,32 +250,135 @@ export class HomeService {
 
   getProjectProgress() {
     if (environment.demo) {
-      return this.demo.projectProgress().pipe(map(res => this._handleProjectProgress(res))).subscribe();
+      return this.demo
+        .projectProgress()
+        .pipe(
+          map((res) => this._handleProjectProgress(res)),
+          first()
+        )
+        .subscribe();
     }
 
-    return this.apolloService.graphQLFetch(
-      `query {
+    return this.apolloService
+      .graphQLFetch(
+        `query {
         project {
           progress
-          milestones{
+          milestones {
             id
             progress
-            activities{
+            activities {
               id progress
+            }
+            unlockConditions {
+              name
+              action
             }
           }
         }
-      }`,
-    ).pipe(
-      map(res => this._handleProjectProgress(res)),
-    ).subscribe();
+      }`
+    )
+    .pipe(
+      map((res) => this._handleProjectProgress(res)),
+      first(),
+    )
+    .subscribe({
+      error: async (err) => {
+        console.error("Project:query", err);
+      },
+    });
   }
 
   private _handleProjectProgress(data) {
     if (!data) {
-      return ;
+      return;
     }
     this._projectProgress$.next(data.data.project);
-    this._experienceProgress$.next(Math.round(data.data.project.progress * 100));
+    this._experienceProgress$.next(
+      Math.round(data.data.project.progress * 100)
+    );
+  }
+
+  getPulseCheck() {
+    if (environment.demo) {
+      return this.demo
+        .pulseCheck()
+        .pipe(map((res) => this._handlePulseCheck(res)))
+        .subscribe();
+    }
+
+    // we only want the "confidence" pulse check so pass the arg: question: "confidence"
+    return this.apolloService
+      .graphQLFetch(
+        // query {
+        //   pulseCheck {
+        //     questions ($confidence: String) {
+        `query {
+        pulseCheck {
+          questions {
+            id
+            name
+            description
+            choices {
+              id
+              name
+            }
+          }
+        }
+      }`
+      )
+      .pipe(map((res) => this._handlePulseCheck(res)))
+      .subscribe();
+  }
+
+  private _handlePulseCheck(data) {
+    if (!data) {
+      return;
+    }
+    // need to transform the result (data.data): { confidence: { self: 0.5, team: 0.6, expert: 0.7 } } to:
+    // { groupLabel: 'On Track', group: [{ value: 0.5, label: 'Self' }, { value: 0.6, label: 'Team' }, { value: 0.7, label: 'Expert' }] }
+    const pulseCheck = data.data;
+    const groupLabel = "On Track";
+    const group = Object.keys(pulseCheck).map((key) => ({
+      value: pulseCheck[key],
+      label: key,
+    }));
+    this._pulseCheck$.next({ groupLabel, group });
+  }
+
+  // traffic light indicator
+  getPulseCheckStatuses() {
+    if (environment.demo) {
+      return of(this.demo.getPulseCheckStatus(this.storageService.getUser().role));
+    }
+    return this.apolloService.graphQLWatch(
+      `query pulseCheckStatus {
+          pulseCheckStatus {
+            self
+            team
+            expert
+            teams {
+              teamName
+              average
+            }
+          }
+        }`
+    );
+  }
+
+  // update skill & progress survey matrix
+  getPulseCheckSkills(): Observable<ApiResponse<{
+    pulseCheckSkills: PulseCheckSkill[]
+  }>> {
+    return this.apolloService.graphQLWatch(
+      `query pulseCheckSkills {
+        pulseCheckSkills {
+          id
+          name
+          value
+          change
+        }
+      }`
+    );
   }
 }

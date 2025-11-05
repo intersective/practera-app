@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+/* eslint-disable no-console */
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AuthService } from '@v3/app/services/auth.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
@@ -7,6 +8,8 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
+import { environment } from '../../../environments/environment';
+import { FfmpegService } from '../../services/ffmpeg.service';
 
 @Component({
   selector: 'app-devtool',
@@ -14,11 +17,16 @@ import { Achievement, AchievementService } from '@v3/app/services/achievement.se
   styleUrls: ['./devtool.page.scss'],
 })
 export class DevtoolPage implements OnInit {
+  turnUppyOff: boolean = true;
+  tusUploadUrl: string;
   doneLogin: boolean = false;
   user: any = {};
-  identifier: string;
+  themeToggle = false;
+  identifier: string = '';
 
   sample: any;
+  viewportWidth: number;
+  viewportHeight: number;
 
   info: {
     userAgent: string;
@@ -40,16 +48,95 @@ export class DevtoolPage implements OnInit {
     private notificationsService: NotificationsService,
     private experienceService: ExperienceService,
     private sharedService: SharedService,
+    private unlockIndicatorService: UnlockIndicatorService,
     private achievementService: AchievementService,
-    private unlockIndicatorService: UnlockIndicatorService
-      ) { }
+    private ffmpegService: FfmpegService
+  ) { }
+
+  selectedFile: File | null = null;
+  isCompressing = false;
+
+  async transcodeVideo() {
+    try {
+      if (this.ffmpegService.isFfmpegLoaded() === false) {
+        await this.ffmpegService.loadFFmpeg();
+      }
+
+      this.isCompressing = true;
+      const compressedFile = await this.ffmpegService.transcode();
+      console.log('Compressed File:', compressedFile);
+
+      const url = URL.createObjectURL(compressedFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (compressedFile as File).name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      this.isCompressing = false;
+    } catch (error) {
+      console.error(error);
+      this.isCompressing = false;
+    }
+  }
+
+  /* async handleFileInput(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+
+      // Compress the file before uploading
+      this.isCompressing = true;
+      const compressedFile = await this.ffmpegService.compressVideo(this.selectedFile);
+      this.isCompressing = false;
+
+      console.log('Compressed File:', compressedFile);
+
+      // Proceed to upload the compressed file
+      // this.uploadFile(compressedFile);
+
+
+
+      // Create a download link for the compressed file
+      const url = URL.createObjectURL(compressedFile);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = compressedFile.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Optionally revoke the object URL after some time
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    }
+  } */
 
   ngOnInit() {
+
     this.doneLogin = this.authService.isAuthenticated();
     if (this.doneLogin) {
       this.user = this.storageService.get('me');
     }
+    // Use matchMedia to check the user preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
 
+    // Initialize the dark theme based on the initial
+    // value of the prefers-color-scheme media query
+    this.initializeDarkTheme(prefersDark.matches);
+
+    // Listen for changes to the prefers-color-scheme media query
+    prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkTheme(mediaQuery.matches));
+    this.updateViewportSize();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.updateViewportSize();
+  }
+
+  updateViewportSize() {
+    this.viewportWidth = window.innerWidth;
+    this.viewportHeight = window.innerHeight;
     this.deviceInfo();
   }
 
@@ -57,24 +144,60 @@ export class DevtoolPage implements OnInit {
     this.authService.authenticate().subscribe();
   }
 
-  login() {
-    /* this.authService.authenticate({
-      email: 'learner_008@practera.com',
-      password: 'REDACTED_TEST_PASSWORD'
-    }).subscribe(res => {
-      this.doneLogin = true;
-      this.user = res;
-      this.authService.getMyInfo();
-    }); */
-  }
-
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
-    const modal = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    if (response.error) {
+      console.error(response.message);
+      return;
+    }
+    const modal = response;
     if (modal && modal.present) {
       await modal.present();
       await modal.onDidDismiss();
     }
+  }
+
+  async showErrorAlert() {
+    try {
+      throw new Error('Missing parameters');
+    } catch (err) {
+      await this.notificationsService.alert({
+        header: $localize`Error submitting rating`,
+        message: err.message ? $localize`Apologies for the inconvenience caused. Something went wrong. Error: ${err.message}` : JSON.stringify(err),
+      });
+      throw new Error(err);
+    }
+  }
+
+  async showAlert() {
+    this.notificationsService.alert({
+      header: 'header',
+      subHeader: 'subheader',
+      message: 'body message',
+      buttons: [
+        'ok',
+        'close',
+        {
+          text: 'dismiss with a message',
+          handler: () => {
+            this.notificationsService.alert({
+              message: 'a message',
+            });
+          },
+        },
+        {
+          text: 'open another alert',
+          handler: () => {
+            this.notificationsService.alert({
+              header: 'another header',
+              subHeader: 'another subheader',
+              message: 'another body message with no button',
+            });
+          }
+        }
+      ]
+    });
   }
 
   async reviewrating() {
@@ -82,7 +205,7 @@ export class DevtoolPage implements OnInit {
   }
 
   async testAuth(withAPIkey?: boolean) {
-    let data: any = {};
+    const data: any = {};
     if (withAPIkey === true) {
       data.apikey = this.storageService.getUser().apikey || 'REDACTED_JWT_TOKEN';
     } else {
@@ -96,10 +219,26 @@ export class DevtoolPage implements OnInit {
     });
   }
 
-  newItems: {id: number; model:string; model_id: number; type:string; }[] = [];
+  // Check/uncheck the toggle and update the theme based on isDark
+  initializeDarkTheme(isDark) {
+    this.themeToggle = isDark;
+    this.toggleDarkTheme(isDark);
+  }
+
+  // Listen for the toggle check/uncheck to toggle the dark theme
+  toggleChange(ev) {
+    this.toggleDarkTheme(ev.detail.checked);
+  }
+
+  // Add or remove the "dark" class on the document body
+  toggleDarkTheme(shouldAdd) {
+    document.body.classList.toggle('dark', shouldAdd);
+  }
+
+  newItems: { id: number; model: string; model_id: number; type: string; }[] = [];
   async triggerAchievement(identifier?: string) {
     if (identifier) {
-      this.notificationsService.markTodoItemAsDone({identifier, id: 15629}).subscribe(res => {
+      this.notificationsService.markTodoItemAsDone({ identifier }).subscribe(res => {
         console.log('manual-marked::', res);
       })
       return;
@@ -109,7 +248,7 @@ export class DevtoolPage implements OnInit {
     this.notificationsService.markTodoItemAsDone({identifier: 'Achievement-'+13919}).subscribe(res => {
       this.newItems = res?.data?.meta?.new_items;
       console.log(this.newItems);
-      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicateTodoItem(this.newItems);
+      const uniqueEntries = this.unlockIndicatorService.transformAndDeduplicate(this.newItems);
       this.sample = uniqueEntries;
       console.log(uniqueEntries);
 
@@ -171,5 +310,13 @@ export class DevtoolPage implements OnInit {
         }
       );
     }
+  }
+
+  tusChanged() {
+    this.turnUppyOff = true;
+  }
+
+  applyTusUploadUrl() {
+    this.turnUppyOff = false;
   }
 }

@@ -9,7 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
-import { Observable, of, Subject } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
 import { map, shareReplay } from 'rxjs/operators';
@@ -29,14 +29,16 @@ export interface CustomTostOptions {
 
 export interface Choice {
   id: number;
-  title: string;
+  title?: string;
+  name?: string;
 }
 
 export interface Question {
   id: number;
-  title: string;
-  description: string;
-  choices: Array<Choice>;
+  name?: string;
+  title?: string;
+  description?: string;
+  choices: Choice[];
 }
 
 export interface Meta {
@@ -45,6 +47,49 @@ export interface Meta {
   target_user_id: number;
   team_name: string;
   assessment_name: string;
+}
+
+export interface TodoItemMeta {
+  // feedback/assessment related properties
+  timeline_id?: number;
+  assessment_id?: number | string; // can be number or string in some cases
+  submission_id?: number;
+  context_id?: number;
+  activity_id?: number;
+  submitter_name?: string;
+  assessment_name?: string;
+  published_date?: string; // iso date string
+  reviewer_name?: string;
+
+  // achievement related properties
+  id?: number;
+  name?: string;
+  description?: string | null;
+  badge?: string; // url to badge image
+  points?: number;
+  program_id?: number;
+  experience_id?: number;
+  new_items?: any[]; // array of new items unlocked
+
+  // chat/fast feedback related properties
+  team_id?: number | null;
+  team_name?: string;
+  target_user_id?: number;
+
+  // reminder related properties
+  due_date?: string | null; // iso date string or null
+
+  // unlock/hierarchy related properties
+  parent_milestone?: number;
+  parent_activity?: number;
+  task_type?: string; // "Story.Topic", "Assess.Assessment", etc.
+  task_id?: number | null;
+
+  // legacy/unknown properties
+  participants_only?: boolean;
+  team_member_id?: number;
+  Unlock?: any; // legacy property, type unclear
+  assessment_submission_id?: number;
 }
 
 /**
@@ -62,27 +107,7 @@ export interface TodoItem {
   is_done?: boolean;
   foreign_key?: number; // milestoneId/activitySequenceId/activityId
   model?: string;
-  meta?: {
-    id?: number;
-    name?: string;
-    description?: string;
-    points?: number;
-    badge?: string;
-    activity_id?: number;
-    context_id?: number;
-    assessment_id?: number;
-    assessment_submission_id?: number;
-    assessment_name?: string;
-    reviewer_name?: string;
-    team_id?: number;
-    team_member_id?: number;
-    participants_only?: boolean;
-    due_date?: string;
-    task_id?: number;
-    task_type?: string;
-    parent_activity?: number; // a referrence to the parent activity id for task
-    parent_milestone?: number; // a referrence to the parent activity id for task
-  };
+  meta?: TodoItemMeta;
   project_id?: number;
   timeline_id?: number;
 }
@@ -98,17 +123,16 @@ export const api = {
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class NotificationsService {
-
   private _notification$ = new Subject<TodoItem[]>();
   notification$ = this._notification$.pipe(shareReplay(1));
 
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
-  private notifications: TodoItem[];
+  private notifications: TodoItem[] = [];
 
   private connection = {
     informed: false,
@@ -132,24 +156,26 @@ export class NotificationsService {
     private apolloService: ApolloService,
     private eventsService: EventService,
     private networkService: NetworkService,
-    private unlockIndicatorService: UnlockIndicatorService,
+    private unlockIndicatorService: UnlockIndicatorService
   ) {
     // after messages read need to update chat notification data on notification service
-    this.utils.getEvent('chat-badge-update').subscribe(event => {
+    this.utils.getEvent("chat-badge-update").subscribe((event) => {
       this.getChatMessage().subscribe();
     });
 
-    this.networkService.isOnline.subscribe(isOnline => {
+    this.networkService.isOnline.subscribe((isOnline) => {
       this.connection.isOnline = isOnline;
 
       if (!isOnline) {
         this.connection.informed = true;
-        return window.alert($localize`You've disconnected from internet, you may not be able to perform any action now.`);
+        return window.alert(
+          $localize`You've disconnected from internet, you may not be able to perform any action now.`
+        );
       }
       if (this.connection.informed === true && isOnline) {
         this.presentToast($localize`You are back online.`, {
-          color: 'success',
-          icon: 'checkmark-circle'
+          color: "success",
+          icon: "checkmark-circle",
         });
       }
     });
@@ -172,7 +198,10 @@ export class NotificationsService {
    * @name modalConfig
    * @description futher customised filter
    */
-  private modalConfig({ component, componentProps }, options = {}): ModalOptions {
+  private modalConfig(
+    { component, componentProps },
+    options = {}
+  ): ModalOptions {
     const config = Object.assign(
       {
         component,
@@ -184,10 +213,9 @@ export class NotificationsService {
     return config;
   }
 
-  // show pop up message
-  // this is using pop-up.component.ts as the view
+  // show pop up with static message
   // put redirect = false if don't need to redirect
-  async popUp(type, data, redirect: any = false) {
+  async popUp(type: string, data: {[key: string]: any}, redirect?: string[]) {
     const component = PopUpComponent;
     const componentProps = {
       type,
@@ -198,15 +226,23 @@ export class NotificationsService {
     return modal;
   }
 
-  async modal(component, componentProps, options?, event?): Promise<void> {
-    return this.modalOnly(component, componentProps, options, event);
+  async modal(component, componentProps, options?, event?, modalId?: string): Promise<HTMLIonModalElement> {
+    return this.modalOnly(component, componentProps, options, event, modalId);
   }
 
-  async modalOnly(component, componentProps, options?, event?): Promise<void> {
-    const modalConfig = this.modalConfig({ component, componentProps }, options);
-    return this.modalService.addModal(modalConfig, event);
+  async modalOnly(component, componentProps, options?, event?, modalId?: string): Promise<any> {
+    const modalConfig = this.modalConfig(
+      { component, componentProps },
+      options
+    );
+    return this.modalService.addModal(modalConfig, event, modalId);
   }
 
+  /**
+   * Displays an alert dialog with the given configuration options.
+   * @param {AlertOptions} config - The options for the alert dialog.
+   * @returns {Promise<void>} A promise that resolves when the alert is presented.
+   */
   async alert(config: AlertOptions) {
     const alert = await this.alertController.create(config);
     return await alert.present();
@@ -217,8 +253,8 @@ export class NotificationsService {
     let toastOptions: ToastOptions = {
       message: message,
       duration: 3000,
-      position: 'top',
-      color: 'danger'
+      position: "top",
+      color: "danger",
     };
     toastOptions = Object.assign(toastOptions, options);
     const toast = await this.toastController.create(toastOptions);
@@ -228,7 +264,7 @@ export class NotificationsService {
   /**
    * show assessment submission response status toast
    *
-   * @param   {boolean}  isFail  flag to show success or fail message
+   * @param   {boolean}  option isFail/isDuplicated, default/empty is success
    *
    * @return  {Promise<void>}
    */
@@ -239,36 +275,47 @@ export class NotificationsService {
     label?: string;
   }): void | Promise<void> {
     if (!this.connection.isOnline) {
-      return alert('You are offline, please check your internet connection and try again.');
+      return alert(
+        "You are offline, please check your internet connection and try again."
+      );
     }
 
     if (option?.isDuplicated === true) {
-      return this.presentToast($localize`Duplicated submission detected. Your submission is already in our system.`, {
-        color: 'success',
-        icon: 'checkmark-circle'
-      });
+      return this.presentToast(
+        $localize`Duplicated submission detected. Your submission is already in our system.`,
+        {
+          color: "success",
+          icon: "checkmark-circle",
+        }
+      );
     }
 
     // fail message
     if (option?.isFail === true) {
       if (option?.label) {
         return this.presentToast(option.label, {
-          color: 'danger',
-          icon: 'close-circle'
+          color: "danger",
+          icon: "close-circle",
         });
       }
 
-      return this.presentToast($localize`Submission failed. Please try again.`, {
-        color: 'danger',
-        icon: 'close-circle'
-      });
+      return this.presentToast(
+        $localize`Submission failed. Please try again.`,
+        {
+          color: "danger",
+          icon: "close-circle",
+        }
+      );
     }
 
     // success by default
-    const message = option?.isReview === true ? $localize`Review Submitted.` : $localize`Assessment Submitted.`;
+    const message =
+      option?.isReview === true
+        ? $localize`Review Submitted.`
+        : $localize`Assessment Submitted.`;
     return this.presentToast(message, {
-      color: 'success',
-      icon: 'checkmark-circle'
+      color: "success",
+      icon: "checkmark-circle",
     });
   }
 
@@ -291,16 +338,16 @@ export class NotificationsService {
     const component = AchievementPopUpComponent;
     const componentProps = {
       type,
-      achievement
+      achievement,
     };
-    if (type === 'notification') {
+    if (type === "notification") {
       if (environment.demo) {
         return this.demo.normalResponse();
       }
       const identifier = 'Achievement-' + achievement.id;
-      await this.markTodoItemAsDone({
-        identifier,
-      }).toPromise();
+      await firstValueFrom(this.markTodoItemAsDone({
+        identifier: identifier
+      }));
 
       if (this.identifierMarkedAsDone.includes(identifier)) {
         return;
@@ -308,15 +355,23 @@ export class NotificationsService {
 
       this.identifierMarkedAsDone.push(identifier);
     }
-    const modal = await this.modal(component, componentProps, {
-      cssClass: this.utils.isMobile() ? 'practera-popup achievement-popup mobile-view' : 'practera-popup achievement-popup desktop-view',
-      keyboardClose: false,
-      backdropDismiss: false
-    }, () => { // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
-      if (options && options.activeElement && options.activeElement.focus) {
-        options.activeElement.focus();
+    const modal = await this.modal(
+      component,
+      componentProps,
+      {
+        cssClass: this.utils.isMobile()
+          ? "practera-popup achievement-popup mobile-view"
+          : "practera-popup achievement-popup desktop-view",
+        keyboardClose: false,
+        backdropDismiss: false,
+      },
+      () => {
+        // Added to support accessibility - https://www.w3.org/TR/WCAG21/#no-keyboard-trap
+        if (options && options.activeElement && options.activeElement.focus) {
+          options.activeElement.focus();
+        }
       }
-    });
+    );
 
     return modal;
   }
@@ -333,13 +388,16 @@ export class NotificationsService {
   async lockTeamAssessmentPopUp(data, event) {
     const componentProps = {
       name: data.name,
-      image: data.image
+      image: data.image,
     };
     const component = LockTeamAssessmentPopUpComponent;
     const modal = await this.modal(
-      component, componentProps,
+      component,
+      componentProps,
       {
-        cssClass: this.utils.isMobile() ? 'practera-popup lock-assessment-popup' : 'practera-popup lock-assessment-popup desktop-view',
+        cssClass: this.utils.isMobile()
+          ? "practera-popup lock-assessment-popup"
+          : "practera-popup lock-assessment-popup desktop-view",
       },
       event
     );
@@ -353,10 +411,13 @@ export class NotificationsService {
    * NotificationsService.activityCompletePopUp(3);
    *
    */
-  async activityCompletePopUp(activityId: number, activityCompleted: boolean): Promise<void> {
-    let cssClass = 'practera-popup activity-complete-popup';
+  async activityCompletePopUp(
+    activityId: number,
+    activityCompleted: boolean
+  ): Promise<HTMLIonModalElement> {
+    let cssClass = "practera-popup activity-complete-popup";
     if (this.utils.isMobile()) {
-      cssClass += ' mobile-view';
+      cssClass += " mobile-view";
     }
     return this.modal(
       ActivityCompletePopUpComponent,
@@ -364,19 +425,19 @@ export class NotificationsService {
       {
         cssClass: cssClass,
         keyboardClose: false,
-        backdropDismiss: false
+        backdropDismiss: false,
       }
     );
   }
 
   async loading(opts?: LoadingOptions): Promise<void> {
-    const loading = await this.loadingController.create(opts || {
-      spinner: 'dots',
-
-    });
+    const loading = await this.loadingController.create(
+      opts || {
+        spinner: "dots",
+      }
+    );
     return loading.present();
   }
-
 
   /**
    * trigger reviewer rating modal
@@ -387,14 +448,21 @@ export class NotificationsService {
    *
    * @return  {Promise<void>}             deferred ionic modal
    */
-  async popUpReviewRating(reviewId, redirect: string[] | boolean): Promise<void> {
-    return this.modalOnly(ReviewRatingComponent, {
-      reviewId,
-      redirect
-    }, {
-      id: `review-popup-${reviewId}`,
-      backdropDismiss: false,
-    });
+  async popUpReviewRating(
+    reviewId,
+    redirect: string[] | boolean
+  ): Promise<void> {
+    return this.modalOnly(
+      ReviewRatingComponent,
+      {
+        reviewId,
+        redirect,
+      },
+      {
+        id: `review-popup-${reviewId}`,
+        backdropDismiss: false,
+      }
+    );
   }
 
   /**
@@ -402,37 +470,74 @@ export class NotificationsService {
    */
   fastFeedbackModal(
     props: {
-      questions?: Array<Question>;
+      questions?: Question[];
       meta?: Meta | Object;
+      pulseCheckId?: string;
     },
-    modalOnly: boolean = false
+    options: {
+      closable?: boolean;
+      modalOnly: boolean;
+    } = {
+      closable: false,
+      modalOnly: false,
+    }
   ): Promise<HTMLIonModalElement | void> {
-    if (modalOnly) {
-      return this.modalOnly(FastFeedbackComponent, props, {
-        backdropDismiss: false,
-        showBackdrop: false,
-      });
+    const modalConfig = {
+      backdropDismiss: options?.closable === true,
+      showBackdrop: false,
+      ...options
+    };
+
+    // use pulseCheckId to identify each modal instance to prevent duplicate
+    const modalId = props.pulseCheckId ? `pulse-check-${props.pulseCheckId}` : null;
+
+    if (options.modalOnly) {
+      return this.modalOnly(FastFeedbackComponent, props, modalConfig, null, modalId);
     }
 
-    return this.modal(FastFeedbackComponent, props, {
-      backdropDismiss: false,
-      showBackdrop: false,
-    });
+    return this.modal(FastFeedbackComponent, props, modalConfig, null, modalId);
   }
 
+  private currentTodoItems: {id: number, identifier: string}[] = [];
+
   getTodoItems(): Observable<any> {
-    return this.request.get(api.get.todoItem, {
-      params: {
-        project_id: this.storage.getUser().projectId
-      }
-    }).pipe(map(response => {
-      if (response.success && response.data) {
-        const normalised = this._normaliseTodoItems(response.data);
-        this.notifications = normalised;
-        this._notification$.next(this.notifications);
-        return normalised;
-      }
-    }));
+    return this.request
+      .get(api.get.todoItem, {
+        params: {
+          project_id: this.storage.getUser().projectId,
+        },
+      })
+      .pipe(
+        map((response) => {
+          if (response.success && response.data) {
+            const todoItems: TodoItem[] = response.data;
+
+            // Store current TodoItems for duplicate detection
+            this.currentTodoItems = todoItems
+            .filter(item => item.is_done === false)
+            .map(item => ({
+              id: item.id,
+              identifier: item.identifier,
+              is_done: item.is_done
+            }));
+
+            // Clean up orphaned unlock indicators before normalizing
+            this.unlockIndicatorService.cleanupOrphanedIndicators(response.data);
+
+            const normalised = this._normaliseTodoItems(response.data);
+            this.notifications = normalised;
+            this._notification$.next(this.notifications);
+            return normalised;
+          }
+        })
+      );
+  }
+
+  /**
+   * Get current TodoItems for duplicate detection
+   */
+  getCurrentTodoItems(): {id: number, identifier: string}[] {
+    return this.currentTodoItems;
   }
 
   /**
@@ -445,17 +550,19 @@ export class NotificationsService {
    */
   private _normaliseTodoItems(data): Array<TodoItem> {
     let todoItems = [];
-    let unlockedTasks: UnlockedTask[] = [];
+    const unlockedTasks: UnlockedTask[] = [];
     if (!Array.isArray(data)) {
-      this.request.apiResponseFormatError('TodoItem array format error');
+      this.request.apiResponseFormatError("TodoItem array format error");
       return [];
     }
 
     data.forEach((todoItem: TodoItem) => {
-      if (!this.utils.has(todoItem, 'identifier') ||
-        !this.utils.has(todoItem, 'is_done') ||
-        !this.utils.has(todoItem, 'meta')) {
-        return this.request.apiResponseFormatError('TodoItem format error');
+      if (
+        !this.utils.has(todoItem, "identifier") ||
+        !this.utils.has(todoItem, "is_done") ||
+        !this.utils.has(todoItem, "meta")
+      ) {
+        return this.request.apiResponseFormatError("TodoItem format error");
       }
 
       // skip if the todoitem is already done
@@ -464,23 +571,23 @@ export class NotificationsService {
       }
 
       // todo item for user to see the feedback
-      if (todoItem.identifier.includes('AssessmentSubmission-')) {
+      if (todoItem.identifier.includes("AssessmentSubmission-")) {
         todoItems = this._addTodoItemForFeedbackAvailable(todoItem, todoItems);
       }
 
       // todo item for user to do the review
-      if (todoItem.identifier.includes('AssessmentReview-')) {
+      if (todoItem.identifier.includes("AssessmentReview-")) {
         todoItems = this._addTodoItemForReview(todoItem, todoItems);
       }
 
       // todo item for user to see the achievement earned message
-      if (todoItem.identifier.includes('Achievement-')) {
-        this.achievementPopUp('notification', {
+      if (todoItem.identifier.includes("Achievement-")) {
+        this.achievementPopUp("notification", {
           id: todoItem.meta.id,
           name: todoItem.meta.name,
           description: todoItem.meta.description,
           points: todoItem.meta.points,
-          image: todoItem.meta.badge
+          image: todoItem.meta.badge,
         });
       }
 
@@ -489,16 +596,16 @@ export class NotificationsService {
         unlockedTasks.push(unlockedTask);
       }
 
-      if (todoItem.identifier.includes('EventReminder-')) {
+      if (todoItem.identifier.includes("EventReminder-")) {
         // when we get a Event Reminder todo item,
         // fire an 'event-reminder' event, same as when we get this from Pusher
-        this.utils.broadcastEvent('event-reminder', {
-          meta: todoItem.meta
+        this.utils.broadcastEvent("event-reminder", {
+          meta: todoItem.meta,
         });
       }
 
       // todo item for user to submit the assessment
-      if (todoItem.identifier.includes('AssessmentSubmissionReminder-')) {
+      if (todoItem.identifier.includes("AssessmentSubmissionReminder-")) {
         todoItems = this._addTodoItemSubmissionReminder(todoItem, todoItems);
       }
     });
@@ -526,8 +633,8 @@ export class NotificationsService {
     //   "timeline_id": 2659
     // }
     if (
-      todoItem.model === 'Milestone' &&
-      todoItem.name === 'New Item' &&
+      todoItem.model === "Milestone" &&
+      todoItem.name === "New Item" &&
       todoItem.is_done === false &&
       todoItem.model
     ) {
@@ -539,11 +646,11 @@ export class NotificationsService {
       return {
         id: todoItem.id,
         identifier: todoItem.identifier,
-        ...itemId
+        ...itemId,
       };
     } else if (
-      todoItem.model !== 'Milestone' && // skip, due to indicator is determined by task and activity
-      todoItem.name === 'New Item' &&
+      todoItem.model !== "Milestone" && // skip, due to indicator is determined by task and activity
+      todoItem.name === "New Item" &&
       todoItem.model !== null &&
       todoItem.is_done === false &&
       todoItem.model
@@ -563,7 +670,7 @@ export class NotificationsService {
         [key: string]: any;
       } = {
         [key]: todoItem.meta?.task_id || todoItem.foreign_key,
-        taskType: todoItem.meta?.task_type
+        taskType: todoItem.meta?.task_type,
       };
 
       if (todoItem.meta?.parent_activity) {
@@ -577,7 +684,7 @@ export class NotificationsService {
       return {
         id: todoItem.id,
         identifier: todoItem.identifier,
-        ...itemId
+        ...itemId,
       };
     }
     return null;
@@ -585,17 +692,19 @@ export class NotificationsService {
 
   private _addTodoItemForFeedbackAvailable(todoItem, todoItems) {
     const item: TodoItem = {
-      type: '',
-      name: '',
-      description: '',
-      time: '',
-      meta: {}
+      type: "",
+      name: "",
+      description: "",
+      time: "",
+      meta: {},
     };
-    item.type = 'feedback_available';
-    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-      !this.utils.has(todoItem, 'meta.reviewer_name') ||
-      !this.utils.has(todoItem, 'created')) {
-      this.request.apiResponseFormatError('TodoItem meta format error');
+    item.type = "feedback_available";
+    if (
+      !this.utils.has(todoItem, "meta.assessment_name") ||
+      !this.utils.has(todoItem, "meta.reviewer_name") ||
+      !this.utils.has(todoItem, "created")
+    ) {
+      this.request.apiResponseFormatError("TodoItem meta format error");
       return todoItems;
     }
     item.name = $localize`New Feedback`;
@@ -608,16 +717,18 @@ export class NotificationsService {
 
   private _addTodoItemForReview(todoItem, todoItems) {
     const item: TodoItem = {
-      type: '',
-      name: '',
-      description: '',
-      time: '',
-      meta: {}
+      type: "",
+      name: "",
+      description: "",
+      time: "",
+      meta: {},
     };
-    item.type = 'review_submission';
-    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-      !this.utils.has(todoItem, 'created')) {
-      this.request.apiResponseFormatError('TodoItem meta format error');
+    item.type = "review_submission";
+    if (
+      !this.utils.has(todoItem, "meta.assessment_name") ||
+      !this.utils.has(todoItem, "created")
+    ) {
+      this.request.apiResponseFormatError("TodoItem meta format error");
       return todoItems;
     }
     item.name = $localize`New Submission for Review`;
@@ -630,25 +741,32 @@ export class NotificationsService {
 
   private _addTodoItemSubmissionReminder(todoItem, todoItems) {
     const item: TodoItem = {
-      type: '',
-      name: '',
-      description: '',
-      time: '',
-      meta: {}
+      type: "",
+      name: "",
+      description: "",
+      time: "",
+      meta: {},
     };
-    item.type = 'assessment_submission_reminder';
-    if (!this.utils.has(todoItem, 'meta.assessment_name') ||
-      !this.utils.has(todoItem, 'meta.context_id') ||
-      !this.utils.has(todoItem, 'meta.activity_id') ||
-      !this.utils.has(todoItem, 'meta.assessment_id') ||
-      !this.utils.has(todoItem, 'meta.due_date')) {
-      this.request.apiResponseFormatError('TodoItem meta format error');
+    item.type = "assessment_submission_reminder";
+    if (
+      !this.utils.has(todoItem, "meta.assessment_name") ||
+      !this.utils.has(todoItem, "meta.context_id") ||
+      !this.utils.has(todoItem, "meta.activity_id") ||
+      !this.utils.has(todoItem, "meta.assessment_id") ||
+      !this.utils.has(todoItem, "meta.due_date")
+    ) {
+      this.request.apiResponseFormatError("TodoItem meta format error");
       return todoItems;
     }
     item.name = $localize`Submission Reminder`;
     item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task`;
     if (todoItem?.meta?.due_date) {
-      item.description = $localize`Remember to send ${todoItem.meta.assessment_name} task before ${this.utils.dueDateFormatter(todoItem.meta.due_date, true)}`;
+      item.description = $localize`Remember to send ${
+        todoItem.meta.assessment_name
+      } task before ${this.utils.dueDateFormatter(
+        todoItem.meta.due_date,
+        true
+      )}`;
     }
     item.time = this.utils.timeFormatter(todoItem.created);
     item.meta = todoItem.meta;
@@ -657,51 +775,57 @@ export class NotificationsService {
   }
 
   getChatMessage() {
-    return this.apolloService.graphQLFetch(
-      `query getChannels {
+    return this.apolloService
+      .graphQLFetch(
+        `query getChannels {
         channels{
           name unreadMessageCount lastMessage lastMessageCreated
         }
       }`
-    ).pipe(map(response => {
-      if (response.data) {
-        const normalized = this._normaliseChatMessage(response.data);
-        if (!this.utils.isEmpty(normalized)) {
-          this._addChatTodoItem(normalized);
-        } else {
-          this._removeChatTodoItem();
-        }
+      )
+      .pipe(
+        map((response) => {
+          if (response.data) {
+            const normalized = this._normaliseChatMessage(response.data);
+            if (!this.utils.isEmpty(normalized)) {
+              this._addChatTodoItem(normalized);
+            } else {
+              this._removeChatTodoItem();
+            }
 
-        this._notification$.next(this.notifications);
-        return normalized;
-      }
-    }));
+            this._notification$.next(this.notifications);
+            return normalized;
+          }
+        })
+      );
   }
 
   private _normaliseChatMessage(data): TodoItem {
     const result = JSON.parse(JSON.stringify(data.channels));
     if (!Array.isArray(result)) {
-      this.request.apiResponseFormatError('Chat array format error');
+      this.request.apiResponseFormatError("Chat array format error");
       return {};
     }
     let unreadMessages = 0;
     let noOfChats = 0;
     let todoItem: TodoItem;
-    result.forEach(message => {
-      if (!this.utils.has(message, 'unreadMessageCount') ||
-        !this.utils.has(message, 'name') ||
-        !this.utils.has(message, 'lastMessage') ||
-        !this.utils.has(message, 'lastMessageCreated')) {
-        return this.request.apiResponseFormatError('Chat object format error');
+    result.forEach((message) => {
+      if (
+        !this.utils.has(message, "unreadMessageCount") ||
+        !this.utils.has(message, "name") ||
+        !this.utils.has(message, "lastMessage") ||
+        !this.utils.has(message, "lastMessageCreated")
+      ) {
+        return this.request.apiResponseFormatError("Chat object format error");
       }
 
       // if there is any unread message
       if (message.unreadMessageCount > 0) {
         todoItem = {
-          type: 'chat',
-          name: '',
-          description: '',
-          time: '',
+          type: "chat",
+          name: "",
+          description: "",
+          time: "",
         };
 
         todoItem.name = $localize`Unread Messages`;
@@ -734,10 +858,10 @@ export class NotificationsService {
    * and after this will update _notifications$ subject to broadcast the new update
    * @param chatTodoItem normalized Todo item for chat
    */
-  private _addChatTodoItem(chatTodoItem) {
+  private _addChatTodoItem(chatTodoItem: TodoItem) {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
-      if (todoItem.type === 'chat') {
+      if (todoItem.type === "chat") {
         currentChatTodoIndex = index;
         return true;
       }
@@ -749,16 +873,16 @@ export class NotificationsService {
   }
 
   /**
-  * Will remove chat notification to the notification list.
-  * This method use when there are no unread messages but old chat notification still on the notification list.
-  *  - before it execute any codes for remove notifications. it checks is there any chat notification todo items.
-  *  - if it is, it will remove chat notification todo item from notification list
-  * and after this will update _notifications$ subject to broadcast the new update
-  */
+   * Will remove chat notification to the notification list.
+   * This method use when there are no unread messages but old chat notification still on the notification list.
+   *  - before it execute any codes for remove notifications. it checks is there any chat notification todo items.
+   *  - if it is, it will remove chat notification todo item from notification list
+   * and after this will update _notifications$ subject to broadcast the new update
+   */
   private _removeChatTodoItem() {
     let currentChatTodoIndex = -1;
     const currentChatTodo = this.notifications?.find((todoItem, index) => {
-      if (todoItem.type === 'chat') {
+      if (todoItem.type === "chat") {
         currentChatTodoIndex = index;
         return true;
       }
@@ -774,28 +898,33 @@ export class NotificationsService {
    * @return {TodoItem}       [Normalised todo item]
    */
   getTodoItemFromEvent(event): TodoItem {
-    if (!this.utils.has(event, 'type')) {
-      this.request.apiResponseFormatError('Pusher notification event format error');
+    if (!this.utils.has(event, "type")) {
+      this.request.apiResponseFormatError(
+        "Pusher notification event format error"
+      );
       return {};
     }
 
     let result: TodoItem;
     switch (event.type) {
       // This is a feedback available event
-      case 'assessment_review_published':
-        if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
-          !this.utils.has(event, 'meta.AssessmentReview.reviewer_name') ||
-          !this.utils.has(event, 'meta.AssessmentReview.published_date') ||
-          !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-          !this.utils.has(event, 'meta.AssessmentReview.activity_id') ||
-          !this.utils.has(event, 'meta.AssessmentReview.context_id')
+      case "assessment_review_published":
+        if (
+          !this.utils.has(event, "meta.AssessmentReview.assessment_name") ||
+          !this.utils.has(event, "meta.AssessmentReview.reviewer_name") ||
+          !this.utils.has(event, "meta.AssessmentReview.published_date") ||
+          !this.utils.has(event, "meta.AssessmentReview.assessment_id") ||
+          !this.utils.has(event, "meta.AssessmentReview.activity_id") ||
+          !this.utils.has(event, "meta.AssessmentReview.context_id")
         ) {
-          this.request.apiResponseFormatError('Pusher notification event meta format error');
+          this.request.apiResponseFormatError(
+            "Pusher notification event meta format error"
+          );
           return {};
         }
         const review = event.meta.AssessmentReview;
         result = {
-          type: 'feedback_available',
+          type: "feedback_available",
           name: $localize`New Feedback`,
           description: $localize`Feedback received from ${review.reviewer_name} for ${review.assessment_name}`,
           time: this.utils.timeFormatter(review.published_date),
@@ -805,62 +934,99 @@ export class NotificationsService {
             assessment_id: review.assessment_id,
             assessment_name: review.assessment_name,
             reviewer_name: review.reviewer_name,
-          }
+          },
         };
         break;
 
       // This is a submission ready for review event
-      case 'assessment_review_assigned':
-        if (!this.utils.has(event, 'meta.AssessmentReview.assessment_name') ||
-          !this.utils.has(event, 'meta.AssessmentReview.assigned_date') ||
-          !this.utils.has(event, 'meta.AssessmentReview.assessment_id') ||
-          !this.utils.has(event, 'meta.AssessmentReview.context_id') ||
-          !this.utils.has(event, 'meta.AssessmentReview.assessment_submission_id')
+      case "assessment_review_assigned":
+        if (
+          !this.utils.has(event, "meta.AssessmentReview.assessment_name") ||
+          !this.utils.has(event, "meta.AssessmentReview.assigned_date") ||
+          !this.utils.has(event, "meta.AssessmentReview.assessment_id") ||
+          !this.utils.has(event, "meta.AssessmentReview.context_id") ||
+          !this.utils.has(
+            event,
+            "meta.AssessmentReview.assessment_submission_id"
+          )
         ) {
-          this.request.apiResponseFormatError('Pusher notification event meta format error');
+          this.request.apiResponseFormatError(
+            "Pusher notification event meta format error"
+          );
           return {};
         }
         result = {
-          type: 'review_submission',
+          type: "review_submission",
           name: $localize`New Submission for Review`,
           description: $localize`Submission received from ${event.meta.AssessmentReview.submitter_name} for ${event.meta.AssessmentReview.assessment_name}`,
-          time: this.utils.timeFormatter(event.meta.AssessmentReview.assigned_date),
+          time: this.utils.timeFormatter(
+            event.meta.AssessmentReview.assigned_date
+          ),
           meta: {
             context_id: event.meta.AssessmentReview.context_id,
             assessment_id: event.meta.AssessmentReview.assessment_id,
             assessment_name: event.meta.AssessmentReview.assessment_name,
-            assessment_submission_id: event.meta.AssessmentReview.assessment_submission_id,
-          }
+            assessment_submission_id:
+              event.meta.AssessmentReview.assessment_submission_id,
+          },
         };
         break;
 
-      case 'assessment_submission_reminder':
-        if (!this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_name') ||
-          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.context_id') ||
-          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.activity_id') ||
-          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.assessment_id') ||
-          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.due_date') ||
-          !this.utils.has(event, 'meta.AssessmentSubmissionReminder.reminded_date')
+      case "assessment_submission_reminder":
+        if (
+          !this.utils.has(
+            event,
+            "meta.AssessmentSubmissionReminder.assessment_name"
+          ) ||
+          !this.utils.has(
+            event,
+            "meta.AssessmentSubmissionReminder.context_id"
+          ) ||
+          !this.utils.has(
+            event,
+            "meta.AssessmentSubmissionReminder.activity_id"
+          ) ||
+          !this.utils.has(
+            event,
+            "meta.AssessmentSubmissionReminder.assessment_id"
+          ) ||
+          !this.utils.has(
+            event,
+            "meta.AssessmentSubmissionReminder.due_date"
+          ) ||
+          !this.utils.has(
+            event,
+            "meta.AssessmentSubmissionReminder.reminded_date"
+          )
         ) {
-          this.request.apiResponseFormatError('TodoItem meta format error');
+          this.request.apiResponseFormatError("TodoItem meta format error");
           return {};
         }
         result = {
-          type: 'assessment_submission_reminder',
+          type: "assessment_submission_reminder",
           name: $localize`Submission Reminder`,
           description: $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task`,
-          time: this.utils.timeFormatter(event.meta.AssessmentSubmissionReminder.reminded_date),
+          time: this.utils.timeFormatter(
+            event.meta.AssessmentSubmissionReminder.reminded_date
+          ),
           meta: {
             context_id: event.meta.AssessmentSubmissionReminder.context_id,
-            assessment_id: event.meta.AssessmentSubmissionReminder.assessment_id,
-            assessment_name: event.meta.AssessmentSubmissionReminder.assessment_name,
+            assessment_id:
+              event.meta.AssessmentSubmissionReminder.assessment_id,
+            assessment_name:
+              event.meta.AssessmentSubmissionReminder.assessment_name,
             activity_id: event.meta.AssessmentSubmissionReminder.activity_id,
-            due_date: event.meta.AssessmentSubmissionReminder.due_date
-          }
+            due_date: event.meta.AssessmentSubmissionReminder.due_date,
+          },
         };
 
         if (event?.meta?.AssessmentSubmissionReminder?.due_date) {
-          result.description = $localize`Remember to send ${event.meta.AssessmentSubmissionReminder.assessment_name} task before ${this.utils.dueDateFormatter(event.meta.AssessmentSubmissionReminder.due_date, true)}`;
+          result.description = $localize`Remember to send ${
+            event.meta.AssessmentSubmissionReminder.assessment_name
+          } task before ${this.utils.dueDateFormatter(
+            event.meta.AssessmentSubmissionReminder.due_date,
+            true
+          )}`;
         }
         break;
     }
@@ -877,34 +1043,40 @@ export class NotificationsService {
    * @param {Obj} data [The event data from Pusher notification]
    */
   getReminderEvent(data) {
-    if (!this.utils.has(data, 'meta.id')) {
-      this.request.apiResponseFormatError('Pusher notification event format error');
+    if (!this.utils.has(data, "meta.id")) {
+      this.request.apiResponseFormatError(
+        "Pusher notification event format error"
+      );
       return of(null);
     }
-    return this.request.get(api.get.events, {
-      params: {
-        type: 'activity_session',
-        id: data.meta.id
-      }
-    }).pipe(map(response => {
-      if (this.utils.isEmpty(response.data)) {
-        return null;
-      }
-      const event = this.eventsService.normaliseEvents(response.data)[0];
-      if (event.isPast) {
-        // mark the todo item as done if event starts
-        this.postEventReminder(event);
-        return null;
-      }
+    return this.request
+      .get(api.get.events, {
+        params: {
+          type: "activity_session",
+          id: data.meta.id,
+        },
+      })
+      .pipe(
+        map((response) => {
+          if (this.utils.isEmpty(response.data)) {
+            return null;
+          }
+          const event = this.eventsService.normaliseEvents(response.data)[0];
+          if (event.isPast) {
+            // mark the todo item as done if event starts
+            this.postEventReminder(event);
+            return null;
+          }
 
-      this._eventReminder$.next(event);
-      return event;
-    }));
+          this._eventReminder$.next(event);
+          return event;
+        })
+      );
   }
 
   postEventReminder(event) {
     return this.markTodoItemAsDone({
-      identifier: `EventReminder-${event.id}`
+      identifier: `EventReminder-${event.id}`,
     }).subscribe();
   }
 
@@ -912,14 +1084,61 @@ export class NotificationsService {
    * Mark the todo item as done
    * @param {Obj} todoItem
    */
-  markTodoItemAsDone(match: {identifier?: string, id?: number}) {
+  markTodoItemAsDone(match: { identifier?: string; id?: number }) {
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {
         ...match,
         project_id: this.storage.getUser().projectId,
-        is_done: true
-      }
+        is_done: true,
+      },
     });
+  }
+
+  /**
+   * Mark multiple todo items as done (bulk operation)
+   * Handles server-side duplicates for same unlock indicator
+   */
+  markMultipleTodoItemsAsDone(items: { identifier?: string; id?: number }[]) {
+    const markingOperations = items.map(item =>
+      this.markTodoItemAsDone(item).pipe(
+        map(response => ({ success: true, item, response })),
+      )
+    );
+
+    // eslint-disable-next-line no-console
+    console.log(`Bulk marking ${items.length} TodoItems as done:`, items);
+    return markingOperations;
+  }
+
+  async trackInfo() {
+    const modal = await this.modalController.create({
+      component: PopUpComponent,
+      componentProps: {
+        type: "pulseCheckStatus"
+      },
+    });
+
+    return await modal.present();
+  }
+
+  /**
+   * Show team check-in alert when there's misalignment in team status
+   */
+  async showTeamCheckInAlert() {
+    const alert = await this.alertController.create({
+      header: 'Team Check-In Time! 👥',
+      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
+        `✓ Schedule a quick team huddle\n` +
+        `✓ Review your Project plan and milestones together\n` +
+        `✓ Redistribute tasks if needed\n` +
+        `✓ Document 3 next steps forward\n\n` +
+        `Need strategies? Visit Teamwork Toolkit →\n` +
+        `We're here to help: programs@practera.com`,
+      buttons: ['OK'],
+      cssClass: 'team-check-in-alert'
+    });
+
+    await alert.present();
   }
 }

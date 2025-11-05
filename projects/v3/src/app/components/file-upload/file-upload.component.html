@@ -1,0 +1,107 @@
+<div
+  *ngIf="!doAssessment && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
+  <ng-container *ngIf="submission?.answer">
+    <ion-item lines="none">
+      <ion-label class="white-space-normal body-2 gray-3">
+        <p><ion-chip class="label orange" i18n>Learner answer</ion-chip></p>
+      </ion-label>
+    </ion-item>
+
+    <app-file-display [file]="submission.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
+      [lines]="(doReview && question?.canAnswer) ? 'none': 'full'"
+      [deletable]="false"
+    ></app-file-display>
+  </ng-container>
+
+  <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
+    <ion-item lines="none">
+      <ion-label class="white-space-normal body-2 gray-3">
+        <p><ion-chip class="label yellow black" i18n>Reviewer answer</ion-chip></p>
+        <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">
+          No answer given to this optional question.
+        </p>
+      </ion-label>
+    </ion-item>
+
+    <app-file-display
+      *ngIf="review?.answer"
+      [file]="review?.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
+      [deletable]="false"
+    ></app-file-display>
+  </ng-container>
+
+  <ng-container *ngIf="review?.comment && question.canComment === true">
+    <ion-item class="feedback-title ion-no-padding" lines="none">
+      <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
+      <ion-label i18n>Feedback</ion-label>
+    </ion-item>
+    <ion-textarea class="ion-no-margin preview textarea white-space-pre"
+      [autoGrow]="true"
+      [value]="review.comment"
+      [disabled]="true"
+    ></ion-textarea>
+  </ng-container>
+</div>
+
+<ng-container *ngIf="doAssessment">
+  <div class="ion-padding">
+    <div class="uppy-container" *ngIf="!uploadedFile && !submission?.answer">
+      <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
+      </uppy-dashboard>
+    </div>
+
+    <ion-text *ngFor="let error of errors" color="danger">
+      <p role="alert" aria-live="polite">{{error}}</p>
+    </ion-text>
+
+    <app-file-display
+      [file]="uploadedFile || submission?.answer"
+      [fileType]="question.fileType || 'any'"
+      [isFileComponent]="true"
+      [disabled]="control.disabled"
+      (removeFile)="removeSubmitFile($event)"
+    ></app-file-display>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="doReview">
+  <ng-container *ngIf="question.canAnswer">
+    <div class="uppy-container ion-padding"  *ngIf="!uploadedFile && !review?.answer">
+      <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
+      </uppy-dashboard>
+    </div>
+
+    <ng-container *ngIf="uploadedFile || review.answer">
+      <ion-item lines="none">
+        <ion-label class="white-space-normal body-2 gray-3">
+          <p><ion-chip class="label yellow black" i18n>Reviewer answer</ion-chip></p>
+        </ion-label>
+      </ion-item>
+
+      <app-file-display
+        *ngIf="uploadedFile || review?.answer"
+        [file]="uploadedFile || review?.answer"
+        [fileType]="question.fileType || 'any'"
+        [isFileComponent]="true"
+        (removeFile)="removeSubmitFile($event)"
+      ></app-file-display>
+    </ng-container>
+  </ng-container>
+
+  <div class="feedback-field ion-padding-horizontal ion-padding-bottom"
+    *ngIf="question?.canComment && submission?.answer">
+    <ion-item class="feedback-title ion-no-padding" lines="none">
+      <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
+      <ion-label i18n>Feedback</ion-label>
+    </ion-item>
+    <ion-textarea class="ion-no-margin textarea" [autoGrow]="true"
+      [attr.aria-label]="'expert\'s review feedback'"
+      #commentEle [(ngModel)]="comment" (ngModelChange)="onChange(comment, 'comment')"
+      placeholder="Please put your feedback here" [disabled]="control.disabled"
+    ></ion-textarea>
+  </div>
+</ng-container>

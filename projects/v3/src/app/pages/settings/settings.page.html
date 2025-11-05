@@ -15,17 +15,14 @@
     <ng-container *ngIf="!isMobile; else mobileProfile">
       <div class="avatar-and-profile">
         <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile?.image" alt="user profile" i18n-alt [appFallbackImage]="'assets/loading.gif'">
+          <img *ngIf="!imageUpdating" [src]="profile?.avatar" alt="user profile" i18n-alt [appFallbackImage]="'assets/loading.gif'">
           <p *ngIf="imageUpdating" class="loading-icon">
-            <ion-spinner name="bubbles"></ion-spinner>
+            <ion-spinner name="bubbles" role="status"></ion-spinner>
           </p>
         </ion-avatar>
 
         <ion-label>
-          <app-file-stack [accept]="acceptFileTypes"
-            [fileType]="'image'" [type]="'profileImage'"
-            (uploadCompleted)="uploadProfileImage($event)"
-          ></app-file-stack>
+          <ion-button (click)="profileImage()">Upload</ion-button>
         </ion-label>
       </div>
     </ng-container>
@@ -33,15 +30,14 @@
     <ng-template #mobileProfile>
       <ion-item>
         <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile?.image || '/assets/loading.gif'" alt="user profile">
+          <img *ngIf="!imageUpdating" [src]="profile?.avatar || '/assets/loading.gif'" alt="user profile">
           <p *ngIf="imageUpdating" class="loading-icon">
-            <ion-spinner name="bubbles"></ion-spinner>
+            <ion-spinner name="bubbles" role="status"></ion-spinner>
           </p>
         </ion-avatar>
 
         <ion-label>
-          <app-file-stack [accept]="acceptFileTypes" [fileType]="'image'" [type]="'profileImage'"
-            (uploadCompleted)="uploadProfileImage($event)"></app-file-stack>
+          <ion-button (click)="profileImage()">Upload</ion-button>
         </ion-label>
       </ion-item>
     </ng-template>

@@ -1,0 +1,54 @@
+@mixin traffic-light-group-styles {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+:host {
+  display: flex;
+}
+
+.traffic-light-group {
+  @include traffic-light-group-styles;
+}
+
+.traffic-light-group span {
+  margin-right: 5px;
+}
+
+.spacing-right {
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  :host {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 1242px) {
+  :host {
+    width: 100%;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 950px) {
+  .traffic-light-group {
+    @include traffic-light-group-styles;
+    flex-wrap: wrap;
+    min-width: auto !important;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 298px) {
+  .traffic-light-group {
+    @include traffic-light-group-styles;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    min-width: auto !important;
+  }
+}
+

@@ -1,12 +1,12 @@
 import { debounce } from 'lodash';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, delay, filter, firstValueFrom, Subject, Subscription, tap } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
 import { AssessmentComponent } from '@v3/app/components/assessment/assessment.component';
 import { debounceTime } from 'rxjs/operators';
@@ -18,24 +18,25 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
   templateUrl: './assessment-mobile.page.html',
   styleUrls: ['./assessment-mobile.page.scss'],
 })
-export class AssessmentMobilePage implements OnInit {
+export class AssessmentMobilePage implements OnInit, OnDestroy {
   assessment: Assessment;
   submission: Submission;
   review: AssessmentReview;
   activityId: number;
   contextId: number;
   submissionId: number;
-  action: string;
-  fromPage: string;
+  action: 'assessment' | 'review';
+  fromPage: string; // referral source page
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   saving: boolean;
-
   currentTask: Task;
 
   @ViewChild(AssessmentComponent) assessmentComponent!: AssessmentComponent;
   flashIndicators: { [key: string]: boolean } = {};
   scrollSubject: Subject<null> = new Subject();
+  private subscriptions = new Subscription();
+  private assessmentDataLoaded = false; // check asmt data loaded
 
   constructor(
     private route: ActivatedRoute,
@@ -47,9 +48,10 @@ export class AssessmentMobilePage implements OnInit {
     private readonly utils: UtilsService,
     private reviewService: ReviewService,
   ) {
-    this.scrollSubject
-    .pipe(debounceTime(300))
-    .subscribe(() => this.flashHighlight());
+    const scrollSub = this.scrollSubject
+      .pipe(debounceTime(300))
+      .subscribe(() => this.flashHighlight());
+    this.subscriptions.add(scrollSub);
   }
 
   flashHighlight(): void {
@@ -65,16 +67,12 @@ export class AssessmentMobilePage implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
   ngOnInit() {
-    this.assessmentService.assessment$.subscribe(res => {
-      this.assessment = res;
-      this.utils.setPageTitle(this.assessment?.name);
-    });
-    this.assessmentService.submission$.subscribe(res => {
-      this.submission = res;
-    });
-    this.assessmentService.review$.subscribe(res => this.review = res);
-    this.route.params.subscribe(params => {
+    const paramsSub = this.route.params.subscribe(params => {
       const assessmentId = +params.id;
       this.action = this.route.snapshot.data.action;
       this.fromPage = this.route.snapshot.data.from;
@@ -85,7 +83,34 @@ export class AssessmentMobilePage implements OnInit {
       this.contextId = +params.contextId;
       this.submissionId = +params.submissionId;
       this.assessmentService.getAssessment(assessmentId, this.action, this.activityId, this.contextId, this.submissionId);
+      this.assessmentDataLoaded = true;
     });
+    this.subscriptions.add(paramsSub);
+
+    const assessmentSub = this.assessmentService.assessment$.
+      pipe(
+        filter(res => res && this.assessmentDataLoaded), // only proceed if assessment data is loaded
+      ).subscribe(res => {
+        if (!res) {
+          this.goBack();
+          return;
+        }
+
+        if (res) {
+          this.assessment = res;
+          this.utils.setPageTitle(this.assessment?.name);
+        }
+      });
+    this.subscriptions.add(assessmentSub);
+
+    const taskSub = this.activityService.currentTask$.subscribe(res => this.currentTask = res);
+    this.subscriptions.add(taskSub);
+
+    const submissionSub = this.assessmentService.submission$.subscribe(res => this.submission = res);
+    this.subscriptions.add(submissionSub);
+
+    const reviewSub = this.assessmentService.review$.subscribe(res => this.review = res);
+    this.subscriptions.add(reviewSub);
   }
 
   get restrictedAccess() {
@@ -102,7 +127,7 @@ export class AssessmentMobilePage implements OnInit {
   }
 
   onScroll() {
-    this.scrollSubject.next();
+    this.scrollSubject.next(null);
   }
 
   goBack() {
@@ -126,21 +151,21 @@ export class AssessmentMobilePage implements OnInit {
 
     try {
       let hasSubmission = false;
-      const { submission } = await this.assessmentService.fetchAssessment(
+      const { submission } = await firstValueFrom(this.assessmentService.fetchAssessment(
         event.assessmentId,
         this.action,
         this.activityId,
         event.contextId,
         event.submissionId,
-      ).toPromise();
+      ));
 
       if (this.action === 'assessment' && submission.status === 'in progress') {
-        const saved = await this.assessmentService.submitAssessment(
+        const saved = await firstValueFrom(this.assessmentService.submitAssessment(
           event.submissionId,
           event.assessmentId,
           event.contextId,
           event.answers
-        ).toPromise();
+        ));
 
         // http 200 but error
         if (saved?.data?.submitAssessment?.success !== true || this.utils.isEmpty(saved)) {
@@ -148,12 +173,12 @@ export class AssessmentMobilePage implements OnInit {
           throw new Error("Error submitting assessment");
         }
       } else if (this.action === 'review' && submission.status === 'pending review') {
-        const saved = await this.assessmentService.submitReview(
+        const saved = await firstValueFrom(this.assessmentService.submitReview(
           event.assessmentId,
           this.review.id,
           event.submissionId,
           event.answers
-        ).toPromise();
+        ));
 
         // http 200 but error
         if (saved?.data?.submitReview?.success !== true || this.utils.isEmpty(saved)) {
@@ -171,13 +196,13 @@ export class AssessmentMobilePage implements OnInit {
         await this.assessmentService.pullFastFeedback();
       }
 
-      this.savingText$.next($localize `Last saved ${this.utils.getFormatedCurrentTime()}`);
+      this.savingText$.next($localize`Last saved ${this.utils.getFormatedCurrentTime()}`);
       if (!event.autoSave) {
         // show toast message
         if (hasSubmission === true) {
           this.notificationsService.assessmentSubmittedToast({ isDuplicated: true });
         } else {
-          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review'});
+          this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review' });
         }
 
         await this.assessmentService.fetchAssessment(
@@ -206,21 +231,24 @@ export class AssessmentMobilePage implements OnInit {
     } catch (err) {
       this.btnDisabled$.next(false);
       this.saving = false;
-      this.notificationsService.assessmentSubmittedToast({isFail: true});
+      this.notificationsService.assessmentSubmittedToast({ isFail: true });
     }
   }
 
-  async readFeedback(event) {
+  async readFeedback(submissionId: number) {
     try {
-      await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+      const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
+      await firstValueFrom(savedReview.pipe(
+        // get the latest activity tasks and navigate to the next task
+        // wait for a while for the server to save the "read feedback" status
+        tap(() => this.activityService.getActivity(this.activityId, true, this.task)),
+        delay(400)
+      ));
       await this.reviewRatingPopUp();
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+      await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
-      // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activityId, true, this.task, () => {
-        this.btnDisabled$.next(false);
-      });
-    } catch(err) {
+      this.btnDisabled$.next(false);
+    } catch (err) {
       this.btnDisabled$.next(false);
       console.error(err);
     }

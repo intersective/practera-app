@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
@@ -42,7 +42,22 @@ export class TabsPage implements OnInit, OnDestroy {
   ) {
   }
 
+  /**
+   * Check if a feature is enabled in developer mode only
+   * @param featureName The name of the feature to check
+   * @returns True if the feature is enabled in developer mode, false otherwise
+   */
+  forDeveloperMode(featureName: string): boolean {
+    // List of features to enable in developer mode
+    const betaFeatures = [];
+    if (isDevMode() && betaFeatures.includes(featureName)) {
+      return true;
+    }
+    return false;
+  }
+
   ngOnInit() {
+    this.utils.setPageTitle('Practera');
     this.utils.screenStatus$.subscribe((res) => {
       this.hasLeftSidebar = res.leftSidebarExpanded;
     });
@@ -104,7 +119,7 @@ export class TabsPage implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => {
-      if (sub.closed == false) {
+      if (sub.closed === false) {
         sub.unsubscribe();
       }
     });

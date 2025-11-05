@@ -4,12 +4,10 @@
   *ngIf="result?.status === 'completed'; else conversionPending"
   tabindex="0"
   role="button">
-  <p class="label" [title]="video?.fileObject?.filename">
-    {{ video?.fileObject?.filename }}
-  </p>
-  <div id="inner-box">
+  <p class="label" [title]="video?.fileObject?.filename" [innerHTML]="video?.fileObject?.filename"></p>
+  <div [attr.id]="'inner-box-video-' + video?.fileObject?.uuid">
     <p>
-      <ion-icon name="play-circle"></ion-icon>
+      <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
     </p>
   </div>
 </div>
@@ -17,7 +15,7 @@
 <ng-template #conversionPending>
   <ng-container *ngIf="waitedTooLong === false; else longWait">
     <div class="waiting-mgs" i18n>
-      <ion-spinner name="bubbles"></ion-spinner>please wait
+      <ion-spinner name="bubbles" role="status"></ion-spinner>please wait
     </div>
   </ng-container>
 </ng-template>

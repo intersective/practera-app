@@ -175,6 +175,11 @@ jobs:
           export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_BADGE_PROJECT_URL=https://badge.usa.practera.com
+          export CUSTOM_UPLOAD_TUS_ENDPOINT=https://tusd.practera.com/uploads/
+          export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
+          export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=false
+          export CUSTOM_HELPLINE=programs@practera.com
+          export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -202,6 +207,7 @@ jobs:
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
           CUSTOM_LIVE_SERVER_REGION: US
+          CUSTOM_STACK_NAME: ${{ env.STACK_NAME }}
 
 ###############################################################
 #  BUILD WEB PACKAGES

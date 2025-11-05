@@ -51,39 +51,7 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   // propagate changes into the form control
   propagateChange = (_: any) => {};
 
-  // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
-  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
-  onChange(value, type?: string) {
-    // set changed value (answer or comment)
-    if (type) {
-      // initialise innerValue if not set
-      if (!this.innerValue) {
-        this.innerValue = {
-          answer: '',
-          comment: ''
-        };
-      }
-      this.innerValue[type] = value;
-    } else {
-      this.innerValue = value;
-    }
-
-    // propagate value into form control using control value accessor interface
-    this.propagateChange(this.innerValue);
-
-    // reset errors
-    this.errors = [];
-    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (const key in this.control.errors) {
-      if (key === 'required') {
-        this.errors.push('This question is required');
-      } else {
-        this.errors.push(this.control.errors[key]);
-      }
-    }
-
-
-
+  triggerSave(): void {
     const action: {
       autoSave?: boolean;
       goBack?: boolean;
@@ -115,6 +83,41 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
     this.submitActions$.next(action);
   }
 
+
+  // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
+  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
+  onChange(value, type?: string) {
+    // set changed value (answer or comment)
+    if (type) {
+      // initialise innerValue if not set
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: '',
+          comment: ''
+        };
+      }
+      this.innerValue[type] = value;
+    } else {
+      this.innerValue = value;
+    }
+
+    // propagate value into form control using control value accessor interface
+    this.propagateChange(this.innerValue);
+
+    // reset errors
+    this.errors = [];
+    // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
+    for (const key in this.control.errors) {
+      if (key === 'required') {
+        this.errors.push('This question is required');
+      } else {
+        this.errors.push(this.control.errors[key]);
+      }
+    }
+
+    this.triggerSave();
+  }
+
   // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
@@ -144,10 +147,9 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
       this.innerValue.answer = this.review.answer;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
@@ -164,5 +166,15 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
+  }
+
+  // innerHTML text toggle - submission
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  // innerHTML text toggle - review
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
   }
 }

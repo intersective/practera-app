@@ -5,7 +5,7 @@ import {
   HostListener,
   OnDestroy,
 } from "@angular/core";
-import { NavigationEnd, Router } from "@angular/router";
+import { NavigationEnd, NavigationStart, Router } from "@angular/router";
 import { Platform } from "@ionic/angular";
 import { SharedService } from "@v3/services/shared.service";
 import { environment } from "@v3/environments/environment";
@@ -16,6 +16,7 @@ import { AuthService } from "@v3/services/auth.service";
 import { VersionCheckService } from "@v3/services/version-check.service";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
   selector: "app-root",
@@ -28,7 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   $unsubscribe = new Subject();
   lastVisitedUrl: string;
 
-  // list of urls that should not be cached
+  // urls that should not be cached for last visited tracking
   noneCachedUrl = [
     'devtool',
     'registration',
@@ -38,6 +39,9 @@ export class AppComponent implements OnInit, OnDestroy {
     'global_login',
     'direct_login',
     'do=secure',
+    'auth/secure',
+    'assessment-mobile/review',
+    'undefined',
   ];
 
   constructor(
@@ -49,10 +53,17 @@ export class AppComponent implements OnInit, OnDestroy {
     private utils: UtilsService,
     private sanitizer: DomSanitizer,
     private authService: AuthService,
-    private versionCheckService: VersionCheckService
+    private versionCheckService: VersionCheckService,
+    private cleanupService: ComponentCleanupService,
   ) {
     this.customHeader = null;
     this.initializeApp();
+
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.cleanupService.triggerCleanup();
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -81,7 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
           const expConfig = response.data;
           const numOfConfigs = expConfig.length;
           if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo = expConfig[0].logo;
+            let logo: string = expConfig[0].logo;
 
             const config = expConfig[0].config || {}; // let it fail gracefully
 
@@ -95,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
             }
 
             // add the domain if the logo url is not a full url
-            if (!logo?.includes("http") && !this.utils.isEmpty(logo)) {
+            if (!this.utils.isEmpty(logo) && logo?.includes("http")) {
               logo = environment.APIEndpoint + logo;
             }
             const colors = {
@@ -238,6 +249,57 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.storage.get("fastFeedbackOpening")) {
       // set default modal status
       this.storage.set("fastFeedbackOpening", false);
+    }
+  }
+
+  /**
+   * Handle skip link clicks for WCAG 2.4.1 compliance
+   * Moves focus to the target element or first focusable element within it
+   */
+  handleSkipLink(event: Event, targetId: string): void {
+    event.preventDefault();
+    const target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+
+    // Try to find first focusable element within target
+    const focusableSelectors = [
+      'a[href]',
+      'button:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])',
+      '[contenteditable="true"]'
+    ].join(', ');
+
+    const focusableElements = target.querySelectorAll(focusableSelectors);
+    const firstFocusable = Array.from(focusableElements).find(
+      (el: any) => {
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      }
+    ) as HTMLElement;
+
+    // Focus first focusable element, or the target itself if it can receive focus
+    if (firstFocusable) {
+      firstFocusable.focus();
+      firstFocusable.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (target instanceof HTMLElement) {
+      // Make target focusable temporarily and focus it
+      const originalTabIndex = target.getAttribute('tabindex');
+      target.setAttribute('tabindex', '-1');
+      target.focus();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Restore original tabindex after a brief delay
+      setTimeout(() => {
+        if (originalTabIndex !== null) {
+          target.setAttribute('tabindex', originalTabIndex);
+        } else {
+          target.removeAttribute('tabindex');
+        }
+      }, 100);
     }
   }
 }

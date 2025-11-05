@@ -1,0 +1,56 @@
+<div class="traffic-light-group"
+  role="group"
+  [attr.aria-label]="isMentor ? 'Team progress indicators' : 'Progress indicators'"
+  i18n-aria-label>
+  <ng-container *ngIf="!isMentor">
+    <ion-chip
+      *ngFor="let group of learnerGroups"
+      class="traffic-light-labels"
+      [ngClass]="{ 'self': group === 'self' && displayOnly === false }"
+      color="medium"
+      (click)="handleTrafficLightClick(group, lights[group])"
+      (keydown.enter)="handleTrafficLightClick(group, lights[group])"
+      (keydown.space)="handleTrafficLightClick(group, lights[group]); $event.preventDefault()"
+      [attr.tabindex]="displayOnly ? -1 : 0"
+      [attr.role]="displayOnly ? 'status' : 'button'"
+      [attr.aria-label]="(group | titlecase) + ' progress status'"
+      i18n-aria-label>
+      <ion-label class="spacing-right">{{ group | titlecase }}</ion-label>
+      <ion-spinner name="bubbles"
+        *ngIf="loading[group] === true"
+        role="status"
+        aria-label="Loading" i18n-aria-label></ion-spinner>
+      <app-traffic-light *ngIf="!loading[group]"
+        [value]="lights[group]"
+        [icon]="group === 'self' && displayOnly === false ? 'pencil-sharp' : null"
+        aria-label="Progress indicator" i18n-aria-label
+        role="img"
+      ></app-traffic-light>
+    </ion-chip>
+  </ng-container>
+
+  <ng-container *ngIf="isMentor">
+    <ion-chip
+      *ngFor="let team of teamGroups"
+      class="traffic-light-labels"
+      color="medium"
+      (click)="handleTrafficLightClick('team', team.average)"
+      (keydown.enter)="handleTrafficLightClick('team', team.average)"
+      (keydown.space)="handleTrafficLightClick('team', team.average); $event.preventDefault()"
+      [attr.tabindex]="displayOnly ? -1 : 0"
+      [attr.role]="displayOnly ? 'status' : 'button'"
+      [attr.aria-label]="team.teamName + ' team progress status'"
+      i18n-aria-label>
+      <ion-label class="spacing-right">{{ team.teamName }}</ion-label>
+      <ion-spinner name="bubbles"
+        *ngIf="loading[team.teamName] === true"
+        role="status"
+        aria-label="Loading" i18n-aria-label></ion-spinner>
+      <app-traffic-light *ngIf="!loading[team.teamName]"
+        [value]="team.average"
+        aria-label="Progress indicator" i18n-aria-label
+        role="img"
+      ></app-traffic-light>
+    </ion-chip>
+  </ng-container>
+</div>

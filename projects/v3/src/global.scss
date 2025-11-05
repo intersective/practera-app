@@ -1,28 +1,33 @@
 /* Core CSS required for Ionic components to work properly */
-@import "~@ionic/angular/css/core.css";
+@import "@ionic/angular/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
-@import "~@ionic/angular/css/normalize.css";
-@import "~@ionic/angular/css/structure.css";
-@import "~@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
 
 /* Optional CSS utils that can be commented out */
-@import "~@ionic/angular/css/padding.css";
-@import "~@ionic/angular/css/text-alignment.css";
-@import "~@ionic/angular/css/text-transformation.css";
-@import "~@ionic/angular/css/flex-utils.css";
-@import '~@ionic/angular/css/display.css';
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+@import "@ionic/angular/css/display.css";
 
 // PFAS
 @import "./theme/variables.scss";
 @import "./theme/typography.scss";
 @import "./theme/colors.scss";
+@import "./theme/dark.scss";
 
 // custom video player styles
-@import '~plyr/src/sass/plyr';
+@import "plyr/src/sass/plyr";
 
 // Quill
-@import '~quill/dist/quill.snow.css';
+@import "quill/dist/quill.snow.css";
+
+// uppy
+@import '@uppy/core/dist/style.css';
+@import '@uppy/dashboard/dist/style.css';
 
 // Slide-in Modal
 // affix modal to right position of screen
@@ -62,3 +67,140 @@ ion-item-divider {
   flex-direction: row;
   align-items: center;
 }
+
+// wcag 2.2 aa accessibility improvements
+.skip-link {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+
+  &:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0.5rem 1rem;
+    background: var(--ion-color-primary);
+    color: white;
+    text-decoration: none;
+    z-index: 9999;
+  }
+}
+
+// WCAG 2.4.13 Focus Appearance (Minimum) - Level AA
+// Focus indicators must be at least 2px and meet 3:1 contrast ratio
+*:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+// Ensure focus is visible on all interactive elements
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible,
+ion-button:focus-visible,
+ion-item:focus-visible,
+ion-segment-button:focus-visible,
+ion-tab-button:focus-visible,
+ion-fab-button:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+// Focus styles for Ionic components
+ion-button:focus-visible {
+  --background-focused: var(--ion-color-primary);
+  --color-focused: var(--ion-color-primary-contrast);
+}
+
+// Ensure focus is not obscured (WCAG 2.4.11)
+ion-modal {
+  --backdrop-opacity: 0.4;
+}
+
+// WCAG 2.4.11: Ensure focused elements are not completely obscured
+// Add padding to sticky headers/footers to prevent focus obscuring
+ion-header {
+  z-index: 1000;
+}
+
+ion-footer {
+  z-index: 1000;
+}
+
+// Ensure focused elements scroll into view properly
+*:focus-visible {
+  scroll-margin: 4px;
+}
+
+// WCAG 1.4.12 Text Spacing - Support for user-adjusted text spacing
+// This allows text to remain readable when users adjust spacing per WCAG guidelines
+body {
+  // Support letter spacing adjustments (up to 0.12em)
+  // Support word spacing adjustments (up to 0.16em)
+  // Support line height adjustments (up to 1.5x)
+  // Support paragraph spacing adjustments (up to 2x)
+  // These are handled by the browser/assistive tech, but we ensure content doesn't break
+}
+
+// Ensure content doesn't break with increased spacing
+p, span, div, ion-label, ion-text {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+// Ensure focus indicators meet contrast requirements
+.focusable:focus-visible,
+[role="button"]:focus-visible,
+[role="link"]:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+.icon-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px; // WCAG 2.5.8 Target Size
+  min-width: 24px;
+
+  &:focus {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+}
+
+.for-accessibility {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+// required indicator for forms
+.required-indicator {
+  font-weight: bold;
+  margin-left: 4px;
+}
+
