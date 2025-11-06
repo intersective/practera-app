@@ -4,7 +4,7 @@
       <ng-container *ngFor="let choice of question.choices">
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
-            <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name"></div>
+            <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
             <ion-chip class="label orange"
               *ngIf="submission?.answer === choice.id" i18n
             >Learner answer</ion-chip>
@@ -16,7 +16,7 @@
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
           <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
             <ion-icon slot="start" name="information-circle"></ion-icon>
-            <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+            <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
           </ion-item>
         </ng-container>
       </ng-container>
@@ -50,6 +50,7 @@
           <ng-container *ngFor="let choice of question.choices; let i = index">
             <ion-item lines="none"
               [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
+              <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name | detectLanguage"></ion-label>
               <ion-radio color="success"
                 [ariaLabel]="choice.name"
                 [value]="choice.id"
@@ -60,7 +61,7 @@
                 mode="md"
               >
                 <span class="ion-text-wrap body-2 black"
-                  [innerHTML]="choice.name"
+                  [innerHTML]="choice.name | detectLanguage"
                   [appToggleLabel]="onLabelToggle"
                   [toggleId]="choice.id"
                   [toggleDisabled]="control.disabled"
@@ -73,7 +74,7 @@
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
               <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
                 <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
-                <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+                <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
               </ion-item>
             </ng-container>
           </ng-container>
@@ -109,7 +110,7 @@
               justify="start"
               labelPlacement="end">
               <div class="body-2 black">
-                <span [innerHTML]="choice.name"
+                <span [innerHTML]="choice.name | detectLanguage"
                   [appToggleLabel]="onLabelToggleReview"
                   [toggleId]="choice.id"
                   [toggleDisabled]="control.disabled"

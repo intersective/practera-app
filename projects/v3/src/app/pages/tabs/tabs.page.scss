@@ -1,12 +1,39 @@
 .tab-item {
-  --color-selected: var(--ion-color-primary) !important;
-  --color: var(--ion-color-primary);
+  // Use darker color for icons to meet WCAG 1.4.11 Non-text Contrast (3:1 minimum)
+  // color-mix creates darker shade: 50% primary + 50% dark green for better contrast
+  --tab-icon-color: color-mix(in srgb, var(--ion-color-primary) 50%, #1a4d2a);
+  
+  // Fallback for browsers without color-mix support
+  @supports not (color-mix(in srgb, white, black)) {
+    --tab-icon-color: var(--ion-color-primary-shade, #2a6d3f);
+  }
+  
+  --color-selected: var(--tab-icon-color) !important;
+  --color: var(--tab-icon-color);
   margin: 0 10px 0 10px;
+  
   &.selected {
     border-bottom: 3px solid;
-    border-bottom-color: var(--ion-color-primary);
+    border-bottom-color: var(--tab-icon-color);
   }
+  
   ion-icon {
     font-size: 28px;
+    // Apply WCAG-compliant darker color to icons
+    color: var(--tab-icon-color);
+    // Ensure icons don't intercept pointer events
+    pointer-events: none;
+  }
+  
+  // Ensure badges don't intercept pointer events
+  ion-badge {
+    pointer-events: none;
+  }
+  
+  // Ensure proper focus visibility for keyboard navigation
+  &:focus-visible {
+    outline: 2px solid var(--tab-icon-color);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
