@@ -91,6 +91,7 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **COMPLETED**: Added aria-labels to fast-feedback pagination buttons ("Go to page X")
 - [x] **COMPLETED**: Fixed navigation menu links to use proper `<a>` tags instead of `ion-item` with `routerLink` (v3.page.html)
 - [x] **COMPLETED**: Added aria-labels to navigation links with badge counts (e.g., "Messages, 3 unread")
+- [x] **VERIFIED**: All navigation links clickable and working on staging (Nov 6, 2025)
 
 #### 2.4.5 Multiple Ways (Level AA)
 - [x] Navigation menu provides multiple ways to access content
@@ -220,7 +221,10 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **COMPLETED**: Added proper focus styles to navigation links (2px outline on focus-visible)
 - [x] **COMPLETED**: Fixed image preview buttons in chat messages to have aria-labels
 - [x] **COMPLETED**: Fixed Quill editor toolbar elements (preview, action, remove links, and input fields) to have aria-labels
-- [ ] **RETEST**: After merge, verify:
+- [x] **VERIFIED**: Navigation links and Settings button work correctly on staging (Nov 6, 2025)
+- [ ] **PENDING**: Verify image preview aria-labels with actual image messages
+- [ ] **PENDING**: Verify Quill editor toolbar aria-labels in chat editor
+- [ ] **RETEST**: After full deployment, verify:
   1. All modals have role="dialog" and aria-label
   2. All custom components announce correct roles to screen readers
   3. All interactive elements have accessible names (text content, aria-label, or aria-labelledby)
