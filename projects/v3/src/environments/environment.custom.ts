@@ -1,25 +1,25 @@
 export const environment = {
-  stackName: '<CUSTOM_STACK_NAME>',
+  stackName: 'p2-stage',
   authCacheDuration: 5 * 60 * 1000, // 5 minutes
-  production: '<CUSTOMPLAIN_PRDMODEFLAG>',
+  production: true,
   demo: false,
-  appkey: '<CUSTOM_APPKEY>',
-  pusherKey: '<CUSTOM_PUSHERKEY>',
-  pusherCluster: '<CUSTOM_PUSHER_CLUSTER>',
-  env: '<CUSTOM_ENVIRONMENT>',
-  APIEndpoint: '<CUSTOM_API_ENDPOINT>',
-  graphQL: '<CUSTOM_GRAPH_QL>',
-  chatGraphQL: '<CUSTOM_CHAT_GRAPH_QL>',
-  globalLoginUrl: '<CUSTOM_GLOBAL_LOGIN_URL>',
-  badgeProjectUrl: '<CUSTOM_BADGE_PROJECT_URL>',
-  stackUuid: '<CUSTOM_STACK_UUID>',
-  intercomAppId: '<CUSTOM_INTERCOM>',
+  appkey: 'b11e7c189b',
+  pusherKey: 'c8f1e1cba0f717e24046',
+  pusherCluster: 'ap1',
+  env: 'test',
+  APIEndpoint: 'https://admin.p2-stage.practera.com/',
+  graphQL: 'https://core-graphql-api.p2-stage.practera.com',
+  chatGraphQL: 'https://chat-api.p2-stage.practera.com',
+  globalLoginUrl: 'https://app.login-stage.practera.com',
+  badgeProjectUrl: 'https://badge.p2-stage.practera.com',
+  stackUuid: '571c91b4-f0e1-498d-a5db-04f8d92d3693',
+  intercomAppId: 'pef1lmo8',
   uppyConfig: {
-    tusUrl: '<CUSTOM_UPLOAD_TUS_ENDPOINT>',
+    tusUrl: 'https://tusd.practera.com/uploads/',
     uploadPreset: 'practera',
     restrictions: {
       minFileSize: 0, // No minimum size
-      maxFileSize: <CUSTOM_UPLOAD_MAX_FILE_SIZE>, // 2GB max size
+      maxFileSize: 2147483648, // 2GB max size
       minNumberOfFiles: 1, // At least one file
       maxNumberOfFiles: 1, // max one file for now
       maxTotalFileSize: undefined, // No limit on total size
@@ -27,36 +27,39 @@ export const environment = {
     }
   },
   filestack: {
-    key: '<CUSTOM_FILESTACK_KEY>',
+    key: 'AO6F4C72uTPGRywaEijdLz',
     s3Config: {
       location: 's3',
-      container: '<CUSTOM_S3_BUCKET>',
+      container: 'files.p2-stage.practera.com',
       containerChina: '<CUSTOM_S3_BUCKET_CHINA>',
-      region: '<CUSTOM_AWS_REGION>',
+      region: 'ap-southeast-2',
       regionChina: '<CUSTOM_AWS_REGION_CHINA>',
       paths: {
-        any: '<CUSTOM_PATH_ANY>',
-        image: '<CUSTOM_PATH_IMAGE>',
-        video: '<CUSTOM_PATH_VIDEO>'
+        any: '/appv3/test/any/',
+        image: '/appv3/test/images/',
+        video: '/appv3/test/videos/'
       },
       workflows: [
-        '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
+        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
       ],
     },
-    policy: '<CUSTOM_FILESTACK_POLICY>',
-    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
+    policy: 'eyJleHBpcnkiOjE3MzU2NTAwMDB9',
+    signature: '30323e4c80bb68e30afef26b32aa4dae401b0581b8e8ba9da93f3a01701be267',
     workflows: {
-      virusDetection: '<CUSTOM_FILESTACK_VIRUS_DETECTION>',
+      virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
     },
   },
   hubspot: {
-    liveServerRegion: '<CUSTOM_LIVE_SERVER_REGION>',
-    supportFormPortalId: '<CUSTOM_PORTAL_ID>',
-    supportFormId: '<CUSTOM_FORM_ID>'
+    liveServerRegion: 'AU',
+    supportFormPortalId: '3404872',
+    supportFormId: '114bee73-67ac-4f23-8285-2b67e0e28df4'
   },
-  defaultCountryModel: '<CUSTOM_COUNTRY>',
+  defaultCountryModel: 'AUS',
   intercom: false,
-  newrelic: '<CUSTOM_NEWRELIC>',
+  newrelic: 'true',
   goMobile: false,
+  featureToggles: {
+    assessmentPagination: true,
+  },
   helpline: '<CUSTOM_HELPLINE>',
 };

@@ -63,7 +63,7 @@
 
           <ng-container *ngIf="message.message || !message.file">
             <quill-view-html [id]="'message-content-' + message.uuid"
-              [content]="message?.message"
+              [content]="getProcessedMessageContent(message?.message)"
               [sanitize]="true"
               tabindex="0"
             ></quill-view-html>
