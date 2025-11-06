@@ -55,7 +55,7 @@
     </div>
 
     <ion-text *ngFor="let error of errors" color="danger">
-      <p aria-live="polite">{{error}}</p>
+      <p role="alert" aria-live="polite">{{error}}</p>
     </ion-text>
 
     <app-file-display

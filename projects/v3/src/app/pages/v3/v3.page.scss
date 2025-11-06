@@ -7,19 +7,20 @@ ion-menu.collapsed {
     --padding-bottom: 1px;
     --padding-start: 1px;
     display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
     margin-right: 10px;
 
     .indicator {
-      position: absolute;
       display: flex;
       height: 24px;
       width: 24px;
     }
 
     .hint {
+      position: absolute;
       right: -1.5px;
-      top: -5px;
       top: 10px;
       border-radius: 100%;
       /* overflow: visible; */
@@ -29,6 +30,20 @@ ion-menu.collapsed {
 
       .icon-inner {
         height: 36px;
+      }
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      background-color: var(--ion-color-danger);
+      border-radius: 50%;
+
+      &.hidden {
+        display: none;
       }
     }
 
@@ -46,21 +61,31 @@ ion-menu.collapsed {
     }
 
     .badge-wrapper {
-      margin: 0px 5px 0px 5px;
+      margin: 0;
     }
 
     .menu-item {
-      --padding-start: 15px;
+      --padding-start: 0px;
 
       &.selected {
-        --padding-start: 12px;
+        --padding-start: 0px;
+        border-left: 3px solid;
+        border-left-color: var(--ion-color-primary);
       }
 
-      & > ion-icon {
-        margin: 5px;
+      a.menu-link {
+        justify-content: center;
+
+        &.selected {
+          padding-left: 0;
+        }
       }
 
-      & > ion-label {
+      ion-icon {
+        margin: 0;
+      }
+
+      ion-label {
         display: none;
       }
 
@@ -91,15 +116,43 @@ ion-menu {
   border-right-color: var(--practera-grey-25);
 
   .badge-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-right: 16px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+
     .hint {
       position: absolute;
-      right: 1.5px;
+      right: -8px;
+      top: -8px;
       /* overflow: visible; */
       display: flex;
       align-items: center;
+      justify-content: center;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 4px;
 
       .icon-inner {
         height: 36px;
+      }
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 8px;
+      height: 8px;
+      background-color: var(--ion-color-danger);
+      border-radius: 50%;
+
+      &.hidden {
+        display: none;
       }
     }
   }
@@ -131,18 +184,68 @@ ion-item-divider {
 }
 
 .menu-item {
-  --padding-start: 20px;
+  --padding-start: 0px;
+  --min-height: 48px;
+
+  // Prevent ion-item from intercepting clicks when it contains a menu-link
+  &:has(a.menu-link) {
+    pointer-events: none;
+
+    a.menu-link {
+      pointer-events: auto;
+    }
+  }
+
+  // Menu link styling for accessibility
+  a.menu-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 48px;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+
+    &:focus {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: -2px;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ion-color-primary);
+      outline-offset: -2px;
+    }
+
+    // Hide ion-label visually but keep it accessible to screen readers
+    // Using display: none is OK here because aria-label on the link provides the accessible name
+    ion-label {
+      display: none;
+    }
+  }
 
   ion-icon {
-    // margin-left: 4px;
-    margin-right: 20px;
     color: var(--ion-color-primary);
   }
 
+  // For menu items without a.menu-link (like Settings), hide ion-label
+  // Using display: none is OK here because aria-label on the button provides the accessible name
+  &:not(:has(a.menu-link)) {
+    ion-label {
+      display: none;
+    }
+  }
+
   &.selected {
-    --padding-start: 17px;
+    --padding-start: 0px;
     border-left: 3px solid;
     border-left-color: var(--ion-color-primary);
+
+    a.menu-link {
+      padding-left: 17px;
+    }
+
     ion-icon {
       color: var(--ion-color-primary);
     }
