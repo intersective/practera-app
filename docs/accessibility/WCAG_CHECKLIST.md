@@ -35,6 +35,7 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 #### 1.4.10 Reflow (Level AA)
 - [x] Responsive design implemented with Ionic framework
 - [x] **VERIFIED**: Content reflows properly at 320px width - no horizontal scroll detected (tested Nov 2025 on staging)
+- [x] **VERIFIED**: Experiences page responsive design fixed - cards resize properly on mobile (320px, 375px), tablet (768px), and desktop (1200px) - Nov 6, 2025
 
 #### 1.4.11 Non-text Contrast (Level AA)
 - [x] **COMPLETED**: Fixed bottom tab bar icons contrast - now uses darker shade (color-mix of 50% primary + 50% dark green) to ensure 3:1 with white background (tabs.page.scss)
