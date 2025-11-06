@@ -85,8 +85,10 @@
         lines="none"
         detail="false"
         aria-hidden="true">
-        <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear">
-          <span class="material-symbols-outlined collapsible">
+        <ion-button class="no-ripple" (click)="toggleMenu()" fill="clear"
+          [attr.aria-label]="(isMenuOpen ? 'Collapse menu' : 'Expand menu')"
+          i18n-aria-label>
+          <span class="material-symbols-outlined collapsible" aria-hidden="true">
             {{ directionIcon }}
           </span>
         </ion-button>
