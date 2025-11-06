@@ -5,7 +5,7 @@
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
-          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name"></div>
+          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name | detectLanguage"></div>
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
@@ -19,7 +19,7 @@
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
-          <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+          <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
         </ion-item>
       </ng-container>
     </ng-container>
@@ -46,7 +46,7 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
             lines='none'>
-            <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></ion-label>
+            <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name | detectLanguage"></ion-label>
             <ion-checkbox color="success"
               [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
               [value]="choice.id"
@@ -61,7 +61,7 @@
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
             <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
               <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
-              <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+              <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
             </ion-item>
           </ng-container>
         </ng-container>
@@ -94,7 +94,7 @@
           [attr.aria-label]="choice.name"
         >
           <div class="ion-text-wrap body-2 black">
-            <span [innerHTML]="choice.name"></span>
+            <span [innerHTML]="choice.name | detectLanguage"></span>
             <p *ngIf="submission?.answer?.includes(choice.id)">
               <ion-chip class="label orange" i18n
                 *ngIf="submission?.answer?.includes(choice.id)"

@@ -1,11 +1,11 @@
 <div class="container">
   <div class="text-content" role="region" [attr.aria-label]="name || 'Content'">
     <ng-container *ngIf="nonCollapsible; else animated">
-      <div id="{{name}}" #description [innerHtml]="content"
+      <div id="{{name}}" #description [innerHtml]="content | detectLanguage"
       class="full-height"></div>
     </ng-container>
     <ng-template #animated>
-      <div id="{{name}}" #description [innerHtml]="content"
+      <div id="{{name}}" #description [innerHtml]="content | detectLanguage"
         [ngClass]="{
           'limit-height': isTruncating && !isInPopup,
           'limit-height-popup': isTruncating && isInPopup,
