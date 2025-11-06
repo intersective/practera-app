@@ -35,6 +35,7 @@ export class ReviewDesktopPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.utils.setPageTitle('Reviews - Practera');
     this.assessmentService.assessment$.subscribe(res => this.assessment = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);

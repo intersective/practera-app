@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Validators, FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from '@v3/services/auth.service';
@@ -11,7 +11,7 @@ import { ExperienceService } from '@v3/services/experience.service';
   templateUrl: 'auth-login.component.html',
   styleUrls: ['auth-login.component.scss']
 })
-export class AuthLoginComponent {
+export class AuthLoginComponent implements OnInit {
   loginForm = new FormGroup({
     email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required]),
@@ -26,6 +26,10 @@ export class AuthLoginComponent {
     private utils: UtilsService,
     private experienceService: ExperienceService,
   ) {}
+
+  ngOnInit() {
+    this.utils.setPageTitle('Login - Practera');
+  }
 
   login(keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
