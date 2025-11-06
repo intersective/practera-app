@@ -58,9 +58,6 @@ export const environment = {
   intercom: false,
   newrelic: 'true',
   goMobile: false,
-  featureToggles: {
-    assessmentPagination: true,
-  },
   helpline: '<CUSTOM_HELPLINE>',
   featureToggles: {
     assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
