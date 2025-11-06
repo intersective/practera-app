@@ -76,6 +76,10 @@ ion-menu.collapsed {
       a.menu-link {
         justify-content: center;
 
+        ion-label {
+          display: none;
+        }
+
         &.selected {
           padding-left: 0;
         }
@@ -83,10 +87,6 @@ ion-menu.collapsed {
 
       ion-icon {
         margin: 0;
-      }
-
-      ion-label {
-        display: none;
       }
 
       .item-inner {
@@ -217,24 +217,11 @@ ion-item-divider {
       outline: 2px solid var(--ion-color-primary);
       outline-offset: -2px;
     }
-
-    // Hide ion-label visually but keep it accessible to screen readers
-    // Using display: none is OK here because aria-label on the link provides the accessible name
-    ion-label {
-      display: none;
-    }
   }
 
   ion-icon {
     color: var(--ion-color-primary);
-  }
-
-  // For menu items without a.menu-link (like Settings), hide ion-label
-  // Using display: none is OK here because aria-label on the button provides the accessible name
-  &:not(:has(a.menu-link)) {
-    ion-label {
-      display: none;
-    }
+    font-size: 24px;
   }
 
   &.selected {
