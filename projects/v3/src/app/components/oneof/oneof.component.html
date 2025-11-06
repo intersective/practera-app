@@ -50,7 +50,6 @@
           <ng-container *ngFor="let choice of question.choices; let i = index">
             <ion-item lines="none"
               [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
-              <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name | detectLanguage"></ion-label>
               <ion-radio color="success"
                 [ariaLabel]="choice.name"
                 [value]="choice.id"
