@@ -696,6 +696,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
+   * Process message content to add lang attributes for WCAG 3.1.2 compliance
+   * @param messageContent Original message HTML content
+   * @returns Processed message content with lang attributes
+   */
+  getProcessedMessageContent(messageContent: string): string {
+    if (!messageContent) {
+      return '';
+    }
+    return this.utils.addLanguageAttributes(messageContent);
+  }
+
+  /**
    * this method will return correct css class for chat avatar to adjust view
    * @param message message object
    * - if selected chat is a team chat and we are not showing time with this message.

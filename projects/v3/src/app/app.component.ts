@@ -79,6 +79,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.configVerification();
     this.sharedService.onPageLoad();
+    
+    // Set initial lang attribute based on current locale (WCAG 3.1.1)
+    this.utils.setPageLanguage();
 
     const currentLocation = this.utils.getCurrentLocation();
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice

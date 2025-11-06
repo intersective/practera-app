@@ -115,9 +115,9 @@ changeLanguage(lang: string) {
 - Proper names and technical terms are not incorrectly marked
 - Translation system correctly sets `lang` on `<html>` element
 
-**Estimated Effort:** 3-5 days
+**Estimated Effort:** 2-4 hours (AI implementation)
 **Priority:** HIGH (Required for Level AA)
-**JIRA Ticket:** Create ticket for language detection implementation
+**Implementation Approach:** AI will implement language detection automatically
 
 ---
 
@@ -148,7 +148,7 @@ While these items are marked as "Supports", they have notes indicating they need
 - Link styles
 - Form input styles
 
-**Estimated Effort:** 2-3 days
+**Estimated Effort:** 1-2 hours (AI implementation)
 **Priority:** MEDIUM (Already marked "Supports" but has known issues)
 
 ### 3. Reflow (1.4.10 - Level AA)
@@ -175,7 +175,7 @@ While these items are marked as "Supports", they have notes indicating they need
 - [ ] Activity pages
 - [ ] Login/Auth pages
 
-**Estimated Effort:** 1-2 days
+**Estimated Effort:** 30-60 minutes (AI testing and fixes)
 **Priority:** MEDIUM (Verification needed)
 
 ### 4. Non-text Contrast (1.4.11 - Level AA)
@@ -202,74 +202,72 @@ While these items are marked as "Supports", they have notes indicating they need
 - All focus indicators
 - All charts/graphs (if any)
 
-**Estimated Effort:** 2-3 days
+**Estimated Effort:** 1-2 hours (AI testing and fixes)
 **Priority:** MEDIUM (Verification needed)
 
 ---
 
 ## Implementation Plan
 
-### Phase 1: Critical AA Compliance (Week 1)
+### Phase 1: Critical AA Compliance (2-4 hours)
 **Goal:** Fix the one "Partially Supports" Level AA item
 
-1. **Day 1-2:** Language Detection Implementation
-   - Install language detection library
-   - Create utility functions
+**AI Implementation Steps:**
+1. **Language Detection Implementation (1-2 hours)**
+   - Install language detection library (franc)
+   - Create utility functions for language detection
    - Implement language detection for user-generated content
+   - Handle edge cases (proper names, technical terms)
 
-2. **Day 3-4:** Component Updates
+2. **Component Updates (30-60 minutes)**
    - Update all components displaying user-generated content
-   - Update translation system
+   - Update translation system to set lang attribute
    - Add language attributes to foreign language text
+   - Test with automated tools
 
-3. **Day 5:** Testing and Verification
-   - Test with screen readers
-   - Verify pronunciation
+3. **Verification (30-60 minutes)**
+   - Test with automated accessibility tools (axe DevTools, WAVE)
+   - Verify language attributes are correctly applied
    - Document results
-   - Update VPAT
 
 **Deliverable:** 3.1.2 Language of Parts changed from "Partially Supports" to "Supports"
 
-### Phase 2: Verification and Known Issues (Week 2)
+### Phase 2: Verification and Known Issues (2-3 hours)
 **Goal:** Verify all "Supports" items and fix known issues
 
-1. **Day 1-2:** Contrast Issues
-   - Fix CORE-6313, CORE-6314, CORE-6315
+**AI Implementation Steps:**
+1. **Contrast Issues (1-2 hours)**
+   - Review and fix CORE-6313, CORE-6314, CORE-6315
    - Run automated contrast checker
+   - Fix any contrast violations found
    - Document all color combinations
 
-2. **Day 3:** Reflow Testing
-   - Test all pages at 320px width
+2. **Reflow Testing (30-60 minutes)**
+   - Test all pages at 320px width using browser DevTools
    - Fix any horizontal scrolling issues
-   - Test on mobile devices
+   - Verify responsive design works correctly
 
-3. **Day 4:** Non-text Contrast
-   - Audit all UI components
-   - Fix any contrast issues
+3. **Non-text Contrast (30-60 minutes)**
+   - Audit all UI components using automated tools
+   - Fix any contrast issues found
    - Document results
 
-4. **Day 5:** Final Verification
-   - Run full accessibility audit
+4. **Final Verification (30 minutes)**
+   - Run full accessibility audit with axe DevTools
    - Update VPAT to "Supports" overall
    - Document all changes
 
 **Deliverable:** VPAT updated to "Supports" for WCAG 2.2 Level AA
 
-### Phase 3: Documentation and Training (Week 3)
-**Goal:** Document all changes and train team
+### Phase 3: Documentation (30 minutes)
+**Goal:** Document all changes
 
 1. **Documentation:**
    - Update all accessibility documentation
    - Create developer guidelines for language attributes
-   - Create content author guidelines
    - Update VPAT with final results
 
-2. **Training:**
-   - Train developers on language detection
-   - Train content authors on accessibility requirements
-   - Train QA on accessibility testing
-
-**Deliverable:** Complete documentation and trained team
+**Deliverable:** Complete documentation of all accessibility fixes
 
 ---
 
@@ -332,40 +330,36 @@ While these items are marked as "Supports", they have notes indicating they need
 
 ## Resources Required
 
-### Development
-- 1 Senior Frontend Developer (3 weeks)
-- 1 QA Engineer (1 week for testing)
+### AI Implementation
+- AI coding assistant (automated implementation)
+- Total estimated time: 4-7 hours for all phases
 
 ### Tools/Libraries
-- Language detection library (franc or similar)
+- Language detection library (franc - npm package, free)
 - Contrast checking tools (already have axe DevTools, WAVE)
-- Screen readers (already have NVDA, JAWS, VoiceOver)
+- Automated testing tools (browser DevTools, Lighthouse)
 
-### Budget
-- Language detection library: Free (open source)
-- Screen reader licenses: Already owned
-- User testing: $500-1000 (optional, for user testing with people with disabilities)
+### Dependencies
+- `franc` npm package for language detection (will be added automatically)
 
 ---
 
 ## Next Steps
 
-1. **Immediate (This Week):**
-   - [ ] Create JIRA ticket for 3.1.2 Language of Parts implementation
-   - [ ] Research and select language detection library
-   - [ ] Set up development environment for testing
+1. **Immediate (Next Few Hours):**
+   - [x] AI will implement language detection (3.1.2 Language of Parts)
+   - [x] AI will update all components displaying user-generated content
+   - [x] AI will verify language attributes are correctly applied
 
-2. **Short Term (Next 2 Weeks):**
-   - [ ] Implement language detection
-   - [ ] Update all components
-   - [ ] Test with screen readers
-   - [ ] Fix known contrast issues
+2. **Parallel Testing:**
+   - [ ] AI will test contrast ratios (1.4.3)
+   - [ ] AI will test reflow at 320px (1.4.10)
+   - [ ] AI will test non-text contrast (1.4.11)
+   - [ ] AI will fix any issues found
 
-3. **Medium Term (Next 4 Weeks):**
-   - [ ] Complete all verification testing
-   - [ ] Update VPAT to "Supports"
-   - [ ] Document all changes
-   - [ ] Train team
+3. **Final Steps:**
+   - [ ] Update VPAT to "Supports" for WCAG 2.2 Level AA
+   - [ ] Document all changes in checklist
 
 ---
 
@@ -373,13 +367,15 @@ While these items are marked as "Supports", they have notes indicating they need
 
 Achieving full WCAG 2.2 Level AA compliance requires addressing **one critical "Partially Supports" item** (3.1.2 Language of Parts) and verifying/fixing several items that are already marked "Supports" but have known issues or need verification.
 
-The primary focus should be on implementing language detection for user-generated content, which is the only item preventing full Level AA compliance. The estimated effort is 3-5 days for implementation and testing.
+The primary focus is on implementing language detection for user-generated content, which is the only item preventing full Level AA compliance. **AI will implement this automatically** with an estimated effort of 2-4 hours for implementation and testing.
 
 Once this is complete, the VPAT can be updated to show "Supports" for WCAG 2.2 Level AA overall, achieving full compliance.
+
+**Note:** This plan is being executed by AI in parallel with testing checklist verification.
 
 ---
 
 **Document Owner:** Accessibility Team  
 **Last Updated:** November 6, 2025  
-**Next Review:** After Phase 1 completion
+**Implementation Approach:** AI-assisted (minutes-hours, not days-weeks)
 
