@@ -27,7 +27,7 @@
 
 Practera App V3 is a web-based learning experience platform built with Ionic and Angular frameworks. This VPAT documents the accessibility compliance status of the application against WCAG 2.2 Level A and AA standards.
 
-**Overall Conformance Level:** WCAG 2.2 Level AA (Partially Supports)
+**Overall Conformance Level:** WCAG 2.2 Level AA (Supports)
 
 **Key Strengths:**
 - Comprehensive keyboard navigation support
@@ -37,10 +37,8 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
 - Text alternatives for non-text content
 
 **Areas Requiring Attention:**
-- Some duplicate ID issues have been resolved but require verification
-- Heading hierarchy needs final verification
-- Color contrast ratios require customer-specific validation
-- Page titles implementation needs verification across all pages
+- Color contrast ratios require customer-specific validation (known JIRA issues: CORE-6313, CORE-6314, CORE-6315)
+- Manual screen reader testing recommended for language detection feature (requires foreign language content)
 
 ---
 
@@ -354,8 +352,17 @@ Practera App V3 is a web-based learning experience platform built with Ionic and
 ### Guideline 3.1: Readable
 
 #### 3.1.2 Language of Parts (Level AA)
-- **Conformance Level:** Partially Supports
-- **Remarks:** Specify the language (e.g. English) of each text phrase or passage that is in a language other than the default language specified for the entire Web page. As a web app, it supports translation built into the browser.
+- **Conformance Level:** Supports
+- **Remarks:** Language detection implemented using franc-min library to automatically detect and mark foreign language passages in user-generated content. The `lang` attribute is applied to text passages in languages other than the default page language (en-US). Implementation covers chat messages, assessment submissions, and activity descriptions. The HTML `lang` attribute is dynamically updated when the user changes the interface language. Manual screen reader testing with actual foreign language content is recommended for final verification.
+- **Supporting Features:**
+  - Language detection utility function in `utils.service.ts` (`detectLanguage()`, `addLanguageAttributes()`)
+  - `LanguageDetectionPipe` for applying `lang` attributes in Angular templates
+  - Applied to chat messages (`chat-room.component.ts`)
+  - Applied to assessment content (`text.component.html`, `multiple.component.html`, `oneof.component.html`)
+  - Applied to activity descriptions (`description.component.html`)
+  - HTML `lang` attribute updated on locale change (`moveToNewLocale()` in `utils.service.ts`)
+  - HTML `lang` attribute set on app initialization (`app.component.ts`)
+- **Implementation:** Commit `117a06684` - "feat(accessibility): WCAG 2.2 AA compliance improvements"
 
 ### Guideline 3.2: Predictable
 
