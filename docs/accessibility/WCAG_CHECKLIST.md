@@ -22,7 +22,9 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [ ] **TODO**: Verify all tables have proper header associations (no tables found in v3 app - uses ion-grid instead)
 
 #### 1.4.3 Contrast (Minimum) (Level AA)
-- [ ] **TODO**: Verify all text meets 4.5:1 contrast ratio for normal text
+- [x] **COMPLETED**: Fixed skip links contrast - now uses darker shade (color-mix of 60% primary + 40% dark green) to ensure 4.5:1 with white text (styles.scss, global.scss)
+- [x] **TESTED**: Notification badge has 21:1 contrast (PASSING)
+- [ ] **TODO**: Verify all other text meets 4.5:1 contrast ratio for normal text
 - [ ] **TODO**: Verify all text meets 3:1 contrast ratio for large text (18pt+ or 14pt+ bold)
 - [ ] **TODO**: Check color variables in variables.scss for WCAG compliance
 
@@ -32,10 +34,12 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 
 #### 1.4.10 Reflow (Level AA)
 - [x] Responsive design implemented with Ionic framework
-- [ ] **TODO**: Verify content reflows horizontally without requiring scrolling at 320px width
+- [x] **VERIFIED**: Content reflows properly at 320px width - no horizontal scroll detected (tested Nov 2025 on staging)
 
 #### 1.4.11 Non-text Contrast (Level AA)
-- [ ] **TODO**: Verify UI components and graphical objects have 3:1 contrast ratio
+- [x] **COMPLETED**: Fixed bottom tab bar icons contrast - now uses darker shade (color-mix of 50% primary + 50% dark green) to ensure 3:1 with white background (tabs.page.scss)
+- [x] **TESTED**: Notification badge has 21:1 contrast (PASSING)
+- [x] **VERIFIED**: Tab icons now use accessibility-specific darker color that meets 3:1 minimum requirement
 
 #### 1.4.12 Text Spacing (Level AA)
 - [x] **COMPLETED**: Added CSS support for text spacing adjustments (word-wrap, overflow-wrap) in global.scss
@@ -91,6 +95,8 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **COMPLETED**: Added aria-labels to fast-feedback pagination buttons ("Go to page X")
 - [x] **COMPLETED**: Fixed navigation menu links to use proper `<a>` tags instead of `ion-item` with `routerLink` (v3.page.html)
 - [x] **COMPLETED**: Added aria-labels to navigation links with badge counts (e.g., "Messages, 3 unread")
+- [x] **COMPLETED**: Applied same accessibility improvements to bottom tab bar navigation (keyboard navigation handlers, pointer-events fixes for icons/badges, focus visibility) (tabs.page.html, tabs.page.ts, tabs.page.scss)
+- [x] **VERIFIED**: All navigation links clickable and working on staging (Nov 6, 2025)
 
 #### 2.4.5 Multiple Ways (Level AA)
 - [x] Navigation menu provides multiple ways to access content
@@ -108,12 +114,9 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 #### 2.4.7 Focus Visible (Level AA)
 - [x] All focusable elements have visible focus indicators (added focus-visible styles)
 - [x] Focus styles implemented in global styles (2px outline with offset)
-- [x] **VERIFIED**: Skip links show visible 2px solid outline when focused via keyboard
-- [ ] **RETEST**: After merge, verify all interactive elements show visible focus indicator when Tab is pressed:
-  1. Press Tab repeatedly through page
-  2. **VERIFY**: Each focused element shows visible outline (not just on click)
-  3. Check skip links especially - should have green outline when focused
-  4. Verify outline is at least 2px wide with offset from element
+- [x] **VERIFIED**: Skip links show visible 2px solid outline when focused via keyboard (tested Nov 2025 on staging)
+- [x] **VERIFIED**: Skip links show 2px solid green (rgb(106, 168, 79)) outline when focused (tested Nov 2025)
+- [ ] **RETEST**: Verify all other interactive elements show visible focus indicator when Tab is pressed
 
 #### 2.4.11 Focus Not Obscured (Minimum) (Level AA) - NEW in 2.2
 - [x] **COMPLETED**: Added CSS to prevent focus obscuring (scroll-margin: 4px on focus-visible elements)
@@ -134,8 +137,10 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [ ] **TODO**: Verify no accidental activations
 
 #### 2.5.3 Label in Name (Level A)
-- [ ] **TODO**: Verify button labels match accessible names (aria-label matches visible text)
-- [ ] **TODO**: Verify all interactive elements have matching labels
+- [x] **VERIFIED**: Home page test (Nov 2025) - Most interactive elements have matching labels/accessible names
+- [x] **COMPLETED**: Fixed menu toggle button to have aria-label (expand/collapse menu) (v3.page.html)
+- [ ] **TODO**: Verify avatar button in personalised-header has aria-label (should be "Go to settings" - need to verify rendering)
+- [ ] **TODO**: Verify all interactive elements have matching labels across all pages
 
 #### 2.5.4 Motion Actuation (Level A)
 - [ ] **TODO**: Verify no functionality depends on device motion or user motion
@@ -153,13 +158,28 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 
 #### 3.1.1 Language of Page (Level A)
 - [x] HTML lang attribute set to "en" in index.html
-- [ ] **TODO**: Verify lang attribute is correctly set on html tag
+- [x] **VERIFIED**: lang attribute is correctly set on html tag (checked index.html - lang="en")
+- [x] **COMPLETED**: moveToNewLocale function now sets lang attribute on HTML element when language changes
+- [x] **VERIFIED**: HTML lang="en-US" correctly set on document element (tested Nov 2025 on staging)
+
+#### 3.1.2 Language of Parts (Level AA) - CRITICAL
+- [x] **COMPLETED**: Implemented language detection utility using franc-min library
+- [x] **COMPLETED**: Created LanguageDetectionPipe to apply lang attributes to HTML content
+- [x] **COMPLETED**: Applied lang attributes to foreign language passages in chat messages (chat-room component)
+- [x] **COMPLETED**: Applied lang attributes to foreign language passages in assessment submissions (text, multiple, oneof components)
+- [x] **COMPLETED**: Applied lang attributes to activity content (description component)
+- [x] **COMPLETED**: Updated moveToNewLocale to set lang attribute on HTML element
+- [x] **COMPLETED**: Added setPageLanguage() call in app.component.ts initialization
+- [x] **VERIFIED**: Language detection implementation ready - tested on staging (Nov 2025), ready for foreign language content testing
+- [ ] **TODO**: Test with screen readers to verify pronunciation (requires manual testing)
 
 #### 3.2.1 On Focus (Level A)
-- [ ] **TODO**: Verify no context changes occur on focus
+- [x] **VERIFIED**: Home page test (Nov 2025) - No problematic focus handlers detected (no inline onfocus handlers found)
+- [ ] **TODO**: Manual test - verify no context changes occur when focusing elements (requires interactive testing)
 
 #### 3.2.2 On Input (Level A)
-- [ ] **TODO**: Verify no context changes occur on input (except submit buttons)
+- [x] **VERIFIED**: Home page test (Nov 2025) - No form inputs with problematic onChange handlers detected
+- [ ] **TODO**: Manual test - verify no context changes occur on input (except submit buttons) - test on forms
 
 #### 3.2.3 Consistent Navigation (Level AA)
 - [x] Navigation is consistent across pages
@@ -174,14 +194,16 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 
 #### 3.3.1 Error Identification (Level A)
 - [x] Error messages associated with form fields (text component)
-- [ ] **TODO**: Verify all form errors are clearly identified
-- [ ] **TODO**: Verify error messages are in text format
+- [x] **VERIFIED**: Home page has no form inputs. Error messages use role="alert" and aria-live="assertive" (implemented)
+- [ ] **TODO**: Test actual forms to verify all errors are clearly identified and in text format
 
 #### 3.3.2 Labels or Instructions (Level A)
 - [x] Form labels present (ion-label with for attribute)
-- [ ] **TODO**: Verify all form inputs have labels or instructions
+- [x] **VERIFIED**: Home page test (Nov 2025) - No form inputs found on home page. Form components (text, multiple, oneof) have proper label associations implemented
+- [ ] **TODO**: Test actual forms to verify all inputs have labels or instructions
 
 #### 3.3.3 Error Suggestion (Level AA)
+- [x] **VERIFIED**: Error messages implemented with aria-describedby in text component
 - [ ] **TODO**: Verify error messages provide suggestions for correction where applicable
 
 #### 3.3.4 Error Prevention (Legal, Financial, Data) (Level AA)
@@ -220,7 +242,12 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **COMPLETED**: Added proper focus styles to navigation links (2px outline on focus-visible)
 - [x] **COMPLETED**: Fixed image preview buttons in chat messages to have aria-labels
 - [x] **COMPLETED**: Fixed Quill editor toolbar elements (preview, action, remove links, and input fields) to have aria-labels
-- [ ] **RETEST**: After merge, verify:
+- [x] **VERIFIED**: Navigation links and Settings button work correctly on staging (Nov 6, 2025)
+- [x] **VERIFIED**: Home page test (Nov 2025): 9/10 images have alt text, all buttons/links have accessible names, heading structure correct
+- [ ] **TODO**: Review one image missing alt (1f3202d8-mEy8U.png - may be decorative)
+- [ ] **PENDING**: Verify image preview aria-labels with actual image messages
+- [ ] **PENDING**: Verify Quill editor toolbar aria-labels in chat editor
+- [ ] **RETEST**: After full deployment, verify:
   1. All modals have role="dialog" and aria-label
   2. All custom components announce correct roles to screen readers
   3. All interactive elements have accessible names (text content, aria-label, or aria-labelledby)
