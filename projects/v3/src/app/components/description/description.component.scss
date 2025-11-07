@@ -136,9 +136,10 @@ ion-button {
   line-height: 1.2;
 }
 
-blockquote {
-  margin: 0 0 1rem;
-}
+// removed for showing more space between blockquotes and other elements for assessment descriptions editor (different editor than admin wysiwyg) [CORE-7942]
+// blockquote {
+//   margin: 0 0 1rem;
+// }
 
 dl,
 ol,
