@@ -42,6 +42,7 @@ export interface Milestone {
   activities?: {
     id: number;
     name: string;
+    description: string;
     isLocked: boolean;
     leadImage: string;
     progress?: number;
@@ -183,7 +184,7 @@ export class HomeService {
           description
           isLocked
           activities {
-            id name isLocked leadImage
+            id name isLocked leadImage description
             unlockConditions {
               name
               action
