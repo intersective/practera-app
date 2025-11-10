@@ -76,6 +76,31 @@ ion-content.scrollable-desktop {
   display: block;
 }
 
+.activity-search-container {
+  padding: 8px 0;
+  margin-bottom: 8px;
+
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0;
+
+    &::part(clear-button) {
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .search-results-info {
+    padding: 4px 16px;
+    text-align: center;
+
+    ion-text {
+      font-size: 0.875rem;
+    }
+  }
+}
+
 
 
 .ontrack-header {
