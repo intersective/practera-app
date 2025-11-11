@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="text-content" role="region" [attr.aria-label]="name || 'Content'">
+  <div class="text-content" role="region" [attr.aria-label]="ariaLabel || name || 'Content'">
     <ng-container *ngIf="nonCollapsible; else animated">
       <div id="{{name}}" #description [innerHtml]="content | detectLanguage"
       class="full-height"></div>
@@ -26,7 +26,7 @@
       (keydown.space)="openShut(); $event.preventDefault()"
       [attr.aria-expanded]="!isTruncating"
       [attr.aria-controls]="name"
-      [attr.aria-label]="isTruncating ? 'Show more content' : 'Show less content'"
+      [attr.aria-label]="isTruncating ? ('Show more of ' + (ariaLabel || 'content')) : ('Show less of ' + (ariaLabel || 'content'))"
       i18n-aria-label
       class="ion-focusable">
       <ng-container *ngIf="isTruncating">
