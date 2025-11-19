@@ -1,9 +1,10 @@
 <div *ngIf="topic" class="ion-padding main-content" style="min-height: 100%;">
-  <div class="headline-2 topic-title" aria-live="polite" role="heading" [innerHtml]="sanitizedTitle"></div>
+  <div class="headline-2 topic-title" aria-live="polite" role="heading" [innerHTML]="sanitizedTitle"></div>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
-    <div *ngIf="iframeHtml" class="video-embed" [innerHtml]="iframeHtml"></div>
+    <div *ngIf="iframeHtml" class="video-embed" [innerHTML]="iframeHtml"></div>
     <video
       *ngIf="!iframeHtml"
+      [attr.id]="'topic-video-' + topic.id"
       class="video-embed topic-video"
       [ngClass]="{'desktop-view': !isMobile}"
       width="100%"
@@ -23,7 +24,7 @@
       </span>
     </div>
     <div class="audio-player">
-      <audio controls class="audio-element" preload="metadata">
+      <audio [attr.id]="'topic-audio-' + topic.id" controls class="audio-element" preload="metadata">
         <source [src]="topic.audio.link" type="audio/mpeg">
         Your browser does not support the audio element.
       </audio>
@@ -32,9 +33,10 @@
 
   <app-description *ngIf="topic.content"
     class="body-2"
-    [name]="'topic'+topic.id"
+    [name]="'topic-description-' + topic.id"
     [content]="topic.content"
     [nonCollapsible]="true"
+    [ariaLabel]="'Topic content'"
   ></app-description>
 
   <ion-list *ngIf="topic.files && topic.files.length > 0" class="ion-margin-vertical">
