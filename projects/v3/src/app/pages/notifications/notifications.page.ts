@@ -45,6 +45,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Notifications - Practera');
     this.subscriptions.push(this.homeService.milestones$.subscribe(async milestones => {
       if (milestones === null) {
         this.homeService.getMilestones();

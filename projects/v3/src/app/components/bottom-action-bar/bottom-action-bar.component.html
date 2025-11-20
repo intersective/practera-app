@@ -1,7 +1,7 @@
 <ion-footer class="wrapper">
   <ng-container [ngSwitch]="buttonType">
-    <ion-text *ngSwitchCase="'blocked-role'" color="grey-50">
-      <p>Team assessment submissions restricted to participants only.</p>
+    <ion-text *ngSwitchCase="'blocked-role'" color="grey-50" role="alert" aria-live="polite">
+      <p i18n>Team assessment submissions restricted to participants only.</p>
     </ion-text>
     <ng-container *ngSwitchDefault>
       <ion-button class="ion-margin"
@@ -9,6 +9,8 @@
         [disabled]="disabled$ | async"
         [color]="color"
         (click)="onClick($event)"
+        [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
+        type="button"
       >{{ text }}</ion-button>
       <ion-button class="ion-margin"
         *ngIf="showResubmit === true"
@@ -16,6 +18,9 @@
         mode="ios"
         [color]="color"
         (click)="onResubmit($event)"
+        [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
+        type="button"
+        i18n
       >Resubmit</ion-button>
     </ng-container>
 

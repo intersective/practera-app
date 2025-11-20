@@ -1,7 +1,7 @@
 <ion-content>
   <ng-container *ngIf="loadingChatList">
     <div class="ion-text-center">
-      <ion-spinner></ion-spinner>
+      <ion-spinner role="status" aria-live="polite" aria-label="Loading chat list"></ion-spinner>
     </div>
   </ng-container>
   <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !isMobile}">
@@ -22,8 +22,8 @@
         aria-hidden="true">
         <img [src]="chat.avatar" alt="chat room avatar">
       </ion-avatar>
-      <ion-label class="chat-item-label" aria-describedby="chatroom-name">
-        <div class="chat-name-container caption" id="chatroom-name"
+      <ion-label class="chat-item-label" [attr.aria-describedby]="'chatroom-name-' + i">
+        <div class="chat-name-container caption" [attr.id]="'chatroom-name-' + i"
           [attr.aria-label]="'chatroom: ' + chat.name">
           <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}" [innerHTML]="chat.name"></p>
           <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
@@ -43,8 +43,8 @@
         </div>
         <div class="indicator-container">
           <ng-container *ngIf="chat.isAnnouncement">
-            <ion-button aria-label="announcement channel Indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it." i18n-title>
-              <ion-icon color="grey-50" name="information-circle" slot="icon-only"></ion-icon>
+            <ion-button aria-label="Announcement channel indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it." i18n-title>
+              <ion-icon color="grey-50" name="information-circle" slot="icon-only" aria-hidden="true"></ion-icon>
             </ion-button>
           </ng-container>
           <ng-container *ngIf="chat.unreadMessageCount > 0">
