@@ -23,11 +23,21 @@
   .headline-6 {
     font-size: 19px !important;
   }
+
+  &.directlink {
+    text-align: center;
+    margin: 0 auto 12px;
+    max-width: 520px;
+    width: 100%;
+  }
 }
 
 .div-after-logo {
   &.directlink {
-    margin: 0 16px 0px !important;
+    margin: 0 auto !important;
+    max-width: 520px;
+    padding: 0 16px;
+    text-align: center;
 
     .continue-btn {
       max-width: 470px;
@@ -38,7 +48,9 @@
 
 .tc-container{
   margin-bottom: 65px !important;
+  text-align: center;
 }
 .password-container {
   margin-bottom: 50px !important;
+  text-align: center;
 }

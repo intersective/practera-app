@@ -52,3 +52,6 @@ export class LanguageDetectionPipe implements PipeTransform {
   }
 }
 
+
+
+
