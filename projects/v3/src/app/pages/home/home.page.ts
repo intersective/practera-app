@@ -499,18 +499,22 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           const action = this.utils.ucfirst(guideline.action);
           const isMobile = this.utils.isMobile();
           if (topicId) {
+            // check if required IDs are available for topic route
+            const isLinkAvailable = activityId && topicId;
             routes.push({
-              path: isMobile
-                ? `/v3/topic-mobile/${activityId}/${topicId}`
-                : `/v3/activity-desktop/${activityId}/${topicId}`,
-              label: `<i><b>${action}</b></i> ${guideline.name}`,
+              path: isLinkAvailable ? (isMobile
+                ? `/topic-mobile/${activityId}/${topicId}`
+                : `/v3/activity-desktop/${activityId}/${topicId}`) : null,
+              label: `<i><b>${action}</b></i> ${guideline.name}${!isLinkAvailable ? ' (unavailable)' : ''}`,
             });
           } else if (assessmentId) {
+            // check if required IDs are available for assessment route
+            const isLinkAvailable = activityId && contextId && assessmentId;
             routes.push({
-              path: isMobile
-                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
-                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
-              label: `<i><b>${action}</b></i> ${guideline.name}`,
+              path: isLinkAvailable ? (isMobile
+                ? `/assessment-mobile/assessment/${activityId}/${contextId}/${assessmentId}`
+                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`) : null,
+              label: `<i><b>${action}</b></i> ${guideline.name}${!isLinkAvailable ? ' (unavailable)' : ''}`,
             });
           }
         }
