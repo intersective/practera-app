@@ -127,7 +127,7 @@ $message-body-size: 60%;
             align-items: center;
           }
 
-          #inner-box {
+          [id^="inner-box"] {
             border-radius: inherit;
             min-width: inherit;
             padding: 0;
@@ -172,7 +172,7 @@ $message-body-size: 60%;
             .label {
               color: var(--ion-color-primary);
             }
-            #inner-box {
+            [id^="inner-box"] {
               p {
                 color: var(--ion-color-primary);
               }
@@ -207,7 +207,7 @@ $message-body-size: 60%;
             .label {
               color: var(--ion-color-primary-contrast) !important;
             }
-            #inner-box {
+            [id^="inner-box"] {
               p {
                 color: var(--ion-color-primary-contrast) !important;
               }
