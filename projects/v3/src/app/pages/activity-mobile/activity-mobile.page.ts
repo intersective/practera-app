@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/services/activity.service';
 import { AssessmentService, Submission } from '@v3/services/assessment.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -18,12 +19,18 @@ export class ActivityMobilePage implements OnInit {
     private router: Router,
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
+    private utils: UtilsService,
   ) { }
 
   ngOnInit() {
     this.activityService.activity$
       .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
-      .subscribe(res => this.activity = res);
+      .subscribe(res => {
+        this.activity = res;
+        if (res?.name) {
+          this.utils.setPageTitle(`${res.name} - Practera`);
+        }
+      });
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, false);

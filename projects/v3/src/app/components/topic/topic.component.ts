@@ -145,12 +145,17 @@ export class TopicComponent implements OnInit, OnChanges, OnDestroy {
   // convert other brand video players to custom player.
   private _initVideoPlayer() {
     setTimeout(() => {
-      this.utils.each(this.document.querySelectorAll('.video-embed'), embedVideo => {
+      this.utils.each(this.document.querySelectorAll('.video-embed'), (embedVideo, index) => {
         embedVideo.classList.remove('topic-video');
         if (!this.utils.isMobile()) {
           embedVideo.classList.remove('desktop-view');
         }
         embedVideo.classList.add('plyr__video-embed');
+
+        // add unique id to prevent duplicate ids from plyr
+        const uniqueId = `plyr-${this.topic?.id || 'unknown'}-${index}-${Date.now()}`;
+        embedVideo.setAttribute('data-plyr-id', uniqueId);
+
         new Plyr(embedVideo as HTMLElement, { ratio: '16:9' });
         // if we have video tag, plugin will adding div tags to wrap video tag and main div contain .plyr css class.
         // so we need to add topic-video and desktop-view to that div to load video properly .

@@ -64,8 +64,16 @@
       >Choose file</ion-button>
 
       <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.filename : 'No file chosen' }}</p>
-      <p class="remove-button" *ngIf="selectedFile"><ion-icon name="close-circle" (click)="removeSelectedFile()"></ion-icon>
-      </p>
+      <button
+        type="button"
+        class="remove-button icon-button"
+        *ngIf="selectedFile"
+        (click)="removeSelectedFile()"
+        (keydown.enter)="removeSelectedFile()"
+        (keydown.space)="removeSelectedFile(); $event.preventDefault()"
+        [attr.aria-label]="'Remove file ' + selectedFile?.filename">
+        <ion-icon name="close-circle" aria-hidden="true"></ion-icon>
+      </button>
     </div>
 
     <ion-item class="list-terms no-ripple">
