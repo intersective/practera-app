@@ -17,7 +17,7 @@
         <ion-avatar class="avatar" slot="start">
           <img *ngIf="!imageUpdating" [src]="profile?.avatar" alt="user profile" i18n-alt [appFallbackImage]="'assets/loading.gif'">
           <p *ngIf="imageUpdating" class="loading-icon">
-            <ion-spinner name="bubbles"></ion-spinner>
+            <ion-spinner name="bubbles" role="status"></ion-spinner>
           </p>
         </ion-avatar>
 
@@ -32,7 +32,7 @@
         <ion-avatar class="avatar" slot="start">
           <img *ngIf="!imageUpdating" [src]="profile?.avatar || '/assets/loading.gif'" alt="user profile">
           <p *ngIf="imageUpdating" class="loading-icon">
-            <ion-spinner name="bubbles"></ion-spinner>
+            <ion-spinner name="bubbles" role="status"></ion-spinner>
           </p>
         </ion-avatar>
 

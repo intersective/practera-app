@@ -17,6 +17,7 @@ import upperFirst from 'lodash-es/upperFirst';
 import * as dayjs from 'dayjs';
 import * as convert from 'color-convert';
 import { Title } from '@angular/platform-browser';
+import { francAll } from 'franc-min';
 
 export enum ThemeColor {
   primary = 'primary',
@@ -767,6 +768,10 @@ export class UtilsService {
       return;
     }
 
+    // Set lang attribute on HTML element
+    const langCode = newLocale === 'en-US' ? 'en' : newLocale.split('-')[0] || 'en';
+    this.document.documentElement.setAttribute('lang', langCode);
+
     // if pathname begin with "/v3/" (for development purpose only)
     const pathname = currentURL.pathname.match(/\/(\w\-?){2,5}\//);
     if (currentURL.pathname.indexOf('/v3/') === 0) {
@@ -792,12 +797,147 @@ export class UtilsService {
     return false;
   }
 
+  /**
+   * decode HTML entities in a string
+   * @param input string containing HTML entities
+   * @returns decoded string
+   */
+  decodeHtmlEntities(input: string): string {
+    if (!input) {
+      return '';
+    }
+
+    const tempDiv = this.document.createElement('div');
+    tempDiv.innerHTML = input;
+    return tempDiv.textContent || '';
+  }
+
   // set page title
   setPageTitle(title: string) {
-    this.title.setTitle(title);
+    const decodedTitle = this.decodeHtmlEntities(title);
+    this.title.setTitle(decodedTitle);
   }
 
   scrollToElement(element: HTMLElement) {
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  /**
+   * Detect language of text passage and return ISO 639-1 language code
+   * Returns null if language cannot be detected or is same as default
+   * @param text Text to analyze
+   * @param defaultLang Default language code (default: 'en')
+   * @returns Language code (e.g., 'es', 'fr', 'ja') or null
+   */
+  detectLanguage(text: string, defaultLang: string = 'en'): string | null {
+    if (!text || text.trim().length < 3) {
+      return null;
+    }
+
+    // Minimum text length for reliable detection
+    const minLength = 10;
+    const cleanText = text.trim().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+
+    if (cleanText.length < minLength) {
+      return null;
+    }
+
+    try {
+      const results = francAll(cleanText, { minLength });
+      if (!results || results.length === 0) {
+        return null;
+      }
+
+      const detected = results[0][0];
+      // Map franc language codes to ISO 639-1 if needed
+      const langMap: { [key: string]: string } = {
+        'eng': 'en',
+        'spa': 'es',
+        'fra': 'fr',
+        'deu': 'de',
+        'jpn': 'ja',
+        'cmn': 'zh',
+        'rus': 'ru',
+        'por': 'pt',
+        'ita': 'it',
+        'kor': 'ko',
+        'ara': 'ar',
+      };
+
+      const normalizedLang = langMap[detected] || detected;
+
+      // Only return if different from default language
+      if (normalizedLang === defaultLang || normalizedLang === 'und') {
+        return null;
+      }
+
+      // Only return if confidence is reasonable (first result should be primary)
+      return normalizedLang;
+    } catch (error) {
+      // Silently fail - return null to not break rendering
+      return null;
+    }
+  }
+
+  /**
+   * Process HTML content and add lang attributes to foreign language passages
+   * WCAG 3.1.2 Language of Parts compliance
+   * @param htmlContent HTML string to process
+   * @param defaultLang Default language code (default: 'en')
+   * @returns Processed HTML with lang attributes
+   */
+  addLanguageAttributes(htmlContent: string, defaultLang: string = 'en'): string {
+    if (!htmlContent) {
+      return htmlContent;
+    }
+
+    // Extract current locale from URL or use default
+    const currentLocale = this.getCurrentLocale();
+    const baseLang = currentLocale === 'en-US' ? 'en' : currentLocale.split('-')[0] || defaultLang;
+
+    try {
+      // Parse HTML and process text nodes
+      const tempDiv = this.document.createElement('div');
+      tempDiv.innerHTML = htmlContent;
+
+      const processNode = (node: Node): void => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = node.textContent?.trim() || '';
+          if (text.length >= 10) {
+            const detectedLang = this.detectLanguage(text, baseLang);
+            if (detectedLang) {
+              const span = this.document.createElement('span');
+              span.setAttribute('lang', detectedLang);
+              span.textContent = text;
+              node.parentNode?.replaceChild(span, node);
+            }
+          }
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const element = node as Element;
+          // Skip if already has lang attribute
+          if (element.hasAttribute('lang')) {
+            return;
+          }
+          // Process child nodes
+          Array.from(node.childNodes).forEach(child => processNode(child));
+        }
+      };
+
+      Array.from(tempDiv.childNodes).forEach(child => processNode(child));
+      return tempDiv.innerHTML;
+    } catch (error) {
+      // If processing fails, return original content
+      return htmlContent;
+    }
+  }
+
+  /**
+   * Set lang attribute on HTML element based on current locale
+   * WCAG 3.1.1 Language of Page compliance
+   */
+  setPageLanguage(): void {
+    const currentLocale = this.getCurrentLocale();
+    const langCode = currentLocale === 'en-US' ? 'en' : currentLocale.split('-')[0] || 'en';
+    this.document.documentElement.setAttribute('lang', langCode);
   }
 }

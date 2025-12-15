@@ -5,16 +5,23 @@
       <ion-item class="item-bottom-border" lines="none">
         <ion-label>
           <span [innerHTML]="teamMember.userName"></span>
-          <p *ngIf="submission?.answer?.includes(teamMember.key) || review?.answer?.includes(teamMember.key)">
-            <ion-chip *ngIf="submission?.answer?.includes(teamMember.key)" class="label orange" i18n>Learner's answer</ion-chip>
-            <ion-chip *ngIf="review?.answer?.includes(teamMember.key)" class="label yellow black" i18n>Expert's answer</ion-chip>
-          </p>
+          <ng-container *ngIf="submission.answer">
+            <p *ngIf="isSelectedInSubmission(teamMember)">
+              <ion-chip *ngIf="isSelectedInSubmission(teamMember)" class="label orange" i18n>Learner answer</ion-chip>
+            </p>
+          </ng-container>
+
+          <ng-container *ngIf="review?.answer">
+            <p *ngIf="isSelectedInReview(teamMember)">
+              <ion-chip *ngIf="isSelectedInReview(teamMember)" class="label yellow black" i18n>Expert answer</ion-chip>
+            </p>
+          </ng-container>
         </ion-label>
       </ion-item>
     </ng-container>
   </ion-list>
 
-  <ng-container *ngIf="review?.comment">
+  <ng-container *ngIf="review?.comment && question.canComment === true">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
@@ -28,54 +35,65 @@
 </ng-container>
 
 <ng-container *ngIf="doAssessment">
-  <ion-list class="no-bg ion-no-padding">
-    <ion-item
-      lines="none"
-      *ngFor="let teamMember of question.teamMembers;let i = index"
-      [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-      <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
-      <ion-checkbox
-        [attr.aria-label]="teamMember.userName"
-        color="success"
-        [checked]="submission.answer ? submission.answer.includes(teamMember.key) : false"
-        [value]="teamMember.key"
-        slot="start"
-        (ionChange)="onChange(teamMember.key)"
-        [disabled]="control.disabled">
-      </ion-checkbox>
-    </ion-item>
-  </ion-list>
+  <fieldset [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
+    <legend class="for-accessibility" [id]="'multi-team-member-selector-legend-' + question.id">{{ question.name }}</legend>
+    <ion-list class="no-bg ion-no-padding" role="group" [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
+      <ion-item
+        lines="none"
+        *ngFor="let teamMember of question.teamMembers;let i = index"
+        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
+        <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+        <ion-checkbox
+          [attr.aria-label]="teamMember.userName"
+          color="success"
+          [checked]="isSelected(teamMember)"
+          [value]="teamMember.key"
+          slot="start"
+          (ionChange)="onChange(teamMember.key)"
+          [disabled]="control.disabled">
+        </ion-checkbox>
+      </ion-item>
+    </ion-list>
+  </fieldset>
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-list class="no-bg ion-no-padding"
-    *ngIf="question.canAnswer">
-    <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
-      <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
-    </ion-list-header>
+  <fieldset [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id" *ngIf="question.canAnswer">
+    <legend class="for-accessibility" [id]="'multi-team-member-selector-review-legend-' + question.id">{{ question.name }}</legend>
+    <ion-list class="no-bg ion-no-padding" role="group" [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
+      <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
+        <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
+      </ion-list-header>
 
-    <ion-item lines="none"
-      *ngFor="let teamMember of question.teamMembers;let i = index"
-      [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
+      <ion-item lines="none"
+        *ngFor="let teamMember of question.teamMembers;let i = index"
+        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
 
-      <ion-checkbox color="success"
-        [attr.aria-label]="teamMember.userName"
-        [checked]="review?.answer?.includes(teamMember.key)"
-        [value]="teamMember.key"
-        justify="start"
-        slot="start"
-        labelPlacement="end"
-        (ionChange)="onChange(teamMember.key, 'answer')"
-        [disabled]="control.disabled">
-        <div class="white-space-normal body-2 black">
-          <span [innerHTML]="teamMember.userName"></span>
-          <p *ngIf="submission?.answer?.includes(teamMember.key)" style="margin: 0; padding: 0;">
-            <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
-          </p>
-        </div>
-      </ion-checkbox>
-    </ion-item>
-  </ion-list>
+        <ion-checkbox color="success"
+          [attr.aria-label]="teamMember.userName"
+          [checked]="review?.answer?.includes(teamMember.key)"
+          [value]="teamMember.key"
+          justify="start"
+          slot="start"
+          labelPlacement="end"
+          (ionChange)="onChange(teamMember.key, 'answer')"
+          [disabled]="control.disabled">
+          <div class="white-space-normal body-2 black">
+            <span [innerHTML]="teamMember.userName"
+              [appToggleLabel]="onLabelToggleReview"
+              [toggleId]="teamMember.key"
+              [toggleDisabled]="control.disabled"
+              role="button"
+              tabindex="0"
+            ></span>
+            <p *ngIf="isSelectedInSubmission(teamMember)" style="margin: 0; padding: 0;">
+              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
+            </p>
+          </div>
+        </ion-checkbox>
+      </ion-item>
+    </ion-list>
+  </fieldset>
 
   <ion-list class="ion-no-padding ion-padding-bottom"
     *ngIf="question.canComment && submission.answer">

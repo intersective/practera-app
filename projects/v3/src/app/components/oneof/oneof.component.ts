@@ -150,7 +150,7 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
       this.innerValue = {
         answer: '',
         comment: ''
@@ -159,11 +159,11 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
       this.comment = this.review.comment;
       this.innerValue.answer = this.review.answer;
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+
+    if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
@@ -193,5 +193,15 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
+  }
+
+  // innerHTML text toggle
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  // Allow clicking the rendered HTML label to toggle during review
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
   }
 }

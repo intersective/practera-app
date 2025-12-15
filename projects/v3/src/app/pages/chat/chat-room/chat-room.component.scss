@@ -127,7 +127,7 @@ $message-body-size: 60%;
             align-items: center;
           }
 
-          #inner-box {
+          [id^="inner-box"] {
             border-radius: inherit;
             min-width: inherit;
             padding: 0;
@@ -172,7 +172,7 @@ $message-body-size: 60%;
             .label {
               color: var(--ion-color-primary);
             }
-            #inner-box {
+            [id^="inner-box"] {
               p {
                 color: var(--ion-color-primary);
               }
@@ -207,7 +207,7 @@ $message-body-size: 60%;
             .label {
               color: var(--ion-color-primary-contrast) !important;
             }
-            #inner-box {
+            [id^="inner-box"] {
               p {
                 color: var(--ion-color-primary-contrast) !important;
               }
@@ -510,7 +510,6 @@ ion-fab.scroll-to-bottom {
   opacity: 0.7;
 }
 
-
 .ql-editor {
   a {
     text-decoration: underline;
@@ -519,5 +518,24 @@ ion-fab.scroll-to-bottom {
 
    a:hover {
     color: var(--ion-color-primary);
+  }
+}
+
+:host {
+  ::ng-deep quill-view-html .ql-container .ql-editor {
+    ol {
+      list-style: decimal !important;
+      padding-left: 2em;
+    }
+
+    ul {
+      list-style: disc !important;
+      padding-left: 2em;
+    }
+
+    li {
+      list-style: inherit !important;
+      display: list-item !important;
+    }
   }
 }

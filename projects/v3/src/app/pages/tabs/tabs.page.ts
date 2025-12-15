@@ -1,6 +1,6 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { IonTabs } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ChatService } from '@v3/services/chat.service';
@@ -39,10 +39,26 @@ export class TabsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private route: ActivatedRoute,
     private activityService: ActivityService,
+    private router: Router,
   ) {
   }
 
+  /**
+   * Check if a feature is enabled in developer mode only
+   * @param featureName The name of the feature to check
+   * @returns True if the feature is enabled in developer mode, false otherwise
+   */
+  forDeveloperMode(featureName: string): boolean {
+    // List of features to enable in developer mode
+    const betaFeatures = [];
+    if (isDevMode() && betaFeatures.includes(featureName)) {
+      return true;
+    }
+    return false;
+  }
+
   ngOnInit() {
+    this.utils.setPageTitle('Practera');
     this.utils.screenStatus$.subscribe((res) => {
       this.hasLeftSidebar = res.leftSidebarExpanded;
     });
@@ -112,5 +128,33 @@ export class TabsPage implements OnInit, OnDestroy {
 
   setCurrentTab() {
     this.selectedTab = this.tabs.getSelected();
+  }
+
+  /**
+   * Handle keyboard navigation for tab buttons
+   * Ensures proper keyboard support similar to side menu navigation
+   */
+  keyboardNavigateTab(tabName: string, keyboardEvent: KeyboardEvent): void | Promise<boolean> {
+    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+      keyboardEvent.preventDefault();
+      // Map tab names to routes
+      const tabRouteMap: { [key: string]: string } = {
+        'home': '/v3/home',
+        'events': '/v3/events',
+        'reviews': '/v3/review-desktop',
+        'messages': '/v3/messages',
+        'due-dates': '/v3/due-dates',
+        'settings': '/v3/settings'
+      };
+      const route = tabRouteMap[tabName];
+      if (route && this.tabs) {
+        // Use Ionic tabs API to select the tab
+        this.tabs.select(tabName);
+        // Also navigate to ensure URL is correct
+        return this.router.navigateByUrl(route);
+      }
+    } else if (keyboardEvent) {
+      return;
+    }
   }
 }

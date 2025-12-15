@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { BrowserStorageService } from '../../services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,10 +11,12 @@ import { Router } from '@angular/router';
 export class PageNotFoundPage {
   constructor(
     private storageService: BrowserStorageService,
-    private route: Router
+    private route: Router,
+    private utils: UtilsService
   ) {}
 
   ionViewDidEnter() {
+    this.utils.setPageTitle('Page Not Found - Practera');
     this.storageService.lastVisited('url', null);
   }
 

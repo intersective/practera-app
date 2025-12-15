@@ -1,4 +1,4 @@
-import { UppyUploaderService } from './../uppy-uploader/uppy-uploader.service';
+import { UppyUploaderService, ALLOWED_FILE_TYPES } from './../uppy-uploader/uppy-uploader.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -9,14 +9,6 @@ import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
-
-const ALLOWED_FILE_TYPES = [
-  'image/*',
-  'video/*',
-  '.jpeg',
-  '.png',
-  'application/pdf',
-];
 
 const UPPY_PROPS: DashboardOptions<any, any> = {
   inline: true,
@@ -182,8 +174,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    const type = this.doReview ? 'answer' : undefined;
-
     // reset errors
     this.errors = [];
     const fileInput: TusFileResponse = {
@@ -199,7 +189,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     };
 
     this.uploadedFile = fileInput;
+    const type = this.doReview ? 'answer' : undefined;
     this.onChange('', type);
+
     if (response?.status !== 200) {
       this.errors.push('File upload failed, please try again later.');
     }
@@ -216,7 +208,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
         reviewId: this.reviewId,
         submissionId: this.submissionId,
         questionId: this.question.id,
-        file: this.innerValue.answer,
+        file: this.innerValue.file,
         comment: this.innerValue.comment,
       };
     }
@@ -233,27 +225,26 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.submitActions$.next(action);
   }
 
-  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
+  // if 'type' is set, this is a reviewer's action (review mode); if not set, it's an assessment submission (assessment mode)
   onChange(value, type?: 'comment' | 'answer') {
     // set changed value (answer or comment)
     if (type) {  // for reviewing
       if (!this.innerValue) {
         this.innerValue = {
           answer: {},
-          comment: ''
+          comment: '',
+          file: {},
         };
       }
-      if (type === 'comment') {
-        // just pass the value for comment since comment is always just text
-        this.innerValue.comment = value;
-      } else {
-        this.innerValue.answer = this.fileRequestFormat();
-      }
+
+      this.innerValue.file = this.fileRequestFormat();
+      this.innerValue[type] = value;
     } else { // for assessment
       this.innerValue = this.fileRequestFormat();
     }
 
     this.control.setValue(this.innerValue);
+    this.control.markAsTouched();
     this.triggerSave();
   }
 
@@ -286,6 +277,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue.comment = this.review.comment;
       this.comment = this.review.comment;
       this.innerValue.answer = this.review.answer;
+      this.innerValue.file = this.review.file;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
       this.innerValue = this.submission.answer;
@@ -301,9 +293,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if (this.doAssessment === true) {
       this.submission.answer = null;
       this.onChange('');
-    }
-
-    if (this.doReview === true) {
+    } else if (this.doReview === true) {
       this.review.answer = null;
       this.onChange('', 'answer');
     }

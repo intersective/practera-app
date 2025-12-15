@@ -2,6 +2,7 @@ import { BehaviorSubject, Subject, Observable, combineLatest } from 'rxjs';
 import { Assessment, AssessmentService, DueAssessment } from '@v3/app/services/assessment.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { EventAttributes } from 'ics';
 import { DueDatesService } from './due-dates.service';
 import { debounceTime, takeUntil, map } from 'rxjs/operators';
@@ -30,10 +31,12 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     private dueDatesService: DueDatesService,
     private notificationsService: NotificationsService,
     private assessmentService: AssessmentService,
+    private utilsService: UtilsService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit() {
+    this.utilsService.setPageTitle('Due Dates - Practera');
     // improved: no need for manual subscription, handle in observable pipeline
     this.filteredAssessments$ = combineLatest([
       this.assessments$,
@@ -64,7 +67,15 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     this.isLoading = true;
     this.statusFilter = '';
     this.assessmentService.dueStatusAssessments()
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        map(assessments => {
+          return assessments.map(assessment => {
+            assessment.name = this.utilsService.decodeHtmlEntities(assessment.name);
+            return assessment;
+          });
+        })
+      )
       .subscribe({
         next: (assessments) => {
           if (assessments?.length) {

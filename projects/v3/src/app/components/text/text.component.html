@@ -1,30 +1,32 @@
 <h3 class="for-accessibility" [id]="'text-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="!doAssessment && !doReview && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
-  <div class="ion-no-padding ion-padding-horizontal" *ngIf="submission?.answer">
+  <div class="ion-no-padding ion-padding-horizontal" *ngIf="submission?.answer" role="region" aria-label="Submitted answer" i18n-aria-label>
     <ion-label class="white-space-normal body-2">
-      <p><ion-chip class="label orange" i18n>Learner's answer</ion-chip></p>
-      <p class="body-2 gray-3 white-space-pre black" [innerHTML]="submission?.answer"></p>
+      <p><ion-chip class="label orange" i18n role="status">Learner's answer</ion-chip></p>
+      <p class="body-2 gray-3 white-space-pre black" [innerHTML]="submission?.answer | detectLanguage"></p>
     </ion-label>
   </div>
 
   <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
     <ion-item lines="none">
       <ion-label class="white-space-normal body-2 gray-3">
-        <p><ion-chip class="label yellow black" i18n>Expert's answer</ion-chip></p>
-        <p class="body-2 gray-3 white-space-pre" [class]="{'noanswer': !review?.answer}" [innerHTML]="review?.answer || 'No answer given to this optional question.'"></p>
+        <p><ion-chip class="label yellow black" i18n role="status">Expert's answer</ion-chip></p>
+        <p class="body-2 gray-3 white-space-pre" [class]="{'noanswer': !review?.answer}" [innerHTML]="(review?.answer || 'No answer given to this optional question.') | detectLanguage"></p>
       </ion-label>
     </ion-item>
   </ng-container>
 
-  <ng-container *ngIf="review?.comment">
+  <ng-container *ngIf="review?.comment && question.canComment === true">
     <ion-item class="feedback-title ion-no-padding" lines="none">
-      <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
+      <ion-icon class="ion-padding-horizontal" name="eye" size="small" aria-hidden="true"></ion-icon>
       <ion-label i18n class="white-space-normal">Feedback</ion-label>
     </ion-item>
     <ion-textarea class="ion-no-margin preview textarea white-space-pre"
       [autoGrow]="true"
       [value]="review.comment"
       [disabled]="true"
+      aria-label="Reviewer feedback" i18n-aria-label
+      readonly
     ></ion-textarea>
   </ng-container>
 </ng-container>
@@ -41,26 +43,30 @@
       (ionFocus)="onFocus($event)"
       (keyup)="onChange()"
       [disabled]="control?.disabled"
+      [attr.aria-required]="question.isRequired"
+      [attr.aria-invalid]="control?.invalid && control?.touched"
       class="ion-no-margin"
       placeholder="Please add your answer here"
       i18n-placeholder
     ></ion-textarea>
-    <ion-text *ngFor="let error of errors" color="danger">
-      <p>{{error}}</p>
-    </ion-text>
+    <div role="alert" aria-live="assertive" aria-atomic="true" *ngIf="errors.length > 0">
+      <ion-text *ngFor="let error of errors" color="danger">
+        <p>{{error}}</p>
+      </ion-text>
+    </div>
   </div>
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-item *ngIf="!submission?.answer && !question.reviewerOnly" class="no-answers item-bottom-border" lines="none">
-    <ion-icon slot="start" color="danger" name="warning-outline"></ion-icon>
+  <ion-item *ngIf="!submission?.answer && !question.reviewerOnly" class="no-answers item-bottom-border" lines="none" role="alert">
+    <ion-icon slot="start" color="danger" name="warning-outline" aria-hidden="true"></ion-icon>
     <ion-label size="small" i18n>No answers were submitted.</ion-label>
   </ion-item>
 
-  <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer">
-    <h3 class="for-accessibility" aria-labelledby="learner-indicator" aria-describedby="learner-answer"></h3>
-    <ion-chip id="learner-indicator" class="label orange" i18n>Learner's answer</ion-chip>
-    <p id="learner-answer" class="body-2 gray-3 white-space-pre" [innerHTML]="submission?.answer"></p>
+  <div class="ion-padding-horizontal ion-padding-bottom" *ngIf="submission?.answer" role="region" aria-label="Learner submission" i18n-aria-label>
+    <h4 class="for-accessibility" id="learner-indicator">Learner's answer</h4>
+    <ion-chip class="label orange" aria-hidden="true" i18n>Learner's answer</ion-chip>
+    <p id="learner-answer" class="body-2 gray-3 white-space-pre" [innerHTML]="submission?.answer | detectLanguage" aria-labelledby="learner-indicator"></p>
   </div>
 
   <div class="ion-no-padding">
@@ -72,7 +78,7 @@
       <div [class]="{'ion-padding-top': question.reviewerOnly}">
         <ion-textarea
           [autoGrow]="true"
-          [attr.aria-label]="'expert\'s answer'"
+          [attr.aria-label]="'Reviewer answer'" i18n-aria-label
           *ngIf="question.canAnswer"
           class="textarea"
           rows="4"
@@ -81,7 +87,10 @@
           (ionFocus)="onFocus($event)"
           (keyup)="onChange('answer')"
           placeholder="Please put your answer here"
+          i18n-placeholder
           [disabled]="control.disabled"
+          [attr.aria-required]="question.isRequired"
+          [attr.aria-invalid]="control?.invalid && control?.touched"
         ></ion-textarea>
       </div>
     </ion-list>
@@ -93,7 +102,7 @@
 
       <ion-textarea
         [autoGrow]="true"
-        [attr.aria-label]="'expert\'s review feedback'"
+        [attr.aria-label]="'Reviewer feedback'" i18n-aria-label
         *ngIf="question.canComment && submission?.answer"
         class="textarea"
         [(ngModel)]="comment"

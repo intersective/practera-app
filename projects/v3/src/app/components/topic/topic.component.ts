@@ -1,5 +1,5 @@
 import { Topic, TopicService } from '@v3/services/topic.service';
-import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChanges, OnDestroy, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
 import { SharedService } from '@v3/services/shared.service';
@@ -8,7 +8,7 @@ import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription } from 'rxjs';
 import { Activity, Task } from '@v3/app/services/activity.service';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
@@ -17,7 +17,7 @@ import { ComponentCleanupService } from '@v3/app/services/component-cleanup.serv
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
 })
-export class TopicComponent implements OnChanges, OnDestroy {
+export class TopicComponent implements OnInit, OnChanges, OnDestroy {
   @Input() topic: Topic;
   @Input() task: Task;
   continuing: boolean;
@@ -32,6 +32,7 @@ export class TopicComponent implements OnChanges, OnDestroy {
   iframeHtml: SafeHtml;
   sanitizedTitle: SafeHtml;
 
+  private continueAction$ = new Subject<Topic>();
   private cleanupSub: Subscription;
 
   constructor(
@@ -51,6 +52,25 @@ export class TopicComponent implements OnChanges, OnDestroy {
     });
   }
 
+  ngOnInit() {
+    this.continueAction$.pipe(
+      filter(() => !this.continuing),
+      exhaustMap((topic) => {
+        this.continuing = true;
+        this.buttonDisabled$.next(true);
+
+        this.continue.emit(topic);
+
+        // 1sec cooldown to prevent multiple clicks
+        return new Promise(resolve => setTimeout(resolve, 1000));
+      }),
+      finalize(() => {
+        this.continuing = false;
+        this.buttonDisabled$.next(false);
+      })
+    ).subscribe();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     this.continuing = false;
     if (this.topic) {
@@ -58,10 +78,15 @@ export class TopicComponent implements OnChanges, OnDestroy {
         this._setVideoUrlElelemts();
       }
       this._initVideoPlayer();
+      this.buttonDisabled$.next(false);
     }
 
     if (changes.topic?.currentValue?.title) {
       this.sanitizedTitle = this.sanitizer.bypassSecurityTrustHtml(changes.topic?.currentValue?.title);
+    }
+
+    if (changes.topic?.currentValue) {
+      this.buttonDisabled$.next(false);
     }
   }
 
@@ -70,6 +95,7 @@ export class TopicComponent implements OnChanges, OnDestroy {
     this.topicService.clearTopic();
     this.cleanupMedia();
     this.cleanupSub.unsubscribe();
+    this.continueAction$.complete();
   }
 
   ionViewWillLeave() {
@@ -108,8 +134,8 @@ export class TopicComponent implements OnChanges, OnDestroy {
 
   private _setVideoUrlElelemts() {
     if (this.topic.videolink.includes('vimeo') ||
-        this.topic.videolink.includes('youtube') ||
-        this.topic.videolink.includes('youtu.be')) {
+      this.topic.videolink.includes('youtube') ||
+      this.topic.videolink.includes('youtu.be')) {
       this.iframeHtml =
         this.embedService.embed(this.topic.videolink, {
           attr: {
@@ -124,12 +150,17 @@ export class TopicComponent implements OnChanges, OnDestroy {
   // convert other brand video players to custom player.
   private _initVideoPlayer() {
     setTimeout(() => {
-      this.utils.each(this.document.querySelectorAll('.video-embed'), embedVideo => {
+      this.utils.each(this.document.querySelectorAll('.video-embed'), (embedVideo, index) => {
         embedVideo.classList.remove('topic-video');
         if (!this.utils.isMobile()) {
           embedVideo.classList.remove('desktop-view');
         }
         embedVideo.classList.add('plyr__video-embed');
+
+        // add unique id to prevent duplicate ids from plyr
+        const uniqueId = `plyr-${this.topic?.id || 'unknown'}-${index}-${Date.now()}`;
+        embedVideo.setAttribute('data-plyr-id', uniqueId);
+
         new Plyr(embedVideo as HTMLElement, { ratio: '16:9' });
         // if we have video tag, plugin will adding div tags to wrap video tag and main div contain .plyr css class.
         // so we need to add topic-video and desktop-view to that div to load video properly .
@@ -188,9 +219,7 @@ export class TopicComponent implements OnChanges, OnDestroy {
   }
 
   async actionBarContinue(topic): Promise<void> {
-    this.continuing = true;
-    this.continue.emit(topic);
-    return;
+    this.continueAction$.next(topic);
   }
 
   handleVideoError(videoError) {

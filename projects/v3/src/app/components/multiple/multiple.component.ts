@@ -161,9 +161,6 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
 
   // From ControlValueAccessor interface
   writeValue(value: any) {
-    if (value) {
-      this.innerValue = JSON.stringify(value);
-    }
   }
 
   // From ControlValueAccessor interface
@@ -177,18 +174,17 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
   }
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
       this.innerValue = {
         answer: this.review.answer,
         comment: this.review.comment
       };
       this.comment = this.review.comment;
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+    if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
     }
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
@@ -218,5 +214,10 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
+  }
+
+  // innerHTML text toggle
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
   }
 }
