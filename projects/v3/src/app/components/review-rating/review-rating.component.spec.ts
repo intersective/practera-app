@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
 import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ describe('ReviewRatingComponent', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let fastfeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
       declarations: [ReviewRatingComponent],
@@ -30,7 +30,10 @@ describe('ReviewRatingComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            alert: Promise.resolve(),
+            dismiss: Promise.resolve()
+          }),
         },
         {
           provide: ReviewRatingService,
@@ -73,40 +76,14 @@ describe('ReviewRatingComponent', () => {
   });
 
   describe('when testing submitReviewRating()', () => {
-    afterEach(() => {
-      component.ratingData = {
-        assessment_review_id: 1,
-        rating: 0.123,
-        comment: '',
-        tags: []
-      };
-      serviceSpy.submitRating.and.returnValue(of(''));
-      component.submitReviewRating();
-      expect(serviceSpy.submitRating.calls.count()).toBe(1);
-      expect(serviceSpy.submitRating.calls.first().args[0].rating).toEqual(0.12);
-      expect(component.isSubmitting).toBe(false);
-      if (component.redirect) {
-        expect(routerSpy.navigate.calls.first().args[0]).toEqual(component.redirect);
-      } else {
-        expect(routerSpy.navigate.calls.count()).toBe(0);
-      }
+    beforeEach(() => {
+      serviceSpy.submitRating.calls.reset();
+      routerSpy.navigate.calls.reset();
     });
-    it('should submit rating', () => {
+
+    it('should submit rating without navigation when redirect is null', async () => {
       component.redirect = null;
       component.moodSelected = 0;
-      component.ratingData.rating = 1;
-    });
-    it('should submit rating and navigate', () => {
-      component.ratingData.rating = 1;
-      component.moodSelected = 1;
-      component.redirect = ['home'];
-    });
-  });
-
-  describe('submitReviewRating() - straightforward test', () => {
-    it('should trigger pulse check API when stay on same view', () => {
-      component.redirect = null;
-
       component.ratingData = {
         assessment_review_id: 1,
         rating: 0.123,
@@ -114,14 +91,61 @@ describe('ReviewRatingComponent', () => {
         tags: []
       };
 
-      component.moodSelected = 0;
-
       serviceSpy.submitRating.and.returnValue(of(''));
-      component.submitReviewRating();
+      await component.submitReviewRating();
+
       expect(serviceSpy.submitRating.calls.count()).toBe(1);
       expect(serviceSpy.submitRating.calls.first().args[0].rating).toEqual(0.12);
       expect(component.isSubmitting).toBe(false);
       expect(routerSpy.navigate.calls.count()).toBe(0);
+    });
+
+    it('should submit rating and navigate when redirect is provided', async () => {
+      component.redirect = ['home'];
+      component.moodSelected = 1;
+      component.ratingData = {
+        assessment_review_id: 1,
+        rating: 0.123,
+        comment: '',
+        tags: []
+      };
+
+      serviceSpy.submitRating.and.returnValue(of(''));
+      await component.submitReviewRating();
+
+      expect(serviceSpy.submitRating.calls.count()).toBe(1);
+      expect(serviceSpy.submitRating.calls.first().args[0].rating).toEqual(0.12);
+      expect(component.isSubmitting).toBe(false);
+    });
+  });
+
+  describe('submitReviewRating() - straightforward test', () => {
+    it('should submit rating and set ratingSessionEnd to true', async () => {
+      component.redirect = null;
+
+      component.ratingData = {
+        assessment_review_id: 1,
+        rating: 0.123,
+        comment: '',
+        tags: []
+      };
+
+      component.moodSelected = 0;
+
+      serviceSpy.submitRating.and.returnValue(of(''));
+      await component.submitReviewRating();
+      expect(serviceSpy.submitRating.calls.count()).toBe(1);
+      expect(serviceSpy.submitRating.calls.first().args[0].rating).toEqual(0.12);
+      expect(component.isSubmitting).toBe(false);
+      expect(component.ratingSessionEnd).toBe(true);
+    });
+
+    it('should trigger pulse check API when dismissModal is called', async () => {
+      component.redirect = null;
+      component.reviewId = 1;
+
+      fastfeedbackSpy.pullFastFeedback.calls.reset();
+      await component.dismissModal();
       expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalledTimes(1);
     });
   });

@@ -27,7 +27,7 @@ describe('ReviewService', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['modal']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['modalOnly']),
         },
         {
           provide: RequestService,
@@ -113,11 +113,18 @@ describe('ReviewService', () => {
   describe('when testing popUpReviewRating()', () => {
     it('should pass the correct data to notification modal', () => {
       service.popUpReviewRating(1, ['home']);
-      expect(notificationSpy.modal).toHaveBeenCalledTimes(1);
-      expect(notificationSpy.modal).toHaveBeenCalledWith({} as any, {
-        reviewId: 1,
-        redirect: ['home']
-      });
+      expect(notificationSpy.modalOnly).toHaveBeenCalledTimes(1);
+      expect(notificationSpy.modalOnly).toHaveBeenCalledWith(
+        jasmine.any(Function), // ReviewRatingComponent
+        {
+          reviewId: 1,
+          redirect: ['home']
+        },
+        {
+          id: 'review-popup-1',
+          backdropDismiss: false,
+        }
+      );
     });
   });
 });

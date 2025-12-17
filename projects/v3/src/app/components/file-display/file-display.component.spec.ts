@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
 import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
@@ -8,6 +8,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { environment } from '@v3/environments/environment';
 import { FileInput, TusFileResponse } from '../types/assessment';
+import { ModalController } from '@ionic/angular';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -39,6 +40,13 @@ describe('FileDisplayComponent', () => {
             'metadata'
           ])
         },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', {
+            create: Promise.resolve({ present: jasmine.createSpy('present').and.returnValue(Promise.resolve()) }),
+            dismiss: Promise.resolve()
+          })
+        },
       ],
     })
       .compileComponents();
@@ -55,8 +63,9 @@ describe('FileDisplayComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should preview file', () => {
-    component.previewFile({
+  it('should preview file with modal', async () => {
+    const modalControllerSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
+    await component.previewFile({
       bucket: 'test-bucket',
       path: 'test-path',
       name: 'test-file',
@@ -65,26 +74,35 @@ describe('FileDisplayComponent', () => {
       type: 'image/jpeg',
       size: 1000
     });
-    expect(filestackSpy.previewFile.calls.count()).toBe(1);
+    expect(modalControllerSpy.create).toHaveBeenCalled();
   });
 
-  it('should fail, if preview file api is faulty', fakeAsync(() => {
-    const error = 'PREVIEW FILE SAMPLE ERROR';
-    // filestackSpy.metadata.and.rejectWith(error);
-    filestackSpy.previewFile.and.rejectWith(error);
-    component.previewFile({
+  it('should open application files in new window', async () => {
+    spyOn(window, 'open');
+    component.file = {
       bucket: 'test-bucket',
       path: 'test-path',
-      name: 'test-file',
-      url: 'file',
-      extension: 'jpg',
-      type: 'image/jpeg',
+      name: 'test-file.pdf',
+      filename: 'test-file.pdf',
+      url: 'DUMMY_URL',
+      extension: 'pdf',
+      type: 'application/pdf',
+      mimetype: 'application/pdf',
+      size: 1000,
+      directUrl: 'DUMMY_URL',
+      cdnUrl: 'DUMMY_URL',
+    };
+    await component.previewFile({
+      bucket: 'test-bucket',
+      path: 'test-path',
+      name: 'test-file.pdf',
+      url: 'DUMMY_URL',
+      extension: 'pdf',
+      type: 'application/pdf',
       size: 1000
-    }).then(res => {
-      console.info('afterPreview', res);
     });
-    flushMicrotasks();
-  }));
+    expect(window.open).toHaveBeenCalledWith('DUMMY_URL', '_system');
+  });
 
   describe('UI logic', () => {
     const url = 'test.com/uilogic';
@@ -93,11 +111,15 @@ describe('FileDisplayComponent', () => {
         bucket: 'test-bucket',
         path: 'test-path',
         name: 'test-file',
+        filename: 'test-file',
         url: url,
         extension: 'jpg',
         type: 'image/jpeg',
-        size: 1000
-      } as TusFileResponse;
+        mimetype: 'image/jpeg',
+        size: 1000,
+        directUrl: url,
+        cdnUrl: url,
+      };
     });
     it('should display image element based on filetype', () => {
       component.fileType = 'image';
@@ -105,10 +127,8 @@ describe('FileDisplayComponent', () => {
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeTruthy();
       expect(videoEle).toBeFalsy();
-      expect(anyEle).toBeFalsy();
     });
 
     it('should display video element based on filetype', () => {
@@ -117,22 +137,20 @@ describe('FileDisplayComponent', () => {
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeFalsy();
       expect(videoEle).toBeTruthy();
-      expect(anyEle).toBeFalsy();
     });
 
-    it('should display "any" element based on filetype', () => {
+    it('should display list-item element for "any" filetype', () => {
       component.fileType = 'any';
       fixture.detectChanges();
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
+      const listItemEle: HTMLElement = fixture.nativeElement.querySelector('app-list-item');
       expect(imageEle).toBeFalsy();
       expect(videoEle).toBeFalsy();
-      expect(anyEle).toBeTruthy();
+      expect(listItemEle).toBeTruthy();
     });
   });
 
@@ -141,37 +159,22 @@ describe('FileDisplayComponent', () => {
       component.removeFile.emit = spyOn(component.removeFile, 'emit');
     });
 
-    it('should remove uploaded file', () => {
-      component.fileType = 'not any';
+    it('should download file when index is 0', () => {
       component.actionBtnClick({
         bucket: 'test-bucket',
         path: 'test-path',
         name: 'test-file',
         url: 'http://dummy.com',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000
-      } as TusFileResponse, 999);
-
-      expect(component.removeFile.emit).toHaveBeenCalled();
-    });
-
-    it('should execute based on index code', fakeAsync(() => {
-      component.fileType = 'any';
-
-      component.actionBtnClick({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
-        url: 'http://dummy.com',
+        directUrl: 'http://dummy.com/direct',
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
       } as TusFileResponse, 0);
 
-      // expect(component.removeFile.emit).toHaveBeenCalled();
       expect(utilsSpy.downloadFile).toHaveBeenCalled();
+    });
 
+    it('should remove uploaded file when index is 1', () => {
       component.actionBtnClick({
         bucket: 'test-bucket',
         path: 'test-path',
@@ -182,22 +185,8 @@ describe('FileDisplayComponent', () => {
         size: 1000
       } as TusFileResponse, 1);
 
-      tick();
-      expect(filestackSpy.previewFile).toHaveBeenCalled();
-
-      component.actionBtnClick({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
-        url: 'http://dummy.com',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000
-      } as TusFileResponse, 2);
-
-      tick();
       expect(component.removeFile.emit).toHaveBeenCalled();
-    }));
+    });
   });
 });
 

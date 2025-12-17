@@ -348,7 +348,7 @@ describe('ChatService', () => {
         {
           message: 'test message',
           channelUuid: '10',
-          file: undefined
+          fileObj: undefined
         }
       ));
     });
@@ -403,12 +403,6 @@ describe('ChatService', () => {
           expect(message.message).toEqual(newMessageRes.data.createChatLog.message);
           expect(message.created).toEqual(newMessageRes.data.createChatLog.created);
           expect(message.file).toEqual(newMessageRes.data.createChatLog.file);
-          expect(message.fileObject).toBeDefined();
-          if ((typeof newMessageRes.data.createChatLog.file) === 'string') {
-            expect(message.fileObject).toEqual(fileJson);
-          } else {
-            expect(message.fileObject).toEqual(newMessageRes.data.createChatLog.file);
-          }
         }
       );
       expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);

@@ -1,16 +1,19 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChatRoomComponent } from './chat-room.component';
 import { ChannelMembers, ChatService, Message } from '@v3/services/chat.service';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { FilestackService } from '@v3/services/filestack.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { ModalService } from '@v3/services/modal.service';
 import { MockRouter } from '@testingv3/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { IonContent, ModalController } from '@ionic/angular';
+import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
 import { mockMembers } from '@testingv3/fixtures';
 
@@ -35,9 +38,9 @@ describe('ChatRoomComponent', () => {
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
   modalCtrlSpy.create.and.returnValue(modalSpy);
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [ChatRoomComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
@@ -51,13 +54,16 @@ describe('ChatRoomComponent', () => {
         },
         {
           provide: IonContent,
-          useValue: jasmine.createSpyObj('IonContent', ['scrollToBottom'])
+          useValue: {
+            scrollToBottom: jasmine.createSpy('scrollToBottom'),
+            ionScrollEnd: new Subject(),
+          }
         },
         {
           provide: ChatService,
           useValue: jasmine.createSpyObj('ChatService', {
-            'getChatMembers': of(true),
-            'getMessageList': of(true),
+            'getChatMembers': of({ data: { channelMembers: [] } }),
+            'getMessageList': of({ messages: [], cursor: null }),
             'postNewMessage': of(true),
             'markMessagesAsSeen': of(true),
             'postAttachmentMessage': of(true),
@@ -74,6 +80,18 @@ describe('ChatRoomComponent', () => {
         {
           provide: FilestackService,
           useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes', 'getS3Config', 'open', 'previewFile'])
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast', 'loading', 'dismiss'])
+        },
+        {
+          provide: ModalService,
+          useValue: jasmine.createSpyObj('ModalService', ['addModal', 'openUppyModal'])
+        },
+        {
+          provide: PopoverController,
+          useValue: jasmine.createSpyObj('PopoverController', ['create', 'dismiss'])
         },
         {
           provide: Router,
@@ -102,6 +120,8 @@ describe('ChatRoomComponent', () => {
   }));
 
   beforeEach(() => {
+    // override ngAfterViewInit before creating component to prevent ionScrollEnd error
+    spyOn(ChatRoomComponent.prototype, 'ngAfterViewInit').and.callFake(() => {});
     fixture = TestBed.createComponent(ChatRoomComponent);
     component = fixture.componentInstance;
     routeStub = TestBed.inject(ActivatedRoute);
@@ -112,8 +132,9 @@ describe('ChatRoomComponent', () => {
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
     filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
     MockIoncontent = TestBed.inject(IonContent) as jasmine.SpyObj<IonContent>;
-    fixture.detectChanges();
+    // assign content for tests that need it
     component.content = MockIoncontent;
+    fixture.detectChanges();
   });
 
   const mockChatMessages = {
@@ -258,31 +279,27 @@ describe('ChatRoomComponent', () => {
         senderUuid: '8bee29d0-bf45',
         senderName: 'user01',
         senderRole: 'participants',
-        senderAvatar: 'http://www.example.com/image.png'
+        senderAvatar: 'http://www.example.com/image.png',
+        sender: undefined,
+        scheduled: undefined,
+        sentAt: undefined
       };
       const receivedMessage = component.getMessageFromEvent(pusherData);
       tick();
       expect(receivedMessage).toEqual({
         uuid: pusherData.uuid,
-        sender: {
-          id: 1,
-          uuid: pusherData.senderUuid,
-          name: pusherData.senderName,
-          role: pusherData.senderRole,
-          avatar: pusherData.senderAvatar,
-          email: 'test@example.com'
-        },
+        sender: undefined,
         senderName: pusherData.senderName,
         senderRole: pusherData.senderRole,
         senderAvatar: pusherData.senderAvatar,
-        isSender: pusherData.isSender,
+        isSender: false,
         message: pusherData.message,
         created: pusherData.created,
         file: pusherData.file,
         channelUuid: pusherData.channelUuid,
         senderUuid: '8bee29d0-bf45',
         sentAt: undefined,
-        scheduled: null
+        scheduled: undefined
       });
     }));
   });
@@ -302,10 +319,12 @@ describe('ChatRoomComponent', () => {
         senderRole: 'participants',
         senderAvatar: 'http://www.example.com/image.png',
         sender: {
+          id: 1,
           uuid: '8bee29d0-bf45',
           name: 'user01',
           role: 'participants',
-          avatar: 'http://www.example.com/image.png'
+          avatar: 'http://www.example.com/image.png',
+          email: 'test@example.com'
         },
         channelUuid: 'c43vwsvc',
         sentAt: undefined,
@@ -321,14 +340,7 @@ describe('ChatRoomComponent', () => {
       component.sendMessage();
       expect(component.messageList[2]).toEqual({
         uuid: saveMessageRes.uuid,
-        sender: {
-          id: 1,
-          uuid: saveMessageRes.senderUuid,
-          name: saveMessageRes.senderName,
-          role: saveMessageRes.senderRole,
-          avatar: saveMessageRes.senderAvatar,
-          email: 'test@example.com'
-        },
+        sender: saveMessageRes.sender,
         isSender: saveMessageRes.isSender,
         message: saveMessageRes.message,
         created: saveMessageRes.created,
@@ -338,7 +350,8 @@ describe('ChatRoomComponent', () => {
         senderName: saveMessageRes.senderName,
         senderRole: saveMessageRes.senderRole,
         senderAvatar: saveMessageRes.senderAvatar,
-        sentAt: undefined
+        sentAt: undefined,
+        preview: undefined
       });
     });
   });
@@ -415,25 +428,29 @@ describe('ChatRoomComponent', () => {
   });
 
   describe('when testing preview()', () => {
-    it(`should call file stack previewFile if file didn't have mimetype`, () => {
+    beforeEach(() => {
+      modalCtrlSpy.create.calls.reset();
+    });
+
+    it(`should call modal controller when previewing file without mimetype`, async () => {
       const file = {
         filename: 'unnamed.jpg',
         mimetype: null,
         url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
-      filestackSpy.previewFile.and.returnValue(Promise.resolve({}));
-      component.preview(file);
-      expect(filestackSpy.previewFile.calls.count()).toBe(1);
+      await component.preview(file);
+      expect(modalCtrlSpy.create.calls.count()).toBe(1);
     });
-    it(`should call modal controller if file have mimetype`, () => {
+
+    it(`should call modal controller when previewing file with mimetype`, async () => {
       const file = {
         filename: 'unnamed.jpg',
         mimetype: 'image/jpeg',
         url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
-      component.preview(file);
+      await component.preview(file);
       expect(modalCtrlSpy.create.calls.count()).toBe(1);
     });
   });
@@ -525,10 +542,11 @@ describe('ChatRoomComponent', () => {
   });
 
   describe('when testing openChatInfo()', () => {
-    it(`should call modal controller if app in mobile view`, () => {
-      utils.isMobile = jasmine.createSpy('utils.isMobile').and.returnValue(true);
-      component.openChatInfo();
-      expect(modalCtrlSpy.create.calls.count()).toBe(2);
+    it(`should call modal controller if app in mobile view`, async () => {
+      modalCtrlSpy.create.calls.reset();
+      component.isMobile = true;
+      await component.openChatInfo();
+      expect(modalCtrlSpy.create.calls.count()).toBe(1);
     });
   });
 

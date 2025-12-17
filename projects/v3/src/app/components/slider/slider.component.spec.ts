@@ -160,13 +160,23 @@ describe('SliderComponent', () => {
 
   describe('Edge cases', () => {
     it('should handle missing min/max gracefully', () => {
+      // reset the slider values to defaults before testing
+      component.sliderMin = 0;
+      component.sliderMax = 100;
+      component.generatedChoices = [];
+
       component.question.min = undefined;
       component.question.max = undefined;
 
       component.ngOnInit();
 
+      // when both min and max are undefined, the condition
+      // (this.question.min !== undefined || this.question.max !== undefined) is false
+      // so sliderMin and sliderMax remain at their initial/reset values
       expect(component.sliderMin).toBe(0);
       expect(component.sliderMax).toBe(100);
+      // Since the condition requires at least one of min/max to be defined,
+      // and both are undefined, generatedChoices won't be populated
       expect(component.generatedChoices.length).toBe(0);
     });
 

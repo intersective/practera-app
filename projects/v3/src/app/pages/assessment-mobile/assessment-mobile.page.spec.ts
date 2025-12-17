@@ -11,6 +11,7 @@ import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { of, Subscription } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
@@ -34,6 +35,7 @@ describe('AssessmentMobilePage', () => {
     TestBed.configureTestingModule({
       declarations: [ AssessmentMobilePage ],
       imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -48,17 +50,17 @@ describe('AssessmentMobilePage', () => {
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', [
-            'getAssessment',
-            'fetchAssessment',
-            'submitAssessment',
-            'submitReview',
-            'pullFastFeedback',
-            'saveFeedbackReviewed',
-          ], {
+          useValue: jasmine.createSpyObj('AssessmentService', {
+            getAssessment: of(true),
+            fetchAssessment: of(true),
+            submitAssessment: of(true),
+            submitReview: of(true),
+            pullFastFeedback: Promise.resolve(),
+            saveFeedbackReviewed: of({}),
+          }, {
             assessment$: of(true),
             submission$: of(true),
-            review$: of(true),
+            review$: of({ id: 1, status: 'done' }),
           }),
         },
         {
@@ -66,7 +68,10 @@ describe('AssessmentMobilePage', () => {
           useValue: jasmine.createSpyObj('ActivityService', [
             'goToNextTask',
             'getActivity',
-          ]),
+          ], {
+            currentTask$: of(null),
+            activity$: of(null),
+          }),
         },
         {
           provide: BrowserStorageService,
@@ -181,6 +186,7 @@ describe('AssessmentMobilePage', () => {
 
     component.saveAssessment(event);
     tick();
+    flushMicrotasks();
 
     expect(assessmentSpy.fetchAssessment).toHaveBeenCalledWith(event.assessmentId, 'assessment', 1, event.contextId, event.submissionId);
     expect(assessmentSpy.submitAssessment).toHaveBeenCalledWith(event.submissionId, event.assessmentId, event.contextId, event.answers);
@@ -270,18 +276,19 @@ describe('AssessmentMobilePage', () => {
       return new Subscription(); // Return a Subscription
     });
 
-    const event = { submissionId: 1, assessmentId: 1, contextId: 1 };
+    const submissionId = 1;
     component.review = { id: 1 } as AssessmentReview;
-    await component.readFeedback(event);
-    expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalledWith(event);
+    await component.readFeedback(submissionId);
+    expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalledWith(submissionId);
     expect(reviewSpy.popUpReviewRating).toHaveBeenCalledWith(component.review.id, false);
     expect(notificationSpy.getTodoItems).toHaveBeenCalled();
     expect(activitySpy.getActivity).toHaveBeenCalled();
   });
 
   it('should call nextTask()', () => {
+    component.activityId = 1;
     component.nextTask();
-    expect(activitySpy.goToNextTask).toHaveBeenCalled();
+    expect(activitySpy.getActivity).toHaveBeenCalledWith(1, true, jasmine.anything());
   });
 
   it('should call reviewRatingPopUp() with hasReviewRating as true', async () => {

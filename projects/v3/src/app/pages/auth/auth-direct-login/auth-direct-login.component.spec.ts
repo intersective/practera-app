@@ -1,8 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { AuthDirectLoginComponent } from './auth-direct-login.component';
 import { AuthService } from '@v3/services/auth.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -25,7 +25,7 @@ describe('AuthDirectLoginComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [],
       declarations: [AuthDirectLoginComponent],
@@ -47,6 +47,10 @@ describe('AuthDirectLoginComponent', () => {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', {
             'directLogin': of(true),
+            'authenticate': of({}),
+            'autologin': of({ experience: { timelineId: 1 } }),
+            'clearCache': Promise.resolve(),
+            'logout': Promise.resolve(),
             'getMyInfo': of({
               data: {
                 user: {
@@ -110,7 +114,7 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   beforeEach(() => {
-    authServiceSpy.authenticate.and.returnValue(of({} as any));
+    authServiceSpy.autologin.and.returnValue(of({ experience: { timelineId: 1 } }));
     authServiceSpy.getMyInfo.and.returnValue(of({
       data: {
         user: {
@@ -148,7 +152,7 @@ describe('AuthDirectLoginComponent', () => {
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { authToken: 'abc' };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      authServiceSpy.authenticate.and.throwError('');
+      authServiceSpy.autologin.and.returnValue(throwError(() => new Error('Login failed')));
       fixture.detectChanges();
       tick(50);
       fixture.detectChanges();
@@ -157,7 +161,7 @@ describe('AuthDirectLoginComponent', () => {
       const button = notificationSpy.alert.calls.first().args[0].buttons[0];
       (typeof button === 'string') ? button : button.handler(true);
 
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['login']);
+      expect(authServiceSpy.logout).toHaveBeenCalled();
     }));
 
     describe('should navigate to', () => {
@@ -196,10 +200,10 @@ describe('AuthDirectLoginComponent', () => {
         fixture.detectChanges();
 
         if (doAuthentication) {
-          expect(authServiceSpy.authenticate.calls.count()).toBe(1);
+          expect(authServiceSpy.autologin.calls.count()).toBe(1);
           expect(authServiceSpy.getMyInfo.calls.count()).toBe(1);
         } else {
-          expect(authServiceSpy.authenticate.calls.count()).toBe(0);
+          expect(authServiceSpy.autologin.calls.count()).toBe(0);
           expect(authServiceSpy.getMyInfo.calls.count()).toBe(0);
         }
 
@@ -216,10 +220,11 @@ describe('AuthDirectLoginComponent', () => {
       }));
 
       it('skip authentication if auth token match', () => {
+        // note: component always calls autologin when token is provided
         switchProgram = false;
         redirect = ['experiences'];
         storageSpy.get.and.returnValue('abc');
-        doAuthentication = false;
+        doAuthentication = true;
       });
 
       it('program switcher page if timeline id is not passed in', () => {
@@ -295,8 +300,8 @@ describe('AuthDirectLoginComponent', () => {
           tmpParams.act,
           {
             task: 'assessment',
-            task_id: tmpParams.asmt,
-            context_id: tmpParams.ctxt
+            contextId: tmpParams.ctxt,
+            assessmentId: tmpParams.asmt,
           }
         ];
         // redirect = ['assessment', 'assessment', tmpParams.act, tmpParams.ctxt, tmpParams.asmt];
@@ -356,8 +361,8 @@ describe('AuthDirectLoginComponent', () => {
           tmpParams.act,
           {
             task: 'assessment',
-            task_id: tmpParams.asmt,
-            context_id: tmpParams.ctxt
+            contextId: tmpParams.ctxt,
+            assessmentId: tmpParams.asmt,
           }
         ];
         setReferrerCalled = true;

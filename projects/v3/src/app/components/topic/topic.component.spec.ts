@@ -30,12 +30,12 @@ describe('TopicComponent', () => {
   let activitySpy: jasmine.SpyObj<ActivityService>;
 
   beforeEach(async () => {
-    topicSpy = jasmine.createSpyObj('TopicService', ['getTopic', 'getTopicProgress', 'updateTopicProgress']);
+    topicSpy = jasmine.createSpyObj('TopicService', ['getTopic', 'getTopicProgress', 'updateTopicProgress', 'clearTopic']);
     filestackSpy = jasmine.createSpyObj('FilestackService', ['previewFile']);
     embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
+    embedSpy.embed.and.returnValue('<iframe src="test"></iframe>'); // return valid embed html
     sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    utilsSpy = jasmine.createSpyObj('UtilsService', ['downloadFile']);
     notificationSpy = jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast']);
     storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
     activitySpy = jasmine.createSpyObj('ActivityService', ['gotoNextTask']);
@@ -52,7 +52,7 @@ describe('TopicComponent', () => {
         { provide: NotificationsService, useValue: notificationSpy },
         { provide: SharedService, useValue: sharedSpy },
         { provide: BrowserStorageService, useValue: storageSpy },
-        { provide: UtilsService, useValue: utilsSpy },
+        { provide: UtilsService, useClass: TestUtils },
         { provide: ActivityService, useValue: activitySpy },
         { provide: ActivatedRouteStub, useValue: new ActivatedRouteStub({ activityId: 1, id: 2 }) },
       ]
@@ -60,6 +60,7 @@ describe('TopicComponent', () => {
 
     fixture = TestBed.createComponent(TopicComponent);
     component = fixture.componentInstance;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
 
     storageSpy.getUser.and.returnValue({ teamId: 1, projectId: 2 });
     storageSpy.get.and.returnValue({});
@@ -85,6 +86,9 @@ describe('TopicComponent', () => {
             contains: jasmine.createSpy('contains').and.returnValue(true),
           },
           nodeName: 'VIDEO',
+          setAttribute: jasmine.createSpy('setAttribute'),
+          removeAttribute: jasmine.createSpy('removeAttribute'),
+          innerHTML: '',
         }
       ] as any);
 
@@ -115,6 +119,8 @@ describe('TopicComponent', () => {
             contains: jasmine.createSpy('contains').and.returnValue(false),
           },
           nodeName: 'NON_VIDEO',
+          setAttribute: jasmine.createSpy('setAttribute'),
+          removeAttribute: jasmine.createSpy('removeAttribute'),
         }
       ] as any);
 

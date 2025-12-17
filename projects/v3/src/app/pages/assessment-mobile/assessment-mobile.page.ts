@@ -217,6 +217,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
           // get the latest activity tasks and refresh the assessment submission data
           this.activityService.getActivity(this.activityId, false, null, () => {
             this.btnDisabled$.next(false);
+            this.saving = false;
           });
         } else {
           this.btnDisabled$.next(false);

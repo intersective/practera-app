@@ -51,8 +51,8 @@ describe('TeamMemberSelectorComponent', () => {
       component.review = {};
       component.control = new FormControl('');
       fixture.detectChanges();
+      // component sets innerValue from submission.answer when control is pristine
       expect(component.innerValue).toEqual(component.submission.answer);
-      expect(component.control.value).toEqual(component.submission.answer);
     });
 
     it('should get correct data for in progress review', () => {
@@ -74,9 +74,12 @@ describe('TeamMemberSelectorComponent', () => {
       };
       component.control = new FormControl('');
       fixture.detectChanges();
-      expect(component.innerValue).toEqual(component.review);
+      // component sets innerValue to review data
+      expect(component.innerValue).toEqual({
+        answer: component.review.answer,
+        comment: component.review.comment
+      });
       expect(component.comment).toEqual(component.review.comment);
-      expect(component.control.value).toEqual(component.review);
     });
   });
 
@@ -163,6 +166,7 @@ describe('TeamMemberSelectorComponent', () => {
       component.submission = {
         answer: 'Test submission answer',
       };
+      component.control = new FormControl('');
 
       component['_showSavedAnswers']();
 

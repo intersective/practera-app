@@ -5,6 +5,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, Platform } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ReviewService } from '@v3/services/review.service';
+import { ActivityService } from '@v3/services/activity.service';
 
 import { TabsPage } from './tabs.page';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -41,6 +42,9 @@ describe('TabsPage', () => {
           provide: UtilsService,
           useValue: jasmine.createSpyObj('UtilsService', {
             'getEvent': of(true),
+            'setPageTitle': undefined,
+          }, {
+            'screenStatus$': of({ leftSidebarExpanded: false }),
           }),
         },
         {
@@ -52,6 +56,12 @@ describe('TabsPage', () => {
             'getChatMessage': of(),
           }, {
             'notification$': of(),
+          }),
+        },
+        {
+          provide: ActivityService,
+          useValue: jasmine.createSpyObj('ActivityService', ['getActivities'], {
+            'activities$': of([]),
           }),
         },
       ],

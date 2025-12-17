@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { NotificationsService } from './notifications.service';
+import { Injectable, Injector } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { of, from, Observable } from 'rxjs';
@@ -18,13 +17,26 @@ export class FastFeedbackService {
 
   private currentPulseCheckId: string = null; // temporary store active pulse check ID
 
+  // lazy-loaded to avoid circular dependency
+  private _notificationsService: any = null;
+
   constructor(
-    private notificationsService: NotificationsService,
+    private injector: Injector,
     private storage: BrowserStorageService,
     private demo: DemoService,
     private apolloService: ApolloService,
     private alertController: AlertController,
   ) {}
+
+  // lazy getter for NotificationsService to break circular dependency
+  private get notificationsService() {
+    if (!this._notificationsService) {
+      // dynamically import to avoid circular dependency at module load time
+      const { NotificationsService } = require('./notifications.service');
+      this._notificationsService = this.injector.get(NotificationsService);
+    }
+    return this._notificationsService;
+  }
 
   private _getFastFeedback(skipChecking = false, type?: string): Observable<ApiResponse<{
     pulseCheck: {

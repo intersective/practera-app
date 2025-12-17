@@ -2,7 +2,10 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { IonicModule } from '@ionic/angular';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { ActivityMobilePage } from './activity-mobile.page';
 import { of } from 'rxjs';
@@ -16,7 +19,8 @@ describe('ActivityMobilePage', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ActivityMobilePage ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -44,6 +48,15 @@ describe('ActivityMobilePage', () => {
           useValue: jasmine.createSpyObj('AssessmentService', [], {
             'submission$': of(),
           }),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'alert',
+            'popUp',
+            'getTodoItems',
+            'markTodoItemAsDone',
+          ]),
         },
       ],
     }).compileComponents();

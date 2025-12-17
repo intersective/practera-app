@@ -6,9 +6,7 @@ import { AchievementPopUpComponent } from '../components/achievement-pop-up/achi
 import { ActivityCompletePopUpComponent } from '../components/activity-complete-pop-up/activity-complete-pop-up.component';
 import { Achievement } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
-import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
@@ -451,6 +449,9 @@ export class NotificationsService {
     reviewId,
     redirect: string[] | boolean
   ): Promise<void> {
+    // use dynamic import to avoid circular dependency
+    const { ReviewRatingComponent } = await import('../components/review-rating/review-rating.component');
+
     return this.modalOnly(
       ReviewRatingComponent,
       {
@@ -467,7 +468,7 @@ export class NotificationsService {
   /**
    * Pop up the fast feedback modal window
    */
-  fastFeedbackModal(
+  async fastFeedbackModal(
     props: {
       questions?: Question[];
       meta?: Meta | Object;
@@ -481,6 +482,9 @@ export class NotificationsService {
       modalOnly: false,
     }
   ): Promise<HTMLIonModalElement | void> {
+    // use dynamic import to avoid circular dependency
+    const { FastFeedbackComponent } = await import('../components/fast-feedback/fast-feedback.component');
+
     const modalConfig = {
       backdropDismiss: options?.closable === true,
       showBackdrop: false,

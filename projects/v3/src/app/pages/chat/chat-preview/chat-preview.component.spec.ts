@@ -1,6 +1,6 @@
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { TestBed, waitForAsync, ComponentFixture } from '@angular/core/testing';
 import { ChatPreviewComponent } from './chat-preview.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';

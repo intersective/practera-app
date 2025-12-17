@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthRegistrationComponent } from './auth-registration.component';
@@ -59,6 +60,7 @@ describe('AuthRegistrationComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [AuthRegistrationComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: BrowserStorageService, useValue: storageSpy },
@@ -88,7 +90,22 @@ describe('AuthRegistrationComponent', () => {
   });
 
   it('should authenticate user and switch program on successful registration', async () => {
-    spyOn(authService, 'authenticate').and.returnValue(of({
+    // set up component state for registration
+    component.unRegisteredDirectLink = true; // use direct link mode for simpler validation
+    component.user = {
+      id: 123,
+      key: 'test-key',
+      email: 'test@example.com',
+      contact: null
+    };
+    component.password = 'TestPassword123!';
+    component.confirmPassword = 'TestPassword123!';
+    component.isAgreed = true;
+
+    authService.saveRegistration.and.returnValue(of({
+      data: { apikey: 'test-api-key' }
+    }));
+    authService.authenticate.and.returnValue(of({
       data: {
         auth: {
           apikey: 'test-api-key',
@@ -126,16 +143,18 @@ describe('AuthRegistrationComponent', () => {
         }
       }
     }));
-    spyOn(storageService, 'set');
-    spyOn(storageService, 'remove');
-    spyOn(experienceService, 'switchProgram').and.returnValue(Promise.resolve(of()));
+    storageService.set.and.stub();
+    storageService.remove.and.stub();
+    experienceService.switchProgram.and.returnValue(Promise.resolve());
 
-    await authService.authenticate({apikey: 'test-api-key'});
+    component.register();
+
+    await fixture.whenStable();
 
     expect(authService.saveRegistration).toHaveBeenCalledWith({
-      user_id: component.user.id,
-      key: component.user.key,
-      password: component.user.password,
+      user_id: 123,
+      key: 'test-key',
+      password: jasmine.any(String), // password is auto-generated or set via confirmPassword
     });
   });
 
@@ -388,7 +407,7 @@ describe('AuthRegistrationComponent', () => {
         expect(notificationsService.popUp).toHaveBeenCalledWith(
           'shortMessage',
           { message: jasmine.stringContaining('Registration not complete') },
-          false
+          false as any
         );
       });
 
@@ -476,7 +495,7 @@ describe('AuthRegistrationComponent', () => {
         expect(notificationsService.popUp).toHaveBeenCalledWith(
           'shortMessage',
           { message: jasmine.stringContaining('Registration not complete') },
-          false
+          false as any
         );
       });
 

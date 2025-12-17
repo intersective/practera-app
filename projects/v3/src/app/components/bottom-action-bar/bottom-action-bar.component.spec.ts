@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { BehaviorSubject } from 'rxjs';
 
 import { BottomActionBarComponent } from './bottom-action-bar.component';
 
@@ -26,6 +27,8 @@ describe('BottomActionBarComponent', () => {
   it('should set the input properties', () => {
     component.text = 'Click me';
     component.color = 'secondary';
+    // disabled$ is optional, so we need to initialize it before using
+    component.disabled$ = new BehaviorSubject<boolean>(false);
     component.disabled$.next(true);
     component.buttonType = 'submit';
     fixture.detectChanges();

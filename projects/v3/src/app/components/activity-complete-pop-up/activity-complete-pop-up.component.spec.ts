@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up.component';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
@@ -13,7 +13,7 @@ describe('ActivityCompletePopUpComponent', () => {
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
   // const routerSpy: jasmine.SpyObj<Router>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ActivityCompletePopUpComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],

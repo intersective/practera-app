@@ -52,7 +52,7 @@ describe('NotificationsService', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'set']),
         },
         {
           provide: ApolloService,
@@ -132,47 +132,26 @@ describe('NotificationsService', () => {
         }
       });
     });
-  });
-});
-describe('NotificationsService', () => {
-  let service: NotificationsService;
-  let requestService: RequestService;
-  let storageService: BrowserStorageService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        // ... existing providers
-      ]
-    });
-    service = TestBed.inject(NotificationsService);
-    requestService = TestBed.inject(RequestService);
-    storageService = TestBed.inject(BrowserStorageService);
-  });
-
-  // ... existing tests
-
-  describe('markTodoItemAsDone', () => {
     it('should call requestService.post with correct parameters', () => {
-      // Arrange
-      const todoItem: TodoItem = {
-        // ... define your todo item properties here
-      };
-      const expectedData = {
-        ...todoItem,
-        project_id: storageService.getUser().projectId,
-        is_done: true
+      // arrange
+      const projectId = 123;
+      storageService.getUser.and.returnValue({ projectId });
+      const todoItem: Partial<TodoItem> = {
+        identifier: 'test-todo'
       };
 
-      spyOn(requestService, 'post').and.returnValue(Promise.resolve() as any);
-
-      // Act
+      // act
       service.markTodoItemAsDone(todoItem);
 
-      // Assert
+      // assert
       expect(requestService.post).toHaveBeenCalledWith({
         endPoint: api.post.todoItem,
-        data: expectedData
+        data: {
+          ...todoItem,
+          project_id: projectId,
+          is_done: true
+        }
       });
     });
   });

@@ -1316,6 +1316,9 @@ Best regards`;
     if (this.doAssessment || this.isPendingReview) {
       // in edit mode, check form validation
       this.setSubmissionDisabled();
+    } else if (this.submission?.isLocked) {
+      // keep button disabled when submission is locked
+      this.btnDisabled$.next(true);
     } else {
       // in read-only mode, ensure button is enabled
       this.btnDisabled$.next(false);

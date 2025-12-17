@@ -2,11 +2,13 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { TestUtils } from '@testingv3/utils';
 import { ReviewService } from '@v3/app/services/review.service';
 import { of } from 'rxjs';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { ReviewDesktopPage } from './review-desktop.page';
 
@@ -18,6 +20,7 @@ describe('ReviewDesktopPage', () => {
     TestBed.configureTestingModule({
       declarations: [ ReviewDesktopPage ],
       imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: UtilsService,
@@ -38,8 +41,17 @@ describe('ReviewDesktopPage', () => {
         {
           provide: ReviewService,
           useValue: jasmine.createSpyObj('ReviewService', ['getReviews'], {
-            reviews$: of(true),
+            reviews$: of([]),
           }),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'alert',
+            'popUp',
+            'getTodoItems',
+            'assessmentSubmittedToast',
+          ]),
         },
       ],
     }).compileComponents();

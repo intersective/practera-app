@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 
 describe('UtilsService', () => {
   moment.updateLocale('en', {
@@ -20,6 +20,7 @@ describe('UtilsService', () => {
   const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
   let service: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
+  let platformSpy: jasmine.SpyObj<Platform>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,10 +47,15 @@ describe('UtilsService', () => {
             'dismiss', 'create'
           ]),
         },
+        {
+          provide: Platform,
+          useValue: jasmine.createSpyObj('Platform', ['is']),
+        },
       ],
     });
 
     service = TestBed.inject(UtilsService);
+    platformSpy = TestBed.inject(Platform) as jasmine.SpyObj<Platform>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
 
@@ -59,51 +65,47 @@ describe('UtilsService', () => {
 
   describe('lodash extensions', () => {
     it('should extend each()', () => {
-      spyOn(_, 'each');
-      service.each([1, 2, 3], () => true);
-      expect(_.each).toHaveBeenCalled();
+      const result: number[] = [];
+      service.each([1, 2, 3], (val) => result.push(val));
+      expect(result).toEqual([1, 2, 3]);
     });
 
     it('should unset', () => {
-      spyOn(_, 'unset');
-      service.unset([1, 2, 3], () => true);
-      expect(_.unset).toHaveBeenCalled();
+      const obj = { a: { b: 1 } };
+      service.unset(obj, 'a.b');
+      expect(obj.a.b).toBeUndefined();
     });
 
     it('should find', () => {
-      spyOn(_, 'find');
-      service.find([1, 2, 3], () => true);
-      expect(_.find).toHaveBeenCalled();
+      const result = service.find([1, 2, 3], (val) => val === 2);
+      expect(result).toBe(2);
     });
 
     it('should findIndex', () => {
-      spyOn(_, 'findIndex');
-      service.findIndex([1, 2, 3], () => true);
-      expect(_.findIndex).toHaveBeenCalled();
+      const result = service.findIndex([1, 2, 3], (val) => val === 2);
+      expect(result).toBe(1);
     });
 
     it('should has', () => {
-      spyOn(_, 'has');
-      service.has([1, 2, 3], () => true);
-      expect(_.has).toHaveBeenCalled();
+      const result = service.has({ a: { b: 1 } }, 'a.b');
+      expect(result).toBe(true);
     });
 
     it('should flatten', () => {
-      spyOn(_, 'flatten');
-      service.flatten([1, 2, 3]);
-      expect(_.flatten).toHaveBeenCalled();
+      const result = service.flatten([[1, 2], [3, 4]]);
+      expect(result).toEqual([1, 2, 3, 4]);
     });
 
     it('should indexOf', () => {
-      spyOn(_, 'indexOf');
-      service.indexOf([1, 2, 3], () => true);
-      expect(_.indexOf).toHaveBeenCalled();
+      const result = service.indexOf([1, 2, 3], 2);
+      expect(result).toBe(1);
     });
 
     it('should remove', () => {
-      spyOn(_, 'remove');
-      service.remove([1, 2, 3], () => true);
-      expect(_.remove).toHaveBeenCalled();
+      const arr = [1, 2, 3, 4];
+      const removed = service.remove(arr, (val) => val % 2 === 0);
+      expect(removed).toEqual([2, 4]);
+      expect(arr).toEqual([1, 3]);
     });
   });
 
@@ -232,16 +234,30 @@ describe('UtilsService', () => {
   });
 
   describe('isMobile()', () => {
-    it('should return false when screensize > 576', () => {
-      spyOnProperty(window, 'innerWidth').and.returnValue(577);
+    it('should return false when platform is desktop', () => {
+      platformSpy.is.and.callFake((type: string) => type === 'desktop');
       const result = service.isMobile();
       expect(result).toBeFalsy();
     });
 
-    it('should return false when screensize <= 576', () => {
-      spyOnProperty(window, 'innerWidth').and.returnValue(576);
+    it('should return true when platform is mobile', () => {
+      platformSpy.is.and.callFake((type: string) => type === 'mobile');
       const result = service.isMobile();
       expect(result).toBeTruthy();
+    });
+
+    it('should return true when tablet with width < 1024', () => {
+      platformSpy.is.and.callFake((type: string) => type === 'tablet');
+      spyOnProperty(window, 'innerWidth').and.returnValue(800);
+      const result = service.isMobile();
+      expect(result).toBeTruthy();
+    });
+
+    it('should return false when tablet with width >= 1024', () => {
+      platformSpy.is.and.callFake((type: string) => type === 'tablet');
+      spyOnProperty(window, 'innerWidth').and.returnValue(1024);
+      const result = service.isMobile();
+      expect(result).toBeFalsy();
     });
   });
 
@@ -327,29 +343,29 @@ describe('UtilsService', () => {
 
     it('should standardize date format', () => {
       const result = service.timeFormatter(NOW);
-      const formatted = new Intl.DateTimeFormat('en-GB', {
+      const formatted = new Intl.DateTimeFormat('en-US', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(NOW);
-      expect(result).toEqual(formatted);
+      expect(result.toLowerCase()).toEqual(formatted.toLowerCase());
     });
 
     it('should standardize date format international format', () => {
       const onePMUTC = `${thisMoment.format('YYYY-MM-DD')} 13:00:00.000Z`;
       const result = service.timeFormatter(onePMUTC); // follows local GMT
-      const formatted = new Intl.DateTimeFormat('en-GB', {
+      const formatted = new Intl.DateTimeFormat('en-US', {
         hour12: true,
         hour: 'numeric',
         minute: 'numeric'
       }).format(new Date(onePMUTC));
-      expect(result).toEqual(formatted);
+      expect(result.toLowerCase()).toEqual(formatted.toLowerCase());
     });
 
     it('should ensure all numeric time format is return in expected time format (h:mm a)', () => {
       LOCAL_TIME_TODAY.forEach(timeString => {
         const result = service.timeFormatter(timeString);
-        const formatted = new Intl.DateTimeFormat('en-GB', {
+        const formatted = new Intl.DateTimeFormat('en-US', {
           hour12: true,
           hour: 'numeric',
           minute: 'numeric'
@@ -362,7 +378,7 @@ describe('UtilsService', () => {
           expect(thisMoment.utcOffset()).toBeLessThan(0);
           expect(moment.utc(new Date(`${timeString} GMT+0000`)).isBefore(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else {
-          expect(result).toEqual(formatted);
+          expect(result.toLowerCase()).toEqual(formatted.toLowerCase());
         }
       });
     });

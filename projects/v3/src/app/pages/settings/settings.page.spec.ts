@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -17,6 +17,7 @@ describe('SettingsPage', () => {
   let fixture: ComponentFixture<SettingsPage>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
   let hubspotServiceSpy: jasmine.SpyObj<HubspotService>;
+  let notificationsServiceSpy: jasmine.SpyObj<NotificationsService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -53,7 +54,7 @@ describe('SettingsPage', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'modal']),
         },
         {
           provide: FilestackService,
@@ -70,20 +71,28 @@ describe('SettingsPage', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    hubspotServiceSpy = TestBed.inject(HubspotService) as jasmine.SpyObj<HubspotService>;
+    notificationsServiceSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
   }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should not call openSupportPopup on a KeyboardEvent that is not Enter or Space', () => {
+  it('should not open modal on a KeyboardEvent that is not Enter or Space', () => {
     component.openSupportPopup(new KeyboardEvent('keydown', { key: 'a' }));
-    expect(hubspotServiceSpy.openSupportPopup).not.toHaveBeenCalled();
+    expect(notificationsServiceSpy.modal).not.toHaveBeenCalled();
   });
 
-  it('should call openSupportPopup when hubspotActivated is true', () => {
+  it('should open support modal when hubspotActivated is true', fakeAsync(() => {
+    const mockModal = { present: jasmine.createSpy('present').and.returnValue(Promise.resolve()) };
+    notificationsServiceSpy.modal.and.returnValue(Promise.resolve(mockModal as any));
+
     component.hubspotActivated = true;
     component.openSupportPopup(new Event('click'));
-    expect(hubspotServiceSpy.openSupportPopup).toHaveBeenCalledWith({ formOnly: true });
-  });
+    tick();
+
+    expect(notificationsServiceSpy.modal).toHaveBeenCalled();
+    expect(mockModal.present).toHaveBeenCalled();
+  }));
 });

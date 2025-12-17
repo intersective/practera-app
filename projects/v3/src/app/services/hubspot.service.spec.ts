@@ -1,8 +1,11 @@
 import { TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 import { HubspotService } from './hubspot.service';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { ModalController } from '@ionic/angular';
+import { DemoService } from './demo.service';
 
 describe('HubspotService', () => {
   let service: HubspotService;
@@ -25,6 +28,14 @@ describe('HubspotService', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer', 'get'])
+        },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss', 'getTop'])
+        },
+        {
+          provide: DemoService,
+          useValue: jasmine.createSpyObj('DemoService', ['normalResponse'])
         }
       ]
     });
@@ -39,8 +50,8 @@ describe('HubspotService', () => {
   });
 
 
+  // user without uuid - the service only generates params when uuid is NOT present
   const tempUser = {
-    uuid: 'uuid-1',
     name: 'test user',
     firstName: 'test',
     lastName: 'user',
@@ -54,25 +65,22 @@ describe('HubspotService', () => {
     experienceId: 1234
   }
 
-  const tempPrograms = [
-    {
-      experience: {
-        id: 1234,
-        name: 'Global Trade Accelerator - 01',
-        config: {
-          primary_color: '#2bc1d9',
-          secondary_color: '#9fc5e8',
-          email_template: 'email_1',
-          card_url: 'https://cdn.filestackcontent.com/uYxes8YBS2elXV0m2yjA',
-          manual_url: 'https://www.filepicker.io/api/file/lNQp4sFcTjGj2ojOm1fR',
-          design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
-          overview_url: 'https://vimeo.com/325554048'
-        },
-        lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
-        support_email: 'help@practera.com'
-      }
-    }
-  ]
+  // experience object - the service calls storage.get('experience') expecting an Experience, not an array
+  const tempExperience = {
+    id: 1234,
+    name: 'Global Trade Accelerator - 01',
+    config: {
+      primary_color: '#2bc1d9',
+      secondary_color: '#9fc5e8',
+      email_template: 'email_1',
+      card_url: 'https://cdn.filestackcontent.com/uYxes8YBS2elXV0m2yjA',
+      manual_url: 'https://www.filepicker.io/api/file/lNQp4sFcTjGj2ojOm1fR',
+      design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
+      overview_url: 'https://vimeo.com/325554048'
+    },
+    lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+    support_email: 'help@practera.com'
+  }
 
   const params = {
     subject: 'test',
@@ -153,9 +161,13 @@ describe('HubspotService', () => {
 
   describe('when testing submitDataToHubspot()', () => {
 
+    beforeEach(() => {
+      requestSpy.post.and.returnValue(of({}));
+    });
+
     it('should call hubspot API with correct data', () => {
       storageSpy.getUser.and.returnValue(tempUser);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.count()).toBe(1);
     });
@@ -163,7 +175,7 @@ describe('HubspotService', () => {
     it('should return correct user role "Learner"', () => {
       const hubspotFields = [ ...hubspotSubmitData.fields ];
       storageSpy.getUser.and.returnValue(tempUser);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -174,7 +186,7 @@ describe('HubspotService', () => {
       const user = { ... tempUser };
       user.role = 'mentor';
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -185,7 +197,7 @@ describe('HubspotService', () => {
       const user = { ... tempUser };
       user.role = 'admin';
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -197,7 +209,7 @@ describe('HubspotService', () => {
       const user = { ... tempUser };
       user.firstName = null;
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -210,7 +222,7 @@ describe('HubspotService', () => {
       user.firstName = 'test';
       user.lastName = null;
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -223,7 +235,7 @@ describe('HubspotService', () => {
       user.lastName = 'user';
       user.contactNumber = null;
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -236,7 +248,7 @@ describe('HubspotService', () => {
       user.contactNumber = '1212121212';
       user.teamName = null;
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
@@ -250,56 +262,24 @@ describe('HubspotService', () => {
       const tempPram = { ...params };
       tempPram.file = null;
       storageSpy.getUser.and.returnValue(user);
-      storageSpy.get.and.returnValue(tempPrograms);
+      storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
       expect(requestSpy.post.calls.first().args[0].data.fields).toEqual(hubspotFields);
     });
 
 
-    describe('if no user data in storage', () => {
+    describe('if user has uuid (service returns null for users with uuid)', () => {
       it('should not call Post request', () => {
-        storageSpy.getUser.and.returnValue({});
+        storageSpy.getUser.and.returnValue({ uuid: 'some-uuid' });
         service.submitDataToHubspot(params);
         expect(requestSpy.post.calls.count()).toBe(0);
       });
     });
 
-    describe('if experienceId is missing', () => {
-      it('should not call Post request', () => {
-        const user = tempUser;
-        delete user.experienceId;
-        storageSpy.getUser.and.returnValue(user);
-        service.submitDataToHubspot(params);
-        expect(requestSpy.post.calls.count()).toBe(0);
-      });
-    });
-
-    describe('if programList is empty', () => {
+    describe('if experience is missing from storage', () => {
       it('should not call Post request', () => {
         storageSpy.getUser.and.returnValue(tempUser);
-        storageSpy.get.and.returnValue({});
-        service.submitDataToHubspot(params);
-        expect(requestSpy.post.calls.count()).toBe(0);
-      });
-    });
-
-    describe('if no program match the program ID', () => {
-      it('should not call Post request', () => {
-        const program = tempPrograms;
-        program[0].experience.id = 4334;
-        storageSpy.getUser.and.returnValue(tempUser);
-        storageSpy.get.and.returnValue(program);
-        service.submitDataToHubspot(params);
-        expect(requestSpy.post.calls.count()).toBe(0);
-      });
-    });
-
-    describe('if no program match the program ID', () => {
-      it('should not call Post request', () => {
-        const program = tempPrograms;
-        program[0].experience.id = 4334;
-        storageSpy.getUser.and.returnValue(tempUser);
-        storageSpy.get.and.returnValue(program);
+        storageSpy.get.and.returnValue(null);
         service.submitDataToHubspot(params);
         expect(requestSpy.post.calls.count()).toBe(0);
       });

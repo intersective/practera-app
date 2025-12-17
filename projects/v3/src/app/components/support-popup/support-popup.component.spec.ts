@@ -307,9 +307,9 @@ describe('SupportPopupComponent', () => {
         file: undefined,
         consentToProcess: true,
       });
-      expect(component.selectedFile).toBeUndefined();
-      expect(component.problemContent).toBe('');
-      expect(component.problemSubject).toBe('');
+      // on error, form is NOT cleared - only cleared on success
+      expect(component.problemContent).toBe('Test Content');
+      expect(component.problemSubject).toBe('Test Subject');
       expect(component.isShowSuccess).toBeFalse();
       expect(component.isShowError).toBeTrue();
     });
