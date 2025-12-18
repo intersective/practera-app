@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SnowOverlayComponent } from './components/snow-overlay/snow-overlay.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       prefixUrl: environment.APIEndpoint,
     }),
     ApolloModule,
+    SnowOverlayComponent,
   ],
   providers: [
     {
