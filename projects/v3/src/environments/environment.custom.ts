@@ -59,4 +59,8 @@ export const environment = {
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
   helpline: '<CUSTOM_HELPLINE>',
+  snowAnimation: {
+    enabled: true,
+    snowflakeCount: 30,
+  },
 };
