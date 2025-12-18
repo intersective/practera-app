@@ -62,6 +62,10 @@ export const environment = {
   newrelic: false,
   goMobile: false,
   helpline: 'help@practera.com',
+  snowAnimation: {
+    enabled: true,
+    snowflakeCount: 30,
+  },
 };
 
 /*
