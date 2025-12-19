@@ -66,6 +66,10 @@ export const environment = {
   featureToggles: {
     assessmentPagination: true,
   },
+  snowAnimation: {
+    enabled: true,
+    snowflakeCount: 30,
+  },
 };
 
 /*

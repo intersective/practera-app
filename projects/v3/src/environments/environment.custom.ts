@@ -62,4 +62,8 @@ export const environment = {
   featureToggles: {
     assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
   },
+  snowAnimation: {
+    enabled: true,
+    snowflakeCount: 30,
+  },
 };
