@@ -1,4 +1,5 @@
 <ion-app>
+  <app-snow-overlay *ngIf="isSnowEnabled"></app-snow-overlay>
   <!-- Skip navigation links for WCAG 2.4.1 -->
   <a href="#main-content" class="skip-link" (click)="handleSkipLink($event, 'main-content')">Skip to main content</a>
   <a href="#main-navigation" class="skip-link" (click)="handleSkipLink($event, 'main-navigation')">Skip to navigation</a>
