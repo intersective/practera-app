@@ -847,8 +847,8 @@ export class UtilsService {
       return null;
     }
 
-    // Minimum text length for reliable detection
-    const minLength = 10;
+    // minimum text length for reliable detection (increased from 10 to 20 for better accuracy)
+    const minLength = 20;
     const cleanText = text.trim().replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 
     if (cleanText.length < minLength) {
@@ -915,13 +915,15 @@ export class UtilsService {
 
       const processNode = (node: Node): void => {
         if (node.nodeType === Node.TEXT_NODE) {
+          // use trimmed text for validation only, preserve original whitespace for rendering
           const text = node.textContent?.trim() || '';
-          if (text.length >= 10) {
+          if (text.length >= 20) {
             const detectedLang = this.detectLanguage(text, baseLang);
             if (detectedLang) {
               const span = this.document.createElement('span');
               span.setAttribute('lang', detectedLang);
-              span.textContent = text;
+              // preserve original whitespace from node.textContent (not trimmed)
+              span.textContent = node.textContent;
               node.parentNode?.replaceChild(span, node);
             }
           }
