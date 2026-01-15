@@ -83,7 +83,7 @@ jobs:
           echo "::add-mask::$CENTRALIZED"
           echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
       - name: Configure AWS Credentials from Centralized account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}

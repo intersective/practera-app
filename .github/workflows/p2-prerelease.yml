@@ -125,7 +125,7 @@ jobs:
 #  AWS CLI CONFIGURATION - P1 MAIN ACCOUNT 
 ################################################ 
       - name: Configure AWS Credentials from P1 Centralized account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
@@ -149,7 +149,7 @@ jobs:
 #  AWS CLI CONFIGURATION - DEVOPS P2 PRERELEASE
 ################################################ 
       - name: Configure AWS Credentials from p2 prerelease AU account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2PRERELEASE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}

@@ -113,7 +113,7 @@ jobs:
 #  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
 ################################################
       - name: Configure AWS Credentials from CENTRALIZED Account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
@@ -137,7 +137,7 @@ jobs:
 #  AWS CLI CONFIGURATION - P2STAGE ACCOUNT
 ################################################
       - name: Configure AWS Credentials from P2STAGE Account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2STAGE }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}

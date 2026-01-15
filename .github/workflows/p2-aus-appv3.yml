@@ -127,7 +127,7 @@ jobs:
 #  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
 ################################################
       - name: Configure AWS Credentials from P1 Centralized account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
@@ -151,7 +151,7 @@ jobs:
 #  AWS CLI CONFIGURATION - DEVOPS P2 P2AUS
 ################################################
       - name: Configure AWS Credentials from p2 AUS account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2AUS }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
@@ -246,7 +246,7 @@ jobs:
 #  AWS P2AUS ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
 ##########################################################
       - name: Configure AWS Credentials from p2 AUS account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2AUS }}:role/github-restricted-role-to-assume
           region: us-east-1
@@ -292,7 +292,7 @@ jobs:
 #  AWS CLI CONFIGURATION - DEVOPS P2 AUS
 ##########################################################
       - name: Configure AWS Credentials from p2 AUS account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2AUS }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}

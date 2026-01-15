@@ -115,7 +115,7 @@ jobs:
 #  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
 ################################################
       - name: Configure AWS Credentials from P1 Centralized account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
           region: ap-southeast-2
@@ -138,7 +138,7 @@ jobs:
 #  AWS CLI CONFIGURATION - DEVOPS P2 EUK
 ################################################
       - name: Configure AWS Credentials from p2 EUK account
-        uses: ./.github/actions/aws-oidc
+        uses: intersective/devops-infrastructure-common/workflows/aws-oidc@release/live
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2EUK }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
