@@ -1,0 +1,109 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title class="ion-text-center" i18n>Project Brief</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()"
+        aria-label="Close project brief" i18n-aria-label>
+        <ion-icon slot="icon-only"
+          name="close"
+          aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- title -->
+    <section class="brief-section" *ngIf="hasValue(projectBrief?.title)">
+      <h1 id="project-brief-title" class="headline-3">{{ projectBrief.title }}</h1>
+    </section>
+
+    <!-- description -->
+    <section class="brief-section">
+      <h2 class="section-label" i18n>Description</h2>
+      <p class="section-value" *ngIf="hasValue(projectBrief?.description); else noDescription">
+        {{ projectBrief.description }}
+      </p>
+      <ng-template #noDescription>
+        <p class="body-2 none-specified" i18n>None specified</p>
+      </ng-template>
+    </section>
+
+    <!-- project type -->
+    <section class="brief-section">
+      <h2 class="section-label" i18n>Project Type</h2>
+      <p class="section-value" *ngIf="hasValue(projectBrief?.projectType); else noProjectType">
+        {{ projectBrief.projectType }}
+      </p>
+      <ng-template #noProjectType>
+        <p class="body-2 none-specified" i18n>None specified</p>
+      </ng-template>
+    </section>
+
+    <!-- industry -->
+    <section class="brief-section">
+      <h2 class="section-label" i18n>Industry</h2>
+      <div class="chip-container" *ngIf="hasItems(projectBrief?.industry); else noIndustry">
+        <ion-chip *ngFor="let item of projectBrief.industry"
+          color="primary"
+          outline="true">
+          <ion-label>{{ item }}</ion-label>
+        </ion-chip>
+      </div>
+      <ng-template #noIndustry>
+        <p class="body-2 none-specified" i18n>None specified</p>
+      </ng-template>
+    </section>
+
+    <!-- technical skills -->
+    <section class="brief-section">
+      <h2 class="section-label" i18n>Technical Skills</h2>
+      <div class="chip-container" *ngIf="hasItems(projectBrief?.technicalSkills); else noTechnicalSkills">
+        <ion-chip *ngFor="let skill of projectBrief.technicalSkills"
+          color="secondary"
+          outline="true">
+          <ion-label>{{ skill }}</ion-label>
+        </ion-chip>
+      </div>
+      <ng-template #noTechnicalSkills>
+        <p class="body-2 none-specified" i18n>None specified</p>
+      </ng-template>
+    </section>
+
+    <!-- professional skills -->
+    <section class="brief-section">
+      <h2 class="section-label" i18n>Professional Skills</h2>
+      <div class="chip-container" *ngIf="hasItems(projectBrief?.professionalSkills); else noProfessionalSkills">
+        <ion-chip *ngFor="let skill of projectBrief.professionalSkills"
+          color="tertiary"
+          outline="true">
+          <ion-label>{{ skill }}</ion-label>
+        </ion-chip>
+      </div>
+      <ng-template #noProfessionalSkills>
+        <p class="body-2 none-specified" i18n>None specified</p>
+      </ng-template>
+    </section>
+
+    <!-- deliverables -->
+    <section class="brief-section">
+      <h2 class="section-label" i18n>Deliverables</h2>
+      <p class="section-value" *ngIf="hasValue(projectBrief?.deliverables); else noDeliverables">
+        {{ projectBrief.deliverables }}
+      </p>
+      <ng-template #noDeliverables>
+        <p class="body-2 none-specified" i18n>None specified</p>
+      </ng-template>
+    </section>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <ion-button expand="block"
+      (click)="close()"
+      (keydown.enter)="close()"
+      (keydown.space)="close(); $event.preventDefault()"
+      class="ion-margin"
+      i18n>Close</ion-button>
+  </ion-toolbar>
+</ion-footer>
