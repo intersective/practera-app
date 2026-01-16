@@ -3,16 +3,22 @@
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
     <div *ngIf="iframeHtml" class="video-embed" [innerHTML]="iframeHtml"></div>
     <video
-      *ngIf="!iframeHtml"
+      #topicVideo
+      *ngIf="!iframeHtml && videoSrc"
       [attr.id]="'topic-video-' + topic.id"
-      class="video-embed topic-video"
+      class="topic-video video-embed"
       [ngClass]="{'desktop-view': !isMobile}"
       width="100%"
       controls
+      controlsList="nodownload"
       preload="metadata"
-      [src]="topic.videolink"
+      playsinline
+      disabled
+      [src]="videoSrc"
+      (canplay)="onVideoCanPlay($event)"
       (error)="handleVideoError($event)"
     >
+      <p i18n="video not supported message">Your browser doesn't support HTML5 video. Here is a <a [href]="videoSrc">link to the video</a> instead.</p>
     </video>
   </div>
 
