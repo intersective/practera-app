@@ -229,7 +229,7 @@ private _initVideoPlayer() {
    ```typescript
    this.plyrInitialized = false;
    this.plyrNeedsInit = false;  // Added: was missing before
-   ```loads Plyr overlay
+   ```
 - [x] Subsequent visits to SAME task loads Plyr overlay correctly
 - [x] Switching between different video tasks works
 - [x] Native video elements (non-YouTube) still work
@@ -237,17 +237,6 @@ private _initVideoPlayer() {
 - [x] No console errors related to Plyr initialization
 - [x] Video controls are fully interactive on all visits
 - [x] Cleanup properly destroys old Plyr instances
-
-**Loading Indicators (Added January 16, 2026):**
-- [ ] Skeleton loader appears immediately when navigating to topic with video
-- [ ] Skeleton has correct 16:9 aspect ratio (400px mobile, 450px desktop)
-- [ ] Skeleton disappears when YouTube/Vimeo embed finishes Plyr initialization
-- [ ] Skeleton disappears when native video triggers `canplay` event
-- [ ] Fade-in animation plays smoothly after skeleton disappears (300ms)
-- [ ] Skeleton clears on video error (test with invalid video URL)
-- [ ] No flash of unstyled content between skeleton and video
-- [ ] Skeleton has proper ARIA attributes (`role="status"`, `aria-label`)
-- [ ] Loading state doesn't get stuck (test rapid navigation between topics)
 
 **Poster Behavior (Updated January 16, 2026):**
 - [x] No poster overlay blocks video interaction (Plyr `poster: false` config)
