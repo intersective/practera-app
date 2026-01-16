@@ -9,7 +9,7 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
-import { Activity, Task } from '@v3/app/services/activity.service';
+import { Task } from '@v3/app/services/activity.service';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
 @Component({
@@ -40,6 +40,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
   private plyrNeedsInit = false;
   private plyrInitialized = false;
   private destroy$ = new Subject<void>();
+  private plyrInstances = new WeakMap<Element, Plyr>();
 
   constructor(
     private embedService: EmbedVideoService,
@@ -130,10 +131,13 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
     if (this.videoNeedsInit && this.topicVideo?.nativeElement) {
       this.videoNeedsInit = false;
 
+      // Capture the videoSrc value to avoid race conditions
+      const capturedSrc = this.videoSrc;
       requestAnimationFrame(() => {
         const videoEl = this.topicVideo?.nativeElement;
-        if (videoEl && this.videoSrc) {
-          videoEl.src = this.videoSrc;
+        // Validate that the video element still exists and the src hasn't changed
+        if (videoEl && capturedSrc && videoEl.src !== capturedSrc) {
+          videoEl.src = capturedSrc;
           videoEl.load();
         }
       });
@@ -176,15 +180,16 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
     this._pauseResetAndReplaceMediaElements('video');
 
     // destroy and remove all plyr instances
-    const plyrElements = this.document.querySelectorAll('.plyr');
+    const plyrElements = this.document.querySelectorAll('.plyr__video-embed');
     this.utils.each(plyrElements, (plyrEl: HTMLElement) => {
-      if ((plyrEl as any).plyr) {
+      const plyrInstance = this.plyrInstances.get(plyrEl);
+      if (plyrInstance) {
         try {
-          (plyrEl as any).plyr.destroy();
+          plyrInstance.destroy();
         } catch (e) {
           console.warn('error destroying plyr instance:', e);
         }
-        (plyrEl as any).plyr = null;
+        this.plyrInstances.delete(plyrEl);
       }
     });
 
@@ -261,10 +266,9 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
         }
       });
 
-      // store plyr instance reference for cleanup
-      (embedVideo as any).plyr = plyrInstance;
+      // store plyr instance reference for cleanup using WeakMap
+      this.plyrInstances.set(embedVideo, plyrInstance);
 
-      embedVideo.classList.add('topic-custome-player');
       if (!this.utils.isMobile()) {
         embedVideo.classList.add('desktop-view');
       }
