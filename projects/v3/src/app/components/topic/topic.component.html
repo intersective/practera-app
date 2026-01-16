@@ -6,13 +6,14 @@
       #topicVideo
       *ngIf="!iframeHtml && videoSrc"
       [attr.id]="'topic-video-' + topic.id"
-      class="topic-video"
+      class="topic-video video-embed"
       [ngClass]="{'desktop-view': !isMobile}"
       width="100%"
       controls
       controlsList="nodownload"
-      preload="auto"
+      preload="metadata"
       playsinline
+      disabled
       [src]="videoSrc"
       (canplay)="onVideoCanPlay($event)"
       (error)="handleVideoError($event)"
