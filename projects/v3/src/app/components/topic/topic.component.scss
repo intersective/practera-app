@@ -38,3 +38,8 @@
 .audio-element {
   width: 100%;
 }
+
+// Hide Plyr poster overlay to prevent blocking video interaction
+::ng-deep .plyr__poster {
+  display: none !important;
+}
