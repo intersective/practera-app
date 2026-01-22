@@ -44,19 +44,33 @@
               <div class="exp-header">
                 <h2 class="headline-2"
                   [innerHTML]="experience.name"></h2>
-                <ion-button *ngIf="projectBrief"
-                  fill="clear"
-                  size="small"
-                  class="project-brief-btn"
-                  (click)="showProjectBrief()"
-                  (keydown.enter)="showProjectBrief()"
-                  (keydown.space)="showProjectBrief(); $event.preventDefault()"
-                  aria-label="View project brief" i18n-aria-label>
-                  <ion-icon name="document-text-outline"
-                    slot="start"
-                    aria-hidden="true"></ion-icon>
-                  <span i18n>Project Brief</span>
-                </ion-button>
+
+                <div class="button-group-no-gap" *ngIf="projectBrief">
+                  <ion-button fill="clear"
+                    size="small"
+                    class="project-brief-btn"
+                    (click)="showProjectBrief()"
+                    (keydown.enter)="showProjectBrief()"
+                    (keydown.space)="showProjectBrief(); $event.preventDefault()"
+                    aria-label="View project brief" i18n-aria-label>
+                    <ion-icon name="document-text-outline"
+                      slot="start"
+                      aria-hidden="true"></ion-icon>
+                    <span i18n>Project Brief</span>
+                  </ion-button>
+                  <ion-button fill="clear"
+                    size="small"
+                    (click)="openProjectBriefExternal()"
+                    (keydown.enter)="openProjectBriefExternal()"
+                    (keydown.space)="openProjectBriefExternal(); $event.preventDefault()"
+                    title="Go to project brief"
+                    aria-label="Go to project brief" i18n-aria-label>
+                    <ion-icon name="open-outline"
+                      slot="icon-only"
+                      size="small"
+                      aria-hidden="true"></ion-icon>
+                  </ion-button>
+                </div>
               </div>
               <ion-text class="subtitle-3"
                 color="grey-75">

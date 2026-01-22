@@ -518,15 +518,20 @@ quill-editor .ql-toolbar.ql-snow {
 // project brief modal
 .project-brief-modal {
   --width: 90%;
-  --max-width: 600px;
-  --height: 70vh;
-  --max-height: 600px;
-
+  --max-width: 700px;
+  --height: 85vh;
+  --max-height: 800px;
 
   @media (min-width: 768px) {
-    --width: 600px;
-    --height: 80vh;
+    --width: 700px;
   }
+}
+
+// fullscreen modal for mobile (used by project brief, fast feedback, etc)
+.modal-fullscreen {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0;
 }
 
 // Alert styles

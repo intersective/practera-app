@@ -90,6 +90,16 @@ ion-content.scrollable-desktop {
   }
 }
 
+.button-group-no-gap {
+  display: flex;
+  gap: 0;
+  align-items: center;
+
+  ion-button {
+    margin: 0;
+  }
+}
+
 .total-points {
   ion-label {
     margin: 17px 0px;
