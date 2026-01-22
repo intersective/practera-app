@@ -8,9 +8,24 @@ import { BehaviorSubject, Observable, of, first, firstValueFrom } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
 import { environment } from '../../environments/environment';
+
+interface Team {
+  id: number;
+  name: string;
+  uuid: string;
+  projectBrief: string;
+}
+
+interface UserTeamsResponse {
+  data: {
+    user: {
+      teams: Team[];
+    };
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -84,64 +99,69 @@ export class SharedService {
    * @description pull team information which belongs to current user
    *              (determined by header data in the api request)
    *
-   * @return  {Observable<any>} non-strict return value, we won't use
-   *                            this return value anywhere.
+   * @return  {Observable<UserTeamsResponse>} graphql response containing user teams data
    */
-  getTeamInfo(): Observable<any> {
+  getTeamInfo(): Observable<UserTeamsResponse> {
     return this.apolloService.graphQLFetch(
       `query user {
         user {
           teams {
             id
             name
+            uuid
+            projectBrief
           }
         }
       }`
-    ).pipe(map(async response => {
-      if (response?.data?.user) {
-        const thisUser = response.data.user;
-        const newTeamId = thisUser.teams.length > 0 ? thisUser.teams[0].id : null;
+    ).pipe(
+      switchMap(async (response: UserTeamsResponse) => {
+        if (response?.data?.user) {
+          const thisUser = response.data.user;
+          const teams: Team[] = thisUser.teams || [];
+          const newTeamId: number | null = teams.length > 0 ? teams[0].id : null;
+          const currentTeamId: number = this.storage.getUser().teamId;
 
-        // get latest JWT if teamId changed
-        if (this.storage.getUser().teamId !== newTeamId) {
-          await this.refreshJWT();
-        }
+          // get latest jwt if teamid changed
+          if (currentTeamId !== newTeamId) {
+            await this.refreshJWT();
+          }
 
-        if (!this.utils.has(thisUser, 'teams') ||
-          !Array.isArray(thisUser.teams) ||
-          !this.utils.has(thisUser.teams[0], 'id')
-        ) {
-          this.storage.setUser({
-            teamId: null
-          });
+          // update storage with team information
+          if (teams.length > 0) {
+            this.storage.setUser({
+              teamId: teams[0].id,
+              teamName: teams[0].name,
+              projectBrief: this.parseProjectBrief(teams[0].projectBrief),
+              teamUuid: teams[0].uuid
+            });
+          } else {
+            this.storage.setUser({
+              teamId: null
+            });
+          }
         }
-
-        if (thisUser.teams.length > 0) {
-          this.storage.setUser({
-            teamId: thisUser.teams[0].id,
-            teamName: thisUser.teams[0].name
-          });
-        }
-      }
-      return response;
-    }));
+        return response;
+      })
+    );
   }
 
   /**
    * This method get all iframe and videos from documents and stop playing videos.
    */
   stopPlayingVideos() {
-    const iframes = Array.from(document.querySelectorAll('iframe'));
-    const videos = Array.from(document.querySelectorAll('video'));
-    if (iframes) {
-      iframes.forEach(frame => {
-        frame.src = null;
-      });
-    }
-    if (videos) {
-      videos.forEach(video => {
-        video.pause();
-      });
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      const iframes = Array.from(document.querySelectorAll('iframe'));
+      const videos = Array.from(document.querySelectorAll('video'));
+      if (iframes) {
+        iframes.forEach(frame => {
+          frame.src = null;
+        });
+      }
+      if (videos) {
+        videos.forEach(video => {
+          video.pause();
+        });
+      }
     }
   }
 
@@ -196,6 +216,37 @@ export class SharedService {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
     this.utils.checkIsPracteraSupportEmail();
+  }
+
+  /**
+   * @name parseProjectBrief
+   * @description safely parse project brief into object
+   *              handles both stringified json and already-parsed objects from api
+   *
+   * @param   {string|object}  brief  project brief from api (string or object)
+   * @return  {object|null}  parsed project brief object or null if invalid
+   */
+  private parseProjectBrief(brief: string | object): object | null {
+    if (!brief) {
+      return null;
+    }
+
+    // if already an object, return as-is
+    if (typeof brief === 'object') {
+      return brief;
+    }
+
+    // if string, try to parse as json
+    if (typeof brief === 'string') {
+      try {
+        return JSON.parse(brief);
+      } catch (e) {
+        console.error('failed to parse project brief:', e);
+        return null;
+      }
+    }
+
+    return null;
   }
 
   /**

@@ -55,6 +55,20 @@ export interface User {
 
   // error handling
   saveAssessmentErrors?: [],
+
+  // project brief - parsed json object containing team project details
+  projectBrief?: {
+    id?: string;
+    title?: string;
+    description?: string;
+    industry?: string[];
+    projectType?: string;
+    technicalSkills?: string[];
+    professionalSkills?: string[];
+    deliverables?: string;
+    timeline?: number;
+  };
+  teamUuid?: string;
 }
 
 export interface Referrer {
