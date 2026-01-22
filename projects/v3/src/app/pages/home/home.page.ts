@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { environment } from '@v3/environments/environment';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
   Achievement,
@@ -410,15 +411,33 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
 
+    const cssClass = this.isMobile
+      ? ['project-brief-modal', 'modal-fullscreen']
+      : 'project-brief-modal';
+
     const modal = await this.modalController.create({
       component: ProjectBriefModalComponent,
       componentProps: {
         projectBrief: this.projectBrief
       },
-      cssClass: 'project-brief-modal'
+      cssClass
     });
 
     await modal.present();
+  }
+
+  /**
+   * @name openProjectBriefExternal
+   * @description opens project brief in external projecthub application with authentication token
+   */
+  openProjectBriefExternal(): void {
+    if (!this.projectBrief) {
+      return;
+    }
+
+    const apikey = this.storageService.getUser().apikey;
+    const url = `${environment.projecthub}login?token=${apikey}`;
+    window.open(url, '_blank');
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {

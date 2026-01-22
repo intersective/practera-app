@@ -58,5 +58,6 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  projecthub: '<CUSTOM_PROJECTHUB_URL>',
   helpline: '<CUSTOM_HELPLINE>',
 };

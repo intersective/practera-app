@@ -458,7 +458,12 @@ export class NotificationsService {
       modalOnly: false,
     }
   ): Promise<HTMLIonModalElement | void> {
+    const cssClass = this.utils.isMobile()
+      ? 'modal-fullscreen'
+      : '';
+
     const modalConfig = {
+      cssClass,
       backdropDismiss: options?.closable === true,
       showBackdrop: false,
       ...options

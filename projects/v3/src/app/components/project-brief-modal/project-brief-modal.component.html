@@ -13,88 +13,104 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!-- title -->
-    <section class="brief-section" *ngIf="hasValue(projectBrief?.title)">
-      <h1 id="project-brief-title" class="headline-3">{{ projectBrief.title }}</h1>
-    </section>
+  <div class="title-section" *ngIf="hasValue(projectBrief?.title)">
+    <h1 id="project-brief-title" class="headline-3">{{ projectBrief.title }}</h1>
+    <div class="info-badge" *ngIf="hasValue(projectBrief?.projectType)">
+      <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+      <span>{{ projectBrief.projectType }}</span>
+    </div>
+  </div>
 
-    <!-- description -->
-    <section class="brief-section">
-      <h2 class="section-label" i18n>Description</h2>
-      <p class="section-value" *ngIf="hasValue(projectBrief?.description); else noDescription">
-        {{ projectBrief.description }}
-      </p>
-      <ng-template #noDescription>
-        <p class="body-2 none-specified" i18n>None specified</p>
-      </ng-template>
-    </section>
+  <ion-accordion-group [multiple]="true" [value]="['description', 'deliverables']" class="brief-accordion">
 
-    <!-- project type -->
-    <section class="brief-section">
-      <h2 class="section-label" i18n>Project Type</h2>
-      <p class="section-value" *ngIf="hasValue(projectBrief?.projectType); else noProjectType">
-        {{ projectBrief.projectType }}
-      </p>
-      <ng-template #noProjectType>
-        <p class="body-2 none-specified" i18n>None specified</p>
-      </ng-template>
-    </section>
-
-    <!-- industry -->
-    <section class="brief-section">
-      <h2 class="section-label" i18n>Industry</h2>
-      <div class="chip-container" *ngIf="hasItems(projectBrief?.industry); else noIndustry">
-        <ion-chip *ngFor="let item of projectBrief.industry"
-          color="primary"
-          outline="true">
-          <ion-label>{{ item }}</ion-label>
-        </ion-chip>
+    <ion-accordion value="description">
+      <ion-item slot="header" color="light">
+        <ion-icon name="document-text-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label class="accordion-header" i18n>Description</ion-label>
+      </ion-item>
+      <div slot="content" class="accordion-content">
+        <p class="section-value" *ngIf="hasValue(projectBrief?.description); else noDescription">
+          {{ projectBrief.description }}
+        </p>
+        <ng-template #noDescription>
+          <p class="body-2 none-specified" i18n>None specified</p>
+        </ng-template>
       </div>
-      <ng-template #noIndustry>
-        <p class="body-2 none-specified" i18n>None specified</p>
-      </ng-template>
-    </section>
+    </ion-accordion>
 
-    <!-- technical skills -->
-    <section class="brief-section">
-      <h2 class="section-label" i18n>Technical Skills</h2>
-      <div class="chip-container" *ngIf="hasItems(projectBrief?.technicalSkills); else noTechnicalSkills">
-        <ion-chip *ngFor="let skill of projectBrief.technicalSkills"
-          color="secondary"
-          outline="true">
-          <ion-label>{{ skill }}</ion-label>
-        </ion-chip>
+    <ion-accordion value="industry">
+      <ion-item slot="header" color="light">
+        <ion-icon name="business-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
+        <ion-label class="accordion-header" i18n>Industry</ion-label>
+      </ion-item>
+      <div slot="content" class="accordion-content">
+        <div class="chip-container" *ngIf="hasItems(projectBrief?.industry); else noIndustry">
+          <ion-chip *ngFor="let item of projectBrief.industry"
+            color="primary"
+            outline="true">
+            <ion-label>{{ item }}</ion-label>
+          </ion-chip>
+        </div>
+        <ng-template #noIndustry>
+          <p class="body-2 none-specified" i18n>None specified</p>
+        </ng-template>
       </div>
-      <ng-template #noTechnicalSkills>
-        <p class="body-2 none-specified" i18n>None specified</p>
-      </ng-template>
-    </section>
+    </ion-accordion>
 
-    <!-- professional skills -->
-    <section class="brief-section">
-      <h2 class="section-label" i18n>Professional Skills</h2>
-      <div class="chip-container" *ngIf="hasItems(projectBrief?.professionalSkills); else noProfessionalSkills">
-        <ion-chip *ngFor="let skill of projectBrief.professionalSkills"
-          color="tertiary"
-          outline="true">
-          <ion-label>{{ skill }}</ion-label>
-        </ion-chip>
+    <ion-accordion value="technical-skills">
+      <ion-item slot="header" color="light">
+        <ion-icon name="code-slash-outline" slot="start" color="secondary" aria-hidden="true"></ion-icon>
+        <ion-label class="accordion-header" i18n>Technical Skills</ion-label>
+      </ion-item>
+      <div slot="content" class="accordion-content">
+        <div class="chip-container" *ngIf="hasItems(projectBrief?.technicalSkills); else noTechnicalSkills">
+          <ion-chip *ngFor="let skill of projectBrief.technicalSkills"
+            color="secondary"
+            outline="true">
+            <ion-label>{{ skill }}</ion-label>
+          </ion-chip>
+        </div>
+        <ng-template #noTechnicalSkills>
+          <p class="body-2 none-specified" i18n>None specified</p>
+        </ng-template>
       </div>
-      <ng-template #noProfessionalSkills>
-        <p class="body-2 none-specified" i18n>None specified</p>
-      </ng-template>
-    </section>
+    </ion-accordion>
 
-    <!-- deliverables -->
-    <section class="brief-section">
-      <h2 class="section-label" i18n>Deliverables</h2>
-      <p class="section-value" *ngIf="hasValue(projectBrief?.deliverables); else noDeliverables">
-        {{ projectBrief.deliverables }}
-      </p>
-      <ng-template #noDeliverables>
-        <p class="body-2 none-specified" i18n>None specified</p>
-      </ng-template>
-    </section>
+    <ion-accordion value="professional-skills">
+      <ion-item slot="header" color="light">
+        <ion-icon name="people-outline" slot="start" color="tertiary" aria-hidden="true"></ion-icon>
+        <ion-label class="accordion-header" i18n>Professional Skills</ion-label>
+      </ion-item>
+      <div slot="content" class="accordion-content">
+        <div class="chip-container" *ngIf="hasItems(projectBrief?.professionalSkills); else noProfessionalSkills">
+          <ion-chip *ngFor="let skill of projectBrief.professionalSkills"
+            color="tertiary"
+            outline="true">
+            <ion-label>{{ skill }}</ion-label>
+          </ion-chip>
+        </div>
+        <ng-template #noProfessionalSkills>
+          <p class="body-2 none-specified" i18n>None specified</p>
+        </ng-template>
+      </div>
+    </ion-accordion>
+
+    <ion-accordion value="deliverables">
+      <ion-item slot="header" color="light">
+        <ion-icon name="checkbox-outline" slot="start" color="success" aria-hidden="true"></ion-icon>
+        <ion-label class="accordion-header" i18n>Deliverables</ion-label>
+      </ion-item>
+      <div slot="content" class="accordion-content">
+        <p class="section-value" *ngIf="hasValue(projectBrief?.deliverables); else noDeliverables">
+          {{ projectBrief.deliverables }}
+        </p>
+        <ng-template #noDeliverables>
+          <p class="body-2 none-specified" i18n>None specified</p>
+        </ng-template>
+      </div>
+    </ion-accordion>
+
+  </ion-accordion-group>
 </ion-content>
 
 <ion-footer class="ion-no-border">
