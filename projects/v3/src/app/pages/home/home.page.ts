@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { environment } from '@v3/environments/environment';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
   Achievement,
@@ -15,9 +16,10 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
+import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 @Component({
   selector: "app-home",
@@ -62,6 +64,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   activitySearchText = '';
   filteredMilestones: Milestone[] = null;
 
+  // project brief data from team storage
+  projectBrief: ProjectBrief | null = null;
+
   // Expose Math to template
   Math = Math;
 
@@ -78,6 +83,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
+    private modalController: ModalController,
     private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
@@ -202,6 +208,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    // load project brief from user storage
+    this.projectBrief = this.storageService.getUser().projectBrief || null;
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
@@ -404,6 +413,44 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
 
     await alert.present();
+  }
+
+  /**
+   * @name showProjectBrief
+   * @description opens modal to display project brief details
+   */
+  async showProjectBrief(): Promise<void> {
+    if (!this.projectBrief) {
+      return;
+    }
+
+    const cssClass = this.isMobile
+      ? ['project-brief-modal', 'modal-fullscreen']
+      : 'project-brief-modal';
+
+    const modal = await this.modalController.create({
+      component: ProjectBriefModalComponent,
+      componentProps: {
+        projectBrief: this.projectBrief
+      },
+      cssClass
+    });
+
+    await modal.present();
+  }
+
+  /**
+   * @name openProjectBriefExternal
+   * @description opens project brief in external projecthub application with authentication token
+   */
+  openProjectBriefExternal(): void {
+    if (!this.projectBrief) {
+      return;
+    }
+
+    const apikey = this.storageService.getUser().apikey;
+    const url = `${environment.projecthub}login?token=${apikey}`;
+    window.open(url, '_blank');
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
