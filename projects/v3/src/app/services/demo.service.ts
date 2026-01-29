@@ -1714,6 +1714,7 @@ export class DemoService {
       "progress": 0,
       "featureToggle": {
         "pulseCheckIndicator": true,
+        "showProjectHub": true,
       },
       "projectId": 1,
     };

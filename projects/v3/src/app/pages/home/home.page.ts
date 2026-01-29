@@ -66,6 +66,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // project brief data from team storage
   projectBrief: ProjectBrief | null = null;
+  showProjectHub = false;
 
   // Expose Math to template
   Math = Math;
@@ -205,6 +206,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
     this.experience = this.storageService.get("experience");
+    this.showProjectHub = this.storageService.getFeature('showProjectHub');
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
