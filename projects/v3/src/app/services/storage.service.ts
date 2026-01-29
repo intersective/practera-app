@@ -154,10 +154,10 @@ export class BrowserStorageService {
   /**
    * Retrieves the status of a specified feature toggle. (controlled by the backend)
    *
-   * @param name - The name of the feature toggle to check. Currently supports 'pulseCheckIndicator'.
+   * @param name - The name of the feature toggle to check. Currently supports 'pulseCheckIndicator' and 'showProjectHub'.
    * @returns A boolean indicating whether the specified feature toggle is enabled.
    */
-  getFeature(name: 'pulseCheckIndicator'): boolean {
+  getFeature(name: 'pulseCheckIndicator' | 'showProjectHub'): boolean {
     return this.get('experience')?.featureToggle?.[name] || false;
   }
 
