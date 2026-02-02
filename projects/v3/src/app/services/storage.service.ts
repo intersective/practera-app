@@ -34,7 +34,7 @@ export interface User {
   userHash?: string;
   colors?: Colors;
   activityCardImage?: string; // default activity card image
-  hasReviewRating?: boolean;
+  hasReviewRating?: boolean; // from experience settings (enable/disable entirely from global setting)
   truncateDescription?: boolean;
   enrolment?: any;
   activityCompleteMessage?: string;

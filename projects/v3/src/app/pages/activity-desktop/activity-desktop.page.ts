@@ -638,7 +638,8 @@ export class ActivityDesktopPage {
     // display review rating modal
     return await this.notificationsService.popUpReviewRating(
       this.review.id,
-      false
+      false,
+      this.assessmentService.assessment?.hasReviewRating
     );
   }
 
