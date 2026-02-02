@@ -445,13 +445,21 @@ export class NotificationsService {
    * @param   {number}          reviewId  submission review record id
    * @param   {string[]<void>}  redirect  array: routeUrl, boolean: disable
    *                                      routing (stay at same component)
+   * @param   {boolean}         hasReviewRating  optional flag from assessment to
+   *                                      skip popup when disabled
    *
    * @return  {Promise<void>}             deferred ionic modal
    */
   async popUpReviewRating(
     reviewId,
-    redirect: string[] | boolean
+    redirect: string[] | boolean,
+    hasReviewRating?: boolean
   ): Promise<void> {
+    // skip popup if assessment-level review rating is disabled
+    if (hasReviewRating === false) {
+      return;
+    }
+
     return this.modalOnly(
       ReviewRatingComponent,
       {
