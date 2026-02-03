@@ -38,6 +38,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   isMobile: boolean;
   isParticipant: boolean;
+  isExpertWithoutTeam: boolean;
   pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
@@ -102,7 +103,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit() {
     const role = this.storageService.getUser().role;
+    const teamId = this.storageService.getUser().teamId;
     this.isParticipant = role === 'participant';
+    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
     this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
     this.homeService.milestones$
