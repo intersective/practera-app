@@ -68,11 +68,14 @@ describe('ActivityDesktopPage', () => {
             'saveAnswers',
             'getAssessment',
             'saveFeedbackReviewed',
-            'popUpReviewRating',
+            'pullFastFeedback',
+            'fetchAssessment',
+            'submitAssessment',
           ], {
             'assessment$': of(true),
             'submission$': of(true),
             'review$': of(true),
+            'assessment': { hasReviewRating: true },
           }),
         },
         {
@@ -80,6 +83,8 @@ describe('ActivityDesktopPage', () => {
           useValue: jasmine.createSpyObj('NotificationsService', [
             'assessmentSubmittedToast',
             'alert',
+            'popUpReviewRating',
+            'getTodoItems',
           ]),
         },
         {
@@ -230,16 +235,56 @@ describe('ActivityDesktopPage', () => {
   });
 
   describe('readFeedback()', () => {
-    it('should mark feedback as read', fakeAsync(() => {
-      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue({ toPromise: jasmine.createSpy() });
+    beforeEach(() => {
+      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue(of({}));
+      notificationsSpy.popUpReviewRating = jasmine.createSpy().and.returnValue(Promise.resolve());
+      notificationsSpy.getTodoItems = jasmine.createSpy().and.returnValue(of({}));
+      assessmentSpy.pullFastFeedback = jasmine.createSpy().and.returnValue(Promise.resolve());
+      activitySpy.getActivity = jasmine.createSpy();
+    });
+
+    it('should mark feedback as read and call pulse check when review rating disabled at user level', fakeAsync(() => {
+      storageSpy.getUser = jasmine.createSpy().and.returnValue({
+        hasReviewRating: false
+      });
 
       component.readFeedback(1, NormalisedTaskFixture);
-      // const spy = spyOn(assessmentSpy.saveFeedbackReviewed);
-      tick();
+      tick(500);
+
       expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
-      // expect(activitySpy.getActivity).toHaveBeenCalled();
-      tick(1000);
       expect(notificationsSpy.popUpReviewRating).toHaveBeenCalled();
+      expect(assessmentSpy.pullFastFeedback).toHaveBeenCalled();
+      expect(notificationsSpy.getTodoItems).toHaveBeenCalled();
+    }));
+
+    it('should mark feedback as read and call pulse check when review rating disabled at assessment level', fakeAsync(() => {
+      storageSpy.getUser = jasmine.createSpy().and.returnValue({
+        hasReviewRating: true
+      });
+      assessmentSpy.assessment = { hasReviewRating: false };
+
+      component.readFeedback(1, NormalisedTaskFixture);
+      tick(500);
+
+      expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
+      expect(notificationsSpy.popUpReviewRating).toHaveBeenCalled();
+      expect(assessmentSpy.pullFastFeedback).toHaveBeenCalled();
+      expect(notificationsSpy.getTodoItems).toHaveBeenCalled();
+    }));
+
+    it('should mark feedback as read and NOT call pulse check when review rating enabled', fakeAsync(() => {
+      storageSpy.getUser = jasmine.createSpy().and.returnValue({
+        hasReviewRating: true
+      });
+      assessmentSpy.assessment = { hasReviewRating: true };
+
+      component.readFeedback(1, NormalisedTaskFixture);
+      tick(500);
+
+      expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
+      expect(notificationsSpy.popUpReviewRating).toHaveBeenCalled();
+      expect(assessmentSpy.pullFastFeedback).not.toHaveBeenCalled();
+      expect(notificationsSpy.getTodoItems).toHaveBeenCalled();
     }));
   });
 
