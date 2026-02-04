@@ -239,6 +239,12 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     try {
       await this.assessmentService.saveFeedbackReviewed(event).toPromise();
       await this.reviewRatingPopUp();
+      // only trigger pulse check if review rating modal was skipped (not shown)
+      // when modal IS shown, ReviewRatingComponent handles pulse check on dismiss
+      if (this.storageService.getUser().hasReviewRating === false ||
+          this.assessment?.hasReviewRating === false) {
+        await this.assessmentService.pullFastFeedback();
+      }
       await this.notificationsService.getTodoItems().toPromise(); // update notifications list
 
       // get the latest activity tasks and navigate to the next task

@@ -1052,17 +1052,6 @@ export class NotificationsService {
     });
   }
 
-  async trackInfo() {
-    const modal = await this.modalController.create({
-      component: PopUpComponent,
-      componentProps: {
-        type: "pulseCheckStatus"
-      },
-    });
-
-    return await modal.present();
-  }
-
   /**
    * Show team check-in alert when there's misalignment in team status
    */
