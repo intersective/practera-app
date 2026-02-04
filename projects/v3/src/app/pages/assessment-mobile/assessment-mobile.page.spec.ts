@@ -49,6 +49,7 @@ describe('AssessmentMobilePage', () => {
             'getAssessment',
             'saveAnswers',
             'saveFeedbackReviewed',
+            'pullFastFeedback',
           ], {
             assessment$: of(true),
             submission$: of(true),
@@ -72,6 +73,7 @@ describe('AssessmentMobilePage', () => {
             'assessmentSubmittedToast',
             'alert',
             'popUpReviewRating',
+            'getTodoItems',
           ]),
         },
         {
@@ -147,15 +149,36 @@ describe('AssessmentMobilePage', () => {
     expect(assessmentSpy.getAssessment).toHaveBeenCalled();
   }));
 
-  it('should call readFeedback()', async () => {
+  it('should call readFeedback() with review rating enabled - no pulse check', async () => {
     storageSpy.getUser.and.returnValue({ hasReviewRating: true });
-    assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue({
-      toPromise: jasmine.createSpy()
-    });
+    component.assessment = { hasReviewRating: true };
+    assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue(of({}));
+    assessmentSpy.pullFastFeedback = jasmine.createSpy().and.returnValue(Promise.resolve());
+    notificationSpy.getTodoItems = jasmine.createSpy().and.returnValue(of({}));
+
     const event = { id: 1, data: 'test data' };
     await component.readFeedback(event);
+
     expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalledWith(event);
     expect(notificationSpy.popUpReviewRating).toHaveBeenCalled();
+    expect(assessmentSpy.pullFastFeedback).not.toHaveBeenCalled();
+    expect(notificationSpy.getTodoItems).toHaveBeenCalled();
+    expect(activitySpy.getActivity).toHaveBeenCalled();
+  });
+
+  it('should call readFeedback() with review rating disabled - calls pulse check', async () => {
+    storageSpy.getUser.and.returnValue({ hasReviewRating: false });
+    component.assessment = { hasReviewRating: true };
+    assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue(of({}));
+    assessmentSpy.pullFastFeedback = jasmine.createSpy().and.returnValue(Promise.resolve());
+    notificationSpy.getTodoItems = jasmine.createSpy().and.returnValue(of({}));
+
+    const event = { id: 1, data: 'test data' };
+    await component.readFeedback(event);
+
+    expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalledWith(event);
+    expect(assessmentSpy.pullFastFeedback).toHaveBeenCalled();
+    expect(notificationSpy.getTodoItems).toHaveBeenCalled();
     expect(activitySpy.getActivity).toHaveBeenCalled();
   });
 
