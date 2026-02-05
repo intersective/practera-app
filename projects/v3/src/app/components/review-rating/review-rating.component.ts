@@ -107,10 +107,9 @@ export class ReviewRatingComponent implements OnInit {
   }
 
   private async fastFeedbackOrRedirect(): Promise<any> {
-    // pulse check is now handled by page components (activity-desktop, assessment-mobile)
-    // this method only handles redirect navigation when redirect is provided
-    if (!this.redirect || typeof this.redirect === 'boolean') {
-      return;
+    // if this.redirect == false, don't redirect to another page
+    if (!this.redirect) {
+      return await this.fastFeedbackService.pullFastFeedback().toPromise();
     }
 
     if (!this.utils.isMobile()) {
@@ -154,6 +153,6 @@ export class ReviewRatingComponent implements OnInit {
 
   async dismissModal(): Promise<void> {
     await this.modalController.dismiss(null, 'cancel', `review-popup-${this.reviewId}`);
-    await this.fastFeedbackOrRedirect(); // check if fast feedback available after review rating modal is closed
+    await this.fastFeedbackOrRedirect();
   }
 }
