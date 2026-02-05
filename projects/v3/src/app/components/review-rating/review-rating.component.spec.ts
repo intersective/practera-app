@@ -104,7 +104,7 @@ describe('ReviewRatingComponent', () => {
   });
 
   describe('submitReviewRating() - straightforward test', () => {
-    it('should NOT trigger pulse check API (handled by page components)', () => {
+    it('should trigger pulse check API when stay on same view', () => {
       component.redirect = null;
 
       component.ratingData = {
@@ -122,8 +122,7 @@ describe('ReviewRatingComponent', () => {
       expect(serviceSpy.submitRating.calls.first().args[0].rating).toEqual(0.12);
       expect(component.isSubmitting).toBe(false);
       expect(routerSpy.navigate.calls.count()).toBe(0);
-      // pulse check is now handled by page components, not ReviewRatingComponent
-      expect(fastfeedbackSpy.pullFastFeedback).not.toHaveBeenCalled();
+      expect(fastfeedbackSpy.pullFastFeedback).toHaveBeenCalledTimes(1);
     });
   });
 
