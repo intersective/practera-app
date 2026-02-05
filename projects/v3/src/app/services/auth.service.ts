@@ -127,6 +127,7 @@ interface AuthQuery {
   apikey?: string;
   service?: string;
   experienceUuid?: string;
+  forceRefresh?: boolean;
 }
 
 @Injectable({
@@ -155,9 +156,14 @@ export class AuthService {
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
 
-    // 2 conditions to pull from server:
-    // when experienceUuid is not null (required for switch experience)
-    // when authToken available (directLogin)
+    // conditions to pull from server:
+    // - when forceRefresh is true (bypass cache)
+    // - when experienceUuid is not null (required for switch experience)
+    // - when authToken available (directLogin)
+    if (data?.forceRefresh) {
+      return this.fetchData(data);
+    }
+
     if (!(data?.experienceUuid || data?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
       return of(authCache);
     } else {
