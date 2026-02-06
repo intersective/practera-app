@@ -304,9 +304,22 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
         this.utils.downloadFile(file.url);
         break;
       case 1:
-        this.previewFile(file);
+        if (this._isFilestackUrl(file.url)) {
+          this.previewFile(file);
+        } else {
+          // non-filestack files: open in new tab as download fallback
+          this.notification.presentToast('Preview not available. Opening file in a new tab.');
+          window.open(file.url, '_blank');
+        }
         break;
     }
+  }
+
+  /**
+   * @description checks if a url is a filestack cdn url
+   */
+  private _isFilestackUrl(url: string): boolean {
+    return url?.includes('filestackcontent') || false;
   }
 
   async actionBarContinue(topic): Promise<void> {
