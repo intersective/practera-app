@@ -151,14 +151,30 @@ describe('TopicComponent', () => {
 
   describe('actionBtnClick', () => {
     it('should call downloadFile when index 0', () => {
-      component.actionBtnClick({} as any, 0);
+      component.actionBtnClick({ url: 'https://example.com/file.pdf' } as any, 0);
       expect(utilsSpy.downloadFile).toHaveBeenCalled();
     });
 
-    it('should call previewFile when index 1', () => {
+    it('should call previewFile when index 1 and url is filestack', () => {
       spyOn(component, 'previewFile');
-      component.actionBtnClick({} as any, 1);
-      expect(component.previewFile).toHaveBeenCalled();
+      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'doc.pdf' };
+      component.actionBtnClick(file, 1);
+      expect(component.previewFile).toHaveBeenCalledWith(file);
+    });
+
+    it('should open new tab when index 1 and url is not filestack', () => {
+      spyOn(window, 'open');
+      const file = { url: 'https://example.com/video.mp4', name: 'video.mp4' };
+      component.actionBtnClick(file, 1);
+      expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
+      expect(notificationSpy.presentToast).toHaveBeenCalled();
+    });
+
+    it('should open new tab for non-filestack url even without extension', () => {
+      spyOn(window, 'open');
+      const file = { url: 'https://storage.example.com/files/12345', name: 'report' };
+      component.actionBtnClick(file, 1);
+      expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
     });
   });
 });
