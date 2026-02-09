@@ -155,16 +155,32 @@ describe('TopicComponent', () => {
       expect(utilsSpy.downloadFile).toHaveBeenCalled();
     });
 
-    it('should call previewFile when index 1 and url is filestack', () => {
+    it('should call previewFile when index 1 and url is filestack with supported type', () => {
       spyOn(component, 'previewFile');
       const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'doc.pdf' };
       component.actionBtnClick(file, 1);
       expect(component.previewFile).toHaveBeenCalledWith(file);
     });
 
+    it('should open video modal when index 1 and file is video', () => {
+      spyOn(component, 'previewVideoFile');
+      const file = { url: 'https://cdn.filestackcontent.com/abc123.mp4', name: 'video.mp4' };
+      component.actionBtnClick(file, 1);
+      expect(component.previewVideoFile).toHaveBeenCalledWith(file);
+    });
+
+    it('should open new tab when index 1 and url is filestack but file is audio', () => {
+      spyOn(window, 'open');
+      spyOn(component, 'previewFile');
+      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'recording.mp3' };
+      component.actionBtnClick(file, 1);
+      expect(component.previewFile).not.toHaveBeenCalled();
+      expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
+    });
+
     it('should open new tab when index 1 and url is not filestack', () => {
       spyOn(window, 'open');
-      const file = { url: 'https://example.com/video.mp4', name: 'video.mp4' };
+      const file = { url: 'https://example.com/document.pdf', name: 'document.pdf' };
       component.actionBtnClick(file, 1);
       expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
       expect(notificationSpy.presentToast).toHaveBeenCalled();
@@ -175,6 +191,66 @@ describe('TopicComponent', () => {
       const file = { url: 'https://storage.example.com/files/12345', name: 'report' };
       component.actionBtnClick(file, 1);
       expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
+    });
+  });
+
+  describe('getFileActionIcons', () => {
+    it('should return both download and search icons for filestack url with supported type', () => {
+      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'document.pdf' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download', 'search']);
+    });
+
+    it('should return both download and search icons for video files', () => {
+      const file = { url: 'https://cdn.filestackcontent.com/abc123.mp4', name: 'video.mp4' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download', 'search']);
+    });
+
+    it('should return both download and search icons for non-filestack video', () => {
+      const file = { url: 'https://example.com/video.mp4', name: 'video.mp4' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download', 'search']);
+    });
+
+    it('should return only download icon for filestack url with audio', () => {
+      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'audio.mp3' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download']);
+    });
+
+    it('should return only download icon for non-filestack non-video file', () => {
+      const file = { url: 'https://example.com/file.pdf', name: 'document.pdf' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download']);
+    });
+
+    it('should return only download icon for non-mp4 video files', () => {
+      const file = { url: 'https://example.com/video.mov', name: 'video.mov' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download']);
+    });
+  });
+
+  describe('previewVideoFile', () => {
+    it('should open video modal with file properties', async () => {
+      const modalSpy = jasmine.createSpyObj('Modal', ['present']);
+      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+
+      const file = { url: 'https://example.com/video.mp4', name: 'test.mp4' };
+      await component.previewVideoFile(file);
+
+      expect(component['modalController'].create).toHaveBeenCalledWith({
+        component: jasmine.anything(),
+        componentProps: {
+          file: {
+            url: file.url,
+            name: file.name,
+            type: 'video/mp4',
+          },
+        },
+      });
+      expect(modalSpy.present).toHaveBeenCalled();
     });
   });
 });
