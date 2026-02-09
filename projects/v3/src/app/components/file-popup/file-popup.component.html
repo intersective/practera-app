@@ -34,12 +34,19 @@
     </ng-container>
 
     <ng-container *ngIf="file?.type.includes('video')">
-      <video controls>
-        <ng-container *ngIf="file?.url">
-          <source [src]="file.url"
-            [type]="file.type">
-          {{ file.url }}
-        </ng-container>
+      <video
+        width="100%"
+        controls
+        controlsList="nodownload"
+        preload="metadata"
+        playsinline
+        [src]="file.url"
+        (error)="handleVideoError($event)"
+      >
+        <p i18n="video not supported message">
+          Your browser doesn't support HTML5 video.
+          Here is a <a [href]="file.url">link to the video</a> instead.
+        </p>
       </video>
     </ng-container>
   </div>
