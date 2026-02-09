@@ -11,6 +11,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
 import { Task } from '@v3/app/services/activity.service';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
+import { ModalController } from '@ionic/angular';
+import { FilePopupComponent } from '../file-popup/file-popup.component';
 
 @Component({
   selector: 'app-topic',
@@ -52,6 +54,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
     private sanitizer: DomSanitizer,
     private cleanupService: ComponentCleanupService,
     private cdr: ChangeDetectorRef,
+    private modalController: ModalController,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.isMobile = this.utils.isMobile();
@@ -304,11 +307,14 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
         this.utils.downloadFile(file.url);
         break;
       case 1:
-        if (this._isFilestackUrl(file.url)) {
+        if (this._isVideoFile(file)) {
+          // show mp4 file in modal with html5 player
+          this.previewVideoFile(file);
+        } else if (this._isFilestackUrl(file.url) && this._isFilestackPreviewSupported(file)) {
+          // show filestack document viewer
           this.previewFile(file);
         } else {
           // non-filestack files: open in new tab as download fallback
-          this.notification.presentToast('Preview not available. Opening file in a new tab.');
           window.open(file.url, '_blank');
         }
         break;
@@ -320,6 +326,56 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
    */
   private _isFilestackUrl(url: string): boolean {
     return url?.includes('filestackcontent') || false;
+  }
+
+  /**
+   * @description checks if file is an mp4 video (html5 browser-supported format)
+   */
+  private _isVideoFile(file: { url: string; name: string }): boolean {
+    const urlLower = (file.url || '').toLowerCase();
+    const nameLower = (file.name || '').toLowerCase();
+    return urlLower.endsWith('.mp4') || nameLower.endsWith('.mp4');
+  }
+
+  /**
+   * @description checks if a file type is supported by filestack document viewer.
+   * supported: pdf, ppt/pptx, xls/xlsx, doc/docx, odt, odp, images, html, txt, ai, psd.
+   * unsupported: audio files (videos handled separately by html5 player).
+   */
+  private _isFilestackPreviewSupported(file: { url: string; name: string }): boolean {
+    const unsupportedExtensions = ['.mp3', '.wav', '.ogg', '.aac', '.flac', '.wma', '.m4a'];
+    const urlLower = (file.url || '').toLowerCase();
+    const nameLower = (file.name || '').toLowerCase();
+    return !unsupportedExtensions.some(ext => urlLower.endsWith(ext) || nameLower.endsWith(ext));
+  }
+
+  /**
+   * @description preview mp4 file in modal with html5 video player
+   */
+  async previewVideoFile(file: { url: string; name: string }): Promise<void> {
+    const modal = await this.modalController.create({
+      component: FilePopupComponent,
+      componentProps: {
+        file: {
+          url: file.url,
+          name: file.name,
+          type: 'video/mp4',
+        },
+      },
+    });
+    return await modal.present();
+  }
+
+  /**
+   * @description returns action button icons for file attachment based on preview support.
+   * preview icon shown for:
+   * - mp4 video files (shown in html5 video modal)
+   * - filestack urls with document viewer supported file types
+   */
+  getFileActionIcons(file: { url: string; name: string }): string[] {
+    const canPreview = this._isVideoFile(file) ||
+                      (this._isFilestackUrl(file.url) && this._isFilestackPreviewSupported(file));
+    return canPreview ? ['download', 'search'] : ['download'];
   }
 
   async actionBarContinue(topic): Promise<void> {
