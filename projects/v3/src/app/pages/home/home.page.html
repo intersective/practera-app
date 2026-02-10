@@ -44,12 +44,11 @@
               <div class="exp-header">
                 <h2 class="headline-2"
                   [innerHTML]="experience.name"></h2>
-
                 <div class="button-group-no-gap" *ngIf="projectBrief || showProjectHub">
                   <ion-button fill="clear"
                     size="small"
                     class="project-brief-btn"
-                    *ngIf="projectBrief"
+                    *ngIf="projectBrief?.id"
                     (click)="showProjectBrief()"
                     (keydown.enter)="showProjectBrief()"
                     (keydown.space)="showProjectBrief(); $event.preventDefault()"
@@ -65,13 +64,14 @@
                     (click)="openProjectBriefExternal()"
                     (keydown.enter)="openProjectBriefExternal()"
                     (keydown.space)="openProjectBriefExternal(); $event.preventDefault()"
-                    title="Go to project brief"
-                    aria-label="Go to project brief" i18n-aria-label>
+                    title="Go to project hub"
+                    aria-label="Go to project hub" i18n-aria-label>
                     <ion-icon name="open-outline"
-                      slot="icon-only"
-                      size="small"
-                      aria-hidden="true"></ion-icon>
-                    <span i18n *ngIf="!projectBrief">Go to Project-Hub</span>
+                    [slot]="projectBrief ? 'icon-only' : 'start'"
+                    size="small"
+                    aria-hidden="true"
+                    ></ion-icon>
+                    <span i18n *ngIf="!projectBrief">Project-Hub</span>
                   </ion-button>
                 </div>
               </div>
