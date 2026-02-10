@@ -216,8 +216,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
+    const user = this.storageService.getUser();
+
     // load project brief from user storage
-    this.projectBrief = this.storageService.getUser().projectBrief || null;
+    this.projectBrief = user.projectBrief || null;
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
