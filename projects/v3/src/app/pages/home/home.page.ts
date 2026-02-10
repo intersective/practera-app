@@ -216,8 +216,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
+    const user = this.storageService.getUser();
+
     // load project brief from user storage
-    this.projectBrief = this.storageService.getUser().projectBrief || null;
+    this.projectBrief = user.projectBrief || null;
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
@@ -433,10 +435,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @description opens project brief in external projecthub application with authentication token
    */
   openProjectBriefExternal(): void {
-    if (!this.projectBrief) {
-      return;
-    }
-
     const apikey = this.storageService.getUser().apikey;
     const url = `${environment.projecthub}login?token=${apikey}`;
     window.open(url, '_blank');
