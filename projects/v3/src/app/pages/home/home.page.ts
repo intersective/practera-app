@@ -474,10 +474,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @description opens project brief in external projecthub application with authentication token
    */
   openProjectBriefExternal(): void {
-    if (!this.projectBrief) {
-      return;
-    }
-
     const apikey = this.storageService.getUser().apikey;
     const url = `${environment.projecthub}login?token=${apikey}`;
     window.open(url, '_blank');
