@@ -45,10 +45,11 @@
                 <h2 class="headline-2"
                   [innerHTML]="experience.name"></h2>
 
-                <div class="button-group-no-gap" *ngIf="projectBrief && showProjectHub">
+                <div class="button-group-no-gap" *ngIf="projectBrief || showProjectHub">
                   <ion-button fill="clear"
                     size="small"
                     class="project-brief-btn"
+                    *ngIf="projectBrief"
                     (click)="showProjectBrief()"
                     (keydown.enter)="showProjectBrief()"
                     (keydown.space)="showProjectBrief(); $event.preventDefault()"
@@ -60,6 +61,7 @@
                   </ion-button>
                   <ion-button fill="clear"
                     size="small"
+                    *ngIf="showProjectHub"
                     (click)="openProjectBriefExternal()"
                     (keydown.enter)="openProjectBriefExternal()"
                     (keydown.space)="openProjectBriefExternal(); $event.preventDefault()"
