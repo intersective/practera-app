@@ -33,7 +33,7 @@
       <img [src]="file.url" alt="uploaded attachment preview" i18n-alt>
     </ng-container>
 
-    <ng-container *ngIf="file?.type.includes('video')">
+    <ng-container *ngIf="isBrowserSupportedVideo()">
       <video
         width="100%"
         controls
@@ -48,6 +48,17 @@
           Here is a <a [href]="file.url">link to the video</a> instead.
         </p>
       </video>
+    </ng-container>
+
+    <ng-container *ngIf="file?.type?.includes('video') && !isBrowserSupportedVideo()">
+      <div class="ion-padding ion-text-center">
+        <ion-icon name="videocam-off-outline" size="large" color="medium"></ion-icon>
+        <p class="body-2" i18n="unsupported video format message">
+          This video format is not supported for preview.
+          <br>
+          <a [href]="file.url" target="_blank" rel="noopener">Download to view</a>
+        </p>
+      </div>
     </ng-container>
   </div>
 </ion-content>
