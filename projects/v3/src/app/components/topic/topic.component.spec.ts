@@ -162,9 +162,23 @@ describe('TopicComponent', () => {
       expect(component.previewFile).toHaveBeenCalledWith(file);
     });
 
-    it('should open video modal when index 1 and file is video', () => {
+    it('should open video modal when index 1 and file is mp4 video', () => {
       spyOn(component, 'previewVideoFile');
       const file = { url: 'https://cdn.filestackcontent.com/abc123.mp4', name: 'video.mp4' };
+      component.actionBtnClick(file, 1);
+      expect(component.previewVideoFile).toHaveBeenCalledWith(file);
+    });
+
+    it('should open video modal when index 1 and file is webm video', () => {
+      spyOn(component, 'previewVideoFile');
+      const file = { url: 'https://cdn.filestackcontent.com/abc123.webm', name: 'video.webm' };
+      component.actionBtnClick(file, 1);
+      expect(component.previewVideoFile).toHaveBeenCalledWith(file);
+    });
+
+    it('should open video modal when index 1 and file is ogg video', () => {
+      spyOn(component, 'previewVideoFile');
+      const file = { url: 'https://cdn.filestackcontent.com/abc123.ogg', name: 'video.ogg' };
       component.actionBtnClick(file, 1);
       expect(component.previewVideoFile).toHaveBeenCalledWith(file);
     });
@@ -225,15 +239,34 @@ describe('TopicComponent', () => {
       expect(icons).toEqual(['download']);
     });
 
-    it('should return only download icon for non-mp4 video files', () => {
-      const file = { url: 'https://example.com/video.mov', name: 'video.mov' };
+    it('should return both download and search icons for webm video', () => {
+      const file = { url: 'https://example.com/video.webm', name: 'video.webm' };
       const icons = component.getFileActionIcons(file);
-      expect(icons).toEqual(['download']);
+      expect(icons).toEqual(['download', 'search']);
+    });
+
+    it('should return both download and search icons for ogg video', () => {
+      const file = { url: 'https://example.com/video.ogg', name: 'video.ogg' };
+      const icons = component.getFileActionIcons(file);
+      expect(icons).toEqual(['download', 'search']);
+    });
+
+    it('should return only download icon for unsupported video formats', () => {
+      const formats = [
+        { url: 'https://example.com/video.mov', name: 'video.mov' },
+        { url: 'https://cdn.filestackcontent.com/abc123', name: 'file_example_AVI_640_800kB.avi' },
+        { url: 'https://cdn.filestackcontent.com/abc123.wmv', name: 'video.wmv' },
+        { url: 'https://example.com/video.mkv', name: 'video.mkv' },
+      ];
+      for (const file of formats) {
+        const icons = component.getFileActionIcons(file);
+        expect(icons).withContext(file.name).toEqual(['download']);
+      }
     });
   });
 
   describe('previewVideoFile', () => {
-    it('should open video modal with file properties', async () => {
+    it('should open video modal with mp4 mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
       spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
 
@@ -247,6 +280,46 @@ describe('TopicComponent', () => {
             url: file.url,
             name: file.name,
             type: 'video/mp4',
+          },
+        },
+      });
+      expect(modalSpy.present).toHaveBeenCalled();
+    });
+
+    it('should open video modal with webm mime type', async () => {
+      const modalSpy = jasmine.createSpyObj('Modal', ['present']);
+      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+
+      const file = { url: 'https://example.com/video.webm', name: 'test.webm' };
+      await component.previewVideoFile(file);
+
+      expect(component['modalController'].create).toHaveBeenCalledWith({
+        component: jasmine.anything(),
+        componentProps: {
+          file: {
+            url: file.url,
+            name: file.name,
+            type: 'video/webm',
+          },
+        },
+      });
+      expect(modalSpy.present).toHaveBeenCalled();
+    });
+
+    it('should open video modal with ogg mime type', async () => {
+      const modalSpy = jasmine.createSpyObj('Modal', ['present']);
+      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+
+      const file = { url: 'https://example.com/video.ogg', name: 'test.ogg' };
+      await component.previewVideoFile(file);
+
+      expect(component['modalController'].create).toHaveBeenCalledWith({
+        component: jasmine.anything(),
+        componentProps: {
+          file: {
+            url: file.url,
+            name: file.name,
+            type: 'video/ogg',
           },
         },
       });
