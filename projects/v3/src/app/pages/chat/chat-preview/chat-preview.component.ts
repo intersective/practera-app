@@ -34,4 +34,29 @@ export class ChatPreviewComponent {
 
     this.modalController.dismiss();
   }
+
+  /**
+   * @description checks if the video format is natively supported by the browser
+   */
+  isBrowserSupportedVideo(): boolean {
+    const supportedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
+    return this.file?.type && supportedTypes.includes(this.file.type);
+  }
+
+  /**
+   * @description handles video playback errors
+   */
+  handleVideoError(videoError: Event): void {
+    console.error('Video Error::', videoError);
+    const target = videoError.target as HTMLVideoElement;
+    if (target) {
+      console.error('Video error details:', {
+        code: target.error?.code,
+        message: target.error?.message,
+        src: target.src,
+        networkState: target.networkState,
+        readyState: target.readyState,
+      });
+    }
+  }
 }
