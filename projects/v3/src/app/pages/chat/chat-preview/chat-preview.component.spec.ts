@@ -72,4 +72,40 @@ describe('ChatPreviewComponent', () => {
       expect(modalSpy.dismiss).toHaveBeenCalled();
     });
   });
+
+  describe('isBrowserSupportedVideo', () => {
+    it('should return true for mp4', () => {
+      component.file = { url: 'video.mp4', type: 'video/mp4' };
+      expect(component.isBrowserSupportedVideo()).toBeTrue();
+    });
+
+    it('should return true for webm', () => {
+      component.file = { url: 'video.webm', type: 'video/webm' };
+      expect(component.isBrowserSupportedVideo()).toBeTrue();
+    });
+
+    it('should return true for ogg', () => {
+      component.file = { url: 'video.ogg', type: 'video/ogg' };
+      expect(component.isBrowserSupportedVideo()).toBeTrue();
+    });
+
+    it('should return false for unsupported video types', () => {
+      component.file = { url: 'video.avi', type: 'video/avi' };
+      expect(component.isBrowserSupportedVideo()).toBeFalse();
+    });
+
+    it('should return false when file type is not set', () => {
+      component.file = { url: 'video.mp4' };
+      expect(component.isBrowserSupportedVideo()).toBeFalse();
+    });
+  });
+
+  describe('handleVideoError', () => {
+    it('should log error details', () => {
+      spyOn(console, 'error');
+      const mockEvent = { target: { error: { code: 4, message: 'not supported' }, src: 'test.mp4', networkState: 3, readyState: 0 } } as any;
+      component.handleVideoError(mockEvent);
+      expect(console.error).toHaveBeenCalledWith('Video Error::', mockEvent);
+    });
+  });
 });
