@@ -56,6 +56,24 @@
           </ion-row>
         </ion-grid>
       </ion-item>
+
+      <ion-item class="ion-no-padding" *ngIf="review?.projectBrief?.id">
+        <ion-grid class="ion-padding-horizontal">
+          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="12" class="ion-align-self-center">
+              <ion-button fill="clear" size="small" class="project-brief-btn"
+                (click)="showProjectBrief()"
+                (keydown.enter)="showProjectBrief()"
+                (keydown.space)="showProjectBrief(); $event.preventDefault()"
+                aria-label="View Project Brief" i18n-aria-label
+                tabindex="0">
+                <ion-icon name="document-text-outline" slot="start" aria-hidden="true"></ion-icon>
+                <span i18n>Project Brief</span>
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
     </ion-item-group>
   </ion-list>
 </ng-container>
