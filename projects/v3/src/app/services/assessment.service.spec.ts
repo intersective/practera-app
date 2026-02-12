@@ -695,7 +695,15 @@ describe('AssessmentService', () => {
                 submitter: {
                   name: 'John Doe',
                   image: 'profile.jpg',
-                  team: { name: 'Team Alpha' }
+                  team: {
+                    id: 10,
+                    name: 'Team Alpha',
+                    projectBrief: JSON.stringify({
+                      id: 'brief-1',
+                      title: 'Team Alpha Brief',
+                      description: 'Brief description',
+                    }),
+                  }
                 },
                 answers: [
                   {
@@ -799,6 +807,11 @@ describe('AssessmentService', () => {
         expect(result.review.id).toBe(201);
         expect(result.review.status).toBe('done');
         expect(result.review.teamName).toBe('Team Alpha');
+        expect(result.review.projectBrief).toEqual({
+          id: 'brief-1',
+          title: 'Team Alpha Brief',
+          description: 'Brief description',
+        });
 
         // Verify review answers normalization
         expect(result.review.answers[1].answer).toBeNull();
