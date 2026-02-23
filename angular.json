@@ -241,8 +241,11 @@
               "projects/v3/src/assets"
             ],
             "styles": ["projects/v3/src/styles.scss"],
-            "scripts": []
-          },
+            "scripts": [],
+            "watch": false,
+            "progress": false,
+            "sourceMap": false
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

@@ -14,6 +14,7 @@
 8. [Service Testing Best Practices](#service-testing-best-practices)
 9. [Debugging Strategies](#debugging-strategies)
 10. [Code Standards](#code-standards)
+11. [Coverage Run Cookbook](#coverage-run-cookbook)
 
 ---
 
@@ -36,6 +37,10 @@ npm test 2>&1 | tee test-run.log
 
 # run specific test file (modify karma.conf.js or use fdescribe/fit)
 ```
+
+### Coverage Run Cookbook
+
+- Quick copy-paste coverage commands are in [coverage-run-cookbook.md](./coverage-run-cookbook.md).
 
 ---
 
