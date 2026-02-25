@@ -52,7 +52,7 @@
       [title]="file.name"
       leadingIcon="document"
       lines="full"
-      [endingActionBtnIcons]="['download', 'search']"
+      [endingActionBtnIcons]="getFileActionIcons(file)"
       (actionBtnClick)="actionBtnClick(file, $event)"
     ></app-list-item>
 
