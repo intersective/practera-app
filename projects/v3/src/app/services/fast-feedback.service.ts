@@ -93,6 +93,10 @@ export class FastFeedbackService {
     closable: false,
   }): Observable<any> {
     return this._getFastFeedback(options.skipChecking, options.type).pipe(
+      retry({
+        count: 3,
+        delay: 1000
+      }),
       switchMap((res) => {
         try {
           // don't open it again if there's one opening
@@ -151,10 +155,6 @@ export class FastFeedbackService {
           });
         }
       }),
-      retry({
-        count: 3,
-        delay: 1000
-      })
     );
   }
 
