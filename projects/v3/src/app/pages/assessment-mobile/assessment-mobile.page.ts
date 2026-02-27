@@ -262,7 +262,11 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
 
     try {
       // display review rating modal
-      return await this.notificationsService.popUpReviewRating(this.review.id, false);
+      return await this.notificationsService.popUpReviewRating(
+        this.review.id,
+        false,
+        this.assessment?.hasReviewRating
+      );
     } catch (err) {
       const header = $localize`Can not get review rating information`;
       await this.notificationsService.alert({

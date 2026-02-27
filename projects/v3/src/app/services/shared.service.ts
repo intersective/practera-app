@@ -242,7 +242,7 @@ export class SharedService {
    * @return  {Promise<any>} non-strict return value, we won't use
    */
   async refreshJWT(): Promise<any> {
-    const res: AuthEndpoint = await firstValueFrom(this.authService.authenticate());
+    const res: AuthEndpoint = await firstValueFrom(this.authService.authenticate({ forceRefresh: true }));
 
     const auth = res?.data?.auth;
     const latestTeamId = auth?.experience?.team?.id;
