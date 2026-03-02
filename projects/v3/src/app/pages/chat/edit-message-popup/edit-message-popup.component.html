@@ -1,0 +1,54 @@
+<ion-header mode="ios">
+  <ion-toolbar>
+    <ion-title class="ion-text-center subtitle-2" i18n>
+      {{ updateSuccess ? 'Message Updated' : 'Edit Message' }}
+    </ion-title>
+    <ion-button slot="end" fill="clear" size="small" (click)="close()" [disabled]="sending"
+      aria-label="Close" i18n-aria-label>
+      <ion-icon name="close" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding edit-message-content">
+  <!-- success state -->
+  <ng-container *ngIf="updateSuccess">
+    <div class="success-state ion-text-center">
+      <ion-icon name="checkmark-circle" color="success" class="success-icon" aria-hidden="true"></ion-icon>
+      <p class="subtitle-1" i18n>Your message has been updated.</p>
+      <div class="updated-message-preview" *ngIf="message">
+        <quill-view-html [content]="message" [sanitize]="true"></quill-view-html>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- edit state -->
+  <ng-container *ngIf="!updateSuccess">
+    <div class="editor-wrapper">
+      <quill-editor
+        [(ngModel)]="message"
+        [modules]="editorModules"
+        [placeholder]="'Enter your message'"
+        i18n-placeholder
+        aria-label="Edit message"
+        i18n-aria-label
+        class="edit-message-editor"
+      ></quill-editor>
+    </div>
+  </ng-container>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="footer-toolbar">
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="close()" [disabled]="sending" i18n>
+        {{ updateSuccess ? 'Close' : 'Cancel' }}
+      </ion-button>
+      <ion-button *ngIf="!updateSuccess" fill="solid" color="primary"
+        (click)="editMessage()" [disabled]="sending" i18n>
+        <ion-spinner *ngIf="sending" name="crescent" slot="start"></ion-spinner>
+        Update Message
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
