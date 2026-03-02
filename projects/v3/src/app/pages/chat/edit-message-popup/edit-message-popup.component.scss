@@ -1,0 +1,99 @@
+:host {
+  // ensure the component fills the modal
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+ion-header {
+  ion-toolbar {
+    --background: white;
+    --border-width: 0 0 1px 0;
+    --border-color: var(--ion-color-light-shade, #d7d8da);
+
+    ion-title {
+      font-weight: 600;
+    }
+
+    ion-button {
+      --color: var(--ion-color-medium, #92949c);
+    }
+  }
+}
+
+.edit-message-content {
+  --background: white;
+}
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.edit-message-editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  ::ng-deep {
+    .ql-toolbar.ql-snow {
+      border: 1px solid var(--ion-color-light-shade, #d7d8da);
+      border-radius: 8px 8px 0 0;
+      background: var(--ion-color-light, #f4f5f8);
+      padding: 8px;
+      flex-shrink: 0;
+    }
+
+    .ql-container.ql-snow {
+      border: 1px solid var(--ion-color-light-shade, #d7d8da);
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      flex: 1;
+      min-height: 150px;
+      font-size: 14px;
+    }
+
+    .ql-editor {
+      min-height: 150px;
+      padding: 12px 16px;
+
+      &.ql-blank::before {
+        color: var(--ion-color-medium, #92949c);
+        font-style: normal;
+      }
+    }
+  }
+}
+
+.success-state {
+  padding: 32px 16px;
+
+  .success-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--ion-text-color, #000);
+    margin-top: 8px;
+  }
+
+  .updated-message-preview {
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: var(--ion-color-light, #f4f5f8);
+    border-radius: 8px;
+    text-align: left;
+    border: 1px solid var(--ion-color-light-shade, #d7d8da);
+  }
+}
+
+ion-footer {
+  .footer-toolbar {
+    --background: white;
+    --border-width: 1px 0 0 0;
+    --border-color: var(--ion-color-light-shade, #d7d8da);
+    padding: 4px 8px;
+  }
+}
