@@ -534,6 +534,16 @@ quill-editor .ql-toolbar.ql-snow {
   --border-radius: 0;
 }
 
+// edit message modal sizing
+.chat-edit-message-popup {
+  --width: 600px;
+  --max-width: 90vw;
+  --height: 500px;
+  --max-height: 80vh;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}
+
 // Alert styles
 .wide-alert {
   .alert-wrapper {
