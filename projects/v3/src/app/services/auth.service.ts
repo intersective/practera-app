@@ -357,8 +357,6 @@ export class AuthService {
    * @param redirect         Whether redirect the user to login page or not
    */
   logout(navigationParams = {}, redirect: boolean | string[] = true) {
-    // use the config color
-    this.utils.changeThemeColor(this.storage.getConfig().colors);
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
