@@ -1,18 +1,37 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { FastFeedbackService } from './fast-feedback.service';
-import { of, throwError } from 'rxjs';
-import { RequestService } from 'request';
+import { of } from 'rxjs';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { DemoService } from './demo.service';
+import { ApolloService } from './apollo.service';
+
+// helper to build a valid pulse check API response
+function makePulseCheckResponse(questions: any[] = [], meta: any = null) {
+  return {
+    data: {
+      pulseCheck: {
+        questions,
+        meta,
+      }
+    }
+  };
+}
+
+const VALID_QUESTIONS = [
+  { id: 7, name: 'Q1', choices: [{ id: 1, name: 'Yes' }, { id: 2, name: 'No' }] },
+  { id: 8, name: 'Q2', choices: [{ id: 3, name: 'Yes' }, { id: 4, name: 'No' }] },
+];
+
+const VALID_META = { teamId: 100, teamName: 'Team A', contextId: 200 };
 
 describe('FastFeedbackService', () => {
   let service: FastFeedbackService;
-  let requestSpy: jasmine.SpyObj<RequestService>;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
-  const testUtils = new TestUtils();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -23,21 +42,30 @@ describe('FastFeedbackService', () => {
           useClass: TestUtils,
         },
         {
-          provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post'])
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', {
+            graphQLFetch: of({}),
+            graphQLMutate: of({}),
+          }),
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['modal'])
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            fastFeedbackModal: Promise.resolve(),
+          }),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['set', 'get'])
-        }
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['set', 'get']),
+        },
+        {
+          provide: DemoService,
+          useValue: jasmine.createSpyObj('DemoService', ['fastFeedback', 'normalResponse']),
+        },
       ]
     });
     service = TestBed.inject(FastFeedbackService);
-    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
   });
@@ -46,99 +74,102 @@ describe('FastFeedbackService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should get fastfeedback from API', () => {
-    requestSpy.get.and.returnValue(of({}));
-    service["_getFastFeedback"]().subscribe();
-    expect(requestSpy.get.calls.count()).toBe(1);
+  it('should fetch pulse check data from API', () => {
+    apolloSpy.graphQLFetch.and.returnValue(of({}));
+    service['_getFastFeedback']().subscribe();
+    expect(apolloSpy.graphQLFetch).toHaveBeenCalledTimes(1);
   });
-
-  /*it('should open fastfeedback modal', () => {
-    service.fastFeedbackModal();
-    expect(notificationSpy.modal.calls.count()).toBe(1);
-  });*/
 
   describe('when testing pullFastFeedback()', () => {
-    it('should pop up modal', () => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          slider: {
-            length: 1
-          },
-          meta: {
-            any: 'data'
-          }
-        }
-      }));
+    it('should open modal and set lock when pulse check data is valid', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
+      storageSpy.get.and.returnValue(false); // fastFeedbackOpening = false
+
+      service.pullFastFeedback().subscribe(() => {
+        // should set fastFeedbackOpening = true
+        expect(storageSpy.set).toHaveBeenCalledWith('fastFeedbackOpening', true);
+        // should call fastFeedbackModal
+        expect(notificationSpy.fastFeedbackModal).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should NOT release the lock after modal is opened (fire-and-forget)', fakeAsync(() => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
       storageSpy.get.and.returnValue(false);
-      service.pullFastFeedback().subscribe(res => {
-        expect(storageSpy.set.calls.count()).toBe(1);
-        expect(notificationSpy.modal.calls.count()).toBe(1);
+
+      service.pullFastFeedback().subscribe();
+      tick();
+
+      // lock is set to true and never released by the service
+      const setCalls = storageSpy.set.calls.allArgs();
+      const lockCalls = setCalls.filter(args => args[0] === 'fastFeedbackOpening');
+      expect(lockCalls.length).toBe(1);
+      expect(lockCalls[0]).toEqual(['fastFeedbackOpening', true]);
+    }));
+
+    it('should not open modal when fastFeedbackOpening is already true', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
+      storageSpy.get.and.returnValue(true); // lock already held
+
+      service.pullFastFeedback().subscribe(() => {
+        expect(notificationSpy.fastFeedbackModal).not.toHaveBeenCalled();
       });
     });
 
-    it('should not pop up modal when slider object length is 0', () => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          slider: {
-            length: 0
-          }
-        }
-      }));
+    it('should not open modal when pulseCheck data is empty', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of({ data: { pulseCheck: null } }));
       storageSpy.get.and.returnValue(false);
-      service.pullFastFeedback().subscribe(res => {
-        expect(storageSpy.set.calls.count()).toBe(0);
-        expect(notificationSpy.modal.calls.count()).toBe(0);
+
+      service.pullFastFeedback().subscribe(() => {
+        expect(notificationSpy.fastFeedbackModal).not.toHaveBeenCalled();
       });
     });
 
-    it('should not pop up modal when get storage returns false', () => {
-      requestSpy.get.and.returnValue(throwError(''));
+    it('should not open modal when questions are empty', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse([], VALID_META)));
       storageSpy.get.and.returnValue(false);
-      service.pullFastFeedback().subscribe(res => {
-        expect(storageSpy.set.calls.count()).toBe(0);
-        expect(notificationSpy.modal.calls.count()).toBe(0);
+
+      service.pullFastFeedback().subscribe(() => {
+        expect(notificationSpy.fastFeedbackModal).not.toHaveBeenCalled();
       });
     });
 
-    it('should not popup modal when slider & meta are not available', () => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          slider: undefined,
-          meta: undefined,
-        }
-      }));
+    it('should not open modal when meta is empty', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, null)));
+      storageSpy.get.and.returnValue(false);
 
-      service.pullFastFeedback().subscribe(res => {
-        expect(notificationSpy.modal).not.toHaveBeenCalled();
+      service.pullFastFeedback().subscribe(() => {
+        expect(notificationSpy.fastFeedbackModal).not.toHaveBeenCalled();
       });
     });
 
-    it('should not popup modal when slider is not available', () => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          slider: [],
-          meta: { hasValue: true },
-        }
-      }));
+    it('should release lock on modal open error', fakeAsync(() => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
+      storageSpy.get.and.returnValue(false);
+      notificationSpy.fastFeedbackModal.and.returnValue(Promise.reject('modal error'));
 
-      service.pullFastFeedback().subscribe(res => {
-        expect(notificationSpy.modal).not.toHaveBeenCalled();
-      });
-    });
+      service.pullFastFeedback().subscribe();
+      tick(); // resolve rejected promise
 
-    it('should not popup modal when meta is not available', () => {
-      requestSpy.get.and.returnValue(of({
-        data: {
-          slider: [1, 2],
-          meta: undefined,
-        }
-      }));
+      const setCalls = storageSpy.set.calls.allArgs();
+      const lockCalls = setCalls.filter(args => args[0] === 'fastFeedbackOpening');
+      // first set to true, then released to false on error
+      expect(lockCalls).toEqual([
+        ['fastFeedbackOpening', true],
+        ['fastFeedbackOpening', false],
+      ]);
+    }));
+  });
 
-      service.pullFastFeedback().subscribe(res => {
-        expect(notificationSpy.modal).not.toHaveBeenCalled();
+  describe('when testing submit()', () => {
+    it('should call graphQLMutate with answers and params', () => {
+      const answers = [{ questionId: 7, choiceId: 1 }];
+      const params = { teamId: 100, contextId: 200 };
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { submitPulseCheck: true } }));
+
+      service.submit(answers, params).subscribe(() => {
+        expect(apolloSpy.graphQLMutate).toHaveBeenCalledTimes(1);
       });
     });
   });
-
-
 });
