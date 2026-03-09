@@ -21,7 +21,8 @@
     box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.24);
     border-radius: 8px;
     padding: 43px 18px;
-    min-width: 576px;
+    width: 100%;
+    max-width: 1200px;
     min-height: 675px;
     margin-bottom: 40px;
 
@@ -123,7 +124,8 @@
     .exp-card-container {
       border-radius: 0;
       padding: 20px;
-      min-width: auto;
+      width: 100%;
+      min-height: auto;
       box-shadow: none;
 
       .cards {
@@ -133,6 +135,7 @@
         .exp-card {
           margin: 0;
           margin-bottom: 20px;
+          width: 100%;
         }
       }
     }
@@ -145,14 +148,39 @@
   }
 }
 
-@media (min-width: 768px) {
-  .exp-card-container {
-    width: 790px;
+// Responsive breakpoints for card container
+@media (max-width: 575px) {
+  .experience-page .exp-card-container {
+    width: 100%;
+    min-width: auto;
+    padding: 20px 10px;
   }
 }
 
-@media (min-width: 960px) {
-  .exp-card-container {
-    width: 1016px;
+@media (min-width: 576px) and (max-width: 767px) {
+  .experience-page .exp-card-container {
+    width: 100%;
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 959px) {
+  .experience-page .exp-card-container {
+    width: 100%;
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1199px) {
+  .experience-page .exp-card-container {
+    width: 100%;
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .experience-page .exp-card-container {
+    width: 100%;
+    max-width: 1140px;
   }
 }

@@ -35,6 +35,7 @@ export class ReviewDesktopPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.utils.setPageTitle('Reviews - Practera');
     this.assessmentService.assessment$.subscribe(res => this.assessment = res);
     this.assessmentService.submission$.subscribe(res => this.submission = res);
     this.assessmentService.review$.subscribe(res => this.review = res);
@@ -115,13 +116,13 @@ export class ReviewDesktopPage implements OnInit {
           await this.assessmentService.pullFastFeedback();
         }
 
-        await this.assessmentService.fetchAssessment(
+        await firstValueFrom(this.assessmentService.fetchAssessment(
           this.assessment.id,
           'review',
           0,
           this.currentReview.contextId,
           this.submission.id
-        ).toPromise();
+        ));
         this.reviewService.getReviews();
 
         await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list

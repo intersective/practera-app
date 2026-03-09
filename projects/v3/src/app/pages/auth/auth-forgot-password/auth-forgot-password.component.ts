@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { AuthService } from '@v3/services/auth.service';
@@ -8,7 +8,7 @@ import { AuthService } from '@v3/services/auth.service';
   templateUrl: 'auth-forgot-password.component.html',
   styleUrls: ['auth-forgot-password.component.scss']
 })
-export class AuthForgotPasswordComponent {
+export class AuthForgotPasswordComponent implements OnInit {
   email = '';
   // variable to control the label of the button
   isSending = false;
@@ -18,6 +18,10 @@ export class AuthForgotPasswordComponent {
     private authService: AuthService,
     private utils: UtilsService
   ) {}
+
+  ngOnInit() {
+    this.utils.setPageTitle('Forgot Password - Practera');
+  }
 
   async send(keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {

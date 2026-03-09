@@ -1,3 +1,6 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <!-- Skip navigation links for WCAG 2.4.1 -->
+  <a href="#main-content" class="skip-link" (click)="handleSkipLink($event, 'main-content')">Skip to main content</a>
+  <a href="#main-navigation" class="skip-link" (click)="handleSkipLink($event, 'main-navigation')">Skip to navigation</a>
+  <ion-router-outlet id="main-content" tabindex="-1"></ion-router-outlet>
 </ion-app>

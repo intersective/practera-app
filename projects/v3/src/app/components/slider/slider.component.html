@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <ng-container class="reviewer-feedback" *ngIf="review?.comment">
+    <ng-container class="reviewer-feedback" *ngIf="review?.comment && question.canComment === true">
       <ion-card class="feedback-card">
         <ion-card-header>
           <ion-card-title class="feedback-title">
