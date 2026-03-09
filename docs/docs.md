@@ -8,3 +8,6 @@ This is practera documentation with more informations.
 ### Components
 - [Chat Room Component](./components/chatRoomComponent.md)
 - [Chat List Component](./components/chatListComponent.md)
+
+### Directives
+- [Toggle Label Directive](./directives/toggleLabelDirective.md)

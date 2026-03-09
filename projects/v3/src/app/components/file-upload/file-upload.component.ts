@@ -174,8 +174,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    const type = this.doReview ? 'answer' : undefined;
-
     // reset errors
     this.errors = [];
     const fileInput: TusFileResponse = {
@@ -191,7 +189,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     };
 
     this.uploadedFile = fileInput;
+    const type = this.doReview ? 'answer' : undefined;
     this.onChange('', type);
+
     if (response?.status !== 200) {
       this.errors.push('File upload failed, please try again later.');
     }
@@ -225,7 +225,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.submitActions$.next(action);
   }
 
-  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
+  // if 'type' is set, this is a reviewer's action (review mode); if not set, it's an assessment submission (assessment mode)
   onChange(value, type?: 'comment' | 'answer') {
     // set changed value (answer or comment)
     if (type) {  // for reviewing
@@ -244,6 +244,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }
 
     this.control.setValue(this.innerValue);
+    this.control.markAsTouched();
     this.triggerSave();
   }
 
@@ -292,9 +293,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if (this.doAssessment === true) {
       this.submission.answer = null;
       this.onChange('');
-    }
-
-    if (this.doReview === true) {
+    } else if (this.doReview === true) {
       this.review.answer = null;
       this.onChange('', 'answer');
     }

@@ -246,14 +246,14 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
     return choiceId.toString();
   }
 
-  // Get slider value for submission (learner's answer)
+  // Get slider value for submission (Learner answer)
   getSubmissionSliderValue(): number {
     if (!this.submission?.answer) return this.sliderMin;
 
     return typeof this.submission.answer === 'number' ? this.submission.answer : this.sliderMin;
   }
 
-  // Get slider value for review (expert's answer)
+  // Get slider value for review (Reviewer answer)
   getReviewSliderValue(): number {
     if (!this.innerValue?.answer) return this.sliderMin;
 
@@ -286,4 +286,17 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   pinFormatter = (value: number): string => {
     return value.toString();
   };
+
+  // helper methods to check if answers exist
+  hasSubmissionAnswer(): boolean {
+    return this.submission?.answer !== null && this.submission?.answer !== undefined;
+  }
+
+  hasReviewAnswer(): boolean {
+    return this.review?.answer !== null && this.review?.answer !== undefined;
+  }
+
+  hasAnyAnswer(): boolean {
+    return this.hasSubmissionAnswer() || this.hasReviewAnswer();
+  }
 }
