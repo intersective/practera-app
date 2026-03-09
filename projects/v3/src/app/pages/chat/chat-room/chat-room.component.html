@@ -1,6 +1,8 @@
 <ion-header mode="ios" aria-label="chat room">
   <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
-    <ion-icon *ngIf="isMobile" name="arrow-back" (click)="back()" color="primary" slot="start" margin-start></ion-icon>
+    <ion-button *ngIf="isMobile" fill="clear" (click)="back()" slot="start" aria-label="Go back">
+      <ion-icon name="arrow-back" color="primary" slot="icon-only" aria-hidden="true"></ion-icon>
+    </ion-button>
     <ion-title class="ion-text-center"
       [ngClass]="{ 'subtitle-2': !isMobile }"
       aria-live="polite"
@@ -25,7 +27,7 @@
 <ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true">
 
   <div *ngIf="loadingChatMessages" class="ion-text-center" aria-label="loading message">
-    <ion-spinner></ion-spinner>
+    <ion-spinner role="status" aria-live="polite" aria-label="Loading chat messages"></ion-spinner>
   </div>
 
   <div *ngIf="!messageList.length && !loadingChatMessages" class="ion-text-center not-started-empty-status" aria-live="polite">
@@ -41,7 +43,7 @@
     <ion-item *ngFor="let message of messageList" color="light">
       <ng-container *ngIf="isLastMessage(message)">
         <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">
-          <img [src]="message.senderAvatar" alt="sender avatar">
+          <img [src]="message.senderAvatar" [attr.alt]="message.senderName ? message.senderName + ' avatar' : 'User avatar'">
         </ion-avatar>
       </ng-container>
 
@@ -60,8 +62,8 @@
           </ng-container>
 
           <ng-container *ngIf="message.message || !message.file">
-            <quill-view-html id="message-content"
-              [content]="message?.message"
+            <quill-view-html [id]="'message-content-' + message.uuid"
+              [content]="getProcessedMessageContent(message?.message)"
               [sanitize]="true"
               tabindex="0"
             ></quill-view-html>
@@ -70,15 +72,15 @@
           <ng-container *ngIf="message?.file?.type">
             <ng-container *ngIf="message?.file?.type?.includes('video')">
               <ng-container *ngIf="message?.file?.type === 'video/mp4'; else nonMp4Format">
-                <div id="message-content" class="label"
+                <div [id]="'message-content-file-' + message.uuid" class="label"
                   (click)="preview(message.file)"
                   (keydown)="preview(message.file, $event)"
                   tabindex="0"
                   role="button">
                   <p class="label" [innerHTML]="message.file.name"></p>
-                  <div id="inner-box">
+                  <div [attr.id]="'inner-box-' + message.uuid">
                     <p>
-                      <ion-icon name="play-circle"></ion-icon>
+                      <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
                     </p>
                   </div>
                 </div>
@@ -95,6 +97,7 @@
                 (keydown)="preview(message.file, $event)"
                 tabindex="0"
                 role="button"
+                [attr.aria-label]="'Preview image: ' + (message.file?.name || 'image')"
               ></div>
             </ng-container>
 
@@ -132,8 +135,9 @@
 
   <ng-container *ngIf="hasUnreadMessages">
     <ion-fab class="scroll-to-bottom" vertical="bottom" horizontal="end" slot="fixed">
-      <ion-fab-button (click)="autoScrollToBottom()">
-        <ion-icon name="arrow-down"></ion-icon>
+      <ion-fab-button (click)="autoScrollToBottom()"
+        aria-label="Scroll to bottom" i18n-aria-label>
+        <ion-icon name="arrow-down" aria-hidden="true"></ion-icon>
       </ion-fab-button>
     </ion-fab>
   </ng-container>
@@ -178,21 +182,41 @@
           <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment?.type?.includes('image')">
             <div class="image" [ngClass]="{'mobile': isMobile}">
               <img [src]="attachment?.preview"
-                alt="attachment preview"
-                (click)="preview(attachment)">
-              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
-                <ion-icon name="close"></ion-icon>
+                [alt]="attachment?.name || 'Attachment preview'"
+                (click)="preview(attachment)"
+                tabindex="0"
+                role="button"
+                [attr.aria-label]="'Preview ' + (attachment?.name || 'attachment')"
+                (keydown.enter)="preview(attachment)"
+                (keydown.space)="preview(attachment); $event.preventDefault()">
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
+                (keydown.enter)="removeSelectAttachment(attachment, i, true)"
+                (keydown.space)="removeSelectAttachment(attachment, i, true); $event.preventDefault()">
+                <ion-icon name="close" aria-hidden="true"></ion-icon>
               </span>
             </div>
           </ion-col>
           <!-- video preview -->
           <ion-col size="4" size-lg="2" class="ion-no-padding" *ngIf="attachment.type && attachment.type.includes('video')">
             <div class="video" [ngClass]="{'mobile': isMobile}">
-              <div class="play-icon" (click)="preview(attachment)">
-                <ion-icon name="play" color="ocean"></ion-icon>
+              <div class="play-icon" (click)="preview(attachment)"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'Preview ' + (attachment?.name || 'attachment')"
+                (keydown.enter)="preview(attachment)"
+                (keydown.space)="preview(attachment); $event.preventDefault()">
+                <ion-icon name="play" color="ocean" aria-hidden="true"></ion-icon>
               </div>
-              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
-                <ion-icon name="close"></ion-icon>
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
+                (keydown.enter)="removeSelectAttachment(attachment, i, true)"
+                (keydown.space)="removeSelectAttachment(attachment, i, true); $event.preventDefault()">
+                <ion-icon name="close" aria-hidden="true"></ion-icon>
               </span>
             </div>
           </ion-col>
@@ -208,8 +232,13 @@
                 </ion-label>
               </ion-item>
               <div class="overlay" (click)="preview(attachment)"></div>
-              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)">
-                <ion-icon name="close"></ion-icon>
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
+                (keydown.enter)="removeSelectAttachment(attachment, i, true)"
+                (keydown.space)="removeSelectAttachment(attachment, i, true); $event.preventDefault()">
+                <ion-icon name="close" aria-hidden="true"></ion-icon>
               </span>
             </div>
           </ion-col>
@@ -219,8 +248,9 @@
     <!-- Action button section -->
     <ion-row nowrap class="ion-no-padding ion-align-items-center ion-justify-content-between action-buttons">
       <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
-        <ion-button [disabled]="selectedAttachments.length > 0" (click)="attachmentSelectPopover($event)" fill="clear" class="ion-no-padding">
-          <ion-icon name="attach" slot="icon-only"></ion-icon>
+        <ion-button [disabled]="selectedAttachments.length > 0" (click)="attachmentSelectPopover($event)" fill="clear" class="ion-no-padding"
+          [attr.aria-label]="'Attach file'" i18n-aria-label>
+          <ion-icon name="attach" slot="icon-only" aria-hidden="true"></ion-icon>
         </ion-button>
       </ion-col>
       <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">

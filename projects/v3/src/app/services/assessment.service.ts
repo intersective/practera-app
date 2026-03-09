@@ -52,6 +52,7 @@ export interface Assessment {
   isOverdue?: boolean;
   groups: Array<Group>;
   pulseCheck: boolean;
+  hasReviewRating: boolean; // assessment level setting to enable review rating
   allowResubmit?: boolean; // indicator to show resubmit button
 }
 
@@ -138,7 +139,11 @@ export class AssessmentService {
       .graphQLFetch(
         `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck allowResubmit
+          id name type
+          description dueDate isTeam
+          pulseCheck
+          hasReviewRating
+          allowResubmit
           groups {
             name description
             questions{
@@ -265,6 +270,7 @@ export class AssessmentService {
         ? this.utils.timeComparer(data.assessment.dueDate) < 0
         : false,
       pulseCheck: data.assessment.pulseCheck,
+      hasReviewRating: data.assessment.hasReviewRating,
       allowResubmit: data.assessment.allowResubmit,
       groups: [],
     };

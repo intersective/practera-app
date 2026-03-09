@@ -44,6 +44,7 @@ export class AuthResetPasswordComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Reset Password - Practera');
     this.key = this.route.snapshot.paramMap.get('key');
     this.email = this.route.snapshot.paramMap.get('email');
 
