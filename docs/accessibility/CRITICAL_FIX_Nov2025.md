@@ -29,6 +29,9 @@ Two critical issues were discovered during staging verification:
 
 ### CSS Changes (`v3.page.scss`)
 
+<<<<<<< HEAD
+Applied the screen-reader-only pattern to hide `ion-label` elements visually while keeping them accessible:
+=======
 **Initial Approach (Had Issues):**
 - Tried screen-reader-only pattern (position: absolute, 1px width/height)
 - **Problem 1:** Labels still took up space in flex layout causing excessive left padding
@@ -36,10 +39,41 @@ Two critical issues were discovered during staging verification:
 
 **Final Solution:**
 Use `display: none` on `ion-label` elements since `aria-label` on the parent link/button provides the accessible name:
+>>>>>>> 2.4.y.z/WCAG-2.2-AA
 
 ```scss
 // Menu link styling for accessibility
 a.menu-link {
+<<<<<<< HEAD
+  // ... existing styles ...
+  
+  // Hide ion-label visually but keep it accessible to screen readers
+  ion-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+// For menu items without a.menu-link (like Settings), hide ion-label for screen readers only
+&:not(:has(a.menu-link)) {
+  ion-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+=======
   display: flex;
   align-items: center;
   width: 100%;
@@ -68,6 +102,7 @@ a.menu-link {
 &:not(:has(a.menu-link)) {
   ion-label {
     display: none;
+>>>>>>> 2.4.y.z/WCAG-2.2-AA
   }
 }
 ```
@@ -128,5 +163,3 @@ After deployment, verify:
 **Fix Date:** November 4, 2025  
 **Tested:** Pending deployment  
 **WCAG Criteria:** 2.4.4 (Link Purpose), 4.1.2 (Name, Role, Value)
-
-

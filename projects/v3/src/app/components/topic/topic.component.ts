@@ -117,7 +117,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
       } else {
         this.videoSrc = null;
       }
-
+      this.buttonDisabled$.next(false);
     }
 
     if (changes.topic?.currentValue?.title) {

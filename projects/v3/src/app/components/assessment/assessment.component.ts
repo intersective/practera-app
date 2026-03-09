@@ -19,6 +19,8 @@ import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
+import { ModalController } from '@ionic/angular';
 
 const MIN_SCROLLING_PAGES = 8; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per paginated view (controls pagination granularity)
@@ -61,7 +63,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * reading a submission or feedback. This actually
    * means the current user is the user who should "do" this assessment
    *
-   * 'reivew' is for user to do review for this assessment. This means the
+   * 'review' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
   @Input() action: 'assessment' | 'review';
@@ -71,7 +73,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() activityId?: number;
   @Input() submission?: Submission;
   @Input() review: AssessmentReview;
-  @Input() isSinglePage?: boolean = false;
+  @Input() isSinglePage?: boolean = false; // forces single page display for mobile view or restricted access mode (review action)
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -149,6 +151,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
     private cdr: ChangeDetectorRef,
+    private modalController: ModalController,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -191,6 +194,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.pageIndex > 0) {
       this.pageIndex--;
       this.scrollActivePageIntoView();
+      this.setSubmissionDisabled();
     }
   }
 
@@ -199,6 +203,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (this.pageIndex < this.pageCount - 1) {
       this.pageIndex++;
       this.scrollActivePageIntoView();
+      this.setSubmissionDisabled();
     }
   }
 
@@ -212,6 +217,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (i >= 0 && i < this.pageCount) {
       this.pageIndex = i;
       this.scrollActivePageIntoView();
+      this.setSubmissionDisabled();
     }
   }
 
@@ -408,18 +414,23 @@ Best regards`;
     );
   }
 
-  ngOnChanges(simpleChanges: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (!this.assessment) {
       return;
     }
 
     this._initialise();
 
-    if (simpleChanges.assessment || simpleChanges.submission || simpleChanges.review) {
+    if (changes.assessment || changes.submission || changes.review) {
+      // reset button state when assessment changes
+      this.btnDisabled$.next(false);
+      this.pageRequiredCompletion = [];
+
       this._handleSubmissionData();
       this._populateQuestionsForm();
       this._handleReviewData();
-      this._populateFormWithAnswers();
+      this._prefillForm();
+      // this._populateFormWithAnswers(); // deprecated
       this._preventSubmission();
     }
 
@@ -1230,6 +1241,7 @@ Best regards`;
     }, 50);
   }
 
+  /* deprecated, but keep for reference */
   private _populateFormWithAnswers() {
     // Populate form with submission answers
     if (this.submission?.answers && this.action === 'assessment') {
@@ -1337,5 +1349,20 @@ Best regards`;
    */
   shouldShowRequiredIndicator(question: Question): boolean {
     return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
+  }
+
+  /**
+   * open the project brief modal for the submitter's team
+   */
+  async showProjectBrief(): Promise<void> {
+    if (!this.review?.projectBrief) {
+      return;
+    }
+    const modal = await this.modalController.create({
+      component: ProjectBriefModalComponent,
+      componentProps: { projectBrief: this.review.projectBrief },
+      cssClass: 'project-brief-modal',
+    });
+    await modal.present();
   }
 }

@@ -1,0 +1,13 @@
+<div class="snow-overlay" aria-hidden="true">
+  <div
+    *ngFor="let flake of snowflakes; trackBy: trackByFlakeId"
+    class="snowflake"
+    [ngStyle]="{
+      '--size': flake.size + 'px',
+      '--left': flake.left + '%',
+      '--delay': flake.delay + 's',
+      '--duration': flake.duration + 's',
+      '--opacity': flake.opacity
+    }"
+  ></div>
+</div>

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { environment } from '@v3/environments/environment';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
   Achievement,
@@ -15,9 +16,10 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
+import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 @Component({
   selector: "app-home",
@@ -59,6 +61,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('activities', { static: false }) activities!: ElementRef;
   pulseCheckSkills: PulseCheckSkill[] = [];
 
+  // activity search/filter
+  activitySearchText = '';
+  filteredMilestones: Milestone[] = null;
+
+  // project brief data from team storage
+  projectBrief: ProjectBrief | null = null;
+  showProjectHub = false;
+
   // Expose Math to template
   Math = Math;
 
@@ -75,6 +85,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
+    private modalController: ModalController,
     private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
@@ -123,6 +134,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       ).subscribe(
         (milestones) => {
           this.milestones = milestones;
+          this.filterActivities(); // apply filter when load
         }
       );
 
@@ -220,9 +232,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.isExpertWithoutTeam = role === 'mentor' && !teamId;
 
     this.experience = this.storageService.get("experience");
+    this.showProjectHub = this.storageService.getFeature('showProjectHub');
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    const user = this.storageService.getUser();
+
+    // load project brief from user storage
+    this.projectBrief = user.projectBrief || null;
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
@@ -427,6 +445,40 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     await alert.present();
   }
 
+  /**
+   * @name showProjectBrief
+   * @description opens modal to display project brief details
+   */
+  async showProjectBrief(): Promise<void> {
+    if (!this.projectBrief) {
+      return;
+    }
+
+    const cssClass = this.isMobile
+      ? ['project-brief-modal', 'modal-fullscreen']
+      : 'project-brief-modal';
+
+    const modal = await this.modalController.create({
+      component: ProjectBriefModalComponent,
+      componentProps: {
+        projectBrief: this.projectBrief
+      },
+      cssClass
+    });
+
+    await modal.present();
+  }
+
+  /**
+   * @name openProjectBriefExternal
+   * @description opens project brief in external projecthub application with authentication token
+   */
+  openProjectBriefExternal(): void {
+    const apikey = this.storageService.getUser().apikey;
+    const url = `${environment.projecthub}login?token=${apikey}`;
+    window.open(url, '_blank');
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
@@ -520,18 +572,22 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
           const action = this.utils.ucfirst(guideline.action);
           const isMobile = this.utils.isMobile();
           if (topicId) {
+            // check if required IDs are available for topic route
+            const isLinkAvailable = activityId && topicId;
             routes.push({
-              path: isMobile
-                ? `/v3/topic-mobile/${activityId}/${topicId}`
-                : `/v3/activity-desktop/${activityId}/${topicId}`,
-              label: `<i><b>${action}</b></i> ${guideline.name}`,
+              path: isLinkAvailable ? (isMobile
+                ? `/topic-mobile/${activityId}/${topicId}`
+                : `/v3/activity-desktop/${activityId}/${topicId}`) : null,
+              label: `<i><b>${action}</b></i> ${guideline.name}${!isLinkAvailable ? ' (unavailable)' : ''}`,
             });
           } else if (assessmentId) {
+            // check if required IDs are available for assessment route
+            const isLinkAvailable = activityId && contextId && assessmentId;
             routes.push({
-              path: isMobile
-                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
-                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
-              label: `<i><b>${action}</b></i> ${guideline.name}`,
+              path: isLinkAvailable ? (isMobile
+                ? `/assessment-mobile/assessment/${activityId}/${contextId}/${assessmentId}`
+                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`) : null,
+              label: `<i><b>${action}</b></i> ${guideline.name}${!isLinkAvailable ? ' (unavailable)' : ''}`,
             });
           }
         }
@@ -546,5 +602,63 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         routes,
       },
     );
+  }
+
+  /**
+   * filter activities based on search text
+   * searches through activity title and description
+   */
+  filterActivities(): void {
+    if (!this.milestones) {
+      this.filteredMilestones = null;
+      return;
+    }
+
+    const searchText = this.activitySearchText.toLowerCase().trim();
+
+    if (!searchText) {
+      this.filteredMilestones = this.milestones;
+      return;
+    }
+
+    // filter milestones and their activities
+    this.filteredMilestones = this.milestones
+      .map(milestone => {
+        const filteredActivities = milestone.activities.filter(activity => {
+          const titleMatch = activity.name?.toLowerCase().includes(searchText);
+          const descriptionMatch = activity.description?.toLowerCase().includes(searchText);
+          return titleMatch || descriptionMatch;
+        });
+
+        // only include milestone if it has matching activities
+        if (filteredActivities.length > 0) {
+          return {
+            ...milestone,
+            activities: filteredActivities
+          };
+        }
+        return null;
+      })
+      .filter(milestone => milestone !== null);
+  }
+
+  /**
+   * clear search input and reset filter
+   */
+  clearSearch(): void {
+    this.activitySearchText = '';
+    this.filterActivities();
+  }
+
+  /**
+   * get total count of filtered activities across all milestones
+   */
+  getFilteredActivityCount(): number {
+    if (!this.filteredMilestones) {
+      return 0;
+    }
+    return this.filteredMilestones.reduce((total, milestone) => {
+      return total + (milestone.activities?.length || 0);
+    }, 0);
   }
 }

@@ -42,11 +42,12 @@
   <div>
     <fieldset [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
       <legend class="for-accessibility" [id]="'multiple-choice-legend-' + question.id">{{ question.name }}</legend>
-      <ion-list class="ion-no-padding" role="group" [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
+      <ion-list class="ion-no-padding"
+        role="group"
+        [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
             lines='none'>
-
             <ion-checkbox color="success"
               [checked]="innerValue?.includes(choice.id)"
               [value]="choice.id"
@@ -87,7 +88,9 @@
 <ng-container *ngIf="doReview">
   <fieldset [attr.aria-labelledby]="'multiple-choice-question-' + question.id" *ngIf="question.canAnswer">
     <legend class="for-accessibility" [id]="'multiple-choice-review-legend-' + question.id">{{ question.name }}</legend>
-    <ion-list class="ion-no-padding" role="group" [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
+    <ion-list class="ion-no-padding"  *ngIf="question.canAnswer"
+      role="group"
+      [attr.aria-labelledby]="'multiple-choice-question-' + question.id">
       <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
         <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
       </ion-list-header>
