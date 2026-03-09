@@ -7,8 +7,29 @@
   border-top: 1px solid var(--practera-grey-25);
   background: white;
 
-  ion-button.ion-focused {
-    border: 1px solid black;
-    border-radius: 8px;
+  ion-button {
+    min-width: 200px;
+    flex: 0 1 auto;
+
+    // restore padding that was removed by global button reset
+    --padding-top: 13px;
+    --padding-bottom: 13px;
+    min-height: 44px; // WCAG 2.5.8 target size minimum
+
+    &.ion-focused {
+      border: 1px solid black;
+      border-radius: 8px;
+    }
+
+    // target shadow DOM button to restore padding
+    &::part(native) {
+      padding-top: 13px;
+      padding-bottom: 13px;
+    }
+
+    // ensure proper sizing on desktop
+    @media (min-width: 768px) {
+      min-width: 240px;
+    }
   }
 }
