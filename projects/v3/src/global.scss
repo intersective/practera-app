@@ -84,12 +84,12 @@ ion-item-divider {
     // Use darker background for WCAG contrast compliance (4.5:1 for normal text)
     // color-mix creates darker shade: 60% primary + 40% dark green
     background-color: color-mix(in srgb, var(--ion-color-primary) 60%, #1a4d2a);
-    
+
     // Fallback for browsers without color-mix support
     @supports not (color-mix(in srgb, white, black)) {
       background-color: var(--ion-color-primary-shade, #2a6d3f);
     }
-    
+
     color: white;
     text-decoration: none;
     z-index: 9999;
@@ -173,7 +173,7 @@ p, span, div, ion-label, ion-text {
 .icon-button {
   background: none;
   border: none;
-  padding: 0;
+  padding: 0; // WCAG 2.5.8 target size compliance
   cursor: pointer;
   display: inline-flex;
   align-items: center;
