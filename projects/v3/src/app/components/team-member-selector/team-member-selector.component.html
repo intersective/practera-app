@@ -37,7 +37,7 @@
       <ion-radio-group
         role="radiogroup"
         [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-        [value]="submission.answer"
+        [value]="innerValue"
         #answerEle
         (ionChange)="onChange(answerEle.value)">
         <ion-item lines="none"
@@ -50,7 +50,14 @@
             [value]="teamMember.key"
             [disabled]="control.disabled"
           ></ion-radio>
-          <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+          <ion-label class="white-space-normal body-2 black"
+            [innerHTML]="teamMember.userName"
+            [appToggleLabel]="onLabelToggle"
+            [toggleId]="teamMember.key"
+            [toggleDisabled]="control.disabled"
+            role="button"
+            tabindex="0">
+          </ion-label>
         </ion-item>
       </ion-radio-group>
     </ion-list>
@@ -78,7 +85,13 @@
             [value]="teamMember.key"
             [disabled]="control.disabled">
             <ion-label class="white-space-normal body-2 black">
-              <span [innerHTML]="teamMember.userName"></span>
+              <span [innerHTML]="teamMember.userName"
+                [appToggleLabel]="onLabelToggleReview"
+                [toggleId]="teamMember.key"
+                [toggleDisabled]="control.disabled"
+                role="button"
+                tabindex="0">
+              </span>
               <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
                 <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>
                   Learner's answer
@@ -86,6 +99,7 @@
               </p>
             </ion-label>
           </ion-radio>
+
         </ion-item>
       </ion-radio-group>
     </ion-list>
