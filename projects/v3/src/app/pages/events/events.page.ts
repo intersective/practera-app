@@ -43,6 +43,7 @@ export class EventsPage implements OnInit {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Events - Practera');
     // get activity and event id from route
     this.activityId = +this.route.snapshot.paramMap.get('activity_id');
     this.eventId = +this.route.snapshot.paramMap.get('event_id');

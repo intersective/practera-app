@@ -5,8 +5,9 @@
       i18n="user feedback form">Pulse Check</ion-title>
     <ion-buttons slot="end"
       *ngIf="closable === true">
-      <ion-button (click)="dismiss({ from: 'ui' })">
-        <ion-icon name="close"></ion-icon>
+      <ion-button (click)="dismiss({ from: 'ui' })"
+        aria-label="Close pulse check" i18n-aria-label>
+        <ion-icon name="close" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -45,18 +46,23 @@
       <ion-card *ngFor="let question of currentPageQuestions"
         class="ion-text-left ion-no-margin ion-margin-bottom ion-padding question-card"
         [ngClass]="{'ion-padding-horizontal': !isMobile }">
-        <ion-list-header class="question-title">
-          <ion-label class="ion-margin-end">
-            <h2 [innerHTML]="question.name"></h2>
-            <p><i [innerHTML]="question.description"></i></p>
-          </ion-label>
-          <ion-text class="required-mark"
-            [ngClass]="{'contrast': isRedColor}"
-            *ngIf="question.isRequired">*</ion-text>
-        </ion-list-header>
+        <fieldset [attr.aria-labelledby]="'fast-feedback-question-' + question.id">
+          <legend class="for-accessibility" [id]="'fast-feedback-question-' + question.id">{{ question.name }}</legend>
+          <ion-list-header class="question-title">
+            <ion-label>
+              <h2 [innerHTML]="question.name" [id]="'fast-feedback-question-title-' + question.id"></h2>
+              <p><i [innerHTML]="question.description"></i></p>
+            </ion-label>
+            <ion-text class="required-mark"
+              [ngClass]="{'contrast': isRedColor}"
+              *ngIf="question.isRequired" aria-label="required">*</ion-text>
+          </ion-list-header>
 
-        <ion-radio-group [formControlName]="question.id"
-          class="ion-padding-start ion-padding-end ion-padding-bottom">
+          <ion-radio-group
+            [formControlName]="question.id"
+            role="radiogroup"
+            [attr.aria-labelledby]="'fast-feedback-question-' + question.id"
+            class="ion-padding-start ion-padding-end ion-padding-bottom">
           <ion-item class="item-bottom-border choice-item"
             *ngFor="let choice of question.choices"
             lines="none"
@@ -79,6 +85,7 @@
             </ion-radio>
           </ion-item>
         </ion-radio-group>
+        </fieldset>
       </ion-card>
 
       <div *ngIf="showPagination"
@@ -150,11 +157,13 @@
           size="small"
           class="dot-button"
           [ngClass]="{'active': currentPage === pageIndex, 'completed': isPageCompleted(pageIndex)}"
-          (click)="goToPage(pageIndex)">
+          (click)="goToPage(pageIndex)"
+          [attr.aria-label]="'Go to page ' + (pageIndex + 1) + (isPageCompleted(pageIndex) ? ', completed' : '')"
+          i18n-aria-label>
           <span class="page-number">
             <ng-container *ngIf="currentPage === pageIndex">{{ pageIndex + 1 }}</ng-container>
             <ng-container *ngIf="currentPage !== pageIndex && isPageCompleted(pageIndex)">
-              <ion-icon name="checkmark-circle"></ion-icon>
+              <ion-icon name="checkmark-circle" aria-hidden="true"></ion-icon>
             </ng-container>
             <ng-container *ngIf="currentPage !== pageIndex && !isPageCompleted(pageIndex)">{{ pageIndex + 1 }}</ng-container>
           </span>

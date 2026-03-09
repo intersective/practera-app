@@ -30,3 +30,4 @@ projects/v3/src/environments/environment.prod.ts
 
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+output/

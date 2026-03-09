@@ -2,45 +2,69 @@
 
 <ng-container *ngIf="isDisplayOnly">
   <div class="likert-slider-container ion-padding display-only">
-    <ion-range
-      [min]="sliderMin"
-      [max]="sliderMax"
-      [step]="1"
-      [snaps]="true"
-      [ticks]="true"
-      [pin]="true"
-      [pinFormatter]="pinFormatter"
-      [value]="submission?.answer"
-      disabled
-      [attr.aria-labelledby]="'slider-question-' + question.id"
-      color="medium"
-      class="likert-range display-only-slider">
-    </ion-range>
+    <!-- Show slider when there's a submission answer -->
+    <div *ngIf="hasSubmissionAnswer(); else noSubmissionTemplate">
+      <ion-range
+        [min]="sliderMin"
+        [max]="sliderMax"
+        [step]="1"
+        [snaps]="true"
+        [ticks]="true"
+        [pin]="true"
+        [pinFormatter]="pinFormatter"
+        [value]="getSubmissionSliderValue()"
+        disabled
+        [attr.aria-labelledby]="'slider-question-' + question.id"
+        color="medium"
+        class="likert-range display-only-slider">
+      </ion-range>
 
-    <!-- Choice labels for display only -->
-    <div class="choice-labels display-only" *ngIf="generatedChoices.length">
-      <div
-        *ngFor="let choice of generatedChoices"
-        class="choice-label"
-        [ngClass]="{'selected': submission?.answer === choice.id}">
-        <span [innerHTML]="choice.name"></span>
+      <!-- Choice labels for display only -->
+      <div class="choice-labels display-only" *ngIf="generatedChoices.length">
+        <div *ngFor="let choice of generatedChoices" class="choice-label" [ngClass]="{'selected': submission?.answer === choice.id}">
+          <span [innerHTML]="choice.name"></span>
+        </div>
       </div>
     </div>
 
-    <!-- Answer indicators -->
-    <div class="answer-indicators" *ngIf="submission?.answer || review?.answer">
-      <ion-chip class="label orange" *ngIf="submission?.answer" i18n>
-        <ion-icon name="person" slot="start"></ion-icon>
-        Learner's answer: {{ getChoiceNameById(submission.answer) }}
-      </ion-chip>
-      <ion-chip class="label yellow black" *ngIf="review?.answer" i18n>
-        <ion-icon name="school" slot="start"></ion-icon>
-        Expert's answer: {{ getChoiceNameById(review.answer) }}
-      </ion-chip>
+    <!-- No submission template -->
+    <ng-template #noSubmissionTemplate>
+      <div class="no-answer-container">
+        <ion-card class="no-answer-card" color="light">
+          <ion-card-content class="ion-text-center">
+            <ion-icon name="help-circle-outline" color="medium" size="large"></ion-icon>
+            <p class="no-answer-text ion-margin-top" i18n>No answer provided</p>
+            <p class="no-answer-subtext" color="medium" i18n>The learner has not submitted an answer for this question.</p>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </ng-template>
+
+    <!-- Answer indicators section -->
+    <div class="answer-indicators">
+      <!-- Show answer chips when answers exist -->
+      <div *ngIf="hasSubmissionAnswer() || hasReviewAnswer()">
+        <ion-chip class="label orange spacer-right" *ngIf="hasSubmissionAnswer()" i18n>
+          <ion-icon name="person" slot="start"></ion-icon>
+          Learner's answer: {{ getChoiceNameById(submission.answer) }}
+        </ion-chip>
+
+        <ion-chip class="label yellow black" *ngIf="hasReviewAnswer()" i18n>
+          <ion-icon name="school" slot="start"></ion-icon>
+          Expert's answer: {{ getChoiceNameById(review.answer) }}
+        </ion-chip>
+      </div>
+
+      <!-- Show no answers message when neither exists -->
+      <div *ngIf="!hasAnyAnswer()" class="no-answers-container">
+        <ion-chip class="label tertiary" i18n>
+          <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+          No answers available yet
+        </ion-chip>
+      </div>
     </div>
 
-    <!-- Review feedback -->
-    <ng-container *ngIf="review?.comment">
+    <ng-container class="reviewer-feedback" *ngIf="review?.comment && question.canComment === true">
       <ion-card class="feedback-card">
         <ion-card-header>
           <ion-card-title class="feedback-title">

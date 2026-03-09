@@ -1,5 +1,5 @@
 import { environment } from '@v3/environments/environment';
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -20,7 +20,8 @@ import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 
-const MIN_SCROLLING_PAGES = 6; // minimum number of pages to show pagination scrolling
+const MIN_SCROLLING_PAGES = 8; // minimum number of pages to show pagination scrolling
+const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per paginated view (controls pagination granularity)
 
 /**
  * Assessment Component with optional pagination feature
@@ -147,6 +148,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -160,7 +162,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     this.sharedService.stopPlayingVideos();
   }
 
-  pageSize = 8; // number of questions per page
+  pageSize = MAX_QUESTIONS_PER_PAGE; // number of questions per page
   pageIndex = 0;
 
   // each entry is a page: an array of (partial) groups
@@ -353,17 +355,6 @@ Best regards`;
   }): Observable<any> {
     const answer = this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
 
-    this.filledAnswers().forEach(answerObj => {
-      if (answerObj.questionId === questionInput.questionId) {
-        // if the answer is empty, we need to set it to null
-        if (this.utils.isEmpty(answer)) {
-          answerObj.answer = null;
-        } else {
-          answerObj.answer = answer;
-        }
-      }
-    });
-
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
@@ -436,6 +427,10 @@ Best regards`;
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
       this.pageIndex = 0;
+
+      setTimeout(() => {
+        this.initializePageCompletion();
+      }, 200);
     } else {
       // Reset pagination data when disabled
       this.pagesGroups = [];
@@ -443,7 +438,7 @@ Best regards`;
     }
 
     // scroll to the active page into view after rendering
-    setTimeout(() => this.scrollActivePageIntoView(), 200);
+    setTimeout(() => this.scrollActivePageIntoView(), 250);
   }
 
   ngOnDestroy() {
@@ -521,11 +516,23 @@ Best regards`;
           }
         }
 
-        this.questionsForm.addControl('q-' + question.id, new FormControl({
-          answer: '',
-          comment: '',
-          file: null,
-        }, validator));
+
+        let quesCtrl: { answer: any; comment?: string; file?: any } | any = null;
+
+        if (this.action === 'review') {
+          quesCtrl = {
+            comment: '',
+            answer: question.type === 'multi team member selector' ? [] : '',
+            file: null
+          };
+        } else {
+          // For assessment mode, initialize multi team member selector with proper structure
+          if (question.type === 'multi team member selector') {
+            quesCtrl = { answer: [] };
+          }
+        }
+
+        this.questionsForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
       });
     });
 
@@ -534,14 +541,16 @@ Best regards`;
       return this.btnDisabled$.next(true);
     }
 
-    this.questionsForm.valueChanges.pipe(
-      takeUntil(this.unsubscribe$),
-      debounceTime(300),
-    ).subscribe(() => {
-      this.initializePageCompletion();
-      // this.btnDisabled$.next(this.questionsForm.invalid);
-      this.setSubmissionDisabled();
-    });
+    // delay the subscription to avoid race conditions during initialization
+    setTimeout(() => {
+      this.questionsForm.valueChanges.pipe(
+        takeUntil(this.unsubscribe$),
+        debounceTime(300),
+      ).subscribe(() => {
+        this.initializePageCompletion();
+        this.setSubmissionDisabled();
+      });
+    }, 300);
   }
 
   /**
@@ -591,7 +600,7 @@ Best regards`;
   }
 
   private _handleReviewData() {
-    if (this.isPendingReview && this.review.status === 'in progress') {
+    if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
       this.btnDisabled$.next(false);
     }
@@ -753,8 +762,8 @@ Best regards`;
             break;
           case 'text':
           case 'file': // answer is for text/oneof/multiple/slider only, file is always ''
-          case 'team-member-selector':
-          case 'multi-team-member-selector':
+          case 'team member selector':
+          case 'multi team member selector':
             answer = '';
             break;
           case 'slider':
@@ -1050,12 +1059,22 @@ Best regards`;
   initializePageCompletion() {
     if (!this.isPaginationEnabled) return;
 
+    // read-only mode (viewing feedback or completed submissions), completion tracking is not relevant
+    if (!this.doAssessment && !this.isPendingReview) {
+      this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+      this.cdr.detectChanges();
+      setTimeout(() => this.scrollActivePageIntoView(), 100);
+      return;
+    }
+
     this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
 
     this.pages.forEach((page, index) => {
       const pageQuestions = this.getAllQuestionsForPage(index);
       this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
     });
+
+    this.cdr.detectChanges();
 
     // Update the scroll position when page completion status changes
     setTimeout(() => this.scrollActivePageIntoView(), 100);
@@ -1248,6 +1267,52 @@ Best regards`;
       this.initializePageCompletion();
     }, 100);
   }
+
+  /**
+   * prefill form with answers and check validation state
+   * replaces the old _populateFormWithAnswers() method
+   */
+  private _prefillForm(): void {
+    // populate form with submission answers (for assessment action)
+    if (this.submission?.answers && this.action === 'assessment') {
+      Object.keys(this.submission.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.submission.answers[questionId]?.answer !== undefined) {
+          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
+        }
+      });
+    }
+
+    // populate form with review answers (for review action)
+    if (this.review?.answers && this.action === 'review') {
+      Object.keys(this.review.answers).forEach(questionId => {
+        const controlName = 'q-' + questionId;
+        const control = this.questionsForm.get(controlName);
+        if (control && this.review.answers[questionId]) {
+          const reviewAnswer = {
+            answer: this.review.answers[questionId].answer,
+            comment: this.review.answers[questionId].comment,
+            file: this.review.answers[questionId].file || null,
+          };
+          control.setValue(reviewAnswer, { emitEvent: false });
+        }
+      });
+    }
+
+    // revalidate form after setting values
+    this.questionsForm.updateValueAndValidity();
+
+    // check validation state and update button accordingly
+    if (this.doAssessment || this.isPendingReview) {
+      // in edit mode, check form validation
+      this.setSubmissionDisabled();
+    } else {
+      // in read-only mode, ensure button is enabled
+      this.btnDisabled$.next(false);
+    }
+  }
+
 
   setSubmissionDisabled() {
     // only enforce form validation when user can actually edit

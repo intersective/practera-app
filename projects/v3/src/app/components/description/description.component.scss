@@ -113,6 +113,19 @@ ion-button {
     padding-top: 0;
     padding-bottom: 0;
   }
+
+  // add visible focus indicator for accessibility
+  &.ion-focusable:focus-visible {
+    outline: 2px solid var(--ion-color-primary, #3880ff);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  // ensure focus indicator works in shadow dom
+  &::part(native):focus-visible {
+    outline: 2px solid var(--ion-color-primary, #3880ff);
+    outline-offset: 2px;
+  }
 }
 
 // copied from admin wysiwyg editor's post-rendering styling
@@ -123,9 +136,10 @@ ion-button {
   line-height: 1.2;
 }
 
-blockquote {
-  margin: 0 0 1rem;
-}
+// removed for showing more space between blockquotes and other elements for assessment descriptions editor (different editor than admin wysiwyg) [CORE-7942]
+// blockquote {
+//   margin: 0 0 1rem;
+// }
 
 dl,
 ol,

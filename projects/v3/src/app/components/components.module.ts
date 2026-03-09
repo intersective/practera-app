@@ -38,12 +38,14 @@ import { VideoConversionComponent } from './video-conversion/video-conversion.co
 import { SupportPopupComponent } from './support-popup/support-popup.component';
 import { BackgroundImageDirective } from '../directives/background-image/background-image.directive';
 import { FallbackImageDirective } from '../directives/fallback-image/fallback-image.directive';
+import { ToggleLabelDirective } from '../directives/toggle-label/toggle-label.directive';
 import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
 import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
 import { FilePopupComponent } from './file-popup/file-popup.component';
 import { SliderComponent } from './slider/slider.component';
+import { LanguageDetectionPipe } from '../pipes/language.pipe';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -67,6 +69,7 @@ const largeCircleDefaultConfig = {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    ToggleLabelDirective,
     UppyAngularDashboardModalModule,
     UppyAngularDashboardModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
@@ -111,6 +114,7 @@ const largeCircleDefaultConfig = {
     TrafficLightGroupComponent,
     UppyUploaderComponent,
     FileUploadComponent,
+    LanguageDetectionPipe,
   ],
   exports: [
     AchievementPopUpComponent,
@@ -152,10 +156,12 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     BottomActionBarComponent,
     SupportPopupComponent,
+    ToggleLabelDirective,
     TrafficLightComponent,
     TrafficLightGroupComponent,
     UppyUploaderComponent,
     FileUploadComponent,
+    LanguageDetectionPipe,
   ],
   providers: [UppyUploaderService]
 })
