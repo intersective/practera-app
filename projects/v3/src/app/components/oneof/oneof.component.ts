@@ -194,4 +194,14 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
+
+  // innerHTML text toggle
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  // Allow clicking the rendered HTML label to toggle during review
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
+  }
 }

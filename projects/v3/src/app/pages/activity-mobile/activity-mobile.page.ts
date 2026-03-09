@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/services/activity.service';
 import { AssessmentService, Submission } from '@v3/services/assessment.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { filter } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -22,6 +23,7 @@ export class ActivityMobilePage implements OnInit {
     private assessmentService: AssessmentService,
     private unlockIndicatorService: UnlockIndicatorService,
     private notificationsService: NotificationsService,
+    private utils: UtilsService,
   ) { }
 
   ngOnInit() {
@@ -31,6 +33,9 @@ export class ActivityMobilePage implements OnInit {
         this.activity = res;
         if (res?.id) {
           this.clearPureActivityIndicator(res.id);
+        }
+        if (res?.name) {
+          this.utils.setPageTitle(`${res.name} - Practera`);
         }
       });
     this.assessmentService.submission$.subscribe(res => this.submission = res);

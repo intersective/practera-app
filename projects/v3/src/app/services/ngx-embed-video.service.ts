@@ -58,20 +58,23 @@ export class EmbedVideoService {
 
   public embed_youtube(id: string, options?: any): SafeHtml {
     options = this.parseOptions(options);
+    const uniqueId = `youtube-embed-${id}-${Date.now()}`;
 
-    return this.sanitize_iframe(`<iframe src="https://www.youtube.com/embed/${id}${options.query}"${options.attr} frameborder="0" allowfullscreen></iframe>`);
+    return this.sanitize_iframe(`<iframe id="${uniqueId}" src="https://www.youtube.com/embed/${id}${options.query}"${options.attr} frameborder="0" allowfullscreen></iframe>`);
   }
 
   public embed_vimeo(id: string, options?: any): SafeHtml {
     options = this.parseOptions(options);
+    const uniqueId = `vimeo-embed-${id}-${Date.now()}`;
 
-    return this.sanitize_iframe(`<iframe src="https://player.vimeo.com/video/${id}${options.query}"${options.attr} frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>`);
+    return this.sanitize_iframe(`<iframe id="${uniqueId}" src="https://player.vimeo.com/video/${id}${options.query}"${options.attr} frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>`);
   }
 
   public embed_dailymotion(id: string, options?: any): SafeHtml {
     options = this.parseOptions(options);
+    const uniqueId = `dailymotion-embed-${id}-${Date.now()}`;
 
-    return this.sanitize_iframe(`<iframe src="https://www.dailymotion.com/embed/video/${id}${options.query}"${options.attr} frameborder="0" allowfullscreen></iframe>`);
+    return this.sanitize_iframe(`<iframe id="${uniqueId}" src="https://www.dailymotion.com/embed/video/${id}${options.query}"${options.attr} frameborder="0" allowfullscreen></iframe>`);
   }
 
   public embed_image(url: any, options?: any): Promise<{

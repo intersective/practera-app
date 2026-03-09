@@ -318,6 +318,11 @@ export class ActivityDesktopPage {
     this.activity = res;
     // only clear pure activity-level unlock indicators onLoad of activity when navigating from Home
     this._clearPureActivityIndicatorIfFromHome(res.id);
+
+    // Set page title when activity is loaded
+    if (res?.name) {
+      this.utils.setPageTitle(`${res.name} - Practera`);
+    }
   }
 
   /**
@@ -634,7 +639,8 @@ export class ActivityDesktopPage {
     // display review rating modal
     return await this.notificationsService.popUpReviewRating(
       this.review.id,
-      false
+      false,
+      this.assessmentService.assessment?.hasReviewRating
     );
   }
 
