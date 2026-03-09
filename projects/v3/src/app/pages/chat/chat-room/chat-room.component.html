@@ -40,7 +40,7 @@
   </div>
 
   <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !isMobile}">
-    <ion-item *ngFor="let message of messageList" color="light">
+    <ion-item *ngFor="let message of messageList; let i = index" color="light">
       <ng-container *ngIf="isLastMessage(message)">
         <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">
           <img [src]="message.senderAvatar" [attr.alt]="message.senderName ? message.senderName + ' avatar' : 'User avatar'">
@@ -52,9 +52,28 @@
           <p>{{ getMessageDate(message.sentAt) }}</p>
         </div>
 
-        <div class="message-body"
-          [ngClass]="getClassForMessageBody(message.file)"
-          aria-describedby="message-content">
+        <div class="message-container">
+
+          <!-- action buttons — only shown for sender's own messages -->
+          <div class="action-container" *ngIf="message.isSender">
+            <ion-button class="delete-btn" fill="clear" size="small"
+              [attr.title]="'Delete Message'"
+              [attr.aria-label]="'Delete message'"
+              (click)="deleteMessage(message.uuid)">
+              <ion-icon name="trash" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small"
+              *ngIf="hasEditableText(message)"
+              [attr.title]="'Edit Message'"
+              [attr.aria-label]="'Edit message'"
+              (click)="openEditMessagePopup(i)">
+              <ion-icon name="create" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+          </div>
+
+          <div class="message-body"
+            [ngClass]="getClassForMessageBody(message.file)"
+            aria-describedby="message-content">
 
           <ng-container *ngIf="!message.isSender">
             <p class="seen-text subtitle-1 black">{{ message.senderName }}</p>
@@ -121,16 +140,18 @@
           </ng-container>
         </div>
 
+        </div><!-- /message-container -->
+
       </ion-label>
     </ion-item>
 
     <ng-container *ngIf="sendingMessage">
-      <ion-item color="light">
-        <div class="message-sending-loading">
-          <ion-spinner name="bubbles"></ion-spinner>
-        </div>
-      </ion-item>
-    </ng-container>
+        <ion-item color="light">
+          <div class="message-sending-loading">
+            <ion-spinner name="bubbles" role="status"></ion-spinner>
+          </div>
+        </ion-item>
+      </ng-container>
   </ion-list>
 
   <ng-container *ngIf="hasUnreadMessages">
@@ -152,7 +173,7 @@
     <ion-label class="received-messages no-avatar" color="medium">
       <p class="message-typing">
         <i>{{ whoIsTyping }}</i>
-        <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
+        <ion-spinner name="dots" class="vertical-middle" role="status"></ion-spinner>
       </p>
     </ion-label>
   </div>

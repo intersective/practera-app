@@ -62,9 +62,14 @@ export const environment = {
   intercom: false,
   newrelic: false,
   goMobile: false,
+  projecthub: 'http://localhost:3000/',
   helpline: 'help@practera.com',
   featureToggles: {
     assessmentPagination: true,
+  },
+  snowAnimation: {
+    enabled: true,
+    snowflakeCount: 30,
   },
 };
 

@@ -29,7 +29,10 @@ export class AppComponent implements OnInit, OnDestroy {
   $unsubscribe = new Subject();
   lastVisitedUrl: string;
 
+  isSnowEnabled = environment.snowAnimation?.enabled ?? false;
+
   // urls that should not be cached for last visited tracking
+  // list of urls that should not be cached
   noneCachedUrl = [
     'devtool',
     'registration',
@@ -80,7 +83,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.configVerification();
     this.sharedService.onPageLoad();
-    
+
     // Set initial lang attribute based on current locale (WCAG 3.1.1)
     this.utils.setPageLanguage();
 

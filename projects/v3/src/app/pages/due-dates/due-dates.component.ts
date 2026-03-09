@@ -33,7 +33,7 @@ export class DueDatesComponent implements OnDestroy, OnInit {
     private assessmentService: AssessmentService,
     private utilsService: UtilsService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.utilsService.setPageTitle('Due Dates - Practera');

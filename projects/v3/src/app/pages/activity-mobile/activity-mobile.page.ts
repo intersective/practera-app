@@ -46,7 +46,6 @@ export class ActivityMobilePage implements OnInit {
 
   /**
    * Clear activity-level-only unlock indicators when entering the activity page.
-   * Uses robust clearing to handle inaccurate unlock indicator data.
    */
   private clearPureActivityIndicator(activityId: number) {
     if (!activityId) { return; }
