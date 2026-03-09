@@ -335,6 +335,49 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((_event) => {
         this._checkScrollPosition();
       });
+    
+    // Set aria-labels for Quill toolbar elements (WCAG 4.1.2)
+    setTimeout(() => {
+      this._setQuillToolbarAriaLabels();
+    }, 500);
+  }
+
+  /**
+   * Set aria-labels for Quill editor toolbar elements for accessibility
+   */
+  private _setQuillToolbarAriaLabels(): void {
+    // Scope queries to the component's native element to avoid conflicts
+    const componentElement = this.element.nativeElement;
+    
+    const previewLink = componentElement.querySelector('.ql-preview') as HTMLElement;
+    if (previewLink && !previewLink.getAttribute('aria-label')) {
+      previewLink.setAttribute('aria-label', 'Preview link');
+    }
+
+    const actionLink = componentElement.querySelector('.ql-action') as HTMLElement;
+    if (actionLink && !actionLink.getAttribute('aria-label')) {
+      actionLink.setAttribute('aria-label', 'Link action');
+    }
+
+    const removeLink = componentElement.querySelector('.ql-remove') as HTMLElement;
+    if (removeLink && !removeLink.getAttribute('aria-label')) {
+      removeLink.setAttribute('aria-label', 'Remove link');
+    }
+
+    const formulaInput = componentElement.querySelector('input[data-formula]') as HTMLInputElement;
+    if (formulaInput && !formulaInput.getAttribute('aria-label')) {
+      formulaInput.setAttribute('aria-label', 'Enter formula');
+    }
+
+    const linkInput = componentElement.querySelector('input[data-link]') as HTMLInputElement;
+    if (linkInput && !linkInput.getAttribute('aria-label')) {
+      linkInput.setAttribute('aria-label', 'Enter link URL');
+    }
+
+    const videoInput = componentElement.querySelector('input[data-video]') as HTMLInputElement;
+    if (videoInput && !videoInput.getAttribute('aria-label')) {
+      videoInput.setAttribute('aria-label', 'Enter video embed URL');
+    }
   }
 
   /**
@@ -650,6 +693,18 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   getMessageDate(date) {
     return this.utils.timeFormatter(date);
+  }
+
+  /**
+   * Process message content to add lang attributes for WCAG 3.1.2 compliance
+   * @param messageContent Original message HTML content
+   * @returns Processed message content with lang attributes
+   */
+  getProcessedMessageContent(messageContent: string): string {
+    if (!messageContent) {
+      return '';
+    }
+    return this.utils.addLanguageAttributes(messageContent);
   }
 
   /**
