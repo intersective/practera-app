@@ -1,4 +1,4 @@
-import { Component, Input, isDevMode, OnChanges } from '@angular/core';
+import { Component, Input, isDevMode, SimpleChanges, OnChanges } from '@angular/core';
 import { getData, getAllTags } from 'exif-js';
 
 const getImageClassToFixOrientation = (orientation) => {

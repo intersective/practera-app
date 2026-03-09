@@ -8,8 +8,8 @@
           <ion-label>
             <span [innerHTML]="teamMember.userName"></span>
             <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner answer</ion-chip>
-              <ion-chip class="label yellow black" *ngIf="teamMember.key === review.answer" i18n>Reviewer answer</ion-chip>
+              <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label yellow black" *ngIf="teamMember.key === review.answer" i18n>Expert's answer</ion-chip>
             </p>
           </ion-label>
         </ion-item>
@@ -37,7 +37,7 @@
       <ion-radio-group
         role="radiogroup"
         [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-        [value]="submission.answer"
+        [value]="innerValue"
         #answerEle
         (ionChange)="onChange(answerEle.value)">
         <ion-item lines="none"
@@ -99,6 +99,7 @@
               </p>
             </ion-label>
           </ion-radio>
+
         </ion-item>
       </ion-radio-group>
     </ion-list>

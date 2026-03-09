@@ -7,10 +7,10 @@
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
             <ion-chip class="label orange"
               *ngIf="submission?.answer === choice.id" i18n
-            >Learner answer</ion-chip>
+            >Learner's answer</ion-chip>
             <ion-chip class="label yellow black"
               *ngIf="review?.answer === choice.id" i18n
-            >Reviewer answer</ion-chip>
+            >Expert's answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
@@ -51,7 +51,9 @@
             <ion-item lines="none"
               [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
               <ion-radio color="success"
-                [ariaLabel]="choice.name"
+                justify="start"
+                labelPlacement="end"
+                [attr.aria-label]="choice.name"
                 [value]="choice.id"
                 [disabled]="control.disabled"
                 slot="start"
