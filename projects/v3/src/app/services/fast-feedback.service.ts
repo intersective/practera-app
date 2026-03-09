@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { of, from, Observable } from 'rxjs';
-import { switchMap, retry, finalize } from 'rxjs/operators';
+import { of, Observable } from 'rxjs';
+import { switchMap, retry } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
@@ -93,6 +93,10 @@ export class FastFeedbackService {
     closable: false,
   }): Observable<any> {
     return this._getFastFeedback(options.skipChecking, options.type).pipe(
+      retry({
+        count: 3,
+        delay: 1000
+      }),
       switchMap((res) => {
         try {
           // don't open it again if there's one opening
@@ -120,25 +124,26 @@ export class FastFeedbackService {
             questions?.length > 0 &&
             !fastFeedbackIsOpened
           ) {
-            // add a flag to indicate that a fast feedback pop up is opening
+            // set a flag to indicate a fast feedback modal is currently opening to prevent duplicates.
+            // the lock stays true until FastFeedbackComponent.dismiss() releases it.
             this.storage.set("fastFeedbackOpening", true);
 
-            return from(
-              this.notificationsService.fastFeedbackModal(
-                {
-                  questions,
-                  meta,
-                },
-                {
-                  closable: options.closable,
-                  modalOnly: options.modalOnly,
-                }
-              )
-            ).pipe(
-              finalize(() => {
-                this.storage.set("fastFeedbackOpening", false);
-              })
-            );
+            // fire-and-forget: addModal() resolves immediately (before modal is dismissed),
+            // so we must NOT use from(promise).pipe(finalize(...)) — that would release the
+            // lock within 1 ms, defeating the duplicate-open guard.
+            this.notificationsService.fastFeedbackModal(
+              {
+                questions,
+                meta,
+              },
+              {
+                closable: options.closable,
+                modalOnly: options.modalOnly,
+              }
+            ).catch(() => {
+              // release the lock only if the modal fails to open
+              this.storage.set("fastFeedbackOpening", false);
+            });
           }
           return of(res);
         } catch (error) {
@@ -151,10 +156,6 @@ export class FastFeedbackService {
           });
         }
       }),
-      retry({
-        count: 3,
-        delay: 1000
-      })
     );
   }
 

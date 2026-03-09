@@ -279,6 +279,10 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Clean up ESC key listener
     document.removeEventListener('keydown', this.handleKeyDown);
+
+    // safety: release the lock if the component is destroyed without dismiss
+    // (e.g. user navigates away while modal is still open)
+    this.storage.set('fastFeedbackOpening', false);
   }
 
   get isRedColor(): boolean {
