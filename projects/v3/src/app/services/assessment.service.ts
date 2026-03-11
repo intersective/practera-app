@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
 import { RequestService } from 'request';
 import { FileInput, FileResponse } from '../components/types/assessment';
+import { Choice, Question } from '@v3/components/types/assessment';
 
 /**
  * @name api
@@ -51,6 +52,7 @@ export interface Assessment {
   isOverdue?: boolean;
   groups: Array<Group>;
   pulseCheck: boolean;
+  hasReviewRating: boolean; // assessment level setting to enable review rating
   allowResubmit?: boolean; // indicator to show resubmit button
 }
 
@@ -58,34 +60,6 @@ export interface Group {
   name: string;
   description: string;
   questions: Array<Question>;
-}
-
-export interface Question {
-  id: number;
-  name: string;
-  type: string;
-  fileType?: string;
-  description: string;
-  info?: string;
-  isRequired: boolean;
-  canComment: boolean;
-  canAnswer: boolean;
-  choices?: Array<Choice>;
-  teamMembers?: Array<TeamMember>;
-  audience: string[];
-  submitterOnly?: boolean;
-  reviewerOnly?: boolean; // question meant for reviewer only
-}
-
-export interface Choice {
-  id: number;
-  name: string;
-  explanation?: string | any;
-}
-
-export interface TeamMember {
-  key: string;
-  userName: string;
 }
 
 export type SubmissionStatuses = 'in progress' | 'pending review' | 'published' | 'pending approval' | 'feedback available' | 'done';
@@ -140,7 +114,6 @@ export class AssessmentService {
     private demo: DemoService,
     private request: RequestService
   ) {
-    // this.assessment$.subscribe((res) => (this.assessment = res));
   }
 
   get assessment() {
@@ -166,11 +139,15 @@ export class AssessmentService {
       .graphQLFetch(
         `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck allowResubmit
+          id name type
+          description dueDate isTeam
+          pulseCheck
+          hasReviewRating
+          allowResubmit
           groups {
             name description
             questions{
-              id name description type isRequired hasComment audience fileType
+              id name description type isRequired hasComment audience fileType min max
               choices{
                 id name explanation description
               }
@@ -293,14 +270,19 @@ export class AssessmentService {
         ? this.utils.timeComparer(data.assessment.dueDate) < 0
         : false,
       pulseCheck: data.assessment.pulseCheck,
+      hasReviewRating: data.assessment.hasReviewRating,
       allowResubmit: data.assessment.allowResubmit,
       groups: [],
     };
+
+    // group
     data.assessment.groups.forEach((eachGroup) => {
       const questions: Question[] = [];
       if (!eachGroup.questions) {
         return;
       }
+
+      // question
       eachGroup.questions.forEach((eachQuestion) => {
         this.questions[eachQuestion.id] = eachQuestion;
         const question: Question = {
@@ -315,6 +297,8 @@ export class AssessmentService {
               ? eachQuestion.audience.includes("reviewer")
               : eachQuestion.audience.includes("submitter"),
           audience: eachQuestion.audience,
+          min: eachQuestion.type === 'slider' && eachQuestion.min !== undefined ? Number(eachQuestion.min) : undefined,
+          max: eachQuestion.type === 'slider' && eachQuestion.max !== undefined ? Number(eachQuestion.max) : undefined,
           submitterOnly:
             eachQuestion.audience.length === 1 &&
             eachQuestion.audience.includes("submitter"),
@@ -568,7 +552,7 @@ export class AssessmentService {
           if (this.utils.isEmpty(answer)) {
             answer = [];
           }
-          if (!Array.isArray(answer)) {
+          if (!Array.isArray(answer) && typeof answer === "string" && answer.length > 0) {
             // re-format json string to array
             answer = JSON.parse(answer);
           }

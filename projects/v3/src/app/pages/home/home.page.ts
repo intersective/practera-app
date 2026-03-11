@@ -9,13 +9,14 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Experience, HomeService, Milestone } from '@v3/services/home.service';
+import { Experience, HomeService, Milestone, PulseCheckSkill } from '@v3/services/home.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, filter, first, takeUntil } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
+import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
+import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 
 @Component({
   selector: "app-home",
@@ -28,12 +29,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   activityCount$: Observable<number>;
   experienceProgress: number;
   pulseCheckStatus: TrafficLightGroupComponent["lights"];
-  milestones: Milestone[];
+  milestones: Milestone[] = null; // Initialize as null to differentiate between not loaded and empty
   achievements: Achievement[];
   experience: Experience;
 
   isMobile: boolean;
   isParticipant: boolean;
+  isExpertWithoutTeam: boolean;
   pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
@@ -52,8 +54,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
-  @ViewChild('activityCol') activityCol: {el: HTMLIonColElement};
-  @ViewChild('activities', {static: false}) activities!: ElementRef;
+  @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
+  @ViewChild('activities', { static: false }) activities!: ElementRef;
+  pulseCheckSkills: PulseCheckSkill[] = [];
+
+  // Expose Math to template
+  Math = Math;
 
   constructor(
     private router: Router,
@@ -67,6 +73,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private cdr: ChangeDetectorRef,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
+    private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -83,14 +90,34 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit() {
     const role = this.storageService.getUser().role;
+    const teamId = this.storageService.getUser().teamId;
     this.isParticipant = role === 'participant';
+    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
     this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
+
+    // subscribe to team changes broadcast from shared service
+    this.sharedService.team$
+      .pipe(
+        filter(team => team !== null),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe(() => {
+        // re-evaluate expert without team status when team changes
+        const currentRole = this.storageService.getUser().role;
+        const currentTeamId = this.storageService.getUser().teamId;
+        this.isExpertWithoutTeam = currentRole === 'mentor' && !currentTeamId;
+      });
+
     this.homeService.milestones$
       .pipe(
         distinctUntilChanged(),
         filter((milestones) => milestones !== null),
         takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading milestones:', error);
+          return of([]);
+        })
       ).subscribe(
         (milestones) => {
           this.milestones = milestones;
@@ -98,13 +125,25 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       );
 
     this.achievementService.achievements$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading achievements:', error);
+          return of([]);
+        })
+      )
       .subscribe((res) => {
         this.achievements = res;
       });
 
     this.homeService.experienceProgress$
-      .pipe(takeUntil(this.unsubscribe$))
+      .pipe(
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading experience progress:', error);
+          return of(-1); // Use -1 to indicate error state
+        })
+      )
       .subscribe((res) => {
         this.experienceProgress = res;
       });
@@ -112,7 +151,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.homeService.projectProgress$
       .pipe(
         filter((progress) => progress !== null),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading project progress:', error);
+          return of(null);
+        })
       )
       .subscribe((progress) => {
         progress?.milestones?.forEach((m) => {
@@ -133,7 +176,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.unlockIndicatorService.unlockedTasks$
       .pipe(
         distinctUntilChanged(),
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading unlocked tasks:', error);
+          return of([]);
+        })
       )
       .subscribe({
         next: (unlockedTasks) => {
@@ -152,6 +199,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         },
       });
 
+    // call updateDashboard on initial load to ensure fresh data
+    this.updateDashboard();
   }
 
   ngOnDestroy(): void {
@@ -161,8 +210,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+
+    // re-evaluate user role and team status after JWT refresh updates teamId
+    const role = this.storageService.getUser().role;
+    const teamId = this.storageService.getUser().teamId;
+    this.isParticipant = role === 'participant';
+    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
+
     this.experience = this.storageService.get("experience");
-    this.homeService.getMilestones();
+    this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
 
@@ -171,7 +227,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     if (this.pulseCheckIndicatorEnabled === true) {
       this.homeService.getPulseCheckStatuses().pipe(
-        takeUntil(this.unsubscribe$)
+        takeUntil(this.unsubscribe$),
+        catchError((error) => {
+          console.error('Error loading pulse check statuses:', error);
+          return of({ data: { pulseCheckStatus: {} } });
+        })
       ).subscribe((res) => {
         this.pulseCheckStatus = res?.data?.pulseCheckStatus || {};
       });
@@ -190,7 +250,20 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.fastFeedbackService.pullFastFeedback().pipe(
       first(),
       takeUntil(this.unsubscribe$),
+      catchError((error) => {
+        console.error('Error loading fast feedback:', error);
+        return of(null);
+      })
     ).subscribe();
+
+    this.homeService.getPulseCheckSkills().pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe((res) => {
+      const newSkills = res?.data?.pulseCheckSkills || [];
+      if (newSkills.length > 0) {
+        this.pulseCheckSkills = newSkills;
+      }
+    });
   }
 
   goBack() {
@@ -323,6 +396,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     await alert.present();
   }
 
+  async showGlobalSkillsInfo() {
+    const alert = await this.alertController.create({
+      header: 'Global Skills Assessment',
+      message: `You'll regularly complete self-assessments of your Global Skills throughout this program. These assessments help you identify key areas for growth and development, while tracking your progress along the way. The Skills Strength section helps visualise your progress, making it easier to see your development over time. For detailed guidance on completing these assessments, refer to the 'How to Self-Assess Your Global Skills' topic.`,
+      buttons: ['OK'],
+      cssClass: ['team-check-in-alert', 'wide-alert']
+    });
+
+    await alert.present();
+  }
+
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
     if (
       keyboardEvent &&
@@ -361,6 +445,35 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.storageService.append('errors', e);
       }
     }
+  }
+
+  // generate aria-label for skill dot
+  // each circle announces its state
+  // eg. "Level X achieved", "Level X half achieved", "Level X not achieved"
+  getSkillDotAriaLabel(level: number, skillValue: number): string {
+    if (level <= Math.floor(skillValue)) {
+      return `Level ${level} achieved`;
+    } else if (level === Math.floor(skillValue) + 1 && skillValue % 1 === 0.5) {
+      return `Level ${level} half achieved`;
+    } else {
+      return `Level ${level} not achieved`;
+    }
+  }
+
+  /**
+   * Get formatted percentage change string with appropriate styling
+   * @param skillId - The ID of the skill
+   * @param currentValue - Current skill value
+   * @param changeValue - Change value from API
+   * @returns Object with change text and CSS class
+   */
+  getSkillChangeDisplay(skillId: number, currentValue: number, changeValue?: number): { text: string; cssClass: string } | null {
+    // Use change value from API if available
+    if (changeValue !== undefined) {
+      return this.pulsecheckService.getSkillChangeDisplayFromValue(changeValue);
+    }
+    // Return null if no change value provided
+    return null;
   }
 
   // show unlock guideline for locked milestone or activity
