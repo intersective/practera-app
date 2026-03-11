@@ -4,6 +4,10 @@
 .question-title {
   --background: var(--ion-color-primary);
   --color: var(--ion-color-primary-contrast);
+
+  &.fade-70 {
+    opacity: 0.7;
+  }
 }
 .btn-info {
   --color: var(--ion-color-primary-contrast);
