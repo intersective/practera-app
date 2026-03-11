@@ -116,11 +116,13 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     // reset errors
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (const key in this.control.errors) {
-      if (key === 'required') {
-        this.errors.push('This question is required');
-      } else {
-        this.errors.push(this.control.errors[key]);
+    if (this.control?.errors) {
+      for (const key in this.control.errors) {
+        if (key === 'required') {
+          this.errors.push('This question is required');
+        } else {
+          this.errors.push(this.control.errors[key]);
+        }
       }
     }
 
@@ -146,7 +148,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
       this.innerValue = {
         answer: this.review.answer || [],
         comment: this.review.comment
@@ -155,10 +157,12 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
       if (!this.innerValue) {
         this.innerValue = {
-          answer: this.submission.answer || [],
+          answer: this.submission?.answer || [],
         };
       }
-      this.innerValue.answer = this.control.pristine ? this.submission.answer : this.control.value;
+      if (this.control) {
+        this.innerValue.answer = this.control.pristine ? this.submission?.answer : this.control.value;
+      }
     }
 
     this.propagateChange(this.innerValue);
