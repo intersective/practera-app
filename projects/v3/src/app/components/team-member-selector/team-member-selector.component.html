@@ -17,7 +17,7 @@
     </ion-radio-group>
   </ion-list>
 
-  <ng-container *ngIf="review?.comment">
+  <ng-container *ngIf="review?.comment && question.canComment === true">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
@@ -31,59 +31,79 @@
 </ng-container>
 
 <ng-container *ngIf="doAssessment">
-  <ion-list class="no-bg">
-    <ion-radio-group
-      [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-      [value]="submission.answer"
-      #answerEle
-      (ionChange)="onChange(answerEle.value)">
-      <ion-item lines="none"
-        *ngFor="let teamMember of question.teamMembers;let i = index"
-        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-        <ion-radio
-          [ariaLabel]="teamMember.userName"
-          color="success"
-          slot="start"
-          [value]="teamMember.key"
-          [disabled]="control.disabled"
-        ></ion-radio>
-        <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
+  <fieldset [attr.aria-labelledby]="'team-member-selector-question-' + question.id">
+    <legend class="for-accessibility" [id]="'team-member-selector-legend-' + question.id">{{ question.name }}</legend>
+    <ion-list class="no-bg">
+      <ion-radio-group
+        role="radiogroup"
+        [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
+        [value]="innerValue"
+        #answerEle
+        (ionChange)="onChange(answerEle.value)">
+        <ion-item lines="none"
+          *ngFor="let teamMember of question.teamMembers;let i = index"
+          [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
+          <ion-radio
+            [ariaLabel]="teamMember.userName"
+            color="success"
+            slot="start"
+            [value]="teamMember.key"
+            [disabled]="control.disabled"
+          ></ion-radio>
+          <ion-label class="white-space-normal body-2 black"
+            [innerHTML]="teamMember.userName"
+            [appToggleLabel]="onLabelToggle"
+            [toggleId]="teamMember.key"
+            [toggleDisabled]="control.disabled"
+            role="button"
+            tabindex="0">
+          </ion-label>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+  </fieldset>
 </ng-container>
 
 <ng-container *ngIf="doReview">
-  <ion-list class="no-bg ion-no-padding"
-    *ngIf="question.canAnswer" lines="none">
-    <ion-radio-group
-      [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-      [value]="review.answer"
-      (ionChange)="onChange($event.detail.value, 'answer')">
+  <fieldset [attr.aria-labelledby]="'team-member-selector-question-' + question.id" *ngIf="question.canAnswer">
+    <legend class="for-accessibility" [id]="'team-member-selector-review-legend-' + question.id">{{ question.name }}</legend>
+    <ion-list class="no-bg ion-no-padding" lines="none">
+      <ion-radio-group
+        role="radiogroup"
+        [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
+        [value]="review.answer"
+        (ionChange)="onChange($event.detail.value, 'answer')">
 
-      <ion-item lines="none"
-        *ngFor="let teamMember of question.teamMembers; let i = index"
-        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-        <ion-radio
-          color="success"
-          justify="start"
-          slot="start"
-          labelPlacement="end"
-          [value]="teamMember.key"
-          [disabled]="control.disabled">
-          <ion-label class="white-space-normal body-2 black">
-            <span [innerHTML]="teamMember.userName"></span>
-            <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>
-                Learner's answer
-              </ion-chip>
-            </p>
-          </ion-label>
-        </ion-radio>
+        <ion-item lines="none"
+          *ngFor="let teamMember of question.teamMembers; let i = index"
+          [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
+          <ion-radio
+            color="success"
+            justify="start"
+            slot="start"
+            labelPlacement="end"
+            [value]="teamMember.key"
+            [disabled]="control.disabled">
+            <ion-label class="white-space-normal body-2 black">
+              <span [innerHTML]="teamMember.userName"
+                [appToggleLabel]="onLabelToggleReview"
+                [toggleId]="teamMember.key"
+                [toggleDisabled]="control.disabled"
+                role="button"
+                tabindex="0">
+              </span>
+              <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
+                <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>
+                  Learner's answer
+                </ion-chip>
+              </p>
+            </ion-label>
+          </ion-radio>
 
-      </ion-item>
-    </ion-radio-group>
-  </ion-list>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+  </fieldset>
 
   <ion-list class="ion-no-padding ion-padding-bottom"
     *ngIf="question.canComment && submission.answer">

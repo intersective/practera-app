@@ -34,7 +34,7 @@ export interface User {
   userHash?: string;
   colors?: Colors;
   activityCardImage?: string; // default activity card image
-  hasReviewRating?: boolean;
+  hasReviewRating?: boolean; // from experience settings (enable/disable entirely from global setting)
   truncateDescription?: boolean;
   enrolment?: any;
   activityCompleteMessage?: string;
@@ -97,7 +97,7 @@ export class BrowserStorageService {
    *
    * @param   {string}  key    index for identify a value later
    *    - directLinkRoute: string
-   *    - fastFeedbackOpening: boolean
+   *    - fastFeedbackOpening: boolean (flag to indicate if there is existing fast feedback modal opened)
    *    - authToken: string
    *    - hasMultipleStacks: boolean
    *    - experience: Experience

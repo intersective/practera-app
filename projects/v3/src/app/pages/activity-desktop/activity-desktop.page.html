@@ -42,7 +42,8 @@
     </ion-row>
   </ion-grid>
 
-  <ng-container *ngIf="currentTask?.type === 'Assessment'">
+  <ng-container *ngIf="currentTask?.type === 'Assessment' && false">
+    <!-- temporary hide fab button - assessment question navigator -->
     <span class="tooltip-container"
       [ngStyle]="tooltipStyle"
       *ngIf="tooltipVisible">
@@ -91,7 +92,7 @@
     (readFeedback)="readFeedback($event, currentTask)"
     (continue)="nextTask(currentTask)"
     tabindex="0"
-    id="task-content"
+    id="task-content-assessment"
   ></app-assessment>
 
   <app-topic
@@ -101,6 +102,6 @@
     (continue)="topicComplete(currentTask)"
     [buttonDisabled$]="btnDisabled$"
     tabindex="0"
-    id="task-content"
+    id="task-content-topic"
   ></app-topic>
 </ng-template>
