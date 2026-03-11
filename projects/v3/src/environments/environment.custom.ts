@@ -59,4 +59,7 @@ export const environment = {
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
   helpline: '<CUSTOM_HELPLINE>',
+  featureToggles: {
+    assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
+  },
 };

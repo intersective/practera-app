@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
+import { ApiResponse } from '@v3/app/models/api.model';
 
 export interface Topic {
   id: number;
@@ -18,13 +19,6 @@ export interface Topic {
     language?: string;
     status?: string;
   };
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  status: string;
-  cache: boolean;
-  data: T;
 }
 
 export interface TopicData {
@@ -110,14 +104,14 @@ export class TopicService {
     if (environment.demo) {
       return this.demo.topic().subscribe(res => this._normaliseTopic(res.data));
     }
-    return this.request.get(api.get.stories, {params: { model_id: id }})
-      .pipe(map((response: ApiResponse<TopicData[]>) => {
-        if (response.success && response.data) {
-          return this._normaliseTopic(response.data);
-        }
 
-      })
-    ).subscribe();
+    return this.request.get(api.get.stories, {
+      params: { model_id: id }
+    }).pipe(map((response: ApiResponse<TopicData[]>) => {
+      if (response.success && response.data) {
+        return this._normaliseTopic(response.data);
+      }
+    })).subscribe();
   }
 
   private _normaliseTopic(data: TopicData[]) {
@@ -162,12 +156,14 @@ export class TopicService {
       };
     }
 
-    topic.files = thisTopic.Filestore.map(item => ({url: item.slug || item.url, name: item.name}));
+    topic.files = thisTopic.Filestore.map(item => ({
+      url: item.slug || item.url, name: item.name
+    }));
     this._topic$.next(topic);
     return topic;
   }
 
-  updateTopicProgress(id, state): Observable<any> {
+  updateTopicProgress(id, state): Observable<ApiResponse<any>> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
       console.log('mark topic as ', state);
@@ -178,6 +174,7 @@ export class TopicService {
       model_id: +id,
       state: state
     };
+
     return this.request.post({
       endPoint: api.post.updateProgress,
       data: postData,

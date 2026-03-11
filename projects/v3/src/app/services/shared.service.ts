@@ -4,12 +4,13 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from './notifications.service';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, first, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, of, first, firstValueFrom } from 'rxjs';
 import { TopicService } from '@v3/services/topic.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { map } from 'rxjs/operators';
 import { AchievementService } from './achievement.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -148,14 +149,27 @@ export class SharedService {
    * Get the user's current location from IP
    */
   getIpLocation() {
-    this._ipAPI().pipe(first()).subscribe(
-      res => this.storage.setCountry(res.country_name),
-      // eslint-disable-next-line no-console
-      err => console.log(err)
-    );
+    this._ipAPI().pipe(first()).subscribe({
+      next: res => this.storage.setCountry(res.country_name),
+      error: err => console.error(err)
+    });
   }
 
   private _ipAPI(): Observable<any> {
+    if (environment.production !== true) {
+      // mock data for development mode
+      return of({
+        ip: '127.0.0.1',
+        city: 'Development City',
+        region: 'Development Region',
+        country_name: 'Development Country',
+        postal: '00000',
+        latitude: 0,
+        longitude: 0,
+        timezone: 'UTC'
+      });
+    }
+
     return this.http.get('https://ipapi.co/json');
   }
 
@@ -164,14 +178,14 @@ export class SharedService {
    */
   markTopicStopOnNavigating() {
     if (this.storage.get('startReadTopic')) {
-      this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe(
-        _response => {
+      this.topicService.updateTopicProgress(this.storage.get('startReadTopic'), 'stopped').subscribe({
+        next: _response => {
           this.storage.remove('startReadTopic');
         },
-        err => {
+        error: err => {
           console.error('error in mark Topic Stop On Navigating - ', err);
         }
-      );
+      });
     }
   }
 
@@ -191,7 +205,7 @@ export class SharedService {
    * @return  {Promise<any>} non-strict return value, we won't use
    */
   async refreshJWT(): Promise<any> {
-    const res: AuthEndpoint = await firstValueFrom(this.authService.authenticate());
+    const res: AuthEndpoint = await firstValueFrom(this.authService.authenticate({ forceRefresh: true }));
 
     const auth = res?.data?.auth;
     const latestTeamId = auth?.experience?.team?.id;

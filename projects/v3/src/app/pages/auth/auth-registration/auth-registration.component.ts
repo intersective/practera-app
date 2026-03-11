@@ -59,6 +59,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.utils.setPageTitle('Registration - Practera');
     this.domain =
       this.domain.indexOf('127.0.0.1') !== -1 ||
       this.domain.indexOf('localhost') !== -1
@@ -161,9 +162,19 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
   }
 
   private autoGeneratePassword() {
-    const text = Md5.hashStr('').toString();
-    const autoPass = text.substr(0, 8);
-    return autoPass;
+    // generate a secure random password that won't be flagged as compromised
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 10);
+    let password = timestamp + random;
+
+    // ensure minimum 12 characters with mixed case, numbers, and special chars
+    while (password.length < 12) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    // shuffle to avoid predictable patterns
+    return password.split('').sort(() => Math.random() - 0.5).join('').substring(0, 16);
   }
 
   openLink(): void {
@@ -185,8 +196,8 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
           key: this.user.key
         })
         .pipe(first())
-        .subscribe(
-          response => {
+        .subscribe({
+          next: response => {
             this.authService
               .authenticate({
                 apikey: response.data.apikey,
@@ -210,7 +221,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
                 }
               });
           },
-          async (error: HttpErrorResponse) => {
+          error: async (error: HttpErrorResponse) => {
             this.isLoading = false;
             const errorData = error?.error?.data;
             if (errorData?.type === 'password_compromised') {
@@ -228,7 +239,7 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
             console.error(error);
             this.showPopupMessages('shortMessage', $localize`Registration not complete!`);
           }
-        );
+        });
     }
   }
 
@@ -335,5 +346,4 @@ export class AuthRegistrationComponent implements OnInit, OnDestroy {
       }
     });
   }
-
 }
