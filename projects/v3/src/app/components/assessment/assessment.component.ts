@@ -61,7 +61,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
    * reading a submission or feedback. This actually
    * means the current user is the user who should "do" this assessment
    *
-   * 'reivew' is for user to do review for this assessment. This means the
+   * 'review' is for user to do review for this assessment. This means the
    * current user is the user who should "review" this assessment
    */
   @Input() action: 'assessment' | 'review';
@@ -71,7 +71,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   @Input() activityId?: number;
   @Input() submission?: Submission;
   @Input() review: AssessmentReview;
-  @Input() isSinglePage?: boolean = false;
+  @Input() isSinglePage?: boolean = false; // forces single page display for mobile view or restricted access mode (review action)
 
   // the text of when the submission get saved last time
   @Input() savingMessage$: BehaviorSubject<string>;
@@ -408,10 +408,10 @@ Best regards`;
 
     this._initialise();
     if (changes.assessment || changes.submission || changes.review) {
-      this._populateQuestionsForm();
       this._handleSubmissionData();
+      this._populateQuestionsForm();
       this._handleReviewData();
-      this._populateFormWithAnswers();
+      this._prefillForm();
     }
 
     // split by question count every time assessment changes - only if pagination is enabled
@@ -1227,47 +1227,8 @@ Best regards`;
     }, 50);
   }
 
-  private _populateFormWithAnswers() {
-    // Populate form with submission answers
-    if (this.submission?.answers && this.action === 'assessment') {
-      Object.keys(this.submission.answers).forEach(questionId => {
-        const controlName = 'q-' + questionId;
-        const control = this.questionsForm.get(controlName);
-        if (control && this.submission.answers[questionId]?.answer !== undefined) {
-          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
-        }
-      });
-    }
-
-    // Populate form with review answers
-    if (this.review?.answers && this.action === 'review') {
-      Object.keys(this.review.answers).forEach(questionId => {
-        const controlName = 'q-' + questionId;
-        const control = this.questionsForm.get(controlName);
-        if (control && this.review.answers[questionId]) {
-          const reviewAnswer = {
-            answer: this.review.answers[questionId].answer,
-            comment: this.review.answers[questionId].comment,
-            file: this.review.answers[questionId].file || null,
-          };
-          control.setValue(reviewAnswer, { emitEvent: false });
-        }
-      });
-    }
-
-    if (this.utils.isEmpty(this.submission?.answers) && this.utils.isEmpty(this.review?.answers) && this.questionsForm?.invalid) {
-      this.setSubmissionDisabled();
-    }
-
-    // Initialize page completion after form is populated
-    setTimeout(() => {
-      this.initializePageCompletion();
-    }, 100);
-  }
-
   /**
    * prefill form with answers and check validation state
-   * replaces the old _populateFormWithAnswers() method
    */
   private _prefillForm(): void {
     // populate form with submission answers (for assessment action)

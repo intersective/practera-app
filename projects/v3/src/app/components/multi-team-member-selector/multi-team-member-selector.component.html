@@ -5,15 +5,15 @@
       <ion-item class="item-bottom-border" lines="none">
         <ion-label>
           <span [innerHTML]="teamMember.userName"></span>
-          <ng-container *ngIf="submission.answer">
+          <ng-container *ngIf="submission?.answer">
             <p *ngIf="isSelectedInSubmission(teamMember)">
-              <ion-chip *ngIf="isSelectedInSubmission(teamMember)" class="label orange" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
             </p>
           </ng-container>
 
           <ng-container *ngIf="review?.answer">
             <p *ngIf="isSelectedInReview(teamMember)">
-              <ion-chip *ngIf="isSelectedInReview(teamMember)" class="label yellow black" i18n>Expert's answer</ion-chip>
+              <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
             </p>
           </ng-container>
         </ion-label>
