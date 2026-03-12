@@ -112,6 +112,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment: boolean;
 
+  // tracks whether a submission is in progress to prevent re-enabling the button
+  private submitting = false;
+
   // if isPendingReview is true, it means this review is WIP, meaning this assessment is pending review
   // if action == 'review' and isPendingReview is false, it means the review is done and this student is reading the submission and review
   isPendingReview = false;
@@ -409,6 +412,18 @@ Best regards`;
     this._initialise();
     if (changes.assessment || changes.submission || changes.review) {
       this._handleSubmissionData();
+
+      // reset submitting flag only when the submission actually changed
+      // or when the assessment is no longer in an editable state;
+      // keeps submitting=true during intermediate fetches of the same submission
+      if (this.submitting) {
+        const submissionChanged = changes.submission
+          && changes.submission.previousValue?.id !== changes.submission.currentValue?.id;
+        if (submissionChanged || (!this.doAssessment && !this.isPendingReview)) {
+          this.submitting = false;
+        }
+      }
+
       this._populateQuestionsForm();
       this._handleReviewData();
       this._prefillForm();
@@ -445,7 +460,6 @@ Best regards`;
   private _initialise() {
     this.doAssessment = false;
     this.feedbackReviewed = false;
-    this.questionsForm = new FormGroup({});
     this.isNotInATeam = false;
     this.isPendingReview = false;
   }
@@ -490,6 +504,10 @@ Best regards`;
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
+    // build a new form group before assigning to avoid _rawValidators errors
+    // during template rendering with stale formControlName bindings
+    const newForm = new FormGroup({});
+
     // question groups
     this.assessment.groups.forEach(group => {
       // questions in each group
@@ -524,9 +542,12 @@ Best regards`;
           }
         }
 
-        this.questionsForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
+        newForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
       });
     });
+
+    // assign fully-built form to trigger a single template update
+    this.questionsForm = newForm;
 
     // when no questions in the assessment, disable the button
     if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
@@ -666,6 +687,7 @@ Best regards`;
   continueToNextTask() {
     switch (this._btnAction) {
       case 'submit':
+        this.submitting = true;
         this.btnDisabled$.next(true);
         return this.submitActions.next({
           autoSave: false,
@@ -778,6 +800,7 @@ Best regards`;
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
 
     if (!autoSave && requiredQuestions.length > 0) {
+      this.submitting = false;
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
@@ -805,6 +828,7 @@ Best regards`;
         if (this.assessment.isForTeam) {
           const teamId = this.storage.getUser().teamId;
           if (typeof teamId !== 'number') {
+            this.submitting = false;
             this.btnDisabled$.next(false);
             return this.notifications.alert({
               message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
@@ -818,6 +842,7 @@ Best regards`;
           }
         }
       } catch (error) {
+        this.submitting = false;
         this.btnDisabled$.next(false);
         return this.notifications.assessmentSubmittedToast({ isFail: true });
       }
@@ -1275,6 +1300,11 @@ Best regards`;
   setSubmissionDisabled() {
     // only enforce form validation when user can actually edit
     if (!this.doAssessment && !this.isPendingReview) {
+      return;
+    }
+
+    // don't re-enable the button while a submission is in progress
+    if (this.submitting) {
       return;
     }
 

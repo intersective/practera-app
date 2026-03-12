@@ -159,13 +159,13 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if (['in progress', 'not start'].includes(this.reviewStatus) && this.doReview) {
+    if (['in progress', 'not start'].includes(this.reviewStatus) && this.doReview && this.review) {
       this.innerValue = {
         answer: this.review.answer,
         comment: this.review.comment
       };
 
-      if (this.control.pristine) {
+      if (this.control?.pristine) {
         this.comment = this.review.comment;
         this.answer = this.review.answer;
       } else {
@@ -173,12 +173,18 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
         this.answer = this.control?.value?.answer || this.review.answer;
       }
     } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
-      this.answer = this.control.pristine ? this.submission.answer : this.control.value;
+      if (this.control) {
+        this.answer = this.control.pristine ? this.submission?.answer : this.control.value;
+      } else {
+        this.answer = this.submission?.answer;
+      }
       this.innerValue = this.answer;
     }
 
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
