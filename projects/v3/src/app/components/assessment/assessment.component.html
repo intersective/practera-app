@@ -1,25 +1,46 @@
-<div *ngIf="!assessment" class="ion-padding-horizontal" role="status" aria-label="Loading assessment" i18n-aria-label aria-live="polite">
-  <ion-skeleton-text animated style="width: 50%;"></ion-skeleton-text>
+<div *ngIf="!assessment"
+  class="ion-padding-horizontal"
+  role="status"
+  aria-label="Loading assessment"
+  i18n-aria-label
+  aria-live="polite">
+  <ion-skeleton-text animated
+    style="width: 50%;"></ion-skeleton-text>
   <ion-skeleton-text animated></ion-skeleton-text>
   <ion-skeleton-text animated></ion-skeleton-text>
 </div>
 
 <!-- Manual Save -->
-<div class="save-info" *ngIf="assessment && (doAssessment || isPendingReview)" role="status" aria-live="polite" aria-atomic="true">
+<div class="save-info"
+  *ngIf="assessment && (doAssessment || isPendingReview)"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true">
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
 </div>
 
 <ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
-  <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal" *ngIf="submission.reviewerName" role="region" aria-label="Reviewer information" i18n-aria-label>
+  <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal"
+    *ngIf="submission.reviewerName"
+    role="region"
+    aria-label="Reviewer information"
+    i18n-aria-label>
     <ion-item-group>
       <ion-item-divider>
-        <ion-label color="primary" i18n>Reviewer Details</ion-label>
+        <ion-label color="primary"
+          i18n>Reviewer Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
         <ion-grid class="ion-padding-horizontal">
-          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center" i18n>Expert</ion-col>
-            <ion-col size="6" class="ion-align-self-center" [innerHTML]="submission.reviewerName" aria-label="Expert name"></ion-col>
+          <ion-row size="12"
+            class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="6"
+              class="ion-align-self-center"
+              i18n>Expert</ion-col>
+            <ion-col size="6"
+              class="ion-align-self-center"
+              [innerHTML]="submission.reviewerName"
+              aria-label="Expert name"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -29,27 +50,42 @@
 
 <ng-container *ngIf="action === 'review'">
   <ion-list *ngIf="submission"
-  class="ion-no-margin ion-padding ion-padding-horizontal main-content" role="region" aria-label="Submission information" i18n-aria-label>
+    class="ion-no-margin ion-padding ion-padding-horizontal main-content"
+    role="region"
+    aria-label="Submission information"
+    i18n-aria-label>
     <ion-item-group>
       <ion-item-divider>
-        <ion-label color="primary" i18n>Submission Details</ion-label>
+        <ion-label color="primary"
+          i18n>Submission Details</ion-label>
       </ion-item-divider>
       <ion-item class="ion-no-padding">
         <ion-grid class="ion-padding-horizontal">
-          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center" i18n>Learner</ion-col>
-            <ion-col size="6" class="ion-align-self-center"
-            [innerHTML]="submission.submitterName" aria-label="Learner name"></ion-col>
+          <ion-row size="12"
+            class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="6"
+              class="ion-align-self-center"
+              i18n>Learner</ion-col>
+            <ion-col size="6"
+              class="ion-align-self-center"
+              [innerHTML]="submission.submitterName"
+              aria-label="Learner name"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
 
-      <ion-item class="ion-no-padding" *ngIf="review?.teamName">
+      <ion-item class="ion-no-padding"
+        *ngIf="review?.teamName">
         <ion-grid class="ion-padding-horizontal">
-          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
-            <ion-col size="6" class="ion-align-self-center" i18n>Team</ion-col>
-            <ion-col size="6" class="ion-align-self-center"
-            [innerHTML]="review.teamName" aria-label="Team name"></ion-col>
+          <ion-row size="12"
+            class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="6"
+              class="ion-align-self-center"
+              i18n>Team</ion-col>
+            <ion-col size="6"
+              class="ion-align-self-center"
+              [innerHTML]="review.teamName"
+              aria-label="Team name"></ion-col>
           </ion-row>
         </ion-grid>
       </ion-item>
@@ -61,31 +97,42 @@
   <div class="main-content ion-padding"
     [ngClass]="{'extra-padding-left': action === 'review' && isSinglePage}"
     style="min-height: 100%;">
+
     <div [ngClass]="{'ion-padding-horizontal padding-top': isSinglePage}">
       <div class="headline-2 assessment-title"
         [attr.aria-describedby]="randomCode(assessment.name)"
         role="heading"
         aria-level="2"
-        [innerHTML]="assessment.name"
-      ></div>
+        [innerHTML]="assessment.name"></div>
 
-      <ion-chip [class]="'label body-3 '+ labelColor" *ngIf="label" role="status">
-        <ion-label [innerHTML]="label" aria-label="Assessment status"></ion-label>
+      <ion-chip [class]="'label body-3 '+ labelColor"
+        *ngIf="label"
+        role="status">
+        <ion-label [innerHTML]="label"
+          aria-label="Assessment status"></ion-label>
       </ion-chip>
 
-      <p class="assessment subtitle-1 due-date" *ngIf="assessment.dueDate" style="margin: 10px 0;" role="note">
+      <p class="assessment subtitle-1 due-date"
+        *ngIf="assessment.dueDate"
+        style="margin: 10px 0;"
+        role="note">
         <strong i18n>Due Date</strong>: <time [attr.datetime]="assessment.dueDate">{{ utils.utcToLocal(assessment.dueDate, 'timeZone') }}</time>
       </p>
 
       <ion-text class="ion-text-left">
         <app-description *ngIf="assessment.description"
           [name]="randomCode(assessment.name)"
-          [content]="assessment.description" id="asmt-des" class="body-2 black"
-          [attr.aria-describedby]="randomCode(assessment.name)"
-        ></app-description>
+          [content]="assessment.description"
+          id="asmt-des"
+          class="body-2 black"
+          [attr.aria-describedby]="randomCode(assessment.name)"></app-description>
       </ion-text>
 
-      <ion-list *ngIf="submission?.isLocked" class="member-detail-container no-bg" lines="none" role="alert" aria-live="assertive">
+      <ion-list *ngIf="submission?.isLocked"
+        class="member-detail-container no-bg"
+        lines="none"
+        role="alert"
+        aria-live="assertive">
         <ion-item lines="none">
           <ion-avatar slot="start">
             <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
@@ -93,20 +140,31 @@
           </ion-avatar>
 
           <ion-label>
-            <p class="subtitle-1" i18n="indicator of a team member is working on the same assessment">Locked by <span [innerHTML]="submission.submitterName"></span></p>
-            <p class="caption gray-2" i18n>Please wait until the user finishes editing</p>
+            <p class="subtitle-1"
+              i18n="indicator of a team member is working on the same assessment">Locked by <span [innerHTML]="submission.submitterName"></span></p>
+            <p class="caption gray-2"
+              i18n>Please wait until the user finishes editing</p>
           </ion-label>
         </ion-item>
       </ion-list>
     </div>
 
-    <form [formGroup]="questionsForm" id="formgroup" #form aria-label="Assessment form" i18n-aria-label novalidate>
-      <ng-container *ngFor="let group of assessment.groups; let groupIndex = index">
-        <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}" role="group" [attr.aria-labelledby]="'group-heading-' + groupIndex">
-          <h3 [id]="'group-heading-' + groupIndex" [attr.aria-describedby]="randomCode(group.name)" [innerHTML]="group.name"></h3>
-          <ion-text color="dark" class="ion-text-left">
-            <div
-              *ngIf="group.description"
+    <form [formGroup]="questionsForm"
+      id="formgroup"
+      #form
+      aria-label="Assessment form"
+      i18n-aria-label
+      novalidate>
+      <ng-container *ngFor="let group of pagedGroups; let groupIndex = index">
+        <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}"
+          role="group"
+          [attr.aria-labelledby]="'group-heading-' + groupIndex">
+          <h3 [id]="'group-heading-' + groupIndex"
+            [attr.aria-describedby]="randomCode(group.name)"
+            [innerHTML]="group.name"></h3>
+          <ion-text color="dark"
+            class="ion-text-left">
+            <div *ngIf="group.description"
               class="g-descriptiond body-2"
               [id]="randomCode(group.name)"
               [innerHtml]="group.description">
@@ -114,10 +172,13 @@
           </ion-text>
         </div>
 
-        <ng-container *ngFor="let question of group.questions">
-          <ion-list class="ion-no-padding" [id]="'q-' + question.id" #questionBox>
-            <ion-list-header
-              class="question-title headline-4"
+        <ng-container *ngFor="let question of group.questions; trackBy: trackById">
+          <ion-list class="ion-no-padding"
+            [id]="'q-' + question.id"
+            #questionBox>
+            <ion-list-header class="question-title headline-4"
+              [ngClass]="{'fade-70': shouldShowRequiredIndicator(question) && questionsForm?.controls['q-' + question.id]?.errors?.required}"
+
               [attr.aria-label]="question.name"
               [attr.aria-describedby]="randomCode('reviewer-' + question.name)"
               role="heading"
@@ -126,9 +187,9 @@
                 <span [innerHTML]="question.name"></span>
                 <span class="required-mark"
                   [ngClass]="{'contrast': isRedColor}"
-                  *ngIf="question.isRequired"
-                  aria-label="required" i18n-aria-label
-                >&nbsp;*</span>
+                  *ngIf="shouldShowRequiredIndicator(question)"
+                  aria-label="required"
+                  i18n-aria-label>&nbsp;*</span>
               </ion-label>
 
               <ion-button mode="ios"
@@ -138,41 +199,50 @@
                 (keydown.enter)="showQuestionInfo(question.info, $event)"
                 (keydown.space)="showQuestionInfo(question.info, $event); $event.preventDefault()"
                 class="btn-info ion-no-margin focusable"
-                [attr.aria-label]="'Show question information'" i18n-aria-label
+                [attr.aria-label]="'Show question information'"
+                i18n-aria-label
                 tabindex="0">
-                <ion-icon name="information-circle-outline" aria-hidden="true"></ion-icon>
+                <ion-icon name="information-circle-outline"
+                  aria-hidden="true"></ion-icon>
               </ion-button>
             </ion-list-header>
 
-            <ion-item lines="none" *ngIf="question.description" class="explanation">
-              <div
-                *ngIf="question.description"
+            <ion-item lines="none"
+              *ngIf="question.description"
+              class="explanation">
+              <div *ngIf="question.description"
                 class="q-description paragraph body-3 ion-text-left gray-2"
                 [id]="randomCode('reviewer-' + question.name)"
                 [innerHtml]="question.description">
               </div>
             </ion-item>
 
-            <ng-container *ngIf="question" [ngSwitch]="question.type">
-              <div class="tick-container" role="status" aria-live="polite" [attr.aria-label]="autosaving()[question.id] ? 'Saving' : (saved()[question.id] ? 'Saved successfully' : (failed()[question.id] ? 'Save failed' : ''))">
-                <ion-spinner name="dots" class="tick-icon"
+            <ng-container *ngIf="question"
+              [ngSwitch]="question.type">
+              <div class="tick-container"
+                role="status"
+                aria-live="polite"
+                [attr.aria-label]="autosaving()[question.id] ? 'Saving' : (saved()[question.id] ? 'Saved successfully' : (failed()[question.id] ? 'Save failed' : ''))">
+                <ion-spinner name="dots"
+                  class="tick-icon"
                   style="max-width: 16px; max-height: 16px;"
                   *ngIf="autosaving()[question.id]"
                   [@tickAnimation]="autosaving()[question.id] ? 'visible' : 'hidden'"
                   (@tickAnimation.done)="onAnimationEnd($event, question.id)"
-                  aria-label="Saving answer" i18n-aria-label
-                  role="img"
-                ></ion-spinner>
+                  aria-label="Saving answer"
+                  i18n-aria-label
+                  role="img"></ion-spinner>
 
                 <ion-icon name="checkmark-circle-outline"
                   class="tick-icon"
                   *ngIf="saved()[question.id]"
                   [@tickAnimation]="saved()[question.id] ? 'visible' : 'hidden'"
-                  aria-label="Answer saved successfully" i18n-aria-label
-                  role="img"
-                ></ion-icon>
+                  aria-label="Answer saved successfully"
+                  i18n-aria-label
+                  role="img"></ion-icon>
 
-                <ion-icon name="reload-circle-outline" class="tick-icon"
+                <ion-icon name="reload-circle-outline"
+                  class="tick-icon"
                   *ngIf="failed()[question.id]"
                   (click)="retrySave(question)"
                   (keydown.enter)="retrySave(question)"
@@ -180,17 +250,27 @@
                   [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
                   tabindex="0"
                   role="button"
-                  [attr.aria-label]="'Retry save'" i18n-aria-label
-                ></ion-icon>
+                  [attr.aria-label]="'Retry save'"
+                  i18n-aria-label></ion-icon>
               </div>
 
-              <ion-item *ngIf="!doAssessment && (
-                (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
-                (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
-              )" class="no-answers item-bottom-border" lines="none" role="note">
-                <ion-icon slot="start" color="orange" name="information-circle-outline" class="ion-margin-end" aria-hidden="true"></ion-icon>
-                <ion-label size="small" i18n>No answer for this question.</ion-label>
-              </ion-item>
+              <ng-container *ngIf="question.type !== 'slider'">
+                <ion-item *ngIf="!doAssessment && (
+                  (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
+                  (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
+                )"
+                  class="no-answers item-bottom-border"
+                  lines="none"
+                  role="note">
+                  <ion-icon slot="start"
+                    color="orange"
+                    name="information-circle-outline"
+                    class="ion-margin-end"
+                    aria-hidden="true"></ion-icon>
+                  <ion-label size="small"
+                    i18n>No answer for this question.</ion-label>
+                </ion-item>
+              </ng-container>
 
               <app-text *ngSwitchCase="'text'"
                 #questionField
@@ -313,18 +393,24 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multi-team-member-selector>
 
-              <div *ngSwitchDefault role="alert">
-                <p class="ion-padding-horizontal" style="color:red;" i18n>Unsupported question type: {{ question.type }}</p>
+              <div *ngSwitchDefault
+                role="alert">
+                <p class="ion-padding-horizontal"
+                  style="color:red;"
+                  i18n>Unsupported question type: {{ question.type }}</p>
               </div>
             </ng-container>
           </ion-list>
         </ng-container>
       </ng-container>
     </form>
+
   </div>
 
   <div class="not-team ion-padding ion-text-center"
-    *ngIf="isNotInATeam" role="alert" aria-live="polite">
+    *ngIf="isNotInATeam"
+    role="alert"
+    aria-live="polite">
     <p class="black subtitle-1"
       i18n>Currently you are not in a team, please reach out to your Administrator or Coordinator to
       proceed with next steps.</p>
@@ -333,6 +419,7 @@
 
 <ng-container *ngIf="assessment">
   <ng-container *ngIf="preventSubmission === false; else blocked">
+
     <app-bottom-action-bar *ngIf="!(action === 'review'
         && submission?.status === 'feedback available'
         && review?.status === 'done')"
@@ -340,7 +427,57 @@
       (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
-      (handleClick)="continueToNextTask()"></app-bottom-action-bar>
+      (handleClick)="continueToNextTask()"
+      [hasCustomContent]="isPaginationEnabled && pageCount > 1">
+
+      <div class="pagination-container"
+        [class.few-pages]="pageCount < manyPages"
+        *ngIf="isPaginationEnabled">
+        <ion-button fill="clear"
+          class="nav-button prev-button"
+          (click)="prevPage()"
+          [disabled]="pageIndex === 0">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          <span>Prev</span>
+        </ion-button>
+
+        <div class="page-indicators"
+          [class.many-pages]="pageCount > manyPages"
+          *ngIf="pageCount > 1"
+          #pageIndicatorsContainer>
+          <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
+            <div class="page-indicator"
+              [class.active]="pageIndex === page"
+              [class.incompleted]="!pageRequiredCompletion[page]"
+              [id]="'page-indicator-' + page"
+              (click)="goToPage(page)"
+              (dblclick)="findAndGoToFirstUnansweredQuestion()">
+
+              <div class="progress-ring">
+                <span class="page-number">{{ i + 1 }}</span>
+              </div>
+
+              <ion-icon *ngIf="pageRequiredCompletion[page]"
+                name="checkmark-circle"
+                class="completion-icon completed">
+              </ion-icon>
+              <ion-icon *ngIf="!pageRequiredCompletion[page]"
+                name="close-circle-outline"
+                class="completion-icon">
+              </ion-icon>
+            </div>
+          </ng-container>
+        </div>
+
+        <ion-button fill="clear"
+          class="nav-button next-button"
+          (click)="nextPage()"
+          [disabled]="pageIndex >= pageCount - 1">
+          <span>Next</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </app-bottom-action-bar>
   </ng-container>
 
   <ng-template #blocked>
