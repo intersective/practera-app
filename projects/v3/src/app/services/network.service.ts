@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestService } from 'request';
 import { Observable, fromEvent, merge, of } from 'rxjs';
 import { map, switchMap, startWith, distinctUntilChanged, catchError } from 'rxjs/operators';
+import { environment } from '@v3/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,9 @@ export class NetworkService {
   }
 
   private checkServerReachability(): Observable<boolean> {
+    if (environment.demo) {
+      return of(true);
+    }
     return this.request.get('https://practera.com', { observe: 'response' })
       .pipe(
         map(response => response.status === 200),

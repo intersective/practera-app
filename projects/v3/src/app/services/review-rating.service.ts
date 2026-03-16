@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { of } from 'rxjs';
 import { RequestService } from 'request';
+import { environment } from '@v3/environments/environment';
 
 const api = {
   post: {
@@ -24,6 +26,9 @@ export class ReviewRatingService {
   ) { }
 
   submitRating(data: ReviewRating) {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     const postData = {
       assessment_review_id: data.assessment_review_id,
       rating: data.rating,

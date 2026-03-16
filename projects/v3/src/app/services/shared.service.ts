@@ -88,6 +88,13 @@ export class SharedService {
    *                            this return value anywhere.
    */
   getTeamInfo(): Observable<any> {
+    if (environment.demo) {
+      this.storage.setUser({
+        teamId: 1,
+        teamName: 'Team 1'
+      });
+      return of({ data: { user: { teams: [{ id: 1, name: 'Team 1' }] } } });
+    }
     return this.apolloService.graphQLFetch(
       `query user {
         user {
@@ -156,7 +163,7 @@ export class SharedService {
   }
 
   private _ipAPI(): Observable<any> {
-    if (environment.production !== true) {
+    if (environment.production !== true || environment.demo) {
       // mock data for development mode
       return of({
         ip: '127.0.0.1',
@@ -193,6 +200,9 @@ export class SharedService {
    * Initialise web services like Pusher/ apollo if there stack info in storage
    */
   async initWebServices(): Promise<void> {
+    if (environment.demo) {
+      return;
+    }
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
     this.utils.checkIsPracteraSupportEmail();
@@ -205,6 +215,9 @@ export class SharedService {
    * @return  {Promise<any>} non-strict return value, we won't use
    */
   async refreshJWT(): Promise<any> {
+    if (environment.demo) {
+      return of(null).toPromise();
+    }
     const res: AuthEndpoint = await firstValueFrom(this.authService.authenticate({ forceRefresh: true }));
 
     const auth = res?.data?.auth;

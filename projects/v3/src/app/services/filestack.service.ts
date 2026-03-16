@@ -5,7 +5,7 @@ import { ModalController } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { HttpClient } from '@angular/common/http'; // added to make one and only API call to filestack server
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { FilestackPreviewComponent } from '../components/filestack-preview/filestack-preview.component';
@@ -181,6 +181,9 @@ export class FilestackService {
   }
 
   async metadata(file): Promise<Metadata> {
+    if (environment.demo) {
+      return { mimetype: 'application/octet-stream', filename: 'demo-file', size: 1024 };
+    }
     const handle = file.url.match(/([A-Za-z0-9]){20,}/);
     return this.httpClient.get(api.metadata.replace('HANDLE', handle[0])).toPromise();
   }
@@ -265,6 +268,9 @@ export class FilestackService {
   }
 
   async getWorkflowStatus(processedJobs = {}): Promise<any[]> {
+    if (environment.demo) {
+      return [];
+    }
     const { policy, signature, workflows } = environment.filestack;
     let jobs = {};
 
@@ -285,11 +291,17 @@ export class FilestackService {
   }
 
   videoConversion(handle) {
+    if (environment.demo) {
+      return of({});
+    }
     return this.httpClient.get(`https://cdn.filestackcontent.com/video_convert/${handle}`);
   }
 
   // securely delete a file from filestack
   deleteFile(handle) {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     const { policy, signature, key } = environment.filestack;
     return this.httpClient.delete(`https://www.filestackapi.com/api/file/${handle}?key=${key}&policy=${policy}&signature=${signature}`);
   }

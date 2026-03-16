@@ -484,6 +484,12 @@ export class NotificationsService {
   }
 
   getTodoItems(): Observable<any> {
+    if (environment.demo) {
+      const normalised = this._normaliseTodoItems(this.demo.todoItems.data);
+      this.notifications = normalised;
+      this._notification$.next(this.notifications);
+      return of(normalised);
+    }
     return this.request
       .get(api.get.todoItem, {
         params: {
@@ -736,7 +742,10 @@ export class NotificationsService {
     return todoItems;
   }
 
-  getChatMessage() {
+  getChatMessage(): Observable<any> {
+    if (environment.demo) {
+      return of(this.demo.chatChannels);
+    }
     return this.apolloService
       .graphQLFetch(
         `query getChannels {
@@ -1047,6 +1056,9 @@ export class NotificationsService {
    * @param {Obj} todoItem
    */
   markTodoItemAsDone(match: { identifier?: string; id?: number }) {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     return this.request.post({
       endPoint: api.post.todoItem,
       data: {

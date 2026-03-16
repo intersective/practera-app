@@ -422,6 +422,9 @@ export class EventService {
   }
 
   bookEvent(event: Event) {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     return this.request.post(
       {
         endPoint: api.post.book,
@@ -433,6 +436,9 @@ export class EventService {
   }
 
   cancelEvent(event: Event) {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     return this.request.delete(api.delete.cancel, {
       params: {
         event_id: event.id

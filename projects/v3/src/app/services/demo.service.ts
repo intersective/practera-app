@@ -1685,6 +1685,147 @@ export class DemoService {
     ]
   }
 
+  // mock auth response for offline demo mode
+  get authResponse() {
+    return {
+      data: {
+        auth: {
+          apikey: 'demo-apikey-12345',
+          experience: {
+            id: 1,
+            uuid: 'demo-exp-uuid-001',
+            timelineId: 1429,
+            projectId: 1,
+            name: 'Global Trade Accelerator',
+            description: this.description,
+            type: 'Other',
+            leadImage: this.image,
+            status: null,
+            setupStep: null,
+            color: '#2bbfd4',
+            secondaryColor: '#9fc5e8',
+            role: 'participant',
+            isLast: false,
+            locale: 'en-US',
+            supportName: 'Demo Support',
+            supportEmail: 'help@practera.com',
+            cardUrl: '',
+            bannerUrl: '',
+            logoUrl: '',
+            iconUrl: '',
+            reviewRating: true,
+            truncateDescription: true,
+            team: { id: 1 },
+            featureToggle: { pulseCheckIndicator: true },
+          },
+          email: 'test@abcd.com',
+          unregistered: false,
+          activationCode: null,
+        }
+      }
+    };
+  }
+
+  // mock experience list for offline demo mode
+  get experienceList() {
+    const exp = this.authResponse.data.auth.experience;
+    return {
+      data: {
+        experiences: [
+          {
+            ...exp,
+            todoItemCount: 2,
+          }
+        ]
+      }
+    };
+  }
+
+  // mock config response for offline demo mode
+  get configResponse() {
+    return {
+      data: [{
+        name: 'Global Trade Accelerator',
+        config: {
+          theme_color: '#2bbfd4',
+        },
+        logo: '',
+      }]
+    };
+  }
+
+  // mock team info for offline demo mode
+  get teamInfo() {
+    return {
+      data: {
+        user: {
+          teams: [
+            { id: 1, name: 'Team 1' }
+          ]
+        }
+      }
+    };
+  }
+
+  // mock todo items for offline demo mode
+  get todoItems() {
+    return {
+      success: true,
+      data: this.notifications.map((n, i) => ({
+        TodoItem: {
+          id: i + 1,
+          identifier: `TodoItem-${i + 1}`,
+          is_done: false,
+          meta: {
+            activity_id: 11,
+            activity_name: 'Welcome to the Global Trade Accelerator',
+            assessment_name: 'Assessment',
+            context_id: 1,
+            assessment_submission_id: 1,
+            reviewer_name: 'Test Reviewer',
+          },
+          created: '2021-10-04 05:44:49',
+        }
+      }))
+    };
+  }
+
+  // mock chat channels for notifications
+  get chatChannels() {
+    return {
+      data: {
+        channels: [
+          {
+            name: 'Team 1',
+            unreadMessageCount: 0,
+            lastMessage: '',
+            lastMessageCreated: '',
+          }
+        ]
+      }
+    };
+  }
+
+  // mock success response for mutations
+  get successResponse() {
+    return of({
+      data: { success: true, message: 'Demo mode' }
+    });
+  }
+
+  // mock pulse check skills for offline demo mode
+  get pulseCheckSkills() {
+    return {
+      data: {
+        pulseCheckSkills: [
+          { id: 1, name: 'Communication', value: 0.7, change: 0.1 },
+          { id: 2, name: 'Teamwork', value: 0.8, change: 0.05 },
+          { id: 3, name: 'Problem Solving', value: 0.6, change: -0.1 },
+        ]
+      }
+    };
+  }
+
   get deletedExperience(): Experience {
     return {
       "id": 1933,

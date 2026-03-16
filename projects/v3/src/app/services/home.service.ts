@@ -370,6 +370,9 @@ export class HomeService {
   getPulseCheckSkills(): Observable<ApiResponse<{
     pulseCheckSkills: PulseCheckSkill[]
   }>> {
+    if (environment.demo) {
+      return of(this.demo.pulseCheckSkills as any);
+    }
     return this.apolloService.graphQLWatch(
       `query pulseCheckSkills {
         pulseCheckSkills {

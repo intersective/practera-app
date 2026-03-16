@@ -162,6 +162,12 @@ export class ExperienceService {
   }
 
   getExperiences(): Subscription {
+    if (environment.demo) {
+      const experiences = this.demo.experienceList.data.experiences;
+      experiences.forEach(exp => { (exp as any).progress = 0; });
+      this._experiences$.next([this.demo.deletedExperience, ...experiences]);
+      return of(null).subscribe();
+    }
     return this.apolloService.graphQLFetch(
       `query experiences {
         experiences {

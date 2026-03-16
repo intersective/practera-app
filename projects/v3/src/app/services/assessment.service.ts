@@ -564,6 +564,9 @@ export class AssessmentService {
 
   // store the answer to the question
   saveQuestionAnswer(submissionId: number, questionId: number, answer: string, file?: FileInput) {
+    if (environment.demo) {
+      return of({ data: { saveSubmissionAnswer: { success: true, message: 'Demo mode' } } });
+    }
     const paramsFormat =
       "$submissionId: Int!, $questionId: Int!, $answer: Any!, $file: FileInput";
     const params =
@@ -660,6 +663,9 @@ export class AssessmentService {
     answer?: string,
     file?: FileInput,
   ) {
+    if (environment.demo) {
+      return of({ data: { saveReviewAnswer: { success: true, message: 'Demo mode' } } });
+    }
     const paramsFormat =
       "$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $file: FileInput, $comment: String!";
     const params =
@@ -703,6 +709,9 @@ export class AssessmentService {
     contextId: number,
     answers: Answer[]
   ) {
+    if (environment.demo) {
+      return of({ data: { submitAssessment: { success: true, message: 'Demo mode' } } });
+    }
     const paramsFormat =
       "$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]";
     const params =
@@ -757,6 +766,9 @@ export class AssessmentService {
     submissionId: number,
     answers: Answer[]
   ) {
+    if (environment.demo) {
+      return of({ data: { submitReview: { success: true, message: 'Demo mode' } } });
+    }
     const paramsFormat =
       "$assessmentId: Int!, $reviewId: Int!, $submissionId: Int!, $answers: [AssessmentReviewAnswerInput]";
     const params =
@@ -890,6 +902,9 @@ export class AssessmentService {
   }
 
   resubmitAssessment({ assessment_id, submission_id }): Observable<any> {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     return this.request.post({
       endPoint: api.post.resubmit,
       data: {
@@ -900,6 +915,9 @@ export class AssessmentService {
   }
 
   dueStatusAssessments(): Observable<DueAssessment[]> {
+    if (environment.demo) {
+      return of([]);
+    }
     return this.apolloService.graphQLFetch(
       `query assessments {
         assessments {

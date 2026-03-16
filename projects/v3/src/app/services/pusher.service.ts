@@ -183,6 +183,9 @@ export class PusherService {
   }
 
   getNotificationChannel(): Observable<any> {
+    if (environment.demo) {
+      return of();
+    }
     // if apikey not exist, we don't need to call API to get channel
     const { apikey } = this.storage.getUser();
     if (!apikey) {
@@ -201,6 +204,9 @@ export class PusherService {
   }
 
   getChatChannels(): Observable<any> {
+    if (environment.demo) {
+      return of();
+    }
     return this.apolloService.graphQLFetch(
       `query getPusherChannels {
         channels {

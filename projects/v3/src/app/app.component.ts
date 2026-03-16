@@ -80,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.configVerification();
     this.sharedService.onPageLoad();
-    
+
     // Set initial lang attribute based on current locale (WCAG 3.1.1)
     this.utils.setPageLanguage();
 
@@ -232,7 +232,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      if (environment.production) {
+      if (environment.production && !environment.demo) {
         // watch version update
         this.versionCheckService.initiateVersionCheck();
       }

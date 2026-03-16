@@ -151,6 +151,9 @@ export class AuthService {
   private authCacheDuration = environment.authCacheDuration;
 
   authenticate(data?: AuthQuery): Observable<AuthEndpoint> {
+    if (environment.demo) {
+      return of(this.demo.authResponse as AuthEndpoint);
+    }
     const currentTime = new Date().getTime();
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
@@ -332,9 +335,7 @@ export class AuthService {
       'Content-Type': 'application/x-www-form-urlencoded',
     };
     if (environment.demo) {
-      return of({
-        programs: []
-      });
+      return of(this._handleAuthResponse(this.demo.authResponse as AuthEndpoint));
     }
 
     return this.request.post({
@@ -431,6 +432,9 @@ export class AuthService {
    * @return {Observable<any>}      [description]
    */
   contactNumberLogin(data: { contactNumber: string }): Observable<any> {
+    if (environment.demo) {
+      return of({ data: { apikey: 'demo-apikey', tutorial: false, timelines: [] } });
+    }
     return this.request.post(
       {
         endPoint: API.login,
@@ -450,6 +454,9 @@ export class AuthService {
   }
 
   getConfig(data: ConfigParams): Observable<{ data: ExperienceConfig[] }> {
+    if (environment.demo) {
+      return of(this.demo.configResponse as any);
+    }
     return this.request.get(API.getConfig, {
       params: data
     })/* comment out until BACKEND is resolved
@@ -491,6 +498,9 @@ export class AuthService {
   }
 
   updateProfile(data: UserProfile): Observable<any> {
+    if (environment.demo) {
+      return of({ success: true });
+    }
     return this.request.post(
       {
         endPoint: API.setProfile,
@@ -549,6 +559,9 @@ export class AuthService {
   }
 
   updateProfileImage(data) {
+    if (environment.demo) {
+      return of({ success: true, data: {} });
+    }
     return this.request.post(
       {
         endPoint: API.profileImageUpload,
@@ -660,6 +673,9 @@ export class AuthService {
    * @return  {}          [return description]
    */
   updateUserProfile(avatar: ProfileAvatar): Observable<Response> {
+    if (environment.demo) {
+      return of({ data: { updateUserProfile: { success: true, message: 'Demo mode' } } } as any);
+    }
     return this.apolloService.graphQLFetch(`
       mutation updateUserProfile($avatar: FileInput) {
         updateUserProfile(avatar: $avatar) {
