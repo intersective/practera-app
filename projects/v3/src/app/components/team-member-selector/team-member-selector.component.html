@@ -7,9 +7,9 @@
         <ion-item class="item-bottom-border" lines="none">
           <ion-label>
             <span [innerHTML]="teamMember.userName"></span>
-            <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>Learner's answer</ion-chip>
-              <ion-chip class="label yellow black" *ngIf="teamMember.key === review.answer" i18n>Expert's answer</ion-chip>
+            <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
+              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label yellow black" *ngIf="teamMember.key === review?.answer" i18n>Expert's answer</ion-chip>
             </p>
           </ion-label>
         </ion-item>
@@ -37,7 +37,7 @@
       <ion-radio-group
         role="radiogroup"
         [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-        [value]="submission.answer"
+        [value]="innerValue"
         #answerEle
         (ionChange)="onChange(answerEle.value)">
         <ion-item lines="none"
@@ -48,9 +48,16 @@
             color="success"
             slot="start"
             [value]="teamMember.key"
-            [disabled]="control.disabled"
+            [disabled]="control?.disabled"
           ></ion-radio>
-          <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+          <ion-label class="white-space-normal body-2 black"
+            [innerHTML]="teamMember.userName"
+            [appToggleLabel]="onLabelToggle"
+            [toggleId]="teamMember.key"
+            [toggleDisabled]="control?.disabled"
+            role="button"
+            tabindex="0">
+          </ion-label>
         </ion-item>
       </ion-radio-group>
     </ion-list>
@@ -64,7 +71,7 @@
       <ion-radio-group
         role="radiogroup"
         [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-        [value]="review.answer"
+        [value]="review?.answer"
         (ionChange)="onChange($event.detail.value, 'answer')">
 
         <ion-item lines="none"
@@ -76,23 +83,30 @@
             slot="start"
             labelPlacement="end"
             [value]="teamMember.key"
-            [disabled]="control.disabled">
+            [disabled]="control?.disabled">
             <ion-label class="white-space-normal body-2 black">
-              <span [innerHTML]="teamMember.userName"></span>
-              <p *ngIf="teamMember.key === submission.answer || teamMember.key === review.answer">
-                <ion-chip class="label orange" *ngIf="teamMember.key === submission.answer" i18n>
+              <span [innerHTML]="teamMember.userName"
+                [appToggleLabel]="onLabelToggleReview"
+                [toggleId]="teamMember.key"
+                [toggleDisabled]="control?.disabled"
+                role="button"
+                tabindex="0">
+              </span>
+              <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
+                <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>
                   Learner's answer
                 </ion-chip>
               </p>
             </ion-label>
           </ion-radio>
+
         </ion-item>
       </ion-radio-group>
     </ion-list>
   </fieldset>
 
   <ion-list class="ion-no-padding ion-padding-bottom"
-    *ngIf="question.canComment && submission.answer">
+    *ngIf="question.canComment && submission?.answer">
     <ion-list-header class="ion-no-padding" lines="none">
       <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
     </ion-list-header>
@@ -105,7 +119,7 @@
       [(ngModel)]="comment"
       (ngModelChange)="onChange(comment, 'comment')"
       placeholder="Please put your feedback here" i18n-placeholder
-      [disabled]="control.disabled"
+      [disabled]="control?.disabled"
     ></ion-textarea>
   </ion-list>
 

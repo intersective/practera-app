@@ -2,6 +2,7 @@ import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit } from '@an
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { Subject } from 'rxjs';
+import { Question } from '../types/assessment';
 
 @Component({
   selector: 'app-multi-team-member-selector',
@@ -18,7 +19,7 @@ import { Subject } from 'rxjs';
 export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, OnInit {
   @Input() submitActions$: Subject<any>;
 
-  @Input() question;
+  @Input() question: Question;
   @Input() submission;
   @Input() submissionId: number;
   @Input() review;
@@ -32,7 +33,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // this is for doing review or not
   @Input() doReview: Boolean;
   // FormControl that is passed in from parent component
-  @Input() control: AbstractControl;
+  @Input() control: AbstractControl<{answer: string[], comment: string}>;
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: ElementRef;
   // comment field for reviewer
@@ -90,10 +91,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // event fired when radio is selected. propagate the change up to the form control using the custom value accessor interface
   // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
   onChange(value, type?: string) {
-    // innerValue should be either array or object, if it is a string, parse it
-    if (typeof this.innerValue === 'string') {
-      this.innerValue = JSON.parse(this.innerValue);
-    }
     // set changed value (answer or comment)
     if (type) {
       // initialise innerValue if not set
@@ -110,9 +107,6 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
         this.innerValue.answer = this.utils.addOrRemove(this.innerValue.answer, value);
       }
     } else {
-      if (!this.innerValue) {
-        this.innerValue = [];
-      }
       this.innerValue = this.utils.addOrRemove(this.innerValue, value);
     }
 
@@ -122,11 +116,13 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     // reset errors
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (const key in this.control.errors) {
-      if (key === 'required') {
-        this.errors.push('This question is required');
-      } else {
-        this.errors.push(this.control.errors[key]);
+    if (this.control?.errors) {
+      for (const key in this.control.errors) {
+        if (key === 'required') {
+          this.errors.push('This question is required');
+        } else {
+          this.errors.push(this.control.errors[key]);
+        }
       }
     }
 
@@ -136,7 +132,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   // From ControlValueAccessor interface
   writeValue(value: any) {
     if (value) {
-      this.innerValue = JSON.stringify(value);
+      this.innerValue = value;
     }
   }
 
@@ -152,18 +148,24 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
       this.innerValue = {
-        answer: this.review.answer,
+        answer: this.review.answer || [],
         comment: this.review.comment
       };
       this.comment = this.review.comment;
+    } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
+      if (!this.innerValue) {
+        this.innerValue = {
+          answer: this.submission?.answer || [],
+        };
+      }
+      if (this.control) {
+        this.innerValue.answer = this.control.pristine ? this.submission?.answer : this.control.value;
+      }
     }
-    if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
-    }
+
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.
@@ -180,5 +182,69 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
+  }
+
+  isSelected(teamMember: any): boolean {
+    if (!this.innerValue) return false;
+    if (this.doReview && !this.innerValue.answer) return false;
+    if (this.doAssessment && !this.innerValue) return false;
+
+    try {
+      const answer = this.doReview ? this.innerValue.answer : this.innerValue;
+      const memberObj = JSON.parse(teamMember.key);
+      return answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  isSelectedInSubmission(teamMember: any): boolean {
+    if (!this.submission?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.submission.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  isSelectedInReview(teamMember: any): boolean {
+    if (!this.review?.answer) return false;
+    try {
+      const memberObj = JSON.parse(teamMember.key);
+      return this.review.answer.some((ans: string) => {
+        try {
+          const ansObj = JSON.parse(ans);
+          return ansObj.userId === memberObj.userId;
+        } catch {
+          return false;
+        }
+      });
+    } catch {
+      return false;
+    }
+  }
+
+  // innerHTML toggle label click handler
+  onLabelToggle = (id: string): void => {
+    this.onChange(id);
+  }
+
+  onLabelToggleReview = (id: string): void => {
+    this.onChange(id, 'answer');
   }
 }
