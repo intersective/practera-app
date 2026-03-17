@@ -433,15 +433,26 @@ ion-footer {
   }
 }
 
-// space for submit button (mid to large screens)
+// space for submit button (mid to large screens) — only inside bottom-action-bar
 @media (min-width: 769px) and (max-width: 1344px) {
-  .pagination-container {
+  app-bottom-action-bar .pagination-container {
     max-width: calc(100% - 150px);
   }
 }
 
 @media (min-width: 1345px) {
-  .pagination-container {
+  app-bottom-action-bar .pagination-container {
     max-width: calc(100% - 40px);
   }
+}
+
+// standalone pagination footer for completed reviews
+.standalone-pagination-footer {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  display: block;
+  border-top: 1px solid var(--ion-color-light-shade);
+  background: var(--ion-color-light);
+  padding: 4px 0;
 }
