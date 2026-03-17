@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 
@@ -146,6 +146,7 @@ describe('AssessmentComponent', () => {
     dueDate: '2029-02-02',
     isOverdue: false,
     pulseCheck: false,
+    hasReviewRating: false,
     groups: [{
       name: 'test groups',
       description: 'test groups description',
@@ -879,6 +880,125 @@ describe('AssessmentComponent', () => {
     });
   });
 
+  describe('_prefillForm()', () => {
+    beforeEach(() => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+        'q-2': new FormControl(''),
+      });
+      component.btnDisabled$ = new BehaviorSubject(false);
+    });
+
+    it('should populate form with submission answers for assessment action', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      component.submission = {
+        id: 1,
+        status: 'in progress',
+        answers: {
+          1: { answer: 'my answer' },
+          2: { answer: 'second answer' },
+        },
+      } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual('my answer');
+      expect(component.questionsForm.get('q-2').value).toEqual('second answer');
+    });
+
+    it('should populate form with review answers for review action', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.review = {
+        id: 1,
+        status: 'in progress',
+        modified: '2019-02-02',
+        answers: {
+          1: { answer: 'review answer', comment: 'good', file: null },
+          2: { answer: 'review 2', comment: 'ok', file: null },
+        },
+      } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual({
+        answer: 'review answer',
+        comment: 'good',
+        file: null,
+      });
+      expect(component.questionsForm.get('q-2').value).toEqual({
+        answer: 'review 2',
+        comment: 'ok',
+        file: null,
+      });
+    });
+
+    it('should not populate form when submission has no answers', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.submission = { id: 1, status: 'in progress', answers: null } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual('');
+      expect(component.questionsForm.get('q-2').value).toEqual('');
+    });
+
+    it('should not populate form when review has no answers', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.review = { id: 1, status: 'in progress', modified: '2019-02-02', answers: null } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual('');
+    });
+
+    it('should enable button in read-only mode', () => {
+      component.action = 'assessment';
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      component.submission = null;
+      spyOn(component.btnDisabled$, 'next');
+
+      component['_prefillForm']();
+
+      expect(component.btnDisabled$.next).toHaveBeenCalledWith(false);
+    });
+
+    it('should call setSubmissionDisabled in edit mode', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      component.submission = null;
+      spyOn(component, 'setSubmissionDisabled');
+
+      component['_prefillForm']();
+
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
+
+    it('should skip controls that do not exist in the form', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.submission = {
+        id: 1,
+        status: 'in progress',
+        answers: {
+          999: { answer: 'no control' },
+        },
+      } as any;
+
+      // should not throw
+      expect(() => component['_prefillForm']()).not.toThrow();
+      expect(component.questionsForm.get('q-999')).toBeNull();
+    });
+  });
+
   describe('should get correct assessment answers when', () => {
     let assessment;
     let answers;
@@ -979,6 +1099,7 @@ describe('AssessmentComponent', () => {
         isOverdue: false,
         groups: [],
         pulseCheck: true,
+        hasReviewRating: false,
       };
     });
 
@@ -1375,6 +1496,258 @@ describe('AssessmentComponent', () => {
       // Expect one missing question
       expect(missingQuestions.length).toBe(1);
       expect(missingQuestions[0].id).toBe(1);
+    });
+  });
+
+  describe('submitting flag (prevent duplicate submissions)', () => {
+    beforeEach(() => {
+      component.assessment = mockAssessment;
+      component.submission = { ...mockSubmission, status: 'in progress', isLocked: false } as any;
+      component.action = 'assessment';
+      component.savingMessage$ = new BehaviorSubject('');
+    });
+
+    describe('continueToNextTask()', () => {
+      it('should set submitting=true and disable button on submit', () => {
+        component.doAssessment = true;
+        const submitSpy = spyOn(component.submitActions, 'next');
+
+        component.continueToNextTask();
+
+        expect(component['submitting']).toBeTrue();
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+        expect(submitSpy).toHaveBeenCalledWith({ autoSave: false, goBack: false });
+      });
+
+      it('should not set submitting flag for readFeedback action', () => {
+        component.doAssessment = false;
+        component.submission = { ...mockSubmission, status: 'published', isLocked: false } as any;
+        component.feedbackReviewed = false;
+        const readFeedbackSpy = spyOn(component.readFeedback, 'emit');
+
+        component.continueToNextTask();
+
+        expect(component['submitting']).toBeFalse();
+        expect(readFeedbackSpy).toHaveBeenCalled();
+      });
+
+      it('should not set submitting flag for continue action', () => {
+        component.doAssessment = false;
+        component.submission = { ...mockSubmission, status: 'done', isLocked: false } as any;
+        const continueSpy = spyOn(component.continue, 'emit');
+
+        component.continueToNextTask();
+
+        expect(component['submitting']).toBeFalse();
+        expect(continueSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('setSubmissionDisabled()', () => {
+      it('should not re-enable button while submitting is true', () => {
+        component.doAssessment = true;
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('some answer'),
+        });
+
+        component.setSubmissionDisabled();
+
+        // button should stay disabled despite form being valid
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('should enable button when submitting is false and form is valid', () => {
+        component.doAssessment = true;
+        component['submitting'] = false;
+        component.btnDisabled$.next(true);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('some answer'),
+        });
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('should disable button when form is invalid and not submitting', () => {
+        component.doAssessment = true;
+        component['submitting'] = false;
+        component.btnDisabled$.next(false);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl(null, Validators.required),
+        });
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+    });
+
+    describe('ngOnChanges() submitting flag preservation', () => {
+      it('should preserve submitting=true when same submission is refetched during submit', () => {
+        // simulate initial state: user clicked submit
+        component.ngOnChanges({
+          submission: { previousValue: undefined, currentValue: component.submission, firstChange: true, isFirstChange: () => true },
+          assessment: { previousValue: undefined, currentValue: component.assessment, firstChange: true, isFirstChange: () => true },
+        } as any);
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+
+        // simulate parent refetching the same submission mid-submit
+        component.ngOnChanges({
+          submission: {
+            previousValue: component.submission,
+            currentValue: component.submission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          assessment: {
+            previousValue: component.assessment,
+            currentValue: component.assessment,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        // submitting flag should remain true because submission id hasn't changed
+        // and doAssessment is still true (status is 'in progress')
+        expect(component['submitting']).toBeTrue();
+      });
+
+      it('should reset submitting when submission changes to a different id', () => {
+        component.ngOnChanges({
+          submission: { previousValue: undefined, currentValue: component.submission, firstChange: true, isFirstChange: () => true },
+          assessment: { previousValue: undefined, currentValue: component.assessment, firstChange: true, isFirstChange: () => true },
+        } as any);
+        component['submitting'] = true;
+
+        const newSubmission = { ...mockSubmission, id: 999, status: 'in progress', isLocked: false } as any;
+        component.submission = newSubmission;
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: { ...mockSubmission, id: 1 },
+            currentValue: newSubmission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          assessment: {
+            previousValue: component.assessment,
+            currentValue: component.assessment,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        expect(component['submitting']).toBeFalse();
+      });
+
+      it('should reset submitting when assessment transitions out of edit mode', () => {
+        component.ngOnChanges({
+          submission: { previousValue: undefined, currentValue: component.submission, firstChange: true, isFirstChange: () => true },
+          assessment: { previousValue: undefined, currentValue: component.assessment, firstChange: true, isFirstChange: () => true },
+        } as any);
+        component['submitting'] = true;
+
+        // submission changes to 'pending review' (no longer editable)
+        const doneSubmission = { ...mockSubmission, id: 1, status: 'pending review', isLocked: false } as any;
+        component.submission = doneSubmission;
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: { ...mockSubmission, id: 1, status: 'in progress' },
+            currentValue: doneSubmission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          assessment: {
+            previousValue: component.assessment,
+            currentValue: component.assessment,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        // doAssessment will be false, isPendingReview will be false (action is 'assessment')
+        // so submitting should reset
+        expect(component['submitting']).toBeFalse();
+      });
+
+      it('should not touch submitting flag when it is already false', () => {
+        component['submitting'] = false;
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: undefined,
+            currentValue: component.submission,
+            firstChange: true,
+            isFirstChange: () => true,
+          },
+          assessment: {
+            previousValue: undefined,
+            currentValue: component.assessment,
+            firstChange: true,
+            isFirstChange: () => true,
+          },
+        } as any);
+
+        expect(component['submitting']).toBeFalse();
+      });
+    });
+
+    describe('_submitAnswer() submitting flag reset on errors', () => {
+      beforeEach(() => {
+        component.doAssessment = true;
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl(null, Validators.required),
+        });
+      });
+
+      it('should reset submitting when required questions are missing', async () => {
+        notificationSpy.alert.and.returnValue(Promise.resolve());
+
+        await component._submitAnswer({ autoSave: false, goBack: false });
+
+        expect(component['submitting']).toBeFalse();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+        expect(notificationSpy.alert).toHaveBeenCalled();
+      });
+
+      it('should reset submitting when team check fails', async () => {
+        // set up team assessment with no team
+        component.assessment = { ...mockAssessment, isForTeam: true };
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('answer'),
+        });
+        storageSpy.getUser.and.returnValue({ ...mockUser, teamId: undefined });
+        (shared.getTeamInfo as jasmine.Spy) = jasmine.createSpy('getTeamInfo').and.returnValue(of({}));
+
+        notificationSpy.alert.and.returnValue(Promise.resolve());
+
+        await component._submitAnswer({ autoSave: false, goBack: false });
+
+        expect(component['submitting']).toBeFalse();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('should reset submitting when getTeamInfo throws', async () => {
+        component.assessment = { ...mockAssessment, isForTeam: true };
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('answer'),
+        });
+        (shared.getTeamInfo as jasmine.Spy) = jasmine.createSpy('getTeamInfo').and.returnValue(
+          { toPromise: () => Promise.reject(new Error('network error')) }
+        );
+
+        await component._submitAnswer({ autoSave: false, goBack: false });
+
+        expect(component['submitting']).toBeFalse();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
     });
   });
 });
