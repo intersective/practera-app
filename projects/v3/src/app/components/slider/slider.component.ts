@@ -153,6 +153,9 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
+      if (value.comment !== undefined) {
+        this.comment = value.comment;
+      }
     }
   }
 
@@ -169,13 +172,17 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   // adding save values to from control
   private _showSavedAnswers() {
     if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
-      this.innerValue = {
-        answer: '',
-        comment: ''
-      };
-      this.innerValue.comment = this.review.comment;
-      this.comment = this.review.comment;
-      this.innerValue.answer = this.review.answer;
+      // preserve user edits across pagination; fall back to saved review data
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+        this.comment = this.control.value?.comment ?? this.review.comment;
+      } else {
+        this.innerValue = {
+          answer: this.review.answer,
+          comment: this.review.comment,
+        };
+        this.comment = this.review.comment;
+      }
     }
 
     if ((this.submissionStatus === 'in progress') && this.doAssessment) {
