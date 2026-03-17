@@ -71,7 +71,7 @@
       <ion-radio-group
         role="radiogroup"
         [attr.aria-labelledby]="'team-member-selector-question-' + question.id"
-        [value]="review?.answer"
+        [value]="innerValue?.answer"
         (ionChange)="onChange($event.detail.value, 'answer')">
 
         <ion-item lines="none"
