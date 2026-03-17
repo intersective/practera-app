@@ -221,7 +221,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       };
     }
 
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
     this.submitActions$.next(action);
   }
 
@@ -243,8 +245,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue = this.fileRequestFormat();
     }
 
-    this.control.setValue(this.innerValue);
-    this.control.markAsTouched();
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+      this.control.markAsTouched();
+    }
     this.triggerSave();
   }
 
@@ -269,7 +273,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
       this.innerValue = {
         answer: {},
         comment: ''
@@ -280,9 +284,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue.file = this.review.file;
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+      this.innerValue = this.submission?.answer;
     }
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
   }
 
   removeSubmitFile(file?: {
