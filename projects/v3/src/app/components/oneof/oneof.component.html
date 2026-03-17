@@ -87,8 +87,10 @@
   <div class="ion-no-padding">
     <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id" *ngIf="question.canAnswer">
       <legend class="for-accessibility" [id]="'oneof-question-review-legend-' + question.id">{{ question.name }}</legend>
-      <ion-list class="ion-no-padding">
-        <ion-radio-group #answerEle [value]="review.answer"
+      <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
+        <ion-radio-group
+          #answerEle
+          [value]="innerValue?.answer"
           (ionChange)="onChange(answerEle.value, 'answer')"
           role="radiogroup"
           [attr.aria-labelledby]="'oneof-question-' + question.id">

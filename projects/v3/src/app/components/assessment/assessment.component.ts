@@ -530,15 +530,18 @@ Best regards`;
         let quesCtrl: { answer: any; comment?: string; file?: any } | any = null;
 
         if (this.action === 'review') {
+          // use array initial value for checkbox-based question types
+          const arrayTypes = ['multiple', 'multi team member selector'];
           quesCtrl = {
             comment: '',
-            answer: question.type === 'multi team member selector' ? [] : '',
+            answer: arrayTypes.includes(question.type) ? [] : '',
             file: null
           };
         } else {
-          // For assessment mode, initialize multi team member selector with proper structure
+          // for assessment mode, multi-team-member-selector uses a plain array
+          // (not an object) because onChange/isSelected/triggerSave treat innerValue as an array
           if (question.type === 'multi team member selector') {
-            quesCtrl = { answer: [] };
+            quesCtrl = [];
           }
         }
 
