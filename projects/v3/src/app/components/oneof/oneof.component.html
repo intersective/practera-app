@@ -92,7 +92,7 @@
       <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
         <ion-radio-group
           #answerEle
-          [value]="review.answer"
+          [value]="innerValue?.answer"
           (ionChange)="onChange(answerEle.value, 'answer')"
           role="radiogroup"
           [attr.aria-labelledby]="'oneof-question-review-legend-' + question.id">
