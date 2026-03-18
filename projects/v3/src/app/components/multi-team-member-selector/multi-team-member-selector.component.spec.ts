@@ -184,4 +184,70 @@ describe('MultiTeamMemberSelectorComponent', () => {
       expect(component.audienceContainReviewer()).toBeFalsy();
     });
   });
+
+  describe('isSelectedInSubmission()', () => {
+    const teamMember = { key: JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 }), userName: 'User1' };
+
+    it('should return false when submission is null', () => {
+      component.submission = null;
+      expect(component.isSelectedInSubmission(teamMember)).toBeFalse();
+    });
+
+    it('should return false when submission is undefined', () => {
+      component.submission = undefined;
+      expect(component.isSelectedInSubmission(teamMember)).toBeFalse();
+    });
+
+    it('should return false when submission.answer is null', () => {
+      component.submission = { answer: null };
+      expect(component.isSelectedInSubmission(teamMember)).toBeFalse();
+    });
+
+    it('should return true when team member is selected in submission answer', () => {
+      component.submission = {
+        answer: [JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 })],
+      };
+      expect(component.isSelectedInSubmission(teamMember)).toBeTrue();
+    });
+
+    it('should return false when team member is not selected in submission answer', () => {
+      component.submission = {
+        answer: [JSON.stringify({ name: 'Other', recipientId: 2, recipientEmail: 'o@test.com', userId: 99 })],
+      };
+      expect(component.isSelectedInSubmission(teamMember)).toBeFalse();
+    });
+  });
+
+  describe('isSelectedInReview()', () => {
+    const teamMember = { key: JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 }), userName: 'User1' };
+
+    it('should return false when review is null', () => {
+      component.review = null;
+      expect(component.isSelectedInReview(teamMember)).toBeFalse();
+    });
+
+    it('should return false when review is undefined', () => {
+      component.review = undefined;
+      expect(component.isSelectedInReview(teamMember)).toBeFalse();
+    });
+
+    it('should return false when review.answer is null', () => {
+      component.review = { answer: null };
+      expect(component.isSelectedInReview(teamMember)).toBeFalse();
+    });
+
+    it('should return true when team member is selected in review answer', () => {
+      component.review = {
+        answer: [JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 })],
+      };
+      expect(component.isSelectedInReview(teamMember)).toBeTrue();
+    });
+
+    it('should return false when team member is not selected in review answer', () => {
+      component.review = {
+        answer: [JSON.stringify({ name: 'Other', recipientId: 2, recipientEmail: 'o@test.com', userId: 99 })],
+      };
+      expect(component.isSelectedInReview(teamMember)).toBeFalse();
+    });
+  });
 });

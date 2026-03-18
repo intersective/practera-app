@@ -19,6 +19,8 @@ import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
+import { ModalController } from '@ionic/angular';
 
 const MIN_SCROLLING_PAGES = 8; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per paginated view (controls pagination granularity)
@@ -112,6 +114,9 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   // if action == 'assessment' and doAssessment is false, it means this user is reading the submission or feedback
   doAssessment: boolean;
 
+  // tracks whether a submission is in progress to prevent re-enabling the button
+  private submitting = false;
+
   // if isPendingReview is true, it means this review is WIP, meaning this assessment is pending review
   // if action == 'review' and isPendingReview is false, it means the review is done and this student is reading the submission and review
   isPendingReview = false;
@@ -149,6 +154,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
     private cdr: ChangeDetectorRef,
+    private modalController: ModalController,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -419,15 +425,24 @@ Best regards`;
     this._initialise();
 
     if (changes.assessment || changes.submission || changes.review) {
-      // reset button state when assessment changes
-      this.btnDisabled$.next(false);
       this.pageRequiredCompletion = [];
 
       this._handleSubmissionData();
+
+      // reset submitting flag only when the submission actually changed
+      // or when the assessment is no longer in an editable state;
+      // keeps submitting=true during intermediate fetches of the same submission
+      if (this.submitting) {
+        const submissionChanged = changes.submission
+          && changes.submission.previousValue?.id !== changes.submission.currentValue?.id;
+        if (submissionChanged || (!this.doAssessment && !this.isPendingReview)) {
+          this.submitting = false;
+        }
+      }
+
       this._populateQuestionsForm();
       this._handleReviewData();
       this._prefillForm();
-      // this._populateFormWithAnswers(); // deprecated
       this._preventSubmission();
     }
 
@@ -462,7 +477,6 @@ Best regards`;
   private _initialise() {
     this.doAssessment = false;
     this.feedbackReviewed = false;
-    this.questionsForm = new FormGroup({});
     this.isNotInATeam = false;
     this.isPendingReview = false;
   }
@@ -507,7 +521,11 @@ Best regards`;
   // Populate the question form with FormControls.
   // The name of form control is like 'q-2' (2 is an example of question id)
   private _populateQuestionsForm() {
-    // questions in multiple groups
+    // build a new form group before assigning to avoid _rawValidators errors
+    // during template rendering with stale formControlName bindings
+    const newForm = new FormGroup({});
+
+    // question groups
     this.assessment.groups.forEach(group => {
       group.questions.forEach(question => {
         let validator = [];
@@ -528,21 +546,27 @@ Best regards`;
         let quesCtrl: { answer: any; comment?: string; file?: any } | any = null;
 
         if (this.action === 'review') {
+          // use array initial value for checkbox-based question types
+          const arrayTypes = ['multiple', 'multi team member selector'];
           quesCtrl = {
             comment: '',
-            answer: question.type === 'multi team member selector' ? [] : '',
+            answer: arrayTypes.includes(question.type) ? [] : '',
             file: null
           };
         } else {
-          // For assessment mode, initialize multi team member selector with proper structure
+          // for assessment mode, multi-team-member-selector uses a plain array
+          // (not an object) because onChange/isSelected/triggerSave treat innerValue as an array
           if (question.type === 'multi team member selector') {
-            quesCtrl = { answer: [] };
+            quesCtrl = [];
           }
         }
 
-        this.questionsForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
+        newForm.addControl('q-' + question.id, new FormControl(quesCtrl, validator));
       });
     });
+
+    // assign fully-built form to trigger a single template update
+    this.questionsForm = newForm;
 
     // when no questions in the assessment, disable the button
     if (this.utils.isEmpty(this.questionsForm.getRawValue())) {
@@ -677,6 +701,7 @@ Best regards`;
   continueToNextTask() {
     switch (this._btnAction) {
       case 'submit':
+        this.submitting = true;
         this.btnDisabled$.next(true);
         return this.submitActions.next({
           autoSave: false,
@@ -789,6 +814,7 @@ Best regards`;
     const requiredQuestions = this._compulsoryQuestionsAnswered(answers);
 
     if (!autoSave && requiredQuestions.length > 0) {
+      this.submitting = false;
       this.btnDisabled$.next(false);
       // display a pop up if required question not answered
       return this.notifications.alert({
@@ -816,6 +842,7 @@ Best regards`;
         if (this.assessment.isForTeam) {
           const teamId = this.storage.getUser().teamId;
           if (typeof teamId !== 'number') {
+            this.submitting = false;
             this.btnDisabled$.next(false);
             return this.notifications.alert({
               message: $localize`Currently you are not in a team, please reach out to your Administrator or Coordinator to proceed with next steps.`,
@@ -829,6 +856,7 @@ Best regards`;
           }
         }
       } catch (error) {
+        this.submitting = false;
         this.btnDisabled$.next(false);
         return this.notifications.assessmentSubmittedToast({ isFail: true });
       }
@@ -1238,48 +1266,8 @@ Best regards`;
     }, 50);
   }
 
-  /* deprecated, but keep for reference */
-  private _populateFormWithAnswers() {
-    // Populate form with submission answers
-    if (this.submission?.answers && this.action === 'assessment') {
-      Object.keys(this.submission.answers).forEach(questionId => {
-        const controlName = 'q-' + questionId;
-        const control = this.questionsForm.get(controlName);
-        if (control && this.submission.answers[questionId]?.answer !== undefined) {
-          control.setValue(this.submission.answers[questionId].answer, { emitEvent: false });
-        }
-      });
-    }
-
-    // Populate form with review answers
-    if (this.review?.answers && this.action === 'review') {
-      Object.keys(this.review.answers).forEach(questionId => {
-        const controlName = 'q-' + questionId;
-        const control = this.questionsForm.get(controlName);
-        if (control && this.review.answers[questionId]) {
-          const reviewAnswer = {
-            answer: this.review.answers[questionId].answer,
-            comment: this.review.answers[questionId].comment,
-            file: this.review.answers[questionId].file || null,
-          };
-          control.setValue(reviewAnswer, { emitEvent: false });
-        }
-      });
-    }
-
-    if (this.utils.isEmpty(this.submission?.answers) && this.utils.isEmpty(this.review?.answers) && this.questionsForm?.invalid) {
-      this.setSubmissionDisabled();
-    }
-
-    // Initialize page completion after form is populated
-    setTimeout(() => {
-      this.initializePageCompletion();
-    }, 100);
-  }
-
   /**
    * prefill form with answers and check validation state
-   * replaces the old _populateFormWithAnswers() method
    */
   private _prefillForm(): void {
     // populate form with submission answers (for assessment action)
@@ -1332,6 +1320,11 @@ Best regards`;
       return;
     }
 
+    // don't re-enable the button while a submission is in progress
+    if (this.submitting) {
+      return;
+    }
+
     const isFormValid = this.questionsForm?.valid ?? false;
     const isCurrentlyDisabled = this.btnDisabled$.getValue();
 
@@ -1349,5 +1342,20 @@ Best regards`;
    */
   shouldShowRequiredIndicator(question: Question): boolean {
     return this._isRequired(question) && (this.doAssessment || this.isPendingReview);
+  }
+
+  /**
+   * open the project brief modal for the submitter's team
+   */
+  async showProjectBrief(): Promise<void> {
+    if (!this.review?.projectBrief) {
+      return;
+    }
+    const modal = await this.modalController.create({
+      component: ProjectBriefModalComponent,
+      componentProps: { projectBrief: this.review.projectBrief },
+      cssClass: 'project-brief-modal',
+    });
+    await modal.present();
   }
 }

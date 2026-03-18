@@ -452,6 +452,7 @@ export class ActivityDesktopPage {
 
   async goToTask(task: Task): Promise<any> {
     this.isLoadingAssessment = true;
+    this.btnDisabled$.next(false);
     try {
       const taskContentElement = this.document.getElementById('task-content');
       if (taskContentElement) {
@@ -640,7 +641,8 @@ export class ActivityDesktopPage {
     // display review rating modal
     return await this.reviewService.popUpReviewRating(
       this.review.id,
-      false
+      false,
+      this.assessmentService.assessment?.hasReviewRating
     );
   }
 

@@ -58,12 +58,13 @@ export const environment = {
   intercom: false,
   newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
+  projecthub: '<CUSTOM_PROJECTHUB_URL>',
   helpline: '<CUSTOM_HELPLINE>',
   featureToggles: {
     assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
   },
   snowAnimation: {
-    enabled: true,
+    enabled: false,
     snowflakeCount: 30,
   },
 };

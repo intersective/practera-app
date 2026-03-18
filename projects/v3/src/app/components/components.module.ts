@@ -46,6 +46,7 @@ import { FilePopupComponent } from './file-popup/file-popup.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { SliderComponent } from './slider/slider.component';
 import { LanguageDetectionPipe } from '../pipes/language.pipe';
+import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -99,6 +100,7 @@ const largeCircleDefaultConfig = {
     MultipleComponent,
     OneofComponent,
     PopUpComponent,
+    ProjectBriefModalComponent,
     ReviewListComponent,
     ReviewRatingComponent,
     SliderComponent,
@@ -146,6 +148,7 @@ const largeCircleDefaultConfig = {
     MultipleComponent,
     OneofComponent,
     PopUpComponent,
+    ProjectBriefModalComponent,
     ReviewListComponent,
     ReviewRatingComponent,
     SliderComponent,

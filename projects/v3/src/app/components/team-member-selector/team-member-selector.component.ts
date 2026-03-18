@@ -107,11 +107,13 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
     // reset errors
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (const key in this.control.errors) {
-      if (key === 'required') {
-        this.errors.push('This question is required');
-      } else {
-        this.errors.push(this.control.errors[key]);
+    if (this.control?.errors) {
+      for (const key in this.control.errors) {
+        if (key === 'required') {
+          this.errors.push('This question is required');
+        } else {
+          this.errors.push(this.control.errors[key]);
+        }
       }
     }
 
@@ -122,6 +124,9 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
+      if (value.comment !== undefined) {
+        this.comment = value.comment;
+      }
     }
   }
 
@@ -137,17 +142,23 @@ export class TeamMemberSelectorComponent implements ControlValueAccessor, OnInit
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
-      this.innerValue = {
-        answer: '',
-        comment: ''
-      };
-      this.innerValue.comment = this.review.comment;
-      this.comment = this.review.comment;
-      this.innerValue.answer = this.review.answer;
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview) && this.review) {
+      // preserve user edits across pagination; fall back to saved review data
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+        this.comment = this.control.value?.comment ?? this.review.comment;
+      } else {
+        this.innerValue = {
+          answer: this.review.answer,
+          comment: this.review.comment,
+        };
+        this.comment = this.review.comment;
+      }
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
+      if (this.control) {
+        this.innerValue = this.control.pristine ? this.submission?.answer : this.control.value;
+      }
     }
     this.propagateChange(this.innerValue);
   }

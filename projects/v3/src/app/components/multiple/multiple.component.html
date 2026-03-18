@@ -9,11 +9,11 @@
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner answer</ion-chip>
+          >Learner's answer</ion-chip>
           <ion-chip i18n
             class="label yellow black"
             *ngIf="review?.answer?.includes(choice.id)"
-          >Reviewer answer</ion-chip>
+          >Expert's answer</ion-chip>
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
@@ -98,7 +98,7 @@
         [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
         lines="none">
         <ion-checkbox color="success"
-          [checked]="review.answer ? review.answer.includes(choice.id) : false"
+          [checked]="innerValue?.answer ? innerValue.answer.includes(choice.id) : false"
           [value]="choice.id"
           justify="start"
           slot="start"

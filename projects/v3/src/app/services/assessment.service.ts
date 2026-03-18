@@ -12,6 +12,7 @@ import { FastFeedbackService } from './fast-feedback.service';
 import { RequestService } from 'request';
 import { FileInput, FileResponse } from '../components/types/assessment';
 import { Choice, Question } from '@v3/components/types/assessment';
+import { ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 /**
  * @name api
@@ -52,6 +53,7 @@ export interface Assessment {
   isOverdue?: boolean;
   groups: Array<Group>;
   pulseCheck: boolean;
+  hasReviewRating: boolean; // assessment level setting to enable review rating
   allowResubmit?: boolean; // indicator to show resubmit button
 }
 
@@ -88,6 +90,7 @@ export interface AssessmentReview {
   status: string;
   modified: string;
   teamName?: string;
+  projectBrief?: ProjectBrief;
 }
 
 @Injectable({
@@ -138,7 +141,11 @@ export class AssessmentService {
       .graphQLFetch(
         `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
-          id name type description dueDate isTeam pulseCheck allowResubmit
+          id name type
+          description dueDate isTeam
+          pulseCheck
+          hasReviewRating
+          allowResubmit
           groups {
             name description
             questions{
@@ -156,7 +163,7 @@ export class AssessmentService {
             submitter {
               name image
               team {
-                name
+                id name projectBrief
               }
             }
             answers {
@@ -265,6 +272,7 @@ export class AssessmentService {
         ? this.utils.timeComparer(data.assessment.dueDate) < 0
         : false,
       pulseCheck: data.assessment.pulseCheck,
+      hasReviewRating: data.assessment.hasReviewRating,
       allowResubmit: data.assessment.allowResubmit,
       groups: [],
     };
@@ -431,6 +439,7 @@ export class AssessmentService {
       status: firstSubmissionReview.status,
       modified: firstSubmissionReview.modified,
       teamName: firstSubmission.submitter.team?.name,
+      projectBrief: this._parseProjectBrief(firstSubmission.submitter.team?.projectBrief),
       answers: {},
     };
 
@@ -451,6 +460,27 @@ export class AssessmentService {
       };
     });
     return review;
+  }
+
+  /**
+   * parse project brief from raw string or object
+   */
+  private _parseProjectBrief(brief: string | object | null): ProjectBrief | null {
+    if (!brief) {
+      return null;
+    }
+    if (typeof brief === 'object') {
+      return brief as ProjectBrief;
+    }
+    if (typeof brief === 'string') {
+      try {
+        return JSON.parse(brief);
+      } catch (e) {
+        console.error('failed to parse project brief:', e);
+        return null;
+      }
+    }
+    return null;
   }
 
   /**

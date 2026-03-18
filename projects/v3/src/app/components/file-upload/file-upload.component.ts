@@ -221,7 +221,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       };
     }
 
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
     this.submitActions$.next(action);
   }
 
@@ -243,8 +245,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue = this.fileRequestFormat();
     }
 
-    this.control.setValue(this.innerValue);
-    this.control.markAsTouched();
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+      this.control.markAsTouched();
+    }
     this.triggerSave();
   }
 
@@ -269,20 +273,31 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
-      this.innerValue = {
-        answer: {},
-        comment: ''
-      };
-      this.innerValue.comment = this.review.comment;
-      this.comment = this.review.comment;
-      this.innerValue.answer = this.review.answer;
-      this.innerValue.file = this.review.file;
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
+      // when the control has been modified (e.g. user edited during pagination),
+      // preserve their edits; otherwise use the saved review data
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+        this.comment = this.control.value?.comment ?? this.review.comment;
+      } else {
+        this.innerValue = {
+          answer: this.review.answer,
+          comment: this.review.comment,
+          file: this.review.file,
+        };
+        this.comment = this.review.comment;
+      }
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+      } else {
+        this.innerValue = this.submission?.answer;
+      }
     }
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
   }
 
   removeSubmitFile(file?: {

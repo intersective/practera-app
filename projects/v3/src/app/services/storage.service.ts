@@ -34,7 +34,7 @@ export interface User {
   userHash?: string;
   colors?: Colors;
   activityCardImage?: string; // default activity card image
-  hasReviewRating?: boolean;
+  hasReviewRating?: boolean; // from experience settings (enable/disable entirely from global setting)
   truncateDescription?: boolean;
   enrolment?: any;
   activityCompleteMessage?: string;
@@ -55,6 +55,20 @@ export interface User {
 
   // error handling
   saveAssessmentErrors?: [],
+
+  // project brief - parsed json object containing team project details
+  projectBrief?: {
+    id?: string;
+    title?: string;
+    description?: string;
+    industry?: string[];
+    projectType?: string;
+    technicalSkills?: string[];
+    professionalSkills?: string[];
+    deliverables?: string;
+    timeline?: number;
+  };
+  teamUuid?: string;
 }
 
 export interface Referrer {
@@ -140,10 +154,10 @@ export class BrowserStorageService {
   /**
    * Retrieves the status of a specified feature toggle. (controlled by the backend)
    *
-   * @param name - The name of the feature toggle to check. Currently supports 'pulseCheckIndicator'.
+   * @param name - The name of the feature toggle to check. Currently supports 'pulseCheckIndicator' and 'showProjectHub'.
    * @returns A boolean indicating whether the specified feature toggle is enabled.
    */
-  getFeature(name: 'pulseCheckIndicator'): boolean {
+  getFeature(name: 'pulseCheckIndicator' | 'showProjectHub'): boolean {
     return this.get('experience')?.featureToggle?.[name] || false;
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApolloService } from '@v3/services/apollo.service';
 import { RequestService } from 'request';
-import { map } from 'rxjs/operators';
+import { delay, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
@@ -90,6 +90,11 @@ export interface Message {
 export interface MessageListResult {
   cursor: string;
   messages: Message[];
+}
+
+export interface EditMessageParam {
+  uuid: string;
+  message?: string;
 }
 
 interface NewMessageParam {
@@ -470,6 +475,43 @@ export class ChatService {
       senderRole: result.sender.role,
       senderAvatar: result.sender.avatar,
     };
+  }
+
+  /**
+   * delete a chat message by uuid.
+   */
+  deleteChatMessage(uuid: string): Observable<any> {
+    if (environment.demo) {
+      return of({}).pipe(delay(1000));
+    }
+    return this.apolloService.graphQLMutate(
+      `mutation deleteChatMessage($uuid: String!) {
+        deleteChatLog(uuid: $uuid) {
+          success
+        }
+      }`,
+      { uuid }
+    );
+  }
+
+  /**
+   * edit a chat message (text content).
+   */
+  editChatMessage(data: EditMessageParam): Observable<any> {
+    if (environment.demo) {
+      return of({}).pipe(delay(1000));
+    }
+    return this.apolloService.graphQLMutate(
+      `mutation editChatMessage($uuid: String!, $message: String) {
+        editChatLog(uuid: $uuid, message: $message) {
+          success
+        }
+      }`,
+      {
+        uuid: data.uuid,
+        message: data.message,
+      }
+    );
   }
 
   logChatError(data) {

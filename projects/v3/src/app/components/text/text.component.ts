@@ -144,6 +144,12 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
+      if (typeof value === 'object') {
+        this.answer = value.answer;
+        this.comment = value.comment;
+      } else {
+        this.answer = value;
+      }
     }
   }
 
@@ -159,26 +165,34 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if (['in progress', 'not start'].includes(this.reviewStatus) && this.doReview) {
-      this.innerValue = {
-        answer: this.review.answer,
-        comment: this.review.comment
-      };
-
-      if (this.control.pristine) {
-        this.comment = this.review.comment;
-        this.answer = this.review.answer;
+    if (['in progress', 'not start'].includes(this.reviewStatus) && this.doReview && this.review) {
+      // when the control has been modified (e.g. user typed during pagination),
+      // preserve their edits; otherwise use the saved review data
+      if (this.control && !this.control.pristine) {
+        this.answer = this.control.value?.answer ?? this.review.answer;
+        this.comment = this.control.value?.comment ?? this.review.comment;
       } else {
-        this.comment = this.control?.value?.comment || this.review.comment;
-        this.answer = this.control?.value?.answer || this.review.answer;
+        this.answer = this.review.answer;
+        this.comment = this.review.comment;
       }
+
+      this.innerValue = {
+        answer: this.answer,
+        comment: this.comment,
+      };
     } else if ((this.submissionStatus === 'in progress') && this.doAssessment) {
-      this.answer = this.control.pristine ? this.submission.answer : this.control.value;
+      if (this.control) {
+        this.answer = this.control.pristine ? this.submission?.answer : this.control.value;
+      } else {
+        this.answer = this.submission?.answer;
+      }
       this.innerValue = this.answer;
     }
 
     this.propagateChange(this.innerValue);
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
   }
 
   // check question audience have more that one audience and is it includes reviewer as audience.

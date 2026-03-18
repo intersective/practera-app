@@ -5,15 +5,15 @@
       <ion-item class="item-bottom-border" lines="none">
         <ion-label>
           <span [innerHTML]="teamMember.userName"></span>
-          <ng-container *ngIf="submission.answer">
+          <ng-container *ngIf="submission?.answer">
             <p *ngIf="isSelectedInSubmission(teamMember)">
-              <ion-chip *ngIf="isSelectedInSubmission(teamMember)" class="label orange" i18n>Learner answer</ion-chip>
+              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
             </p>
           </ng-container>
 
           <ng-container *ngIf="review?.answer">
             <p *ngIf="isSelectedInReview(teamMember)">
-              <ion-chip *ngIf="isSelectedInReview(teamMember)" class="label yellow black" i18n>Expert answer</ion-chip>
+              <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
             </p>
           </ng-container>
         </ion-label>
@@ -42,7 +42,15 @@
         lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
         [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-        <ion-label class="white-space-normal body-2 black" [innerHTML]="teamMember.userName"></ion-label>
+        <ion-label class="white-space-normal body-2 black"
+          [innerHTML]="teamMember.userName"
+          [appToggleLabel]="onLabelToggle"
+          [toggleId]="teamMember.key"
+          [toggleDisabled]="control?.disabled"
+          role="button"
+          tabindex="0">
+        </ion-label>
+
         <ion-checkbox
           [attr.aria-label]="teamMember.userName"
           color="success"
@@ -50,7 +58,7 @@
           [value]="teamMember.key"
           slot="start"
           (ionChange)="onChange(teamMember.key)"
-          [disabled]="control.disabled">
+          [disabled]="control?.disabled">
         </ion-checkbox>
       </ion-item>
     </ion-list>
@@ -71,18 +79,18 @@
 
         <ion-checkbox color="success"
           [attr.aria-label]="teamMember.userName"
-          [checked]="review?.answer?.includes(teamMember.key)"
+          [checked]="isSelected(teamMember)"
           [value]="teamMember.key"
           justify="start"
           slot="start"
           labelPlacement="end"
           (ionChange)="onChange(teamMember.key, 'answer')"
-          [disabled]="control.disabled">
+          [disabled]="control?.disabled">
           <div class="white-space-normal body-2 black">
             <span [innerHTML]="teamMember.userName"
               [appToggleLabel]="onLabelToggleReview"
               [toggleId]="teamMember.key"
-              [toggleDisabled]="control.disabled"
+              [toggleDisabled]="control?.disabled"
               role="button"
               tabindex="0"
             ></span>
@@ -96,7 +104,7 @@
   </fieldset>
 
   <ion-list class="ion-no-padding ion-padding-bottom"
-    *ngIf="question.canComment && submission.answer">
+    *ngIf="question.canComment && submission?.answer">
     <ion-list-header class="ion-no-padding" lines="none">
       <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
     </ion-list-header>
@@ -109,7 +117,7 @@
       [(ngModel)]="comment"
       (ngModelChange)="onChange(comment, 'comment')"
       placeholder="Please put your feedback here"
-      [disabled]="control.disabled"
+      [disabled]="control?.disabled"
       i18n-placeholder
     ></ion-textarea>
   </ion-list>

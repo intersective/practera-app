@@ -177,6 +177,7 @@ describe('HomePage', () => {
     beforeEach(() => {
       sharedService.refreshJWT.and.returnValue(Promise.resolve());
       storageService.get.and.returnValue({ name: 'Test Experience', cardUrl: 'test-url' });
+      storageService.getFeature.and.returnValue(true);
       achievementService.getIsPointsConfigured.and.returnValue(true);
       achievementService.getEarnedPoints.and.returnValue(100);
       homeService.getPulseCheckStatuses.and.returnValue(of({
@@ -204,6 +205,18 @@ describe('HomePage', () => {
       await component.updateDashboard();
       expect(storageService.get).toHaveBeenCalledWith('experience');
       expect(component.experience).toEqual({ name: 'Test Experience', cardUrl: 'test-url' } as any);
+    });
+
+    it('should set project hub visibility from feature toggle', async () => {
+      await component.updateDashboard();
+      expect(storageService.getFeature).toHaveBeenCalledWith('showProjectHub');
+      expect(component.showProjectHub).toBe(true);
+    });
+
+    it('should hide project hub when feature toggle is disabled', async () => {
+      storageService.getFeature.and.returnValue(false);
+      await component.updateDashboard();
+      expect(component.showProjectHub).toBe(false);
     });
 
     it('should call service methods to fetch data', async () => {

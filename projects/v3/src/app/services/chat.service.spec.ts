@@ -416,4 +416,30 @@ describe('ChatService', () => {
     });
   });
 
+  describe('when testing deleteChatMessage()', () => {
+    it('should call graphQLMutate with correct uuid', () => {
+      const response = { data: { deleteChatLog: { success: true } } };
+      apolloSpy.graphQLMutate.and.returnValue(of(response));
+      service.deleteChatMessage('msg-uuid-1').subscribe(res => {
+        expect(res).toEqual(response);
+      });
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalled();
+      const args = apolloSpy.graphQLMutate.calls.mostRecent().args;
+      expect(args[1]).toEqual({ uuid: 'msg-uuid-1' });
+    });
+  });
+
+  describe('when testing editChatMessage()', () => {
+    it('should call graphQLMutate with correct params', () => {
+      const response = { data: { editChatLog: { success: true } } };
+      apolloSpy.graphQLMutate.and.returnValue(of(response));
+      service.editChatMessage({ uuid: 'msg-uuid-1', message: '<p>updated</p>' }).subscribe(res => {
+        expect(res).toEqual(response);
+      });
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalled();
+      const args = apolloSpy.graphQLMutate.calls.mostRecent().args;
+      expect(args[1]).toEqual({ uuid: 'msg-uuid-1', message: '<p>updated</p>' });
+    });
+  });
+
 });
