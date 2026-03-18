@@ -248,6 +248,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if (this.control) {
       this.control.setValue(this.innerValue);
       this.control.markAsTouched();
+      this.control.markAsDirty();
     }
     this.triggerSave();
   }
@@ -279,6 +280,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       if (this.control && !this.control.pristine) {
         this.innerValue = this.control.value;
         this.comment = this.control.value?.comment ?? this.review.comment;
+        // restore uploadedFile from saved file data so template shows file after pagination
+        if (this.innerValue?.file?.url) {
+          this.uploadedFile = { ...this.innerValue.file, cdnUrl: this.innerValue.file.url } as TusFileResponse;
+        }
       } else {
         this.innerValue = {
           answer: this.review.answer,
@@ -291,6 +296,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
       if (this.control && !this.control.pristine) {
         this.innerValue = this.control.value;
+        // restore uploadedFile from saved file data so template shows file after pagination
+        if (this.innerValue?.url) {
+          this.uploadedFile = { ...this.innerValue, cdnUrl: this.innerValue.url } as TusFileResponse;
+        }
       } else {
         this.innerValue = this.submission?.answer;
       }
