@@ -78,13 +78,13 @@ describe('MultipleComponent', () => {
       component.doReview = true;
       component.review = {
         comment: 'asdf',
-        answer: { name: 'abc' }
+        answer: ['abc']
       };
       component.control = new FormControl('');
       fixture.detectChanges();
       // component sets innerValue to review data
       expect(component.innerValue).toEqual({
-        answer: component.review.answer,
+        answer: ['abc'],
         comment: component.review.comment
       });
       expect(component.comment).toEqual(component.review.comment);

@@ -683,7 +683,7 @@ Best regards`;
             missing.push(question);
 
             // add highlight effect to the question
-            const questionElement = this.form.nativeElement.querySelector(`#q-${question.id}`);
+            const questionElement = this.form?.nativeElement?.querySelector(`#q-${question.id}`);
             if (questionElement) {
               questionElement.classList.add('flash-highlight');
             }

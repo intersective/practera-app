@@ -27,7 +27,8 @@ const createExperience = (num: number) => {
     reviewRating: false,
     truncateDescription: false,
     featureToggle: {
-      pulseCheckIndicator: false
+      pulseCheckIndicator: false,
+      showProjectHub: false,
     },
     progress: 0,
     config: {},

@@ -422,4 +422,5 @@ describe('PusherService', async () => {
       expect(mockSubscription.trigger).toHaveBeenCalledWith('client-chat-edit-message', data);
     });
   });
+});
 

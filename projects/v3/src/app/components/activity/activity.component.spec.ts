@@ -74,7 +74,7 @@ describe('ActivityComponent', () => {
 
     // configure shared service mock
     const sharedServiceSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    sharedServiceSpy.getTeamInfo.and.returnValue(of({}));
+    sharedServiceSpy.getTeamInfo.and.returnValue(of({} as any));
   }));
 
   it('should create', () => {

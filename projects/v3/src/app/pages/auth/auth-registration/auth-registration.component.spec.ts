@@ -137,7 +137,8 @@ describe('AuthRegistrationComponent', () => {
               id: 1
             },
             featureToggle: {
-              pulseCheckIndicator: false
+              pulseCheckIndicator: false,
+              showProjectHub: false,
             }
           }
         }

@@ -40,7 +40,7 @@ export class ChatPreviewComponent {
    */
   isBrowserSupportedVideo(): boolean {
     const supportedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
-    return this.file?.type && supportedTypes.includes(this.file.type);
+    return !!(this.file?.type && supportedTypes.includes(this.file.type));
   }
 
   /**

@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { AlertController, IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import { AchievementService } from '@v3/app/services/achievement.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -56,7 +56,9 @@ describe('HomePage', () => {
       'achievements$': of(),
     });
 
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT']);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT'], {
+      'team$': of(null),
+    });
     const storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', [
       'get',
       'lastVisited',
@@ -152,6 +154,10 @@ describe('HomePage', () => {
             'popUp',
             'getTodoItems',
           ])
+        },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss'])
         },
       ],
     }).compileComponents();

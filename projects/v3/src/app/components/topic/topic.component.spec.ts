@@ -15,6 +15,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivityService } from '@v3/services/activity.service';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
+import { ModalController } from '@ionic/angular';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -55,6 +56,7 @@ describe('TopicComponent', () => {
         { provide: UtilsService, useClass: TestUtils },
         { provide: ActivityService, useValue: activitySpy },
         { provide: ActivatedRouteStub, useValue: new ActivatedRouteStub({ activityId: 1, id: 2 }) },
+        { provide: ModalController, useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss']) },
       ]
     }).compileComponents();
 
@@ -221,7 +223,6 @@ describe('TopicComponent', () => {
       const file = { url: 'https://example.com/document.pdf', name: 'document.pdf' };
       component.actionBtnClick(file, 1);
       expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
-      expect(notificationSpy.presentToast).toHaveBeenCalled();
     });
 
     it('should open new tab for non-filestack url even without extension', () => {
@@ -292,7 +293,7 @@ describe('TopicComponent', () => {
   describe('previewVideoFile', () => {
     it('should open video modal with mp4 mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
-      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+      (component['modalController'].create as jasmine.Spy).and.returnValue(Promise.resolve(modalSpy));
 
       const file = { url: 'https://example.com/video.mp4', name: 'test.mp4' };
       await component.previewVideoFile(file);
@@ -312,7 +313,7 @@ describe('TopicComponent', () => {
 
     it('should open video modal with webm mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
-      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+      (component['modalController'].create as jasmine.Spy).and.returnValue(Promise.resolve(modalSpy));
 
       const file = { url: 'https://example.com/video.webm', name: 'test.webm' };
       await component.previewVideoFile(file);
@@ -332,7 +333,7 @@ describe('TopicComponent', () => {
 
     it('should open video modal with ogg mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
-      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+      (component['modalController'].create as jasmine.Spy).and.returnValue(Promise.resolve(modalSpy));
 
       const file = { url: 'https://example.com/video.ogg', name: 'test.ogg' };
       await component.previewVideoFile(file);

@@ -170,7 +170,7 @@ describe('AssessmentService', () => {
             submissions: [
               {
                 id: 1,
-                status: 'feedback available',
+                status: 'published',
                 modified: '2019-02-02',
                 locked: false,
                 completed: false,
@@ -265,6 +265,7 @@ describe('AssessmentService', () => {
         dueDate: assessment.dueDate,
         isOverdue: assessment.dueDate ? utils.timeComparer(assessment.dueDate) < 0 : false,
         pulseCheck: assessment.pulseCheck,
+        hasReviewRating: assessment.hasReviewRating,
         allowResubmit: assessment.allowResubmit,
         groups: [
           {
@@ -393,7 +394,7 @@ describe('AssessmentService', () => {
       submission = assessment.submissions[0];
       expectedSubmission = {
         id: submission.id,
-        status: submission.status,
+        status: 'feedback available',
         submitterName: submission.submitter.name,
         submitterImage: submission.submitter.image,
         modified: submission.modified,
@@ -425,6 +426,7 @@ describe('AssessmentService', () => {
         status: review.status,
         modified: review.modified,
         teamName: submission.submitter.team.name,
+        projectBrief: null,
         answers: {
           1: {
             answer: review.answers[0].answer,
@@ -474,9 +476,6 @@ describe('AssessmentService', () => {
       expectedAssessment.groups.splice(1, 1);
       delete expectedSubmission.answers[11];
       delete expectedSubmission.answers[12];
-      delete expectedReview.answers[1];
-      delete expectedReview.answers[2];
-      delete expectedReview.answers[3];
       delete expectedReview.answers[11];
       delete expectedReview.answers[12];
     });

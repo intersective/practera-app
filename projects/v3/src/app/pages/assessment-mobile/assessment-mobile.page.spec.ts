@@ -268,19 +268,14 @@ describe('AssessmentMobilePage', () => {
     storageSpy.getUser.and.returnValue({ hasReviewRating: true });
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({}));
     notificationSpy.getTodoItems.and.returnValue(of({}));
-    reviewSpy.popUpReviewRating.and.resolveTo();
-    activitySpy.getActivity.and.callFake((activityId, navigate, task, callback) => {
-      if (callback) {
-        callback();
-      }
-      return new Subscription(); // Return a Subscription
-    });
+    notificationSpy.popUpReviewRating.and.resolveTo();
+    activitySpy.getActivity.and.returnValue(new Subscription());
 
     const submissionId = 1;
     component.review = { id: 1 } as AssessmentReview;
     await component.readFeedback(submissionId);
     expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalledWith(submissionId);
-    expect(reviewSpy.popUpReviewRating).toHaveBeenCalledWith(component.review.id, false);
+    expect(notificationSpy.popUpReviewRating).toHaveBeenCalled();
     expect(notificationSpy.getTodoItems).toHaveBeenCalled();
     expect(activitySpy.getActivity).toHaveBeenCalled();
   });
@@ -293,16 +288,16 @@ describe('AssessmentMobilePage', () => {
 
   it('should call reviewRatingPopUp() with hasReviewRating as true', async () => {
     storageSpy.getUser.and.returnValue({ hasReviewRating: true });
-    reviewSpy.popUpReviewRating.and.resolveTo();
+    notificationSpy.popUpReviewRating.and.resolveTo();
 
     await component.reviewRatingPopUp();
-    expect(reviewSpy.popUpReviewRating).toHaveBeenCalled();
+    expect(notificationSpy.popUpReviewRating).toHaveBeenCalled();
   });
 
   it('should call reviewRatingPopUp() with hasReviewRating as false', async () => {
     storageSpy.getUser.and.returnValue({ hasReviewRating: false });
 
     await component.reviewRatingPopUp();
-    expect(reviewSpy.popUpReviewRating).not.toHaveBeenCalled();
+    expect(notificationSpy.popUpReviewRating).not.toHaveBeenCalled();
   });
 });

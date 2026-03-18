@@ -237,7 +237,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly', 'assessmentSubmittedToast'])
         },
         {
           provide: ActivityService,
@@ -557,9 +557,9 @@ describe('AssessmentComponent', () => {
       const optionalControl = component.questionsForm.get('q-2');
       expect(optionalControl.validator).toBeFalsy();
 
-      // Check that multi team member selector has object with answer array initial value
+      // Check that multi team member selector has plain array initial value in assessment mode
       const multiControl = component.questionsForm.get('q-3');
-      expect(multiControl.value).toEqual({ answer: [] });
+      expect(multiControl.value).toEqual([]);
     });
 
     it('should apply required validators only when user can edit (doAssessment = true)', () => {
@@ -1770,6 +1770,7 @@ describe('AssessmentComponent', () => {
         component.doAssessment = true;
         component['submitting'] = true;
         component.btnDisabled$.next(true);
+        component.assessment = { ...mockAssessment };
         component.questionsForm = new FormGroup({
           'q-123': new FormControl(null, Validators.required),
         });

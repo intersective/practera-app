@@ -631,6 +631,9 @@ describe('ChatRoomComponent', () => {
     });
 
     it('should return false for a message with only empty html tags', () => {
+      (utils as any).isQuillContentEmpty = jasmine.createSpy('isQuillContentEmpty').and.callFake(
+        (content: string) => content.replace(/<(.|\n)*?>/g, '').trim().length === 0
+      );
       const message: any = { uuid: '1', message: '<p></p>' };
       expect(component.hasEditableText(message)).toBeFalse();
     });
@@ -686,7 +689,6 @@ describe('ChatRoomComponent', () => {
     });
 
     it('should call notificationsService.alert for confirmation', () => {
-      spyOn(notificationsService, 'alert');
       component.deleteMessage('msg-1');
       expect(notificationsService.alert).toHaveBeenCalled();
     });

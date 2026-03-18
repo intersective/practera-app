@@ -167,9 +167,8 @@ describe('MultiTeamMemberSelectorComponent', () => {
 
       component['_showSavedAnswers']();
 
-      // component sets innerValue to { answer: submission.answer } wrapped format
-      expect(component.innerValue).toEqual({ answer: ['answer1'] });
-      // propagateChange doesn't update control.value
+      // in assessment mode, innerValue is a plain array (not an object)
+      expect(component.innerValue).toEqual(['answer1']);
     });
   });
 
