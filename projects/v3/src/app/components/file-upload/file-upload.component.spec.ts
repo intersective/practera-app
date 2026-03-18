@@ -251,4 +251,229 @@ describe('FileUploadComponent', () => {
 
     expect((component.uppy.destroy as any)).toHaveBeenCalled();
   });
+
+  describe('onChange() - markAsDirty behavior', () => {
+    it('should mark control as dirty in review mode (with type)', () => {
+      component.doReview = true;
+      component.uploadedFile = {
+        name: 'test.pdf',
+        type: 'application/pdf',
+        size: 100,
+        extension: 'pdf',
+        bucket: 'bucket',
+        path: '/uploads/test',
+        cdnUrl: 'https://cdn/test.pdf',
+      } as any;
+      spyOn(component, 'triggerSave');
+
+      component.onChange('review comment', 'comment');
+
+      expect(component.control.dirty).toBeTrue();
+      expect(component.control.touched).toBeTrue();
+    });
+
+    it('should mark control as dirty in assessment mode (without type)', () => {
+      component.doAssessment = true;
+      component.uploadedFile = {
+        name: 'test.pdf',
+        type: 'application/pdf',
+        size: 100,
+        extension: 'pdf',
+        bucket: 'bucket',
+        path: '/uploads/test',
+        cdnUrl: 'https://cdn/test.pdf',
+      } as any;
+      spyOn(component, 'triggerSave');
+
+      component.onChange('');
+
+      expect(component.control.dirty).toBeTrue();
+      expect(component.control.touched).toBeTrue();
+    });
+
+    it('should set innerValue with file and type property in review mode', () => {
+      component.doReview = true;
+      component.uploadedFile = {
+        name: 'doc.pdf',
+        type: 'application/pdf',
+        size: 50,
+        extension: 'pdf',
+        bucket: 'b',
+        path: '/uploads/doc',
+        cdnUrl: 'https://cdn/doc.pdf',
+      } as any;
+      spyOn(component, 'triggerSave');
+
+      component.onChange('new answer', 'answer');
+
+      expect(component.innerValue.answer).toBe('new answer');
+      expect(component.innerValue.file).toBeDefined();
+      expect(component.innerValue.file.url).toBe('https://cdn/doc.pdf');
+    });
+
+    it('should initialize innerValue if not set in review mode', () => {
+      component.doReview = true;
+      component.innerValue = null;
+      component.uploadedFile = {
+        name: 'a.pdf',
+        type: 'application/pdf',
+        size: 10,
+        extension: 'pdf',
+        bucket: 'b',
+        path: '/uploads/a',
+        cdnUrl: 'https://cdn/a.pdf',
+      } as any;
+      spyOn(component, 'triggerSave');
+
+      component.onChange('comment text', 'comment');
+
+      expect(component.innerValue.comment).toBe('comment text');
+      expect(component.innerValue.file).toBeDefined();
+    });
+  });
+
+  describe('_showSavedAnswers() - pristine check and uploadedFile restoration', () => {
+    describe('review mode', () => {
+      beforeEach(() => {
+        component.reviewStatus = 'in progress';
+        component.doReview = true;
+        component.review = {
+          answer: { url: 'https://cdn/saved.pdf', name: 'saved.pdf' },
+          comment: 'saved comment',
+          file: { url: 'https://cdn/saved.pdf', name: 'saved.pdf', path: '/uploads/saved' },
+        };
+      });
+
+      it('should use saved review data when control is pristine', () => {
+        component.control = new FormControl('');
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual({
+          answer: component.review.answer,
+          comment: component.review.comment,
+          file: component.review.file,
+        });
+        expect(component.comment).toBe('saved comment');
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        const dirtyValue = {
+          answer: 'user edited',
+          comment: 'user comment',
+          file: { url: 'https://cdn/edited.pdf', name: 'edited.pdf', path: '/uploads/edited' },
+        };
+        component.control = new FormControl(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(dirtyValue);
+        expect(component.comment).toBe('user comment');
+      });
+
+      it('should restore uploadedFile from file.url when control is dirty with file data', () => {
+        const dirtyValue = {
+          answer: 'edited',
+          comment: 'edited comment',
+          file: { url: 'https://cdn/dirty-file.pdf', name: 'dirty-file.pdf', path: '/uploads/dirty' },
+        };
+        component.control = new FormControl(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.uploadedFile).toBeDefined();
+        expect(component.uploadedFile.cdnUrl).toBe('https://cdn/dirty-file.pdf');
+      });
+
+      it('should not set uploadedFile when dirty control has no file url', () => {
+        const dirtyValue = {
+          answer: 'edited',
+          comment: 'edited comment',
+          file: null,
+        };
+        component.control = new FormControl(dirtyValue);
+        component.control.markAsDirty();
+        component.uploadedFile = null as any;
+
+        component['_showSavedAnswers']();
+
+        // uploadedFile should remain null since file has no url
+        expect(component.uploadedFile).toBeNull();
+      });
+
+      it('should fallback to review comment when dirty control has no comment', () => {
+        const dirtyValue = { answer: 'edited', file: null };
+        component.control = new FormControl(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.comment).toBe('saved comment');
+      });
+    });
+
+    describe('assessment mode', () => {
+      beforeEach(() => {
+        component.submissionStatus = 'in progress';
+        component.doAssessment = true;
+        component.submission = {
+          answer: { url: 'https://cdn/submission.pdf', name: 'submission.pdf', path: '/uploads/sub' },
+        };
+        component.reviewStatus = '';
+        component.doReview = false;
+      });
+
+      it('should use saved submission answer when control is pristine', () => {
+        component.control = new FormControl('');
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(component.submission.answer);
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        const dirtyValue = { url: 'https://cdn/user-edit.pdf', name: 'user-edit.pdf', path: '/uploads/user' };
+        component.control = new FormControl(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(dirtyValue);
+      });
+
+      it('should restore uploadedFile from innerValue.url when control is dirty', () => {
+        const dirtyValue = { url: 'https://cdn/dirty.pdf', name: 'dirty.pdf', path: '/uploads/dirty' };
+        component.control = new FormControl(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.uploadedFile).toBeDefined();
+        expect(component.uploadedFile.cdnUrl).toBe('https://cdn/dirty.pdf');
+      });
+
+      it('should not restore uploadedFile when dirty control has no url', () => {
+        component.control = new FormControl({});
+        component.control.markAsDirty();
+        component.uploadedFile = null as any;
+
+        component['_showSavedAnswers']();
+
+        expect(component.uploadedFile).toBeNull();
+      });
+    });
+
+    it('should set control value at the end', () => {
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: { url: 'https://cdn/test.pdf' } };
+      component.control = new FormControl('');
+
+      component['_showSavedAnswers']();
+
+      expect(component.control.value).toEqual(component.submission.answer);
+    });
+  });
 });

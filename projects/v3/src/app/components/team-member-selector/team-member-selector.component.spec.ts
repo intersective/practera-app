@@ -183,6 +183,51 @@ describe('TeamMemberSelectorComponent', () => {
 
       expect(component.innerValue).toBeUndefined();
     });
+
+    it('should preserve control value when control is dirty in review mode', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = {
+        comment: 'saved comment',
+        answer: 'saved answer',
+      };
+      component.control = new FormControl({ answer: 'user edited', comment: 'user comment' });
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual({ answer: 'user edited', comment: 'user comment' });
+      expect(component.comment).toBe('user comment');
+    });
+
+    it('should fallback to review comment when dirty value has no comment', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = {
+        comment: 'saved comment',
+        answer: 'saved answer',
+      };
+      component.control = new FormControl({ answer: 'user edited' });
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.comment).toBe('saved comment');
+    });
+
+    it('should preserve control value when control is dirty in assessment mode', () => {
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: 'saved' };
+      component.control = new FormControl('user edited');
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toBe('user edited');
+    });
   });
 
   describe('audienceContainReviewer()', () => {

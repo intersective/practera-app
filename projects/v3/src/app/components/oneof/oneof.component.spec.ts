@@ -175,5 +175,84 @@ describe('OneofComponent', () => {
       expect(component.isDisplayOnly).toBeFalse();
     });
   });
+
+  describe('_showSavedAnswers() - pristine check for pagination persistence', () => {
+    describe('review mode', () => {
+      beforeEach(() => {
+        component.reviewStatus = 'in progress';
+        component.doReview = true;
+        component.review = {
+          answer: 'saved review answer',
+          comment: 'saved review comment',
+        };
+        component.control = new FormControl('');
+      });
+
+      it('should use saved review data when control is pristine', () => {
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual({
+          answer: 'saved review answer',
+          comment: 'saved review comment',
+        });
+        expect(component.comment).toBe('saved review comment');
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        const dirtyValue = { answer: 'user edited', comment: 'user comment' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(dirtyValue);
+        expect(component.comment).toBe('user comment');
+      });
+
+      it('should fallback to review comment when dirty value has no comment', () => {
+        const dirtyValue = { answer: 'user edited' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.comment).toBe('saved review comment');
+      });
+    });
+
+    describe('assessment mode', () => {
+      beforeEach(() => {
+        component.submissionStatus = 'in progress';
+        component.doAssessment = true;
+        component.submission = { answer: 'saved submission answer' };
+        component.reviewStatus = '';
+        component.doReview = false;
+        component.control = new FormControl('');
+      });
+
+      it('should use saved submission answer when control is pristine', () => {
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toBe('saved submission answer');
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        component.control.setValue('user edited answer');
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toBe('user edited answer');
+      });
+
+      it('should use submission answer when control is null', () => {
+        component.control = null;
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toBe('saved submission answer');
+      });
+    });
+  });
 });
 

@@ -140,6 +140,47 @@ describe('MultiTeamMemberSelectorComponent', () => {
       component.writeValue(null);
       expect(component.innerValue).toEqual('initialValue');
     });
+
+    it('should normalize non-array answer in review mode', () => {
+      component.doReview = true;
+      component.writeValue({ answer: 'not-array', comment: 'test' });
+
+      expect(Array.isArray(component.innerValue.answer)).toBeTrue();
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should keep array answer in review mode', () => {
+      component.doReview = true;
+      component.writeValue({ answer: ['member1'], comment: 'test' });
+
+      expect(component.innerValue.answer).toEqual(['member1']);
+    });
+
+    it('should normalize non-array value to plain array in assessment mode', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.writeValue({ answer: ['member1'], comment: 'test' });
+
+      // in assessment mode, innerValue should be a plain array
+      expect(Array.isArray(component.innerValue)).toBeTrue();
+      expect(component.innerValue).toEqual(['member1']);
+    });
+
+    it('should normalize non-array value to empty array in assessment mode', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.writeValue('not-an-array');
+
+      expect(Array.isArray(component.innerValue)).toBeTrue();
+      expect(component.innerValue).toEqual([]);
+    });
+
+    it('should set comment from value when present', () => {
+      component.doReview = true;
+      component.writeValue({ answer: [], comment: 'new comment' });
+
+      expect(component.comment).toBe('new comment');
+    });
   });
 
   describe('_showSavedAnswers()', () => {
@@ -169,6 +210,86 @@ describe('MultiTeamMemberSelectorComponent', () => {
 
       // in assessment mode, innerValue is a plain array (not an object)
       expect(component.innerValue).toEqual(['answer1']);
+    });
+
+    it('should preserve control value when control is dirty in review mode', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: ['saved'], comment: 'saved comment' };
+      const dirtyValue = { answer: ['user-edited'], comment: 'user comment' };
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual(dirtyValue);
+      expect(component.comment).toBe('user comment');
+    });
+
+    it('should normalize non-array answer when control is dirty in review mode', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: ['saved'], comment: 'saved comment' };
+      const dirtyValue = { answer: 'not-an-array', comment: 'user comment' };
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(Array.isArray(component.innerValue.answer)).toBeTrue();
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should normalize non-array answer to empty array when review data is pristine', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: 'not-an-array', comment: 'comment' };
+      component.control = new FormControl('') as any;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should fallback to review comment when dirty value has no comment', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: ['saved'], comment: 'saved comment' };
+      const dirtyValue = { answer: ['user-edited'] };
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.comment).toBe('saved comment');
+    });
+
+    it('should preserve control value when control is dirty in assessment mode', () => {
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: ['saved'] };
+      const dirtyValue = ['user-edited'];
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual(['user-edited']);
+    });
+
+    it('should default to empty array when submission answer is null in assessment mode', () => {
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: null };
+      component.control = new FormControl('') as any;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual([]);
     });
   });
 

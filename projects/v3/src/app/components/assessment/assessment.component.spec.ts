@@ -1819,4 +1819,524 @@ describe('AssessmentComponent', () => {
       });
     });
   });
+
+  describe('areAllRequiredQuestionsAnswered()', () => {
+    beforeEach(() => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.isPendingReview = false;
+    });
+
+    it('should return true when there are no questions', () => {
+      const result = component['areAllRequiredQuestionsAnswered']([]);
+      expect(result).toBeTrue();
+    });
+
+    it('should return true when no questions are required', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answer'),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Optional',
+        type: 'text',
+        isRequired: false,
+        audience: ['submitter'],
+      }] as any[];
+
+      const result = component['areAllRequiredQuestionsAnswered'](questions);
+      expect(result).toBeTrue();
+    });
+
+    it('should return true when required text question has a value', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('some text'),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Text Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should return false when required text question is empty', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Text Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return false when required text question is null', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(null),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Text Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return true when required multi-choice question has selections', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(['option1', 'option2']),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Multi Q',
+        type: 'multiple',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should return false when required multi-choice question has empty array', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl([]),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Multi Q',
+        type: 'multiple',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return true when required review question has answer', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl({ answer: 'review text', comment: 'good', file: null }),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Review Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['reviewer'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should return false when required review question has empty answer', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl({ answer: '', comment: '', file: null }),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Review Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['reviewer'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return false when control does not exist', () => {
+      component.questionsForm = new FormGroup({});
+      const questions = [{
+        id: 1,
+        name: 'Missing Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return false when control is invalid', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(null, Validators.required),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Invalid Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should skip questions not in current role audience', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+      // required but only for reviewer, not submitter
+      const questions = [{
+        id: 1,
+        name: 'Reviewer Only',
+        type: 'text',
+        isRequired: true,
+        audience: ['reviewer'],
+      }] as any[];
+
+      // submitter role will not consider this as required
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should handle mix of answered and unanswered required questions', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+      const questions = [
+        { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+        { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] },
+      ] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return true when all mixed required questions are answered', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('text answer'),
+        'q-2': new FormControl(['choice1']),
+        'q-3': new FormControl('optional'),
+      });
+      const questions = [
+        { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+        { id: 2, name: 'Q2', type: 'multiple', isRequired: true, audience: ['submitter'] },
+        { id: 3, name: 'Q3', type: 'text', isRequired: false, audience: ['submitter'] },
+      ] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+  });
+
+  describe('initializePageCompletion()', () => {
+    beforeEach(() => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+              { id: 2, name: 'Q2', type: 'text', isRequired: false, audience: ['submitter'] },
+            ],
+          },
+        ],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+      spyOn(component, 'scrollActivePageIntoView');
+    });
+
+    it('should return early when pagination is disabled', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.pageRequiredCompletion = [];
+
+      component.initializePageCompletion();
+      tick(200);
+
+      expect(component.pageRequiredCompletion).toEqual([]);
+    }));
+
+    it('should set all pages complete in read-only mode', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [{ id: 1 }] as any[] }],
+        [{ name: 'G2', questions: [{ id: 2 }] as any[] }],
+      ];
+
+      component.initializePageCompletion();
+      tick(200);
+
+      expect(component.pageRequiredCompletion).toEqual([true, true]);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    }));
+
+    it('should evaluate each page completion in edit mode', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.doAssessment = true;
+      component.action = 'assessment';
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [
+          { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+        ] }],
+        [{ name: 'G2', questions: [
+          { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+        ] }],
+      ];
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+
+      component.initializePageCompletion();
+      tick(200);
+
+      // page 0 has answered required question → true
+      expect(component.pageRequiredCompletion[0]).toBeTrue();
+      // page 1 has unanswered required question → false
+      expect(component.pageRequiredCompletion[1]).toBeFalse();
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    }));
+  });
+
+  describe('findAndGoToFirstUnansweredQuestion()', () => {
+    beforeEach(() => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      spyOn(component, 'goToQuestion');
+    });
+
+    it('should return false when all required questions are answered (no pagination)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeFalse();
+      expect(component.goToQuestion).not.toHaveBeenCalled();
+    });
+
+    it('should find unanswered question and navigate to it (no pagination)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+            { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(1);
+    });
+
+    it('should find unanswered question on current page (with pagination)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pageIndex = 0;
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [
+          { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+          { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+        ] }],
+      ];
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(1);
+    });
+
+    it('should detect unanswered multi-choice question (empty array)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'multiple', isRequired: true, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl([]),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(0);
+    });
+
+    it('should detect unanswered review question (empty answer in object)', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['reviewer'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl({ answer: '', comment: '', file: null }),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(0);
+    });
+
+    it('should return false when no required questions exist', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: false, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeFalse();
+      expect(component.goToQuestion).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('_answerRequiredValidatorForReviewer()', () => {
+    it('should return required error for null value', () => {
+      const control = new FormControl(null);
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error when answer and file are both empty', () => {
+      const control = new FormControl({ answer: '', file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null when answer has content', () => {
+      const control = new FormControl({ answer: 'some review', file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when file has content but answer is empty', () => {
+      const control = new FormControl({ answer: '', file: { url: 'https://cdn/file.pdf', path: '/uploads/file' } });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return required error for empty string value', () => {
+      const control = new FormControl('');
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null for non-empty string value', () => {
+      const control = new FormControl('some text');
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return required error when answer is empty array and file is empty', () => {
+      const control = new FormControl({ answer: [], file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null when answer is non-empty array', () => {
+      const control = new FormControl({ answer: ['choice1'], file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('_fileRequiredValidatorForLearner()', () => {
+    it('should return required error for null value', () => {
+      const control = new FormControl(null);
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error for undefined value', () => {
+      const control = new FormControl(undefined);
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error for empty object', () => {
+      const control = new FormControl({});
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error when object has no url', () => {
+      const control = new FormControl({ name: 'file.pdf', path: '/uploads/file' });
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error when url is empty string', () => {
+      const control = new FormControl({ url: '' });
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null when file object has url', () => {
+      const control = new FormControl({ url: 'https://cdn/file.pdf', name: 'file.pdf', path: '/uploads/file' });
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return required error for string value', () => {
+      const control = new FormControl('some string');
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+  });
 });

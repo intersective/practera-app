@@ -147,5 +147,126 @@ describe('MultipleComponent', () => {
     component.registerOnTouched(() => true);
   });
 
+  describe('_showSavedAnswers() - pristine check and array normalization', () => {
+    describe('review mode', () => {
+      beforeEach(() => {
+        component.reviewStatus = 'in progress';
+        component.doReview = true;
+        component.review = {
+          answer: ['choice1', 'choice2'],
+          comment: 'saved comment',
+        };
+        component.control = new FormControl('');
+        component.submissionStatus = '';
+        component.doAssessment = false;
+      });
+
+      it('should use saved review data when control is pristine', () => {
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual({
+          answer: ['choice1', 'choice2'],
+          comment: 'saved comment',
+        });
+        expect(component.comment).toBe('saved comment');
+      });
+
+      it('should normalize non-array answer to empty array when pristine', () => {
+        component.review = { answer: 'not-an-array', comment: 'comment' };
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue.answer).toEqual([]);
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        const dirtyValue = { answer: ['user-choice'], comment: 'user comment' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(dirtyValue);
+      });
+
+      it('should normalize non-array answer in dirty control value', () => {
+        const dirtyValue = { answer: 'not-an-array', comment: 'user comment' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(Array.isArray(component.innerValue.answer)).toBeTrue();
+        expect(component.innerValue.answer).toEqual([]);
+      });
+
+      it('should fallback to review comment when dirty value has no comment', () => {
+        const dirtyValue = { answer: ['choice'] };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.comment).toBe('saved comment');
+      });
+    });
+
+    describe('assessment mode', () => {
+      beforeEach(() => {
+        component.submissionStatus = 'in progress';
+        component.doAssessment = true;
+        component.submission = { answer: ['saved-choice1', 'saved-choice2'] };
+        component.reviewStatus = '';
+        component.doReview = false;
+        component.control = new FormControl('');
+      });
+
+      it('should use saved submission answer when control is pristine', () => {
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(['saved-choice1', 'saved-choice2']);
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        component.control.setValue(['user-choice']);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(['user-choice']);
+      });
+    });
+  });
+
+  describe('writeValue() - array normalization in review mode', () => {
+    it('should normalize non-array answer to empty array in review mode', () => {
+      component.doReview = true;
+      component.writeValue({ answer: 'not-array', comment: 'test' });
+
+      expect(Array.isArray(component.innerValue.answer)).toBeTrue();
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should keep array answer as-is in review mode', () => {
+      component.doReview = true;
+      component.writeValue({ answer: ['choice1'], comment: 'test' });
+
+      expect(component.innerValue.answer).toEqual(['choice1']);
+    });
+
+    it('should set comment from value', () => {
+      component.doReview = true;
+      component.writeValue({ answer: [], comment: 'new comment' });
+
+      expect(component.comment).toBe('new comment');
+    });
+
+    it('should not update innerValue for null', () => {
+      component.innerValue = 'existing';
+      component.writeValue(null);
+
+      // writeValue does nothing for null based on the code
+    });
+  });
 });
 
