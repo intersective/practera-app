@@ -95,7 +95,7 @@
         [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
         lines="none">
         <ion-checkbox color="success"
-          [checked]="review.answer ? review.answer.includes(choice.id) : false"
+          [checked]="innerValue?.answer ? innerValue.answer.includes(choice.id) : false"
           [value]="choice.id"
           justify="start"
           slot="start"
