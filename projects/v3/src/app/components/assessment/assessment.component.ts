@@ -533,7 +533,7 @@ Best regards`;
         const isRequired = this._isRequired(question);
         // only apply required validators when user can actually edit (doAssessment or isPendingReview)
         if (isRequired === true && (this.doAssessment || this.isPendingReview )) {
-          if (this.action === 'review' && ['text', 'file'].includes(question.type)) {
+          if (this.action === 'review') {
             validator = [this._answerRequiredValidatorForReviewer];
           } else if (question.type === 'file' && this.action === 'assessment') {
             validator = [this._fileRequiredValidatorForLearner];
@@ -1168,7 +1168,14 @@ Best regards`;
         // multi choice questions
         return value.length > 0;
       } else if (typeof value === 'object' && value !== null) {
+        // file type in assessment mode: { name, url, type, ... }
+        if (value.url) { return true; }
+        // review file type: { answer: '', file: { url, ... }, comment: '' }
+        if (value.file && typeof value.file === 'object' && Object.keys(value.file).length > 0) { return true; }
         // review questions with answer and comment fields
+        if (Array.isArray(value.answer)) {
+          return value.answer.length > 0;
+        }
         return value.answer !== undefined && value.answer !== null && value.answer !== '';
       } else {
         // text / one off questions
