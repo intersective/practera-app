@@ -1750,4 +1750,148 @@ describe('AssessmentComponent', () => {
       });
     });
   });
+
+  describe('CORE-8182: pagination indicator accuracy in review mode', () => {
+    const reviewAssessment: Assessment = {
+      id: 1,
+      name: 'review test',
+      description: '',
+      type: 'quiz',
+      isForTeam: false,
+      dueDate: '2029-02-02',
+      isOverdue: false,
+      pulseCheck: false,
+      hasReviewRating: false,
+      groups: [{
+        name: 'group 1',
+        description: '',
+        questions: [
+          { id: 1, name: 'text q', description: '', canAnswer: true, canComment: true, type: 'text', isRequired: true, audience: ['reviewer'] },
+          { id: 2, name: 'oneof q', description: '', canAnswer: true, canComment: true, type: 'oneof', isRequired: true, audience: ['reviewer'] },
+          { id: 3, name: 'multiple q', description: '', canAnswer: true, canComment: true, type: 'multiple', isRequired: true, audience: ['reviewer'] },
+          { id: 4, name: 'file q', description: '', canAnswer: true, canComment: true, type: 'file', isRequired: true, audience: ['reviewer'] },
+          { id: 5, name: 'team-member q', description: '', canAnswer: true, canComment: true, type: 'team member selector', isRequired: true, audience: ['reviewer'] },
+          { id: 6, name: 'multi-team q', description: '', canAnswer: true, canComment: true, type: 'multi team member selector', isRequired: true, audience: ['reviewer'] },
+        ],
+      }],
+    };
+
+    function setupReviewMode() {
+      component.action = 'review';
+      component.assessment = reviewAssessment;
+      component.submission = { id: 1, status: 'pending review', answers: [], submitterName: '', modified: '', completed: false, isLocked: false, submitterImage: '', reviewerName: '' } as any;
+      component.review = { id: 1, answers: {}, status: 'in progress', modified: '' } as any;
+      component['isPendingReview'] = true;
+      component['doAssessment'] = false;
+    }
+
+    describe('areAllRequiredQuestionsAnswered', () => {
+      beforeEach(() => {
+        setupReviewMode();
+        component.questionsForm = new FormGroup({});
+      });
+
+      it('should return false for empty array answer (multiple/checkbox in review mode)', () => {
+        component.questionsForm.addControl('q-3', new FormControl({ answer: [], comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[2]]);
+        expect(result).toBeFalse();
+      });
+
+      it('should return true for non-empty array answer (multiple/checkbox in review mode)', () => {
+        component.questionsForm.addControl('q-3', new FormControl({ answer: ['choice1'], comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[2]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return false for empty array answer (multi-team-member-selector in review mode)', () => {
+        component.questionsForm.addControl('q-6', new FormControl({ answer: [], comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[5]]);
+        expect(result).toBeFalse();
+      });
+
+      it('should return true for non-empty array answer (multi-team-member-selector in review mode)', () => {
+        component.questionsForm.addControl('q-6', new FormControl({ answer: [{ name: 'user1' }], comment: '' }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[5]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return false for empty string answer (text in review mode)', () => {
+        component.questionsForm.addControl('q-1', new FormControl({ answer: '', comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[0]]);
+        expect(result).toBeFalse();
+      });
+
+      it('should return true for non-empty string answer (text in review mode)', () => {
+        component.questionsForm.addControl('q-1', new FormControl({ answer: 'some text', comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[0]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return true for review file question with file object', () => {
+        component.questionsForm.addControl('q-4', new FormControl({ answer: '', comment: '', file: { url: 'http://file.com/test.pdf' } }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[3]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return false for review file question with empty file', () => {
+        component.questionsForm.addControl('q-4', new FormControl({ answer: '', comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[3]]);
+        expect(result).toBeFalse();
+      });
+    });
+
+    describe('_answerRequiredValidatorForReviewer applied to all review question types', () => {
+      beforeEach(() => {
+        setupReviewMode();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for multiple type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-3'];
+        expect(control).toBeTruthy();
+        // empty array answer should be invalid
+        control.setValue({ answer: [], comment: '', file: null });
+        expect(control.valid).toBeFalse();
+        // non-empty array should be valid
+        control.setValue({ answer: ['choice1'], comment: '', file: null });
+        expect(control.valid).toBeTrue();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for multi-team-member-selector type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-6'];
+        expect(control).toBeTruthy();
+        // empty array answer should be invalid
+        control.setValue({ answer: [], comment: '' });
+        expect(control.valid).toBeFalse();
+        // non-empty array should be valid
+        control.setValue({ answer: [{ name: 'user1' }], comment: '' });
+        expect(control.valid).toBeTrue();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for oneof type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-2'];
+        expect(control).toBeTruthy();
+        // empty answer should be invalid
+        control.setValue({ answer: '', comment: '' });
+        expect(control.valid).toBeFalse();
+        // non-empty answer should be valid
+        control.setValue({ answer: 'option1', comment: '' });
+        expect(control.valid).toBeTrue();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-5'];
+        expect(control).toBeTruthy();
+        // empty answer should be invalid
+        control.setValue({ answer: '', comment: '' });
+        expect(control.valid).toBeFalse();
+        // non-empty answer should be valid
+        control.setValue({ answer: 'member1', comment: '' });
+        expect(control.valid).toBeTrue();
+      });
+    });
+  });
 });
