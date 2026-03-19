@@ -1157,6 +1157,10 @@ Best regards`;
         // multi choice questions
         return value.length > 0;
       } else if (typeof value === 'object' && value !== null) {
+        // file type in assessment mode: { name, url, type, ... }
+        if (value.url) { return true; }
+        // review file type: { answer: '', file: { url, ... }, comment: '' }
+        if (value.file && typeof value.file === 'object' && Object.keys(value.file).length > 0) { return true; }
         // review questions with answer and comment fields
         return value.answer !== undefined && value.answer !== null && value.answer !== '';
       } else {
