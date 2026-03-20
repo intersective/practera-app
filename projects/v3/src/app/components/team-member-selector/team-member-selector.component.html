@@ -8,8 +8,8 @@
           <ion-label>
             <span [innerHTML]="teamMember.userName"></span>
             <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>Learner's answer</ion-chip>
-              <ion-chip class="label yellow black" *ngIf="teamMember.key === review?.answer" i18n>Expert's answer</ion-chip>
+              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>Learner's Answer</ion-chip>
+              <ion-chip class="label yellow black" *ngIf="teamMember.key === review?.answer" i18n>Reviewer's Answer</ion-chip>
             </p>
           </ion-label>
         </ion-item>
@@ -94,7 +94,7 @@
               </span>
               <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
                 <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>
-                  Learner's answer
+                  Learner's Answer
                 </ion-chip>
               </p>
             </ion-label>
