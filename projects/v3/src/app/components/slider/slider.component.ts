@@ -259,14 +259,14 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
     return choiceId.toString();
   }
 
-  // Get slider value for submission (Learner answer)
+  // Get slider value for submission (Learner's answer)
   getSubmissionSliderValue(): number {
     if (!this.submission?.answer) return this.sliderMin;
 
     return typeof this.submission.answer === 'number' ? this.submission.answer : this.sliderMin;
   }
 
-  // Get slider value for review (Reviewer answer)
+  // Get slider value for review (Reviewer's answer)
   getReviewSliderValue(): number {
     if (!this.innerValue?.answer) return this.sliderMin;
 
