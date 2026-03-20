@@ -6,7 +6,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, filter, firstValueFrom, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, delay, filter, firstValueFrom, Subject, Subscription, tap } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
 import { AssessmentComponent } from '@v3/app/components/assessment/assessment.component';
 import { debounceTime } from 'rxjs/operators';
@@ -25,7 +25,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
   activityId: number;
   contextId: number;
   submissionId: number;
-  action: string;
+  action: 'assessment' | 'review';
   fromPage: string; // referral source page
   savingText$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -235,16 +235,19 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     }
   }
 
-  async readFeedback(event) {
+  async readFeedback(submissionId: number) {
     try {
-      await this.assessmentService.saveFeedbackReviewed(event).toPromise();
+      const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
+      await firstValueFrom(savedReview.pipe(
+        // get the latest activity tasks and navigate to the next task
+        // wait for a while for the server to save the "read feedback" status
+        tap(() => this.activityService.getActivity(this.activityId, true, this.task)),
+        delay(400)
+      ));
       await this.reviewRatingPopUp();
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+      await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
-      // get the latest activity tasks and navigate to the next task
-      return this.activityService.getActivity(this.activityId, true, this.task, () => {
-        this.btnDisabled$.next(false);
-      });
+      this.btnDisabled$.next(false);
     } catch (err) {
       this.btnDisabled$.next(false);
       console.error(err);

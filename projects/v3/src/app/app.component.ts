@@ -29,7 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   $unsubscribe = new Subject();
   lastVisitedUrl: string;
 
-  // list of urls that should not be cached
+  // urls that should not be cached for last visited tracking
   noneCachedUrl = [
     'devtool',
     'registration',
@@ -40,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
     'direct_login',
     'do=secure',
     'auth/secure',
+    'assessment-mobile/review',
     'undefined',
   ];
 
