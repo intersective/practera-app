@@ -268,5 +268,176 @@ describe('MultipleComponent', () => {
       // writeValue does nothing for null based on the code
     });
   });
-});
 
+  describe('triggerSave()', () => {
+    beforeEach(() => {
+      component.question = { id: 7, audience: [] };
+      component.submissionId = 30;
+      component.reviewId = 40;
+      component.submitActions$ = jasmine.createSpyObj('Subject', ['next']);
+    });
+
+    it('should emit review save action when doReview is true', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = { answer: [1, 3], comment: 'nice work' };
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        reviewSave: {
+          reviewId: 40,
+          submissionId: 30,
+          questionId: 7,
+          answer: [1, 3],
+          comment: 'nice work',
+        },
+      }));
+    });
+
+    it('should emit question save action when doAssessment is true', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = [2, 4];
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        questionSave: {
+          submissionId: 30,
+          questionId: 7,
+          answer: [2, 4],
+        },
+      }));
+    });
+  });
+
+  describe('onLabelToggle()', () => {
+    beforeEach(() => {
+      component.control = new FormControl('');
+      spyOn(component, 'onChange');
+    });
+
+    it('should call onChange with answer type when doReview', () => {
+      component.doReview = true;
+      component.onLabelToggle('5');
+      expect(component.onChange).toHaveBeenCalledWith('5', 'answer');
+    });
+
+    it('should call onChange without type when not doReview', () => {
+      component.doReview = false;
+      component.onLabelToggle('5');
+      expect(component.onChange).toHaveBeenCalledWith('5');
+    });
+  });
+
+  describe('ngOnDestroy()', () => {
+    it('should unsubscribe all subscriptions', () => {
+      const sub1 = jasmine.createSpyObj('Subscription', ['unsubscribe']);
+      const sub2 = jasmine.createSpyObj('Subscription', ['unsubscribe']);
+      component.subscriptions = [sub1, sub2];
+
+      component.ngOnDestroy();
+
+      expect(sub1.unsubscribe).toHaveBeenCalled();
+      expect(sub2.unsubscribe).toHaveBeenCalled();
+    });
+  });
+
+  describe('isDisplayOnly()', () => {
+    it('should be true when reviewer has canAnswer false', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.question = { canAnswer: false, audience: [] };
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be true when status is feedback available', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'feedback available';
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be false when doing assessment', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+
+    it('should be true when done with empty review status', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'done';
+      component.reviewStatus = '';
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+  });
+
+  describe('audienceContainReviewer()', () => {
+    it('should return true when multiple audiences include reviewer', () => {
+      component.question = { audience: ['submitter', 'reviewer'] };
+      expect(component.audienceContainReviewer()).toBeTrue();
+    });
+
+    it('should return false for single audience', () => {
+      component.question = { audience: ['submitter'] };
+      expect(component.audienceContainReviewer()).toBeFalse();
+    });
+  });
+
+  describe('_showSavedAnswers() - propagateChange call', () => {
+    it('should call propagateChange with innerValue', () => {
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: [1, 2] };
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.control = new FormControl('');
+      spyOn(component, 'propagateChange');
+
+      component['_showSavedAnswers']();
+
+      expect(component.propagateChange).toHaveBeenCalledWith([1, 2]);
+    });
+  });
+
+  describe('_showSavedAnswers() - "not start" review status', () => {
+    it('should load review data when reviewStatus is "not start"', () => {
+      component.reviewStatus = 'not start';
+      component.doReview = true;
+      component.review = { answer: ['a', 'b'], comment: 'test' };
+      component.control = new FormControl('');
+      component.submissionStatus = '';
+      component.doAssessment = false;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual({
+        answer: ['a', 'b'],
+        comment: 'test',
+      });
+    });
+  });
+
+  describe('checkInnerValue()', () => {
+    it('should return true when choiceId is in innerValue array', () => {
+      component.innerValue = [1, 2, 3];
+      expect(component.checkInnerValue(2)).toBeTrue();
+    });
+
+    it('should return undefined when choiceId is not in array', () => {
+      component.innerValue = [1, 2, 3];
+      expect(component.checkInnerValue(5)).toBeUndefined();
+    });
+
+    it('should return undefined for falsy choiceId', () => {
+      component.innerValue = [1, 2];
+      expect(component.checkInnerValue(null)).toBeUndefined();
+    });
+  });
+});

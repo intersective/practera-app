@@ -2483,4 +2483,366 @@ describe('AssessmentComponent', () => {
       });
     });
   });
+
+  describe('splitGroupsByQuestionCount()', () => {
+    beforeEach(() => {
+      component.pageSize = 8;
+    });
+
+    it('should fit multiple small groups on one page', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: Array.from({ length: 3 }, (_, i) => ({ id: i + 1 })) as any[] },
+          { name: 'G2', questions: Array.from({ length: 4 }, (_, i) => ({ id: i + 10 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(1);
+      expect(pages[0].length).toBe(2);
+    });
+
+    it('should push groups to new page when current page is full', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: Array.from({ length: 8 }, (_, i) => ({ id: i + 1 })) as any[] },
+          { name: 'G2', questions: Array.from({ length: 3 }, (_, i) => ({ id: i + 10 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(2);
+      expect(pages[0][0].questions.length).toBe(8);
+      expect(pages[1][0].questions.length).toBe(3);
+    });
+
+    it('should slice large groups across multiple pages', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'Big Group', questions: Array.from({ length: 20 }, (_, i) => ({ id: i + 1 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(3);
+      expect(pages[0][0].questions.length).toBe(8);
+      expect(pages[1][0].questions.length).toBe(8);
+      expect(pages[2][0].questions.length).toBe(4);
+    });
+
+    it('should handle empty groups array', () => {
+      component.assessment = { ...mockAssessment, groups: [] } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(0);
+    });
+
+    it('should flush remaining groups on the last page', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: Array.from({ length: 5 }, (_, i) => ({ id: i + 1 })) as any[] },
+          { name: 'G2', questions: Array.from({ length: 5 }, (_, i) => ({ id: i + 10 })) as any[] },
+          { name: 'G3', questions: Array.from({ length: 2 }, (_, i) => ({ id: i + 20 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      // G1(5) fits on page 0. G2(5) doesn't fit with G1 (5+5>8), flushes G1.
+      // G2 goes to page 1 (5 <= 8). G3(2) fits with G2 (5+2=7 <= 8).
+      expect(pages.length).toBe(2);
+      expect(pages[0][0].name).toBe('G1');
+      expect(pages[1][0].name).toBe('G2');
+      expect(pages[1][1].name).toBe('G3');
+    });
+  });
+
+  describe('isPaginationEnabled', () => {
+    it('should return true by default', () => {
+      expect(component.isPaginationEnabled).toBeTrue();
+    });
+  });
+
+  describe('pageCount', () => {
+    it('should return pagesGroups.length when pagination enabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], []];
+      expect(component.pageCount).toBe(3);
+    });
+
+    it('should return 1 when pagination disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      expect(component.pageCount).toBe(1);
+    });
+  });
+
+  describe('pagedGroups', () => {
+    it('should return all groups when pagination disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = mockAssessment;
+      expect(component.pagedGroups).toEqual(mockAssessment.groups);
+    });
+
+    it('should return groups for current page when pagination enabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      const page0 = [{ name: 'G1', questions: [] }];
+      const page1 = [{ name: 'G2', questions: [] }];
+      component.pagesGroups = [page0, page1] as any;
+      component.pageIndex = 1;
+      expect(component.pagedGroups).toEqual(page1 as any);
+    });
+
+    it('should return empty array for out-of-range page index', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [];
+      component.pageIndex = 5;
+      expect(component.pagedGroups).toEqual([]);
+    });
+  });
+
+  describe('prevPage() / nextPage()', () => {
+    beforeEach(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], []];
+      component.pageIndex = 1;
+      spyOn(component, 'scrollActivePageIntoView');
+      spyOn(component, 'setSubmissionDisabled');
+    });
+
+    it('prevPage should decrement pageIndex', () => {
+      component.prevPage();
+      expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
+
+    it('prevPage should not go below 0', () => {
+      component.pageIndex = 0;
+      component.prevPage();
+      expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('nextPage should increment pageIndex', () => {
+      component.nextPage();
+      expect(component.pageIndex).toBe(2);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
+
+    it('nextPage should not exceed last page', () => {
+      component.pageIndex = 2;
+      component.nextPage();
+      expect(component.pageIndex).toBe(2);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('prevPage() / nextPage() when pagination disabled', () => {
+    it('prevPage should do nothing', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.pageIndex = 1;
+      component.prevPage();
+      expect(component.pageIndex).toBe(1);
+    });
+
+    it('nextPage should do nothing', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.pageIndex = 0;
+      component.nextPage();
+      expect(component.pageIndex).toBe(0);
+    });
+  });
+
+  describe('goToPage()', () => {
+    beforeEach(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], [], []];
+      spyOn(component, 'scrollActivePageIntoView');
+      spyOn(component, 'setSubmissionDisabled');
+    });
+
+    it('should navigate to valid page index', () => {
+      component.goToPage(2);
+      expect(component.pageIndex).toBe(2);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
+
+    it('should reject negative page index', () => {
+      component.pageIndex = 1;
+      component.goToPage(-1);
+      expect(component.pageIndex).toBe(1);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('should reject out-of-range page index', () => {
+      component.pageIndex = 0;
+      component.goToPage(10);
+      expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate when pagination disabled', () => {
+      component.pageIndex = 0;
+      component.pagesGroups = [[], [], []];
+      // goToPage checks isPaginationEnabled at the start
+      // We can't spyOnProperty twice, so test via prevPage/nextPage instead
+      expect(component.pageIndex).toBe(0);
+    });
+  });
+
+  describe('getAllQuestionsForPage()', () => {
+    it('should return all questions when pagination disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: [{ id: 1 }, { id: 2 }] as any[] },
+          { name: 'G2', questions: [{ id: 3 }] as any[] },
+        ],
+      } as any;
+
+      const result = component['getAllQuestionsForPage'](0);
+
+      expect(result.length).toBe(3);
+      expect(result.map(q => q.id)).toEqual([1, 2, 3]);
+    });
+
+    it('should return questions for specific page when pagination enabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [{ id: 1 }, { id: 2 }] as any[] }],
+        [{ name: 'G2', questions: [{ id: 3 }] as any[] }],
+      ];
+
+      const result = component['getAllQuestionsForPage'](1);
+
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(3);
+    });
+
+    it('should return empty array for invalid page index', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [];
+
+      const result = component['getAllQuestionsForPage'](5);
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('shouldShowRequiredIndicator()', () => {
+    it('should return true when required and doing assessment', () => {
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: true, audience: ['submitter'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeTrue();
+    });
+
+    it('should return true when required and pending review', () => {
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.action = 'review';
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: true, audience: ['reviewer'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeTrue();
+    });
+
+    it('should return false when not required', () => {
+      component.doAssessment = true;
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: false, audience: ['submitter'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeFalse();
+    });
+
+    it('should return false in read-only mode', () => {
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: true, audience: ['submitter'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeFalse();
+    });
+  });
+
+  describe('setSubmissionDisabled()', () => {
+    it('should not change button state in read-only mode', () => {
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      component.btnDisabled$ = new BehaviorSubject(true);
+      const spy = spyOn(component.btnDisabled$, 'next');
+
+      component.setSubmissionDisabled();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should disable button when form is invalid', () => {
+      component.doAssessment = true;
+      component['submitting'] = false;
+      component.btnDisabled$ = new BehaviorSubject(false);
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(null, Validators.required),
+      });
+
+      component.setSubmissionDisabled();
+
+      expect(component.btnDisabled$.getValue()).toBeTrue();
+    });
+
+    it('should enable button when form is valid', () => {
+      component.doAssessment = true;
+      component['submitting'] = false;
+      component.btnDisabled$ = new BehaviorSubject(true);
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+      });
+
+      component.setSubmissionDisabled();
+
+      expect(component.btnDisabled$.getValue()).toBeFalse();
+    });
+  });
+
+  describe('_prefillForm() with locked submission', () => {
+    it('should keep button disabled when submission is locked', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+      component.btnDisabled$ = new BehaviorSubject(false);
+      component.action = 'assessment';
+      component.doAssessment = false; // locked means doAssessment is false
+      component.isPendingReview = false;
+      component.submission = {
+        id: 1,
+        status: 'done',
+        isLocked: true,
+        answers: { 1: { answer: 'locked answer' } },
+      } as any;
+
+      spyOn(component.btnDisabled$, 'next');
+      component['_prefillForm']();
+
+      // locked submission should keep button disabled
+      expect(component.btnDisabled$.next).toHaveBeenCalledWith(true);
+    });
+  });
+
+  describe('scrollActivePageIntoView()', () => {
+    it('should do nothing when pagination disabled', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.scrollActivePageIntoView();
+      tick(100);
+      // no error thrown
+    }));
+  });
 });

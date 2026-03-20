@@ -475,5 +475,60 @@ describe('FileUploadComponent', () => {
 
       expect(component.control.value).toEqual(component.submission.answer);
     });
+
+    describe('review mode with "not start" status', () => {
+      it('should load review data when reviewStatus is "not start"', () => {
+        component.reviewStatus = 'not start';
+        component.doReview = true;
+        component.review = {
+          answer: { url: 'https://cdn/r.pdf' },
+          comment: 'review comment',
+          file: { url: 'https://cdn/r.pdf', name: 'r.pdf' },
+        };
+        component.control = new FormControl('');
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual({
+          answer: component.review.answer,
+          comment: component.review.comment,
+          file: component.review.file,
+        });
+      });
+    });
+  });
+
+  describe('isDisplayOnly behavior via ngOnInit paths', () => {
+    it('should restore saved file from submission answer URL when control is dirty in assessment mode', () => {
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      const savedFile = { url: 'https://cdn/sub-file.pdf', name: 'sub-file.pdf', path: '/uploads/sub' };
+      component.submission = { answer: savedFile };
+      component.control = new FormControl(savedFile);
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.uploadedFile).toBeDefined();
+      expect(component.uploadedFile.cdnUrl).toBe('https://cdn/sub-file.pdf');
+    });
+
+    it('should restore saved file from review file URL when control is dirty in review mode', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      const savedReview = {
+        answer: null,
+        comment: 'test',
+        file: { url: 'https://cdn/rev-file.pdf', name: 'rev-file.pdf', path: '/uploads/rev' },
+      };
+      component.review = savedReview;
+      component.control = new FormControl(savedReview);
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.uploadedFile).toBeDefined();
+      expect(component.uploadedFile.cdnUrl).toBe('https://cdn/rev-file.pdf');
+    });
   });
 });

@@ -498,5 +498,82 @@ describe('TextComponent', () => {
     });
   });
 
+  describe('_showSavedAnswers() - pristine check for pagination persistence', () => {
+    const dummyQuestion = {
+      id: 1, name: '', type: 'text', description: '',
+      isRequired: true, canComment: false, canAnswer: true, choices: [], audience: []
+    };
+
+    describe('review mode', () => {
+      beforeEach(() => {
+        component.question = dummyQuestion;
+        component.reviewStatus = 'in progress';
+        component.doReview = true;
+        component.review = { answer: 'saved answer', comment: 'saved comment' };
+        component.control = new FormControl('');
+        component.submissionStatus = '';
+        component.doAssessment = false;
+      });
+
+      it('should use saved review data when control is pristine', () => {
+        component.ngOnInit();
+
+        expect(component.innerValue).toEqual(component.review);
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        const dirtyValue = { answer: 'user edited', comment: 'user comment' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component.ngOnInit();
+
+        expect(component.innerValue).toEqual(dirtyValue);
+      });
+    });
+
+    describe('assessment mode', () => {
+      beforeEach(() => {
+        component.question = dummyQuestion;
+        component.submissionStatus = 'in progress';
+        component.doAssessment = true;
+        component.submission = { answer: 'saved submission answer' };
+        component.reviewStatus = '';
+        component.doReview = false;
+        component.control = new FormControl('');
+      });
+
+      it('should use saved submission answer when control is pristine', () => {
+        component.ngOnInit();
+
+        expect(component.innerValue).toBe('saved submission answer');
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        component.control.setValue('user edited');
+        component.control.markAsDirty();
+
+        component.ngOnInit();
+
+        expect(component.innerValue).toBe('user edited');
+      });
+    });
+
+    it('should call propagateChange with innerValue', () => {
+      component.question = dummyQuestion;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: 'test' };
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.control = new FormControl('');
+      spyOn(component, 'propagateChange');
+
+      component.ngOnInit();
+
+      expect(component.propagateChange).toHaveBeenCalled();
+    });
+  });
+
 });
 

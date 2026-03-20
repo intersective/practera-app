@@ -370,4 +370,226 @@ describe('MultiTeamMemberSelectorComponent', () => {
       expect(component.isSelectedInReview(teamMember)).toBeFalse();
     });
   });
+
+  describe('isSelected()', () => {
+    const teamMember = { key: JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 }), userName: 'User1' };
+
+    it('should return false when innerValue is null', () => {
+      component.innerValue = null;
+      expect(component.isSelected(teamMember)).toBeFalse();
+    });
+
+    it('should return true in assessment mode when member is in innerValue', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = [JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 })];
+      expect(component.isSelected(teamMember)).toBeTrue();
+    });
+
+    it('should return false in assessment mode when member is not in innerValue', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = [JSON.stringify({ name: 'Other', recipientId: 2, recipientEmail: 'o@test.com', userId: 99 })];
+      expect(component.isSelected(teamMember)).toBeFalse();
+    });
+
+    it('should return true in review mode when member is in innerValue.answer', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = {
+        answer: [JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 })],
+        comment: '',
+      };
+      expect(component.isSelected(teamMember)).toBeTrue();
+    });
+
+    it('should return false in review mode when innerValue.answer is undefined', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = { comment: '' };
+      expect(component.isSelected(teamMember)).toBeFalse();
+    });
+  });
+
+  describe('triggerSave()', () => {
+    beforeEach(() => {
+      component.question = { id: 20, audience: [] } as any;
+      component.submissionId = 50;
+      component.reviewId = 60;
+      component.submitActions$ = jasmine.createSpyObj('Subject', ['next']);
+    });
+
+    it('should emit review save action when doReview is true', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = { answer: ['member-1'], comment: 'review comment' };
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        reviewSave: {
+          reviewId: 60,
+          submissionId: 50,
+          questionId: 20,
+          answer: ['member-1'],
+          comment: 'review comment',
+        },
+      }));
+    });
+
+    it('should emit question save action when doAssessment is true', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = ['member-a', 'member-b'];
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        questionSave: {
+          submissionId: 50,
+          questionId: 20,
+          answer: ['member-a', 'member-b'],
+        },
+      }));
+    });
+  });
+
+  describe('onLabelToggle / onLabelToggleReview', () => {
+    beforeEach(() => {
+      component.control = new FormControl('') as any;
+      component.submitActions$ = new Subject();
+      spyOn(component, 'onChange');
+    });
+
+    it('onLabelToggle should call onChange without type', () => {
+      component.onLabelToggle('member-1');
+      expect(component.onChange).toHaveBeenCalledWith('member-1');
+    });
+
+    it('onLabelToggleReview should call onChange with answer type', () => {
+      component.onLabelToggleReview('member-1');
+      expect(component.onChange).toHaveBeenCalledWith('member-1', 'answer');
+    });
+  });
+
+  describe('registerOnChange() / registerOnTouched()', () => {
+    it('registerOnChange should set propagateChange', () => {
+      const fn = jasmine.createSpy('onChange');
+      component.registerOnChange(fn);
+      component.propagateChange('test');
+      expect(fn).toHaveBeenCalledWith('test');
+    });
+
+    it('registerOnTouched should not throw', () => {
+      expect(() => component.registerOnTouched(() => {})).not.toThrow();
+    });
+  });
+
+  describe('isDisplayOnly', () => {
+    it('should be true when reviewer has canAnswer false', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.question = { canAnswer: false, audience: [] } as any;
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be truthy when feedback available with submission answer', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'feedback available';
+      component.submission = { answer: ['member-1'] };
+      expect(component.isDisplayOnly).toBeTruthy();
+    });
+
+    it('should be truthy when pending review with submission answer', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'pending review';
+      component.submission = { answer: ['member-1'] };
+      expect(component.isDisplayOnly).toBeTruthy();
+    });
+
+    it('should be truthy when done with empty review status', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'done';
+      component.reviewStatus = '';
+      component.submission = { answer: ['member-1'] };
+      expect(component.isDisplayOnly).toBeTruthy();
+    });
+
+    it('should be false when doing assessment', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+
+    it('should be false when doing review with canAnswer true', () => {
+      component.doAssessment = false;
+      component.doReview = true;
+      component.question = { canAnswer: true, audience: [] } as any;
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+  });
+
+  describe('_showSavedAnswers() - "not start" review status', () => {
+    it('should load review data when reviewStatus is "not start"', () => {
+      component.reviewStatus = 'not start';
+      component.doReview = true;
+      component.review = { answer: ['member-x'], comment: 'test' };
+      component.control = new FormControl(null) as any;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual({
+        answer: ['member-x'],
+        comment: 'test',
+      });
+    });
+  });
+
+  describe('_showSavedAnswers() - propagateChange call', () => {
+    it('should call propagateChange with innerValue', () => {
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: ['member-1'] };
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.control = new FormControl(null) as any;
+      spyOn(component, 'propagateChange');
+
+      component['_showSavedAnswers']();
+
+      expect(component.propagateChange).toHaveBeenCalledWith(['member-1']);
+    });
+  });
+
+  describe('onChange() - initializes innerValue for review mode', () => {
+    it('should initialize innerValue with answer array and empty comment when innerValue is null', () => {
+      component.innerValue = null;
+      component.control = new FormControl('') as any;
+      utilsSpy.addOrRemove = jasmine.createSpy('addOrRemove').and.returnValue(['member-1']);
+      spyOn(component, 'propagateChange');
+
+      component.onChange('member-1', 'answer');
+
+      expect(component.innerValue.answer).toEqual(['member-1']);
+      expect(component.innerValue.comment).toBe('');
+    });
+
+    it('should normalize non-array answer to empty array before toggling', () => {
+      component.innerValue = { answer: 'not-array', comment: '' };
+      component.control = new FormControl('') as any;
+      utilsSpy.addOrRemove = jasmine.createSpy('addOrRemove').and.returnValue(['member-1']);
+      spyOn(component, 'propagateChange');
+
+      component.onChange('member-1', 'answer');
+
+      expect(utilsSpy.addOrRemove).toHaveBeenCalledWith([], 'member-1');
+    });
+  });
 });
