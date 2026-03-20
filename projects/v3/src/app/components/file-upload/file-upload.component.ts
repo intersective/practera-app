@@ -174,8 +174,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    const type = this.doReview ? 'answer' : undefined;
-
     // reset errors
     this.errors = [];
     const fileInput: TusFileResponse = {
@@ -191,7 +189,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     };
 
     this.uploadedFile = fileInput;
+    const type = this.doReview ? 'answer' : undefined;
     this.onChange('', type);
+
     if (response?.status !== 200) {
       this.errors.push('File upload failed, please try again later.');
     }
@@ -221,11 +221,13 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       };
     }
 
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
     this.submitActions$.next(action);
   }
 
-  // if 'type' is set, it means it comes from reviewer doing review, otherwise it comes from submitter doing assessment
+  // if 'type' is set, this is a reviewer's action (review mode); if not set, it's an assessment submission (assessment mode)
   onChange(value, type?: 'comment' | 'answer') {
     // set changed value (answer or comment)
     if (type) {  // for reviewing
@@ -243,7 +245,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       this.innerValue = this.fileRequestFormat();
     }
 
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+      this.control.markAsTouched();
+      this.control.markAsDirty();
+    }
     this.triggerSave();
   }
 
@@ -268,20 +274,39 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && (this.doReview)) {
-      this.innerValue = {
-        answer: {},
-        comment: ''
-      };
-      this.innerValue.comment = this.review.comment;
-      this.comment = this.review.comment;
-      this.innerValue.answer = this.review.answer;
-      this.innerValue.file = this.review.file;
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
+      // when the control has been modified (e.g. user edited during pagination),
+      // preserve their edits; otherwise use the saved review data
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+        this.comment = this.control.value?.comment ?? this.review.comment;
+        // restore uploadedFile from saved file data so template shows file after pagination
+        if (this.innerValue?.file?.url) {
+          this.uploadedFile = { ...this.innerValue.file, cdnUrl: this.innerValue.file.url } as TusFileResponse;
+        }
+      } else {
+        this.innerValue = {
+          answer: this.review.answer,
+          comment: this.review.comment,
+          file: this.review.file,
+        };
+        this.comment = this.review.comment;
+      }
     }
     if ((this.submissionStatus === 'in progress') && (this.doAssessment)) {
-      this.innerValue = this.submission.answer;
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+        // restore uploadedFile from saved file data so template shows file after pagination
+        if (this.innerValue?.url) {
+          this.uploadedFile = { ...this.innerValue, cdnUrl: this.innerValue.url } as TusFileResponse;
+        }
+      } else {
+        this.innerValue = this.submission?.answer;
+      }
     }
-    this.control.setValue(this.innerValue);
+    if (this.control) {
+      this.control.setValue(this.innerValue);
+    }
   }
 
   removeSubmitFile(file?: {
@@ -292,9 +317,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if (this.doAssessment === true) {
       this.submission.answer = null;
       this.onChange('');
-    }
-
-    if (this.doReview === true) {
+    } else if (this.doReview === true) {
       this.review.answer = null;
       this.onChange('', 'answer');
     }
