@@ -7,13 +7,13 @@
           <span [innerHTML]="teamMember.userName"></span>
           <ng-container *ngIf="submission?.answer">
             <p *ngIf="isSelectedInSubmission(teamMember)">
-              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
             </p>
           </ng-container>
 
           <ng-container *ngIf="review?.answer">
             <p *ngIf="isSelectedInReview(teamMember)">
-              <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
+              <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
             </p>
           </ng-container>
         </ion-label>
@@ -95,7 +95,7 @@
               tabindex="0">
             </span>
             <p *ngIf="isSelectedInSubmission(teamMember)" style="margin: 0; padding: 0;">
-              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
             </p>
           </div>
         </ion-checkbox>
