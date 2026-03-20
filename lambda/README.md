@@ -7,4 +7,4 @@ This directory will hold `lambda@edge` functions.
 
 ### Deployment
 
-Once `AWS` credentials is ready, just run `deploy.sh` on each function.
+Once `AWS` credentials is ready, just run `deploy.sh`. Make sure you installed [sam](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) on your machine.
