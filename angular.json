@@ -188,6 +188,12 @@
                   "maximumWarning": "20kb"
                 }
               ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.local.ts"
+                }
+              ],
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
