@@ -1,4 +1,11 @@
-version: '3'
+version: '3.8'
+
+# =============================================================================
+# App V2 - Standalone Development Configuration
+# =============================================================================
+# Use this for standalone development of app-v2
+# For full-stack development, use practera-devpod/docker-compose.yml
+# =============================================================================
 
 services:
   app:
@@ -8,16 +15,20 @@ services:
     container_name: app
     ports:
       - "4200:4200"
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - API_URL=http://core-graphql-api:8000
     volumes:
-      - .:/app
+      - .:/app:cached
       - node_modules:/app/node_modules
     networks:
-      - core-admin
+      - practera-dev
 
 volumes:
   node_modules:
 
 networks:
-  core-admin:
-    name: core-admin
+  practera-dev:
+    name: practera-dev
     external: true
