@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatListComponent } from './chat-list.component';
 import { ChatChannel, ChatService } from '@v3/services/chat.service';
@@ -38,7 +38,7 @@ describe('ChatListComponent', () => {
   let routeStub: Partial<ActivatedRoute>;
   let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [ChatListComponent],
@@ -124,6 +124,8 @@ describe('ChatListComponent', () => {
       expect(component.chatList).toBeDefined();
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
       expect(chatSeviceSpy.getPusherChannels.calls.count()).toBe(1);
+      expect(pusherSpy.subscribeChannel).toHaveBeenCalledWith('chat', 'sdb746-93r7dc-5f44eb4f');
+      expect(pusherSpy.subscribeChannel).toHaveBeenCalledWith('chat', 'kb5gt-9nfbj-5f45eb4g');
     });
   });
 
@@ -152,6 +154,50 @@ describe('ChatListComponent', () => {
         }
       );
       expect(component.navigate.emit).toHaveBeenCalled();
+    });
+
+    it('should ignore unsupported keyboard input', () => {
+      spyOn(component.navigate, 'emit');
+
+      component.goToChatRoom(mockChats.data.channels[0] as any, {
+        code: 'KeyA',
+        preventDefault: jasmine.createSpy('preventDefault'),
+      } as any);
+
+      expect(component.navigate.emit).not.toHaveBeenCalled();
+      expect(storageSpy.setCurrentChatChannel).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to room on mobile and set current channel', () => {
+      component.isMobile = true;
+
+      component.goToChatRoom(mockChats.data.channels[0] as any);
+
+      expect(storageSpy.setCurrentChatChannel).toHaveBeenCalledWith(mockChats.data.channels[0] as any);
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'messages', 'chat-room']);
+    });
+
+    it('should prevent default for keyboard enter action', () => {
+      const preventDefault = jasmine.createSpy('preventDefault');
+      spyOn(component.navigate, 'emit');
+
+      component.goToChatRoom(mockChats.data.channels[0] as any, {
+        code: 'Enter',
+        preventDefault,
+      } as any);
+
+      expect(preventDefault).toHaveBeenCalled();
+      expect(component.navigate.emit).toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing getChatDate()', () => {
+    it('should format date through utils service', () => {
+      const testDate = '2026-02-23T00:00:00.000Z';
+
+      component.getChatDate(testDate);
+
+      expect(utils.timeFormatter).toHaveBeenCalledWith(testDate);
     });
   });
 
