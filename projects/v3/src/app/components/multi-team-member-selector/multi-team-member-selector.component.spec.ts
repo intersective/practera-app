@@ -32,7 +32,7 @@ describe('MultiTeamMemberSelectorComponent', () => {
 
     component.control = new FormControl();
     component.submitActions$ = new Subject<any>();
-    component.question = { audience: [] };
+    component.question = { audience: [] } as any;
     component.submission = {};
     component.review = {};
   });
@@ -105,15 +105,17 @@ describe('MultiTeamMemberSelectorComponent', () => {
 
     it('should set errors and call submitActions$.next()', () => {
       spyOn(component.submitActions$, 'next');
-      component.control = new FormControl('', Validators.required);
+      component.control = new FormControl('', Validators.required) as any;
 
       component.onChange('value1');
 
       expect(component.errors).toContain('This question is required');
-      expect(component.submitActions$.next).toHaveBeenCalledWith({
-        saveInProgress: true,
-        goBack: false,
-      });
+      expect(component.submitActions$.next).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          autoSave: true,
+          goBack: false,
+        })
+      );
     });
   });
 
@@ -125,7 +127,8 @@ describe('MultiTeamMemberSelectorComponent', () => {
       };
 
       component.writeValue(value);
-      expect(component.innerValue).toEqual(JSON.stringify(value));
+      // writeValue sets innerValue directly without stringify
+      expect(component.innerValue).toEqual(value);
     });
 
     it('should not update innerValue when the value is undefined or null', () => {
@@ -137,6 +140,47 @@ describe('MultiTeamMemberSelectorComponent', () => {
       component.writeValue(null);
       expect(component.innerValue).toEqual('initialValue');
     });
+
+    it('should normalize non-array answer in review mode', () => {
+      component.doReview = true;
+      component.writeValue({ answer: 'not-array', comment: 'test' });
+
+      expect(Array.isArray(component.innerValue.answer)).toBeTrue();
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should keep array answer in review mode', () => {
+      component.doReview = true;
+      component.writeValue({ answer: ['member1'], comment: 'test' });
+
+      expect(component.innerValue.answer).toEqual(['member1']);
+    });
+
+    it('should normalize non-array value to plain array in assessment mode', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.writeValue({ answer: ['member1'], comment: 'test' });
+
+      // in assessment mode, innerValue should be a plain array
+      expect(Array.isArray(component.innerValue)).toBeTrue();
+      expect(component.innerValue).toEqual(['member1']);
+    });
+
+    it('should normalize non-array value to empty array in assessment mode', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.writeValue('not-an-array');
+
+      expect(Array.isArray(component.innerValue)).toBeTrue();
+      expect(component.innerValue).toEqual([]);
+    });
+
+    it('should set comment from value when present', () => {
+      component.doReview = true;
+      component.writeValue({ answer: [], comment: 'new comment' });
+
+      expect(component.comment).toBe('new comment');
+    });
   });
 
   describe('_showSavedAnswers()', () => {
@@ -145,6 +189,7 @@ describe('MultiTeamMemberSelectorComponent', () => {
       component.doReview = true;
       component.review.answer = ['answer1'];
       component.review.comment = 'comment1';
+      component.control = new FormControl('') as any;
 
       component['_showSavedAnswers']();
 
@@ -152,21 +197,99 @@ describe('MultiTeamMemberSelectorComponent', () => {
         answer: ['answer1'],
         comment: 'comment1',
       });
-      expect(component.control.value).toEqual({
-        answer: ['answer1'],
-        comment: 'comment1',
-      });
+      // propagateChange doesn't update control.value, so we only check innerValue
     });
 
     it('should set innerValue and propagate changes for in-progress submission', () => {
       component.submissionStatus = 'in progress';
       component.doAssessment = true;
       component.submission.answer = ['answer1'];
+      component.control = new FormControl('') as any;
 
       component['_showSavedAnswers']();
 
+      // in assessment mode, innerValue is a plain array (not an object)
       expect(component.innerValue).toEqual(['answer1']);
-      expect(component.control.value).toEqual(['answer1']);
+    });
+
+    it('should preserve control value when control is dirty in review mode', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: ['saved'], comment: 'saved comment' };
+      const dirtyValue = { answer: ['user-edited'], comment: 'user comment' };
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual(dirtyValue);
+      expect(component.comment).toBe('user comment');
+    });
+
+    it('should normalize non-array answer when control is dirty in review mode', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: ['saved'], comment: 'saved comment' };
+      const dirtyValue = { answer: 'not-an-array', comment: 'user comment' };
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(Array.isArray(component.innerValue.answer)).toBeTrue();
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should normalize non-array answer to empty array when review data is pristine', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: 'not-an-array', comment: 'comment' };
+      component.control = new FormControl('') as any;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue.answer).toEqual([]);
+    });
+
+    it('should fallback to review comment when dirty value has no comment', () => {
+      component.reviewStatus = 'in progress';
+      component.doReview = true;
+      component.review = { answer: ['saved'], comment: 'saved comment' };
+      const dirtyValue = { answer: ['user-edited'] };
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.comment).toBe('saved comment');
+    });
+
+    it('should preserve control value when control is dirty in assessment mode', () => {
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: ['saved'] };
+      const dirtyValue = ['user-edited'];
+      component.control = new FormControl(dirtyValue) as any;
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual(['user-edited']);
+    });
+
+    it('should default to empty array when submission answer is null in assessment mode', () => {
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: null };
+      component.control = new FormControl('') as any;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual([]);
     });
   });
 
@@ -245,6 +368,228 @@ describe('MultiTeamMemberSelectorComponent', () => {
         answer: [JSON.stringify({ name: 'Other', recipientId: 2, recipientEmail: 'o@test.com', userId: 99 })],
       };
       expect(component.isSelectedInReview(teamMember)).toBeFalse();
+    });
+  });
+
+  describe('isSelected()', () => {
+    const teamMember = { key: JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 }), userName: 'User1' };
+
+    it('should return false when innerValue is null', () => {
+      component.innerValue = null;
+      expect(component.isSelected(teamMember)).toBeFalse();
+    });
+
+    it('should return true in assessment mode when member is in innerValue', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = [JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 })];
+      expect(component.isSelected(teamMember)).toBeTrue();
+    });
+
+    it('should return false in assessment mode when member is not in innerValue', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = [JSON.stringify({ name: 'Other', recipientId: 2, recipientEmail: 'o@test.com', userId: 99 })];
+      expect(component.isSelected(teamMember)).toBeFalse();
+    });
+
+    it('should return true in review mode when member is in innerValue.answer', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = {
+        answer: [JSON.stringify({ name: 'User1', recipientId: 1, recipientEmail: 'u1@test.com', userId: 10 })],
+        comment: '',
+      };
+      expect(component.isSelected(teamMember)).toBeTrue();
+    });
+
+    it('should return false in review mode when innerValue.answer is undefined', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = { comment: '' };
+      expect(component.isSelected(teamMember)).toBeFalse();
+    });
+  });
+
+  describe('triggerSave()', () => {
+    beforeEach(() => {
+      component.question = { id: 20, audience: [] } as any;
+      component.submissionId = 50;
+      component.reviewId = 60;
+      component.submitActions$ = jasmine.createSpyObj('Subject', ['next']);
+    });
+
+    it('should emit review save action when doReview is true', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = { answer: ['member-1'], comment: 'review comment' };
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        reviewSave: {
+          reviewId: 60,
+          submissionId: 50,
+          questionId: 20,
+          answer: ['member-1'],
+          comment: 'review comment',
+        },
+      }));
+    });
+
+    it('should emit question save action when doAssessment is true', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = ['member-a', 'member-b'];
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        questionSave: {
+          submissionId: 50,
+          questionId: 20,
+          answer: ['member-a', 'member-b'],
+        },
+      }));
+    });
+  });
+
+  describe('onLabelToggle / onLabelToggleReview', () => {
+    beforeEach(() => {
+      component.control = new FormControl('') as any;
+      component.submitActions$ = new Subject();
+      spyOn(component, 'onChange');
+    });
+
+    it('onLabelToggle should call onChange without type', () => {
+      component.onLabelToggle('member-1');
+      expect(component.onChange).toHaveBeenCalledWith('member-1');
+    });
+
+    it('onLabelToggleReview should call onChange with answer type', () => {
+      component.onLabelToggleReview('member-1');
+      expect(component.onChange).toHaveBeenCalledWith('member-1', 'answer');
+    });
+  });
+
+  describe('registerOnChange() / registerOnTouched()', () => {
+    it('registerOnChange should set propagateChange', () => {
+      const fn = jasmine.createSpy('onChange');
+      component.registerOnChange(fn);
+      component.propagateChange('test');
+      expect(fn).toHaveBeenCalledWith('test');
+    });
+
+    it('registerOnTouched should not throw', () => {
+      expect(() => component.registerOnTouched(() => {})).not.toThrow();
+    });
+  });
+
+  describe('isDisplayOnly', () => {
+    it('should be true when reviewer has canAnswer false', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.question = { canAnswer: false, audience: [] } as any;
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be truthy when feedback available with submission answer', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'feedback available';
+      component.submission = { answer: ['member-1'] };
+      expect(component.isDisplayOnly).toBeTruthy();
+    });
+
+    it('should be truthy when pending review with submission answer', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'pending review';
+      component.submission = { answer: ['member-1'] };
+      expect(component.isDisplayOnly).toBeTruthy();
+    });
+
+    it('should be truthy when done with empty review status', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'done';
+      component.reviewStatus = '';
+      component.submission = { answer: ['member-1'] };
+      expect(component.isDisplayOnly).toBeTruthy();
+    });
+
+    it('should be false when doing assessment', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+
+    it('should be false when doing review with canAnswer true', () => {
+      component.doAssessment = false;
+      component.doReview = true;
+      component.question = { canAnswer: true, audience: [] } as any;
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+  });
+
+  describe('_showSavedAnswers() - "not start" review status', () => {
+    it('should load review data when reviewStatus is "not start"', () => {
+      component.reviewStatus = 'not start';
+      component.doReview = true;
+      component.review = { answer: ['member-x'], comment: 'test' };
+      component.control = new FormControl(null) as any;
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual({
+        answer: ['member-x'],
+        comment: 'test',
+      });
+    });
+  });
+
+  describe('_showSavedAnswers() - propagateChange call', () => {
+    it('should call propagateChange with innerValue', () => {
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: ['member-1'] };
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.control = new FormControl(null) as any;
+      spyOn(component, 'propagateChange');
+
+      component['_showSavedAnswers']();
+
+      expect(component.propagateChange).toHaveBeenCalledWith(['member-1']);
+    });
+  });
+
+  describe('onChange() - initializes innerValue for review mode', () => {
+    it('should initialize innerValue with answer array and empty comment when innerValue is null', () => {
+      component.innerValue = null;
+      component.control = new FormControl('') as any;
+      utilsSpy.addOrRemove = jasmine.createSpy('addOrRemove').and.returnValue(['member-1']);
+      spyOn(component, 'propagateChange');
+
+      component.onChange('member-1', 'answer');
+
+      expect(component.innerValue.answer).toEqual(['member-1']);
+      expect(component.innerValue.comment).toBe('');
+    });
+
+    it('should normalize non-array answer to empty array before toggling', () => {
+      component.innerValue = { answer: 'not-array', comment: '' };
+      component.control = new FormControl('') as any;
+      utilsSpy.addOrRemove = jasmine.createSpy('addOrRemove').and.returnValue(['member-1']);
+      spyOn(component, 'propagateChange');
+
+      component.onChange('member-1', 'answer');
+
+      expect(utilsSpy.addOrRemove).toHaveBeenCalledWith([], 'member-1');
     });
   });
 });

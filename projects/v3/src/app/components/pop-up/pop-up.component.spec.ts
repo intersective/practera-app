@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { PopUpComponent } from './pop-up.component';
 import { Observable, of, pipe } from 'rxjs';
 import { ModalController } from '@ionic/angular';
@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 describe('PopUpComponent', () => {
   let component: PopUpComponent;
   let fixture: ComponentFixture<PopUpComponent>;
-  const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
+  let modalCtrlSpy: any;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PopUpComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
@@ -34,6 +34,7 @@ describe('PopUpComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PopUpComponent);
     component = fixture.componentInstance;
+    modalCtrlSpy = TestBed.inject(ModalController);
   });
 
   it('should create', () => {

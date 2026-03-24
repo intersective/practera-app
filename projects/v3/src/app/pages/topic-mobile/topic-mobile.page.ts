@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task } from '@v3/app/services/activity.service';
 import { TopicService, Topic } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-topic-mobile',
@@ -11,7 +11,7 @@ import { BehaviorSubject, firstValueFrom } from 'rxjs';
   styleUrls: ['./topic-mobile.page.scss'],
 })
 export class TopicMobilePage implements OnInit {
-  topic$ = this.topicService.topic$;
+  topic$: Observable<Topic>;
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   topic: Topic;
@@ -24,7 +24,9 @@ export class TopicMobilePage implements OnInit {
     private topicService: TopicService,
     private activityService: ActivityService,
     private utils: UtilsService
-  ) { }
+  ) {
+    this.topic$ = this.topicService.topic$;
+  }
 
   ngOnInit() {
     this.topic$.subscribe(res => {
