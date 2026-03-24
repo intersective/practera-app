@@ -23,7 +23,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
-  uppyProps = this.uppyUploaderService.uppyProps;
+  uppyProps: any;
 
   s3Info: {
     path: string;
@@ -37,6 +37,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
   ) {
+    this.uppyProps = this.uppyUploaderService.uppyProps;
     this.uppyProps.height = '500px';
     this.uppyProps.note = "Upload a file here";
   }

@@ -1300,8 +1300,8 @@ Best regards`;
     if (this.doAssessment || this.isPendingReview) {
       // in edit mode, check form validation
       this.setSubmissionDisabled();
-    } else {
-      // in read-only mode, ensure button is enabled
+    } else if (!this.submission?.isLocked) {
+      // in read-only mode (not locked), ensure button is enabled
       this.btnDisabled$.next(false);
     }
   }

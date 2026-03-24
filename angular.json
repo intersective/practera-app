@@ -73,11 +73,11 @@
             ],
             "styles": [
               {
-                "input": "projects/v3/src/theme/variables.scss",
+                "input": "projects/v3/src/global.scss",
                 "inject": true
               },
               {
-                "input": "projects/v3/src/global.scss",
+                "input": "projects/v3/src/theme/variables.scss",
                 "inject": true
               },
               {
@@ -235,6 +235,7 @@
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
+            "include": ["projects/v3/src/**/*.spec.ts"],
             "assets": ["./projects/v3/src/assets/icon/favicon.ico", "projects/v3/src/assets"],
             "styles": ["projects/v3/src/styles.scss"],
             "scripts": []
