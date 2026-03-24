@@ -46,7 +46,6 @@ describe('FilestackPreviewComponent', () => {
 
   it('should has toolbar to control modal content', () => {
     spyOn(window, 'open');
-    spyOn(modalSpy, 'dismiss');
 
     component.file = { url: TEST_URL };
     component.url = TEST_URL;
@@ -77,7 +76,6 @@ describe('FilestackPreviewComponent', () => {
 
   describe('close()', () => {
     it('should close opened modal', () => {
-      spyOn(modalSpy, 'dismiss');
       component.close();
       expect(modalSpy.dismiss).toHaveBeenCalled();
     });

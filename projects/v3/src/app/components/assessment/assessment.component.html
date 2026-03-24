@@ -108,8 +108,7 @@
       <ion-chip [class]="'label body-3 '+ labelColor"
         *ngIf="label"
         role="status">
-        <ion-label [innerHTML]="label"
-          aria-label="Assessment status"></ion-label>
+        <span aria-label="Assessment status">{{ label }}</span>
       </ion-chip>
 
       <p class="assessment subtitle-1 due-date"

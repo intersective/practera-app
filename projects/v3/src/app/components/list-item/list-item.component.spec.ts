@@ -47,14 +47,14 @@ describe('ListItemComponent', () => {
   it('should display the title', () => {
     listItemComponent.isEventItem = true;
     listItemComponent.loading = false;
+    listItemComponent.title = testHost.title;
     fixture.detectChanges();
 
-    const listItemDe: DebugElement = fixture.debugElement.query(By.css('.item-title'));
+    const listItemDe: DebugElement = fixture.debugElement.query(By.css('[role="heading"]'));
     const listItemEl: HTMLElement = listItemDe.nativeElement;
-    // eslint-disable-next-line no-console
-    console.log(listItemEl);
 
-    expect(listItemEl.textContent).toEqual(testHost.title);
+    // the title is rendered via innerHTML and may have extra whitespace
+    expect(listItemEl.textContent.trim()).toEqual(testHost.title);
   });
 
   it('should return correct description', () => {
