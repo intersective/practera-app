@@ -28,6 +28,11 @@ export interface SendMessageParam {
   sentAt: string;
 }
 
+export interface DeleteMessageParam {
+  channelUuid: string;
+  uuid: string;
+}
+
 class PusherChannel {
   name: string;
   subscription?: Channel;
@@ -349,6 +354,22 @@ export class PusherService {
       return;
     }
     channel.subscription.trigger('client-chat-new-message', data);
+  }
+
+  triggerDeleteMessage(channelName: string, data: DeleteMessageParam) {
+    const channel = this.channels.chat.find(c => c.name === channelName);
+    if (!channel) {
+      return;
+    }
+    channel.subscription.trigger('client-chat-delete-message', data);
+  }
+
+  triggerEditMessage(channelName: string, data: SendMessageParam) {
+    const channel = this.channels.chat.find(c => c.name === channelName);
+    if (!channel) {
+      return;
+    }
+    channel.subscription.trigger('client-chat-edit-message', data);
   }
 
 }

@@ -3,7 +3,7 @@ import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChange
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
 import { SharedService } from '@v3/services/shared.service';
-import * as Plyr from 'plyr';
+import Plyr from 'plyr';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 import { FilestackService } from '@v3/app/services/filestack.service';
@@ -15,6 +15,7 @@ import { ModalController } from '@ionic/angular';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 
 @Component({
+  standalone: false,
   selector: 'app-topic',
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']

@@ -17,6 +17,7 @@ import { ComponentCleanupService } from '@v3/app/services/component-cleanup.serv
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
+  standalone: false,
   selector: 'app-activity-desktop',
   templateUrl: './activity-desktop.page.html',
   styleUrls: ['./activity-desktop.page.scss'],

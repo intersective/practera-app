@@ -19,6 +19,7 @@ interface FileStackCompatible extends TusFileResponse {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-file-display',
   templateUrl: 'file-display.component.html',
   styleUrls: ['file-display.component.scss'],
