@@ -7,13 +7,13 @@
           <span [innerHTML]="teamMember.userName"></span>
           <ng-container *ngIf="submission?.answer">
             <p *ngIf="isSelectedInSubmission(teamMember)">
-              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
             </p>
           </ng-container>
 
           <ng-container *ngIf="review?.answer">
             <p *ngIf="isSelectedInReview(teamMember)">
-              <ion-chip class="label yellow black" i18n>Expert's answer</ion-chip>
+              <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
             </p>
           </ng-container>
         </ion-label>
@@ -42,23 +42,25 @@
         lines="none"
         *ngFor="let teamMember of question.teamMembers;let i = index"
         [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-        <ion-label class="white-space-normal body-2 black"
-          [innerHTML]="teamMember.userName"
-          [appToggleLabel]="onLabelToggle"
-          [toggleId]="teamMember.key"
-          [toggleDisabled]="control?.disabled"
-          role="button"
-          tabindex="0">
-        </ion-label>
-
         <ion-checkbox
           [attr.aria-label]="teamMember.userName"
           color="success"
           [checked]="isSelected(teamMember)"
           [value]="teamMember.key"
+          labelPlacement="end"
+          justify="start"
           slot="start"
           (ionChange)="onChange(teamMember.key)"
           [disabled]="control?.disabled">
+          <div class="white-space-normal body-2 black">
+            <span [innerHTML]="teamMember.userName"
+              [appToggleLabel]="onLabelToggle"
+              [toggleId]="teamMember.key"
+              [toggleDisabled]="control?.disabled"
+              role="button"
+              tabindex="0">
+            </span>
+          </div>
         </ion-checkbox>
       </ion-item>
     </ion-list>
@@ -95,7 +97,7 @@
               tabindex="0"
             ></span>
             <p *ngIf="isSelectedInSubmission(teamMember)" style="margin: 0; padding: 0;">
-              <ion-chip class="label orange" i18n>Learner's answer</ion-chip>
+              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
             </p>
           </div>
         </ion-checkbox>

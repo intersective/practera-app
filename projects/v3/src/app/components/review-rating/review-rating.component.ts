@@ -1,5 +1,5 @@
 import { firstValueFrom } from 'rxjs';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit, forwardRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
@@ -8,6 +8,7 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { NotificationsService } from '../../services/notifications.service';
 
 @Component({
+  standalone: false,
   selector: 'app-review-rating',
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
@@ -63,8 +64,9 @@ export class ReviewRatingComponent implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private utils: UtilsService,
-    private fastFeedbackService: FastFeedbackService,
-    private notificationsService: NotificationsService,
+    // types are 'any' to prevent design:paramtypes metadata from triggering circular dependency TDZ error
+    @Inject(forwardRef(() => FastFeedbackService)) private fastFeedbackService: any,
+    @Inject(forwardRef(() => NotificationsService)) private notificationsService: any,
   ) {}
 
   ngOnInit(): void {

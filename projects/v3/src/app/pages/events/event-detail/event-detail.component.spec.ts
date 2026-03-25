@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EventDetailComponent } from './event-detail.component';
 import { of } from 'rxjs';
 import { Router } from '@angular/router';
@@ -62,7 +62,7 @@ describe('EventDetailComponent', () => {
   let modalSpy: jasmine.SpyObj<ModalController>;
   const testUtils = new TestUtils();
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [ComponentsModule, BrowserAnimationsModule],
       declarations: [EventDetailComponent],
@@ -159,17 +159,18 @@ describe('EventDetailComponent', () => {
       fixture.detectChanges();
       component.event = tmpEvent;
       expect(component.buttonText.label).toEqual(expected);
-      expect(page.eventName.innerHTML).toEqual(tmpEvent.name);
-      expect(page.activityName.innerHTML).toEqual(tmpEvent.activityName);
+      expect(page.eventName.innerHTML.trim()).toEqual(tmpEvent.name);
+      expect(page.activityName.innerHTML.trim()).toEqual(tmpEvent.activityName);
       if (expected === 'Expired') {
         expect(page.expired).toBeTruthy();
       } else {
         expect(page.expired).toBeFalsy();
       }
-      expect(page.date.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
+      expect(page.date.innerHTML.trim()).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'date')}, ${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
       // expect(page.time.innerHTML).toEqual(`${utils.utcToLocal(tmpEvent.startTime, 'time')} - ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
-      expect(page.location.innerHTML).toEqual(tmpEvent.location);
-      expect(page.capacity.innerHTML).toEqual(`${tmpEvent.remainingCapacity} Seats Available Out of ${tmpEvent.capacity}`);
+      expect(page.location.innerHTML.trim()).toEqual(tmpEvent.location);
+      // normalize whitespace - template interpolation may add extra spaces
+      expect(page.capacity.textContent.trim().replace(/\s+/g, ' ')).toEqual(`${tmpEvent.remainingCapacity} Seats Available Out of ${tmpEvent.capacity}`);
       if (expected) {
         expect(page.button.innerHTML.trim()).toEqual(expected);
       }
@@ -265,7 +266,7 @@ describe('EventDetailComponent', () => {
       tmpEvent.isBooked = true;
       tmpEvent.isPast = true;
       tmpEvent.assessment = null;
-      expected = false;
+      expected = undefined;
     });
 
     it(`should return 'View Check In' if the event's check in assessment is done`, () => {

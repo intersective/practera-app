@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
+  standalone: false,
   selector: 'app-terms-conditions-preview',
   templateUrl: './terms-conditions-preview.component.html',
   styleUrls: ['./terms-conditions-preview.component.scss']

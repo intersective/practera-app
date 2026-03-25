@@ -19,6 +19,7 @@ import { takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
+  standalone: false,
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
@@ -213,7 +214,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // redirect to the last visited url/assessment if available
   redirectToLastVisitedUrl(): Promise<boolean> {
     if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
-      return this.navigate(window.location.href);
+      return; // special urls (login, register, etc.) are already handled by the router
     }
 
     const lastVisitedUrl = this.storage.lastVisited("url") as string;

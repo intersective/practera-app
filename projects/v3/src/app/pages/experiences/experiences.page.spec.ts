@@ -5,6 +5,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { ExperiencesPage } from './experiences.page';
 import { MockRouter } from '@testingv3/mocked.service';
@@ -24,6 +26,7 @@ describe('ExperiencesPage', () => {
     TestBed.configureTestingModule({
       declarations: [ ExperiencesPage ],
       imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: Router,
@@ -35,11 +38,14 @@ describe('ExperiencesPage', () => {
         },
         {
           provide: ExperienceService,
-          useValue: jasmine.createSpyObj('ExperienceService', [
-            'getPrograms',
-            'switchProgramAndNavigate',
-          ], {
-            'programsWithProgress$': of(),
+          useValue: jasmine.createSpyObj('ExperienceService', {
+            'getPrograms': undefined,
+            'getExperiences': undefined,
+            'switchProgramAndNavigate': Promise.resolve(true),
+            'getProgresses': of([]),
+          }, {
+            'programsWithProgress$': of([]),
+            'experiences$': of(null),
           }),
         },
         {
@@ -58,7 +64,16 @@ describe('ExperiencesPage', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getConfig']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            'getConfig': {},
+            'get': null,
+          }),
+        },
+        {
+          provide: UnlockIndicatorService,
+          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['clearAllTasks'], {
+            'unlockedTasks$': of([])
+          })
         },
       ],
     }).compileComponents();
