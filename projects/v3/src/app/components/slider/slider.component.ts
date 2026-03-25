@@ -5,6 +5,7 @@ import { debounceTime } from 'rxjs/operators';
 import { Question } from '../types/assessment';
 
 @Component({
+  standalone: false,
   selector: 'app-slider',
   templateUrl: 'slider.component.html',
   styleUrls: ['./slider.component.scss'],
@@ -259,7 +260,7 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
     return choiceId.toString();
   }
 
-  // Get slider value for submission (Learner's answer)
+  // Get slider value for submission (Learner's Answer)
   getSubmissionSliderValue(): number {
     if (!this.submission?.answer) return this.sliderMin;
 

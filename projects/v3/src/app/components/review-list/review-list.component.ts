@@ -15,6 +15,7 @@ import { Review } from '@v3/app/services/review.service';
 import { SegmentChangeEventDetail, SegmentValue } from '@ionic/angular';
 
 @Component({
+  standalone: false,
   selector: 'app-review-list',
   templateUrl: './review-list.component.html',
   styleUrls: ['./review-list.component.scss'],
