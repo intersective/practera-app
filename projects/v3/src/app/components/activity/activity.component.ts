@@ -11,6 +11,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { takeUntil, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'app-activity',
   templateUrl: './activity.component.html',
   styleUrls: ['./activity.component.scss'],

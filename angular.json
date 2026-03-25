@@ -31,7 +31,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "allowedCommonJsDependencies": [
               "pusher-js",
@@ -49,8 +49,8 @@
             "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
             "index": "projects/v3/src/index.html",
-            "main": "projects/v3/src/main.ts",
-            "polyfills": "projects/v3/src/polyfills.ts",
+            "browser": "projects/v3/src/main.ts",
+            "polyfills": ["projects/v3/src/polyfills.ts"],
             "tsConfig": "projects/v3/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -73,11 +73,11 @@
             ],
             "styles": [
               {
-                "input": "projects/v3/src/theme/variables.scss",
+                "input": "projects/v3/src/global.scss",
                 "inject": true
               },
               {
-                "input": "projects/v3/src/global.scss",
+                "input": "projects/v3/src/theme/variables.scss",
                 "inject": true
               },
               {
@@ -86,9 +86,6 @@
               }
             ],
             "scripts": [],
-            "vendorChunk": true,
-            "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
             "optimization": false,
             "namedChunks": true
@@ -124,12 +121,10 @@
                   "with": "projects/v3/src/environments/environment.custom.ts"
                 }
               ],
-              "buildOptimizer": true,
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false
+              "extractLicenses": true
             },
             "stage": {
               "budgets": [
@@ -148,9 +143,7 @@
                   "with": "projects/v3/src/environments/environment.custom.ts"
                 }
               ],
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -188,9 +181,7 @@
                   "maximumWarning": "20kb"
                 }
               ],
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -231,10 +222,12 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
+            "builderMode": "application",
             "main": "projects/v3/src/test.ts",
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
+            "include": ["projects/v3/src/**/*.spec.ts"],
             "assets": ["./projects/v3/src/assets/icon/favicon.ico", "projects/v3/src/assets"],
             "styles": ["projects/v3/src/styles.scss"],
             "scripts": []

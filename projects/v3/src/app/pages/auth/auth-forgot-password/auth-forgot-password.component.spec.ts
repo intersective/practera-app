@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthForgotPasswordComponent } from './auth-forgot-password.component';
 import { AuthService } from '@v3/services/auth.service';
@@ -18,7 +18,7 @@ describe('AuthForgotPasswordComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [AuthForgotPasswordComponent],

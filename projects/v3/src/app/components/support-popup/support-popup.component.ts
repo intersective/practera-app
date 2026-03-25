@@ -8,6 +8,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
+  standalone: false,
   selector: 'app-support-popup',
   templateUrl: './support-popup.component.html',
   styleUrls: ['./support-popup.component.scss'],

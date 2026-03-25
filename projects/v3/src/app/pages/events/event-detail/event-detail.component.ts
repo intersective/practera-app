@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
+  standalone: false,
   selector: 'app-event-detail',
   templateUrl: 'event-detail.component.html',
   styleUrls: ['event-detail.component.scss']

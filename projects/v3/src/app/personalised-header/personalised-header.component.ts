@@ -11,6 +11,7 @@ import { UtilsService } from '../services/utils.service';
 import { SupportPopupComponent } from '../components/support-popup/support-popup.component';
 
 @Component({
+  standalone: false,
   selector: 'app-personalised-header',
   templateUrl: './personalised-header.component.html',
   styleUrls: ['./personalised-header.component.scss'],

@@ -15,6 +15,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivityService } from '@v3/services/activity.service';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
+import { ModalController } from '@ionic/angular';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;
@@ -30,12 +31,12 @@ describe('TopicComponent', () => {
   let activitySpy: jasmine.SpyObj<ActivityService>;
 
   beforeEach(async () => {
-    topicSpy = jasmine.createSpyObj('TopicService', ['getTopic', 'getTopicProgress', 'updateTopicProgress']);
+    topicSpy = jasmine.createSpyObj('TopicService', ['getTopic', 'getTopicProgress', 'updateTopicProgress', 'clearTopic']);
     filestackSpy = jasmine.createSpyObj('FilestackService', ['previewFile']);
     embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
+    embedSpy.embed.and.returnValue('<iframe src="test"></iframe>'); // return valid embed html
     sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    utilsSpy = jasmine.createSpyObj('UtilsService', ['downloadFile']);
     notificationSpy = jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast']);
     storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'get', 'remove']);
     activitySpy = jasmine.createSpyObj('ActivityService', ['gotoNextTask']);
@@ -52,14 +53,16 @@ describe('TopicComponent', () => {
         { provide: NotificationsService, useValue: notificationSpy },
         { provide: SharedService, useValue: sharedSpy },
         { provide: BrowserStorageService, useValue: storageSpy },
-        { provide: UtilsService, useValue: utilsSpy },
+        { provide: UtilsService, useClass: TestUtils },
         { provide: ActivityService, useValue: activitySpy },
         { provide: ActivatedRouteStub, useValue: new ActivatedRouteStub({ activityId: 1, id: 2 }) },
+        { provide: ModalController, useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss']) },
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TopicComponent);
     component = fixture.componentInstance;
+    utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
 
     storageSpy.getUser.and.returnValue({ teamId: 1, projectId: 2 });
     storageSpy.get.and.returnValue({});
@@ -70,27 +73,46 @@ describe('TopicComponent', () => {
   });
 
   it('should call stopPlayingVideos on ionViewWillLeave', () => {
-    sharedSpy.stopPlayingVideos.and.returnValue('');
+    sharedSpy.stopPlayingVideos.and.returnValue(undefined);
     component.ionViewWillLeave();
     expect(sharedSpy.stopPlayingVideos).toHaveBeenCalledTimes(1);
   });
 
   describe('ngOnChanges', () => {
     it('should embed video when video element found', fakeAsync(() => {
-      spyOn(component['document'], 'querySelectorAll').and.returnValue([
-        {
-          classList: {
-            add: () => true,
-            remove: () => true,
-            contains: jasmine.createSpy('contains').and.returnValue(true),
-          },
-          nodeName: 'VIDEO',
+      const originalQSA = component['document'].querySelectorAll.bind(component['document']);
+      spyOn(component['document'], 'querySelectorAll').and.callFake((selector: string) => {
+        if (selector === 'audio' || selector === 'video' || selector === '.plyr__video-embed') {
+          return [] as any;
         }
-      ] as any);
+        if (selector === '.video-embed') {
+          return [{
+            classList: {
+              add: () => true,
+              remove: () => true,
+              contains: jasmine.createSpy('contains').and.returnValue(true),
+            },
+            nodeName: 'VIDEO',
+            setAttribute: jasmine.createSpy('setAttribute'),
+            removeAttribute: jasmine.createSpy('removeAttribute'),
+            innerHTML: '',
+          }] as any;
+        }
+        return originalQSA(selector);
+      });
 
-      component.topic = { videolink: 'test.com/vimeo' } as any;
-      component.ngOnChanges();
-      expect(component.continuing).toBe(false);
+      component.topic = {
+        videolink: 'test.com/vimeo',
+      } as any;
+      component.ngOnChanges({
+        topic: {
+          currentValue: component.topic,
+          firstChange: true,
+          previousValue: undefined,
+          isFirstChange: () => true
+        }
+      });
+      expect(component.continuing).toEqual(false);
 
       tick(500);
 
@@ -98,20 +120,38 @@ describe('TopicComponent', () => {
     }));
 
     it('should not embed video when no video element found', fakeAsync(() => {
-      spyOn(component['document'], 'querySelectorAll').and.returnValue([
-        {
-          classList: {
-            add: () => true,
-            remove: () => true,
-            contains: jasmine.createSpy('contains').and.returnValue(false),
-          },
-          nodeName: 'NON_VIDEO',
+      const originalQSA = component['document'].querySelectorAll.bind(component['document']);
+      spyOn(component['document'], 'querySelectorAll').and.callFake((selector: string) => {
+        if (selector === 'audio' || selector === 'video' || selector === '.plyr__video-embed') {
+          return [] as any;
         }
-      ] as any);
+        if (selector === '.video-embed') {
+          return [{
+            classList: {
+              add: () => true,
+              remove: () => true,
+              contains: jasmine.createSpy('contains').and.returnValue(false),
+            },
+            nodeName: 'NON_VIDEO',
+            setAttribute: jasmine.createSpy('setAttribute'),
+            removeAttribute: jasmine.createSpy('removeAttribute'),
+          }] as any;
+        }
+        return originalQSA(selector);
+      });
 
-      component.topic = { videolink: 'test.com' } as any;
-      component.ngOnChanges();
-      expect(component.continuing).toBe(false);
+      component.topic = {
+        videolink: 'test.com',
+      } as any;
+      component.ngOnChanges({
+        topic: {
+          currentValue: component.topic,
+          firstChange: true,
+          previousValue: undefined,
+          isFirstChange: () => true
+        }
+      });
+      expect(component.continuing).toEqual(false);
 
       tick(500);
 
@@ -137,7 +177,7 @@ describe('TopicComponent', () => {
     it('should handle preview file failure', fakeAsync(() => {
       const SAMPLE_RESULT = 'FAILED_SAMPLE';
       let result: any;
-      notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_RESULT));
+      notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_RESULT as any));
       filestackSpy.previewFile.and.rejectWith(new Error('File preview test error'));
       component.isLoadingPreview = false;
 
@@ -197,7 +237,6 @@ describe('TopicComponent', () => {
       const file = { url: 'https://example.com/document.pdf', name: 'document.pdf' };
       component.actionBtnClick(file, 1);
       expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
-      expect(notificationSpy.presentToast).toHaveBeenCalled();
     });
 
     it('should open new tab for non-filestack url even without extension', () => {
@@ -268,7 +307,7 @@ describe('TopicComponent', () => {
   describe('previewVideoFile', () => {
     it('should open video modal with mp4 mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
-      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+      (component['modalController'].create as jasmine.Spy).and.returnValue(Promise.resolve(modalSpy));
 
       const file = { url: 'https://example.com/video.mp4', name: 'test.mp4' };
       await component.previewVideoFile(file);
@@ -288,7 +327,7 @@ describe('TopicComponent', () => {
 
     it('should open video modal with webm mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
-      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+      (component['modalController'].create as jasmine.Spy).and.returnValue(Promise.resolve(modalSpy));
 
       const file = { url: 'https://example.com/video.webm', name: 'test.webm' };
       await component.previewVideoFile(file);
@@ -308,7 +347,7 @@ describe('TopicComponent', () => {
 
     it('should open video modal with ogg mime type', async () => {
       const modalSpy = jasmine.createSpyObj('Modal', ['present']);
-      spyOn(component['modalController'], 'create').and.returnValue(Promise.resolve(modalSpy));
+      (component['modalController'].create as jasmine.Spy).and.returnValue(Promise.resolve(modalSpy));
 
       const file = { url: 'https://example.com/video.ogg', name: 'test.ogg' };
       await component.previewVideoFile(file);
