@@ -1,7 +1,7 @@
 import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import _ from 'lodash';
+import moment from 'moment';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ModalController, Platform } from '@ionic/angular';

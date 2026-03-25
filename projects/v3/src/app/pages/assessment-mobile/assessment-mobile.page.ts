@@ -14,6 +14,7 @@ import { debounceTime } from 'rxjs/operators';
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
+  standalone: false,
   selector: 'app-assessment-mobile',
   templateUrl: './assessment-mobile.page.html',
   styleUrls: ['./assessment-mobile.page.scss'],

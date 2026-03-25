@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Review } from '@v3/app/services/review.service';
 
 @Component({
+  standalone: false,
   selector: 'app-review-list',
   templateUrl: './review-list.component.html',
   styleUrls: ['./review-list.component.scss'],

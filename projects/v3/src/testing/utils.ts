@@ -1,6 +1,6 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { UtilsService } from '@v3/services/utils.service';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { of, Subject } from 'rxjs';
 
 export class SpyObject {

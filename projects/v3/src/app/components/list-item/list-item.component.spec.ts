@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { ListItemComponent } from './list-item.component';
 
 @Component({
+  standalone: false,
   template: `<app-list-item
     [title]="title"
     [eventDayCount]="null"
