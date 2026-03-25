@@ -4,6 +4,7 @@ import { Achievement } from '@v3/services/achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
+  standalone: false,
   selector: 'app-achievement-pop-up',
   templateUrl: 'achievement-pop-up.component.html',
   styleUrls: ['achievement-pop-up.component.scss']

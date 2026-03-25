@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-topic-mobile',
   templateUrl: './topic-mobile.page.html',
   styleUrls: ['./topic-mobile.page.scss'],

@@ -9,6 +9,7 @@ import { SharedService } from '@v3/services/shared.service';
 import { environment } from '@v3/environments/environment';
 
 @Component({
+  standalone: false,
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
 })

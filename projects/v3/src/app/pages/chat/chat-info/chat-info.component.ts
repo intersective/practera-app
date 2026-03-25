@@ -6,6 +6,7 @@ import { ChatService, ChatChannel, ChannelMembers } from '@v3/services/chat.serv
 import { ModalController } from '@ionic/angular';
 
 @Component({
+  standalone: false,
   selector: 'app-chat-info',
   templateUrl: 'chat-info.component.html',
   styleUrls: ['chat-info.component.scss']

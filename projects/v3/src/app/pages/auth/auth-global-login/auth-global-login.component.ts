@@ -8,6 +8,7 @@ import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
+  standalone: false,
   selector: 'app-auth-global-login',
   templateUrl: 'auth-global-login.component.html'
 })

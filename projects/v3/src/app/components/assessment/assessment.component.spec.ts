@@ -24,6 +24,7 @@ import { ModalController } from '@ionic/angular';
  * on custom elements like app-text, app-oneof, etc.
  */
 @Directive({
+  standalone: false,
   selector: '[formControlName]',
   providers: [
     {

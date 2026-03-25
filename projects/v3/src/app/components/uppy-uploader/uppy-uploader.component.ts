@@ -10,6 +10,7 @@ type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
 
 @Component({
+  standalone: false,
   selector: "app-uppy-uploader",
   templateUrl: "./uppy-uploader.component.html",
   styleUrls: ["./uppy-uploader.component.scss"],
