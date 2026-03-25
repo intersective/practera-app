@@ -33,6 +33,7 @@ const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per
  * When enabled, questions are split across multiple pages based on pageSize
  */
 @Component({
+  standalone: false,
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],

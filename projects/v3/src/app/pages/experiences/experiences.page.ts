@@ -11,6 +11,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Subject, Observable } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-experiences',
   templateUrl: './experiences.page.html',
   styleUrls: ['./experiences.page.scss'],

@@ -3,6 +3,7 @@ import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
+  standalone: false,
   selector: 'app-file-popup',
   templateUrl: 'file-popup.component.html',
   styleUrls: ['file-popup.component.scss']

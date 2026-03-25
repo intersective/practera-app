@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import * as exif from 'exif-js';
+import exif from 'exif-js';
 
 import { ImgComponent } from './img.component';
 

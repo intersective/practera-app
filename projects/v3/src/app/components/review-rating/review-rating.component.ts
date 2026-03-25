@@ -8,6 +8,7 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { NotificationsService } from '../../services/notifications.service';
 
 @Component({
+  standalone: false,
   selector: 'app-review-rating',
   templateUrl: './review-rating.component.html',
   styleUrls: ['./review-rating.component.scss']
