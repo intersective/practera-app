@@ -6,6 +6,7 @@ import { AuthService } from '@v3/services/auth.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
+  standalone: false,
   selector: 'app-auth-reset-password',
   templateUrl: './auth-reset-password.component.html',
   styleUrls: ['./auth-reset-password.component.scss']

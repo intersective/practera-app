@@ -62,9 +62,13 @@ export class ApolloService {
    * @returns boolean
    */
   private _hasInitiated(): boolean {
-    if (this.apollo.client
-      && this._url === environment.graphQL) {
-      return true;
+    try {
+      if (this.apollo.client
+        && this._url === environment.graphQL) {
+        return true;
+      }
+    } catch {
+      // apollo client not yet created
     }
     return false;
   }

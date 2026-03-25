@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { Question } from '../types/assessment';
 
 @Component({
+  standalone: false,
   selector: 'app-multi-team-member-selector',
   templateUrl: 'multi-team-member-selector.component.html',
   styleUrls: ['multi-team-member-selector.component.scss'],
@@ -238,7 +239,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   /**
    * checks if a team member was selected in the learner's original submission.
    * reads from @Input submission.answer (api data, never modified locally).
-   * used only for displaying the "Learner's answer" badge in review mode.
+   * used only for displaying the "Learner's Answer" badge in review mode.
    */
   isSelectedInSubmission(teamMember: any): boolean {
     if (!this.submission?.answer) return false;
@@ -260,7 +261,7 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   /**
    * checks if a team member was selected in the reviewer's original review.
    * reads from @Input review.answer (api data, never modified locally).
-   * used only in isDisplayOnly (read-only) mode for the "Expert's answer" badge.
+   * used only in isDisplayOnly (read-only) mode for the "Reviewer's Answer" badge.
    * not used for checkbox [checked] binding — use isSelected() instead to
    * preserve local edits across pagination.
    */

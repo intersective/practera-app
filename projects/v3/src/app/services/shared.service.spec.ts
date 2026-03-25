@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { TestBed, tick } from '@angular/core/testing';
+import { TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { RequestService } from 'request';
 import { TopicService } from '@v3/services/topic.service';
@@ -112,7 +112,7 @@ describe('SharedService', () => {
       expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
     });
 
-    it('should set teamId as null when no teams retrieved from API', () => {
+    it('should set teamId as null when no teams retrieved from API', fakeAsync(() => {
       apolloSpy.graphQLFetch.and.returnValue(of({
         data: {
           user: {
@@ -123,48 +123,51 @@ describe('SharedService', () => {
       utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
 
       service.getTeamInfo().subscribe();
+      tick();
       expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
       expect(storageSpy.setUser).toHaveBeenCalledWith({
         teamId: null
       });
-    });
+    }));
 
-    it('should set teamId as null when wrong response format retrieved from API', () => {
+    it('should set teamId as null when wrong response format retrieved from API', fakeAsync(() => {
       apolloSpy.graphQLFetch.and.returnValue(of({
         data: {}
       }));
       utilsSpy.has = jasmine.createSpy('has').and.returnValue(false);
 
       service.getTeamInfo().subscribe();
+      tick();
       expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
       expect(storageSpy.setUser).not.toHaveBeenCalled();
-    });
+    }));
 
-    it('should just forward response when no "data" object available in the response', () => {
+    it('should just forward response when no "data" object available in the response', fakeAsync(() => {
       const SAMPLE_RESULT = {
         nodata: {}
       };
       apolloSpy.graphQLFetch.and.returnValue(of(SAMPLE_RESULT));
 
       let result;
-      service.getTeamInfo().subscribe(res => result = res);
+      service.getTeamInfo().subscribe(async res => result = await res);
+      tick();
       expect(apolloSpy.graphQLFetch).toHaveBeenCalled();
       expect(storageSpy.setUser).not.toHaveBeenCalled();
       expect(result).toEqual(SAMPLE_RESULT);
-    });
+    }));
   });
 
   describe('onPageLoad()', () => {
-    it('should return void if timelineId undefined', () => {
+    it('should return void if timelineId undefined', async () => {
       storageSpy.getUser = jasmine.createSpy('storageSpy.getUser').and.returnValue({
         timelineId: undefined,
       });
-      const result = service.onPageLoad();
+      const result = await service.onPageLoad();
       expect(httpSpy.get).toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
 
-    it('should able to change color', () => {
+    it('should able to change color', async () => {
       storageSpy.getUser = jasmine.createSpy('storageSpy.getUser').and.returnValue({
         timelineId: 1,
         colors: {
@@ -172,7 +175,7 @@ describe('SharedService', () => {
         },
         activityCardImage: 'abc'
       });
-      const result = service.onPageLoad();
+      const result = await service.onPageLoad();
       expect(httpSpy.get).toHaveBeenCalled();
       expect(utilsSpy.changeThemeColor).toHaveBeenCalled();
       expect(utilsSpy.changeCardBackgroundImage).toHaveBeenCalled();
