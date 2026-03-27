@@ -16,7 +16,7 @@
         <ng-container *ngFor="let question of questionList">
           <ion-accordion value="{{ question.questionId}}" class="question-item">
             <ion-item slot="header">
-              <ion-label class="subtitle-1 black" [innerHTML]="question.question"></ion-label>
+              <ion-label class="subtitle-1 black"><span [innerHTML]="question.question"></span></ion-label>
             </ion-item>
             <div class="ion-padding body-2" slot="content">
               <ng-container *ngFor="let answer of question.answer">

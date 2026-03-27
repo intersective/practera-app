@@ -23,7 +23,7 @@
       [value]="selectedActivities"
       (ionChange)="onSelect(filterEle.value)"
       #filterEle>
-      <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected [innerHTML]="activity.name"></ion-select-option>
+      <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
     </ion-select>
   </ion-item>
 

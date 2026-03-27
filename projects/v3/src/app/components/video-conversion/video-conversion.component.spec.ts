@@ -60,7 +60,15 @@ describe('VideoConversionComponent', () => {
   describe('convertVideo()', () => {
     it('should perform filestack video conversion and wait', fakeAsync(() => {
       component.stop$ = new Subject<boolean>();
-      component.convertVideo({ handle: 'abcdefg'});
+      component.convertVideo({
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-video',
+        url: 'http://test.com/video.mp4',
+        extension: 'mp4',
+        type: 'video/mp4',
+        size: 1000
+      });
       tick(10000);
       expect(component.result).toEqual({ status: 'completed' });
     }));
