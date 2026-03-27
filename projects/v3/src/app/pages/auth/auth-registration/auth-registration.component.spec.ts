@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthRegistrationComponent } from './auth-registration.component';
@@ -59,6 +60,7 @@ describe('AuthRegistrationComponent', () => {
         ReactiveFormsModule
       ],
       declarations: [AuthRegistrationComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: BrowserStorageService, useValue: storageSpy },
@@ -85,6 +87,76 @@ describe('AuthRegistrationComponent', () => {
     fixture = TestBed.createComponent(AuthRegistrationComponent);
     component = fixture.componentInstance;
     storageService.get.and.returnValue(false);
+  });
+
+  it('should authenticate user and switch program on successful registration', async () => {
+    // set up component state for registration
+    component.unRegisteredDirectLink = true; // use direct link mode for simpler validation
+    component.user = {
+      id: 123,
+      key: 'test-key',
+      email: 'test@example.com',
+      contact: null
+    };
+    component.password = 'TestPassword123!';
+    component.confirmPassword = 'TestPassword123!';
+    component.isAgreed = true;
+
+    authService.saveRegistration.and.returnValue(of({
+      data: { apikey: 'test-api-key' }
+    }));
+    authService.authenticate.and.returnValue(of({
+      data: {
+        auth: {
+          apikey: 'test-api-key',
+          experience: {
+            id: 1,
+            uuid: 'test-uuid',
+            timelineId: 1,
+            projectId: 1,
+            name: 'Test Experience',
+            description: 'Test Description',
+            type: 'Test Type',
+            leadImage: 'test-image.jpg',
+            status: null,
+            setupStep: null,
+            color: '#000000',
+            secondaryColor: '#FFFFFF',
+            role: 'participant',
+            isLast: false,
+            locale: 'en-US',
+            supportName: 'Support',
+            supportEmail: 'support@example.com',
+            cardUrl: 'card-url',
+            bannerUrl: 'banner-url',
+            logoUrl: 'logo-url',
+            iconUrl: 'icon-url',
+            reviewRating: false,
+            truncateDescription: false,
+            team: {
+              id: 1
+            },
+            featureToggle: {
+              pulseCheckIndicator: false,
+              showProjectHub: false,
+            }
+          }
+        }
+      }
+    }));
+    storageService.set.and.stub();
+    storageService.remove.and.stub();
+    experienceService.switchProgram.and.returnValue(Promise.resolve());
+
+    component.register();
+
+    await fixture.whenStable();
+
+    expect(authService.saveRegistration).toHaveBeenCalledWith({
+      user_id: 123,
+      key: 'test-key',
+      password: jasmine.any(String), // password is auto-generated or set via confirmPassword
+    });
   });
 
   describe('unRegisteredDirectLink === true scenarios', () => {
@@ -336,7 +408,7 @@ describe('AuthRegistrationComponent', () => {
         expect(notificationsService.popUp).toHaveBeenCalledWith(
           'shortMessage',
           { message: jasmine.stringContaining('Registration not complete') },
-          false
+          false as any
         );
       });
 
@@ -424,7 +496,7 @@ describe('AuthRegistrationComponent', () => {
         expect(notificationsService.popUp).toHaveBeenCalledWith(
           'shortMessage',
           { message: jasmine.stringContaining('Registration not complete') },
-          false
+          false as any
         );
       });
 

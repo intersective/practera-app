@@ -8,6 +8,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
+  standalone: false,
   selector: 'app-activity-mobile',
   templateUrl: './activity-mobile.page.html',
   styleUrls: ['./activity-mobile.page.scss'],

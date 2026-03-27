@@ -1,6 +1,5 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular';
-import { of } from 'rxjs';
 import { ModalService } from './modal.service';
 
 describe('ModalService', () => {
@@ -27,7 +26,8 @@ describe('ModalService', () => {
 
   it('should add a modal to the queue and show it', async () => {
     const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
-    modalSpy.onDidDismiss.and.returnValue(of({}));
+    // onDidDismiss returns a Promise, not an Observable
+    modalSpy.onDidDismiss.and.returnValue(Promise.resolve({}));
     modalControllerSpy.create.and.returnValue(Promise.resolve(modalSpy));
 
     await service.addModal({}, () => {});
@@ -38,6 +38,7 @@ describe('ModalService', () => {
 
   it('should not show a new modal while another one is showing', async () => {
     const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
+    // never-resolving promise to simulate modal staying open
     modalSpy.onDidDismiss.and.returnValue(new Promise(() => {}));
     modalControllerSpy.create.and.returnValue(Promise.resolve(modalSpy));
 
@@ -48,15 +49,22 @@ describe('ModalService', () => {
     expect(modalSpy.present.calls.count()).toEqual(1);
   });
 
-  it('should show the next modal after the current one is dismissed', async () => {
+  it('should show the next modal after the current one is dismissed', fakeAsync(() => {
     const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
-    modalSpy.onDidDismiss.and.returnValue(of({}));
+    // onDidDismiss returns a Promise, not an Observable
+    modalSpy.onDidDismiss.and.returnValue(Promise.resolve({}));
     modalControllerSpy.create.and.returnValue(Promise.resolve(modalSpy));
 
-    await service.addModal({}, () => {});
-    await service.addModal({}, () => {});
+    service.addModal({}, () => {});
+    tick(); // let first modal be created
+    service.addModal({}, () => {});
+    tick(); // let second modal be added to queue
+
+    // flush all pending async operations
+    flush();
 
     expect(modalControllerSpy.create.calls.count()).toEqual(2);
     expect(modalSpy.present.calls.count()).toEqual(2);
-  });
+  }));
+
 });

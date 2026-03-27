@@ -9,17 +9,17 @@
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's answer</ion-chip>
+          >Learner's Answer</ion-chip>
           <ion-chip i18n
             class="label yellow black"
             *ngIf="review?.answer?.includes(choice.id)"
-          >Expert's answer</ion-chip>
+          >Reviewer's Answer</ion-chip>
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
-          <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
+          <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
         </ion-item>
       </ng-container>
     </ng-container>
@@ -73,7 +73,7 @@
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
             <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
               <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
-              <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
+              <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
             </ion-item>
           </ng-container>
         </ng-container>
@@ -118,7 +118,7 @@
             <p *ngIf="submission?.answer?.includes(choice.id)">
               <ion-chip class="label orange" i18n
                 *ngIf="submission?.answer?.includes(choice.id)"
-              >Learner's answer</ion-chip>
+              >Learner's Answer</ion-chip>
             </p>
           </div>
         </ion-checkbox>
