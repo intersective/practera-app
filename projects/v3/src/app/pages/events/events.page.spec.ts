@@ -2,7 +2,6 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angul
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule } from '@ionic/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { EventsPage } from './events.page';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
@@ -16,7 +15,6 @@ describe('EventsPage', () => {
     TestBed.configureTestingModule({
       declarations: [ EventsPage ],
       imports: [IonicModule.forRoot()],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,

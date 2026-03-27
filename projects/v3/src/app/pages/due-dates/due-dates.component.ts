@@ -14,7 +14,6 @@ interface GroupedAssessments {
 }
 
 @Component({
-  standalone: false,
   selector: 'app-due-dates',
   templateUrl: './due-dates.component.html',
   styleUrls: ['./due-dates.component.scss'],

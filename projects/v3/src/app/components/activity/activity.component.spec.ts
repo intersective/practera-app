@@ -1,13 +1,9 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
-import { of } from 'rxjs';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { SharedService } from '@v3/app/services/shared.service';
-import { ActivityService } from '@v3/services/activity.service';
-import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 import { ActivityComponent } from './activity.component';
 
@@ -49,20 +45,6 @@ describe('ActivityComponent', () => {
             },
           }),
         },
-        {
-          provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['stopPlayingVideos', 'getTeamInfo']),
-        },
-        {
-          provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['goToNextTask']),
-        },
-        {
-          provide: UnlockIndicatorService,
-          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['getUnlockIndicatorForTask'], {
-            unlockIndicators$: { pipe: () => ({ subscribe: () => {} }) }
-          }),
-        },
       ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
@@ -71,10 +53,6 @@ describe('ActivityComponent', () => {
     component = fixture.componentInstance;
     notificationsSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
-
-    // configure shared service mock
-    const sharedServiceSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
-    sharedServiceSpy.getTeamInfo.and.returnValue(of({} as any));
   }));
 
   it('should create', () => {
@@ -130,7 +108,7 @@ describe('ActivityComponent', () => {
       expect(result).toEqual('');
     });
 
-    it('should show due date when task is overdue', () => {
+    it('should empty when task is overdue', () => {
       const result = component.subtitle({
         type: 'Assessment',
         dueDate: 'dummy/date',
@@ -139,8 +117,7 @@ describe('ActivityComponent', () => {
           name: 'unit tester'
         },
       } as any);
-      // subtitle shows due date regardless of overdue status
-      expect(result).toContain('<strong>Due Date</strong>:');
+      expect(result).toEqual('');
     });
   });
 
@@ -331,19 +308,19 @@ describe('ActivityComponent', () => {
   });
 
   describe('goto()', () => {
-    it('should warn when user not in a team', async () => {
+    it('should warn when user not in a team', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
-      await component.goto({
+      component.goto({
         isForTeam: true,
         type: 'Locked',
       } as any);
       expect(notificationsSpy.alert).toHaveBeenCalled();
     });
 
-    it('should warn activity is locked', async () => {
+    it('should warn activity is locked', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
       const spy = spyOn(component.navigate, 'emit');
-      await component.goto({
+      component.goto({
         isForTeam: false,
         type: 'Locked',
       } as any);
@@ -351,10 +328,10 @@ describe('ActivityComponent', () => {
       expect(spy).not.toHaveBeenCalled();
     });
 
-    it('should emit "navigate" event', async () => {
+    it('should emit "navigate" event', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
       const spy = spyOn(component.navigate, 'emit');
-      await component.goto({
+      component.goto({
         isForTeam: false,
         type: 'in progress',
       } as any);
@@ -362,10 +339,10 @@ describe('ActivityComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should emit "navigate" event through keyboardEvent', async () => {
+    it('should emit "navigate" event through keyboardEvent', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
       const spy = spyOn(component.navigate, 'emit');
-      await component.goto({
+      component.goto({
         isForTeam: false,
         type: 'in progress',
       } as any, new KeyboardEvent('keydown', {

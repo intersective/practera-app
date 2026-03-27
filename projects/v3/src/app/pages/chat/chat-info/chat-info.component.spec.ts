@@ -1,4 +1,4 @@
-import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -25,7 +25,7 @@ describe('ChatInfoComponent', () => {
   const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
   modalCtrlSpy.create.and.returnValue(modalSpy);
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ChatInfoComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],

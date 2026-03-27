@@ -7,16 +7,16 @@
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
             <ion-chip class="label orange"
               *ngIf="submission?.answer === choice.id" i18n
-            >Learner's Answer</ion-chip>
+            >Learner's answer</ion-chip>
             <ion-chip class="label yellow black"
               *ngIf="review?.answer === choice.id" i18n
-            >Reviewer's Answer</ion-chip>
+            >Expert's answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
           <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
             <ion-icon slot="start" name="information-circle"></ion-icon>
-            <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
+            <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
           </ion-item>
         </ng-container>
       </ng-container>
@@ -57,23 +57,25 @@
                 [value]="choice.id"
                 [disabled]="control.disabled"
                 slot="start"
-                mode="md">
-                <div class="ion-text-wrap body-2 black">
-                  <span [innerHTML]="choice.name | detectLanguage"
-                    [appToggleLabel]="onLabelToggle"
-                    [toggleId]="choice.id"
-                    [toggleDisabled]="control.disabled"
-                    role="button"
-                    tabindex="0">
-                  </span>
-                </div>
+                justify="start"
+                labelPlacement="end"
+                mode="md"
+              >
+                <span class="ion-text-wrap body-2 black"
+                  [innerHTML]="choice.name | detectLanguage"
+                  [appToggleLabel]="onLabelToggle"
+                  [toggleId]="choice.id"
+                  [toggleDisabled]="control.disabled"
+                  role="button"
+                  tabindex="0">
+                </span>
               </ion-radio>
             </ion-item>
             <ng-container
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
               <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
                 <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
-                <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
+                <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
               </ion-item>
             </ng-container>
           </ng-container>
@@ -117,7 +119,9 @@
                   tabindex="0">
                 </span>
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id" style="margin: 0; padding: 0;">
-                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's Answer</ion-chip>
+                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>
+                    Learner's answer
+                  </ion-chip>
                 </p>
               </div>
             </ion-radio>

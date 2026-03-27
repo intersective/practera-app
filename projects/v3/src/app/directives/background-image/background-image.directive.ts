@@ -2,7 +2,6 @@ import { Directive, ElementRef, Input, OnDestroy, OnInit, Renderer2 } from '@ang
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 
 @Directive({
-  standalone: false,
   selector: '[appBackgroundImage]'
 })
 export class BackgroundImageDirective implements OnInit, OnDestroy {

@@ -6,7 +6,6 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { NotificationsService } from '../../../services/notifications.service';
 
 @Component({
-  standalone: false,
   selector: 'app-attachment-popover',
   templateUrl: './attachment-popover.component.html',
   styleUrls: ['./attachment-popover.component.scss'],

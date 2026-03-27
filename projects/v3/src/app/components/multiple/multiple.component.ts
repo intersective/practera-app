@@ -6,7 +6,6 @@ import { from, fromEvent, merge, Subject, Subscription } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 
 @Component({
-  standalone: false,
   selector: 'app-multiple',
   templateUrl: 'multiple.component.html',
   styleUrls: ['multiple.component.scss'],

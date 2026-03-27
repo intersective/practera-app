@@ -34,7 +34,6 @@ interface selectedAttachment {
 }
 
 @Component({
-  standalone: false,
   selector: "app-chat-room",
   templateUrl: "./chat-room.component.html",
   styleUrls: ["./chat-room.component.scss"],

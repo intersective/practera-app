@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  standalone: false,
   selector: 'app-clickable-item',
   templateUrl: './clickable-item.component.html',
   styleUrls: ['./clickable-item.component.scss']
