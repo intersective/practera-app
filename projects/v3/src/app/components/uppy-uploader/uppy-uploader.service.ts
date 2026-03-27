@@ -4,6 +4,7 @@ import { ModalController } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
+import { UppyUploaderComponent } from './uppy-uploader.component';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Dashboard } from 'uppy';
 import { environment } from '../../../environments/environment';
@@ -200,8 +201,6 @@ export class UppyUploaderService {
    * @return  {Promise<HTMLIonModalElement>}
    */
   async open(source: 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | null): Promise<HTMLIonModalElement> {
-    // dynamic import to break circular dependency with UppyUploaderComponent
-    const { UppyUploaderComponent } = await import('./uppy-uploader.component');
     const modal = await this.modalController.create({
       component: UppyUploaderComponent,
       componentProps: {

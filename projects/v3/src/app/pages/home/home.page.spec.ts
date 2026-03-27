@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { AlertController, IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 import { AchievementService } from '@v3/app/services/achievement.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -11,9 +11,6 @@ import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { HomePage } from './home.page';
 import { of } from 'rxjs';
@@ -32,19 +29,19 @@ describe('HomePage', () => {
   let utilsService: jasmine.SpyObj<UtilsService>;
 
   beforeEach(waitForAsync(() => {
-    const homeServiceSpy = jasmine.createSpyObj('HomeService', {
-      'getExperience': undefined,
-      'getMilestones': undefined,
-      'getProjectProgress': undefined,
-      'getPulseCheckStatuses': of({ data: { pulseCheckStatus: {} } }),
-      'getPulseCheckSkills': of({ data: { pulseCheckSkills: [] } }),
-    }, {
-      'experience$': of({ id: 1, name: 'Test Experience', cardUrl: 'test-card-url' }),
-      'experienceProgress$': of(0),
-      'activityCount$': of(0),
-      'milestonesWithProgress$': of([]),
-      'milestones$': of([]),
-      'projectProgress$': of(0),
+    const homeServiceSpy = jasmine.createSpyObj('HomeService', [
+      'getExperience',
+      'getMilestones',
+      'getProjectProgress',
+      'getPulseCheckStatuses',
+      'getPulseCheckSkills',
+    ], {
+      'experience$': of(),
+      'experienceProgress$': of(),
+      'activityCount$': of(),
+      'milestonesWithProgress$': of(),
+      'milestones$': of(),
+      'projectProgress$': of(),
     });
 
     const achievementServiceSpy = jasmine.createSpyObj('AchievementService', [
@@ -55,38 +52,19 @@ describe('HomePage', () => {
       'achievements$': of(),
     });
 
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT'], {
-      'team$': of(null),
-    });
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT']);
     const storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', [
       'get',
       'lastVisited',
       'getUser',
       'getFeature',
     ]);
-    // set up default return values for storage service
-    storageServiceSpy.getUser.and.returnValue({
-      role: 'participant',
-      apikey: 'test-key',
-      projectId: 1,
-      teamId: 1,
-    });
-    storageServiceSpy.get.and.callFake((key: string) => {
-      if (key === 'experience') {
-        return { id: 1, name: 'Test Experience', cardUrl: 'test-card-url' };
-      }
-      return null;
-    });
-    storageServiceSpy.getFeature.and.returnValue(false);
-    const fastFeedbackServiceSpy = jasmine.createSpyObj('FastFeedbackService', {
-      'pullFastFeedback': of(null),
-    });
+    const fastFeedbackServiceSpy = jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback']);
     const utilsServiceSpy = jasmine.createSpyObj('UtilsService', ['setPageTitle', 'isMobile']);
 
     TestBed.configureTestingModule({
       declarations: [ HomePage ],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [IonicModule.forRoot()],
       providers: [
         {
           provide: ActivatedRoute,
@@ -134,27 +112,7 @@ describe('HomePage', () => {
             'unlockedTasks$': of([])
           })
         },
-        {
-          provide: AlertController,
-          useValue: jasmine.createSpyObj('AlertController', ['create'])
-        },
-        {
-          provide: PulsecheckService,
-          useValue: jasmine.createSpyObj('PulsecheckService', ['getPulsecheckStatuses'])
-        },
-        {
-          provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', [
-            'alert',
-            'popUp',
-            'getTodoItems',
-          ])
-        },
-        {
-          provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss'])
-        },
-      ],
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomePage);
@@ -205,12 +163,7 @@ describe('HomePage', () => {
     it('should get experience from storage', async () => {
       await component.updateDashboard();
       expect(storageService.get).toHaveBeenCalledWith('experience');
-      expect(component.experience).toEqual({ name: 'Test Experience', cardUrl: 'test-url' } as any);
-    });
-
-    it('should set project hub visibility from feature toggle', async () => {
-      await component.updateDashboard();
-      expect(storageService.getFeature).toHaveBeenCalledWith('pulseCheckIndicator');
+      expect(component.experience).toEqual({ name: 'Test Experience', cardUrl: 'test-url' });
     });
 
     it('should set project hub visibility from feature toggle', async () => {
@@ -244,7 +197,7 @@ describe('HomePage', () => {
       component.pulseCheckIndicatorEnabled = true;
       await component.updateDashboard();
       expect(homeService.getPulseCheckStatuses).toHaveBeenCalled();
-      expect(component.pulseCheckStatus).toEqual({ red: 1, orange: 2, green: 3 } as any);
+      expect(component.pulseCheckStatus).toEqual({ red: 1, orange: 2, green: 3 });
     });
 
     it('should not get pulse check statuses when pulse check indicator is disabled', async () => {
@@ -316,9 +269,7 @@ describe('HomePage', () => {
         data: { pulseCheckSkills: null }
       }));
       await component.updateDashboard();
-      // component defaults to [] when pulseCheckSkills is null or empty (see line 243: || [])
-      // and only updates when newSkills.length > 0, so it stays as initial []
-      expect(component.pulseCheckSkills).toEqual([]);
+      expect(component.pulseCheckSkills).toBeNull();
     });
 
     it('should handle empty pulse check skills response', async () => {
@@ -659,5 +610,3 @@ describe('HomePage', () => {
       expect(component.getFilteredActivityCount()).toBe(0);
     });
 
-  });
-});

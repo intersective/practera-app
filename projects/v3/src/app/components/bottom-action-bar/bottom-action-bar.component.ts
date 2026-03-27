@@ -2,7 +2,6 @@ import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core
 import { BehaviorSubject } from 'rxjs';
 
 @Component({
-  standalone: false,
   selector: 'app-bottom-action-bar',
   templateUrl: 'bottom-action-bar.component.html',
   styleUrls: ['./bottom-action-bar.component.scss'],

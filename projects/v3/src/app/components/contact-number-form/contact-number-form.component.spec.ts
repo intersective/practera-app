@@ -181,7 +181,7 @@ describe('ContactNumberFormComponent', () => {
         [cancelBtn, submitBtn] = res.buttons;
 
         submitBtn.handler();
-        expect(submitBtn.text).toEqual('OK');
+        expect(submitBtn.text).toEqual('Okay');
       });
 
       component.countryModel = COUNTRIES['US'];
@@ -197,7 +197,7 @@ describe('ContactNumberFormComponent', () => {
         [cancelBtn, submitBtn] = res.buttons;
 
         submitBtn.handler();
-        expect(submitBtn.text).toEqual('OK');
+        expect(submitBtn.text).toEqual('Okay');
       });
 
       component.countryModel = COUNTRIES['AUS'];

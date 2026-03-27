@@ -4,7 +4,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Router } from '@angular/router';
 
 @Component({
-  standalone: false,
   selector: 'app-page-not-found',
   templateUrl: './page-not-found.page.html',
   styleUrls: ['./page-not-found.page.scss']

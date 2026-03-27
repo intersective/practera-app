@@ -25,7 +25,6 @@ const UPPY_PROPS: DashboardOptions<any, any> = {
 };
 
 @Component({
-  standalone: false,
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: [

@@ -14,7 +14,6 @@ import { debounceTime } from 'rxjs/operators';
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
-  standalone: false,
   selector: 'app-assessment-mobile',
   templateUrl: './assessment-mobile.page.html',
   styleUrls: ['./assessment-mobile.page.scss'],
@@ -218,7 +217,6 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
           // get the latest activity tasks and refresh the assessment submission data
           this.activityService.getActivity(this.activityId, false, null, () => {
             this.btnDisabled$.next(false);
-            this.saving = false;
           });
         } else {
           this.btnDisabled$.next(false);

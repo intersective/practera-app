@@ -130,13 +130,6 @@ describe('FilestackService', () => {
     it('should popup file preview', fakeAsync(() => {
       spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
-        url: 'https://example.com/test.jpg',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000,
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -146,13 +139,7 @@ describe('FilestackService', () => {
     it('should popup file preview (support older URL format)', fakeAsync(() => {
       spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
         url: 'www.filepicker.io/api/file',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000,
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -162,13 +149,7 @@ describe('FilestackService', () => {
     it('should popup file preview (support older URL format 2)', fakeAsync(() => {
       spyOn(service, 'metadata').and.returnValue(Promise.resolve({ mimetype: 'testing/format' }));
       service.previewFile({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
         url: 'filestackcontent.com',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000,
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -182,13 +163,7 @@ describe('FilestackService', () => {
       }));
 
       service.previewFile({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
         url: 'filestackcontent.com',
-        extension: 'pdf',
-        type: 'application/pdf',
-        size: 11 * 1000 * 1000, // 11mb
         handle: 'testingHandleValue'
       }).then();
       flushMicrotasks();
@@ -266,10 +241,14 @@ describe('FilestackService', () => {
 
   describe('previewModal()', () => {
     it('should pop up modal for provided filestack link', fakeAsync(() => {
-      service.previewModal('test.com');
+      let result;
+      service.previewModal('test.com').then(res => {
+        result = res;
+      });
       flushMicrotasks();
 
       expect(modalctrlSpy.create).toHaveBeenCalled();
+      expect(result).toEqual(MODAL_SAMPLE);
     }));
   });
 
@@ -319,30 +298,23 @@ describe('FilestackService', () => {
 
   describe('onFileSelectedRename()', () => {
     it('should rename file with spacing', fakeAsync(() => {
+      let result: any;
       const currentFile = {
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'a b c',
-        url: 'http://example.com/a-b-c',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000,
         filename: 'a b c',
         handle: 'a-b-c',
         mimetype: 'mimetype',
         originalPath: 'here',
+        size: 1,
         source: 'earth',
         uploadId: '12345',
-        alt: ''
+        url: 'https://test.com',
       };
-
-      // Since onFileSelectedRename is always returning a Promise now
-      let result;
       service['onFileSelectedRename'](currentFile).then(res => {
-        result = res;
-        expect(result.filename).toEqual('a_b_c');
+        result = res.filename;
       });
+
       flushMicrotasks();
+      expect(result).toEqual('a_b_c');
     }));
   });
 });

@@ -59,7 +59,6 @@ describe('AppComponent', () => {
             'getConfig',
             'setConfig',
             'getUser',
-            'lastVisited',
           ]),
         },
         {
@@ -74,7 +73,6 @@ describe('AppComponent', () => {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', {
             getConfig: of({data: []}),
-            logout: undefined,
           }),
         },
         {
@@ -206,7 +204,7 @@ describe('AppComponent', () => {
       app.ngOnInit();
       tick();
       expect(storageSpy.get).toHaveBeenCalled();
-      expect(authSpy.logout).toHaveBeenCalled();
+      expect(routerSpy.navigate).toHaveBeenCalled();
     }));
   });
 });

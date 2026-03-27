@@ -7,7 +7,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { ExperienceService } from '@v3/services/experience.service';
 
 @Component({
-  standalone: false,
   selector: 'app-auth-login',
   templateUrl: 'auth-login.component.html',
   styleUrls: ['auth-login.component.scss']

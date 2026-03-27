@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { AchievementPopUpComponent } from './achievement-pop-up.component';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { UtilsService } from '@v3/services/utils.service';
@@ -27,9 +27,9 @@ describe('AchievementPopUpComponent', () => {
   let component: AchievementPopUpComponent;
   let fixture: ComponentFixture<AchievementPopUpComponent>;
   let page: AchievementModalPage;
-  let modalCtrlSpy: any;
+  const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ IonicModule ],
       declarations: [ AchievementPopUpComponent ],
@@ -49,7 +49,6 @@ describe('AchievementPopUpComponent', () => {
 
     fixture = TestBed.createComponent(AchievementPopUpComponent);
     component = fixture.componentInstance;
-    modalCtrlSpy = TestBed.inject(ModalController);
 
     page = new AchievementModalPage(fixture);
   }));
@@ -119,9 +118,7 @@ describe('AchievementPopUpComponent', () => {
       component.achievement = {
         id: 1,
         name: 'achieve',
-        description: '',
-        type: 'badge',
-        badge: 'badge-image'
+        description: ''
       };
 
       let keyboardEvent = new KeyboardEvent('keydown', {

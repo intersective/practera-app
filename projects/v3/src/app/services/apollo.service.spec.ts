@@ -13,7 +13,6 @@ describe('ApolloService', () => {
         provide: Apollo,
         useValue: jasmine.createSpyObj('Apollo', [
           'create',
-          'createDefault',
           'getClient',
           'watchQuery',
           'mutate',
@@ -36,22 +35,5 @@ describe('ApolloService', () => {
   it('should be created', () => {
     const service: ApolloService = TestBed.inject(ApolloService);
     expect(service).toBeTruthy();
-  });
-
-  describe('initiateCoreClient()', () => {
-    it('should not throw when apollo client is not yet defined', () => {
-      const service: ApolloService = TestBed.inject(ApolloService);
-      const apollo: any = TestBed.inject(Apollo);
-      // mock client getter to throw (as real Apollo does before initialization)
-      apollo.client = undefined;
-      Object.defineProperty(apollo, 'client', {
-        get: () => { throw new Error('Client has not been defined yet'); },
-        configurable: true,
-      });
-      // add createDefault as a simple spy since defineProperty may interfere with the original spy
-      apollo.createDefault = jasmine.createSpy('createDefault');
-      expect(() => service.initiateCoreClient()).not.toThrow();
-      expect(apollo.createDefault).toHaveBeenCalled();
-    });
   });
 });

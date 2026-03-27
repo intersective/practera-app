@@ -43,9 +43,6 @@
         ],
         "rxjs/no-ignored-observable": "warn",
 
-        // disable standalone preference rule — app uses ngmodule architecture
-        "@angular-eslint/prefer-standalone": "off",
-
         // General TypeScript best practices
         "prefer-const": "error",
         "no-console": [
