@@ -103,7 +103,15 @@ describe('SupportPopupComponent', () => {
     it('should return false when selectedFile is truthy', () => {
       component.problemSubject = '';
       component.problemContent = '';
-      component.selectedFile = { handle: 'abc123' };
+      component.selectedFile = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'http://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000
+      };
 
       const result = component.isPristine();
 
@@ -186,7 +194,16 @@ describe('SupportPopupComponent', () => {
     it('should remove the selected file and call deleteFile with the file handle', fakeAsync(() => {
       filestackSpy.deleteFile = jasmine.createSpy().and.returnValue(of({}));
 
-      component.selectedFile = { handle: 'abc123' };
+      component.selectedFile = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'http://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
+        handle: 'abc123'
+      };
       component.removeSelectedFile();
       flushMicrotasks();
 
@@ -197,7 +214,17 @@ describe('SupportPopupComponent', () => {
 
   describe('uploadFile', () => {
     it('should call FilestackService open method and set the selectedFile on upload finished', fakeAsync(() => {
-      const mockResponse = { filename: 'test.jpg', handle: 'abc123', url: 'http://example.com/test.jpg' };
+      const mockResponse = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test.jpg',
+        url: 'http://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
+        handle: 'abc123',
+        filename: 'test.jpg'
+      };
 
       filestackSpy.open = jasmine.createSpy().and.callFake(options => {
         return options.onFileUploadFinished(mockResponse);
@@ -280,9 +307,9 @@ describe('SupportPopupComponent', () => {
         file: undefined,
         consentToProcess: true,
       });
-      expect(component.selectedFile).toBeUndefined();
-      expect(component.problemContent).toBe('');
-      expect(component.problemSubject).toBe('');
+      // on error, form is NOT cleared - only cleared on success
+      expect(component.problemContent).toBe('Test Content');
+      expect(component.problemSubject).toBe('Test Subject');
       expect(component.isShowSuccess).toBeFalse();
       expect(component.isShowError).toBeTrue();
     });

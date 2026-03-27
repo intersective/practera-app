@@ -1,4 +1,39 @@
+import { supportQuestionList } from './../../app/components/support-popup/support-questions';
 import { ProgramObj } from "@v3/app/services/experience.service";
+
+const createExperience = (num: number) => {
+  return {
+    id: num,
+    uuid: `uuid-${num}`,
+    timelineId: num,
+    projectId: num,
+    name: `test-experience-${num}`,
+    description: 'test description',
+    type: 'test',
+    leadImage: '',
+    status: 'active',
+    color: '',
+    secondaryColor: '',
+    todoItemCount: 0,
+    role: 'participant',
+    isLast: false,
+    locale: 'en',
+    supportName: '',
+    supportEmail: '',
+    cardUrl: '',
+    bannerUrl: '',
+    logoUrl: '',
+    iconUrl: '',
+    reviewRating: false,
+    truncateDescription: false,
+    featureToggle: {
+      pulseCheckIndicator: false,
+      showProjectHub: false,
+    },
+    progress: 0,
+    config: {},
+  };
+};
 
 const programObj: ProgramObj[] = [1, 2].map(num => {
   return {
@@ -19,12 +54,7 @@ const programObj: ProgramObj[] = [1, 2].map(num => {
     enrolment: {
       contact_number: `0${123456789 + num}`
     },
-    experience: {
-      id: num,
-      config: {},
-      name: '',
-      lead_image: '',
-    },
+    experience: createExperience(num),
     institution: {
       name: '',
       logo_url: '',
@@ -33,6 +63,7 @@ const programObj: ProgramObj[] = [1, 2].map(num => {
     }
   };
 });
+
 programObj.push(...[3].map(num => {
   return {
     program: {
@@ -52,12 +83,7 @@ programObj.push(...[3].map(num => {
     enrolment: {
       contact_number: `0${123456789 + num}`
     },
-    experience: {
-      id: num,
-      config: null,
-      name: '',
-      lead_image: '',
-    },
+    experience: createExperience(num),
     institution: {
       name: '',
       logo_url: '',
@@ -66,6 +92,7 @@ programObj.push(...[3].map(num => {
     }
   };
 }));
+
 programObj.push(...[4].map(num => {
   return {
     program: {
@@ -85,19 +112,14 @@ programObj.push(...[4].map(num => {
     enrolment: {
       contact_number: `0${123456789 + num}`
     },
-    experience: {
-      id: num,
-      config: null,
-      name: '',
-      lead_image: '',
-    },
+    experience: createExperience(num),
     institution: {
       name: '',
       logo_url: '',
       config: {},
       uuid: '',
-    },
+    }
   };
 }));
 
-export const ProgramFixture: ProgramObj[] = programObj;
+export const ProgramFixture = programObj;

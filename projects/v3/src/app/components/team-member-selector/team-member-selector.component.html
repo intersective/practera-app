@@ -8,8 +8,8 @@
           <ion-label>
             <span [innerHTML]="teamMember.userName"></span>
             <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>Learner's answer</ion-chip>
-              <ion-chip class="label yellow black" *ngIf="teamMember.key === review?.answer" i18n>Expert's answer</ion-chip>
+              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>Learner's Answer</ion-chip>
+              <ion-chip class="label yellow black" *ngIf="teamMember.key === review?.answer" i18n>Reviewer's Answer</ion-chip>
             </p>
           </ion-label>
         </ion-item>
@@ -46,18 +46,21 @@
           <ion-radio
             [ariaLabel]="teamMember.userName"
             color="success"
+            justify="start"
+            labelPlacement="end"
             slot="start"
             [value]="teamMember.key"
-            [disabled]="control?.disabled"
-          ></ion-radio>
-          <ion-label class="white-space-normal body-2 black"
-            [innerHTML]="teamMember.userName"
-            [appToggleLabel]="onLabelToggle"
-            [toggleId]="teamMember.key"
-            [toggleDisabled]="control?.disabled"
-            role="button"
-            tabindex="0"
-          ></ion-label>
+            [disabled]="control?.disabled">
+            <div class="white-space-normal body-2 black">
+              <span [innerHTML]="teamMember.userName"
+                [appToggleLabel]="onLabelToggle"
+                [toggleId]="teamMember.key"
+                [toggleDisabled]="control?.disabled"
+                role="button"
+                tabindex="0">
+              </span>
+            </div>
+          </ion-radio>
         </ion-item>
       </ion-radio-group>
     </ion-list>
@@ -84,7 +87,7 @@
             labelPlacement="end"
             [value]="teamMember.key"
             [disabled]="control?.disabled">
-            <ion-label class="white-space-normal body-2 black">
+            <div class="white-space-normal body-2 black">
               <span [innerHTML]="teamMember.userName"
                 [appToggleLabel]="onLabelToggleReview"
                 [toggleId]="teamMember.key"
@@ -94,10 +97,10 @@
               </span>
               <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
                 <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>
-                  Learner's answer
+                  Learner's Answer
                 </ion-chip>
               </p>
-            </ion-label>
+            </div>
           </ion-radio>
 
         </ion-item>

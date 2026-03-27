@@ -11,6 +11,7 @@ interface FilestackConversionResponse {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-video-conversion',
   templateUrl: 'video-conversion.component.html',
   styleUrls: ['video-conversion.component.scss'],

@@ -4,6 +4,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { AuthService } from '@v3/services/auth.service';
 
 @Component({
+  standalone: false,
   selector: 'app-auth-forgot-password',
   templateUrl: 'auth-forgot-password.component.html',
   styleUrls: ['auth-forgot-password.component.scss']

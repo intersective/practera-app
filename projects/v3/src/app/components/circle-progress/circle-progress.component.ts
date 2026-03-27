@@ -3,6 +3,7 @@ import { CircleProgressOptionsInterface } from 'ng-circle-progress';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
+  standalone: false,
   selector: 'app-circle-progress',
   templateUrl: './circle-progress.component.html',
   styleUrls: ['./circle-progress.component.scss'],
