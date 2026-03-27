@@ -1,4 +1,4 @@
-import { DashboardModalComponent, DashboardComponent } from '@uppy/angular';
+import { UppyAngularDashboardModalModule, UppyAngularDashboardModule } from '@uppy/angular';
 import { TrafficLightComponent } from './traffic-light/traffic-light.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -71,8 +71,8 @@ const largeCircleDefaultConfig = {
     FormsModule,
     ReactiveFormsModule,
     ToggleLabelDirective,
-    DashboardModalComponent,
-    DashboardComponent,
+    UppyAngularDashboardModalModule,
+    UppyAngularDashboardModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
   declarations: [

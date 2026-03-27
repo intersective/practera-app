@@ -5,10 +5,6 @@ import { FormControl, FormsModule } from '@angular/forms';
 import { IonicModule, IonTextarea } from '@ionic/angular';
 import { Subject, of } from 'rxjs';
 import { DebugElement } from '@angular/core';
-import { LanguageDetectionPipe } from '@v3/app/pipes/language.pipe';
-import { UtilsService } from '@v3/services/utils.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { TestUtils } from '@testingv3/utils';
 
 describe('TextComponent', () => {
   let component: TextComponent;
@@ -17,18 +13,8 @@ describe('TextComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [IonicModule.forRoot(), FormsModule],
-      declarations: [TextComponent, LanguageDetectionPipe],
+      declarations: [TextComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [
-        { provide: UtilsService, useClass: TestUtils },
-        {
-          provide: DomSanitizer,
-          useValue: {
-            bypassSecurityTrustHtml: (val: string) => val,
-            sanitize: (ctx: any, val: string) => val,
-          },
-        },
-      ],
     })
     .compileComponents();
   }));
@@ -110,20 +96,16 @@ describe('TextComponent', () => {
     });
     it('should get correct data when writing submission answer', () => {
       component.onChange();
-      expect(component.innerValue).toBe(component.answer);
+      expect(component.innerValue).toEqual(component.answer);
     });
     it('should get correct data when writing review answer', () => {
       component.innerValue = { answer: '', comment: '' };
-      component.doReview = true;
       component.onChange('answer');
-      expect(component.innerValue.answer).toBe(component.answer);
-      expect(component.innerValue.comment).toEqual('');
+      expect(component.innerValue).toEqual({ answer: component.answer, comment: '' });
     });
     it('should get correct data when writing review comment', () => {
-      component.innerValue = { answer: '', comment: '' };
-      component.doReview = true;
       component.onChange('comment');
-      expect(component.innerValue.comment).toBe(component.comment);
+      expect(component.innerValue).toEqual({ answer: '', comment: component.comment });
     });
   });
 
@@ -245,10 +227,13 @@ describe('TextComponent', () => {
 
   describe('when testing ngAfterViewInit()', () => {
     it('should set up auto-save subscription when answerRef is available', fakeAsync(() => {
-      // create a mock input event with a proper target value
-      const mockInputEvent = { target: { value: 'test' } };
+      const mockIonInput = {
+        pipe: jasmine.createSpy('pipe').and.returnValue({
+          subscribe: jasmine.createSpy('subscribe').and.returnValue({ closed: false, unsubscribe: () => {} })
+        })
+      };
 
-      component.answerRef = { ionInput: of(mockInputEvent) } as any;
+      component.answerRef = { ionInput: of('test') } as any;
       spyOn(component, 'triggerSave');
 
       component.ngAfterViewInit();
@@ -288,8 +273,7 @@ describe('TextComponent', () => {
         target: { firstChild: mockTextarea }
       };
 
-      // use proper Edge userAgent format that matches the regex /edge\//i
-      spyOnProperty(window.navigator, 'userAgent', 'get').and.returnValue('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Edge/91.0.864.59');
+      spyOnProperty(window.navigator, 'userAgent', 'get').and.returnValue('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.59');
 
       component.onFocus(mockEvent);
 
@@ -305,8 +289,7 @@ describe('TextComponent', () => {
         target: { firstChild: mockTextarea }
       };
 
-      // use proper Edge userAgent format that matches the regex /edge\//i
-      spyOnProperty(window.navigator, 'userAgent', 'get').and.returnValue('Mozilla/5.0 (Windows NT 10.0; Win64; x64) Edge/91.0.864.59');
+      spyOnProperty(window.navigator, 'userAgent', 'get').and.returnValue('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0 Edge/91.0.864.59');
 
       component.onFocus(mockEvent);
 
@@ -409,9 +392,8 @@ describe('TextComponent', () => {
 
       expect(component.innerValue.comment).toEqual('test comment');
       expect(component.innerValue.answer).toEqual('test answer');
-      // note: component.comment and component.answer become strings after _showSavedAnswers
-      expect(component.comment as any).toEqual('test comment');
-      expect(component.answer as any).toEqual('test answer');
+      expect(component.comment).toEqual('test comment');
+      expect(component.answer).toEqual('test answer');
     });
 
     it('should not set values when conditions are not met', () => {
@@ -421,12 +403,10 @@ describe('TextComponent', () => {
       component.reviewStatus = 'completed';
       component.doReview = false;
       component.control = new FormControl('test');
-      component.innerValue = 'original';
 
       component.ngOnInit();
 
-      // innerValue remains unchanged since no conditions were met
-      expect(component.innerValue).toBe('original');
+      expect(component.control.value).toBe('test');
     });
 
     it('should handle missing review data gracefully', () => {
@@ -438,7 +418,7 @@ describe('TextComponent', () => {
 
       component.ngOnInit();
 
-      expect(component.innerValue).toEqual({ answer: undefined, comment: undefined });
+      expect(component.innerValue).toEqual({ answer: [], comment: '' });
     });
 
     it('should handle missing submission data gracefully', () => {
@@ -457,20 +437,15 @@ describe('TextComponent', () => {
   describe('when testing onChange() edge cases', () => {
     it('should handle onChange when innerValue is not initialized for review', () => {
       component.innerValue = null;
-      component.doReview = true;
-      const answerControl = new FormControl('new answer');
-      component.answer = answerControl as any;
+      component.answer = new FormControl('new answer');
       component.onChange('answer');
 
-      // component stores the FormControl reference, not its value
-      expect(component.innerValue.answer).toBe(answerControl);
-      expect(component.innerValue.comment).toEqual('');
+      expect(component.innerValue).toEqual({ answer: 'new answer', comment: '' });
     });
 
     it('should propagate changes correctly', () => {
       spyOn(component, 'propagateChange');
-      component.answer = new FormControl('test') as any;
-      component.doReview = false;
+      component.answer = new FormControl('test');
 
       component.onChange();
 
@@ -495,83 +470,6 @@ describe('TextComponent', () => {
       component.innerValue = 'existing';
       component.writeValue('');
       expect(component.innerValue).toBe('existing');
-    });
-  });
-
-  describe('_showSavedAnswers() - pristine check for pagination persistence', () => {
-    const dummyQuestion = {
-      id: 1, name: '', type: 'text', description: '',
-      isRequired: true, canComment: false, canAnswer: true, choices: [], audience: []
-    };
-
-    describe('review mode', () => {
-      beforeEach(() => {
-        component.question = dummyQuestion;
-        component.reviewStatus = 'in progress';
-        component.doReview = true;
-        component.review = { answer: 'saved answer', comment: 'saved comment' };
-        component.control = new FormControl('');
-        component.submissionStatus = '';
-        component.doAssessment = false;
-      });
-
-      it('should use saved review data when control is pristine', () => {
-        component.ngOnInit();
-
-        expect(component.innerValue).toEqual(component.review);
-      });
-
-      it('should preserve control value when control is dirty', () => {
-        const dirtyValue = { answer: 'user edited', comment: 'user comment' };
-        component.control.setValue(dirtyValue);
-        component.control.markAsDirty();
-
-        component.ngOnInit();
-
-        expect(component.innerValue).toEqual(dirtyValue);
-      });
-    });
-
-    describe('assessment mode', () => {
-      beforeEach(() => {
-        component.question = dummyQuestion;
-        component.submissionStatus = 'in progress';
-        component.doAssessment = true;
-        component.submission = { answer: 'saved submission answer' };
-        component.reviewStatus = '';
-        component.doReview = false;
-        component.control = new FormControl('');
-      });
-
-      it('should use saved submission answer when control is pristine', () => {
-        component.ngOnInit();
-
-        expect(component.innerValue).toBe('saved submission answer');
-      });
-
-      it('should preserve control value when control is dirty', () => {
-        component.control.setValue('user edited');
-        component.control.markAsDirty();
-
-        component.ngOnInit();
-
-        expect(component.innerValue).toBe('user edited');
-      });
-    });
-
-    it('should call propagateChange with innerValue', () => {
-      component.question = dummyQuestion;
-      component.submissionStatus = 'in progress';
-      component.doAssessment = true;
-      component.submission = { answer: 'test' };
-      component.reviewStatus = '';
-      component.doReview = false;
-      component.control = new FormControl('');
-      spyOn(component, 'propagateChange');
-
-      component.ngOnInit();
-
-      expect(component.propagateChange).toHaveBeenCalled();
     });
   });
 

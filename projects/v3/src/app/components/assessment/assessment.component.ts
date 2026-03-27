@@ -33,7 +33,6 @@ const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per 
  * When enabled, questions are split across multiple pages based on pageSize
  */
 @Component({
-  standalone: false,
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
@@ -1312,8 +1311,8 @@ Best regards`;
     if (this.doAssessment || this.isPendingReview) {
       // in edit mode, check form validation
       this.setSubmissionDisabled();
-    } else if (!this.submission?.isLocked) {
-      // in read-only mode (not locked), ensure button is enabled
+    } else {
+      // in read-only mode, ensure button is enabled
       this.btnDisabled$.next(false);
     }
   }

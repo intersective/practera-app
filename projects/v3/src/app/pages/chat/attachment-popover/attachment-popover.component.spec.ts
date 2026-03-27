@@ -1,39 +1,16 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { PopoverController } from '@ionic/angular';
-import { of } from 'rxjs';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AttachmentPopoverComponent } from './attachment-popover.component';
-import { FilestackService } from '@v3/services/filestack.service';
-import { NotificationsService } from '@v3/services/notifications.service';
-import { ModalService } from '@v3/services/modal.service';
 
 describe('AttachmentPopoverComponent', () => {
   let component: AttachmentPopoverComponent;
   let fixture: ComponentFixture<AttachmentPopoverComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ AttachmentPopoverComponent ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      providers: [
-        {
-          provide: PopoverController,
-          useValue: jasmine.createSpyObj('PopoverController', ['dismiss', 'create'])
-        },
-        {
-          provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes', 'getS3Config', 'open'])
-        },
-        {
-          provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast'])
-        },
-        {
-          provide: ModalService,
-          useValue: jasmine.createSpyObj('ModalService', ['openUppyModal'])
-        }
-      ]
     })
     .compileComponents();
   }));

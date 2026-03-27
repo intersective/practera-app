@@ -22,7 +22,6 @@ export interface FilestackUploaded {
 }
 
 @Component({
-  standalone: false,
   selector: 'app-file-stack',
   templateUrl: 'filestack.component.html',
   styleUrls: ['filestack.component.scss']

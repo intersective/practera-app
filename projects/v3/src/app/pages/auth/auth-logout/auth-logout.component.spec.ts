@@ -1,5 +1,5 @@
 import { AuthLogoutComponent } from './auth-logout.component';
-import { waitForAsync, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { AuthService } from '@v3/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 // import { NewRelicService } from '@v3/services/new-relic.service';
@@ -17,7 +17,7 @@ describe('AuthLogoutComponent', () => {
   // let newRelicSpy: jasmine.SpyObj<NewRelicService>;
 
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AuthLogoutComponent],
       imports: [RouterTestingModule],

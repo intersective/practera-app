@@ -12,7 +12,6 @@ import { environment } from '../../../environments/environment';
 import { FfmpegService } from '../../services/ffmpeg.service';
 
 @Component({
-  standalone: false,
   selector: 'app-devtool',
   templateUrl: './devtool.page.html',
   styleUrls: ['./devtool.page.scss'],

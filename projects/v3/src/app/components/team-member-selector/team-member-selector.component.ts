@@ -3,7 +3,6 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor, FormControl, AbstractControl }
 import { Subject } from 'rxjs';
 
 @Component({
-  standalone: false,
   selector: 'app-team-member-selector',
   templateUrl: 'team-member-selector.component.html',
   styleUrls: ['team-member-selector.component.scss'],

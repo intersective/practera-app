@@ -3,7 +3,6 @@ import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  standalone: false,
   selector: 'app-chat-preview',
   templateUrl: 'chat-preview.component.html',
   styleUrls: ['chat-preview.component.scss']
@@ -41,7 +40,7 @@ export class ChatPreviewComponent {
    */
   isBrowserSupportedVideo(): boolean {
     const supportedTypes = ['video/mp4', 'video/webm', 'video/ogg'];
-    return !!(this.file?.type && supportedTypes.includes(this.file.type));
+    return this.file?.type && supportedTypes.includes(this.file.type);
   }
 
   /**

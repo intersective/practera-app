@@ -9,7 +9,6 @@ import { SharedService } from '@v3/services/shared.service';
 import { environment } from '@v3/environments/environment';
 
 @Component({
-  standalone: false,
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
 })
@@ -245,7 +244,7 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
 
-    const errorMessage = res?.message?.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({
       message: errorMessage,
