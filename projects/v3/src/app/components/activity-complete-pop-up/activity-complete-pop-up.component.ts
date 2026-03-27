@@ -4,6 +4,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Router } from '@angular/router';
 
 @Component({
+  standalone: false,
   selector: 'app-activity-complete-pop-up',
   templateUrl: 'activity-complete-pop-up.component.html',
   styleUrls: ['activity-complete-pop-up.component.scss']

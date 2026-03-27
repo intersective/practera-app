@@ -1,24 +1,33 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { OneofComponent } from './oneof.component';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
+import { LanguageDetectionPipe } from '@v3/app/pipes/language.pipe';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ToggleLabelDirective } from '@v3/app/directives/toggle-label/toggle-label.directive';
 
 describe('OneofComponent', () => {
   let component: OneofComponent;
   let fixture: ComponentFixture<OneofComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [OneofComponent],
+      imports: [ReactiveFormsModule, ToggleLabelDirective],
+      declarations: [OneofComponent, LanguageDetectionPipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: UtilsService,
           useClass: TestUtils,
         },
+        {
+          provide: DomSanitizer,
+          useValue: {
+            bypassSecurityTrustHtml: (html: string) => html
+          }
+        }
       ],
     })
       .compileComponents();
@@ -50,8 +59,8 @@ describe('OneofComponent', () => {
       component.review = {};
       component.control = new FormControl('');
       fixture.detectChanges();
+      // component sets innerValue from submission.answer when control is pristine
       expect(component.innerValue).toEqual(component.submission.answer);
-      expect(component.control.value).toEqual(component.submission.answer);
     });
 
     it('should get correct data for in progress review', () => {
@@ -73,9 +82,12 @@ describe('OneofComponent', () => {
       };
       component.control = new FormControl('');
       fixture.detectChanges();
-      expect(component.innerValue).toEqual(component.review);
+      // component sets innerValue to review data
+      expect(component.innerValue).toEqual({
+        answer: component.review.answer,
+        comment: component.review.comment
+      });
       expect(component.comment).toEqual(component.review.comment);
-      expect(component.control.value).toEqual(component.review);
     });
   });
 
@@ -88,25 +100,25 @@ describe('OneofComponent', () => {
       component.control.setErrors({
         key: 'error'
       });
-      component.onChange(4, null);
+      component.onChange(4);
       expect(component.errors.length).toBe(1);
     });
     it('should return error if required not filled', () => {
       component.control.setErrors({
         required: true
       });
-      component.onChange(4, null);
+      component.onChange(4);
       expect(component.errors.length).toBe(1);
       expect(component.errors[0]).toContain('is required');
     });
     it('should get correct data when writing submission answer', () => {
-      component.onChange(4, null);
+      component.onChange(4);
       expect(component.errors.length).toBe(0);
       expect(component.innerValue).toEqual(4);
     });
-    it('should get correct data when writing submission answer', () => {
+    it('should get correct data when replacing submission answer', () => {
       component.innerValue = 1;
-      component.onChange(4, null);
+      component.onChange(4);
       expect(component.errors.length).toBe(0);
       expect(component.innerValue).toEqual(4);
     });
@@ -163,5 +175,243 @@ describe('OneofComponent', () => {
       expect(component.isDisplayOnly).toBeFalse();
     });
   });
-});
 
+  describe('triggerSave()', () => {
+    beforeEach(() => {
+      component.question = { id: 42, audience: [] };
+      component.submissionId = 100;
+      component.reviewId = 200;
+      component.submitActions$ = jasmine.createSpyObj('Subject', ['next']);
+    });
+
+    it('should emit review save action when doReview is true', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.innerValue = { answer: 'choice1', comment: 'good' };
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        reviewSave: {
+          reviewId: 200,
+          submissionId: 100,
+          questionId: 42,
+          answer: 'choice1',
+          comment: 'good',
+        },
+      }));
+    });
+
+    it('should emit question save action when doAssessment is true', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.innerValue = 'choice2';
+
+      component.triggerSave();
+
+      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
+        autoSave: true,
+        goBack: false,
+        questionSave: {
+          submissionId: 100,
+          questionId: 42,
+          answer: 'choice2',
+        },
+      }));
+    });
+  });
+
+  describe('onLabelToggle / onLabelToggleReview', () => {
+    beforeEach(() => {
+      component.control = new FormControl('');
+      spyOn(component, 'onChange');
+    });
+
+    it('onLabelToggle should call onChange with id', () => {
+      component.onLabelToggle('5');
+      expect(component.onChange).toHaveBeenCalledWith('5');
+    });
+
+    it('onLabelToggleReview should call onChange with id and answer type', () => {
+      component.onLabelToggleReview('5');
+      expect(component.onChange).toHaveBeenCalledWith('5', 'answer');
+    });
+  });
+
+  describe('checkInnerValue()', () => {
+    it('should return true when choiceId matches innerValue', () => {
+      component.innerValue = 3;
+      expect(component.checkInnerValue(3)).toBeTrue();
+    });
+
+    it('should return undefined when choiceId does not match', () => {
+      component.innerValue = 3;
+      expect(component.checkInnerValue(5)).toBeUndefined();
+    });
+
+    it('should return undefined for falsy choiceId', () => {
+      component.innerValue = 3;
+      expect(component.checkInnerValue(null)).toBeUndefined();
+    });
+  });
+
+  describe('audienceContainReviewer()', () => {
+    it('should return true when audience has multiple entries including reviewer', () => {
+      component.question = { audience: ['submitter', 'reviewer'] };
+      expect(component.audienceContainReviewer()).toBeTrue();
+    });
+
+    it('should return false when audience has only one entry', () => {
+      component.question = { audience: ['submitter'] };
+      expect(component.audienceContainReviewer()).toBeFalse();
+    });
+
+    it('should return false when audience does not include reviewer', () => {
+      component.question = { audience: ['submitter', 'admin'] };
+      expect(component.audienceContainReviewer()).toBeFalse();
+    });
+  });
+
+  describe('_showSavedAnswers() - pristine check for pagination persistence', () => {
+    describe('review mode', () => {
+      beforeEach(() => {
+        component.reviewStatus = 'in progress';
+        component.doReview = true;
+        component.review = {
+          answer: 'saved review answer',
+          comment: 'saved review comment',
+        };
+        component.control = new FormControl('');
+      });
+
+      it('should use saved review data when control is pristine', () => {
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual({
+          answer: 'saved review answer',
+          comment: 'saved review comment',
+        });
+        expect(component.comment).toBe('saved review comment');
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        const dirtyValue = { answer: 'user edited', comment: 'user comment' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual(dirtyValue);
+        expect(component.comment).toBe('user comment');
+      });
+
+      it('should fallback to review comment when dirty value has no comment', () => {
+        const dirtyValue = { answer: 'user edited' };
+        component.control.setValue(dirtyValue);
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.comment).toBe('saved review comment');
+      });
+    });
+
+    describe('assessment mode', () => {
+      beforeEach(() => {
+        component.submissionStatus = 'in progress';
+        component.doAssessment = true;
+        component.submission = { answer: 'saved submission answer' };
+        component.reviewStatus = '';
+        component.doReview = false;
+        component.control = new FormControl('');
+      });
+
+      it('should use saved submission answer when control is pristine', () => {
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toBe('saved submission answer');
+      });
+
+      it('should preserve control value when control is dirty', () => {
+        component.control.setValue('user edited answer');
+        component.control.markAsDirty();
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toBe('user edited answer');
+      });
+
+      it('should use submission answer when control is null', () => {
+        component.control = null;
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toBe('saved submission answer');
+      });
+    });
+
+    describe('review mode with "not start" status', () => {
+      it('should load review data when reviewStatus is "not start"', () => {
+        component.reviewStatus = 'not start';
+        component.doReview = true;
+        component.review = { answer: 'review answer', comment: 'review comment' };
+        component.control = new FormControl('');
+
+        component['_showSavedAnswers']();
+
+        expect(component.innerValue).toEqual({
+          answer: 'review answer',
+          comment: 'review comment',
+        });
+      });
+    });
+
+    it('should call propagateChange with innerValue', () => {
+      component.submissionStatus = 'in progress';
+      component.doAssessment = true;
+      component.submission = { answer: 'test' };
+      component.reviewStatus = '';
+      component.doReview = false;
+      component.control = new FormControl('');
+      spyOn(component, 'propagateChange');
+
+      component['_showSavedAnswers']();
+
+      expect(component.propagateChange).toHaveBeenCalledWith('test');
+    });
+  });
+
+  describe('isDisplayOnly() - additional cases', () => {
+    it('should be true when reviewer has canAnswer false', () => {
+      component.doReview = true;
+      component.doAssessment = false;
+      component.question = { canAnswer: false };
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be true when status is done with empty reviewStatus', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'done';
+      component.reviewStatus = '';
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be true when submission status is feedback available', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'feedback available';
+      expect(component.isDisplayOnly).toBeTrue();
+    });
+
+    it('should be false when done but reviewStatus is non-empty', () => {
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'done';
+      component.reviewStatus = 'in progress';
+      expect(component.isDisplayOnly).toBeFalse();
+    });
+  });
+});

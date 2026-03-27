@@ -16,6 +16,7 @@ export enum COUNTRIES {
 };
 
 @Component({
+  standalone: false,
   selector: 'app-contact-number-form',
   templateUrl: './contact-number-form.component.html',
   styleUrls: ['./contact-number-form.component.scss']
