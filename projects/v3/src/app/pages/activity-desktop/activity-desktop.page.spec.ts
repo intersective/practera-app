@@ -5,15 +5,12 @@ import { AssessmentService } from '@v3/services/assessment.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { TopicService } from '@v3/services/topic.service';
-import { ReviewService } from '@v3/services/review.service';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { of } from 'rxjs';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ActivityDesktopPage } from './activity-desktop.page';
 import { NormalisedTaskFixture, TaskFixture } from '@testingv3/fixtures/tasks';
@@ -61,24 +58,21 @@ describe('ActivityDesktopPage', () => {
           provide: TopicService,
           useValue: jasmine.createSpyObj('TopicService', {
             updateTopicProgress: of(true),
-            clearTopic: undefined,
           }, {
             topic$: of(true)
           }),
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', {
-            saveAnswers: of(true),
-            getAssessment: of(null),
-            saveFeedbackReviewed: of(true),
-            fetchAssessment: of({ submission: { status: 'in progress' } }),
-            submitAssessment: of({ data: { submitAssessment: { success: true } } }),
-          }, {
+          useValue: jasmine.createSpyObj('AssessmentService', [
+            'saveAnswers',
+            'getAssessment',
+            'saveFeedbackReviewed',
+            'popUpReviewRating',
+          ], {
             'assessment$': of(true),
-            'assessment': null,
             'submission$': of(true),
-            'review$': of({ id: 1, status: 'done' }),
+            'review$': of(true),
           }),
         },
         {
@@ -86,34 +80,22 @@ describe('ActivityDesktopPage', () => {
           useValue: jasmine.createSpyObj('NotificationsService', [
             'assessmentSubmittedToast',
             'alert',
-            'getTodoItems',
-            'getCurrentTodoItems',
-            'markTodoItemAsDone',
-            'markMultipleTodoItemsAsDone',
           ]),
         },
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
-            'getUser': { hasReviewRating: true },
-            'lastVisited': null,
-            'get': null,
-            'getFeature': null,
+            'getUser': {
+              hasReviewRating: true
+            }
           }),
         },
         {
           provide: UtilsService,
           useClass: TestUtils
         },
-        {
-          provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', {
-            'popUpReviewRating': Promise.resolve(),
-          }),
-        },
       ],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [IonicModule.forRoot()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActivityDesktopPage);
@@ -156,7 +138,6 @@ describe('ActivityDesktopPage', () => {
         id: 1,
         name: 'test',
         tasks: [NormalisedTaskFixture],
-        unlockConditions: []
       };
 
       component.ionViewDidEnter();
@@ -175,11 +156,6 @@ describe('ActivityDesktopPage', () => {
   });
 
   describe('topicComplete()', () => {
-    beforeEach(() => {
-      // set required activity object for all tests in this block
-      component.activity = { id: 1, name: 'Test Activity' } as any;
-    });
-
     it('should request to update progress', fakeAsync(() => {
       component.topicComplete(NormalisedTaskFixture);
       activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
@@ -193,7 +169,7 @@ describe('ActivityDesktopPage', () => {
 
     it('should go to next task when task is done', () => {
       const task = NormalisedTaskFixture;
-      task.status = 'done';
+      task.status = 'done';2
       component.topicComplete(task);
       expect(topicSpy.updateTopicProgress).not.toHaveBeenCalled();
       expect(activitySpy.goToNextTask).toHaveBeenCalled();
@@ -201,69 +177,61 @@ describe('ActivityDesktopPage', () => {
   });
 
   describe('saveAssessment()', () => {
-    beforeEach(() => {
-      // set required activity object for all tests in this block
-      component.activity = { id: 1, name: 'Test Activity' } as any;
-    });
-
     it('should save answers', fakeAsync(() => {
-      assessmentSpy.fetchAssessment = jasmine.createSpy().and.returnValue(of({ submission: { status: 'in progress' } }));
-      assessmentSpy.submitAssessment = jasmine.createSpy().and.returnValue(of({ data: { submitAssessment: { success: true } } }));
+      assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
+        toPromise: jasmine.createSpy()
+      });
       const saveTextSpy = spyOn(component.savingText$, 'next');
       const btnDisabledSpy = spyOn(component.btnDisabled$, 'next');
 
       component.saveAssessment({
-        assessmentId: 1,
-        submissionId: 1,
-        contextId: 1,
+        assessment: { id: 1, inProgress: true, submssionId: 1, contextId: 1 },
         answers: {},
-        autoSave: true,
+        action: '',
       }, NormalisedTaskFixture);
       tick();
 
-      expect(assessmentSpy.fetchAssessment).toHaveBeenCalled();
-      expect(assessmentSpy.submitAssessment).toHaveBeenCalled();
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
       expect(saveTextSpy).toHaveBeenCalled();
       expect(btnDisabledSpy).toHaveBeenCalled();
-      tick(10000); // wait for SAVE_PROGRESS_TIMEOUT (10 seconds)
       expect(component.loading).toBeFalse();
     }));
 
     it('should save answers (when not in progress)', fakeAsync(() => {
-      assessmentSpy.fetchAssessment = jasmine.createSpy().and.returnValue(of({ submission: { status: 'done' } }));
-      notificationsSpy.assessmentSubmittedToast = jasmine.createSpy();
+      assessmentSpy.saveAnswers = jasmine.createSpy().and.returnValue({
+        toPromise: jasmine.createSpy()
+      });
 
       activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, task, cb) => {
-        if (cb) cb();
+        cb();
       });
 
       const saveTextSpy = spyOn(component.savingText$, 'next');
       const btnDisabledSpy = spyOn(component.btnDisabled$, 'next');
 
       component.saveAssessment({
-        assessmentId: 1,
-        submissionId: 1,
-        contextId: 1,
+        assessment: {
+          id: 1,
+          inProgress: false,
+          submssionId: 1,
+          contextId: 1,
+        },
         answers: {},
-        autoSave: false,
+        action: '',
       }, NormalisedTaskFixture);
       tick();
 
-      expect(assessmentSpy.fetchAssessment).toHaveBeenCalled();
+      expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
       expect(notificationsSpy.assessmentSubmittedToast).toHaveBeenCalled();
       expect(saveTextSpy).toHaveBeenCalled();
       expect(btnDisabledSpy).toHaveBeenCalled();
-      tick(1000);
       expect(component.loading).toBeFalse();
     }));
   });
 
   describe('readFeedback()', () => {
     it('should mark feedback as read', fakeAsync(() => {
-      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue(of(true));
-      notificationsSpy.getTodoItems = jasmine.createSpy().and.returnValue(of([]));
-      // set required activity object
-      component.activity = { id: 1, name: 'Test Activity' } as any;
+      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue({ toPromise: jasmine.createSpy() });
 
       component.readFeedback(1, NormalisedTaskFixture);
       // const spy = spyOn(assessmentSpy.saveFeedbackReviewed);
@@ -271,7 +239,7 @@ describe('ActivityDesktopPage', () => {
       expect(assessmentSpy.saveFeedbackReviewed).toHaveBeenCalled();
       // expect(activitySpy.getActivity).toHaveBeenCalled();
       tick(1000);
-      // expect(assessmentSpy.popUpReviewRating).toHaveBeenCalled(); // Removed as popUpReviewRating does not exist on AssessmentService
+      expect(notificationsSpy.popUpReviewRating).toHaveBeenCalled();
     }));
   });
 
@@ -296,7 +264,7 @@ describe('ActivityDesktopPage', () => {
       });
       component.reviewRatingPopUp();
       tick();
-      // expect(assessmentSpy.popUpReviewRating).not.toHaveBeenCalled(); // Removed as popUpReviewRating does not exist on AssessmentService
+      expect(notificationsSpy.popUpReviewRating).not.toHaveBeenCalled();
     }));
   });
 });

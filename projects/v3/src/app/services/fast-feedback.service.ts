@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -18,8 +18,7 @@ export class FastFeedbackService {
   private currentPulseCheckId: string = null; // temporary store active pulse check ID
 
   constructor(
-    // type is 'any' to prevent design:paramtypes metadata from accessing NotificationsService during module evaluation (circular dependency)
-    @Inject(forwardRef(() => NotificationsService)) private notificationsService: any,
+    private notificationsService: NotificationsService,
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private demo: DemoService,

@@ -8,7 +8,6 @@ import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/app/services/utils.service';
 
 @Component({
-  standalone: false,
   selector: 'app-auth-global-login',
   templateUrl: 'auth-global-login.component.html'
 })
@@ -81,7 +80,7 @@ export class AuthGlobalLoginComponent implements OnInit {
   }
 
   private _error(res?): Promise<any> {
-    const errorMessage = res?.message?.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({
       message: errorMessage,

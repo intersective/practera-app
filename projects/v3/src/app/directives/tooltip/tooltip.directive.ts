@@ -1,7 +1,6 @@
 import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from '@angular/core';
 
 @Directive({
-  standalone: false,
   selector: '[appTooltip]'
 })
 export class TooltipDirective implements OnDestroy {

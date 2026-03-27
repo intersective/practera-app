@@ -28,7 +28,7 @@ export interface SendMessageParam {
   sentAt: string;
 }
 
-export interface DeleteMessageParam {
+export interface DeleteMessageTriggerParam {
   channelUuid: string;
   uuid: string;
 }
@@ -359,7 +359,7 @@ export class PusherService {
   /**
    * trigger a client event to notify other members that a message was deleted.
    */
-  triggerDeleteMessage(channelName: string, data: DeleteMessageParam) {
+  triggerDeleteMessage(channelName: string, data: DeleteMessageTriggerParam) {
     const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {
       return;

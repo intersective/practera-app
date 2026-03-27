@@ -19,7 +19,6 @@ import { environment } from '@v3/environments/environment';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  standalone: false,
   selector: 'app-auth-registration',
   templateUrl: './auth-registration.component.html',
   styleUrls: ['./auth-registration.component.scss']
