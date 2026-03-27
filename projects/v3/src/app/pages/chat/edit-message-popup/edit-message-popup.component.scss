@@ -86,6 +86,23 @@ ion-header {
     border-radius: 8px;
     text-align: left;
     border: 1px solid var(--ion-color-light-shade, #d7d8da);
+
+    ::ng-deep quill-view-html .ql-container .ql-editor {
+      ol {
+        list-style: decimal !important;
+        padding-left: 2em;
+      }
+
+      ul {
+        list-style: disc !important;
+        padding-left: 2em;
+      }
+
+      li {
+        list-style: inherit !important;
+        display: list-item !important;
+      }
+    }
   }
 }
 
