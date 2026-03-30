@@ -341,6 +341,37 @@ review and update as needed:
 - `Apollo.use()`, `Apollo.watchQuery()`, `Apollo.mutate()`, `Apollo.query()` signatures
 - check for changes in `ApolloModule.forRoot()` vs standalone provider pattern
 
+### 5.5. Lambda@Edge forwarder — S3 path prefix (COMPLETED March 2026)
+
+**Root cause:** The Angular 19 `application` builder (`@angular-devkit/build-angular ^19`) changed the build output structure by introducing a `browser/` subdirectory:
+
+| Builder | Angular version | Output path | S3 key prefix |
+|---------|-----------------|-------------|---------------|
+| `browser` (webpack) | 17 / 18 | `dist/v3/{locale}/` | `/{locale}/` |
+| `application` (esbuild) | **19+** | `dist/v3/browser/{locale}/` | `/browser/{locale}/` |
+
+This mismatch caused `lambda/forwarder/index.js` to rewrite all CloudFront URIs to non-existent S3 keys (e.g. `/en-US/index.html` instead of `/browser/en-US/index.html`). S3 returned `403 AccessDenied` — surfaced as raw XML to every user loading the app.
+
+**Fix applied to `lambda/forwarder/index.js`:**
+
+```javascript
+// before (Angular 17/18)
+request.uri = "/en-US/index.html";          // fallback
+request.uri = `/${locale}/index.html`;      // spa route
+// (no static-asset rewrite needed — assets were at root)
+
+// after (Angular 19+)
+request.uri = "/browser/en-US/index.html";         // fallback
+request.uri = `/browser/${locale}/index.html`;    // spa route
+} else if (!request.uri.startsWith('/browser/')) {
+    request.uri = `/browser${request.uri}`;         // static assets
+}
+```
+
+**Validation:** Confirmed working on `p2-stage` after deployment (March 2026).
+
+**Future Angular upgrades:** check `ls dist/v3/` after building to verify the output structure before merging. If thenstructure changes again, update `forwarder/index.js` in the same PR. See `lambda/README.md` for the full dependency documentation.
+
 ---
 
 ## Phase 6 — Testing & Validation
@@ -446,6 +477,7 @@ npm audit > ./output/angular-19-upgrade-audit.log 2>&1
 | TypeScript 5.6 stricter checks | incremental fix of any new type errors |
 | ngx-quill v27 regressions | minimal risk — usually just peer dep bump |
 | CI build failures | run full CI pipeline before merging |
+| **Lambda@Edge S3 path mismatch** (**occurred** March 2026) | Angular 19 `application` builder adds `browser/` subdirectory; `lambda/forwarder/index.js` must be updated in the same PR — see §5.5 |
 
 **Rollback plan:** revert to the pre-upgrade commit on `angular-eos-upgrades-prerelease` branch. all changes are confined to `package.json`, `package-lock.json`, and targeted source fixes.
 
@@ -480,6 +512,7 @@ npm audit > ./output/angular-19-upgrade-audit.log 2>&1
   - [ ] update uppy service/component if API changed
   - [ ] update apollo-angular usage if API changed
   - [ ] fix any Angular 19 deprecation warnings
+  - [x] update `lambda/forwarder/index.js` for `browser/` path prefix *(completed March 2026)*
 - [ ] **Phase 6:** Validation
   - [ ] `npm run prebuildv3` succeeds
   - [ ] `ng build v3` succeeds
@@ -487,3 +520,5 @@ npm audit > ./output/angular-19-upgrade-audit.log 2>&1
   - [ ] `npm run lint` passes
   - [ ] `npm audit` shows reduced vulnerability count
   - [ ] manual testing on staging
+    - [ ] verify app loads at `https://app.<stack>.practera.com/en-US` without S3 AccessDenied
+    - [ ] verify deep-links with query params (magic-link login) resolve to correct locale
