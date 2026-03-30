@@ -6,7 +6,7 @@ import { SharedService } from '@v3/services/shared.service';
 import Plyr from 'plyr';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
-import { FilestackService } from '@v3/app/services/filestack.service';
+import { FilePreviewService } from '@v3/app/services/file-preview.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
 import { Task } from '@v3/app/services/activity.service';
@@ -50,7 +50,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
     private notification: NotificationsService,
     private utils: UtilsService,
     private sharedService: SharedService,
-    private filestack: FilestackService,
+    private filePreviewService: FilePreviewService,
     private topicService: TopicService,
     private sanitizer: DomSanitizer,
     private cleanupService: ComponentCleanupService,
@@ -288,9 +288,9 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
       this.isLoadingPreview = true;
       try {
 
-        const filestack = await this.filestack.previewFile(file);
+        const result = await this.filePreviewService.preview(file);
         this.isLoadingPreview = false;
-        return filestack;
+        return result;
       } catch (err) {
         const toasted = await this.notification.alert({
           header: 'Error Previewing file',

@@ -32,27 +32,6 @@ export interface Environment {
       requiredMetaFields: string[];
     };
   };
-  filestack: {
-    key: string;
-    s3Config: {
-      location: string;
-      container: string;
-      containerChina: string;
-      region: string;
-      regionChina: string;
-      paths: {
-        any: string;
-        image: string;
-        video: string;
-      };
-      workflows: string[];
-    };
-    policy: string;
-    signature: string;
-    workflows: {
-      virusDetection: string;
-    };
-  };
   hubspot: {
     liveServerRegion: string;
     supportFormPortalId: string;

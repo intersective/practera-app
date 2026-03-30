@@ -11,8 +11,8 @@ import { FileInput, TusFileResponse } from '../types/assessment';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 import { ModalController } from '@ionic/angular';
 
-// @TODO: make compatible with FileStack format (remove when no longer needed)
-interface FileStackCompatible extends TusFileResponse {
+// backward-compatible file type that includes legacy property names
+interface DisplayableFile extends TusFileResponse {
   filename: string;
   mimetype: string;
   url: string;
@@ -26,7 +26,7 @@ interface FileStackCompatible extends TusFileResponse {
 })
 export class FileDisplayComponent {
   @Input() fileType: string = 'any';
-  @Input() file?: FileStackCompatible;
+  @Input() file?: DisplayableFile;
   @Input() isFileComponent: boolean = false; // flag parent component is FileComponent
   @ViewChild('videoEle') videoEle?: ElementRef = new ElementRef(null);
   @Output() removeFile: EventEmitter<any> = new EventEmitter<any>();
