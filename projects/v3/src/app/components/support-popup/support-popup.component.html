@@ -63,7 +63,7 @@
         (click)="uploadFile()"
       >Choose file</ion-button>
 
-      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.filename : 'No file chosen' }}</p>
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.name : 'No file chosen' }}</p>
       <button
         type="button"
         class="remove-button icon-button"
@@ -71,7 +71,7 @@
         (click)="removeSelectedFile()"
         (keydown.enter)="removeSelectedFile()"
         (keydown.space)="removeSelectedFile(); $event.preventDefault()"
-        [attr.aria-label]="'Remove file ' + selectedFile?.filename">
+        [attr.aria-label]="'Remove file ' + selectedFile?.name">
         <ion-icon name="close-circle" aria-hidden="true"></ion-icon>
       </button>
     </div>
