@@ -18,8 +18,7 @@ import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { FilestackComponent } from './filestack/filestack.component';
-import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
+import { FilePreviewComponent } from './file-preview/file-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
 import { AssessmentComponent } from './assessment/assessment.component';
@@ -90,8 +89,7 @@ const largeCircleDefaultConfig = {
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
-    FilestackComponent,
-    FilestackPreviewComponent,
+    FilePreviewComponent,
     ImgComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
@@ -136,8 +134,7 @@ const largeCircleDefaultConfig = {
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
-    FilestackComponent,
-    FilestackPreviewComponent,
+    FilePreviewComponent,
     ImgComponent,
     IonicModule,
     ListItemComponent,

@@ -4,7 +4,7 @@ import { PopoverController } from '@ionic/angular';
 import { of } from 'rxjs';
 
 import { AttachmentPopoverComponent } from './attachment-popover.component';
-import { FilestackService } from '@v3/services/filestack.service';
+import { UppyUploaderService } from '@v3/app/components/uppy-uploader/uppy-uploader.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ModalService } from '@v3/services/modal.service';
 
@@ -22,8 +22,8 @@ describe('AttachmentPopoverComponent', () => {
           useValue: jasmine.createSpyObj('PopoverController', ['dismiss', 'create'])
         },
         {
-          provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes', 'getS3Config', 'open'])
+          provide: UppyUploaderService,
+          useValue: jasmine.createSpyObj('UppyUploaderService', ['open'])
         },
         {
           provide: NotificationsService,
