@@ -18,6 +18,6 @@ ion-segment {
 }
 
 .focusable:focus {
-  display: block;
-  border: 1px solid var(--ion-color-primary);
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
 }

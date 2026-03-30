@@ -2,7 +2,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
-import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
@@ -19,7 +18,6 @@ class OnChangedValues extends SimpleChange {
 describe('FileDisplayComponent', () => {
   let component: FileDisplayComponent;
   let fixture: ComponentFixture<FileDisplayComponent>;
-  let filestackSpy: jasmine.SpyObj<FilestackService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(waitForAsync(() => {
@@ -31,14 +29,6 @@ describe('FileDisplayComponent', () => {
         {
           provide: UtilsService,
           useClass: TestUtils,
-        },
-        {
-          provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', [
-            'previewFile',
-            'getWorkflowStatus',
-            'metadata'
-          ])
         },
         {
           provide: ModalController,
@@ -55,7 +45,6 @@ describe('FileDisplayComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDisplayComponent);
     component = fixture.debugElement.componentInstance;
-    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
