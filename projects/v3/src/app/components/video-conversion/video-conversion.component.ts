@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { FilePreviewService } from '@v3/app/services/file-preview.service';
 import { Subject, Subscription } from 'rxjs';
 
@@ -9,7 +9,7 @@ import { Subject, Subscription } from 'rxjs';
   styleUrls: ['video-conversion.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
+export class VideoConversionComponent implements OnChanges, OnDestroy {
   @Input() video?;
   @Output() preview = new EventEmitter();
   result = null;
@@ -18,10 +18,6 @@ export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
   waitedTooLong: boolean = false;
 
   constructor(private filePreviewService: FilePreviewService) {}
-
-  ngOnInit(): void {
-    // no-op: conversion polling removed (filestack deprecated)
-  }
 
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.video?.fileObject?.mimetype !== 'video/mp4') {
