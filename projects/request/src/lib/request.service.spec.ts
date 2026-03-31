@@ -6,8 +6,9 @@ import {
 
 import {
   HttpTestingController,
-  HttpClientTestingModule,
+  provideHttpClientTesting,
 } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { RequestService, RequestConfig, DevModeService, QueryEncoder } from './request.service';
 import { Router } from '@angular/router';
@@ -68,12 +69,12 @@ describe('RequestService', () => {
   let mockBackend: HttpTestingController;
   let requestConfigSpy: RequestConfig;
   let devModeServiceSpy: DevModeService;
-  let storageSpy: BrowserStorageService;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         RequestService,
         DevModeService,
         {
@@ -102,7 +103,6 @@ describe('RequestService', () => {
     mockBackend = TestBed.inject(HttpTestingController);
     requestConfigSpy = TestBed.inject(RequestConfig);
     devModeServiceSpy = TestBed.inject(DevModeService);
-    storageSpy = TestBed.inject(BrowserStorageService);
   });
 
   it('should be created', () => {
@@ -130,15 +130,16 @@ describe('RequestService', () => {
       mockBackend.verify();
     }));
 
-    it('should update apikey if new apikey exist', () => {
-      let res = { body: true, apikey: 'testapikey' };
+    it('should pass through response with custom headers', () => {
+      let res: any;
       service.get(testURL, { headers: { some: 'keys' } }).subscribe(_res => {
         res = _res;
       });
       const req = mockBackend.expectOne({ method: 'GET' });
-      req.flush(res);
+      req.flush({ body: true, apikey: 'testapikey' });
 
-      expect(storageSpy.setUser).toHaveBeenCalledWith({ apikey: res.apikey });
+      expect(res).toEqual({ body: true, apikey: 'testapikey' });
+      expect(req.request.headers.get('Content-Type')).toBe('application/json');
       mockBackend.verify();
     });
 
@@ -160,7 +161,7 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: testURL, method: 'GET' }).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
-      expect(errRes).toEqual(ERR_MESSAGE);
+      expect(errRes.error).toEqual(ERR_MESSAGE);
       mockBackend.verify();
 
     }));
@@ -242,6 +243,7 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: testURL, method: 'POST' }).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
+      expect(errRes.error).toEqual(ERR_MESSAGE);
       mockBackend.verify();
     }));
   });
@@ -308,7 +310,7 @@ describe('RequestService', () => {
       const req = mockBackend.expectOne({ url: `https://${PREFIX_URL}/${testURL}`, method: 'PUT' }).flush(ERR_MESSAGE, err);
 
       expect(res).toBeUndefined();
-      expect(errRes).toEqual(ERR_MESSAGE);
+      expect(errRes.error).toEqual(ERR_MESSAGE);
       mockBackend.verify();
     }));
   });
@@ -354,7 +356,7 @@ describe('RequestService', () => {
 
       expect(res).toBeUndefined();
       expect(console.error).not.toHaveBeenCalled();
-      expect(errRes).toEqual(ERR_MESSAGE);
+      expect(errRes.error).toEqual(ERR_MESSAGE);
       mockBackend.verify();
     }));
   });
@@ -400,7 +402,7 @@ describe('RequestService', () => {
         },
         _err => {
           errRes = _err;
-          expect(errRes).toEqual(ERR_MESSAGE);
+          expect(errRes.error).toEqual(ERR_MESSAGE);
         }
       );
 
@@ -415,7 +417,7 @@ describe('RequestService', () => {
         _res => _res,
         _err => {
           errRes = _err;
-          expect(errRes.message).toEqual(badKey);
+          expect(errRes.error.message).toEqual(badKey);
         }
       );
 
