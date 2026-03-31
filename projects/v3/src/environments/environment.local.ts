@@ -30,29 +30,6 @@ export const environment = {
       requiredMetaFields: [], // No required metadata fields
     }
   },
-  filestack: {
-    key: 'AO6F4C72uTPGRywaEijdLz',
-    s3Config: {
-      location: 's3',
-      container: 'practera-aus',
-      containerChina: 'practera-kr',
-      region: 'ap-southeast-2',
-      regionChina: 'ap-northeast-2',
-      paths: {
-        any: '/appv2/local/uploads/',
-        image: '/appv2/local/uploads/',
-        video: '/appv2/local/video/upload/'
-      },
-      workflows: [
-        '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
-      ],
-    },
-    policy: '<CUSTOM_FILESTACK_POLICY>',
-    signature: '<CUSTOM_FILESTACK_SIGNATURE>',
-    workflows: {
-      virusDetection: '3c38ef53-a9d0-4aa4-9234-617d9f03c0de',
-    },
-  },
   hubspot: {
     liveServerRegion: '',
     supportFormPortalId: '',

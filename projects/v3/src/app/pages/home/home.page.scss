@@ -108,8 +108,8 @@ ion-content.scrollable-desktop {
 }
 
 .focusable:focus {
-  border: 1px solid var(--ion-color-primary);
-  display: block;
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
 }
 
 .activity-search-container {

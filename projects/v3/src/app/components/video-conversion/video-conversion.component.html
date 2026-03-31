@@ -1,6 +1,6 @@
 <div class="video-conversion"
-  (click)="showInFilestackPreview(result)"
-  (keydown)="showInFilestackPreview(result, $event)"
+  (click)="showPreview(result)"
+  (keydown)="showPreview(result, $event)"
   *ngIf="result?.status === 'completed'; else conversionPending"
   tabindex="0"
   role="button">
