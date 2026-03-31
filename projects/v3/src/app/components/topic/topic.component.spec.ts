@@ -4,7 +4,7 @@ import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@an
 import { Router } from '@angular/router';
 import { TopicComponent } from './topic.component';
 import { TopicService } from '@v3/services/topic.service';
-import { FilestackService } from '@v3/services/filestack.service';
+import { FilePreviewService } from '@v3/services/file-preview.service';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -21,7 +21,7 @@ describe('TopicComponent', () => {
   let component: TopicComponent;
   let fixture: ComponentFixture<TopicComponent>;
   let topicSpy: jasmine.SpyObj<TopicService>;
-  let filestackSpy: jasmine.SpyObj<FilestackService>;
+  let filePreviewSpy: jasmine.SpyObj<FilePreviewService>;
   let embedSpy: jasmine.SpyObj<EmbedVideoService>;
   let sharedSpy: jasmine.SpyObj<SharedService>;
   let routerSpy: jasmine.SpyObj<Router>;
@@ -32,7 +32,7 @@ describe('TopicComponent', () => {
 
   beforeEach(async () => {
     topicSpy = jasmine.createSpyObj('TopicService', ['getTopic', 'getTopicProgress', 'updateTopicProgress', 'clearTopic']);
-    filestackSpy = jasmine.createSpyObj('FilestackService', ['previewFile']);
+    filePreviewSpy = jasmine.createSpyObj('FilePreviewService', ['preview']);
     embedSpy = jasmine.createSpyObj('EmbedVideoService', ['embed']);
     embedSpy.embed.and.returnValue('<iframe src="test"></iframe>'); // return valid embed html
     sharedSpy = jasmine.createSpyObj('SharedService', ['stopPlayingVideos']);
@@ -47,7 +47,7 @@ describe('TopicComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: TopicService, useValue: topicSpy },
-        { provide: FilestackService, useValue: filestackSpy },
+        { provide: FilePreviewService, useValue: filePreviewSpy },
         { provide: EmbedVideoService, useValue: embedSpy },
         { provide: Router, useValue: routerSpy },
         { provide: NotificationsService, useValue: notificationSpy },
@@ -163,7 +163,7 @@ describe('TopicComponent', () => {
     it('should load file successfully', fakeAsync(() => {
       const SAMPLE_RESULT = 'SAMPLE';
       let result: any;
-      filestackSpy.previewFile.and.returnValue(Promise.resolve(SAMPLE_RESULT));
+      filePreviewSpy.preview.and.returnValue(Promise.resolve(SAMPLE_RESULT));
       component.isLoadingPreview = false;
 
       component.previewFile('').then(res => result = res);
@@ -178,7 +178,7 @@ describe('TopicComponent', () => {
       const SAMPLE_RESULT = 'FAILED_SAMPLE';
       let result: any;
       notificationSpy.alert.and.returnValue(Promise.resolve(SAMPLE_RESULT as any));
-      filestackSpy.previewFile.and.rejectWith(new Error('File preview test error'));
+      filePreviewSpy.preview.and.rejectWith(new Error('File preview test error'));
       component.isLoadingPreview = false;
 
       component.previewFile('').then(res => result = res);

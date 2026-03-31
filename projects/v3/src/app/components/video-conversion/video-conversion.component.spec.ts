@@ -1,13 +1,13 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from "@angular/core/testing";
-import { FilestackService } from "@v3/app/services/filestack.service";
+import { FilePreviewService } from "@v3/app/services/file-preview.service";
 import { of, Subject } from "rxjs";
 import { VideoConversionComponent } from "./video-conversion.component";
 
 describe('VideoConversionComponent', () => {
   let component: VideoConversionComponent;
   let fixture: ComponentFixture<VideoConversionComponent>;
-  let filestackSpy: FilestackService;
+  let filePreviewSpy: jasmine.SpyObj<FilePreviewService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -16,10 +16,9 @@ describe('VideoConversionComponent', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
-          provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', {
-            'videoConversion': of({ status: 'completed' }),
-            'previewModal': of(),
+          provide: FilePreviewService,
+          useValue: jasmine.createSpyObj('FilePreviewService', {
+            'openModal': Promise.resolve(),
           }),
         },
       ],
@@ -27,7 +26,7 @@ describe('VideoConversionComponent', () => {
 
     fixture = TestBed.createComponent(VideoConversionComponent);
     component = fixture.componentInstance;
-    filestackSpy = TestBed.inject(FilestackService);
+    filePreviewSpy = TestBed.inject(FilePreviewService) as jasmine.SpyObj<FilePreviewService>;
   }));
 
   it('should created', () => {
@@ -35,46 +34,26 @@ describe('VideoConversionComponent', () => {
   });
 
   describe('ngOnInit()', () => {
-    it('should start with countdown for timeout', fakeAsync(() => {
+    it('should be a no-op after filestack removal', () => {
       component.ngOnInit();
       expect(component.waitedTooLong).toBeFalse();
-      tick(10000);
-      expect(component.waitedTooLong).toBeTrue();
-    }));
+    });
   });
 
   describe('ngOnChange()', () => {
-    it('should act on video file which isn\'t an mp4', () => {
-      const spy = spyOn(component, 'convertVideo');
+    it('should show download fallback for non-mp4 video', () => {
       component.video = {
         fileObject: {
-          mimetype: 'video/abc', // not mp4
+          mimetype: 'video/abc',
         },
       };
 
       component.ngOnChanges({} as any);
-      expect(spy).toHaveBeenCalled();
+      expect(component.waitedTooLong).toBeTrue();
     });
   });
 
-  describe('convertVideo()', () => {
-    it('should perform filestack video conversion and wait', fakeAsync(() => {
-      component.stop$ = new Subject<boolean>();
-      component.convertVideo({
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-video',
-        url: 'http://test.com/video.mp4',
-        extension: 'mp4',
-        type: 'video/mp4',
-        size: 1000
-      });
-      tick(10000);
-      expect(component.result).toEqual({ status: 'completed' });
-    }));
-  });
-
-  describe('showInFilestackPreview()', () => {
+  describe('showPreview()', () => {
     it('should show video in streaming URL', () => {
       const file = {
         data: {
@@ -87,8 +66,8 @@ describe('VideoConversionComponent', () => {
           url: 'http://streaming.com',
         },
       };
-      component.showInFilestackPreview(file as any);
-      expect(filestackSpy.previewModal).toHaveBeenCalledWith('http://practera.com', { url: 'http://streaming.com' });
+      component.showPreview(file as any);
+      expect(filePreviewSpy.openModal).toHaveBeenCalledWith('http://practera.com', { url: 'http://streaming.com' });
     });
 
     it('should allow keyboard event', () => {
@@ -109,7 +88,7 @@ describe('VideoConversionComponent', () => {
         key: 'Enter',
       });
       const spyKb = spyOn(kbEvent, 'preventDefault');
-      component.showInFilestackPreview(file as any, kbEvent);
+      component.showPreview(file as any, kbEvent);
       expect(spyKb).toHaveBeenCalled();
     });
 
@@ -131,7 +110,7 @@ describe('VideoConversionComponent', () => {
         key: 'Tab',
       });
       const spyKb = spyOn(kbEvent, 'preventDefault');
-      component.showInFilestackPreview(file as any, kbEvent);
+      component.showPreview(file as any, kbEvent);
       expect(spyKb).not.toHaveBeenCalled();
     });
   });

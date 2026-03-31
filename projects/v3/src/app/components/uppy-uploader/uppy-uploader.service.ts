@@ -199,7 +199,7 @@ export class UppyUploaderService {
    * @param   {string}        source
    * @return  {Promise<HTMLIonModalElement>}
    */
-  async open(source: 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | null): Promise<HTMLIonModalElement> {
+  async open(source: 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | 'any' | 'image' | 'video' | null): Promise<HTMLIonModalElement> {
     // dynamic import to break circular dependency with UppyUploaderComponent
     const { UppyUploaderComponent } = await import('./uppy-uploader.component');
     const modal = await this.modalController.create({
