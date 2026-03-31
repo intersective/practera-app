@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { RequestModule } from './request.module';
 
 describe('RequestModule', () => {
@@ -11,6 +13,10 @@ describe('RequestModule', () => {
           appkey: 'TEST',
           prefixUrl: 'TEST',
         }),
+      ],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
