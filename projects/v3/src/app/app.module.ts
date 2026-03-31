@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RequestInterceptor } from '@v3/services/request.interceptor';
@@ -32,6 +32,7 @@ import { SnowOverlayComponent } from './components/snow-overlay/snow-overlay.com
     SnowOverlayComponent,
   ],
   providers: [
+    provideHttpClient(withInterceptorsFromDi()),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RequestInterceptor,

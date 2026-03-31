@@ -274,9 +274,11 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
+            "builderMode": "application",
             "main": "projects/request/src/test.ts",
             "karmaConfig": "projects/request/karma.conf.js",
             "tsConfig": "projects/request/tsconfig.spec.json",
+            "include": ["projects/request/src/**/*.spec.ts"],
             "scripts": []
           }
         }
