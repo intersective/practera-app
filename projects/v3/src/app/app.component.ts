@@ -20,6 +20,7 @@ import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
   selector: "app-root",
+  standalone: false,
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
