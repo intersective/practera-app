@@ -5,27 +5,27 @@
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
-          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name"></div>
+          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name | detectLanguage"></div>
           <ion-chip i18n
             class="label orange"
             *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's answer</ion-chip>
+          >Learner's Answer</ion-chip>
           <ion-chip i18n
             class="label yellow black"
             *ngIf="review?.answer?.includes(choice.id)"
-          >Expert's answer</ion-chip>
+          >Reviewer's Answer</ion-chip>
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
-          <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+          <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
         </ion-item>
       </ng-container>
     </ng-container>
   </ion-list>
 
-  <ng-container *ngIf="review?.comment">
+  <ng-container *ngIf="review?.comment && question.canComment === true">
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
@@ -46,22 +46,33 @@
         <ng-container *ngFor="let choice of question.choices; let i = index">
           <ion-item [ngClass]="{'item-bottom-border': (i !== question.choices.length - 1 || !checkInnerValue(choice.id))}"
             lines='none'>
-            <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name"></ion-label>
+
             <ion-checkbox color="success"
-              [checked]="submission.answer ? submission.answer.includes(choice.id) : false"
+              [checked]="innerValue?.includes(choice.id)"
               [value]="choice.id"
+              labelPlacement="end"
+              justify="start"
               slot="start"
               (ionChange)="onChange(choice.id)"
               [disabled]="control.disabled"
               [attr.aria-label]="choice.name"
-            ></ion-checkbox>
+            >
+              <span class="ion-text-wrap body-2 black"
+                [innerHTML]="choice.name | detectLanguage"
+                [appToggleLabel]="onLabelToggle"
+                [toggleId]="choice.id"
+                [toggleDisabled]="control.disabled"
+                role="button"
+                tabindex="0">
+              </span>
+            </ion-checkbox>
           </ion-item>
 
           <ng-container
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
             <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
               <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
-              <ion-note size="small" [innerHTML]="choice.explanation"></ion-note>
+              <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
             </ion-item>
           </ng-container>
         </ng-container>
@@ -84,7 +95,7 @@
         [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}"
         lines="none">
         <ion-checkbox color="success"
-          [checked]="review.answer ? review.answer.includes(choice.id) : false"
+          [checked]="innerValue?.answer ? innerValue.answer.includes(choice.id) : false"
           [value]="choice.id"
           justify="start"
           slot="start"
@@ -94,11 +105,17 @@
           [attr.aria-label]="choice.name"
         >
           <div class="ion-text-wrap body-2 black">
-            <span [innerHTML]="choice.name"></span>
+            <span [innerHTML]="choice.name | detectLanguage"
+              [appToggleLabel]="onLabelToggle"
+              [toggleId]="choice.id"
+              [toggleDisabled]="control.disabled"
+              role="button"
+              tabindex="0">
+            </span>
             <p *ngIf="submission?.answer?.includes(choice.id)">
               <ion-chip class="label orange" i18n
                 *ngIf="submission?.answer?.includes(choice.id)"
-              >Learner's answer</ion-chip>
+              >Learner's Answer</ion-chip>
             </p>
           </div>
         </ion-checkbox>

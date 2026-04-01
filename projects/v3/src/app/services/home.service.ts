@@ -367,6 +367,7 @@ export class HomeService {
     );
   }
 
+  // update skill & progress survey matrix
   getPulseCheckSkills(): Observable<ApiResponse<{
     pulseCheckSkills: PulseCheckSkill[]
   }>> {

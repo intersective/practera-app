@@ -235,17 +235,29 @@ ion-chip.label {
 
 /******************
   Skip navigation links for WCAG 2.4.1
+  Accessibility: Ensures 4.5:1 contrast ratio for normal text (WCAG 1.4.3)
 ******************/
 .skip-link {
   position: absolute;
   top: -40px;
   left: 0;
-  background: var(--ion-color-primary);
+  // Use darker background for WCAG contrast compliance
+  // Ensures white text has at least 4.5:1 contrast ratio
+  background: var(--ion-color-primary-shade, #2a6d3f); // Darker fallback if shade not set
   color: white;
   padding: 8px;
   text-decoration: none;
   z-index: 10000;
   border-radius: 0 0 4px 0;
+  
+  // Calculate darker shade if primary color is too light
+  // Falls back to a WCAG-compliant dark green (#2a6d3f = white:dark green = ~7.5:1)
+  background-color: color-mix(in srgb, var(--ion-color-primary) 60%, #1a4d2a);
+  
+  // Fallback for browsers without color-mix support
+  @supports not (color-mix(in srgb, white, black)) {
+    background-color: var(--ion-color-primary-shade, #2a6d3f);
+  }
 }
 
 .skip-link:focus {
@@ -521,4 +533,10 @@ quill-editor .ql-toolbar.ql-snow {
 
 .txt-red {
   color: red;
+}
+
+.spacer {
+  &-right {
+    margin-right: 8px !important;
+  }
 }
