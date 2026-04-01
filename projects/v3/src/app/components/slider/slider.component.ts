@@ -102,11 +102,13 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
     // reset errors
     this.errors = [];
     // setting, resetting error messages into an array (to loop) and adding the validation messages to show below the answer area
-    for (const key in this.control.errors) {
-      if (key === 'required') {
-        this.errors.push('This question is required');
-      } else {
-        this.errors.push(this.control.errors[key]);
+    if (this.control?.errors) {
+      for (const key in this.control.errors) {
+        if (key === 'required') {
+          this.errors.push('This question is required');
+        } else {
+          this.errors.push(this.control.errors[key]);
+        }
       }
     }
 
@@ -151,6 +153,9 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   writeValue(value: any) {
     if (value) {
       this.innerValue = value;
+      if (value.comment !== undefined) {
+        this.comment = value.comment;
+      }
     }
   }
 
@@ -166,18 +171,26 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
 
   // adding save values to from control
   private _showSavedAnswers() {
-    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview) {
-      this.innerValue = {
-        answer: '',
-        comment: ''
-      };
-      this.innerValue.comment = this.review.comment;
-      this.comment = this.review.comment;
-      this.innerValue.answer = this.review.answer;
+    if ((['in progress', 'not start'].includes(this.reviewStatus)) && this.doReview && this.review) {
+      // preserve user edits across pagination; fall back to saved review data
+      if (this.control && !this.control.pristine) {
+        this.innerValue = this.control.value;
+        this.comment = this.control.value?.comment ?? this.review.comment;
+      } else {
+        this.innerValue = {
+          answer: this.review.answer,
+          comment: this.review.comment,
+        };
+        this.comment = this.review.comment;
+      }
     }
 
     if ((this.submissionStatus === 'in progress') && this.doAssessment) {
-      this.innerValue = this.control.pristine ? this.submission.answer : this.control.value;
+      if (this.control) {
+        this.innerValue = this.control.pristine ? this.submission?.answer : this.control.value;
+      } else {
+        this.innerValue = this.submission?.answer;
+      }
     }
 
     this.propagateChange(this.innerValue);
@@ -246,14 +259,14 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
     return choiceId.toString();
   }
 
-  // Get slider value for submission (learner's answer)
+  // Get slider value for submission (Learner's Answer)
   getSubmissionSliderValue(): number {
     if (!this.submission?.answer) return this.sliderMin;
 
     return typeof this.submission.answer === 'number' ? this.submission.answer : this.sliderMin;
   }
 
-  // Get slider value for review (expert's answer)
+  // Get slider value for review (Reviewer's answer)
   getReviewSliderValue(): number {
     if (!this.innerValue?.answer) return this.sliderMin;
 
@@ -286,4 +299,17 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   pinFormatter = (value: number): string => {
     return value.toString();
   };
+
+  // helper methods to check if answers exist
+  hasSubmissionAnswer(): boolean {
+    return this.submission?.answer !== null && this.submission?.answer !== undefined;
+  }
+
+  hasReviewAnswer(): boolean {
+    return this.review?.answer !== null && this.review?.answer !== undefined;
+  }
+
+  hasAnyAnswer(): boolean {
+    return this.hasSubmissionAnswer() || this.hasReviewAnswer();
+  }
 }

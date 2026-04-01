@@ -11,6 +11,8 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
 import { Task } from '@v3/app/services/activity.service';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
+import { ModalController } from '@ionic/angular';
+import { FilePopupComponent } from '../file-popup/file-popup.component';
 
 @Component({
   selector: 'app-topic',
@@ -52,6 +54,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
     private sanitizer: DomSanitizer,
     private cleanupService: ComponentCleanupService,
     private cdr: ChangeDetectorRef,
+    private modalController: ModalController,
     @Inject(DOCUMENT) private readonly document: Document
   ) {
     this.isMobile = this.utils.isMobile();
@@ -114,6 +117,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
       } else {
         this.videoSrc = null;
       }
+
     }
 
     if (changes.topic?.currentValue?.title) {
@@ -299,9 +303,91 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
         this.utils.downloadFile(file.url);
         break;
       case 1:
-        this.previewFile(file);
+        if (this._isVideoFile(file)) {
+          // show browser-supported video in modal with html5 player
+          this.previewVideoFile(file);
+        } else if (this._isFilestackUrl(file.url) && this._isFilestackPreviewSupported(file)) {
+          // show filestack document viewer
+          this.previewFile(file);
+        } else {
+          // non-filestack files: open in new tab as download fallback
+          window.open(file.url, '_blank');
+        }
         break;
     }
+  }
+
+  /**
+   * @description checks if a url is a filestack cdn url
+   */
+  private _isFilestackUrl(url: string): boolean {
+    return url?.includes('filestackcontent') || false;
+  }
+
+  /**
+   * @description checks if file is a browser-supported video format (mp4, webm, ogg)
+   */
+  private _isVideoFile(file: { url: string; name: string }): boolean {
+    const supportedExtensions = ['.mp4', '.webm', '.ogg'];
+    const urlLower = (file.url || '').toLowerCase();
+    const nameLower = (file.name || '').toLowerCase();
+    return supportedExtensions.some(ext => urlLower.endsWith(ext) || nameLower.endsWith(ext));
+  }
+
+  /**
+   * @description derives video mime type from file extension
+   */
+  private _getVideoMimeType(file: { url: string; name: string }): string {
+    const name = (file.name || file.url || '').toLowerCase();
+    if (name.endsWith('.webm')) return 'video/webm';
+    if (name.endsWith('.ogg')) return 'video/ogg';
+    return 'video/mp4';
+  }
+
+  /**
+   * @description checks if a file type is supported by filestack document viewer.
+   * supported: pdf, ppt/pptx, xls/xlsx, doc/docx, odt, odp, images, html, txt, ai, psd.
+   * unsupported: audio and video files (filestack doesn't support media preview).
+   */
+  private _isFilestackPreviewSupported(file: { url: string; name: string }): boolean {
+    const unsupportedExtensions = [
+      // audio formats
+      '.mp3', '.wav', '.ogg', '.aac', '.flac', '.wma', '.m4a',
+      // video formats (filestack doesn't support any video preview)
+      '.mp4', '.webm', '.avi', '.mov', '.wmv', '.mkv', '.flv', '.m4v',
+    ];
+    const urlLower = (file.url || '').toLowerCase();
+    const nameLower = (file.name || '').toLowerCase();
+    return !unsupportedExtensions.some(ext => urlLower.endsWith(ext) || nameLower.endsWith(ext));
+  }
+
+  /**
+   * @description preview browser-supported video file in modal with html5 video player
+   */
+  async previewVideoFile(file: { url: string; name: string }): Promise<void> {
+    const modal = await this.modalController.create({
+      component: FilePopupComponent,
+      componentProps: {
+        file: {
+          url: file.url,
+          name: file.name,
+          type: this._getVideoMimeType(file),
+        },
+      },
+    });
+    return await modal.present();
+  }
+
+  /**
+   * @description returns action button icons for file attachment based on preview support.
+   * preview icon shown for:
+   * - browser-supported video files: mp4, webm, ogg (shown in html5 video modal)
+   * - filestack urls with document viewer supported file types
+   */
+  getFileActionIcons(file: { url: string; name: string }): string[] {
+    const canPreview = this._isVideoFile(file) ||
+                      (this._isFilestackUrl(file.url) && this._isFilestackPreviewSupported(file));
+    return canPreview ? ['download', 'search'] : ['download'];
   }
 
   async actionBarContinue(topic): Promise<void> {

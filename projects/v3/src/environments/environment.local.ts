@@ -63,6 +63,9 @@ export const environment = {
   goMobile: false,
   projecthub: 'http://localhost:3000/',
   helpline: 'help@practera.com',
+  featureToggles: {
+    assessmentPagination: true,
+  },
 };
 
 /*

@@ -125,7 +125,7 @@
             <ion-segment-button value="pulse-checks"
               mode="ios"
               role="tab"
-              *ngIf="pulseCheckIndicatorEnabled === true"
+              *ngIf="pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam"
               [attr.aria-selected]="display === 'pulse-checks'"
               [attr.aria-controls]="'pulse-checks-panel'">
               <ion-label i18n>Skill & Progress Surveys</ion-label>

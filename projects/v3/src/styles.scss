@@ -553,3 +553,9 @@ quill-editor .ql-toolbar.ql-snow {
 .txt-red {
   color: red;
 }
+
+.spacer {
+  &-right {
+    margin-right: 8px !important;
+  }
+}

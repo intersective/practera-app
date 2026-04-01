@@ -37,6 +37,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   isMobile: boolean;
   isParticipant: boolean;
+  isExpertWithoutTeam: boolean;
   pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
 
@@ -96,9 +97,25 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit() {
     const role = this.storageService.getUser().role;
+    const teamId = this.storageService.getUser().teamId;
     this.isParticipant = role === 'participant';
+    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
     this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
+
+    // subscribe to team changes broadcast from shared service
+    this.sharedService.team$
+      .pipe(
+        filter(team => team !== null),
+        takeUntil(this.unsubscribe$)
+      )
+      .subscribe(() => {
+        // re-evaluate expert without team status when team changes
+        const currentRole = this.storageService.getUser().role;
+        const currentTeamId = this.storageService.getUser().teamId;
+        this.isExpertWithoutTeam = currentRole === 'mentor' && !currentTeamId;
+      });
+
     this.homeService.milestones$
       .pipe(
         distinctUntilChanged(),
@@ -189,6 +206,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         },
       });
 
+    // call updateDashboard on initial load to ensure fresh data
+    this.updateDashboard();
   }
 
   ngOnDestroy(): void {
@@ -196,20 +215,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.unsubscribe$.complete();
   }
 
-  /**
-   * @name openPulseCheck
-   * @description This method pulls the fast feedback service (with type 'skills') to open the pulse check modal.
-   */
-  openPulseCheck() {
-    this.fastFeedbackService.pullFastFeedback({
-      closable: true,
-      skipChecking: true,
-      type: 'skills'
-    }).pipe(first()).subscribe();
-  }
-
   async updateDashboard() {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+
+    // re-evaluate user role and team status after JWT refresh updates teamId
+    const role = this.storageService.getUser().role;
+    const teamId = this.storageService.getUser().teamId;
+    this.isParticipant = role === 'participant';
+    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
+
     this.experience = this.storageService.get("experience");
     this.showProjectHub = this.storageService.getFeature('showProjectHub');
     this.homeService.getMilestones({ forceRefresh: true });
