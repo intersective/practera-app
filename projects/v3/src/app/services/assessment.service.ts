@@ -439,7 +439,7 @@ export class AssessmentService {
       status: firstSubmissionReview.status,
       modified: firstSubmissionReview.modified,
       teamName: firstSubmission.submitter.team?.name,
-      projectBrief: this._parseProjectBrief(firstSubmission.submitter.team?.projectBrief),
+      projectBrief: this._parseProjectBrief(firstSubmission.submitter.team?.projectBrief), // show team project brief in the review page if available
       answers: {},
     };
 
