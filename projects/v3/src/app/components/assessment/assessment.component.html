@@ -478,6 +478,65 @@
         </ion-button>
       </div>
     </app-bottom-action-bar>
+
+    <!-- standalone pagination for completed reviews (bottom action bar hidden) -->
+    <ion-footer class="standalone-pagination-footer"
+      *ngIf="action === 'review'
+        && submission?.status === 'feedback available'
+        && review?.status === 'done'
+        && isPaginationEnabled
+        && pageCount > 1">
+      <div class="pagination-container"
+        [class.few-pages]="pageCount < manyPages">
+        <ion-button fill="clear"
+          class="nav-button prev-button"
+          (click)="prevPage()"
+          [disabled]="pageIndex === 0">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          <span>Prev</span>
+        </ion-button>
+
+        <div class="page-indicators"
+          [class.many-pages]="pageCount > manyPages"
+          *ngIf="pageCount > 1"
+          #pageIndicatorsContainer>
+          <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
+            <div class="page-indicator"
+              [class.active]="pageIndex === page"
+              [class.incompleted]="!pageRequiredCompletion[page]"
+              [id]="'page-indicator-' + page"
+              (click)="goToPage(page)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Page ' + (i + 1)"
+              (keydown.enter)="goToPage(page)"
+              (keydown.space)="goToPage(page); $event.preventDefault()">
+
+              <div class="progress-ring">
+                <span class="page-number">{{ i + 1 }}</span>
+              </div>
+
+              <ion-icon *ngIf="pageRequiredCompletion[page]"
+                name="checkmark-circle"
+                class="completion-icon completed">
+              </ion-icon>
+              <ion-icon *ngIf="!pageRequiredCompletion[page]"
+                name="close-circle-outline"
+                class="completion-icon">
+              </ion-icon>
+            </div>
+          </ng-container>
+        </div>
+
+        <ion-button fill="clear"
+          class="nav-button next-button"
+          (click)="nextPage()"
+          [disabled]="pageIndex >= pageCount - 1">
+          <span>Next</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-footer>
   </ng-container>
 
   <ng-template #blocked>

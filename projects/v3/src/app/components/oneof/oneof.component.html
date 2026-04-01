@@ -9,10 +9,10 @@
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
             <ion-chip class="label orange"
               *ngIf="submission?.answer === choice.id" i18n
-            >Learner's answer</ion-chip>
+            >Learner's Answer</ion-chip>
             <ion-chip class="label yellow black"
               *ngIf="review?.answer === choice.id" i18n
-            >Expert's answer</ion-chip>
+            >Reviewer's Answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
@@ -87,8 +87,10 @@
   <div class="ion-no-padding">
     <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id" *ngIf="question.canAnswer">
       <legend class="for-accessibility" [id]="'oneof-question-review-legend-' + question.id">{{ question.name }}</legend>
-      <ion-list class="ion-no-padding">
-        <ion-radio-group #answerEle [value]="review.answer"
+      <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
+        <ion-radio-group
+          #answerEle
+          [value]="innerValue?.answer"
           (ionChange)="onChange(answerEle.value, 'answer')"
           role="radiogroup"
           [attr.aria-labelledby]="'oneof-question-' + question.id">
@@ -115,7 +117,7 @@
                   tabindex="0">
                 </span>
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id" style="margin: 0; padding: 0;">
-                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's answer</ion-chip>
+                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's Answer</ion-chip>
                 </p>
               </div>
             </ion-radio>
