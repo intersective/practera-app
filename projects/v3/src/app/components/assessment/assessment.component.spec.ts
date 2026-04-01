@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 
@@ -146,6 +146,7 @@ describe('AssessmentComponent', () => {
     dueDate: '2029-02-02',
     isOverdue: false,
     pulseCheck: false,
+    hasReviewRating: false,
     groups: [{
       name: 'test groups',
       description: 'test groups description',
@@ -445,6 +446,559 @@ describe('AssessmentComponent', () => {
     expect(component['_compulsoryQuestionsAnswered'](answers)).toEqual([]);
   });
 
+  describe('_populateQuestionsForm()', () => {
+    beforeEach(() => {
+      component.questionsForm = new FormGroup({});
+      component.btnDisabled$ = new BehaviorSubject(false);
+      spyOn(component.btnDisabled$, 'next');
+    });
+
+    it('should create form controls for all questions with correct validators', () => {
+      // Mock assessment with different question types
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Required Text Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              },
+              {
+                id: 2,
+                name: 'Optional Multiple Question',
+                type: 'multiple',
+                isRequired: false,
+                audience: ['submitter']
+              },
+              {
+                id: 3,
+                name: 'Multi Team Member Selector',
+                type: 'multi team member selector',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = true;
+      component.isPendingReview = false;
+
+      // Call the method
+      component['_populateQuestionsForm']();
+
+      // Check that form controls are created
+      expect(component.questionsForm.get('q-1')).toBeTruthy();
+      expect(component.questionsForm.get('q-2')).toBeTruthy();
+      expect(component.questionsForm.get('q-3')).toBeTruthy();
+
+      // Check that required question has validator
+      const requiredControl = component.questionsForm.get('q-1');
+      expect(requiredControl.validator).toBeTruthy();
+
+      // Check that optional question has no validator
+      const optionalControl = component.questionsForm.get('q-2');
+      expect(optionalControl.validator).toBeFalsy();
+
+      // Check that multi team member selector has array initial value
+      const multiControl = component.questionsForm.get('q-3');
+      expect(multiControl.value).toEqual([]);
+    });
+
+    it('should apply required validators only when user can edit (doAssessment = true)', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Required Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = true;
+      component.isPendingReview = false;
+
+      component['_populateQuestionsForm']();
+
+      const control = component.questionsForm.get('q-1');
+      expect(control.validator).toBeTruthy();
+    });
+
+    it('should apply required validators only when user can edit (isPendingReview = true)', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Required Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['reviewer']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.action = 'review';
+
+      component['_populateQuestionsForm']();
+
+      const control = component.questionsForm.get('q-1');
+      expect(control.validator).toBeTruthy();
+    });
+
+    it('should not apply required validators when user cannot edit', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Required Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = false;
+      component.isPendingReview = false;
+
+      component['_populateQuestionsForm']();
+
+      const control = component.questionsForm.get('q-1');
+      expect(control.validator).toBeFalsy();
+    });
+
+    it('should use custom validator for reviewer text and file questions', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Text Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['reviewer']
+              },
+              {
+                id: 2,
+                name: 'File Question',
+                type: 'file',
+                isRequired: true,
+                audience: ['reviewer']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.action = 'review';
+
+      component['_populateQuestionsForm']();
+
+      const textControl = component.questionsForm.get('q-1');
+      const fileControl = component.questionsForm.get('q-2');
+
+      // Check that custom validator is applied (we can't directly check which validator,
+      // but we can verify validator exists and behaves correctly)
+      expect(textControl.validator).toBeTruthy();
+      expect(fileControl.validator).toBeTruthy();
+
+      // Test custom validator behavior
+      textControl.setValue(null);
+      expect(textControl.valid).toBeFalsy();
+      expect(textControl.errors?.required).toBeTruthy();
+    });
+
+    it('should use file validator for learner file questions', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'File Question',
+                type: 'file',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      component.action = 'assessment';
+
+      component['_populateQuestionsForm']();
+
+      const control = component.questionsForm.get('q-1');
+      expect(control.validator).toBeTruthy();
+
+      // Test file validator behavior
+      control.setValue(null);
+      expect(control.valid).toBeFalsy();
+      expect(control.errors?.required).toBeTruthy();
+    });
+
+    it('should initialize review form structure correctly', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Text Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['reviewer']
+              },
+              {
+                id: 2,
+                name: 'Multi Team Member Selector',
+                type: 'multi team member selector',
+                isRequired: false,
+                audience: ['reviewer']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+
+      component['_populateQuestionsForm']();
+
+      const textControl = component.questionsForm.get('q-1');
+      const multiControl = component.questionsForm.get('q-2');
+
+      // Check review form structure
+      expect(textControl.value).toEqual({
+        comment: '',
+        answer: '',
+        file: null
+      });
+
+      // Check multi team member selector has answer as array
+      expect(multiControl.value.answer).toEqual([]);
+      expect(multiControl.value.comment).toBe('');
+      expect(multiControl.value.file).toBe(null);
+    });
+
+    it('should disable button when no questions exist', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: []
+      } as any;
+
+      spyOn(utils, 'isEmpty').and.returnValue(true);
+
+      component['_populateQuestionsForm']();
+
+      expect(component.btnDisabled$.next).toHaveBeenCalledWith(true);
+    });
+
+    it('should set up form value change subscription', fakeAsync(() => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Text Question',
+                type: 'text',
+                isRequired: false,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = true;
+      component.isPendingReview = false;
+
+      spyOn(component, 'initializePageCompletion');
+      spyOn(component, 'setSubmissionDisabled');
+      spyOn(utils, 'isEmpty').and.returnValue(false);
+
+      component['_populateQuestionsForm']();
+
+      // Trigger form value change
+      component.questionsForm.get('q-1').setValue('test value');
+      tick(300); // Wait for debounce
+
+      expect(component.initializePageCompletion).toHaveBeenCalled();
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    }));
+
+    it('should handle multiple groups with different question types', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Text Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          },
+          {
+            name: 'Group 2',
+            questions: [
+              {
+                id: 2,
+                name: 'Multiple Question',
+                type: 'multiple',
+                isRequired: false,
+                audience: ['submitter']
+              },
+              {
+                id: 3,
+                name: 'File Question',
+                type: 'file',
+                isRequired: true,
+                audience: ['submitter']
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      component.action = 'assessment';
+
+      component['_populateQuestionsForm']();
+
+      // Check all controls are created
+      expect(component.questionsForm.get('q-1')).toBeTruthy();
+      expect(component.questionsForm.get('q-2')).toBeTruthy();
+      expect(component.questionsForm.get('q-3')).toBeTruthy();
+
+      // Check validators are applied correctly
+      expect(component.questionsForm.get('q-1').validator).toBeTruthy(); // required text
+      expect(component.questionsForm.get('q-2').validator).toBeFalsy();  // optional multiple
+      expect(component.questionsForm.get('q-3').validator).toBeTruthy(); // required file
+    });
+
+    it('should not apply validators for questions not in user audience', () => {
+      component.assessment = {
+        id: 1,
+        type: 'quiz',
+        isForTeam: false,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              {
+                id: 1,
+                name: 'Reviewer Only Question',
+                type: 'text',
+                isRequired: true,
+                audience: ['reviewer'] // submitter not in audience
+              }
+            ]
+          }
+        ]
+      } as any;
+
+      component.doAssessment = true; // user is doing assessment (submitter role)
+      component.isPendingReview = false;
+      component.action = 'assessment';
+
+      component['_populateQuestionsForm']();
+
+      const control = component.questionsForm.get('q-1');
+      expect(control.validator).toBeFalsy(); // should not have validator since not in audience
+    });
+  });
+
+  describe('_prefillForm()', () => {
+    beforeEach(() => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+        'q-2': new FormControl(''),
+      });
+      component.btnDisabled$ = new BehaviorSubject(false);
+    });
+
+    it('should populate form with submission answers for assessment action', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      component.submission = {
+        id: 1,
+        status: 'in progress',
+        answers: {
+          1: { answer: 'my answer' },
+          2: { answer: 'second answer' },
+        },
+      } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual('my answer');
+      expect(component.questionsForm.get('q-2').value).toEqual('second answer');
+    });
+
+    it('should populate form with review answers for review action', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.review = {
+        id: 1,
+        status: 'in progress',
+        modified: '2019-02-02',
+        answers: {
+          1: { answer: 'review answer', comment: 'good', file: null },
+          2: { answer: 'review 2', comment: 'ok', file: null },
+        },
+      } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual({
+        answer: 'review answer',
+        comment: 'good',
+        file: null,
+      });
+      expect(component.questionsForm.get('q-2').value).toEqual({
+        answer: 'review 2',
+        comment: 'ok',
+        file: null,
+      });
+    });
+
+    it('should not populate form when submission has no answers', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.submission = { id: 1, status: 'in progress', answers: null } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual('');
+      expect(component.questionsForm.get('q-2').value).toEqual('');
+    });
+
+    it('should not populate form when review has no answers', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.review = { id: 1, status: 'in progress', modified: '2019-02-02', answers: null } as any;
+
+      component['_prefillForm']();
+
+      expect(component.questionsForm.get('q-1').value).toEqual('');
+    });
+
+    it('should enable button in read-only mode', () => {
+      component.action = 'assessment';
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      component.submission = null;
+      spyOn(component.btnDisabled$, 'next');
+
+      component['_prefillForm']();
+
+      expect(component.btnDisabled$.next).toHaveBeenCalledWith(false);
+    });
+
+    it('should call setSubmissionDisabled in edit mode', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      component.submission = null;
+      spyOn(component, 'setSubmissionDisabled');
+
+      component['_prefillForm']();
+
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
+
+    it('should skip controls that do not exist in the form', () => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.submission = {
+        id: 1,
+        status: 'in progress',
+        answers: {
+          999: { answer: 'no control' },
+        },
+      } as any;
+
+      // should not throw
+      expect(() => component['_prefillForm']()).not.toThrow();
+      expect(component.questionsForm.get('q-999')).toBeNull();
+    });
+  });
+
   describe('should get correct assessment answers when', () => {
     let assessment;
     let answers;
@@ -545,6 +1099,7 @@ describe('AssessmentComponent', () => {
         isOverdue: false,
         groups: [],
         pulseCheck: true,
+        hasReviewRating: false,
       };
     });
 
@@ -941,6 +1496,402 @@ describe('AssessmentComponent', () => {
       // Expect one missing question
       expect(missingQuestions.length).toBe(1);
       expect(missingQuestions[0].id).toBe(1);
+    });
+  });
+
+  describe('submitting flag (prevent duplicate submissions)', () => {
+    beforeEach(() => {
+      component.assessment = mockAssessment;
+      component.submission = { ...mockSubmission, status: 'in progress', isLocked: false } as any;
+      component.action = 'assessment';
+      component.savingMessage$ = new BehaviorSubject('');
+    });
+
+    describe('continueToNextTask()', () => {
+      it('should set submitting=true and disable button on submit', () => {
+        component.doAssessment = true;
+        const submitSpy = spyOn(component.submitActions, 'next');
+
+        component.continueToNextTask();
+
+        expect(component['submitting']).toBeTrue();
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+        expect(submitSpy).toHaveBeenCalledWith({ autoSave: false, goBack: false });
+      });
+
+      it('should not set submitting flag for readFeedback action', () => {
+        component.doAssessment = false;
+        component.submission = { ...mockSubmission, status: 'published', isLocked: false } as any;
+        component.feedbackReviewed = false;
+        const readFeedbackSpy = spyOn(component.readFeedback, 'emit');
+
+        component.continueToNextTask();
+
+        expect(component['submitting']).toBeFalse();
+        expect(readFeedbackSpy).toHaveBeenCalled();
+      });
+
+      it('should not set submitting flag for continue action', () => {
+        component.doAssessment = false;
+        component.submission = { ...mockSubmission, status: 'done', isLocked: false } as any;
+        const continueSpy = spyOn(component.continue, 'emit');
+
+        component.continueToNextTask();
+
+        expect(component['submitting']).toBeFalse();
+        expect(continueSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('setSubmissionDisabled()', () => {
+      it('should not re-enable button while submitting is true', () => {
+        component.doAssessment = true;
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('some answer'),
+        });
+
+        component.setSubmissionDisabled();
+
+        // button should stay disabled despite form being valid
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('should enable button when submitting is false and form is valid', () => {
+        component.doAssessment = true;
+        component['submitting'] = false;
+        component.btnDisabled$.next(true);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('some answer'),
+        });
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('should disable button when form is invalid and not submitting', () => {
+        component.doAssessment = true;
+        component['submitting'] = false;
+        component.btnDisabled$.next(false);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl(null, Validators.required),
+        });
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+    });
+
+    describe('ngOnChanges() submitting flag preservation', () => {
+      it('should preserve submitting=true when same submission is refetched during submit', () => {
+        // simulate initial state: user clicked submit
+        component.ngOnChanges({
+          submission: { previousValue: undefined, currentValue: component.submission, firstChange: true, isFirstChange: () => true },
+          assessment: { previousValue: undefined, currentValue: component.assessment, firstChange: true, isFirstChange: () => true },
+        } as any);
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+
+        // simulate parent refetching the same submission mid-submit
+        component.ngOnChanges({
+          submission: {
+            previousValue: component.submission,
+            currentValue: component.submission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          assessment: {
+            previousValue: component.assessment,
+            currentValue: component.assessment,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        // submitting flag should remain true because submission id hasn't changed
+        // and doAssessment is still true (status is 'in progress')
+        expect(component['submitting']).toBeTrue();
+      });
+
+      it('should reset submitting when submission changes to a different id', () => {
+        component.ngOnChanges({
+          submission: { previousValue: undefined, currentValue: component.submission, firstChange: true, isFirstChange: () => true },
+          assessment: { previousValue: undefined, currentValue: component.assessment, firstChange: true, isFirstChange: () => true },
+        } as any);
+        component['submitting'] = true;
+
+        const newSubmission = { ...mockSubmission, id: 999, status: 'in progress', isLocked: false } as any;
+        component.submission = newSubmission;
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: { ...mockSubmission, id: 1 },
+            currentValue: newSubmission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          assessment: {
+            previousValue: component.assessment,
+            currentValue: component.assessment,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        expect(component['submitting']).toBeFalse();
+      });
+
+      it('should reset submitting when assessment transitions out of edit mode', () => {
+        component.ngOnChanges({
+          submission: { previousValue: undefined, currentValue: component.submission, firstChange: true, isFirstChange: () => true },
+          assessment: { previousValue: undefined, currentValue: component.assessment, firstChange: true, isFirstChange: () => true },
+        } as any);
+        component['submitting'] = true;
+
+        // submission changes to 'pending review' (no longer editable)
+        const doneSubmission = { ...mockSubmission, id: 1, status: 'pending review', isLocked: false } as any;
+        component.submission = doneSubmission;
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: { ...mockSubmission, id: 1, status: 'in progress' },
+            currentValue: doneSubmission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          assessment: {
+            previousValue: component.assessment,
+            currentValue: component.assessment,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        // doAssessment will be false, isPendingReview will be false (action is 'assessment')
+        // so submitting should reset
+        expect(component['submitting']).toBeFalse();
+      });
+
+      it('should not touch submitting flag when it is already false', () => {
+        component['submitting'] = false;
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: undefined,
+            currentValue: component.submission,
+            firstChange: true,
+            isFirstChange: () => true,
+          },
+          assessment: {
+            previousValue: undefined,
+            currentValue: component.assessment,
+            firstChange: true,
+            isFirstChange: () => true,
+          },
+        } as any);
+
+        expect(component['submitting']).toBeFalse();
+      });
+    });
+
+    describe('_submitAnswer() submitting flag reset on errors', () => {
+      beforeEach(() => {
+        component.doAssessment = true;
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl(null, Validators.required),
+        });
+      });
+
+      it('should reset submitting when required questions are missing', async () => {
+        notificationSpy.alert.and.returnValue(Promise.resolve());
+
+        await component._submitAnswer({ autoSave: false, goBack: false });
+
+        expect(component['submitting']).toBeFalse();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+        expect(notificationSpy.alert).toHaveBeenCalled();
+      });
+
+      it('should reset submitting when team check fails', async () => {
+        // set up team assessment with no team
+        component.assessment = { ...mockAssessment, isForTeam: true };
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('answer'),
+        });
+        storageSpy.getUser.and.returnValue({ ...mockUser, teamId: undefined });
+        (shared.getTeamInfo as jasmine.Spy) = jasmine.createSpy('getTeamInfo').and.returnValue(of({}));
+
+        notificationSpy.alert.and.returnValue(Promise.resolve());
+
+        await component._submitAnswer({ autoSave: false, goBack: false });
+
+        expect(component['submitting']).toBeFalse();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('should reset submitting when getTeamInfo throws', async () => {
+        component.assessment = { ...mockAssessment, isForTeam: true };
+        component.questionsForm = new FormGroup({
+          'q-123': new FormControl('answer'),
+        });
+        (shared.getTeamInfo as jasmine.Spy) = jasmine.createSpy('getTeamInfo').and.returnValue(
+          { toPromise: () => Promise.reject(new Error('network error')) }
+        );
+
+        await component._submitAnswer({ autoSave: false, goBack: false });
+
+        expect(component['submitting']).toBeFalse();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+    });
+  });
+
+  describe('CORE-8182: pagination indicator accuracy in review mode', () => {
+    const reviewAssessment: Assessment = {
+      id: 1,
+      name: 'review test',
+      description: '',
+      type: 'quiz',
+      isForTeam: false,
+      dueDate: '2029-02-02',
+      isOverdue: false,
+      pulseCheck: false,
+      hasReviewRating: false,
+      groups: [{
+        name: 'group 1',
+        description: '',
+        questions: [
+          { id: 1, name: 'text q', description: '', canAnswer: true, canComment: true, type: 'text', isRequired: true, audience: ['reviewer'] },
+          { id: 2, name: 'oneof q', description: '', canAnswer: true, canComment: true, type: 'oneof', isRequired: true, audience: ['reviewer'] },
+          { id: 3, name: 'multiple q', description: '', canAnswer: true, canComment: true, type: 'multiple', isRequired: true, audience: ['reviewer'] },
+          { id: 4, name: 'file q', description: '', canAnswer: true, canComment: true, type: 'file', isRequired: true, audience: ['reviewer'] },
+          { id: 5, name: 'team-member q', description: '', canAnswer: true, canComment: true, type: 'team member selector', isRequired: true, audience: ['reviewer'] },
+          { id: 6, name: 'multi-team q', description: '', canAnswer: true, canComment: true, type: 'multi team member selector', isRequired: true, audience: ['reviewer'] },
+        ],
+      }],
+    };
+
+    function setupReviewMode() {
+      component.action = 'review';
+      component.assessment = reviewAssessment;
+      component.submission = { id: 1, status: 'pending review', answers: [], submitterName: '', modified: '', completed: false, isLocked: false, submitterImage: '', reviewerName: '' } as any;
+      component.review = { id: 1, answers: {}, status: 'in progress', modified: '' } as any;
+      component['isPendingReview'] = true;
+      component['doAssessment'] = false;
+    }
+
+    describe('areAllRequiredQuestionsAnswered', () => {
+      beforeEach(() => {
+        setupReviewMode();
+        component.questionsForm = new FormGroup({});
+      });
+
+      it('should return false for empty array answer (multiple/checkbox in review mode)', () => {
+        component.questionsForm.addControl('q-3', new FormControl({ answer: [], comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[2]]);
+        expect(result).toBeFalse();
+      });
+
+      it('should return true for non-empty array answer (multiple/checkbox in review mode)', () => {
+        component.questionsForm.addControl('q-3', new FormControl({ answer: ['choice1'], comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[2]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return false for empty array answer (multi-team-member-selector in review mode)', () => {
+        component.questionsForm.addControl('q-6', new FormControl({ answer: [], comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[5]]);
+        expect(result).toBeFalse();
+      });
+
+      it('should return true for non-empty array answer (multi-team-member-selector in review mode)', () => {
+        component.questionsForm.addControl('q-6', new FormControl({ answer: [{ name: 'user1' }], comment: '' }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[5]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return false for empty string answer (text in review mode)', () => {
+        component.questionsForm.addControl('q-1', new FormControl({ answer: '', comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[0]]);
+        expect(result).toBeFalse();
+      });
+
+      it('should return true for non-empty string answer (text in review mode)', () => {
+        component.questionsForm.addControl('q-1', new FormControl({ answer: 'some text', comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[0]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return true for review file question with file object', () => {
+        component.questionsForm.addControl('q-4', new FormControl({ answer: '', comment: '', file: { url: 'http://file.com/test.pdf' } }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[3]]);
+        expect(result).toBeTrue();
+      });
+
+      it('should return false for review file question with empty file', () => {
+        component.questionsForm.addControl('q-4', new FormControl({ answer: '', comment: '', file: null }));
+        const result = component['areAllRequiredQuestionsAnswered']([reviewAssessment.groups[0].questions[3]]);
+        expect(result).toBeFalse();
+      });
+    });
+
+    describe('_answerRequiredValidatorForReviewer applied to all review question types', () => {
+      beforeEach(() => {
+        setupReviewMode();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for multiple type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-3'];
+        expect(control).toBeTruthy();
+        // empty array answer should be invalid
+        control.setValue({ answer: [], comment: '', file: null });
+        expect(control.valid).toBeFalse();
+        // non-empty array should be valid
+        control.setValue({ answer: ['choice1'], comment: '', file: null });
+        expect(control.valid).toBeTrue();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for multi-team-member-selector type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-6'];
+        expect(control).toBeTruthy();
+        // empty array answer should be invalid
+        control.setValue({ answer: [], comment: '' });
+        expect(control.valid).toBeFalse();
+        // non-empty array should be valid
+        control.setValue({ answer: [{ name: 'user1' }], comment: '' });
+        expect(control.valid).toBeTrue();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for oneof type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-2'];
+        expect(control).toBeTruthy();
+        // empty answer should be invalid
+        control.setValue({ answer: '', comment: '' });
+        expect(control.valid).toBeFalse();
+        // non-empty answer should be valid
+        control.setValue({ answer: 'option1', comment: '' });
+        expect(control.valid).toBeTrue();
+      });
+
+      it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
+        component.ngOnChanges({});
+        const control = component.questionsForm.controls['q-5'];
+        expect(control).toBeTruthy();
+        // empty answer should be invalid
+        control.setValue({ answer: '', comment: '' });
+        expect(control.valid).toBeFalse();
+        // non-empty answer should be valid
+        control.setValue({ answer: 'member1', comment: '' });
+        expect(control.valid).toBeTrue();
+      });
     });
   });
 });

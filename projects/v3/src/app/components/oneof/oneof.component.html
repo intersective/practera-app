@@ -9,10 +9,10 @@
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
             <ion-chip class="label orange"
               *ngIf="submission?.answer === choice.id" i18n
-            >Learner's answer</ion-chip>
+            >Learner's Answer</ion-chip>
             <ion-chip class="label yellow black"
               *ngIf="review?.answer === choice.id" i18n
-            >Expert's answer</ion-chip>
+            >Reviewer's Answer</ion-chip>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
@@ -43,23 +43,31 @@
     <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id">
       <legend class="for-accessibility" [id]="'oneof-question-legend-' + question.id">{{ question.name }}</legend>
       <ion-list class="ion-no-padding">
-        <ion-radio-group
-          [value]="submission.answer"
-          #answerEle
+        <ion-radio-group [value]="innerValue" #answerEle
           (ionChange)="onChange(answerEle.value)"
           role="radiogroup"
           [attr.aria-labelledby]="'oneof-question-' + question.id">
           <ng-container *ngFor="let choice of question.choices; let i = index">
             <ion-item lines="none"
               [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
-              <ion-label class="ion-text-wrap body-2 black" [innerHTML]="choice.name | detectLanguage"></ion-label>
+              <ion-label class="ion-text-wrap body-2 black"
+                [innerHTML]="choice.name | detectLanguage"
+                [appToggleLabel]="onLabelToggle"
+                [toggleId]="choice.id"
+                [toggleDisabled]="control.disabled"
+                role="button"
+                tabindex="0">
+              </ion-label>
               <ion-radio color="success"
-                [ariaLabel]="choice.name"
+                justify="start"
+                labelPlacement="end"
+                [attr.aria-label]="choice.name"
                 [value]="choice.id"
                 [disabled]="control.disabled"
                 slot="start"
                 mode="md"
-              ></ion-radio>
+              >
+              </ion-radio>
             </ion-item>
             <ng-container
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
@@ -79,10 +87,10 @@
   <div class="ion-no-padding">
     <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id" *ngIf="question.canAnswer">
       <legend class="for-accessibility" [id]="'oneof-question-review-legend-' + question.id">{{ question.name }}</legend>
-      <ion-list class="ion-no-padding">
+      <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
         <ion-radio-group
           #answerEle
-          [value]="review.answer"
+          [value]="innerValue?.answer"
           (ionChange)="onChange(answerEle.value, 'answer')"
           role="radiogroup"
           [attr.aria-labelledby]="'oneof-question-' + question.id">
@@ -101,9 +109,15 @@
               justify="start"
               labelPlacement="end">
               <div class="body-2 black">
-                <span [innerHTML]="choice.name | detectLanguage"></span>
+                <span [innerHTML]="choice.name | detectLanguage"
+                  [appToggleLabel]="onLabelToggleReview"
+                  [toggleId]="choice.id"
+                  [toggleDisabled]="control.disabled"
+                  role="button"
+                  tabindex="0">
+                </span>
                 <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id" style="margin: 0; padding: 0;">
-                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's answer</ion-chip>
+                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's Answer</ion-chip>
                 </p>
               </div>
             </ion-radio>
