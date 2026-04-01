@@ -46,12 +46,12 @@
       <div *ngIf="hasSubmissionAnswer() || hasReviewAnswer()">
         <ion-chip class="label orange spacer-right" *ngIf="hasSubmissionAnswer()" i18n>
           <ion-icon name="person" slot="start"></ion-icon>
-          Learner's answer: {{ getChoiceNameById(submission.answer) }}
+          Learner's Answer: {{ getChoiceNameById(submission.answer) }}
         </ion-chip>
 
         <ion-chip class="label yellow black" *ngIf="hasReviewAnswer()" i18n>
           <ion-icon name="school" slot="start"></ion-icon>
-          Expert's answer: {{ getChoiceNameById(review.answer) }}
+          Reviewer's Answer: {{ getChoiceNameById(review.answer) }}
         </ion-chip>
       </div>
 
