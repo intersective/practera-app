@@ -35,6 +35,8 @@ export class ActivityDesktopPage {
   // loading overlay for assessment
   isLoadingAssessment: boolean = false;
 
+  longAsmtNavigator: boolean = false; // disable fab navigator on long assessment
+
   // grabs from URL parameter
   urlParams = {
     action: null,
@@ -337,6 +339,7 @@ export class ActivityDesktopPage {
 
   async goToTask(task: Task): Promise<any> {
     this.isLoadingAssessment = true;
+    this.btnDisabled$.next(false);
     try {
       const taskContentElement = this.document.getElementById('task-content');
       if (taskContentElement) {
@@ -400,25 +403,25 @@ export class ActivityDesktopPage {
     try {
       // handle unexpected submission: do final status check before saving
       let hasSubmssion = false;
-      const { submission } = await this.assessmentService
-        .fetchAssessment(
+      const { submission } = await firstValueFrom(
+        this.assessmentService.fetchAssessment(
           event.assessmentId,
           'assessment',
           this.activity.id,
           event.contextId,
           event.submissionId
         )
-        .toPromise();
+      );
 
       if (submission?.status === 'in progress') {
-        const saved = await this.assessmentService
-          .submitAssessment(
+        const saved = await firstValueFrom(
+          this.assessmentService.submitAssessment(
             event.submissionId,
             event.assessmentId,
             event.contextId,
             event.answers
           )
-          .toPromise();
+        );
 
         // http 200 but error
         if (
@@ -494,7 +497,7 @@ export class ActivityDesktopPage {
         delay(400)
       ));
       await this.reviewRatingPopUp();
-      await this.notificationsService.getTodoItems().toPromise(); // update notifications list
+      await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
       this.loading = false;
       this.btnDisabled$.next(false);
@@ -524,7 +527,8 @@ export class ActivityDesktopPage {
     // display review rating modal
     return await this.notificationsService.popUpReviewRating(
       this.review.id,
-      false
+      false,
+      this.assessmentService.assessment?.hasReviewRating
     );
   }
 

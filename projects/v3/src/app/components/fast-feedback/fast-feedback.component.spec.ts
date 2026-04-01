@@ -84,9 +84,17 @@ describe('FastFeedbackComponent', () => {
     expect(Object.keys(component.fastFeedbackForm.controls).length).toBe(5);
   });
 
-  it('when testing dismiss(), it should dismiss', () => {
+  it('when testing dismiss(), it should dismiss and release lock', () => {
+    const storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     component.dismiss({});
     expect(modalSpy.dismiss.calls.count()).toBe(1);
+    expect(storageSpy.set).toHaveBeenCalledWith('fastFeedbackOpening', false);
+  });
+
+  it('ngOnDestroy() should release fastFeedbackOpening lock', () => {
+    const storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    component.ngOnDestroy();
+    expect(storageSpy.set).toHaveBeenCalledWith('fastFeedbackOpening', false);
   });
 
   describe('when testing submit()', () => {

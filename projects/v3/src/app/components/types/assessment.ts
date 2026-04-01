@@ -45,6 +45,12 @@ export interface Choice {
   explanation?: string | any;
 }
 
+export interface TeamMemberKey {
+  userId: number;
+  userName: string;
+  teamId: number;
+}
+
 export interface TeamMember {
   key: string;
   userName: string;

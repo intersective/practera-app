@@ -29,7 +29,7 @@ export class AppComponent implements OnInit, OnDestroy {
   $unsubscribe = new Subject();
   lastVisitedUrl: string;
 
-  // list of urls that should not be cached
+  // urls that should not be cached for last visited tracking
   noneCachedUrl = [
     'devtool',
     'registration',
@@ -40,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
     'direct_login',
     'do=secure',
     'auth/secure',
+    'assessment-mobile/review',
     'undefined',
   ];
 
@@ -79,6 +80,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.configVerification();
     this.sharedService.onPageLoad();
+    
+    // Set initial lang attribute based on current locale (WCAG 3.1.1)
+    this.utils.setPageLanguage();
 
     const currentLocation = this.utils.getCurrentLocation();
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
