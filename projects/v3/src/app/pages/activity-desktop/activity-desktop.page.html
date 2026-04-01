@@ -42,7 +42,8 @@
     </ion-row>
   </ion-grid>
 
-  <ng-container *ngIf="currentTask?.type === 'Assessment'">
+  <ng-container *ngIf="currentTask?.type === 'Assessment' && false">
+    <!-- temporary hide fab button - assessment question navigator -->
     <span class="tooltip-container"
       [ngStyle]="tooltipStyle"
       *ngIf="tooltipVisible">

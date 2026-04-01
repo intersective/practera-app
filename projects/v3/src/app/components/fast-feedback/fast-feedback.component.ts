@@ -30,6 +30,7 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
   loading = false;
   submissionCompleted: boolean;
   isMobile: boolean;
+  pulseCheckId: string;
 
   // pagination properties
   currentPage = 0;
@@ -71,6 +72,8 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
 
     this.totalPages = Math.ceil(this.questions.length / this.questionsPerPage);
     this.showPagination = this.totalPages > 1;
+
+    this.pulseCheckId = this.navParams.get('modal')?.componentProps?.pulseCheckId;
 
     // Determine pulse check type based on question IDs
     this.pulseCheckType = this.determinePulseCheckType();
@@ -240,7 +243,7 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
     let submissionResult;
     try {
       submissionResult = await firstValueFrom(this.fastFeedbackService
-        .submit(answers, params));
+        .submit(answers, params, this.pulseCheckId));
 
       // Check if question 7's answer is 0
       const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)
@@ -279,6 +282,10 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Clean up ESC key listener
     document.removeEventListener('keydown', this.handleKeyDown);
+
+    // safety: release the lock if the component is destroyed without dismiss
+    // (e.g. user navigates away while modal is still open)
+    this.storage.set('fastFeedbackOpening', false);
   }
 
   get isRedColor(): boolean {
