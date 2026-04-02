@@ -4,8 +4,9 @@ import { ModalController } from '@ionic/angular';
 import { Injectable } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
-import { environment } from '../../../environments/environment';
 import { BrowserStorageService } from '../../services/storage.service';
+import { Dashboard } from 'uppy';
+import { environment } from '../../../environments/environment';
 
 export interface UppyUploaderResponse {
   path: string;
@@ -189,6 +190,28 @@ export class UppyUploaderService {
         console.log('Cache cleared:', cacheClearResult);
       }
     });
+  }
+
+  /**
+   * this will open up a modal showing the file upload component as the content
+   *
+   * @link https://intersective.slack.com/archives/C086A45JHSQ/p1736234870910269?thread_ts=1736232498.728959&cid=C086A45JHSQ
+   * @param   {string}        source
+   * @return  {Promise<HTMLIonModalElement>}
+   */
+  async open(source: 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | 'any' | 'image' | 'video' | null): Promise<HTMLIonModalElement> {
+    // dynamic import to break circular dependency with UppyUploaderComponent
+    const { UppyUploaderComponent } = await import('./uppy-uploader.component');
+    const modal = await this.modalController.create({
+      component: UppyUploaderComponent,
+      componentProps: {
+        source
+      },
+      cssClass: 'uppy-uploader-modal',
+    });
+    await modal.present();
+
+    return modal;
   }
 
   getPatchValue(id) {

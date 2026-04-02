@@ -10,7 +10,7 @@
 }
 
 .focusable:focus {
-  display: block;
-  border: 1px solid;
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
 }
 

@@ -20,6 +20,7 @@ import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
   selector: "app-root",
+  standalone: false,
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
@@ -213,7 +214,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // redirect to the last visited url/assessment if available
   redirectToLastVisitedUrl(): Promise<boolean> {
     if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
-      return this.navigate(window.location.href);
+      return; // special urls (login, register, etc.) are already handled by the router
     }
 
     const lastVisitedUrl = this.storage.lastVisited("url") as string;

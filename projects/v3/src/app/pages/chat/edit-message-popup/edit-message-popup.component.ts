@@ -8,6 +8,7 @@ import { QuillModules } from 'ngx-quill';
  * displays a quill editor pre-populated with the message text.
  */
 @Component({
+  standalone: false,
   selector: 'app-edit-message-popup',
   templateUrl: './edit-message-popup.component.html',
   styleUrls: ['./edit-message-popup.component.scss'],

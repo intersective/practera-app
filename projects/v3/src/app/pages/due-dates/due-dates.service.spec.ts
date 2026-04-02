@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import * as ics from 'ics';
 
 import { DueDatesService } from './due-dates.service';
 
@@ -51,10 +50,10 @@ describe('DueDatesService', () => {
 
   it('should call downloadCalendarEvent when createEvent succeeds', () => {
     const downloadSpy = spyOn<any>(service, 'downloadCalendarEvent');
-    spyOn(ics as any, 'createEvent').and.callFake((event: any, callback: any) => {
+    service.icsCreateEvent = ((event: any, callback: any) => {
       callback(null, 'BEGIN:VCALENDAR...');
       return undefined as any;
-    });
+    }) as any;
 
     service.createCalendarEvent({
       title: 'Assessment',
@@ -65,10 +64,10 @@ describe('DueDatesService', () => {
   });
 
   it('should throw error when createEvent callback receives error', () => {
-    spyOn(ics as any, 'createEvent').and.callFake((event: any, callback: any) => {
+    service.icsCreateEvent = ((event: any, callback: any) => {
       callback({ message: 'failed' }, null);
       return undefined as any;
-    });
+    }) as any;
 
     expect(() => service.createCalendarEvent({
       title: 'Assessment',

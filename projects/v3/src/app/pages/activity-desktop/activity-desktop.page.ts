@@ -4,12 +4,12 @@ import { DOCUMENT } from '@angular/common';
 import { Component, Inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
-import { AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
+import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
-import { BehaviorSubject, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 import { TopicComponent } from '@v3/app/components/topic/topic.component';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
@@ -18,6 +18,7 @@ import { ReviewService } from '../../services/review.service';
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
+  standalone: false,
   selector: 'app-activity-desktop',
   templateUrl: './activity-desktop.page.html',
   styleUrls: ['./activity-desktop.page.scss'],
@@ -25,7 +26,7 @@ const SAVE_PROGRESS_TIMEOUT = 10000;
 export class ActivityDesktopPage {
   activity: Activity;
   currentTask: Task;
-  assessment = this.assessmentService.assessment$;
+  assessment: Observable<Assessment>;
   submission: Submission;
   review: AssessmentReview;
   topic: Topic;
@@ -73,6 +74,7 @@ export class ActivityDesktopPage {
     private reviewService: ReviewService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
+    this.assessment = this.assessmentService.assessment$;
     // slow down the scroll event trigger
     this.scrolSubject
       .pipe(debounceTime(300))

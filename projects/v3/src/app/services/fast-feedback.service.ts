@@ -1,12 +1,12 @@
 import { Injectable, Injector } from '@angular/core';
-import { AlertController } from '@ionic/angular';
+import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { UtilsService } from '@v3/services/utils.service';
 import { of, Observable } from 'rxjs';
 import { switchMap, retry, tap } from 'rxjs/operators';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
-import isEmpty from 'lodash-es/isEmpty';
 import { ApiResponse } from '../models/api.model';
 
 @Injectable({
@@ -17,26 +17,19 @@ export class FastFeedbackService {
 
   private currentPulseCheckId: string = null; // temporary store active pulse check ID
 
-  // lazy-loaded to avoid circular dependency
-  private _notificationsService: any = null;
+  // lazily resolved to break circular dependency with NotificationsService
+  private _notificationsService: NotificationsService;
+  private get notificationsService(): NotificationsService {
+    return (this._notificationsService ??= this.injector.get(NotificationsService));
+  }
 
   constructor(
     private injector: Injector,
     private storage: BrowserStorageService,
+    private utils: UtilsService,
     private demo: DemoService,
     private apolloService: ApolloService,
-    private alertController: AlertController,
-  ) {}
-
-  // lazy getter for NotificationsService to break circular dependency
-  private get notificationsService() {
-    if (!this._notificationsService) {
-      // dynamically import to avoid circular dependency at module load time
-      const { NotificationsService } = require('./notifications.service');
-      this._notificationsService = this.injector.get(NotificationsService);
-    }
-    return this._notificationsService;
-  }
+  ) { }
 
   private _getFastFeedback(skipChecking = false, type?: string): Observable<ApiResponse<{
     pulseCheck: {
@@ -120,7 +113,7 @@ export class FastFeedbackService {
           const fastFeedbackIsOpened = this.storage.get("fastFeedbackOpening");
 
           // no need to alert user, just display as error on console
-          if (isEmpty(res.data?.pulseCheck)) {
+          if (this.utils.isEmpty(res.data?.pulseCheck)) {
             console.error('No pulse check data found');
             return of(res);
           }
@@ -129,7 +122,7 @@ export class FastFeedbackService {
           // should just skip the modal popup
           const { questions, meta } = res.data.pulseCheck ?? {};
           if (
-            (isEmpty(questions) || isEmpty(meta)) &&
+            (this.utils.isEmpty(questions) || this.utils.isEmpty(meta)) &&
             options.skipChecking === false // if skipChecking is true, force open the modal
           ) {
             return of(res);
@@ -148,7 +141,7 @@ export class FastFeedbackService {
 
           // popup instant feedback view if question quantity found > 0
           if (
-            !isEmpty(res.data) &&
+            !this.utils.isEmpty(res.data) &&
             questions?.length > 0 &&
             !fastFeedbackIsOpened
           ) {
@@ -222,26 +215,6 @@ export class FastFeedbackService {
   }
 
   /**
-   * Show team check-in alert when there's misalignment in team status
-   */
-  async showTeamCheckInAlert() {
-    const alert = await this.alertController.create({
-      header: 'Team Check-In Time! 👥',
-      message: `Your status update shows some misalignment. Great opportunity to:\n\n` +
-        `✓ Schedule a quick team huddle\n` +
-        `✓ Review your Project plan and milestones together\n` +
-        `✓ Redistribute tasks if needed\n` +
-        `✓ Document 3 next steps forward\n\n` +
-        `Need strategies? Visit Teamwork Toolkit →\n` +
-        `We're here to help: programs@practera.com`,
-      buttons: ['OK'],
-      cssClass: 'team-check-in-alert'
-    });
-
-    await alert.present();
-  }
-
-  /**
    * generates a unique id for a pulse check based on its content
    */
   private generatePulseCheckId(questions: any[], meta: any): string {
@@ -295,4 +268,3 @@ export class FastFeedbackService {
     this.storage.set('submittedPulseChecks', submittedChecks);
   }
 }
-

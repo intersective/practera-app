@@ -24,6 +24,7 @@ import { ModalController } from '@ionic/angular';
  * on custom elements like app-text, app-oneof, etc.
  */
 @Directive({
+  standalone: false,
   selector: '[formControlName]',
   providers: [
     {
@@ -1774,6 +1775,8 @@ describe('AssessmentComponent', () => {
         component.questionsForm = new FormGroup({
           'q-123': new FormControl(null, Validators.required),
         });
+        // mock the form ViewChild to prevent nativeElement errors
+        component.form = { nativeElement: document.createElement('div') } as any;
       });
 
       it('should reset submitting when required questions are missing', async () => {
@@ -2614,14 +2617,12 @@ describe('AssessmentComponent', () => {
       component.pagesGroups = [[], [], []];
       component.pageIndex = 1;
       spyOn(component, 'scrollActivePageIntoView');
-      spyOn(component, 'setSubmissionDisabled');
     });
 
     it('prevPage should decrement pageIndex', () => {
       component.prevPage();
       expect(component.pageIndex).toBe(0);
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
-      expect(component.setSubmissionDisabled).toHaveBeenCalled();
     });
 
     it('prevPage should not go below 0', () => {
@@ -2635,7 +2636,6 @@ describe('AssessmentComponent', () => {
       component.nextPage();
       expect(component.pageIndex).toBe(2);
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
-      expect(component.setSubmissionDisabled).toHaveBeenCalled();
     });
 
     it('nextPage should not exceed last page', () => {
@@ -2667,14 +2667,12 @@ describe('AssessmentComponent', () => {
       spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
       component.pagesGroups = [[], [], [], []];
       spyOn(component, 'scrollActivePageIntoView');
-      spyOn(component, 'setSubmissionDisabled');
     });
 
     it('should navigate to valid page index', () => {
       component.goToPage(2);
       expect(component.pageIndex).toBe(2);
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
-      expect(component.setSubmissionDisabled).toHaveBeenCalled();
     });
 
     it('should reject negative page index', () => {
@@ -2818,7 +2816,7 @@ describe('AssessmentComponent', () => {
       component.questionsForm = new FormGroup({
         'q-1': new FormControl(''),
       });
-      component.btnDisabled$ = new BehaviorSubject(false);
+      component.btnDisabled$ = new BehaviorSubject(true);
       component.action = 'assessment';
       component.doAssessment = false; // locked means doAssessment is false
       component.isPendingReview = false;
@@ -2829,11 +2827,10 @@ describe('AssessmentComponent', () => {
         answers: { 1: { answer: 'locked answer' } },
       } as any;
 
-      spyOn(component.btnDisabled$, 'next');
       component['_prefillForm']();
 
-      // locked submission should keep button disabled
-      expect(component.btnDisabled$.next).toHaveBeenCalledWith(true);
+      // locked submission should keep button disabled (not reset to false)
+      expect(component.btnDisabled$.getValue()).toBeTrue();
     });
   });
 

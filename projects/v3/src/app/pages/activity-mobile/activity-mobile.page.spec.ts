@@ -62,6 +62,13 @@ describe('ActivityMobilePage', () => {
           }),
         },
         {
+          provide: UtilsService,
+          useValue: jasmine.createSpyObj('UtilsService', {
+            setPageTitle: undefined,
+            getEvent: new Subject(),
+          }),
+        },
+        {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', ['markTodoItemAsDone']),
         },
@@ -73,10 +80,6 @@ describe('ActivityMobilePage', () => {
             'findRelatedIndicators',
             'clearRelatedIndicators',
           ]),
-        },
-        {
-          provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', ['setPageTitle']),
         },
       ],
     }).compileComponents();

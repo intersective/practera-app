@@ -8,7 +8,6 @@ import { of, Subject } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { FilestackService } from '@v3/services/filestack.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ModalService } from '@v3/services/modal.service';
 import { MockRouter } from '@testingv3/mocked.service';
@@ -29,14 +28,12 @@ describe('ChatRoomComponent', () => {
   let utils: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
-  let filestackSpy: jasmine.SpyObj<FilestackService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeStub: Partial<ActivatedRoute>;
   let MockIoncontent: IonContent;
   const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
   modalSpy.onDidDismiss.and.returnValue(new Promise(() => { }));
-  const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
-  modalCtrlSpy.create.and.returnValue(modalSpy);
+  let modalCtrlSpy: any;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -78,10 +75,6 @@ describe('ChatRoomComponent', () => {
         {
           provide: PusherService,
           useValue: jasmine.createSpyObj('PusherService', ['triggerSendMessage', 'triggerTyping', 'triggerDeleteMessage', 'triggerEditMessage'])
-        },
-        {
-          provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', ['getFileTypes', 'getS3Config', 'open', 'previewFile'])
         },
         {
           provide: NotificationsService,
@@ -136,8 +129,9 @@ describe('ChatRoomComponent', () => {
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
-    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
     MockIoncontent = TestBed.inject(IonContent) as jasmine.SpyObj<IonContent>;
+    modalCtrlSpy = TestBed.inject(ModalController);
+    modalCtrlSpy.create.and.returnValue(Promise.resolve(modalSpy));
     // assign content for tests that need it
     component.content = MockIoncontent;
     fixture.detectChanges();
@@ -631,10 +625,8 @@ describe('ChatRoomComponent', () => {
     });
 
     it('should return false for a message with only empty html tags', () => {
-      (utils as any).isQuillContentEmpty = jasmine.createSpy('isQuillContentEmpty').and.callFake(
-        (content: string) => content.replace(/<(.|\n)*?>/g, '').trim().length === 0
-      );
       const message: any = { uuid: '1', message: '<p></p>' };
+      (utils as any).isQuillContentEmpty.and.returnValue(true);
       expect(component.hasEditableText(message)).toBeFalse();
     });
   });

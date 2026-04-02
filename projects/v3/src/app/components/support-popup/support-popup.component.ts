@@ -1,25 +1,24 @@
-import * as filestack from 'filestack-js';
 import { Component, Inject, Input, OnInit, forwardRef } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
 import { ModalController } from '@ionic/angular';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
-import { FilestackService } from '@v3/app/services/filestack.service';
+import { UppyUploaderService, UppyFileData } from '../uppy-uploader/uppy-uploader.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
 @Component({
+  standalone: false,
   selector: 'app-support-popup',
   templateUrl: './support-popup.component.html',
   styleUrls: ['./support-popup.component.scss'],
 })
 export class SupportPopupComponent implements OnInit {
-  protected filestack = filestack.Client;
   isShowForm: boolean = false;
   isShowSuccess: boolean = false;
   isShowError: boolean = false;
   isShowRequiredError: boolean = false;
   questionList = supportQuestionList;
-  selectedFile: any;
+  selectedFile: UppyFileData;
   problemSubject: string;
   problemContent: string;
   @Input() isShowFormOnly?: boolean;
@@ -27,10 +26,9 @@ export class SupportPopupComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private utilService: UtilsService,
-    // private hubspotService: HubspotService,
     @Inject(forwardRef(() => HubspotService)) private hubspotService: HubspotService,
-    private filestackService: FilestackService,
+    private uppyUploaderService: UppyUploaderService,
+    private utilService: UtilsService,
     private notificationsService: NotificationsService,
   ) { }
 
@@ -68,11 +66,6 @@ export class SupportPopupComponent implements OnInit {
           {
             text: 'Leave',
             handler: () => {
-              // if fileupload has been initiated earlier, delete the file from filestack
-              if (this.selectedFile) {
-                this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
-              }
-
               this.modalController.dismiss({
                 isPristine: this.isPristine()
               });
@@ -92,7 +85,6 @@ export class SupportPopupComponent implements OnInit {
   }
 
   async removeSelectedFile() {
-    await this.filestackService.deleteFile(this.selectedFile.handle).toPromise();
     this.selectedFile = undefined;
   }
 
@@ -103,28 +95,13 @@ export class SupportPopupComponent implements OnInit {
       return;
     }
 
-    const pickerOptions: filestack.PickerOptions = {
-      storeTo: this.filestackService.getS3Config('any'),
-      onFileUploadFailed: data => {
-        this.selectedFile = undefined;
-      },
-      onFileUploadFinished: data => {
-        this.selectedFile = data;
-      },
-      onOpen: () => { // for accessibility
-        setTimeout(() => {
-          const eles = document.getElementsByClassName('fsp-picker__close-button');
-          if (eles.length > 0) {
-            (eles[0] as HTMLElement).focus();
-          }
-        }, 850);
-      },
-    };
-
     try {
-
-      const res = await this.filestackService.open(pickerOptions);
-      return res;
+      const modal = await this.uppyUploaderService.open('any');
+      const res = await modal.onDidDismiss();
+      const data: UppyFileData = res.data;
+      if (data) {
+        this.selectedFile = data;
+      }
     } catch (err) {
       throw new Error(err);
     }

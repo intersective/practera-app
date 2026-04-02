@@ -8,7 +8,7 @@ import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
-import * as Pusher from 'pusher-js';
+import Pusher from 'pusher-js';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from './apollo.service';
 import { ApolloQueryResult } from '@apollo/client';

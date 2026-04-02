@@ -79,10 +79,12 @@ describe('ReviewListComponent', () => {
   });
 
   describe('noReviews()', () => {
-    it('should be null', () => {
+    it('should be empty string when reviews is null', () => {
       component.reviews = null;
       expect(component.noReviews).toEqual('');
+    });
 
+    it('should be empty string when matching reviews exist', () => {
       component.showDone = true;
       component.reviews = [{
         isDone: true,
@@ -91,7 +93,7 @@ describe('ReviewListComponent', () => {
       expect(component.noReviews).toEqual('');
     });
 
-    it('should return "completed"', () => {
+    it('should return "completed" when showDone but no completed reviews', () => {
       component.reviews = [
         { isDone: false } as any
       ];
@@ -100,7 +102,7 @@ describe('ReviewListComponent', () => {
       expect(component.noReviews).toEqual('completed');
     });
 
-    it('should return "pending"', () => {
+    it('should return "pending" when not showDone but no pending reviews', () => {
       component.reviews = [
         { isDone: true } as any
       ];

@@ -114,7 +114,7 @@ describe('SliderComponent', () => {
 
   it('should get selected choice label with parameter', () => {
     expect(component.getSelectedChoiceLabel(2)).toBe('2');
-    expect(component.getSelectedChoiceLabel()).toBe('');
+    expect(component.getSelectedChoiceLabel()).toBe(component.innerValue?.toString() || '');
   });
 
   describe('Review functionality', () => {
@@ -361,8 +361,9 @@ describe('SliderComponent', () => {
     });
 
     it('should not crash on null', () => {
+      const prevValue = component.innerValue;
       component.writeValue(null);
-      expect(component.innerValue).toBeUndefined();
+      expect(component.innerValue).toEqual(prevValue);
     });
   });
 

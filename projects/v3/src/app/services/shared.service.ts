@@ -215,7 +215,7 @@ export class SharedService {
   async initWebServices(): Promise<void> {
     await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
-    this.utils.checkIsPracteraSupportEmail(this.storage.get('experience').supportEmail);
+    this.utils.checkIsPracteraSupportEmail();
   }
 
   /**

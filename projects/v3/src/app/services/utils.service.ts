@@ -14,20 +14,15 @@ import indexOf from 'lodash-es/indexOf';
 import remove from 'lodash-es/remove';
 import isEqual from 'lodash-es/isEqual';
 import upperFirst from 'lodash-es/upperFirst';
-import * as dayjs from 'dayjs';
-import * as convert from 'color-convert';
+import dayjs from 'dayjs';
+import { Colors, BrowserStorageService } from './storage.service';
+import convert from 'color-convert';
 import { Title } from '@angular/platform-browser';
 import { francAll } from 'franc-min';
 
 export enum ThemeColor {
   primary = 'primary',
   secondary = 'secondary',
-}
-
-export interface Colors {
-  theme?: string;
-  primary?: string;
-  secondary?: string;
 }
 
 // @TODO: enhance Window reference later, we shouldn't refer directly to browser's window object like this
@@ -50,6 +45,7 @@ export class UtilsService {
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
+    private readonly storageService: BrowserStorageService,
     private title: Title,
     private platform: Platform,
   ) {
@@ -210,11 +206,7 @@ export class UtilsService {
    * @param   {Colors}  colors accept colors
    * @return  {void}
    */
-  changeThemeColor(colors?: {
-    primary?: string;
-    secondary?: string;
-    theme?: string;
-  }): void {
+  changeThemeColor(colors?: Colors): void {
     const defaultColor = '#2bbfd4';
     if (colors) {
       if (colors?.primary || colors?.theme) {
@@ -784,8 +776,10 @@ export class UtilsService {
     return this.redirectToUrl(`${currentURL.origin}${newPath}`);
   }
 
-  checkIsPracteraSupportEmail(supportEmail: string): boolean {
-    if (supportEmail) {
+  checkIsPracteraSupportEmail() {
+    const currentExperience = this.storageService.get('experience');
+    if (currentExperience && currentExperience.supportEmail) {
+      const supportEmail = currentExperience.supportEmail;
       if (supportEmail.includes("@practera.com")) {
         this.broadcastEvent('support-email-checked', true);
         return true;
@@ -795,6 +789,25 @@ export class UtilsService {
     }
     this.broadcastEvent('support-email-checked', false);
     return false;
+  }
+
+  getSupportEmail() {
+    const expId = this.storageService.getUser().experienceId;
+    const programList = this.storageService.get('programs');
+    if (!expId || !programList || programList.length < 1) {
+      return;
+    }
+    const currentExperience = programList.find((program: any) => {
+      return program.experience.id === expId;
+    });
+    if (currentExperience) {
+      const supportEmail = currentExperience.experience.support_email;
+      if (supportEmail) {
+        return supportEmail;
+      }
+      return null;
+    }
+    return null;
   }
 
   /**

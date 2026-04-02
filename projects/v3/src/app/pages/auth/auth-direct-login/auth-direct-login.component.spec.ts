@@ -137,17 +137,15 @@ describe('AuthDirectLoginComponent', () => {
   });
 
   describe('when testing ngOnInit()', () => {
-    it('should pop up alert if auth token is not provided', fakeAsync(() => {
+    it('should pop up alert if auth token is not provided', async () => {
       const params = { authToken: null };
       routeSpy.snapshot.paramMap.get = jasmine.createSpy().and.callFake(key => params[key]);
-      utils.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(true);
+      notificationSpy.alert.and.returnValue(Promise.resolve() as any);
 
-      tick(50);
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        expect(notificationSpy.alert.calls.count()).toBe(1);
-      });
-    }));
+      await component.ngOnInit();
+
+      expect(notificationSpy.alert.calls.count()).toBe(1);
+    });
 
     it('should pop up alert if direct login service throw error', fakeAsync(() => {
       const params = { authToken: 'abc' };

@@ -8,14 +8,18 @@ describe('TrafficLightGroupComponent', () => {
   let component: TrafficLightGroupComponent;
   let fastFeedbackService: jasmine.SpyObj<FastFeedbackService>;
   let storageService: jasmine.SpyObj<BrowserStorageService>;
+  let notificationsService: jasmine.SpyObj<NotificationsService>;
 
   beforeEach(() => {
     fastFeedbackService = jasmine.createSpyObj<FastFeedbackService>('FastFeedbackService', [
       'pullFastFeedback',
-      'showTeamCheckInAlert'
     ]);
     fastFeedbackService.pullFastFeedback.and.returnValue(of(null) as any);
-    fastFeedbackService.showTeamCheckInAlert.and.returnValue(Promise.resolve() as any);
+
+    notificationsService = jasmine.createSpyObj<NotificationsService>('NotificationsService', [
+      'showTeamCheckInAlert',
+    ]);
+    notificationsService.showTeamCheckInAlert.and.returnValue(Promise.resolve() as any);
 
     storageService = jasmine.createSpyObj<BrowserStorageService>('BrowserStorageService', ['getUser', 'set']);
     storageService.getUser.and.returnValue({ role: 'participant' } as any);
@@ -23,7 +27,7 @@ describe('TrafficLightGroupComponent', () => {
     component = new TrafficLightGroupComponent(
       fastFeedbackService,
       storageService,
-      {} as NotificationsService
+      notificationsService
     );
     component.lights = {
       self: 0.2,
@@ -83,24 +87,24 @@ describe('TrafficLightGroupComponent', () => {
     await component.handleTrafficLightClick('self', 0.2);
 
     expect(component.navigateToPulseCheck).toHaveBeenCalledWith('self');
-    expect(fastFeedbackService.showTeamCheckInAlert).not.toHaveBeenCalled();
+    expect(notificationsService.showTeamCheckInAlert).not.toHaveBeenCalled();
   });
 
   it('should skip alert when value is undefined', async () => {
     await component.handleTrafficLightClick('team', undefined as any);
 
-    expect(fastFeedbackService.showTeamCheckInAlert).not.toHaveBeenCalled();
+    expect(notificationsService.showTeamCheckInAlert).not.toHaveBeenCalled();
   });
 
   it('should skip alert when value is above threshold', async () => {
     await component.handleTrafficLightClick('team', 0.8);
 
-    expect(fastFeedbackService.showTeamCheckInAlert).not.toHaveBeenCalled();
+    expect(notificationsService.showTeamCheckInAlert).not.toHaveBeenCalled();
   });
 
   it('should show alert when value is at or below threshold', async () => {
     await component.handleTrafficLightClick('team', 0.65);
 
-    expect(fastFeedbackService.showTeamCheckInAlert).toHaveBeenCalled();
+    expect(notificationsService.showTeamCheckInAlert).toHaveBeenCalled();
   });
 });

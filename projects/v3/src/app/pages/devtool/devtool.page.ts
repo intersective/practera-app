@@ -10,6 +10,7 @@ import { FfmpegService } from '../../services/ffmpeg.service';
 import { ReviewService } from '../../services/review.service';
 
 @Component({
+  standalone: false,
   selector: 'app-devtool',
   templateUrl: './devtool.page.html',
   styleUrls: ['./devtool.page.scss'],

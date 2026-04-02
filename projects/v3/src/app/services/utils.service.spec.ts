@@ -1,7 +1,7 @@
 import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
-import * as _ from 'lodash';
-import * as moment from 'moment';
+import _ from 'lodash';
+import moment from 'moment';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ModalController, Platform } from '@ionic/angular';
@@ -637,8 +637,9 @@ describe('UtilsService', () => {
   describe('checkIsPracteraSupportEmail()', () => {
     it('should return true and broadcast event with "true" when email is a practera.com email', () => {
       spyOn(service, 'broadcastEvent');
+      storageSpy.get.and.returnValue({ supportEmail: 'test@practera.com' } as any);
 
-      const result = service.checkIsPracteraSupportEmail('test@practera.com');
+      const result = service.checkIsPracteraSupportEmail();
 
       expect(result).toBeTruthy();
       expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', true);
@@ -646,8 +647,9 @@ describe('UtilsService', () => {
 
     it('should return false and broadcast event with "false" when email is not a practera.com email', () => {
       spyOn(service, 'broadcastEvent');
+      storageSpy.get.and.returnValue({ supportEmail: 'test@example.com' } as any);
 
-      const result = service.checkIsPracteraSupportEmail('test@example.com');
+      const result = service.checkIsPracteraSupportEmail();
 
       expect(result).toBeFalsy();
       expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);
@@ -655,8 +657,9 @@ describe('UtilsService', () => {
 
     it('should return false and broadcast event with "false" when no email is provided', () => {
       spyOn(service, 'broadcastEvent');
+      storageSpy.get.and.returnValue(null as any);
 
-      const result = service.checkIsPracteraSupportEmail(undefined);
+      const result = service.checkIsPracteraSupportEmail();
 
       expect(result).toBeFalsy();
       expect(service.broadcastEvent).toHaveBeenCalledWith('support-email-checked', false);

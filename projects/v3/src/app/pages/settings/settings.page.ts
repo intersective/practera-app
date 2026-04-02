@@ -11,9 +11,9 @@ import { DOCUMENT } from '@angular/common';
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
-import { ModalService } from '../../services/modal.service';
 
 @Component({
+  standalone: false,
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
@@ -52,7 +52,8 @@ export class SettingsPage implements OnInit, OnDestroy {
     private storage: BrowserStorageService,
     readonly utils: UtilsService,
     private notificationsService: NotificationsService,
-    private modalService: ModalService,
+    private modalController: ModalController,
+    private uppyUploaderService: UppyUploaderService,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -104,7 +105,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     .subscribe(event => {
       this.hubspotActivated = event;
     });
-    this.utils.checkIsPracteraSupportEmail(this.storage.get('experience').supportEmail);
+    this.utils.checkIsPracteraSupportEmail();
   }
 
   get isMobile() {
@@ -112,7 +113,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   dismiss() {
-    this.notificationsService.dismiss({
+    this.modalController.dismiss({
       'dismissed': true
     });
   }
@@ -151,11 +152,11 @@ export class SettingsPage implements OnInit, OnDestroy {
     }
 
     let mailto = `mailto:${this.helpline}?subject=${this.currentProgramName}`;
-    const supportEmail = this.storage.get('experience').supportEmail;
+    const supportEmail = this.utils.getSupportEmail();
 
     // check if support email is not practera one and have support email
     // then send message to that email
-    if (!this.utils.checkIsPracteraSupportEmail(supportEmail) && !this.utils.isEmpty(supportEmail)) {
+    if (!this.utils.checkIsPracteraSupportEmail() && !this.utils.isEmpty(supportEmail)) {
       mailto = `mailto:${supportEmail}?subject=${this.currentProgramName}`;
     }
     window.open(mailto, '_self');
@@ -172,7 +173,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   async profileImage() {
     try {
-      const modal = await this.modalService.openUppyUploaderModal('user-profile');
+      const modal = await this.uppyUploaderService.open('user-profile');
       const res = await modal.onDidDismiss();
 
       // eslint-disable-next-line no-console
@@ -252,7 +253,9 @@ export class SettingsPage implements OnInit, OnDestroy {
         isShowFormOnly: true,
       };
 
-      const modal = await this.notificationsService.modal(SupportPopupComponent, componentProps, {
+      const modal = await this.modalController.create({
+        componentProps,
+        component: SupportPopupComponent,
         cssClass: 'support-popup',
         backdropDismiss: false,
       });

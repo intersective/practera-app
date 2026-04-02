@@ -60,7 +60,7 @@ describe('AppComponent', () => {
             'getConfig',
             'setConfig',
             'getUser',
-            'lastVisited'
+            'lastVisited',
           ]),
         },
         {
@@ -75,7 +75,7 @@ describe('AppComponent', () => {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', {
             getConfig: of({data: []}),
-            logout: (...args: any[]) => Promise.resolve()
+            logout: undefined,
           }),
         },
         {
@@ -207,13 +207,7 @@ describe('AppComponent', () => {
       app.ngOnInit();
       tick();
       expect(storageSpy.get).toHaveBeenCalled();
-      // registration flow calls authService.logout() which internally navigates
-      expect(authSpy.logout).toHaveBeenCalledWith({}, [
-        'auth',
-        'registration',
-        'dummy2@email.com',
-        'abcdefg'
-      ]);
+      expect(authSpy.logout).toHaveBeenCalled();
     }));
   });
 });

@@ -1,7 +1,6 @@
 import { TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular';
 import { ModalService } from './modal.service';
-import { UppyUploaderComponent } from '../components/uppy-uploader/uppy-uploader.component';
 
 describe('ModalService', () => {
   let service: ModalService;
@@ -68,23 +67,4 @@ describe('ModalService', () => {
     expect(modalSpy.present.calls.count()).toEqual(2);
   }));
 
-  describe('openUppyUploaderModal', () => {
-    it('should create and present a modal with the correct component and props', async () => {
-      const modalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
-      // onDidDismiss returns a Promise, not an Observable
-      modalSpy.onDidDismiss.and.returnValue(Promise.resolve({}));
-      modalControllerSpy.create.and.returnValue(Promise.resolve(modalSpy));
-
-      const modal = await service.openUppyUploaderModal('chat');
-
-      expect(modalControllerSpy.create).toHaveBeenCalledWith({
-        component: UppyUploaderComponent,
-        componentProps: { source: 'chat' },
-        cssClass: 'uppy-uploader-modal'
-      });
-
-      expect(modalSpy.present).toHaveBeenCalled();
-      expect(modal).toBe(modalSpy);
-    });
-  });
 });

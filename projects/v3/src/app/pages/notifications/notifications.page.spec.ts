@@ -77,6 +77,10 @@ describe('NotificationsPage', () => {
     utilsSpy = TestBed.inject(UtilsService);
     modalSpy = TestBed.inject(ModalController);
     notificationSpy = TestBed.inject(NotificationsService);
+
+    // reconfigure getTop to return truthy (global test.ts override sets it to null)
+    (modalSpy.getTop as jasmine.Spy).and.returnValue(Promise.resolve(true));
+
     fixture.detectChanges();
   }));
 

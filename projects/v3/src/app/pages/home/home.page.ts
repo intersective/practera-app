@@ -22,6 +22,7 @@ import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 @Component({
+  standalone: false,
   selector: "app-home",
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"],
@@ -38,6 +39,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   isMobile: boolean;
   isParticipant: boolean;
+  isExpert: boolean;
   isExpertWithoutTeam: boolean;
   pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
@@ -102,10 +104,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
-    const role = this.storageService.getUser().role;
-    const teamId = this.storageService.getUser().teamId;
-    this.isParticipant = role === 'participant';
-    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
+    this.updateUserRoleState();
     this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
 
@@ -116,10 +115,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         takeUntil(this.unsubscribe$)
       )
       .subscribe(() => {
-        // re-evaluate expert without team status when team changes
-        const currentRole = this.storageService.getUser().role;
-        const currentTeamId = this.storageService.getUser().teamId;
-        this.isExpertWithoutTeam = currentRole === 'mentor' && !currentTeamId;
+        // re-evaluate role state when team changes
+        this.updateUserRoleState();
       });
 
     this.homeService.milestones$
@@ -226,10 +223,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
 
     // re-evaluate user role and team status after JWT refresh updates teamId
-    const role = this.storageService.getUser().role;
-    const teamId = this.storageService.getUser().teamId;
-    this.isParticipant = role === 'participant';
-    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
+    this.updateUserRoleState();
 
     this.experience = this.storageService.get("experience");
     this.showProjectHub = this.storageService.getFeature('showProjectHub');
@@ -288,6 +282,16 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   goBack() {
     this.router.navigate(["experiences"]);
+  }
+
+  private updateUserRoleState(): void {
+    const user = this.storageService.getUser() || {};
+    const role = user.role;
+    const teamId = user.teamId;
+
+    this.isParticipant = role === 'participant';
+    this.isExpert = role === 'mentor';
+    this.isExpertWithoutTeam = this.isExpert && !teamId;
   }
 
   switchContent(event) {

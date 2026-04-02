@@ -10,6 +10,7 @@ import { first, Observable } from 'rxjs';
 import { DemoService } from '../../services/demo.service';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { HomeService } from '@v3/app/services/home.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 export interface Meta {
   context_id: number;
@@ -20,6 +21,7 @@ export interface Meta {
 }
 
 @Component({
+  standalone: false,
   selector: "app-fast-feedback",
   templateUrl: "./fast-feedback.component.html",
   styleUrls: ["./fast-feedback.component.scss"],
@@ -53,7 +55,8 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
     private navParams: NavParams,
     private homeService: HomeService,
     private request: RequestService,
-    private demo: DemoService
+    private demo: DemoService,
+    private notificationsService: NotificationsService,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -246,7 +249,7 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
       // Check if question 7's answer is 0
       const question7Answer = formData['7']; // hardcoded question id 7 (1st fast feedback question)
       if (question7Answer === 0) { // if answer is No (where value = 0)
-        await this.fastFeedbackService.showTeamCheckInAlert();
+        await this.notificationsService.showTeamCheckInAlert();
       }
 
       this.submissionCompleted = true;

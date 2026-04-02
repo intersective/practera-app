@@ -231,11 +231,11 @@ describe('ChatService', () => {
             expect(message.message).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].message);
             expect(message.created).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].created);
             expect(message.file).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
-            expect(message.fileObject).toBeDefined();
+            expect((message as any).fileObject).toBeDefined();
             if ((typeof messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file) === 'string') {
-              expect(message.fileObject).toEqual(fileJson);
+              expect((message as any).fileObject).toEqual(fileJson);
             } else {
-              expect(message.fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
+              expect((message as any).fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
             }
           });
         }

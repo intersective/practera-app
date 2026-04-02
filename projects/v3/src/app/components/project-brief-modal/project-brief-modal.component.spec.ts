@@ -29,8 +29,9 @@ describe('ProjectBriefModalComponent', () => {
 
   describe('close()', () => {
     it('should dismiss the modal', () => {
+      const injectedCtrl = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
       component.close();
-      expect(modalControllerSpy.dismiss).toHaveBeenCalled();
+      expect(injectedCtrl.dismiss).toHaveBeenCalled();
     });
   });
 

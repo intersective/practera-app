@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 describe('PopUpComponent', () => {
   let component: PopUpComponent;
   let fixture: ComponentFixture<PopUpComponent>;
-  const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
+  let modalCtrlSpy: any;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -34,6 +34,7 @@ describe('PopUpComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(PopUpComponent);
     component = fixture.componentInstance;
+    modalCtrlSpy = TestBed.inject(ModalController);
   });
 
   it('should create', () => {

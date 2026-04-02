@@ -8,7 +8,7 @@ import { TestUtils } from '@testingv3/utils';
 describe('LockTeamAssessmentPopUpComponent', () => {
   let component: LockTeamAssessmentPopUpComponent;
   let fixture: ComponentFixture<LockTeamAssessmentPopUpComponent>;
-  const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
+  let modalCtrlSpy: any;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -31,6 +31,7 @@ describe('LockTeamAssessmentPopUpComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LockTeamAssessmentPopUpComponent);
     component = fixture.componentInstance;
+    modalCtrlSpy = TestBed.inject(ModalController);
   });
 
   it('should create', () => {

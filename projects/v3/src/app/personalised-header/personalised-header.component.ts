@@ -11,6 +11,7 @@ import { UtilsService } from '../services/utils.service';
 import { SupportPopupComponent } from '../components/support-popup/support-popup.component';
 
 @Component({
+  standalone: false,
   selector: 'app-personalised-header',
   templateUrl: './personalised-header.component.html',
   styleUrls: ['./personalised-header.component.scss'],
@@ -42,7 +43,7 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
       // hide support button on mobile. because we need space in heder for other things. but we still have the settings page
         this.isShowSupportBtn = event;
     }));
-    this.utilService.checkIsPracteraSupportEmail(this.storageService.get('experience').supportEmail);
+    this.utilService.checkIsPracteraSupportEmail();
   }
 
   ngOnDestroy() {

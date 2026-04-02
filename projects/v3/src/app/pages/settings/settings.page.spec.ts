@@ -5,7 +5,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { of, Subject, throwError } from 'rxjs';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { SettingsPage } from './settings.page';
-import { ModalService } from '../../services/modal.service';
+import { ModalController } from '@ionic/angular';
+import { UppyUploaderService } from '../../components/uppy-uploader/uppy-uploader.service';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
 
 describe('SettingsPage', () => {
@@ -15,7 +16,8 @@ describe('SettingsPage', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
   let notificationsServiceSpy: jasmine.SpyObj<NotificationsService>;
-  let modalServiceSpy: jasmine.SpyObj<ModalService>;
+  let modalControllerSpy: jasmine.SpyObj<ModalController>;
+  let uppyUploaderServiceSpy: jasmine.SpyObj<UppyUploaderService>;
   let queryParams$: Subject<any>;
 
   const createComponent = () => {
@@ -31,10 +33,12 @@ describe('SettingsPage', () => {
       'isMobile',
       'redirectToUrl',
       'isEmpty',
-      'openUrl'
+      'openUrl',
+      'getSupportEmail'
     ]);
     notificationsServiceSpy = jasmine.createSpyObj<NotificationsService>('NotificationsService', ['alert', 'modal', 'dismiss']);
-    modalServiceSpy = jasmine.createSpyObj<ModalService>('ModalService', ['openUppyUploaderModal']);
+    modalControllerSpy = jasmine.createSpyObj<ModalController>('ModalController', ['create', 'dismiss', 'getTop']);
+    uppyUploaderServiceSpy = jasmine.createSpyObj<UppyUploaderService>('UppyUploaderService', ['open']);
 
     authSpy.getMyInfo.and.returnValue(of({
       data: {
@@ -87,7 +91,8 @@ describe('SettingsPage', () => {
       storageSpy,
       utilsSpy,
       notificationsServiceSpy,
-      modalServiceSpy,
+      modalControllerSpy,
+      uppyUploaderServiceSpy,
       documentMock
     );
   };
@@ -148,6 +153,7 @@ describe('SettingsPage', () => {
   it('should use experience support email when non-practera and non-empty', () => {
     spyOn(window, 'open');
     storageSpy.get.withArgs('experience').and.returnValue({ supportEmail: 'help@client.com' } as any);
+    utilsSpy.getSupportEmail.and.returnValue('help@client.com');
     utilsSpy.checkIsPracteraSupportEmail.and.returnValue(false);
     utilsSpy.isEmpty.and.returnValue(false);
 
@@ -159,6 +165,7 @@ describe('SettingsPage', () => {
   it('should fallback to helpline email when support email is practera/empty', () => {
     spyOn(window, 'open');
     storageSpy.get.withArgs('experience').and.returnValue({ supportEmail: 'support@practera.com' } as any);
+    utilsSpy.getSupportEmail.and.returnValue('support@practera.com');
     utilsSpy.checkIsPracteraSupportEmail.and.returnValue(true);
 
     component.mailTo(new Event('click'));
@@ -175,28 +182,28 @@ describe('SettingsPage', () => {
   it('should dismiss and logout on valid logout action', async () => {
     await component.logout(new Event('click'));
 
-    expect(notificationsServiceSpy.dismiss).toHaveBeenCalled();
+    expect(modalControllerSpy.dismiss).toHaveBeenCalled();
     expect(authSpy.logout).toHaveBeenCalled();
   });
 
   it('should ignore support popup for unsupported keyboard key', async () => {
     await component.openSupportPopup(new KeyboardEvent('keydown', { key: 'a' }));
 
-    expect(notificationsServiceSpy.modal).not.toHaveBeenCalled();
+    expect(modalControllerSpy.create).not.toHaveBeenCalled();
   });
 
   it('should open support modal when hubspot is activated', async () => {
     const modal = { present: jasmine.createSpy('present').and.returnValue(Promise.resolve()) };
-    notificationsServiceSpy.modal.and.returnValue(Promise.resolve(modal as any));
+    modalControllerSpy.create.and.returnValue(Promise.resolve(modal as any));
     component.hubspotActivated = true;
 
     await component.openSupportPopup(new Event('click'));
 
-    expect(notificationsServiceSpy.modal).toHaveBeenCalledWith(
-      SupportPopupComponent,
-      { mode: 'modal', isShowFormOnly: true },
-      { cssClass: 'support-popup', backdropDismiss: false }
-    );
+    expect(modalControllerSpy.create).toHaveBeenCalledWith(jasmine.objectContaining({
+      component: SupportPopupComponent,
+      cssClass: 'support-popup',
+      backdropDismiss: false,
+    }));
     expect(modal.present).toHaveBeenCalled();
   });
 
@@ -210,7 +217,7 @@ describe('SettingsPage', () => {
   });
 
   it('should return early in profileImage when modal dismiss has no data', async () => {
-    modalServiceSpy.openUppyUploaderModal.and.returnValue(Promise.resolve({
+    uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve({
       onDidDismiss: () => Promise.resolve({ data: null })
     } as any));
 
@@ -230,7 +237,7 @@ describe('SettingsPage', () => {
       path: '/uploads/profile',
       preview: 'https://cdn/profile.png',
     };
-    modalServiceSpy.openUppyUploaderModal.and.returnValue(Promise.resolve({
+    uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve({
       onDidDismiss: () => Promise.resolve({ data: uploaded })
     } as any));
 
@@ -243,7 +250,7 @@ describe('SettingsPage', () => {
   });
 
   it('should show upload error subHeader when server returns message', async () => {
-    modalServiceSpy.openUppyUploaderModal.and.returnValue(Promise.resolve({
+    uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve({
       onDidDismiss: () => Promise.resolve({ data: { tus: { uploadUrl: 'u' } } })
     } as any));
     authSpy.updateUserProfile.and.returnValue(throwError(() => ({ error: { message: 'Upload denied' } })) as any);

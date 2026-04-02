@@ -27,7 +27,7 @@ describe('AchievementPopUpComponent', () => {
   let component: AchievementPopUpComponent;
   let fixture: ComponentFixture<AchievementPopUpComponent>;
   let page: AchievementModalPage;
-  const modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss', 'create']);
+  let modalCtrlSpy: any;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -49,6 +49,7 @@ describe('AchievementPopUpComponent', () => {
 
     fixture = TestBed.createComponent(AchievementPopUpComponent);
     component = fixture.componentInstance;
+    modalCtrlSpy = TestBed.inject(ModalController);
 
     page = new AchievementModalPage(fixture);
   }));

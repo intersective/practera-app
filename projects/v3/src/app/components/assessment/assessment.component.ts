@@ -33,6 +33,7 @@ const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per 
  * When enabled, questions are split across multiple pages based on pageSize
  */
 @Component({
+  standalone: false,
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
@@ -153,8 +154,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
-    private cdr: ChangeDetectorRef,
     private modalController: ModalController,
+    private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -683,7 +684,7 @@ Best regards`;
             missing.push(question);
 
             // add highlight effect to the question
-            const questionElement = this.form?.nativeElement?.querySelector(`#q-${question.id}`);
+            const questionElement = this.form.nativeElement.querySelector(`#q-${question.id}`);
             if (questionElement) {
               questionElement.classList.add('flash-highlight');
             }
@@ -1311,11 +1312,8 @@ Best regards`;
     if (this.doAssessment || this.isPendingReview) {
       // in edit mode, check form validation
       this.setSubmissionDisabled();
-    } else if (this.submission?.isLocked) {
-      // keep button disabled when submission is locked
-      this.btnDisabled$.next(true);
-    } else {
-      // in read-only mode, ensure button is enabled
+    } else if (!this.submission?.isLocked) {
+      // in read-only mode (not locked), ensure button is enabled
       this.btnDisabled$.next(false);
     }
   }
