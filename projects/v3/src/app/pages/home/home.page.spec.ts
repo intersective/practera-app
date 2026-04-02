@@ -178,6 +178,20 @@ describe('HomePage', () => {
       expect(component.showProjectHub).toBe(false);
     });
 
+    it('should treat mentor users as expert users', async () => {
+      storageService.getUser.and.returnValue({
+        role: 'mentor',
+        apikey: 'test-key',
+        projectId: 1,
+        teamId: 1,
+      });
+
+      await component.updateDashboard();
+
+      expect(component.isExpert).toBe(true);
+      expect(component.isParticipant).toBe(false);
+    });
+
     it('should call service methods to fetch data', async () => {
       await component.updateDashboard();
       expect(homeService.getMilestones).toHaveBeenCalled();
