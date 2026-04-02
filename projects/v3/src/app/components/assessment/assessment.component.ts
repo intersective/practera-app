@@ -154,8 +154,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
-    private cdr: ChangeDetectorRef,
     private modalController: ModalController,
+    private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
