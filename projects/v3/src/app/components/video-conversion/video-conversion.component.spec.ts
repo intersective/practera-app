@@ -33,9 +33,14 @@ describe('VideoConversionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('ngOnInit()', () => {
-    it('should be a no-op after filestack removal', () => {
-      component.ngOnInit();
+  describe('ngOnChanges()', () => {
+    it('should not set waitedTooLong for mp4 video', () => {
+      component.video = {
+        fileObject: {
+          mimetype: 'video/mp4',
+        },
+      };
+      component.ngOnChanges({} as any);
       expect(component.waitedTooLong).toBeFalse();
     });
   });

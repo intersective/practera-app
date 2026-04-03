@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import { AchievementService } from '@v3/app/services/achievement.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -11,6 +12,8 @@ import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { NavigationStateService } from '@v3/app/services/navigation-state.service';
+import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 
 import { HomePage } from './home.page';
 import { of } from 'rxjs';
@@ -52,7 +55,9 @@ describe('HomePage', () => {
       'achievements$': of(),
     });
 
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT']);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT'], {
+      'team$': of(null)
+    });
     const storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', [
       'get',
       'lastVisited',
@@ -65,6 +70,7 @@ describe('HomePage', () => {
     TestBed.configureTestingModule({
       declarations: [ HomePage ],
       imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -112,6 +118,26 @@ describe('HomePage', () => {
             'unlockedTasks$': of([])
           })
         },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['getCurrentTodoItems', 'achievementPopUp', 'popUp'])
+        },
+        {
+          provide: NavigationStateService,
+          useValue: jasmine.createSpyObj('NavigationStateService', ['setNavigationSource'])
+        },
+        {
+          provide: PulsecheckService,
+          useValue: jasmine.createSpyObj('PulsecheckService', ['getSkillChangeDisplayFromValue'])
+        },
+        {
+          provide: AlertController,
+          useValue: jasmine.createSpyObj('AlertController', ['create'])
+        },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss'])
+        },
       ]
     }).compileComponents();
 
@@ -125,6 +151,15 @@ describe('HomePage', () => {
     fastFeedbackService = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     utilsService = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
 
+    // default return values needed by ngOnInit -> updateDashboard
+    sharedService.refreshJWT.and.returnValue(Promise.resolve());
+    storageService.getUser.and.returnValue({ role: 'participant', apikey: 'test-key', projectId: 1, teamId: 1 });
+    storageService.get.and.returnValue({ name: 'Default Experience', leadImage: '', description: '', locale: 'en' });
+    storageService.getFeature.and.returnValue(false);
+    storageService.lastVisited.and.returnValue([]);
+    fastFeedbackService.pullFastFeedback.and.returnValue(of({}));
+    homeService.getPulseCheckSkills.and.returnValue(of({ success: true, status: 'success', cache: false, data: { pulseCheckSkills: [] } }));
+
     fixture.detectChanges();
   }));
 
@@ -135,7 +170,8 @@ describe('HomePage', () => {
   describe('updateDashboard', () => {
     beforeEach(() => {
       sharedService.refreshJWT.and.returnValue(Promise.resolve());
-      storageService.get.and.returnValue({ name: 'Test Experience', cardUrl: 'test-url' });
+      storageService.get.and.returnValue({ name: 'Test Experience', cardUrl: 'test-url', leadImage: '', description: '', locale: 'en' });
+      storageService.getUser.and.returnValue({ role: 'participant', apikey: 'test-key', projectId: 1, teamId: 1 });
       storageService.getFeature.and.returnValue(true);
       achievementService.getIsPointsConfigured.and.returnValue(true);
       achievementService.getEarnedPoints.and.returnValue(100);
@@ -143,7 +179,7 @@ describe('HomePage', () => {
         success: true,
         status: 'success',
         cache: false,
-        data: { pulseCheckStatus: { red: 1, orange: 2, green: 3 } }
+        data: { pulseCheckStatus: { self: 1, expert: 2, team: 3, teams: [] } }
       }));
       homeService.getPulseCheckSkills.and.returnValue(of({
         success: true,
@@ -163,7 +199,7 @@ describe('HomePage', () => {
     it('should get experience from storage', async () => {
       await component.updateDashboard();
       expect(storageService.get).toHaveBeenCalledWith('experience');
-      expect(component.experience).toEqual({ name: 'Test Experience', cardUrl: 'test-url' });
+      expect(component.experience).toEqual({ name: 'Test Experience', cardUrl: 'test-url', leadImage: '', description: '', locale: 'en' });
     });
 
     it('should set project hub visibility from feature toggle', async () => {
@@ -211,7 +247,7 @@ describe('HomePage', () => {
       component.pulseCheckIndicatorEnabled = true;
       await component.updateDashboard();
       expect(homeService.getPulseCheckStatuses).toHaveBeenCalled();
-      expect(component.pulseCheckStatus).toEqual({ red: 1, orange: 2, green: 3 });
+      expect(component.pulseCheckStatus).toEqual({ self: 1, expert: 2, team: 3, teams: [] });
     });
 
     it('should not get pulse check statuses when pulse check indicator is disabled', async () => {
@@ -237,7 +273,7 @@ describe('HomePage', () => {
     });
 
     it('should set empty default lead image when experience has no card URL', async () => {
-      storageService.get.and.returnValue({ name: 'Test Experience' });
+      storageService.get.and.returnValue({ name: 'Test Experience', leadImage: '', description: '', locale: 'en' });
       await component.updateDashboard();
       expect(component.defaultLeadImage).toBe('');
     });
@@ -283,7 +319,7 @@ describe('HomePage', () => {
         data: { pulseCheckSkills: null }
       }));
       await component.updateDashboard();
-      expect(component.pulseCheckSkills).toBeNull();
+      expect(component.pulseCheckSkills).toEqual([]);
     });
 
     it('should handle empty pulse check skills response', async () => {
