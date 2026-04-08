@@ -176,6 +176,42 @@ export class FfmpegService {
     };
   }
 
+  /** transcode any user-supplied video file to mp4 using h.264/aac */
+  async transcodeToMp4(file: File): Promise<File> {
+    if (!this.isLoaded) {
+      await this.loadFFmpeg();
+    }
+
+    const inputName = 'input_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const outputName = 'transcoded_' + Date.now() + '.mp4';
+
+    await this.ffmpeg.writeFile(inputName, await fetchFile(file));
+
+    await this.ffmpeg.exec([
+      '-i', inputName,
+      '-c:v', 'libx264',
+      '-preset', 'fast',
+      '-crf', '23',
+      '-c:a', 'aac',
+      '-b:a', '128k',
+      '-movflags', '+faststart',
+      outputName,
+    ]);
+
+    const fileData = await this.ffmpeg.readFile(outputName);
+    const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
+    const outputFile = new File(
+      [blob],
+      file.name.replace(/\.[^.]+$/, '') + '.mp4',
+      { type: 'video/mp4' }
+    );
+
+    await this.ffmpeg.deleteFile(inputName);
+    await this.ffmpeg.deleteFile(outputName);
+
+    return outputFile;
+  }
+
   /** transcode a remote AVI url to mp4 — used for quick smoke-testing */
   async transcode(videoURL = 'https://raw.githubusercontent.com/ffmpegwasm/testdata/master/video-15s.avi'): Promise<Blob> {
     if (!this.isLoaded) {
