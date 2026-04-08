@@ -295,6 +295,8 @@ export class UppyUploaderService {
         source
       },
       cssClass: 'uppy-uploader-modal',
+      backdropDismiss: false,
+      canDismiss: () => Promise.resolve(this.compressingUppy === null),
     });
     await modal.present();
 

@@ -152,6 +152,10 @@ describe('UppyUploaderService', () => {
     expect(service.compressingUppy).toBeNull();
   });
 
+  it('should have compressingUppy null initially', () => {
+    expect(service.compressingUppy).toBeNull();
+  });
+
   it('should expose compressionProgress$ subject', () => {
     expect(service.compressionProgress$).toBeTruthy();
   });
