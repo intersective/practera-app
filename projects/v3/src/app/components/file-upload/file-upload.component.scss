@@ -24,21 +24,45 @@
 
   .compression-status {
     text-align: center;
-    padding: 24px;
+    padding: 32px;
+    width: 100%;
+    max-width: 320px;
+
+    .compression-icon {
+      margin-bottom: 16px;
+
+      ion-icon {
+        font-size: 48px;
+        opacity: 0.6;
+      }
+    }
 
     ion-spinner {
-      width: 32px;
-      height: 32px;
-      margin-bottom: 12px;
+      width: 44px;
+      height: 44px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      margin: 0 0 4px;
+      font-weight: 600;
     }
 
     p {
-      margin-bottom: 12px;
+      margin: 0 0 20px;
     }
 
     ion-progress-bar {
-      width: 200px;
+      width: 100%;
       margin: 0 auto;
+      border-radius: 4px;
+      --background: var(--ion-color-light, #f0f0f0);
+    }
+
+    .percentage {
+      margin: 8px 0 0;
+      font-weight: 500;
+      color: var(--ion-color-primary);
     }
   }
 }
