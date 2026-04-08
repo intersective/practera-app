@@ -57,7 +57,7 @@
           <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
         </div>
       </div>
-      <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
+      <uppy-dashboard [hidden]="isCompressing" [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
 
@@ -85,7 +85,7 @@
           <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
         </div>
       </div>
-      <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
+      <uppy-dashboard [hidden]="isCompressing" [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
 

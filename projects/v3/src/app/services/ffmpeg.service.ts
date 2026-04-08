@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import { Subject } from 'rxjs';
@@ -47,7 +47,7 @@ export class FfmpegService {
   readonly progress$ = new Subject<CompressionProgress>();
   readonly log$ = new Subject<string>();
 
-  constructor() {
+  constructor(private ngZone: NgZone) {
     this.ffmpeg = new FFmpeg();
   }
 
@@ -101,7 +101,7 @@ export class FfmpegService {
     });
 
     this.ffmpeg.on('progress', ({ progress, time }) => {
-      this.progress$.next({ progress, timeUs: time });
+      this.ngZone.run(() => this.progress$.next({ progress, timeUs: time }));
     });
 
     await this.ffmpeg.load({
@@ -162,8 +162,8 @@ export class FfmpegService {
     const compressedFile = new File([blob], outputName, { type: 'video/mp4' });
 
     // clean up virtual fs to free memory
-    await this.ffmpeg.deleteFile(inputName);
-    await this.ffmpeg.deleteFile(outputName);
+    try { await this.ffmpeg.deleteFile(inputName); } catch { /* already removed */ }
+    try { await this.ffmpeg.deleteFile(outputName); } catch { /* already removed */ }
 
     const reductionPercent = Math.round((1 - compressedFile.size / file.size) * 100);
 
@@ -206,8 +206,8 @@ export class FfmpegService {
       { type: 'video/mp4' }
     );
 
-    await this.ffmpeg.deleteFile(inputName);
-    await this.ffmpeg.deleteFile(outputName);
+    try { await this.ffmpeg.deleteFile(inputName); } catch { /* already removed */ }
+    try { await this.ffmpeg.deleteFile(outputName); } catch { /* already removed */ }
 
     return outputFile;
   }
@@ -223,8 +223,8 @@ export class FfmpegService {
     const fileData = await this.ffmpeg.readFile('output.mp4');
     const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
 
-    await this.ffmpeg.deleteFile('input.avi');
-    await this.ffmpeg.deleteFile('output.mp4');
+    try { await this.ffmpeg.deleteFile('input.avi'); } catch { /* already removed */ }
+    try { await this.ffmpeg.deleteFile('output.mp4'); } catch { /* already removed */ }
 
     return blob;
   }
