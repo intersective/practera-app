@@ -148,18 +148,18 @@ describe('UppyUploaderService', () => {
     });
   });
 
-  it('should have isCompressing false initially', () => {
-    expect(service.isCompressing).toBeFalse();
+  it('should have compressingUppy null initially', () => {
+    expect(service.compressingUppy).toBeNull();
   });
 
   it('should expose compressionProgress$ subject', () => {
     expect(service.compressionProgress$).toBeTruthy();
   });
 
-  describe('compressVideoFiles (via files-added event)', () => {
+  describe('compression preprocessor', () => {
     it('should skip non-video files', () => {
       ffmpegServiceSpy.shouldCompress.and.returnValue({ compress: false, reason: 'not a video file' });
-      // the method is private but triggers via uppy event — verify no compression call
+      // the preprocessor is private — verify no compression call
       expect(ffmpegServiceSpy.compressVideo).not.toHaveBeenCalled();
     });
   });
