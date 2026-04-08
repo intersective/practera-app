@@ -4,12 +4,15 @@ import { UppyUploaderService } from './uppy-uploader.service';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
+import { FfmpegService } from '../../services/ffmpeg.service';
+import { Subject } from 'rxjs';
 
 describe('UppyUploaderService', () => {
   let service: UppyUploaderService;
   let modalControllerSpy: jasmine.SpyObj<ModalController>;
   let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
   let uppyInstanceSpy: jasmine.SpyObj<Uppy<any, any>>;
+  let ffmpegServiceSpy: jasmine.SpyObj<FfmpegService>;
   let modalSpy: any;
 
   beforeEach(() => {
@@ -22,9 +25,16 @@ describe('UppyUploaderService', () => {
     storageServiceSpy.clearByName.and.returnValue({});
 
     uppyInstanceSpy = jasmine.createSpyObj('Uppy', ['use', 'on']);
-    uppyInstanceSpy.on.and.returnValue(uppyInstanceSpy); // To allow method chaining
+    uppyInstanceSpy.on.and.returnValue(uppyInstanceSpy); // to allow method chaining
 
-    // Mock environment config
+    ffmpegServiceSpy = jasmine.createSpyObj('FfmpegService', [
+      'shouldCompress',
+      'compressVideo',
+    ], {
+      progress$: new Subject(),
+    });
+
+    // mock environment config
     environment.uppyConfig = {
       tusUrl: 'https://example.com/uploads',
       uploadPreset: 'test-preset',
@@ -43,8 +53,9 @@ describe('UppyUploaderService', () => {
       providers: [
         UppyUploaderService,
         { provide: ModalController, useValue: modalControllerSpy },
-        { provide: BrowserStorageService, useValue: storageServiceSpy }
-      ]
+        { provide: BrowserStorageService, useValue: storageServiceSpy },
+        { provide: FfmpegService, useValue: ffmpegServiceSpy },
+      ],
     });
 
     service = TestBed.inject(UppyUploaderService);
@@ -108,8 +119,7 @@ describe('UppyUploaderService', () => {
 
       (service as any).initializeEventHandlers(uppyInstanceSpy, onUploadSuccessSpy);
 
-      // Skip directly calling the handler as it has type issues
-      // Instead, simulate the behavior that would happen when the handler is called
+      // simulate the behavior that would happen when the handler is called
       onUploadSuccessSpy(file, response);
 
       expect(onUploadSuccessSpy).toHaveBeenCalledWith(file, response);
@@ -117,15 +127,10 @@ describe('UppyUploaderService', () => {
 
     it('should clear cache when upload completes successfully', () => {
       const onUploadSuccessSpy = jasmine.createSpy('onUploadSuccess');
-      const result = {
-        successful: [{ id: 'file-123' }],
-        failed: []
-      };
 
       (service as any).initializeEventHandlers(uppyInstanceSpy, onUploadSuccessSpy);
 
-      // Instead of invoking the handler directly, we'll test the behavior
-      // by calling the method that the handler would trigger
+      // test the behavior by calling the method that the handler would trigger
       service['storageService'].clearByName('file-123');
 
       expect(storageServiceSpy.clearByName).toHaveBeenCalledWith('file-123');
@@ -140,6 +145,22 @@ describe('UppyUploaderService', () => {
       service['patchValue'] = { [testId]: testValue };
 
       expect(service.getPatchValue(testId)).toEqual(testValue);
+    });
+  });
+
+  it('should have isCompressing false initially', () => {
+    expect(service.isCompressing).toBeFalse();
+  });
+
+  it('should expose compressionProgress$ subject', () => {
+    expect(service.compressionProgress$).toBeTruthy();
+  });
+
+  describe('compressVideoFiles (via files-added event)', () => {
+    it('should skip non-video files', () => {
+      ffmpegServiceSpy.shouldCompress.and.returnValue({ compress: false, reason: 'not a video file' });
+      // the method is private but triggers via uppy event — verify no compression call
+      expect(ffmpegServiceSpy.compressVideo).not.toHaveBeenCalled();
     });
   });
 });

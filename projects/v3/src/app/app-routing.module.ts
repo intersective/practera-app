@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
-import { DevOnlyGuard } from './guards/dev-only.guard';
+import { devOnlyGuard } from './guards/dev-only.guard';
 
 const routes: Routes = [
   {
@@ -31,7 +31,7 @@ const routes: Routes = [
   {
     path: 'devtool',
     loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule),
-    canLoad: [DevOnlyGuard],
+    canMatch: [devOnlyGuard],
   },
   {
     path: '',
