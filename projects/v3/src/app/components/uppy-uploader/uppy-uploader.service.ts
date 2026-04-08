@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import { ModalController } from '@ionic/angular';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
 import { BrowserStorageService } from '../../services/storage.service';
@@ -102,16 +102,17 @@ export class UppyUploaderService {
     };
   };
 
-  /** emits compression progress for ui consumption */
-  readonly compressionProgress$ = new Subject<CompressionProgress | null>();
+  /** emits compression progress scoped to a specific uppy instance */
+  readonly compressionProgress$ = new Subject<{ uppy: Uppy<any, any>; progress: CompressionProgress | null }>();
 
-  /** true while a video is being compressed */
-  isCompressing = false;
+  /** the uppy instance currently compressing, or null when idle */
+  compressingUppy: Uppy<any, any> | null = null;
 
   constructor(
     private modalController: ModalController,
     private storageService: BrowserStorageService,
     private ffmpegService: FfmpegService,
+    private ngZone: NgZone,
   ) {
   }
 
@@ -171,6 +172,7 @@ export class UppyUploaderService {
     });
 
     this.initializeEventHandlers(uppy, events.onUploadSuccess);
+    this.registerCompressionPreProcessor(uppy);
 
     return uppy;
   }
@@ -180,7 +182,6 @@ export class UppyUploaderService {
       console.log('file edit start', file);
     }).on('files-added', (files: any) => {
       console.log('files added', files);
-      this.compressVideoFiles(uppy, files);
     }).on('file-removed', (file: any) => {
       console.log('file removed', file);
     }).on('restriction-failed', (file: any, error: any) => {
@@ -203,61 +204,79 @@ export class UppyUploaderService {
   }
 
   /**
-   * compress video files in-place within the uppy instance.
-   * replaces original video blob with the compressed version.
+   * register a preprocessor that compresses video files before upload.
+   * uppy waits for the returned promise to resolve before starting the upload.
    */
-  private async compressVideoFiles(uppy: Uppy<FileMetadata, FileBody>, files: UppyFile<any, any>[]): Promise<void> {
-    const videoFiles = files.filter(f => f.type?.startsWith('video/'));
-    if (videoFiles.length === 0) {
-      return;
-    }
+  private registerCompressionPreProcessor(uppy: Uppy<FileMetadata, FileBody>): void {
+    uppy.addPreProcessor(async (fileIDs: string[]) => {
+      const videoFileIDs = fileIDs.filter(id => {
+        const file = uppy.getFile(id);
+        return file?.type?.startsWith('video/');
+      });
 
-    for (const uppyFile of videoFiles) {
-      const file = new File([uppyFile.data as Blob], uppyFile.name, { type: uppyFile.type });
-      const check = this.ffmpegService.shouldCompress(file);
-
-      if (!check.compress) {
-        console.log(`skipping compression for ${uppyFile.name}: ${check.reason}`);
-        continue;
+      if (videoFileIDs.length === 0) {
+        return;
       }
 
-      try {
-        this.isCompressing = true;
-        this.compressionProgress$.next({ progress: 0, timeUs: 0 });
+      for (const id of videoFileIDs) {
+        const uppyFile = uppy.getFile(id);
+        if (!uppyFile) continue;
 
-        // forward ffmpeg progress to our subject
-        const sub = this.ffmpegService.progress$.subscribe(p => {
-          this.compressionProgress$.next(p);
-        });
+        const file = new File([uppyFile.data as Blob], uppyFile.name, { type: uppyFile.type });
+        const check = this.ffmpegService.shouldCompress(file);
 
-        const result = await this.ffmpegService.compressVideo(file);
+        if (!check.compress) {
+          console.log(`skipping compression for ${uppyFile.name}: ${check.reason}`);
+          continue;
+        }
 
-        sub.unsubscribe();
-        this.compressionProgress$.next(null);
-        this.isCompressing = false;
+        try {
+          this.ngZone.run(() => {
+            this.compressingUppy = uppy;
+            this.compressionProgress$.next({ uppy, progress: { progress: 0, timeUs: 0 } });
+          });
 
-        if (!result.skipped) {
-          console.log(`compressed ${uppyFile.name}: ${result.originalSize} → ${result.compressedSize} (${result.reductionPercent}% reduction)`);
+          const sub = this.ffmpegService.progress$.subscribe(p => {
+            this.compressionProgress$.next({ uppy, progress: p });
+          });
 
-          // replace the file data in uppy with the compressed version
-          uppy.setFileState(uppyFile.id, {
-            data: result.file,
-            size: result.compressedSize,
-            name: result.file.name,
-            type: 'video/mp4',
-            meta: {
-              ...uppyFile.meta,
-              name: result.file.name,
-              type: 'video/mp4',
-            },
+          const result = await this.ffmpegService.compressVideo(file);
+
+          sub.unsubscribe();
+          this.ngZone.run(() => {
+            this.compressionProgress$.next({ uppy, progress: null });
+            this.compressingUppy = null;
+          });
+
+          if (!result.skipped) {
+            console.log(`compressed ${uppyFile.name}: ${result.originalSize} → ${result.compressedSize} (${result.reductionPercent}% reduction)`);
+
+            // guard: file may have been removed during async compression
+            if (uppy.getFile(id)) {
+              uppy.setFileState(id, {
+                data: result.file,
+                size: result.compressedSize,
+                name: result.file.name,
+                type: 'video/mp4',
+                meta: {
+                  ...uppyFile.meta,
+                  name: result.file.name,
+                  type: 'video/mp4',
+                },
+              });
+            } else {
+              console.warn(`file ${id} was removed during compression, skipping state update`);
+            }
+          }
+        } catch (error) {
+          console.error(`compression failed for ${uppyFile.name}, uploading original:`, error);
+          this.ngZone.run(() => {
+            this.compressingUppy = null;
+            this.compressionProgress$.next({ uppy, progress: null });
           });
         }
-      } catch (error) {
-        console.error(`compression failed for ${uppyFile.name}, uploading original:`, error);
-        this.isCompressing = false;
-        this.compressionProgress$.next(null);
       }
-    }
+    });
   }
 
   /**
@@ -276,6 +295,8 @@ export class UppyUploaderService {
         source
       },
       cssClass: 'uppy-uploader-modal',
+      backdropDismiss: false,
+      canDismiss: () => Promise.resolve(this.compressingUppy === null),
     });
     await modal.present();
 
