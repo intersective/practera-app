@@ -50,6 +50,13 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding">
     <div class="uppy-container" *ngIf="!uploadedFile && !submission?.answer">
+      <div *ngIf="isCompressing" class="compression-overlay">
+        <div class="compression-status">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p class="body-2" i18n>Compressing video... {{ compressionProgress }}%</p>
+          <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
+        </div>
+      </div>
       <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
@@ -71,6 +78,13 @@
 <ng-container *ngIf="doReview">
   <ng-container *ngIf="question.canAnswer">
     <div class="uppy-container ion-padding"  *ngIf="!uploadedFile && !review?.answer">
+      <div *ngIf="isCompressing" class="compression-overlay">
+        <div class="compression-status">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p class="body-2" i18n>Compressing video... {{ compressionProgress }}%</p>
+          <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
+        </div>
+      </div>
       <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>

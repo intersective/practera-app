@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { AuthService } from '@v3/app/services/auth.service';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
@@ -17,7 +18,7 @@ import { FfmpegService } from '../../services/ffmpeg.service';
   templateUrl: './devtool.page.html',
   styleUrls: ['./devtool.page.scss'],
 })
-export class DevtoolPage implements OnInit {
+export class DevtoolPage implements OnInit, OnDestroy {
   turnUppyOff: boolean = true;
   tusUploadUrl: string;
   doneLogin: boolean = false;
@@ -56,6 +57,105 @@ export class DevtoolPage implements OnInit {
 
   selectedFile: File | null = null;
   isCompressing = false;
+  compressionProgress = 0;
+  originalSize = 0;
+  compressedSize = 0;
+  isTranscoding = false;
+  transcodeProgress = 0;
+  transcodedSize = 0;
+  private progressSub: Subscription | undefined;
+  private transcodeSub: Subscription | undefined;
+
+  handleFileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+      this.originalSize = this.selectedFile.size;
+      this.compressionProgress = 0;
+      this.compressedSize = 0;
+    }
+  }
+
+  async compressSelectedVideo(): Promise<void> {
+    if (!this.selectedFile) return;
+
+    try {
+      if (!this.ffmpegService.isFfmpegLoaded()) {
+        await this.ffmpegService.loadFFmpeg();
+      }
+
+      this.isCompressing = true;
+      this.compressionProgress = 0;
+
+      this.progressSub = this.ffmpegService.progress$.subscribe(({ progress }) => {
+        this.compressionProgress = Math.round(progress * 100);
+      });
+
+      const result = await this.ffmpegService.compressVideo(this.selectedFile);
+      this.compressedSize = result.compressedSize;
+      this.progressSub.unsubscribe();
+      this.compressionProgress = 100;
+
+      if (result.skipped) {
+        console.log('compression skipped:', result.skipReason);
+        this.isCompressing = false;
+        return;
+      }
+
+      const url = URL.createObjectURL(result.file);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = result.file.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      this.isCompressing = false;
+    } catch (error) {
+      console.error(error);
+      this.progressSub?.unsubscribe();
+      this.isCompressing = false;
+    }
+  }
+
+  async transcodeSelectedVideo(): Promise<void> {
+    if (!this.selectedFile) return;
+
+    try {
+      if (!this.ffmpegService.isFfmpegLoaded()) {
+        await this.ffmpegService.loadFFmpeg();
+      }
+
+      this.isTranscoding = true;
+      this.transcodeProgress = 0;
+      this.transcodedSize = 0;
+
+      this.transcodeSub = this.ffmpegService.progress$.subscribe(({ progress }) => {
+        this.transcodeProgress = Math.round(progress * 100);
+      });
+
+      const output = await this.ffmpegService.transcodeToMp4(this.selectedFile);
+      this.transcodedSize = output.size;
+      this.transcodeSub.unsubscribe();
+      this.transcodeProgress = 100;
+
+      const url = URL.createObjectURL(output);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = output.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      this.isTranscoding = false;
+    } catch (error) {
+      console.error(error);
+      this.transcodeSub?.unsubscribe();
+      this.isTranscoding = false;
+    }
+  }
 
   async transcodeVideo() {
     try {
@@ -70,10 +170,11 @@ export class DevtoolPage implements OnInit {
       const url = URL.createObjectURL(compressedFile);
       const a = document.createElement('a');
       a.href = url;
-      a.download = (compressedFile as File).name;
+      a.download = 'output.mp4';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
       this.isCompressing = false;
     } catch (error) {
       console.error(error);
@@ -81,39 +182,7 @@ export class DevtoolPage implements OnInit {
     }
   }
 
-  /* async handleFileInput(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-
-      // Compress the file before uploading
-      this.isCompressing = true;
-      const compressedFile = await this.ffmpegService.compressVideo(this.selectedFile);
-      this.isCompressing = false;
-
-      console.log('Compressed File:', compressedFile);
-
-      // Proceed to upload the compressed file
-      // this.uploadFile(compressedFile);
-
-
-
-      // Create a download link for the compressed file
-      const url = URL.createObjectURL(compressedFile);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = compressedFile.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      // Optionally revoke the object URL after some time
-      setTimeout(() => URL.revokeObjectURL(url), 100);
-    }
-  } */
-
   ngOnInit() {
-
     this.doneLogin = this.authService.isAuthenticated();
     if (this.doneLogin) {
       this.user = this.storageService.get('me');
@@ -128,6 +197,11 @@ export class DevtoolPage implements OnInit {
     // Listen for changes to the prefers-color-scheme media query
     prefersDark.addEventListener('change', (mediaQuery) => this.initializeDarkTheme(mediaQuery.matches));
     this.updateViewportSize();
+  }
+
+  ngOnDestroy() {
+    this.progressSub?.unsubscribe();
+    this.transcodeSub?.unsubscribe();
   }
 
   @HostListener('window:resize', ['$event'])

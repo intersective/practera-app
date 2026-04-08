@@ -1,4 +1,14 @@
-<uppy-dashboard-modal
-  [uppy]="uppy"
-  [props]="uppyProps">
-</uppy-dashboard-modal>
+<div class="uppy-uploader-wrapper">
+  <div *ngIf="isCompressing" class="compression-overlay">
+    <div class="compression-status">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p class="body-2" i18n>Compressing video... {{ compressionProgress }}%</p>
+      <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
+    </div>
+  </div>
+
+  <uppy-dashboard-modal
+    [uppy]="uppy"
+    [props]="uppyProps">
+  </uppy-dashboard-modal>
+</div>

@@ -7,6 +7,8 @@ import Tus from '@uppy/tus';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Dashboard } from 'uppy';
 import { environment } from '../../../environments/environment';
+import { FfmpegService, CompressionProgress } from '../../services/ffmpeg.service';
+import { Subject } from 'rxjs';
 
 export interface UppyUploaderResponse {
   path: string;
@@ -100,9 +102,16 @@ export class UppyUploaderService {
     };
   };
 
+  /** emits compression progress for ui consumption */
+  readonly compressionProgress$ = new Subject<CompressionProgress | null>();
+
+  /** true while a video is being compressed */
+  isCompressing = false;
+
   constructor(
     private modalController: ModalController,
     private storageService: BrowserStorageService,
+    private ffmpegService: FfmpegService,
   ) {
   }
 
@@ -171,6 +180,7 @@ export class UppyUploaderService {
       console.log('file edit start', file);
     }).on('files-added', (files: any) => {
       console.log('files added', files);
+      this.compressVideoFiles(uppy, files);
     }).on('file-removed', (file: any) => {
       console.log('file removed', file);
     }).on('restriction-failed', (file: any, error: any) => {
@@ -190,6 +200,64 @@ export class UppyUploaderService {
         console.log('Cache cleared:', cacheClearResult);
       }
     });
+  }
+
+  /**
+   * compress video files in-place within the uppy instance.
+   * replaces original video blob with the compressed version.
+   */
+  private async compressVideoFiles(uppy: Uppy<FileMetadata, FileBody>, files: UppyFile<any, any>[]): Promise<void> {
+    const videoFiles = files.filter(f => f.type?.startsWith('video/'));
+    if (videoFiles.length === 0) {
+      return;
+    }
+
+    for (const uppyFile of videoFiles) {
+      const file = new File([uppyFile.data as Blob], uppyFile.name, { type: uppyFile.type });
+      const check = this.ffmpegService.shouldCompress(file);
+
+      if (!check.compress) {
+        console.log(`skipping compression for ${uppyFile.name}: ${check.reason}`);
+        continue;
+      }
+
+      try {
+        this.isCompressing = true;
+        this.compressionProgress$.next({ progress: 0, timeUs: 0 });
+
+        // forward ffmpeg progress to our subject
+        const sub = this.ffmpegService.progress$.subscribe(p => {
+          this.compressionProgress$.next(p);
+        });
+
+        const result = await this.ffmpegService.compressVideo(file);
+
+        sub.unsubscribe();
+        this.compressionProgress$.next(null);
+        this.isCompressing = false;
+
+        if (!result.skipped) {
+          console.log(`compressed ${uppyFile.name}: ${result.originalSize} → ${result.compressedSize} (${result.reductionPercent}% reduction)`);
+
+          // replace the file data in uppy with the compressed version
+          uppy.setFileState(uppyFile.id, {
+            data: result.file,
+            size: result.compressedSize,
+            name: result.file.name,
+            type: 'video/mp4',
+            meta: {
+              ...uppyFile.meta,
+              name: result.file.name,
+              type: 'video/mp4',
+            },
+          });
+        }
+      } catch (error) {
+        console.error(`compression failed for ${uppyFile.name}, uploading original:`, error);
+        this.isCompressing = false;
+        this.compressionProgress$.next(null);
+      }
+    }
   }
 
   /**
