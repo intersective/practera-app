@@ -100,16 +100,28 @@
           <ion-note>{{ selectedFile.name }} — {{ (originalSize / 1024 / 1024).toFixed(2) }} MB</ion-note>
         </ion-col>
         <ion-col size="12" size-sm="6">
-          <ion-button expand="block" [disabled]="isCompressing" (click)="compressSelectedVideo()">
+          <ion-button expand="block" [disabled]="isCompressing || isTranscoding" (click)="compressSelectedVideo()">
             {{ isCompressing ? 'Compressing...' : 'Compress Video' }}
+          </ion-button>
+        </ion-col>
+        <ion-col size="12" size-sm="6">
+          <ion-button expand="block" color="tertiary" [disabled]="isCompressing || isTranscoding" (click)="transcodeSelectedVideo()">
+            {{ isTranscoding ? 'Transcoding...' : 'Transcode to MP4' }}
           </ion-button>
         </ion-col>
       </ion-row>
 
       <ion-row *ngIf="isCompressing">
         <ion-col size="12">
-          <p>Processing: {{ compressionProgress }}%</p>
+          <p>Compressing: {{ compressionProgress }}%</p>
           <ion-progress-bar [value]="compressionProgress / 100"></ion-progress-bar>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="isTranscoding">
+        <ion-col size="12">
+          <p>Transcoding: {{ transcodeProgress }}%</p>
+          <ion-progress-bar color="tertiary" [value]="transcodeProgress / 100"></ion-progress-bar>
         </ion-col>
       </ion-row>
 
@@ -118,6 +130,14 @@
           <ion-note color="success">
             Compressed: {{ (compressedSize / 1024 / 1024).toFixed(2) }} MB
             ({{ (100 - (compressedSize / originalSize * 100)).toFixed(1) }}% reduction)
+          </ion-note>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="transcodedSize > 0 && !isTranscoding">
+        <ion-col size="12">
+          <ion-note color="tertiary">
+            Transcoded: {{ (transcodedSize / 1024 / 1024).toFixed(2) }} MB → downloaded as MP4
           </ion-note>
         </ion-col>
       </ion-row>

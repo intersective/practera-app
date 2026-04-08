@@ -59,7 +59,11 @@ export class DevtoolPage implements OnInit, OnDestroy {
   compressionProgress = 0;
   originalSize = 0;
   compressedSize = 0;
+  isTranscoding = false;
+  transcodeProgress = 0;
+  transcodedSize = 0;
   private progressSub: Subscription | undefined;
+  private transcodeSub: Subscription | undefined;
 
   handleFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -114,6 +118,44 @@ export class DevtoolPage implements OnInit, OnDestroy {
     }
   }
 
+  async transcodeSelectedVideo(): Promise<void> {
+    if (!this.selectedFile) return;
+
+    try {
+      if (!this.ffmpegService.isFfmpegLoaded()) {
+        await this.ffmpegService.loadFFmpeg();
+      }
+
+      this.isTranscoding = true;
+      this.transcodeProgress = 0;
+      this.transcodedSize = 0;
+
+      this.transcodeSub = this.ffmpegService.progress$.subscribe(({ progress }) => {
+        this.transcodeProgress = Math.round(progress * 100);
+      });
+
+      const output = await this.ffmpegService.transcodeToMp4(this.selectedFile);
+      this.transcodedSize = output.size;
+      this.transcodeSub.unsubscribe();
+      this.transcodeProgress = 100;
+
+      const url = URL.createObjectURL(output);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = output.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      this.isTranscoding = false;
+    } catch (error) {
+      console.error(error);
+      this.transcodeSub?.unsubscribe();
+      this.isTranscoding = false;
+    }
+  }
+
   async transcodeVideo() {
     try {
       if (this.ffmpegService.isFfmpegLoaded() === false) {
@@ -158,6 +200,7 @@ export class DevtoolPage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.progressSub?.unsubscribe();
+    this.transcodeSub?.unsubscribe();
   }
 
   @HostListener('window:resize', ['$event'])
