@@ -10,3 +10,42 @@
 .uppy-container {
   height: 100%;
 }
+
+.uppy-uploader-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.compression-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+
+  .compression-status {
+    text-align: center;
+    padding: 24px;
+
+    ion-spinner {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 12px;
+    }
+
+    ion-progress-bar {
+      width: 200px;
+      margin: 0 auto;
+    }
+  }
+}

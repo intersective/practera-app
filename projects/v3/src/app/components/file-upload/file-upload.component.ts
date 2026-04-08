@@ -1,7 +1,7 @@
 import { UppyUploaderService, ALLOWED_FILE_TYPES } from './../uppy-uploader/uppy-uploader.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
@@ -87,11 +87,21 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // validation errors array
   errors: Array<any> = [];
 
+  // compression state
+  compressionProgress = 0;
+  private compressionSub: Subscription | undefined;
+
+  /** exposes service isCompressing for template binding */
+  get isCompressing(): boolean {
+    return this.uppyUploaderService.isCompressing;
+  }
+
   constructor(
     private uppyUploaderService: UppyUploaderService,
   ) { }
 
   ngOnDestroy(): void {
+    this.compressionSub?.unsubscribe();
     this.uppy.destroy();
   }
 
@@ -99,6 +109,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.initiateUppy();
     this.uppyProps.note = this.noteMessage();
     this._showSavedAnswers();
+
+    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(p => {
+      this.compressionProgress = p ? Math.round(p.progress * 100) : 0;
+    });
   }
 
   // size notice based on fileType
