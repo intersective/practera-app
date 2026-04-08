@@ -1,17 +1,61 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { NgZone } from '@angular/core';
 
 import { FfmpegService, CompressionResult } from './ffmpeg.service';
 
 describe('FfmpegService', () => {
   let service: FfmpegService;
+  let ngZone: NgZone;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(FfmpegService);
+    ngZone = TestBed.inject(NgZone);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should inject NgZone', () => {
+    expect(ngZone).toBeTruthy();
+  });
+
+  describe('progress$ and log$', () => {
+    it('should expose progress$ subject', () => {
+      expect(service.progress$).toBeTruthy();
+      expect(typeof service.progress$.subscribe).toBe('function');
+    });
+
+    it('should expose log$ subject', () => {
+      expect(service.log$).toBeTruthy();
+      expect(typeof service.log$.subscribe).toBe('function');
+    });
+
+    it('should emit progress values to subscribers', () => {
+      const emitted: any[] = [];
+      const sub = service.progress$.subscribe(p => emitted.push(p));
+
+      service.progress$.next({ progress: 0.5, timeUs: 1000 });
+      service.progress$.next({ progress: 1.0, timeUs: 2000 });
+
+      expect(emitted.length).toBe(2);
+      expect(emitted[0].progress).toBe(0.5);
+      expect(emitted[1].progress).toBe(1.0);
+      sub.unsubscribe();
+    });
+
+    it('should emit log messages to subscribers', () => {
+      const logs: string[] = [];
+      const sub = service.log$.subscribe(msg => logs.push(msg));
+
+      service.log$.next('encoding started');
+      service.log$.next('frame=100');
+
+      expect(logs.length).toBe(2);
+      expect(logs[0]).toBe('encoding started');
+      sub.unsubscribe();
+    });
   });
 
   describe('isSupported', () => {
@@ -111,6 +155,35 @@ describe('FfmpegService', () => {
   describe('isFfmpegLoaded', () => {
     it('should return false initially', () => {
       expect(service.isFfmpegLoaded()).toBeFalse();
+    });
+  });
+
+  describe('transcodeToMp4', () => {
+    it('should attempt to load ffmpeg if not loaded', async () => {
+      const loadSpy = spyOn(service, 'loadFFmpeg').and.rejectWith(new Error('test: skip actual load'));
+      const file = new File(['data'], 'video.avi', { type: 'video/x-msvideo' });
+
+      try {
+        await service.transcodeToMp4(file);
+      } catch {
+        // expected — we prevented actual load
+      }
+
+      expect(loadSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('loadFFmpeg', () => {
+    it('should skip loading if already loaded', async () => {
+      // set isLoaded to true via reflection
+      (service as any).isLoaded = true;
+      const ffmpegSpy = spyOn((service as any).ffmpeg, 'load');
+
+      await service.loadFFmpeg();
+
+      expect(ffmpegSpy).not.toHaveBeenCalled();
+      // reset
+      (service as any).isLoaded = false;
     });
   });
 });
