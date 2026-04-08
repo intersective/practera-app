@@ -1,7 +1,7 @@
 import { UppyFileData, UppyUploaderService, ALLOWED_FILE_TYPES } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
@@ -30,10 +30,8 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   compressionProgress = 0;
   private compressionSub: Subscription | undefined;
 
-  /** exposes service isCompressing for template binding */
-  get isCompressing(): boolean {
-    return this.uppyUploaderService.isCompressing;
-  }
+  /** true only when this component's own uppy instance is compressing */
+  isCompressing = false;
 
   s3Info: {
     path: string;
@@ -46,6 +44,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private modalController: ModalController,
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.uppyProps.height = '500px';
     this.uppyProps.note = "Upload a file here";
@@ -67,8 +66,11 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       allowedFileTypes: this.loadAllowedFileTypes(),
     });
 
-    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(p => {
-      this.compressionProgress = p ? Math.round(p.progress * 100) : 0;
+    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(({ uppy, progress }) => {
+      if (uppy !== this.uppy) return;
+      this.isCompressing = progress !== null;
+      this.compressionProgress = progress ? Math.round(progress.progress * 100) : 0;
+      this.cdr.markForCheck();
     });
   }
 

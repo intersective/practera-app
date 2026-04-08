@@ -12,17 +12,15 @@
 }
 
 .compression-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
+  position: relative;
+  min-height: 200px;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
+  border: 1px dashed var(--ion-color-medium, #ccc);
 
   .compression-status {
     text-align: center;

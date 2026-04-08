@@ -1,5 +1,5 @@
 import { UppyUploaderService, ALLOWED_FILE_TYPES } from './../uppy-uploader/uppy-uploader.service';
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
@@ -91,13 +91,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   compressionProgress = 0;
   private compressionSub: Subscription | undefined;
 
-  /** exposes service isCompressing for template binding */
-  get isCompressing(): boolean {
-    return this.uppyUploaderService.isCompressing;
-  }
+  /** true only when this component's own uppy instance is compressing */
+  isCompressing = false;
 
   constructor(
     private uppyUploaderService: UppyUploaderService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnDestroy(): void {
@@ -110,8 +109,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.uppyProps.note = this.noteMessage();
     this._showSavedAnswers();
 
-    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(p => {
-      this.compressionProgress = p ? Math.round(p.progress * 100) : 0;
+    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(({ uppy, progress }) => {
+      if (uppy !== this.uppy) return;
+      this.isCompressing = progress !== null;
+      this.compressionProgress = progress ? Math.round(progress.progress * 100) : 0;
+      this.cdr.markForCheck();
     });
   }
 
