@@ -5,6 +5,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angu
 import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
+import { Subscription } from 'rxjs';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -24,6 +25,15 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
   uppyProps = this.uppyUploaderService.uppyProps;
+
+  // compression state
+  compressionProgress = 0;
+  private compressionSub: Subscription | undefined;
+
+  /** exposes service isCompressing for template binding */
+  get isCompressing(): boolean {
+    return this.uppyUploaderService.isCompressing;
+  }
 
   s3Info: {
     path: string;
@@ -55,6 +65,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       onUploadSuccess: this.onUploadSuccess.bind(this),
     }, {
       allowedFileTypes: this.loadAllowedFileTypes(),
+    });
+
+    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(p => {
+      this.compressionProgress = p ? Math.round(p.progress * 100) : 0;
     });
   }
 
@@ -100,6 +114,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.compressionSub?.unsubscribe();
     if (this.uppy) {
       // eslint-disable-next-line no-console
       this.uppy.off("upload-success", (res) => console.info(res));
