@@ -1,8 +1,36 @@
 /// <reference no-default-lib="true" />
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
-import { CORE_URL, FFMessageType } from "./const.js";
-import { ERROR_UNKNOWN_MESSAGE_TYPE, ERROR_NOT_LOADED, ERROR_IMPORT_FAILURE, } from "./errors.js";
+
+// vendored from @ffmpeg/ffmpeg@0.12.15  (node_modules/@ffmpeg/ffmpeg/dist/esm/worker.js)
+// imports from ./const.js and ./errors.js are inlined below because this file
+// is served as a standalone asset via angular.json and those siblings don't exist
+// at the serving path. keep in sync when upgrading @ffmpeg/ffmpeg.
+const CORE_VERSION = "0.12.9";
+const CORE_URL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd/ffmpeg-core.js`;
+const FFMessageType = {
+    LOAD: "LOAD",
+    EXEC: "EXEC",
+    FFPROBE: "FFPROBE",
+    WRITE_FILE: "WRITE_FILE",
+    READ_FILE: "READ_FILE",
+    DELETE_FILE: "DELETE_FILE",
+    RENAME: "RENAME",
+    CREATE_DIR: "CREATE_DIR",
+    LIST_DIR: "LIST_DIR",
+    DELETE_DIR: "DELETE_DIR",
+    ERROR: "ERROR",
+    DOWNLOAD: "DOWNLOAD",
+    PROGRESS: "PROGRESS",
+    LOG: "LOG",
+    MOUNT: "MOUNT",
+    UNMOUNT: "UNMOUNT",
+};
+
+// inlined from ./errors.js (only the three errors worker.js actually uses)
+const ERROR_UNKNOWN_MESSAGE_TYPE = new Error("unknown message type");
+const ERROR_NOT_LOADED = new Error("ffmpeg is not loaded, call `await ffmpeg.load()` first");
+const ERROR_IMPORT_FAILURE = new Error("failed to import ffmpeg-core.js");
 let ffmpeg;
 const load = async ({ coreURL: _coreURL, wasmURL: _wasmURL, workerURL: _workerURL, }) => {
     const first = !ffmpeg;
