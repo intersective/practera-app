@@ -105,9 +105,9 @@ export class FfmpegService {
     });
 
     await this.ffmpeg.load({
-      coreURL: new URL('assets/ffmpeg/ffmpeg-core.js', window.location.origin).toString(),
-      wasmURL: new URL('assets/ffmpeg/ffmpeg-core.wasm', window.location.origin).toString(),
-      classWorkerURL: new URL('assets/ffmpeg/worker.js', window.location.origin).toString(),
+      coreURL: new URL('assets/ffmpeg/ffmpeg-core.js', document.baseURI).toString(),
+      wasmURL: new URL('assets/ffmpeg/ffmpeg-core.wasm', document.baseURI).toString(),
+      classWorkerURL: new URL('assets/ffmpeg/worker.js', document.baseURI).toString(),
     });
 
     this.isLoaded = true;
