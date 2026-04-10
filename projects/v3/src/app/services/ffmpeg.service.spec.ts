@@ -186,4 +186,39 @@ describe('FfmpegService', () => {
       (service as any).isLoaded = false;
     });
   });
+
+  describe('terminate', () => {
+    it('should call ffmpeg.terminate and reset isLoaded', () => {
+      (service as any).isLoaded = true;
+      const terminateSpy = spyOn((service as any).ffmpeg, 'terminate');
+
+      service.terminate();
+
+      expect(terminateSpy).toHaveBeenCalled();
+      expect((service as any).isLoaded).toBeFalse();
+    });
+
+    it('should create a new FFmpeg instance after termination', () => {
+      const oldFfmpeg = (service as any).ffmpeg;
+      spyOn(oldFfmpeg, 'terminate');
+
+      service.terminate();
+
+      expect((service as any).ffmpeg).not.toBe(oldFfmpeg);
+    });
+  });
+
+  describe('getDefaultTimeout', () => {
+    it('should return mobile timeout when mobile', () => {
+      spyOn(service, 'isMobile').and.returnValue(true);
+      const timeout = (service as any).getDefaultTimeout();
+      expect(timeout).toBe(5 * 60 * 1000);
+    });
+
+    it('should return desktop timeout when not mobile', () => {
+      spyOn(service, 'isMobile').and.returnValue(false);
+      const timeout = (service as any).getDefaultTimeout();
+      expect(timeout).toBe(10 * 60 * 1000);
+    });
+  });
 });

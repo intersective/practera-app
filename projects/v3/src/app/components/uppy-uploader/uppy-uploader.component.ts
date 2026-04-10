@@ -119,13 +119,9 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.compressionSub?.unsubscribe();
+    this.uppyUploaderService.cancelCompression();
     if (this.uppy) {
-      // eslint-disable-next-line no-console
-      this.uppy.off("upload-success", (res) => console.info(res));
-
-      // eslint-disable-next-line no-console
-      this.uppy.off("complete", (res) => console.info(res));
-      this.uppy.resetProgress();
+      this.uppy.destroy();
     }
   }
 

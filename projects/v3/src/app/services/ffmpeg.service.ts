@@ -12,6 +12,8 @@ export interface CompressionOptions {
   preset?: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow';
   /** audio bitrate */
   audioBitrate?: string;
+  /** exec timeout in milliseconds (-1 = unlimited) */
+  timeout?: number;
 }
 
 export interface CompressionProgress {
@@ -36,6 +38,9 @@ const MIN_COMPRESS_SIZE = 5 * 1024 * 1024;
 const MAX_MOBILE_SIZE = 200 * 1024 * 1024;
 /** max file size on desktop (500 MB) */
 const MAX_DESKTOP_SIZE = 500 * 1024 * 1024;
+/** default exec timeout: 10 min desktop, 5 min mobile */
+const DESKTOP_TIMEOUT_MS = 10 * 60 * 1000;
+const MOBILE_TIMEOUT_MS = 5 * 60 * 1000;
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +58,20 @@ export class FfmpegService {
 
   isFfmpegLoaded(): boolean {
     return this.isLoaded;
+  }
+
+  /** terminate the wasm worker and reset state so a fresh load can happen */
+  terminate(): void {
+    try {
+      this.ffmpeg.terminate();
+    } catch { /* already terminated or never loaded */ }
+    this.isLoaded = false;
+    this.ffmpeg = new FFmpeg();
+  }
+
+  /** default exec timeout based on device type */
+  private getDefaultTimeout(): number {
+    return this.isMobile() ? MOBILE_TIMEOUT_MS : DESKTOP_TIMEOUT_MS;
   }
 
   /** detect if the current device is mobile */
@@ -133,6 +152,7 @@ export class FfmpegService {
       crf = defaults.crf,
       preset = defaults.preset,
       audioBitrate = defaults.audioBitrate,
+      timeout = this.getDefaultTimeout(),
     } = options;
 
     if (!this.isLoaded) {
@@ -155,7 +175,7 @@ export class FfmpegService {
       '-b:a', audioBitrate,
       '-movflags', '+faststart',
       outputName,
-    ]);
+    ], timeout);
 
     const fileData = await this.ffmpeg.readFile(outputName);
     const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
@@ -196,7 +216,7 @@ export class FfmpegService {
       '-b:a', '128k',
       '-movflags', '+faststart',
       outputName,
-    ]);
+    ], this.getDefaultTimeout());
 
     const fileData = await this.ffmpeg.readFile(outputName);
     const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });

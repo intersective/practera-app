@@ -185,36 +185,120 @@ the installed `@ffmpeg/core` v0.12.10 is the **single-thread** build. this was a
 
 ### 4. wasm asset loading
 
-assets are loaded lazily from `assets/ffmpeg/`:
+assets are loaded lazily from `assets/ffmpeg/` using `document.baseURI` as the base (not `window.location.origin`) to correctly resolve under locale-prefixed paths like `/en-US/`:
 
 ```typescript
 await this.ffmpeg.load({
-  coreURL:        new URL('assets/ffmpeg/ffmpeg-core.js', window.location.origin).toString(),
-  wasmURL:        new URL('assets/ffmpeg/ffmpeg-core.wasm', window.location.origin).toString(),
-  classWorkerURL: new URL('assets/ffmpeg/worker.js', window.location.origin).toString(),
+  coreURL:        new URL('assets/ffmpeg/ffmpeg-core.js', document.baseURI).toString(),
+  wasmURL:        new URL('assets/ffmpeg/ffmpeg-core.wasm', document.baseURI).toString(),
+  classWorkerURL: new URL('assets/ffmpeg/worker.js', document.baseURI).toString(),
 });
 ```
+
+**why `document.baseURI`?** the app is served under `<base href="/en-US/">` on staging/production. `window.location.origin` returns `https://app.p2-stage.practera.com` — missing the locale prefix — so asset requests 404 and the SPA returns `index.html` instead. `document.baseURI` respects the `<base>` tag and resolves to the correct path.
+
+#### vendored worker.js
+
+`projects/v3/src/assets/ffmpeg/worker.js` is a **vendored copy** of `node_modules/@ffmpeg/ffmpeg/dist/esm/worker.js` (v0.12.15). the upstream file has ES module `import` statements referencing `./const.js` and `./errors.js` — but angular's asset copy only copies the files we list in `angular.json`, not the full `dist/esm/` tree. when the worker is loaded as a standalone asset at `/en-US/assets/ffmpeg/worker.js`, those sibling modules don't exist at the serving path, so the worker silently fails and `ffmpeg.load()` hangs forever.
+
+the fix: all dependencies from `const.js` and `errors.js` are inlined directly into `worker.js`. the file header documents the exact upstream version and which constants were inlined. **keep this in sync when upgrading `@ffmpeg/ffmpeg`.**
+
+#### angular.json asset config
+
+```json
+{
+  "glob": "**/*",
+  "input": "node_modules/@ffmpeg/ffmpeg/dist/esm",
+  "output": "./assets/ffmpeg"
+},
+"projects/v3/src/assets/ffmpeg"
+```
+
+the node_modules glob copies the upstream files first. then the local `projects/v3/src/assets/ffmpeg` directory is listed **after**, so its files (including the vendored `worker.js`) override the upstream versions. this is intentional — it provides a fallback for any new files added in future `@ffmpeg/ffmpeg` releases while ensuring the vendored worker takes priority.
 
 **asset sizes:**
 - `ffmpeg-core.wasm`: ~31 MB (downloaded once, browser-cached)
 - `ffmpeg-core.js`: ~200 KB (emscripten glue)
 - `worker.js`: ~2 KB
 
-**caching strategy:** the wasm file is loaded once and the `FFmpeg` instance is reused. subsequent compressions skip the load step entirely.
+**caching strategy:** the wasm file is loaded once and the `FFmpeg` instance is reused. subsequent compressions skip the load step entirely (unless `terminate()` was called, in which case the next compression will lazy-load again).
 
 ### 5. known limitations
 
 1. **memory**: wasm heap limited to 2 GB. very large files (>500 MB) may cause oom on constrained devices.
 2. **no hardware acceleration**: wasm cannot access gpu/videotoolbox — encoding is pure cpu.
 3. **single-thread**: only uses one cpu core. multi-thread would help but requires coop/coep headers and drops ios support.
-4. **asset duplication in angular.json**: both `node_modules/@ffmpeg/ffmpeg/dist/esm` and `projects/v3/src/assets/ffmpeg` are copied to output. the node_modules copy should be removed once local assets are confirmed stable.
+
+---
+
+## transcoding
+
+`FfmpegService.transcodeToMp4(file)` converts any user-supplied video to h.264/aac mp4 without custom compression parameters. this is used when the goal is format normalization (e.g. `.webm` → `.mp4`) rather than size reduction. it uses the same lazy wasm load and exec timeout as `compressVideo()`.
+
+---
+
+## error handling
+
+### exec timeout
+
+all `ffmpeg.exec()` calls have a timeout:
+- **desktop**: 10 minutes
+- **mobile**: 5 minutes
+- configurable via `CompressionOptions.timeout` (ms, -1 = unlimited)
+
+if the timeout fires, ffmpeg throws and the preprocessor `catch` block uploads the original file uncompressed.
+
+### compression cancellation (`cancelCompression`)
+
+`UppyUploaderService.cancelCompression()` terminates the wasm worker mid-encode and resets all state:
+
+```
+cancelCompression() → ffmpegService.terminate() → progress$.next(null) → compressingUppy = null
+```
+
+called automatically from:
+- `FileUploadComponent.ngOnDestroy()` — triggered by route navigation away from assessment
+- `UppyUploaderComponent.ngOnDestroy()` — triggered by modal dismissal or route change
+
+after termination, `FfmpegService` creates a fresh `FFmpeg` instance so the next compression starts cleanly.
+
+### navigation guards
+
+| scenario | protection |
+|----------|------------|
+| user clicks another task / browser back (angular route) | `SinglePageDeactivateGuard` — shows `window.confirm()` dialog, cancels compression if user confirms leave |
+| user closes tab or reloads | `beforeunload` event listener on `UppyUploaderService` — browser shows native "leave page?" prompt |
+| user swipe-dismisses modal (ionic gesture) | `canDismiss` on modal — returns `false` while `compressingUppy !== null` |
+| modal dismissed programmatically (e.g. route forces modal stack clear) | `UppyUploaderComponent.ngOnDestroy()` calls `cancelCompression()` |
+
+### subscription leak prevention
+
+the progress subscription in `registerCompressionPreProcessor` uses `try/finally` to guarantee `sub.unsubscribe()` runs even if `compressVideo()` throws:
+
+```typescript
+const sub = ffmpegService.progress$.subscribe(...);
+try {
+  result = await ffmpegService.compressVideo(file);
+} finally {
+  sub.unsubscribe();
+}
+```
+
+### graceful fallback
+
+if compression fails for any reason (timeout, wasm crash, out of memory), the preprocessor `catch` block:
+1. logs the error
+2. nulls `compressingUppy`
+3. emits `progress: null` to hide the overlay
+4. lets uppy proceed with the **original uncompressed file**
+
+the user is never blocked from uploading.
 
 ## future improvements
 
 | priority | improvement | effort |
 |----------|-------------|--------|
-| p1 | remove angular.json asset duplication | low |
-| p2 | add feature flag to toggle compression | low |
-| p3 | compression quality preview (thumbnail before/after) | medium |
-| p4 | evaluate `@ffmpeg/core-mt` when ios safari adds SharedArrayBuffer | medium |
-| p5 | webcodecs api as alternative for simple transcode (chrome 94+) | high |
+| p1 | add feature flag to toggle compression | low |
+| p2 | compression quality preview (thumbnail before/after) | medium |
+| p3 | evaluate `@ffmpeg/core-mt` when ios safari adds SharedArrayBuffer | medium |
+| p4 | webcodecs api as alternative for simple transcode (chrome 94+) | high |
