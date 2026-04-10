@@ -21,6 +21,7 @@ describe('UppyUploaderService', () => {
     ffmpegServiceSpy = jasmine.createSpyObj('FfmpegService', [
       'shouldCompress',
       'compressVideo',
+      'terminate',
     ], {
       progress$: new Subject(),
     });
@@ -150,6 +151,33 @@ describe('UppyUploaderService', () => {
       ffmpegServiceSpy.shouldCompress.and.returnValue({ compress: false, reason: 'not a video file' });
       // the preprocessor is private — verify no compression call
       expect(ffmpegServiceSpy.compressVideo).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('cancelCompression', () => {
+    it('should do nothing if no compression is active', () => {
+      service.compressingUppy = null;
+
+      service.cancelCompression();
+
+      expect(ffmpegServiceSpy.terminate).not.toHaveBeenCalled();
+    });
+
+    it('should terminate ffmpeg and emit null progress when compressing', () => {
+      const fakeUppy = {} as Uppy<any, any>;
+      service.compressingUppy = fakeUppy;
+
+      const emitted: any[] = [];
+      const sub = service.compressionProgress$.subscribe(v => emitted.push(v));
+
+      service.cancelCompression();
+
+      expect(ffmpegServiceSpy.terminate).toHaveBeenCalled();
+      expect(emitted.length).toBe(1);
+      expect(emitted[0]).toEqual({ uppy: fakeUppy, progress: null });
+      expect(service.compressingUppy).toBeNull();
+
+      sub.unsubscribe();
     });
   });
 
