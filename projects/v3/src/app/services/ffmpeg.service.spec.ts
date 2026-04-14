@@ -221,4 +221,76 @@ describe('FfmpegService', () => {
       expect(timeout).toBe(10 * 60 * 1000);
     });
   });
+
+  describe('probeMetadata', () => {
+    it('should return null for a non-video file', async () => {
+      const file = new File(['not a video'], 'test.txt', { type: 'text/plain' });
+      const result = await (service as any).probeMetadata(file);
+      expect(result).toBeNull();
+    });
+
+    it('should return null for an empty file', async () => {
+      const file = new File([], 'empty.mp4', { type: 'video/mp4' });
+      const result = await (service as any).probeMetadata(file);
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('compressVideo conditional scale', () => {
+    it('should include -vf scale when metadata is unavailable', async () => {
+      const data = new ArrayBuffer(10 * 1024 * 1024);
+      const file = new File([data], 'video.mp4', { type: 'video/mp4' });
+      spyOn(service, 'isMobile').and.returnValue(false);
+      spyOn(service as any, 'probeMetadata').and.resolveTo(null);
+
+      const loadSpy = spyOn(service, 'loadFFmpeg').and.resolveTo();
+      const execSpy = spyOn((service as any).ffmpeg, 'exec').and.resolveTo(0);
+      spyOn((service as any).ffmpeg, 'writeFile').and.resolveTo();
+      spyOn((service as any).ffmpeg, 'readFile').and.resolveTo(new Uint8Array(100));
+      spyOn((service as any).ffmpeg, 'deleteFile').and.resolveTo();
+
+      await service.compressVideo(file);
+
+      const args: string[] = execSpy.calls.mostRecent().args[0];
+      expect(args).toContain('-vf');
+      expect(args).toContain('scale=-2:720');
+    });
+
+    it('should omit -vf scale when source height is at or below maxHeight', async () => {
+      const data = new ArrayBuffer(10 * 1024 * 1024);
+      const file = new File([data], 'video.mp4', { type: 'video/mp4' });
+      spyOn(service, 'isMobile').and.returnValue(false);
+      spyOn(service as any, 'probeMetadata').and.resolveTo({ width: 640, height: 480, durationSec: 30 });
+
+      spyOn(service, 'loadFFmpeg').and.resolveTo();
+      const execSpy = spyOn((service as any).ffmpeg, 'exec').and.resolveTo(0);
+      spyOn((service as any).ffmpeg, 'writeFile').and.resolveTo();
+      spyOn((service as any).ffmpeg, 'readFile').and.resolveTo(new Uint8Array(100));
+      spyOn((service as any).ffmpeg, 'deleteFile').and.resolveTo();
+
+      await service.compressVideo(file);
+
+      const args: string[] = execSpy.calls.mostRecent().args[0];
+      expect(args).not.toContain('-vf');
+    });
+
+    it('should include -vf scale when source height exceeds maxHeight', async () => {
+      const data = new ArrayBuffer(10 * 1024 * 1024);
+      const file = new File([data], 'video.mp4', { type: 'video/mp4' });
+      spyOn(service, 'isMobile').and.returnValue(false);
+      spyOn(service as any, 'probeMetadata').and.resolveTo({ width: 1920, height: 1080, durationSec: 60 });
+
+      spyOn(service, 'loadFFmpeg').and.resolveTo();
+      const execSpy = spyOn((service as any).ffmpeg, 'exec').and.resolveTo(0);
+      spyOn((service as any).ffmpeg, 'writeFile').and.resolveTo();
+      spyOn((service as any).ffmpeg, 'readFile').and.resolveTo(new Uint8Array(100));
+      spyOn((service as any).ffmpeg, 'deleteFile').and.resolveTo();
+
+      await service.compressVideo(file);
+
+      const args: string[] = execSpy.calls.mostRecent().args[0];
+      expect(args).toContain('-vf');
+      expect(args).toContain('scale=-2:720');
+    });
+  });
 });

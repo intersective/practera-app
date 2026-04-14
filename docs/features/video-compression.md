@@ -29,8 +29,11 @@ the app uses [@ffmpeg/ffmpeg](https://github.com/ffmpegwasm/ffmpeg.wasm) v0.12.1
 │           │   FfmpegService      │                          │
 │           │  ┌────────────────┐  │                          │
 │           │  │ compressVideo()│  │                          │
-│           │  └────────────────┘  │                          │
-│           │  ┌────────────────┐  │                          │
+│           │  └───────┬────────┘  │                          │
+│           │  ┌───────▼────────┐  │                          │
+│           │  │probeMetadata() │  │  <video> metadata read   │
+│           │  └───────┬────────┘  │                          │
+│           │  ┌───────▼────────┐  │                          │
 │           │  │ loadFFmpeg()   │  │  lazy WASM load          │
 │           │  └────────────────┘  │                          │
 │           └──────────────────────┘                          │
@@ -76,21 +79,50 @@ when a video file is added to any uppy instance, the compression interceptor:
 
 1. checks if the file is a video (by mime type)
 2. applies size gating — skips compression for files < 5 MB or > limits
-3. lazy-loads the ffmpeg wasm core (only on first video)
-4. pauses the uppy upload queue
-5. compresses the video with h.264/aac encoding
-6. replaces the original file in uppy with the compressed version
-7. resumes the upload queue
+3. **probes video metadata** via a temporary `<video>` element (width, height, duration) — fast, no wasm needed
+4. lazy-loads the ffmpeg wasm core (only on first video — runs after probe)
+5. pauses the uppy upload queue
+6. compresses the video with h.264/aac encoding, **conditionally applying a scale filter** based on probe results
+7. replaces the original file in uppy with the compressed version
+8. resumes the upload queue
 
 ### compression parameters
 
 | parameter | desktop | mobile | purpose |
 |-----------|---------|--------|---------|
-| `maxHeight` | 720 | 480 | scale output height (aspect preserved) |
+| `maxHeight` | 720 | 480 | target height ceiling for the scale filter (aspect preserved via `-2:h`) |
 | `crf` | 28 | 30 | quality factor (0-51, lower=better) |
 | `preset` | `fast` | `ultrafast` | encoding speed |
 | `audioBitrate` | `128k` | `96k` | aac audio bitrate |
 | `movflags` | `+faststart` | `+faststart` | enables streaming playback |
+
+### conditional scale filter
+
+the `-vf scale=-2:${maxHeight}` ffmpeg filter is **only added when necessary**:
+
+| probe result | source height | action |
+|--------------|---------------|--------|
+| metadata available | height ≤ maxHeight | **skip scale** — source already fits, no re-encode overhead |
+| metadata available | height > maxHeight | **apply scale** — downscale to maxHeight, preserve aspect ratio |
+| probe failed/timed out | unknown | **apply scale** (safe fallback — preserves previous behaviour) |
+
+this avoids an unnecessary decode/filter/encode pass when uploading a video that is already within the resolution ceiling (e.g. a 480p clip uploaded on mobile where `maxHeight = 480`).
+
+#### `probeMetadata()` implementation
+
+`FfmpegService.probeMetadata(file)` extracts metadata before wasm loads:
+
+```typescript
+private probeMetadata(file: File): Promise<VideoMetadata | null>
+```
+
+- creates a temporary `<video>` element with `URL.createObjectURL(file)` and `preload=metadata`
+- resolves with `{ width, height, durationSec }` on the `loadedmetadata` event
+- resolves `null` if dimensions are zero, duration is non-finite, an error fires, or the **5-second timeout** (`PROBE_TIMEOUT_SEC`) elapses
+- always calls `URL.revokeObjectURL()` via a `cleanup()` function to prevent memory leaks
+- returns `null` for non-video files (browser won't load metadata)
+
+**why before `loadFFmpeg()`?** the probe is a lightweight browser api call (milliseconds) whereas loading the wasm core takes 1-3 seconds. by probing first, the scale decision is ready before wasm finishes loading.
 
 ### size gating
 
@@ -159,6 +191,7 @@ the installed `@ffmpeg/core` v0.12.10 is the **single-thread** build. this was a
 - lower resolution cap (480p vs 720p)
 - lower audio bitrate (96k vs 128k)
 - size gate at 200 MB (vs 500 MB desktop)
+- **conditional scale filter** — videos already ≤ 480p skip the scale pass entirely, saving significant encode time on low-end devices
 
 ### 3. cross-browser compatibility
 
@@ -301,4 +334,22 @@ the user is never blocked from uploading.
 | p1 | add feature flag to toggle compression | low |
 | p2 | compression quality preview (thumbnail before/after) | medium |
 | p3 | evaluate `@ffmpeg/core-mt` when ios safari adds SharedArrayBuffer | medium |
-| p4 | webcodecs api as alternative for simple transcode (chrome 94+) | high |
+| p4 | use `durationSec` from probe to apply stricter crf/preset for very short clips | low |
+
+### not planned
+
+| item | reason |
+|------|--------|
+| webcodecs api as ffmpeg.wasm replacement | not viable — caniuse marks it "limited availability"; ios/safari support is video-only (no audio encode pipeline); firefox android unsupported; no built-in demux api (would require mp4box.js or similar, negating simplicity gains); still a w3c working draft as of apr 2026. revisit when it reaches full cross-browser baseline |
+
+---
+
+## changelog
+
+| date | change |
+|------|--------|
+| apr 2026 | added `probeMetadata()` + conditional scale filter — skips `-vf scale` when source already fits within `maxHeight` |
+| apr 2026 | fixed service duplication bug — removed `UppyUploaderService` from `ComponentsModule.providers`; `providedIn: 'root'` services must not be declared in module providers as this creates a second instance in lazy-loaded contexts, breaking `SinglePageDeactivateGuard` |
+| nov 2025 | added `cancelCompression()`, `beforeunload` guard, `CanDeactivate` guard, `try/finally` subscription cleanup, and 10/5-minute exec timeouts |
+| nov 2025 | fixed wasm load from `window.location.origin` → `document.baseURI` to support `/en-US/` base href |
+| nov 2025 | vendored `worker.js` with inlined imports to fix silent failure when angular asset copy omits sibling modules |
