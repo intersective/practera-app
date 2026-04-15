@@ -46,7 +46,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // default card image (gracefully show broken url)
   defaultLeadImage: string = "";
 
-  lastVisitedActivityId: number = null;
+  lastVisitedActivityId?: number;
   bookmarkedActivities: {
     [key: number]: boolean;
   } = {};
@@ -60,7 +60,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   // activity search/filter
   activitySearchText = '';
-  filteredMilestones: Milestone[] = null;
+  filteredMilestones: Milestone[] | null = null;
 
   // Expose Math to template
   Math = Math;
@@ -553,11 +553,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     // filter milestones and their activities
     this.filteredMilestones = this.milestones
       .map(milestone => {
-        const filteredActivities = milestone.activities.filter(activity => {
+        const filteredActivities = milestone.activities?.filter(activity => {
           const titleMatch = activity.name?.toLowerCase().includes(searchText);
           const descriptionMatch = activity.description?.toLowerCase().includes(searchText);
           return titleMatch || descriptionMatch;
-        });
+        }) ?? [];
 
         // only include milestone if it has matching activities
         if (filteredActivities.length > 0) {
