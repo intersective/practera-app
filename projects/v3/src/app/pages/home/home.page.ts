@@ -629,10 +629,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.filteredMilestones = this.milestones
       .map(milestone => {
         const filteredActivities = milestone.activities?.filter(activity => {
-          if (activity?.isLocked) {
-            return false;
-          }
-
           const titleMatch = activity.name?.toLowerCase().includes(searchText);
           const descriptionMatch = activity.description?.toLowerCase().includes(searchText);
           return titleMatch || descriptionMatch;
