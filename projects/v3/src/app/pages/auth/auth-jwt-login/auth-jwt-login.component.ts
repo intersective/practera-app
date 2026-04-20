@@ -6,18 +6,36 @@ import { Experience, ExperienceService } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { environment } from '@v3/environments/environment';
 
 /**
- * @deprecated Handles legacy opaque auth_token direct login (?do=secure&auth_token=xxx).
- * New magic links use JWT via ?token= param, handled by AuthJwtLoginComponent.
- * Kept operational for in-flight opaque tokens not yet expired.
+ * Handles ?token=<jwt> login flow.
+ * The JWT from core-graphql-api exchangeToken is trusted directly as the apikey.
+ * After storing it, a regular authenticate() call fetches the experience data.
+ * Deep link parameters are read from route params and handled identically to
+ * AuthDirectLoginComponent.
  */
 @Component({
-  selector: 'app-auth-direct-login',
-  templateUrl: 'auth-direct-login.component.html',
+  selector: 'app-auth-jwt-login',
+  template: `
+    <ion-content color="light" class="ion-text-center">
+      <header>
+        <h1 class="for-accessibility" i18n>Logging in</h1>
+        <div class="div-logo">
+          <app-branding-logo></app-branding-logo>
+        </div>
+      </header>
+      <main aria-label="authentication" aria-live="polite" aria-busy="true">
+        <div class="div-after-logo">
+          <p role="status" aria-live="polite" i18n>
+            We are logging you in, please be patient
+            <ion-spinner name="dots" class="vertical-middle" aria-label="Loading" i18n-aria-label role="img"></ion-spinner>
+          </p>
+        </div>
+      </main>
+    </ion-content>
+  `,
 })
-export class AuthDirectLoginComponent implements OnInit {
+export class AuthJwtLoginComponent implements OnInit {
   constructor(
     readonly utils: UtilsService,
     private router: Router,
@@ -31,36 +49,38 @@ export class AuthDirectLoginComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    const authToken = this.route.snapshot.paramMap.get('authToken');
-    if (!authToken) {
+    const jwt = this.route.snapshot.paramMap.get('jwt');
+    if (!jwt) {
       return this._error();
     }
 
-    this.authService.autologin({ authToken }).subscribe({
-      next: async (authed) => {
+    this.authService.logout({}, false);
+    this.storage.setUser({ apikey: jwt });
+
+    this.authService.authenticate({ forceRefresh: true }).subscribe({
+      next: async (res) => {
+        const data = res?.data?.auth;
+        if (data) {
+          this.storage.setUser({ apikey: data.apikey });
+          this.storage.set('experience', data.experience);
+          this.storage.set('isLoggedIn', true);
+        }
         await this.authService.getMyInfo().toPromise();
-        return this._redirect({ experience: authed.experience });
+        return this._redirect({ experience: data?.experience });
       },
       error: err => {
-        console.error(err);
+        console.error('JWT login failed:', err);
         this._error(err);
       }
     });
   }
 
-  // force every navigation happen under radar of angular
   private navigate(direction): Promise<boolean> {
     return this.ngZone.run(() => {
       return this.router.navigate(direction);
     });
   }
 
-  /**
-   * Redirect user to a specific page if data is passed in, otherwise redirect to program switcher page
-   *
-   * @param {boolean}   redirectLater
-   * @returns {Promise<boolean | void>}
-   */
   private async _redirect(options?: {
     experience?: Experience;
     redirectLater?: boolean;
@@ -76,7 +96,6 @@ export class AuthDirectLoginComponent implements OnInit {
     const topicId = +this.route.snapshot.paramMap.get('top');
     const timelineId = +this.route.snapshot.paramMap.get('tl');
 
-    // clear the cached data
     await this.authService.clearCache();
 
     const redirectConfig = {
@@ -85,25 +104,19 @@ export class AuthDirectLoginComponent implements OnInit {
     };
 
     if (!redirect || !timelineId) {
-      // if there's no redirection or timeline id
       return this._saveOrRedirect(['experiences'], redirectConfig);
     }
 
-    // purpose of return_url
-    // - when user switch program, he/she will be redirect to this url
     if (this.route.snapshot.paramMap.has('return_url')) {
       this.storage.setUser({
         LtiReturnUrl: this.route.snapshot.paramMap.get('return_url')
       });
     }
 
-    const restrictedAccess = this.singlePageRestriction();
+    const restrictedAccess = this._singlePageRestriction();
 
-    // switch program directly if user already registered
     if (!redirectLater && experience) {
-      await this.experienceService.switchProgram({
-        experience
-      });
+      await this.experienceService.switchProgram({ experience });
     }
 
     let referrerUrl = '';
@@ -115,7 +128,7 @@ export class AuthDirectLoginComponent implements OnInit {
       case 'activity':
         if (!activityId) {
           return this._saveOrRedirect(['v3', 'home'], redirectConfig);
-        } else if (this.utils.isMobile()){
+        } else if (this.utils.isMobile()) {
           return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectConfig);
         }
         return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectConfig);
@@ -125,13 +138,9 @@ export class AuthDirectLoginComponent implements OnInit {
         }
         referrerUrl = this.route.snapshot.paramMap.get('activity_task_referrer_url');
         if (referrerUrl) {
-          // save the referrer url so that we can redirect user later
-          this.storage.setReferrer({
-            route: 'activity-task',
-            url: referrerUrl
-          });
+          this.storage.setReferrer({ route: 'activity-task', url: referrerUrl });
         }
-        if (this.utils.isMobile()){
+        if (this.utils.isMobile()) {
           return this._saveOrRedirect(['v3', 'activity-mobile', activityId], redirectConfig);
         }
         return this._saveOrRedirect(['v3', 'activity-desktop', activityId], redirectConfig);
@@ -139,16 +148,10 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!activityId || !contextId || !assessmentId) {
           return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
-
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
         if (referrerUrl) {
-          // save the referrer url so that we can redirect user later
-          this.storage.setReferrer({
-            route: 'assessment',
-            url: referrerUrl
-          });
+          this.storage.setReferrer({ route: 'assessment', url: referrerUrl });
         }
-
         if (this.utils.isMobile() || restrictedAccess) {
           if (submissionId) {
             return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId, submissionId], redirectConfig);
@@ -156,13 +159,8 @@ export class AuthDirectLoginComponent implements OnInit {
           return this._saveOrRedirect(['assessment-mobile', 'assessment', activityId, contextId, assessmentId], redirectConfig);
         } else {
           return this._saveOrRedirect([
-            'v3', 'activity-desktop',
-            activityId,
-            {
-              task: 'assessment',
-              contextId,
-              assessmentId,
-            }
+            'v3', 'activity-desktop', activityId,
+            { task: 'assessment', contextId, assessmentId }
           ], redirectConfig);
         }
       case 'topic':
@@ -180,23 +178,13 @@ export class AuthDirectLoginComponent implements OnInit {
         if (!contextId || !assessmentId || !submissionId) {
           return this._saveOrRedirect(['v3', 'home'], redirectConfig);
         }
-
         referrerUrl = this.route.snapshot.paramMap.get('assessment_referrer_url');
         if (referrerUrl) {
-          // save the referrer url so that we can redirect user later
-          this.storage.setReferrer({
-            route: 'assessment',
-            url: referrerUrl
-          });
+          this.storage.setReferrer({ route: 'assessment', url: referrerUrl });
         }
-
         if (this.utils.isMobile() || restrictedAccess === true) {
           return this._saveOrRedirect([
-            'assessment-mobile',
-            'review',
-            contextId,
-            assessmentId,
-            submissionId,
+            'assessment-mobile', 'review', contextId, assessmentId, submissionId,
             { from: 'reviews' }
           ], redirectConfig);
         }
@@ -219,8 +207,7 @@ export class AuthDirectLoginComponent implements OnInit {
     if (currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
-    } else { // Info: This block is only for development purpose
-      /* eslint-disable no-console */
+    } else {
       console.info('URL redirection::', {
         dev: route,
         prod: [locale ? `/${locale}` : '', ...route].filter(Boolean)
@@ -230,12 +217,6 @@ export class AuthDirectLoginComponent implements OnInit {
     if (options?.save === true) {
       return this.storage.set('directLinkRoute', route);
     }
-    /**
-    * Initialise Pusher.
-    *
-    * When user use deep link to login to app. user not going through switcher service.
-    * So pusher initialise not calling after user login using using deep link.
-    */
     this.sharedService.initWebServices();
     return this.navigate(route);
   }
@@ -243,13 +224,15 @@ export class AuthDirectLoginComponent implements OnInit {
   private _error(res?): Promise<any> {
     if (!this.utils.isEmpty(res) && res.status === 'forbidden' && [
       'User is not registered'
-    ].includes(res.data.message)) {
+    ].includes(res.data?.message)) {
       this._redirect({ redirectLater: true });
       this.storage.set('unRegisteredDirectLink', true);
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
 
-    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+    const errorMessage = res?.message?.includes('User not enrolled')
+      ? res.message
+      : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({
       message: errorMessage,
@@ -258,7 +241,6 @@ export class AuthDirectLoginComponent implements OnInit {
           text: $localize`OK`,
           role: 'cancel',
           handler: () => {
-            // clear login data
             this.authService.logout();
           }
         }
@@ -266,17 +248,11 @@ export class AuthDirectLoginComponent implements OnInit {
     });
   }
 
-  singlePageRestriction(): boolean {
-    // one_page_only: display app limited to one single screen and no other view access are allowed
+  private _singlePageRestriction(): boolean {
     const restrictedAccess: string = this.route.snapshot.paramMap.get('one_page_only');
-
-    // extract single page restriction flag from url
     if (restrictedAccess) {
-      this.storage.singlePageAccess = (restrictedAccess === 'true') ? true : false;
+      this.storage.singlePageAccess = (restrictedAccess === 'true');
     }
-
     return this.storage.singlePageAccess;
   }
-
-
 }

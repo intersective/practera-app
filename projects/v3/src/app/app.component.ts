@@ -40,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
     'direct_login',
     'do=secure',
     'auth/secure',
+    'auth/jwt',
     'assessment-mobile/review',
     'undefined',
   ];
@@ -155,6 +156,16 @@ export class AppComponent implements OnInit, OnDestroy {
       queryString = currentLocation.hash.substring(2);
     }
     searchParams = new URLSearchParams(queryString);
+
+    if (searchParams.has("token") && !searchParams.has("do")) {
+      const queries = this.utils.urlQueryToObject(queryString);
+      return this.navigate([
+        "auth",
+        "jwt",
+        searchParams.get("token"),
+        queries,
+      ]);
+    }
 
     if (searchParams.has("apikey")) {
       const queries = this.utils.urlQueryToObject(queryString);

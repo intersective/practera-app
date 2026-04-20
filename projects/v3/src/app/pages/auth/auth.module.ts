@@ -17,6 +17,7 @@ import { AuthRegistrationComponent } from './auth-registration/auth-registration
 import { AuthResetPasswordComponent } from './auth-reset-password/auth-reset-password.component';
 import { AuthDirectLoginComponent } from './auth-direct-login/auth-direct-login.component';
 import { AuthGlobalLoginComponent } from './auth-global-login/auth-global-login.component';
+import { AuthJwtLoginComponent } from './auth-jwt-login/auth-jwt-login.component';
 import { TermsConditionsPreviewComponent } from './terms-conditions-preview/terms-conditions-preview.component';
 
 @NgModule({
@@ -34,6 +35,7 @@ import { TermsConditionsPreviewComponent } from './terms-conditions-preview/term
     AuthResetPasswordComponent,
     AuthDirectLoginComponent,
     AuthGlobalLoginComponent,
+    AuthJwtLoginComponent,
     TermsConditionsPreviewComponent
   ],
   providers: [
