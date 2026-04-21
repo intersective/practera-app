@@ -292,7 +292,8 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "packageManager": "npm"
   },
   "schematics": {
     "@ionic/angular-toolkit:component": {
