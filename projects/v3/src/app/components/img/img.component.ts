@@ -1,5 +1,5 @@
 import { Component, Input, isDevMode, SimpleChanges, OnChanges } from '@angular/core';
-import { getData, getAllTags } from 'exif-js';
+import { parse } from 'exifr';
 
 const getImageClassToFixOrientation = (orientation) => {
   switch (orientation) {
@@ -62,19 +62,21 @@ export class ImgComponent implements OnChanges {
   }
 
 
-  imageLoaded(e) {
-    const imgElement = e.target;
-    getData(imgElement, () => {
-      const allMetaData = getAllTags(imgElement);
-      const orientationClassFix = getImageClassToFixOrientation(allMetaData.Orientation);
+  async imageLoaded(e: Event) {
+    const imgElement = e.target as HTMLImageElement;
+    try {
+      const metadata = await parse(imgElement.src, { pick: ['Orientation'] });
+      if (!metadata?.Orientation) return;
 
+      const orientationClassFix = getImageClassToFixOrientation(metadata.Orientation);
       if (orientationClassFix) {
         imgElement.classList.add(orientationClassFix);
       }
-
-      if (allMetaData.Orientation >= 5) {
+      if (metadata.Orientation >= 5) {
         swapWidthAndHeight(imgElement);
       }
-    });
+    } catch {
+      // EXIF parsing not available for this image (missing EXIF data or CORS restriction)
+    }
   }
 }

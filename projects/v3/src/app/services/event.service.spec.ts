@@ -6,22 +6,14 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { TestUtils } from '@testingv3/utils';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 describe('EventService', () => {
-  moment.updateLocale('en', {
-    monthsShort: [
-      // customised shortened month to accommodate Intl date format
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
-    ]
-  });
   let service: EventService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
   const testUtils = new TestUtils();
-  const thisMoment = moment();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -197,7 +189,7 @@ describe('EventService', () => {
       const multiDayEvents: Array<Event> = [];
       let eventObj = null;
       for (let index = 0; index < dateDifference; index++) {
-        const startTime = moment(utils.iso8601Formatter(multiDayEvent.start));
+        const startTime = dayjs(utils.iso8601Formatter(multiDayEvent.start));
         eventObj = {
           id: multiDayEvent.id,
           name: multiDayEvent.title,
@@ -219,7 +211,7 @@ describe('EventService', () => {
           allDay: true,
           isMultiDay: true,
           multiDayInfo: {
-            startTime: startTime.clone().add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
+            startTime: startTime.add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
             endTime: multiDayEvent.end,
             dayCount: `(Day ${index + 1}/${dateDifference})`,
             id: `E${multiDayEvent.id}${index + 1}`,

@@ -1,7 +1,9 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { UtilsService } from '@v3/services/utils.service';
-import _ from 'lodash';
 import { of, Subject } from 'rxjs';
+
+dayjs.extend(utc);
 
 export class SpyObject {
   constructor(type?: any) {
@@ -81,7 +83,6 @@ export class TestUtils extends SpyObject {
 
   constructor() {
     super(UtilsService);
-    this.lodash = _;
     // UtilsService.prototype['lodash'] = (UtilsService.prototype['lodash']) ? UtilsService.prototype['lodash'] : _;
     this.isEmpty = this.spy('isEmpty').and.callFake(UtilsService.prototype.isEmpty);
     this.isMobile = this.spy('isMobile').and.returnValue(false);
@@ -130,8 +131,14 @@ export class TestUtils extends SpyObject {
     };
   }
 
-  has(object, path) {
-    return _.has(object, path);
+  has(object: Record<string, any>, path: string | string[]): boolean {
+    const parts = Array.isArray(path) ? path : String(path).split('.');
+    let obj: any = object;
+    for (const key of parts) {
+      if (obj == null || !Object.prototype.hasOwnProperty.call(obj, key)) return false;
+      obj = obj[key];
+    }
+    return true;
   }
 
   /**
@@ -146,8 +153,7 @@ export class TestUtils extends SpyObject {
    * @return {string} UTC date string
    */
   getDateString(day: number, minute: number): string {
-    const momentDate = `${moment.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss')}`;
-    return momentDate;
+    return dayjs.utc().add(day, 'days').add(minute, 'minute').format('YYYY-MM-DD hh:mm:ss');
   }
 
   /**

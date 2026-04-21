@@ -1,5 +1,5 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import exif from 'exif-js';
+import * as exifr from 'exifr';
 
 import { ImgComponent } from './img.component';
 
@@ -63,42 +63,36 @@ describe('ImgComponent', () => {
     expect(component.proxiedImgSrc).toBeUndefined();
   });
 
-  it('should apply EXIF orientation class and swap dimensions for orientation >= 5', () => {
+  it('should apply EXIF orientation class and swap dimensions for orientation >= 5', async () => {
     const imageElement = {
+      src: 'https://example.com/image.jpg',
       classList: jasmine.createSpyObj('classList', ['add']),
       height: 100,
       width: 200,
     } as any;
-    const event = { target: imageElement };
+    const event = { target: imageElement } as unknown as Event;
 
-    spyOn(exif, 'getData').and.callFake((image, callback: Function) => {
-      callback.call(image);
-      return undefined;
-    });
-    spyOn(exif, 'getAllTags').and.returnValue({ Orientation: 6 } as any);
+    spyOn(exifr, 'parse').and.returnValue(Promise.resolve({ Orientation: 6 }));
 
-    component.imageLoaded(event);
+    await component.imageLoaded(event);
 
     expect(imageElement.classList.add).toHaveBeenCalledWith('rotate-90');
     expect(imageElement.height).toBe(200);
     expect(imageElement.width).toBe(100);
   });
 
-  it('should not add class for unknown orientation', () => {
+  it('should not add class for unknown orientation', async () => {
     const imageElement = {
+      src: 'https://example.com/image.jpg',
       classList: jasmine.createSpyObj('classList', ['add']),
       height: 100,
       width: 200,
     } as any;
-    const event = { target: imageElement };
+    const event = { target: imageElement } as unknown as Event;
 
-    spyOn(exif, 'getData').and.callFake((image, callback: Function) => {
-      callback.call(image);
-      return undefined;
-    });
-    spyOn(exif, 'getAllTags').and.returnValue({ Orientation: 1 } as any);
+    spyOn(exifr, 'parse').and.returnValue(Promise.resolve({ Orientation: 1 }));
 
-    component.imageLoaded(event);
+    await component.imageLoaded(event);
 
     expect(imageElement.classList.add).not.toHaveBeenCalled();
     expect(imageElement.height).toBe(100);

@@ -3,17 +3,6 @@ import { Injectable, Inject, DOCUMENT } from '@angular/core';
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';
-import isEmpty from 'lodash-es/isEmpty';
-import each from 'lodash-es/each';
-import unset from 'lodash-es/unset';
-import find from 'lodash-es/find';
-import findIndex from 'lodash-es/findIndex';
-import has from 'lodash-es/has';
-import flatten from 'lodash-es/flatten';
-import indexOf from 'lodash-es/indexOf';
-import remove from 'lodash-es/remove';
-import isEqual from 'lodash-es/isEqual';
-import upperFirst from 'lodash-es/upperFirst';
 import dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import convert from 'color-convert';
@@ -39,7 +28,6 @@ export class UtilsService {
   });
   public screenStatus$ = this._screenStatus$.asObservable();
 
-  private lodash;
   // this Subject is used to broadcast an event to the app
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -48,22 +36,7 @@ export class UtilsService {
     private readonly storageService: BrowserStorageService,
     private title: Title,
     private platform: Platform,
-  ) {
-    // initialise lodash (reduce bundle size)
-    this.lodash = {
-      isEmpty,
-      each,
-      unset,
-      find,
-      findIndex,
-      has,
-      flatten,
-      indexOf,
-      remove,
-      isEqual,
-      upperFirst,
-    };
-  }
+  ) {}
 
   /**
    * get orientation of the device by comparing window height and width
@@ -83,8 +56,8 @@ export class UtilsService {
     });
   }
 
-  ucfirst(text) {
-    return this.lodash.upperFirst(text);
+  ucfirst(text: string): string {
+    return text ? text.charAt(0).toUpperCase() + text.slice(1) : text;
   }
 
   /**
@@ -112,58 +85,97 @@ export class UtilsService {
   }
 
   /** check if a value is empty
-   * precautions:
-   *  - Lodash's isEmpty, by default, sees "number" type value as empty,
-   *    but in our case, we just treat null/undefined/""/[]/{} as empty.
-   *  - [{}] = true
-   *  - [{}, {}, {}] = false
-   *
+   * Numbers are never considered empty (unlike lodash default behaviour).
+   * Returns true for null, undefined, '', [], and {}
    * @param  {any}     value
    * @return {boolean}       true: when empty string/object/array, otherwise false
    */
   isEmpty(value: any): boolean {
-    // number type value shouldn't be treat as empty
-    if (typeof value === 'number') {
-      return false;
+    if (typeof value === 'number') return false;
+    if (value == null) return true;
+    if (typeof value === 'string' || Array.isArray(value)) return value.length === 0;
+    if (typeof value === 'object') return Object.keys(value).length === 0;
+    return false;
+  }
+
+  each(collections: any[] | Record<string, any>, callback: (...args: any[]) => any) {
+    if (Array.isArray(collections)) {
+      collections.forEach((val, idx, arr) => callback(val, idx, arr));
+    } else if (collections && typeof collections === 'object') {
+      Object.keys(collections).forEach(key => callback((collections as Record<string, any>)[key], key, collections));
     }
-
-    return this.lodash.isEmpty(value);
+    return collections;
   }
 
-  each(collections, callback) {
-    return this.lodash.each(collections, callback);
+  unset(object: Record<string, any>, path: string | string[]): boolean {
+    const parts = Array.isArray(path) ? [...path] : String(path).split('.');
+    const last = parts.pop();
+    const parent = parts.reduce((acc: any, key) => (acc != null ? acc[key] : undefined), object);
+    if (parent != null && last !== undefined) {
+      delete parent[last];
+    }
+    return true;
   }
 
-  unset(object, path) {
-    return this.lodash.unset(object, path);
+  find(collections: any[], callback: ((val: any) => boolean) | Record<string, any>) {
+    if (typeof callback === 'object') {
+      const keys = Object.keys(callback);
+      return collections.find(item => keys.every(k => item[k] === (callback as Record<string, any>)[k]));
+    }
+    return collections.find(callback);
   }
 
-  find(collections, callback) {
-    return this.lodash.find(collections, callback);
+  findIndex(collections: any[], callback: ((val: any) => boolean) | Record<string, any>): number {
+    if (typeof callback === 'object') {
+      const keys = Object.keys(callback);
+      return collections.findIndex(item => keys.every(k => item[k] === (callback as Record<string, any>)[k]));
+    }
+    return collections.findIndex(callback);
   }
 
-  findIndex(collections: any[], callback: any) {
-    return this.lodash.findIndex(collections, callback);
+  has(object: Record<string, any>, path: string | string[]): boolean {
+    const parts = Array.isArray(path) ? path : String(path).split('.');
+    let obj: any = object;
+    for (const key of parts) {
+      if (obj == null || !Object.prototype.hasOwnProperty.call(obj, key)) return false;
+      obj = obj[key];
+    }
+    return true;
   }
 
-  has(object, path) {
-    return this.lodash.has(object, path);
+  flatten(values: any[]): any[] {
+    return values.flat(1);
   }
 
-  flatten(values: any[]) {
-    return this.lodash.flatten(values);
+  indexOf(values: any[], value: any, fromIndex = 0): number {
+    return values.indexOf(value, fromIndex);
   }
 
-  indexOf(values: any[], value, fromIndex = 0) {
-    return this.lodash.indexOf(values, value, fromIndex);
+  remove(collections: any[], callback: (value: any) => boolean): any[] {
+    const removed: any[] = [];
+    for (let i = collections.length - 1; i >= 0; i--) {
+      if (callback(collections[i])) {
+        removed.unshift(...collections.splice(i, 1));
+      }
+    }
+    return removed;
   }
 
-  remove(collections: any[], callback: (value: any) => boolean) {
-    return this.lodash.remove(collections, callback);
-  }
-
-  isEqual(value: any, other: any) {
-    return this.lodash.isEqual(value, other);
+  isEqual(value: any, other: any): boolean {
+    if (value === other) return true;
+    if (value == null || other == null) return value === other;
+    if (typeof value !== typeof other) return false;
+    if (Array.isArray(value)) {
+      if (!Array.isArray(other) || value.length !== other.length) return false;
+      return value.every((item, i) => this.isEqual(item, other[i]));
+    }
+    if (typeof value === 'object') {
+      const keysA = Object.keys(value);
+      const keysB = Object.keys(other);
+      if (keysA.length !== keysB.length) return false;
+      return keysA.every(key => this.isEqual(value[key], other[key]));
+    }
+    return false;
   }
 
   openUrl(url: string, options?: { target: string }) {

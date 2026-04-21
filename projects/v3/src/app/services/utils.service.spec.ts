@@ -1,23 +1,17 @@
 import { TestBed, flushMicrotasks, fakeAsync } from '@angular/core/testing';
 import { UtilsService, ThemeColor } from './utils.service';
-import _ from 'lodash';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ModalController, Platform } from '@ionic/angular';
 
 describe('UtilsService', () => {
-  moment.updateLocale('en', {
-    monthsShort: [
-      // customised shortened month to accommodate Intl date format
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'
-    ]
-  });
-  const thisMoment = moment();
+  dayjs.extend(utc);
+  const thisMoment = dayjs();
   const NOW = new Date();
-  const YESTERDAY = new Date(moment(NOW).subtract(1, 'day').toString());
-  const TOMORROW = new Date(moment(NOW).add(1, 'day').toString());
+  const YESTERDAY = dayjs(NOW).subtract(1, 'day').toDate();
+  const TOMORROW = dayjs(NOW).add(1, 'day').toDate();
   let service: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let platformSpy: jasmine.SpyObj<Platform>;
@@ -373,10 +367,10 @@ describe('UtilsService', () => {
 
         if (result === 'Tomorrow') {
           expect(thisMoment.utcOffset()).toBeGreaterThan(0);
-          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isAfter(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
+          expect(dayjs.utc(new Date(`${timeString} GMT+0000`)).isAfter(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else if (result === 'Yesterday') {
           expect(thisMoment.utcOffset()).toBeLessThan(0);
-          expect(moment.utc(new Date(`${timeString} GMT+0000`)).isBefore(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
+          expect(dayjs.utc(new Date(`${timeString} GMT+0000`)).isBefore(thisMoment.format('YYYY-MM-DD'))).toBeTruthy();
         } else {
           expect(result.toLowerCase()).toEqual(formatted.toLowerCase());
         }
@@ -389,9 +383,9 @@ describe('UtilsService', () => {
     });
 
     it('should ignore date/month other than today', () => {
-      const NEXT_MONTH = thisMoment.add(1, 'month').toString();
+      const NEXT_MONTH = thisMoment.add(1, 'month').toDate().toString();
       const result = service.timeFormatter(NOW, new Date(NEXT_MONTH));
-      expect(result).toEqual(moment(NOW).format('D MMM'));
+      expect(result).toEqual(new Intl.DateTimeFormat('en-GB', { month: 'short', day: 'numeric' }).format(NOW));
     });
 
     it('should standardize today date into "Tomorrow"', () => {
@@ -405,7 +399,7 @@ describe('UtilsService', () => {
     });
 
     it('should standardize today date into formatted date', () => {
-      const future30days = new Date(moment('2020-01-01').add(30, 'days').toString());
+      const future30days = dayjs('2020-01-01').add(30, 'days').toDate();
       const result = service.timeFormatter(future30days);
       expect(result).toEqual('31 Jan');
     });
@@ -455,7 +449,7 @@ describe('UtilsService', () => {
     });
 
     it('should standardize today date into formatted date', () => {
-      const future30days = new Date(moment('2020-01-01').add(30, 'days').toString());
+      const future30days = dayjs('2020-01-01').add(30, 'days').toDate();
       const result = service.dateFormatter(future30days);
       expect(result).toEqual('31 Jan 2020');
     });
@@ -584,8 +578,7 @@ describe('UtilsService', () => {
   describe('getFutureDated()', () => {
     it('should return future date from the date it get', () => {
       const date = service.getFutureDated('2021-11-25 05:18:00', 2);
-      const momentObj = moment(service.iso8601Formatter('2021-11-25 05:18:00'));
-      const expected = momentObj.clone().add(2, 'day').format('YYYY-MM-DD hh:mm:ss');
+      const expected = dayjs(service.iso8601Formatter('2021-11-25 05:18:00')).add(2, 'day').format('YYYY-MM-DD hh:mm:ss');
       expect(date).toEqual(expected);
     });
   });
