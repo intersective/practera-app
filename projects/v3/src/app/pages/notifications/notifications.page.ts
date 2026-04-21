@@ -1,4 +1,5 @@
-import { Component, Inject, Input, OnDestroy, OnInit, DOCUMENT } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationsService, TodoItem } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';

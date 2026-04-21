@@ -105,6 +105,12 @@ interface AuthEndpointExperience {
   role: string;
   isLast: null | boolean;
   locale: string;
+  todoItemCount: number;
+  progress: number;
+  config: {
+    primary_color?: string;
+    secondary_color?: string;
+  };
   supportName: string;
   supportEmail: string;
   cardUrl: string;

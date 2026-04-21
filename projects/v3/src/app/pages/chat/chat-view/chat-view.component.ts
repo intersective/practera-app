@@ -1,4 +1,5 @@
-import { Component, ViewChild, OnInit, Inject, DOCUMENT } from '@angular/core';
+import { Component, ViewChild, OnInit, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { ChatChannel } from '@v3/services/chat.service';

@@ -1,5 +1,6 @@
 import { NotificationsService } from './../../../services/notifications.service';
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit, DOCUMENT } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 

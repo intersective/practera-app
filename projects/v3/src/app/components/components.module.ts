@@ -1,6 +1,5 @@
-import { DashboardModalComponent, DashboardComponent } from '@uppy/angular';
 import { TrafficLightComponent } from './traffic-light/traffic-light.component';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -69,10 +68,13 @@ const largeCircleDefaultConfig = {
     FormsModule,
     ReactiveFormsModule,
     ToggleLabelDirective,
-    DashboardModalComponent,
-    DashboardComponent,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
+  // @uppy/angular v1.1.0 was compiled for Angular <=20 and is incompatible with Angular 21's
+  // IVY standalone detection. CUSTOM_ELEMENTS_SCHEMA allows <uppy-dashboard> and
+  // <uppy-dashboard-modal> to render as custom elements via Uppy's own JavaScript.
+  // Remove when @uppy/angular releases Angular 21 support.
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AchievementPopUpComponent,
     ActivityCompletePopUpComponent,

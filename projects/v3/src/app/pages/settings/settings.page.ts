@@ -1,5 +1,6 @@
 import { UppyUploaderService } from './../../components/uppy-uploader/uppy-uploader.service';
-import { Component, Inject, Input, OnDestroy, OnInit, DOCUMENT } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';

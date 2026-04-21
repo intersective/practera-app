@@ -1,5 +1,6 @@
 import { Topic, TopicService } from '@v3/services/topic.service';
-import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChanges, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked, ChangeDetectorRef, DOCUMENT } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChanges, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked, ChangeDetectorRef } from '@angular/core';
 
 import { UtilsService } from '@v3/services/utils.service';
 import { SharedService } from '@v3/services/shared.service';
