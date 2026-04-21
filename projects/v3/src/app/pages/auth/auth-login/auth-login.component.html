@@ -21,7 +21,7 @@
               placeholder="Email"
               i18n-placeholder
               autofocus="true"
-              ></ion-input>
+            ></ion-input>
           </ion-item>
           <ion-item lines="none">
             <ion-label position="stacked" for="login-password">Password</ion-label>
@@ -34,10 +34,10 @@
               [type]="showPassword ? 'text' : 'password'"
               placeholder="Password"
               i18n-placeholder
-              ></ion-input>
-              <ion-button (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
-                <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
-              </ion-button>
+            ></ion-input>
+            <ion-button (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+              <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
+            </ion-button>
           </ion-item>
         </ion-list>
         <ion-button
@@ -51,8 +51,12 @@
           (keydown)="login($event)"
           >
           <span id="login-desc" [attr.aria-live]="'polite'">
-            <ng-container *ngIf="!isLoggingIn" i18n>LOGIN</ng-container>
-            <ng-container *ngIf="isLoggingIn" i18n>LOGGING IN...</ng-container>
+            @if (!isLoggingIn) {
+              <ng-container i18n>LOGIN</ng-container>
+            }
+            @if (isLoggingIn) {
+              <ng-container i18n>LOGGING IN...</ng-container>
+            }
           </span>
         </ion-button>
       </form>

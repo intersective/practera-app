@@ -17,24 +17,36 @@
   </div>
 
   <div class="details-container ion-text-center">
-    <div class="div-after-img" *ngIf="type === 'notification' && hideName !== true">
-      <p class="headline-6" i18n>Congratulations</p>
-      <p class="body-1" i18n>You have earned a new badge</p>
-      <div class="description subtitle-1 gray-2" *ngIf="achievement.name" tabindex="0" #achievementName>{{achievement.name}}</div>
-    </div>
+    @if (type === 'notification' && hideName !== true) {
+      <div class="div-after-img">
+        <p class="headline-6" i18n>Congratulations</p>
+        <p class="body-1" i18n>You have earned a new badge</p>
+        @if (achievement.name) {
+          <div class="description subtitle-1 gray-2" tabindex="0" #achievementName>{{achievement.name}}</div>
+        }
+      </div>
+    }
 
-    <div class="div-after-img" *ngIf="type !== 'notification' && hideName !== true">
-      <p class="headline-6" *ngIf="achievement.name" tabindex="0" [attr.aria-label]="achievement.name" #achievementName>{{achievement.name}}</p>
-      <p class="body-1" *ngIf="achievement.points && type !== 'notification'" i18n>{{achievement.points}}&nbsp;{achievement.points, plural, =1 {point} other {points}}!</p>
-    </div>
+    @if (type !== 'notification' && hideName !== true) {
+      <div class="div-after-img">
+        @if (achievement.name) {
+          <p class="headline-6" tabindex="0" [attr.aria-label]="achievement.name" #achievementName>{{achievement.name}}</p>
+        }
+        @if (achievement.points && type !== 'notification') {
+          <p class="body-1" i18n>{{achievement.points}}&nbsp;{achievement.points, plural, =1 {point} other {points}}!</p>
+        }
+      </div>
+    }
 
-    <ion-text color="medium" *ngIf="achievement.description" text-center>
-      <app-description class="body-1 gray-2"
-        [content]="achievement.description"
-        [isInPopup]="true"
-        (hasExpanded)="hideAchievementName($event)"
-      ></app-description>
-    </ion-text>
+    @if (achievement.description) {
+      <ion-text color="medium" text-center>
+        <app-description class="body-1 gray-2"
+          [content]="achievement.description"
+          [isInPopup]="true"
+          (hasExpanded)="hideAchievementName($event)"
+        ></app-description>
+      </ion-text>
+    }
   </div>
 </ion-content>
 
@@ -44,7 +56,7 @@
       <ion-button mode="ios" (click)="confirmed($event)"
         shape="round" color="primary"
         expand="full" tabindex="0" id="confirm"
-        [attr.aria-role]="'button'" (keydown)=confirmed($event) [attr.aria-label]="'confirm'" #dismissButton i18n>OK</ion-button>
+      [attr.aria-role]="'button'" (keydown)=confirmed($event) [attr.aria-label]="'confirm'" #dismissButton i18n>OK</ion-button>
     </div>
   </div>
 </ion-footer>

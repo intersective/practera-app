@@ -1,31 +1,34 @@
 <h3 class="for-accessibility" [id]="'oneof-question-' + question.id">{{question.name}}</h3>
 
-<ng-container *ngIf="isDisplayOnly">
+@if (isDisplayOnly) {
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
-      <ng-container *ngFor="let choice of question.choices">
+      @for (choice of question.choices; track choice) {
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
-            <ion-chip class="label orange"
-              *ngIf="submission?.answer === choice.id" i18n
-            >Learner's Answer</ion-chip>
-            <ion-chip class="label yellow black"
-              *ngIf="review?.answer === choice.id" i18n
-            >Reviewer's Answer</ion-chip>
+            @if (submission?.answer === choice.id) {
+              <ion-chip class="label orange"
+                i18n
+              >Learner's Answer</ion-chip>
+            }
+            @if (review?.answer === choice.id) {
+              <ion-chip class="label yellow black"
+                i18n
+              >Reviewer's Answer</ion-chip>
+            }
           </ion-label>
         </ion-item>
-        <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">
+        @if (choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id) {
           <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
             <ion-icon slot="start" name="information-circle"></ion-icon>
             <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
           </ion-item>
-        </ng-container>
-      </ng-container>
+        }
+      }
     </ion-radio-group>
   </ion-list>
-
-  <ng-container *ngIf="review?.comment && question.canComment === true">
+  @if (review?.comment && question.canComment === true) {
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
@@ -35,10 +38,10 @@
       [value]="review.comment"
       [disabled]="true"
     ></ion-textarea>
-  </ng-container>
-</ng-container>
+  }
+}
 
-<ng-container *ngIf="doAssessment">
+@if (doAssessment) {
   <div class="ion-no-padding">
     <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id">
       <legend class="for-accessibility" [id]="'oneof-question-legend-' + question.id">{{ question.name }}</legend>
@@ -47,7 +50,7 @@
           (ionChange)="onChange(answerEle.value)"
           role="radiogroup"
           [attr.aria-labelledby]="'oneof-question-' + question.id">
-          <ng-container *ngFor="let choice of question.choices; let i = index">
+          @for (choice of question.choices; track choice; let i = $index) {
             <ion-item lines="none"
               [ngClass]="{'item-bottom-border': i !== question.choices.length - 1 || !checkInnerValue(choice.id)}">
               <ion-radio color="success"
@@ -69,80 +72,93 @@
                 </div>
               </ion-radio>
             </ion-item>
-            <ng-container
-            *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
+            @if (control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)) {
               <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
                 <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
                 <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
               </ion-item>
-            </ng-container>
-          </ng-container>
+            }
+          }
         </ion-radio-group>
       </ion-list>
     </fieldset>
   </div>
-</ng-container>
+}
 
-<ng-container *ngIf="doReview">
+@if (doReview) {
   <div class="ion-no-padding">
-    <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id" *ngIf="question.canAnswer">
-      <legend class="for-accessibility" [id]="'oneof-question-review-legend-' + question.id">{{ question.name }}</legend>
-      <ion-list class="ion-no-padding" *ngIf="question.canAnswer">
-        <ion-radio-group
-          #answerEle
-          [value]="innerValue?.answer"
-          (ionChange)="onChange(answerEle.value, 'answer')"
-          role="radiogroup"
-          [attr.aria-labelledby]="'oneof-question-' + question.id">
-          <ion-list-header class="ion-no-padding" *ngIf="!question.reviewerOnly">
-            <ion-label class="subtitle-2 black" i18n>Your Answer is</ion-label>
-          </ion-list-header>
-          <ion-item *ngFor="let choice of question.choices; let i = index"
-            lines="none"
-            [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}">
-            <ion-radio
-              color="success"
-              [attr.aria-label]="choice.name"
-              [value]="choice.id"
-              [disabled]="control.disabled"
-              slot="start"
-              justify="start"
-              labelPlacement="end">
-              <div class="body-2 black">
-                <span [innerHTML]="choice.name | detectLanguage"
-                  [appToggleLabel]="onLabelToggleReview"
-                  [toggleId]="choice.id"
-                  [toggleDisabled]="control.disabled"
-                  role="button"
-                  tabindex="0">
-                </span>
-                <p *ngIf="submission?.answer === choice.id || review?.answer === choice.id" style="margin: 0; padding: 0;">
-                  <ion-chip class="label orange" *ngIf="submission?.answer === choice.id" i18n>Learner's Answer</ion-chip>
-                </p>
-              </div>
-            </ion-radio>
-          </ion-item>
-        </ion-radio-group>
+    @if (question.canAnswer) {
+      <fieldset [attr.aria-labelledby]="'oneof-question-' + question.id">
+        <legend class="for-accessibility" [id]="'oneof-question-review-legend-' + question.id">{{ question.name }}</legend>
+        @if (question.canAnswer) {
+          <ion-list class="ion-no-padding">
+            <ion-radio-group
+              #answerEle
+              [value]="innerValue?.answer"
+              (ionChange)="onChange(answerEle.value, 'answer')"
+              role="radiogroup"
+              [attr.aria-labelledby]="'oneof-question-' + question.id">
+              @if (!question.reviewerOnly) {
+                <ion-list-header class="ion-no-padding">
+                  <ion-label class="subtitle-2 black" i18n>Your Answer is</ion-label>
+                </ion-list-header>
+              }
+              @for (choice of question.choices; track choice; let i = $index) {
+                <ion-item
+                  lines="none"
+                  [ngClass]="{'item-bottom-border': i !== question.choices.length - 1}">
+                  <ion-radio
+                    color="success"
+                    [attr.aria-label]="choice.name"
+                    [value]="choice.id"
+                    [disabled]="control.disabled"
+                    slot="start"
+                    justify="start"
+                    labelPlacement="end">
+                    <div class="body-2 black">
+                      <span [innerHTML]="choice.name | detectLanguage"
+                        [appToggleLabel]="onLabelToggleReview"
+                        [toggleId]="choice.id"
+                        [toggleDisabled]="control.disabled"
+                        role="button"
+                        tabindex="0">
+                      </span>
+                      @if (submission?.answer === choice.id || review?.answer === choice.id) {
+                        <p style="margin: 0; padding: 0;">
+                          @if (submission?.answer === choice.id) {
+                            <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
+                          }
+                        </p>
+                      }
+                    </div>
+                  </ion-radio>
+                </ion-item>
+              }
+            </ion-radio-group>
+          </ion-list>
+        }
+      </fieldset>
+    }
+    @if (question.canComment && submission.answer) {
+      <ion-list class="ion-no-padding ion-padding-bottom"
+        >
+        <ion-list-header class="ion-no-padding" lines="none">
+          <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
+        </ion-list-header>
+        @if (question.canComment && submission.answer) {
+          <ion-textarea
+            [autoGrow]="true"
+            [attr.aria-label]="'expert\'s review feedback'"
+            class="textarea"
+            #commentEle
+            [(ngModel)]="comment"
+            rows="4"
+            (ngModelChange)="onChange(comment, 'comment')"
+            placeholder="Please put your feedback here"
+            i18n-placeholder
+          [disabled]="control.disabled"></ion-textarea>
+        }
       </ion-list>
-    </fieldset>
-
-    <ion-list class="ion-no-padding ion-padding-bottom"
-      *ngIf="question.canComment && submission.answer">
-      <ion-list-header class="ion-no-padding" lines="none">
-        <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
-      </ion-list-header>
-      <ion-textarea
-        [autoGrow]="true"
-        [attr.aria-label]="'expert\'s review feedback'"
-        *ngIf="question.canComment && submission.answer"
-        class="textarea"
-        #commentEle
-        [(ngModel)]="comment"
-        rows="4"
-        (ngModelChange)="onChange(comment, 'comment')"
-        placeholder="Please put your feedback here"
-        i18n-placeholder
-        [disabled]="control.disabled"></ion-textarea>
-    </ion-list>
+    }
   </div>
-</ng-container>
+}

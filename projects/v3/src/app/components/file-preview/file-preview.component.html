@@ -1,18 +1,19 @@
 <ion-header mode="ios" aria-label="file preview">
   <ion-toolbar>
-    <ion-icon
-      *ngIf="file.url"
-      name="download-outline"
-      (click)="download()"
-      (keydown.space)="download()"
-      (keydown.enter)="download()"
-      color="primary"
-      size="large"
-      slot="end"
-      class="ion-margin-start focusable"
-      role="button"
-      tabindex="0"
-    ></ion-icon>
+    @if (file.url) {
+      <ion-icon
+        name="download-outline"
+        (click)="download()"
+        (keydown.space)="download()"
+        (keydown.enter)="download()"
+        color="primary"
+        size="large"
+        slot="end"
+        class="ion-margin-start focusable"
+        role="button"
+        tabindex="0"
+      ></ion-icon>
+    }
 
     <ion-icon
       name="close-circle-outline"

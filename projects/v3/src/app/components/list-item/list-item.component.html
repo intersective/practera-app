@@ -3,136 +3,159 @@
   [lines]="lines"
   tabindex="0"
   role="listitem">
-  <ng-container *ngIf="!loading; else loadingSkeleton">
-    <div class="icon-container activitypage" *ngIf="!leadImage">
-      <ion-icon *ngIf="leadingIcon"
-        [name]="leadingIcon"
-        slot="start"
-        class="leading-icon"
-        [ngClass]="{'pulsing': leadingIconPulsing}"
-        aria-hidden="true"
-      ></ion-icon>
-
-      <ion-icon *ngIf="notificationIcon"
-        [name]="notificationIcon"
-        slot="start"
-        class="notification-icon"
-        aria-hidden="true"
-      ></ion-icon>
-
-      <span class="notification-dot"
-        *ngIf="redDot === true"
-        role="status"
-        aria-label="New notification" i18n-aria-label></span>
-    </div>
-
-    <ion-avatar class="icon-container homepage" *ngIf="leadImage" slot="start" aria-hidden="true">
-      <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
-      <ion-icon name="bookmark"
-        class="bookmark-icon"
-        color="primary"
-        *ngIf="bookmarked === true"
-        role="img"
-        aria-label="Bookmarked" i18n-aria-label></ion-icon>
-      <span class="notification-dot"
-        *ngIf="redDot === true"
-        role="status"
-        aria-label="New notification" i18n-aria-label></span>
-    </ion-avatar>
-
+  @if (!loading) {
+    @if (!leadImage) {
+      <div class="icon-container activitypage">
+        @if (leadingIcon) {
+          <ion-icon
+            [name]="leadingIcon"
+            slot="start"
+            class="leading-icon"
+            [ngClass]="{'pulsing': leadingIconPulsing}"
+            aria-hidden="true"
+          ></ion-icon>
+        }
+        @if (notificationIcon) {
+          <ion-icon
+            [name]="notificationIcon"
+            slot="start"
+            class="notification-icon"
+            aria-hidden="true"
+          ></ion-icon>
+        }
+        @if (redDot === true) {
+          <span class="notification-dot"
+            role="status"
+          aria-label="New notification" i18n-aria-label></span>
+        }
+      </div>
+    }
+    @if (leadImage) {
+      <ion-avatar class="icon-container homepage" slot="start" aria-hidden="true">
+        <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
+        @if (bookmarked === true) {
+          <ion-icon name="bookmark"
+            class="bookmark-icon"
+            color="primary"
+            role="img"
+          aria-label="Bookmarked" i18n-aria-label></ion-icon>
+        }
+        @if (redDot === true) {
+          <span class="notification-dot"
+            role="status"
+          aria-label="New notification" i18n-aria-label></span>
+        }
+      </ion-avatar>
+    }
     <div class="item-content ion-padding-vertical"
       [ngClass]="{'event-item': isEventItem, 'content-expired': eventExpired}">
-      <div *ngIf="isEventItem" style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
-        <div class="'item-title body-2 ion-color-' + titleColor"
+      @if (isEventItem) {
+        <div style="display: flex; flex-wrap: nowrap; flex-direction: row; align-items: center;">
+          <div class="'item-title body-2 ion-color-' + titleColor"
+            [innerHTML]="title"
+            role="heading"
+          aria-level="3"></div>
+          &nbsp; <!-- this is to add some space between two elements -->
+          <span style="white-space: nowrap;"
+            class="item-title subtitle-3"
+            [ngClass]="'color-' + titleColor"
+          > {{ eventDayCount }}</span>
+        </div>
+      }
+      @if (!isEventItem) {
+        <div
+          [class]="'body-2 ' + titleColor"
           [innerHTML]="title"
           role="heading"
-          aria-level="3"></div>
-        &nbsp; <!-- this is to add some space between two elements -->
-        <span style="white-space: nowrap;"
-          class="item-title subtitle-3"
-          [ngClass]="'color-' + titleColor"
-        > {{ eventDayCount }}</span>
-      </div>
-
-      <div *ngIf="!isEventItem"
-        [class]="'body-2 ' + titleColor"
-        [innerHTML]="title"
-        role="heading"
-        aria-level="3"
-      ></div>
-
-      <div *ngIf="subtitle1"
-        [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color"
-        [innerHTML]="subtitle1"
-      ></div>
-
-      <div *ngIf="subtitle2" [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color"
-        [innerHTML]="subtitle2"
-      ></div>
-
-      <div *ngIf="callToActionBtn"
-        [class]="'call-to-action ion-color-' + callToActionBtn.color"
-      >
-        <ion-button size="small"
-          color="notification"
-          (keydown.enter)="anyBtnClick.emit($event)"
-          (keydown.space)="anyBtnClick.emit($event); $event.preventDefault()"
-          (click)="anyBtnClick.emit()"
-          [attr.aria-label]="callToActionBtn.name">
-          {{callToActionBtn.name}}
-        </ion-button>
-      </div>
-
-      <div *ngIf="label">
-        <ion-chip [class]="'label ion-no-margin ' + labelColor" role="status">
-          <span class="body-3" [innerHTML]="label"></span>
-        </ion-chip>
-      </div>
+          aria-level="3"
+        ></div>
+      }
+      @if (subtitle1) {
+        <div
+          [class]="'item-subtitle-1 subtitle-2 ion-color-' + subtitle1Color"
+          [innerHTML]="subtitle1"
+        ></div>
+      }
+      @if (subtitle2) {
+        <div [class]="'item-subtitle-2 caption ion-color-' + subtitle2Color"
+          [innerHTML]="subtitle2"
+        ></div>
+      }
+      @if (callToActionBtn) {
+        <div
+          [class]="'call-to-action ion-color-' + callToActionBtn.color"
+          >
+          <ion-button size="small"
+            color="notification"
+            (keydown.enter)="anyBtnClick.emit($event)"
+            (keydown.space)="anyBtnClick.emit($event); $event.preventDefault()"
+            (click)="anyBtnClick.emit()"
+            [attr.aria-label]="callToActionBtn.name">
+            {{callToActionBtn.name}}
+          </ion-button>
+        </div>
+      }
+      @if (label) {
+        <div>
+          <ion-chip [class]="'label ion-no-margin ' + labelColor" role="status">
+            <span class="body-3" [innerHTML]="label"></span>
+          </ion-chip>
+        </div>
+      }
     </div>
-
-    <ion-text *ngIf="endingText"
-      class="item-ending-text caption"
-      [color]="endingTextColor"
-      slot="end"
-      [innerHTML]="endingText"
-    ></ion-text>
-
-    <ion-icon *ngIf="endingIcon"
-      [name]="endingIcon"
-      slot="end"
-      [color]="endingIconColor || 'primary'"
-      [attr.aria-hidden]="!statusDescriptions(endingIcon)"
-      [attr.aria-label]="statusDescriptions(endingIcon)"
-      role="img"
-    ></ion-icon>
-    <div *ngIf="(endingProgress && endingProgress !== 1) && !endingIcon"
-      slot="end" style="width: 2em;"
-      role="status"
-      [attr.aria-label]="'Progress ' + (endingProgress * 100) + ' percent'" i18n-aria-label>
-      <app-circle-progress
-        [data]='{ percent: endingProgress * 100 }'
-        aria-hidden="true"
-      ></app-circle-progress>
-    </div>
-
-    <div *ngIf="isEventItem">
+    @if (endingText) {
+      <ion-text
+        class="item-ending-text caption"
+        [color]="endingTextColor"
+        slot="end"
+        [innerHTML]="endingText"
+      ></ion-text>
+    }
+    @if (endingIcon) {
+      <ion-icon
+        [name]="endingIcon"
+        slot="end"
+        [color]="endingIconColor || 'primary'"
+        [attr.aria-hidden]="!statusDescriptions(endingIcon)"
+        [attr.aria-label]="statusDescriptions(endingIcon)"
+        role="img"
+      ></ion-icon>
+    }
+    @if ((endingProgress && endingProgress !== 1) && !endingIcon) {
       <div
-        *ngIf="eventExpired"
-        class="expired-batch gray-2"
+        slot="end" style="width: 2em;"
         role="status"
-        i18n>Expired</div>
-      <!-- Show fully booked label if event is not expired -->
-      <div *ngIf="eventFullyBooked && !eventExpired"
-        class="expired-batch gray-2"
-        role="status"
-        i18n>Fully Booked</div>
-      <!-- Show video conference label if event is not expired and not fully booked -->
-      <div *ngIf="eventVideoConference && !eventExpired && !eventFullyBooked"
-        class="video-conference-batch ion-text-capitalize"
-        role="status">{{ eventVideoConference.provider }}</div>
-    </div>
-
-    <ng-container *ngFor="let actionBtnIcon of endingActionBtnIcons; let i = index">
+        [attr.aria-label]="'Progress ' + (endingProgress * 100) + ' percent'" i18n-aria-label>
+        <app-circle-progress
+          [data]='{ percent: endingProgress * 100 }'
+          aria-hidden="true"
+        ></app-circle-progress>
+      </div>
+    }
+    @if (isEventItem) {
+      <div>
+        @if (eventExpired) {
+          <div
+            class="expired-batch gray-2"
+            role="status"
+          i18n>Expired</div>
+        }
+        <!-- Show fully booked label if event is not expired -->
+        @if (eventFullyBooked && !eventExpired) {
+          <div
+            class="expired-batch gray-2"
+            role="status"
+          i18n>Fully Booked</div>
+        }
+        <!-- Show video conference label if event is not expired and not fully booked -->
+        @if (eventVideoConference && !eventExpired && !eventFullyBooked) {
+          <div
+            class="video-conference-batch ion-text-capitalize"
+          role="status">{{ eventVideoConference.provider }}</div>
+        }
+      </div>
+    }
+    @for (actionBtnIcon of endingActionBtnIcons; track actionBtnIcon; let i = $index) {
       <ion-button mode="ios" fill="clear"
         (click)="actionBtnClick.emit(i)"
         (keydown.enter)="actionBtnClick.emit(i)"
@@ -140,19 +163,18 @@
         [attr.aria-label]="'Action button' + (i + 1)" i18n-aria-label>
         <ion-icon [name]="actionBtnIcon" aria-hidden="true"></ion-icon>
       </ion-button>
-    </ng-container>
-  </ng-container>
+    }
+  } @else {
+    <div role="status" aria-label="Loading item" i18n-aria-label>
+      <ion-avatar class="skeleton-icon leading-icon">
+        <ion-skeleton-text animated></ion-skeleton-text>
+      </ion-avatar>
+      <div class="item-content ion-padding-vertical">
+        <p><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
+        <p><ion-skeleton-text animated></ion-skeleton-text></p>
+      </div>
+    </div>
+  }
 </ion-item>
 
-<ng-template #loadingSkeleton>
-  <div role="status" aria-label="Loading item" i18n-aria-label>
-    <ion-avatar class="skeleton-icon leading-icon">
-      <ion-skeleton-text animated></ion-skeleton-text>
-    </ion-avatar>
-    <div class="item-content ion-padding-vertical">
-      <p><ion-skeleton-text animated style="width: 50%"></ion-skeleton-text></p>
-      <p><ion-skeleton-text animated></ion-skeleton-text></p>
-    </div>
-  </div>
-</ng-template>
 

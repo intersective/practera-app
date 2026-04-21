@@ -8,150 +8,161 @@
 
   <main aria-label="registration">
 
-  <div [ngClass]="{'ion-text-center div-after-logo': !unRegisteredDirectLink}">
-    <ng-container *ngIf="!unRegisteredDirectLink">
-      <ng-container *ngIf="!hide_password">
-        <h2 class="headline-6" i18n>Your Login Email Address</h2>
-        <p class="body-1" aria-label="Email address">{{user.email}}</p>
-      </ng-container>
-      <ng-container *ngIf="hide_password">
-        <h2 class="headline-6" i18n>Your Mobile Number</h2>
-        <p class="body-1" aria-label="Mobile number">{{user.contact}}</p>
-      </ng-container>
-      <form [formGroup]="registerationForm" aria-label="Registration form">
-        <ion-input name="email"
-          formControlName="email"
-          type="hidden" value="{{user.email}}"
-          aria-hidden="true" aria-label="email address">
-        </ion-input>
-        <ion-list margin>
-          <ion-item *ngIf="!hide_password">
-            <ion-label position="stacked" for="register-password">
-              Set up Practera password <span aria-label="required" i18n-aria-label>*</span>
-            </ion-label>
-            <ion-input
-              id="register-password"
-              name="password"
-              [(ngModel)]="password"
-              formControlName="password"
-              autocomplete="new-password"
-              required
-              [type]="showPassword ? 'text' : 'password'"
-              placeholder="Set up Practera password*"
-              i18n-placeholder
-              aria-required="true"
-              [attr.aria-invalid]="registerationForm.get('password')?.invalid && registerationForm.get('password')?.touched">
-            </ion-input>
-            <ion-button slot="end" mode="ios" (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="(showPassword ? 'Hide password' : 'Show password')" i18n-aria-label>
-              <ion-icon [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
-            </ion-button>
-          </ion-item>
-          <ion-item *ngIf="!hide_password" lines="none">
-            <ion-label position="stacked" for="register-confirm-password">
-              Confirm password <span aria-label="required" i18n-aria-label>*</span>
-            </ion-label>
-            <ion-input
-              id="register-confirm-password"
-              name="confirmPassword"
-              [(ngModel)]="confirmPassword"
-              formControlName="confirmPassword"
-              [type]="showPassword ? 'text' : 'password'"
-              placeholder="Confirm password"
-              i18n-placeholder
-              autocomplete="new-password"
-              required
-              aria-required="true"
-              [attr.aria-invalid]="registerationForm.get('confirmPassword')?.invalid && registerationForm.get('confirmPassword')?.touched">
-            </ion-input>
-          </ion-item>
-        </ion-list>
-        <div class="list-terms" role="group" aria-label="Terms and conditions agreement" i18n-aria-label>
-          <ion-checkbox id="registerAgreement" color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
+    <div [ngClass]="{'ion-text-center div-after-logo': !unRegisteredDirectLink}">
+      @if (!unRegisteredDirectLink) {
+        @if (!hide_password) {
+          <h2 class="headline-6" i18n>Your Login Email Address</h2>
+          <p class="body-1" aria-label="Email address">{{user.email}}</p>
+        }
+        @if (hide_password) {
+          <h2 class="headline-6" i18n>Your Mobile Number</h2>
+          <p class="body-1" aria-label="Mobile number">{{user.contact}}</p>
+        }
+        <form [formGroup]="registerationForm" aria-label="Registration form">
+          <ion-input name="email"
+            formControlName="email"
+            type="hidden" value="{{user.email}}"
+            aria-hidden="true" aria-label="email address">
+          </ion-input>
+          <ion-list margin>
+            @if (!hide_password) {
+              <ion-item>
+                <ion-label position="stacked" for="register-password">
+                  Set up Practera password <span aria-label="required" i18n-aria-label>*</span>
+                </ion-label>
+                <ion-input
+                  id="register-password"
+                  name="password"
+                  [(ngModel)]="password"
+                  formControlName="password"
+                  autocomplete="new-password"
+                  required
+                  [type]="showPassword ? 'text' : 'password'"
+                  placeholder="Set up Practera password*"
+                  i18n-placeholder
+                  aria-required="true"
+                  [attr.aria-invalid]="registerationForm.get('password')?.invalid && registerationForm.get('password')?.touched">
+                </ion-input>
+                <ion-button slot="end" mode="ios" (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="(showPassword ? 'Hide password' : 'Show password')" i18n-aria-label>
+                  <ion-icon [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
+                </ion-button>
+              </ion-item>
+            }
+            @if (!hide_password) {
+              <ion-item lines="none">
+                <ion-label position="stacked" for="register-confirm-password">
+                  Confirm password <span aria-label="required" i18n-aria-label>*</span>
+                </ion-label>
+                <ion-input
+                  id="register-confirm-password"
+                  name="confirmPassword"
+                  [(ngModel)]="confirmPassword"
+                  formControlName="confirmPassword"
+                  [type]="showPassword ? 'text' : 'password'"
+                  placeholder="Confirm password"
+                  i18n-placeholder
+                  autocomplete="new-password"
+                  required
+                  aria-required="true"
+                  [attr.aria-invalid]="registerationForm.get('confirmPassword')?.invalid && registerationForm.get('confirmPassword')?.touched">
+                </ion-input>
+              </ion-item>
+            }
+          </ion-list>
+          <div class="list-terms" role="group" aria-label="Terms and conditions agreement" i18n-aria-label>
+            <ion-checkbox id="registerAgreement" color="primary" slot="start" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
             name="isAgreed" [attr.aria-label]="(isAgreed ? 'Terms and conditions agreed' : 'Agree to terms and conditions')" i18n-aria-label aria-required="true"></ion-checkbox>
-          <ion-label class="body-2" for="registerAgreement" id="terms-label">
-            <span i18n>I agree to the </span><a class="subtitle-2" (click)="openLink()" (keydown.enter)="openLink()" (keydown.space)="openLink(); $event.preventDefault()" tabindex="0" role="link" aria-label="Open terms and conditions" i18n-aria-label i18n>Terms & Conditions</a>
-          </ion-label>
-        </div>
+            <ion-label class="body-2" for="registerAgreement" id="terms-label">
+              <span i18n>I agree to the </span><a class="subtitle-2" (click)="openLink()" (keydown.enter)="openLink()" (keydown.space)="openLink(); $event.preventDefault()" tabindex="0" role="link" aria-label="Open terms and conditions" i18n-aria-label i18n>Terms & Conditions</a>
+            </ion-label>
+          </div>
+          @if (errors.length > 0) {
+            <div role="alert" aria-live="assertive" aria-atomic="true">
+              @for (error of errors; track error) {
+                <ion-text color="danger">
+                  <p class="text-error">{{error}}</p>
+                </ion-text>
+              }
+            </div>
+          }
+          <ion-button mode="ios" id="btn-register"
+            shape="round" expand="full"
+            (click)="register()" color="primary"
+            [disabled]="!isAgreed || isLoading"
+            [attr.aria-busy]="isLoading"
+            type="submit"
+            >
+            <span i18n>{{ isLoading ? 'Registering...' : 'REGISTER' }}</span>
+          </ion-button>
+        </form>
+      }
 
-        <div role="alert" aria-live="assertive" aria-atomic="true" *ngIf="errors.length > 0">
-          <ion-text *ngFor="let error of errors" color="danger">
-            <p class="text-error">{{error}}</p>
-          </ion-text>
-        </div>
-        <ion-button mode="ios" id="btn-register"
-          shape="round" expand="full"
-          (click)="register()" color="primary"
-          [disabled]="!isAgreed || isLoading"
-          [attr.aria-busy]="isLoading"
-          type="submit"
-        >
-          <span i18n>{{ isLoading ? 'Registering...' : 'REGISTER' }}</span>
-        </ion-button>
-      </form>
-    </ng-container>
-
-    <ng-container *ngIf="unRegisteredDirectLink">
-      <div class="title div-after-logo directlink">
-        <h2 class="headline-6" i18n>Welcome {{user.email}}.</h2>
-      </div>
-      <div class="tc-container">
-        <div class="div-after-logo directlink">
-          <p class="subtitle-1">
-            <span i18n>Please accept the </span><a (click)="termsAndConditionsPopup()" (keydown.enter)="termsAndConditionsPopup()" (keydown.space)="termsAndConditionsPopup(); $event.preventDefault()" tabindex="0" role="link" aria-label="Open terms and conditions" i18n-aria-label i18n>Terms and Conditions</a><span i18n> in order to continue.</span>
-          </p>
-        </div>
-        <div [ngClass]="{'div-after-logo directlink': !isMobile}">
-          <ion-list margin lines="none">
-            <ion-item>
-              <ion-label class="body-2" id="toggle-label" i18n>I agree to the Terms and Conditions</ion-label>
-              <ion-toggle color="primary" slot="end" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
-                name="isAgreed" tabindex="0" [attr.aria-checked]="isAgreed" aria-labelledby="toggle-label" aria-required="true"></ion-toggle>
-            </ion-item>
-          </ion-list>
-        </div>
-      </div>
-      <div class="password-container">
+      @if (unRegisteredDirectLink) {
         <div class="title div-after-logo directlink">
-          <p class="subtitle-1" id="password-description" i18n>Optionally, create an account password as an additional future login option.</p>
+          <h2 class="headline-6" i18n>Welcome {{user.email}}.</h2>
         </div>
-        <div [ngClass]="{'div-after-logo directlink': !isMobile}">
-          <ion-list margin lines="none">
-            <ion-item>
-              <ion-label class="body-2" position="fixed" for="directlink-password" i18n>Password</ion-label>
-              <ion-input
-                id="directlink-password"
-                name="password"
-                [(ngModel)]="password"
-                autocomplete="new-password"
-                [type]="showPassword ? 'text' : 'password'"
-                placeholder="Optional"
-                i18n-placeholder
-                aria-describedby="password-description">
-              </ion-input>
-              <ion-button slot="end" (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="(showPassword ? 'Hide password' : 'Show password')" i18n-aria-label>
-                <ion-icon [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
-              </ion-button>
-            </ion-item>
-          </ion-list>
+        <div class="tc-container">
+          <div class="div-after-logo directlink">
+            <p class="subtitle-1">
+              <span i18n>Please accept the </span><a (click)="termsAndConditionsPopup()" (keydown.enter)="termsAndConditionsPopup()" (keydown.space)="termsAndConditionsPopup(); $event.preventDefault()" tabindex="0" role="link" aria-label="Open terms and conditions" i18n-aria-label i18n>Terms and Conditions</a><span i18n> in order to continue.</span>
+            </p>
+          </div>
+          <div [ngClass]="{'div-after-logo directlink': !isMobile}">
+            <ion-list margin lines="none">
+              <ion-item>
+                <ion-label class="body-2" id="toggle-label" i18n>I agree to the Terms and Conditions</ion-label>
+                <ion-toggle color="primary" slot="end" [(ngModel)]="isAgreed" [ngModelOptions]="{standalone: true}"
+                name="isAgreed" tabindex="0" [attr.aria-checked]="isAgreed" aria-labelledby="toggle-label" aria-required="true"></ion-toggle>
+              </ion-item>
+            </ion-list>
+          </div>
         </div>
-      </div>
-      <div class="div-after-logo directlink">
-        <div role="alert" aria-live="assertive" aria-atomic="true" *ngIf="errors.length > 0">
-          <ion-text *ngFor="let error of errors" color="danger">
-            <p class="text-error">{{error}}</p>
-          </ion-text>
+        <div class="password-container">
+          <div class="title div-after-logo directlink">
+            <p class="subtitle-1" id="password-description" i18n>Optionally, create an account password as an additional future login option.</p>
+          </div>
+          <div [ngClass]="{'div-after-logo directlink': !isMobile}">
+            <ion-list margin lines="none">
+              <ion-item>
+                <ion-label class="body-2" position="fixed" for="directlink-password" i18n>Password</ion-label>
+                <ion-input
+                  id="directlink-password"
+                  name="password"
+                  [(ngModel)]="password"
+                  autocomplete="new-password"
+                  [type]="showPassword ? 'text' : 'password'"
+                  placeholder="Optional"
+                  i18n-placeholder
+                  aria-describedby="password-description">
+                </ion-input>
+                <ion-button slot="end" (click)="showPassword = !showPassword" fill="clear" [attr.aria-label]="(showPassword ? 'Hide password' : 'Show password')" i18n-aria-label>
+                  <ion-icon [name]="showPassword ? 'eye' : 'eye-off'" aria-hidden="true"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </ion-list>
+          </div>
         </div>
-        <ion-button mode="ios" class="continue-btn" id="btn-continue"
-          shape="round" expand="full"
-          (click)="register()"
-          [disabled]="!isAgreed || isLoading"
-          [attr.aria-busy]="isLoading"
-          color="primary"
-          type="submit">
-          <span i18n>{{ isLoading ? 'Processing...' : 'CONTINUE' }}</span>
-        </ion-button>
-      </div>
-    </ng-container>
-  </div>
+        <div class="div-after-logo directlink">
+          @if (errors.length > 0) {
+            <div role="alert" aria-live="assertive" aria-atomic="true">
+              @for (error of errors; track error) {
+                <ion-text color="danger">
+                  <p class="text-error">{{error}}</p>
+                </ion-text>
+              }
+            </div>
+          }
+          <ion-button mode="ios" class="continue-btn" id="btn-continue"
+            shape="round" expand="full"
+            (click)="register()"
+            [disabled]="!isAgreed || isLoading"
+            [attr.aria-busy]="isLoading"
+            color="primary"
+            type="submit">
+            <span i18n>{{ isLoading ? 'Processing...' : 'CONTINUE' }}</span>
+          </ion-button>
+        </div>
+      }
+    </div>
   </main>
 </ion-content>

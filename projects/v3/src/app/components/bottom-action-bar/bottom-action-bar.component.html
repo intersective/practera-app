@@ -1,15 +1,16 @@
 <ion-footer class="wrapper">
-  <ng-container [ngSwitch]="buttonType">
-    <ion-text *ngSwitchCase="'blocked-role'" color="grey-50" class="ion-text-center"
-      role="alert" aria-live="polite">
-      <p i18n>Team assessment submissions restricted to participants only.</p>
-    </ion-text>
-    <ng-container *ngSwitchDefault>
+  @switch (buttonType) {
+    @case ('blocked-role') {
+      <ion-text color="grey-50" class="ion-text-center"
+        role="alert" aria-live="polite">
+        <p i18n>Team assessment submissions restricted to participants only.</p>
+      </ion-text>
+    }
+    @default {
       <div class="action-container">
-        <ng-container *ngIf="hasCustomContent">
+        @if (hasCustomContent) {
           <ng-content></ng-content>
-        </ng-container>
-
+        }
         <div class="button-container"
           [ngClass]="{'with-custom-content': hasCustomContent}">
           <ion-button class="action-button"
@@ -20,19 +21,19 @@
             [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
             type="button"
           >{{ text }}</ion-button>
-
-          <ion-button class="action-button"
-            *ngIf="showResubmit === true"
-            [disabled]="disabled$ | async"
-            mode="ios"
-            [color]="color"
-            (click)="onResubmit($event)"
-            [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
-            type="button"
-            i18n
-          >Resubmit</ion-button>
+          @if (showResubmit === true) {
+            <ion-button class="action-button"
+              [disabled]="disabled$ | async"
+              mode="ios"
+              [color]="color"
+              (click)="onResubmit($event)"
+              [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
+              type="button"
+              i18n
+            >Resubmit</ion-button>
+          }
         </div>
       </div>
-    </ng-container>
-  </ng-container>
+    }
+  }
 </ion-footer>

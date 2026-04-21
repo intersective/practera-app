@@ -13,7 +13,9 @@
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
-  <ion-progress-bar type="indeterminate" *ngIf="loading === true"></ion-progress-bar>
+  @if (loading === true) {
+    <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  }
 </ion-header>
 
 <ion-content>
@@ -33,75 +35,77 @@
         size="12" size-md="8" class="border-left"
         (scroll)="onScroll()"
         [ngClass]="{'loading-overlay': isLoadingAssessment, 'hidden-asmt':  activityLockShown}">
-        <ng-container *ngIf="notInATeamAndForTeamOnly === true; else showCurrentTask">
+        @if (notInATeamAndForTeamOnly === true) {
           <div class="centered-text">
             This assessment can only be accessed when you are in a team.
           </div>
-        </ng-container>
+        } @else {
+          @if (currentTask?.type === 'Assessment') {
+            <app-assessment
+              [task]="currentTask"
+              [assessment]="assessment | async"
+              [submission]="submission"
+              [review]="review"
+              [contextId]="currentTask.contextId"
+              [activityId]="activity?.id"
+              [savingMessage$]="savingText$"
+              [btnDisabled$]="btnDisabled$"
+              action="assessment"
+              (save)="saveAssessment($event, currentTask)"
+              (readFeedback)="readFeedback($event, currentTask)"
+              (continue)="nextTask(currentTask)"
+              tabindex="0"
+              id="task-content-assessment"
+            ></app-assessment>
+          }
+          @if (currentTask?.type === 'Topic') {
+            <app-topic
+              [topic]="topic"
+              [task]="currentTask"
+              (continue)="topicComplete(currentTask)"
+              [buttonDisabled$]="btnDisabled$"
+              tabindex="0"
+              id="task-content-topic"
+            ></app-topic>
+          }
+        }
       </ion-col>
     </ion-row>
   </ion-grid>
 
-  <ng-container *ngIf="currentTask?.type === 'Assessment' && false">
+  @if (currentTask?.type === 'Assessment' && false) {
     <!-- temporary hide fab button - assessment question navigator -->
-    <span class="tooltip-container"
-      [ngStyle]="tooltipStyle"
-      *ngIf="tooltipVisible">
-      {{ tooltipText }}
-    </span>
-
-    <ion-fab
-      slot="fixed"
-      vertical="bottom"
-      horizontal="end"
-      *ngIf="totalQuestions() > 5 && (assessment | async) as asmt">
-
-      <ion-fab-button>
-        <ion-icon name="chevron-up-circle"></ion-icon>
-      </ion-fab-button>
-
-      <ion-fab-list side="top" class="scrollable-fab">
-        <ng-container *ngFor="let group of asmt.groups; let groupIndex = index">
-          <ion-fab-button (click)="scrollTo(question)"
-            class="fab-button"
-            *ngFor="let question of group.questions; let questionIndex = index"
-            (mouseenter)="showTooltip($event, question.name)"
-            (mouseleave)="hideTooltip()"
-            [title]="question.name">
-            Q{{ getContinuousIndex(groupIndex, questionIndex) }}
-          </ion-fab-button>
-        </ng-container>
-      </ion-fab-list>
-    </ion-fab>
-  </ng-container>
+    @if (tooltipVisible) {
+      <span class="tooltip-container"
+        [ngStyle]="tooltipStyle"
+        >
+        {{ tooltipText }}
+      </span>
+    }
+    @if (totalQuestions() > 5 && (assessment | async); as asmt) {
+      <ion-fab
+        slot="fixed"
+        vertical="bottom"
+        horizontal="end"
+        >
+        <ion-fab-button>
+          <ion-icon name="chevron-up-circle"></ion-icon>
+        </ion-fab-button>
+        <ion-fab-list side="top" class="scrollable-fab">
+          @for (group of asmt.groups; track group; let groupIndex = $index) {
+            @for (question of group.questions; track question; let questionIndex = $index) {
+              <ion-fab-button (click)="scrollTo(question)"
+                class="fab-button"
+                (mouseenter)="showTooltip($event, question.name)"
+                (mouseleave)="hideTooltip()"
+                [title]="question.name">
+                Q{{ getContinuousIndex(groupIndex, questionIndex) }}
+              </ion-fab-button>
+            }
+          }
+        </ion-fab-list>
+      </ion-fab>
+    }
+  }
 </ion-content>
 
-<ng-template #showCurrentTask>
-  <app-assessment
-    [task]="currentTask"
-    *ngIf="currentTask?.type === 'Assessment'"
-    [assessment]="assessment | async"
-    [submission]="submission"
-    [review]="review"
-    [contextId]="currentTask.contextId"
-    [activityId]="activity?.id"
-    [savingMessage$]="savingText$"
-    [btnDisabled$]="btnDisabled$"
-    action="assessment"
-    (save)="saveAssessment($event, currentTask)"
-    (readFeedback)="readFeedback($event, currentTask)"
-    (continue)="nextTask(currentTask)"
-    tabindex="0"
-    id="task-content-assessment"
-  ></app-assessment>
-
-  <app-topic
-    *ngIf="currentTask?.type === 'Topic'"
-    [topic]="topic"
-    [task]="currentTask"
-    (continue)="topicComplete(currentTask)"
-    [buttonDisabled$]="btnDisabled$"
-    tabindex="0"
-    id="task-content-topic"
-  ></app-topic>
-</ng-template>

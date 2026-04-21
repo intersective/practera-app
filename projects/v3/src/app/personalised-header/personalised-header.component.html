@@ -1,45 +1,51 @@
 <div class="buttons" role="navigation" aria-label="User navigation" i18n-aria-label>
-  <ng-container *ngIf="!isMobile; else mobileBtn">
-    <ion-button *ngIf="isShowSupportBtn"
-      (click)="openSupport()"
-      (keydown.enter)="openSupport()"
-      (keydown.space)="openSupport(); $event.preventDefault()"
-      class="support-btn"
-      shape="round"
-      size="small"
-      aria-label="Get help and support" i18n-aria-label
-      i18n>
+  @if (!isMobile) {
+    @if (isShowSupportBtn) {
+      <ion-button
+        (click)="openSupport()"
+        (keydown.enter)="openSupport()"
+        (keydown.space)="openSupport(); $event.preventDefault()"
+        class="support-btn"
+        shape="round"
+        size="small"
+        aria-label="Get help and support" i18n-aria-label
+        i18n>
       Do you need help?
     </ion-button>
-  </ng-container>
-  <ng-template #mobileBtn>
-    <ion-button *ngIf="isShowSupportBtn"
-      (click)="openSupport()"
-      (keydown.enter)="openSupport()"
-      (keydown.space)="openSupport(); $event.preventDefault()"
-      class="support-btn mobile"
-      shape="round"
-      size="small"
-      aria-label="Get help and support" i18n-aria-label>
-      <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
-    </ion-button>
-  </ng-template>
+    }
+  } @else {
+    @if (isShowSupportBtn) {
+      <ion-button
+        (click)="openSupport()"
+        (keydown.enter)="openSupport()"
+        (keydown.space)="openSupport(); $event.preventDefault()"
+        class="support-btn mobile"
+        shape="round"
+        size="small"
+        aria-label="Get help and support" i18n-aria-label>
+        <ion-icon slot="icon-only" name="help-circle-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    }
+  }
 
-  <ion-button *ngIf="!isExpPage"
-    (click)="notifications()"
-    (keydown.enter)="notifications()"
-    (keydown.space)="notifications(); $event.preventDefault()"
-    class="notify-btn"
-    [attr.aria-label]="'Notifications' + (notiCount > 0 ? ', ' + notiCount + ' unread' : '')"
-    i18n-aria-label>
-    <ion-icon name="notifications" color="primary" aria-hidden="true"></ion-icon>
-    <ion-badge class="hint"
-      color="danger"
-      *ngIf="notiCount > 0"
-      role="status"
-      [attr.aria-label]="notiCount + ' unread notifications'"
-      aria-live="polite">{{notiCount}}</ion-badge>
-  </ion-button>
+  @if (!isExpPage) {
+    <ion-button
+      (click)="notifications()"
+      (keydown.enter)="notifications()"
+      (keydown.space)="notifications(); $event.preventDefault()"
+      class="notify-btn"
+      [attr.aria-label]="'Notifications' + (notiCount > 0 ? ', ' + notiCount + ' unread' : '')"
+      i18n-aria-label>
+      <ion-icon name="notifications" color="primary" aria-hidden="true"></ion-icon>
+      @if (notiCount > 0) {
+        <ion-badge class="hint"
+          color="danger"
+          role="status"
+          [attr.aria-label]="notiCount + ' unread notifications'"
+        aria-live="polite">{{notiCount}}</ion-badge>
+      }
+    </ion-button>
+  }
 
   <ion-button class="avatar-btn"
     aria-label="Go to settings" i18n-aria-label
@@ -51,18 +57,20 @@
       'loading-overlay': isLoadingSetting === true
     }"
     [attr.aria-busy]="isLoadingSetting"
-  >
-    <ion-avatar class="ion-margin-horizontal"
-      *ngIf="user?.image"
-      aria-hidden="true">
-      <img [src]="user?.image" alt="user profile avatar" i18n-alt>
-    </ion-avatar>
+    >
+    @if (user?.image) {
+      <ion-avatar class="ion-margin-horizontal"
+        aria-hidden="true">
+        <img [src]="user?.image" alt="user profile avatar" i18n-alt>
+      </ion-avatar>
+    }
 
-    <ion-icon
-      aria-hidden="true"
-      *ngIf="!user?.image"
-      slot="icon-only"
-      name="person-circle"
-    ></ion-icon>
+    @if (!user?.image) {
+      <ion-icon
+        aria-hidden="true"
+        slot="icon-only"
+        name="person-circle"
+      ></ion-icon>
+    }
   </ion-button>
 </div>

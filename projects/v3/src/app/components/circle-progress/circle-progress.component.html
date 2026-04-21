@@ -1,4 +1,4 @@
-<ng-container *ngIf="!loading">
+@if (!loading) {
   <circle-progress
     [animateTitle]='config.animateTitle'
     [animation]='config.animation'
@@ -22,8 +22,8 @@
     [startFromZero]='config.startFromZero'
     [toFixed]='config.toFixed'
   ></circle-progress>
-</ng-container>
-<ng-container *ngIf="loading">
+}
+@if (loading) {
   <div class="skeleton">
     <ion-skeleton-text animated class="progress-circle" [ngClass]="{'desktop' : !isMobile}"></ion-skeleton-text>
     <div class="progress-content" [ngClass]="{'desktop' : !isMobile}">
@@ -33,5 +33,5 @@
       </div>
     </div>
   </div>
-</ng-container>
+}
 

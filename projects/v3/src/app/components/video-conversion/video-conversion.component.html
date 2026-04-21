@@ -1,28 +1,27 @@
-<div class="video-conversion"
-  (click)="showPreview(result)"
-  (keydown)="showPreview(result, $event)"
-  *ngIf="result?.status === 'completed'; else conversionPending"
-  tabindex="0"
-  role="button">
-  <p class="label" [title]="video?.fileObject?.filename" [innerHTML]="video?.fileObject?.filename"></p>
-  <div [attr.id]="'inner-box-video-' + video?.fileObject?.uuid">
-    <p>
-      <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
-    </p>
+@if (result?.status === 'completed') {
+  <div class="video-conversion"
+    (click)="showPreview(result)"
+    (keydown)="showPreview(result, $event)"
+    tabindex="0"
+    role="button">
+    <p class="label" [title]="video?.fileObject?.filename" [innerHTML]="video?.fileObject?.filename"></p>
+    <div [attr.id]="'inner-box-video-' + video?.fileObject?.uuid">
+      <p>
+        <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
+      </p>
+    </div>
   </div>
-</div>
-
-<ng-template #conversionPending>
-  <ng-container *ngIf="waitedTooLong === false; else longWait">
+} @else {
+  @if (waitedTooLong === false) {
     <div class="waiting-mgs" i18n>
       <ion-spinner name="bubbles"></ion-spinner>please wait
     </div>
-  </ng-container>
-</ng-template>
+  } @else {
+    <div>
+      <p i18n>Waited too long?</p>
+      <p i18n>Download <a target="_blank" href="{{video?.fileObject?.url}}" class="contrast">here</a></p>
+    </div>
+  }
+}
 
-<ng-template #longWait>
-  <div>
-    <p i18n>Waited too long?</p>
-    <p i18n>Download <a target="_blank" href="{{video?.fileObject?.url}}" class="contrast">here</a></p>
-  </div>
-</ng-template>
+

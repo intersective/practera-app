@@ -9,33 +9,38 @@
 </ion-header>
 
 <ion-content>
-  <ion-grid *ngIf="!isMobile" class="ion-no-padding">
-    <ion-row>
-      <ion-col size="12" size-md="4">
-        <app-chat-list #chatList
-          [currentChat]="chatChannel"
-          (navigate)="desktopGoto($event, { click: true })"
-          (chatListReady)="selectFirstChat($event)">
-        </app-chat-list>
-      </ion-col>
-      <ion-col size="12" size-md="8"
-        class="border-left"
-        [class]="{'info-page': loadInfo}"
-        id="chatroom" tabindex="0">
-        <app-chat-room #chatRoom
-          *ngIf="chatChannel && !loadInfo"
-          [chatChannel]="chatChannel"
-          (loadInfo)="loadchannelInfo($event)"
-        ></app-chat-room>
-        <app-chat-info *ngIf="loadInfo"
-          [selectedChat]="chatChannel"
-          (navigate)="desktopGoto($event, { click: false })"
-        ></app-chat-info>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  @if (!isMobile) {
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="12" size-md="4">
+          <app-chat-list #chatList
+            [currentChat]="chatChannel"
+            (navigate)="desktopGoto($event, { click: true })"
+            (chatListReady)="selectFirstChat($event)">
+          </app-chat-list>
+        </ion-col>
+        <ion-col size="12" size-md="8"
+          class="border-left"
+          [class]="{'info-page': loadInfo}"
+          id="chatroom" tabindex="0">
+          @if (chatChannel && !loadInfo) {
+            <app-chat-room #chatRoom
+              [chatChannel]="chatChannel"
+              (loadInfo)="loadchannelInfo($event)"
+            ></app-chat-room>
+          }
+          @if (loadInfo) {
+            <app-chat-info
+              [selectedChat]="chatChannel"
+              (navigate)="desktopGoto($event, { click: false })"
+            ></app-chat-info>
+          }
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  }
 
-  <ng-container *ngIf="isMobile">
+  @if (isMobile) {
     <app-chat-list #chatList></app-chat-list>
-  </ng-container>
+  }
 </ion-content>

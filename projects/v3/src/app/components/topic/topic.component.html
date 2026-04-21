@@ -1,75 +1,88 @@
-<div *ngIf="topic" class="ion-padding main-content" style="min-height: 100%;">
-  <div class="headline-2 topic-title" aria-live="polite" role="heading" [innerHTML]="sanitizedTitle"></div>
-  <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
-    <div *ngIf="iframeHtml" class="video-embed" [innerHTML]="iframeHtml"></div>
-    <video
-      #topicVideo
-      *ngIf="!iframeHtml && videoSrc"
-      [attr.id]="'topic-video-' + topic.id"
-      class="topic-video video-embed"
-      [ngClass]="{'desktop-view': !isMobile}"
-      width="100%"
-      controls
-      controlsList="nodownload"
-      preload="metadata"
-      playsinline
-      disabled
-      [src]="videoSrc"
-      (canplay)="onVideoCanPlay($event)"
-      (error)="handleVideoError($event)"
-    >
-      <p i18n="video not supported message">Your browser doesn't support HTML5 video. Here is a <a [href]="videoSrc">link to the video</a> instead.</p>
-    </video>
-  </div>
-
-  <div *ngIf="topic.audio" class="audio-player-container ion-margin-vertical">
-    <div class="audio-player-header">
-      <ion-icon name="musical-notes-outline" class="audio-icon"></ion-icon>
-      <span class="headline-4" i18n="audio content">
+@if (topic) {
+  <div class="ion-padding main-content" style="min-height: 100%;">
+    <div class="headline-2 topic-title" aria-live="polite" role="heading" [innerHTML]="sanitizedTitle"></div>
+    @if (topic.videolink && topic.videolink !=='magiclink') {
+      <div class="text-center topic-video">
+        @if (iframeHtml) {
+          <div class="video-embed" [innerHTML]="iframeHtml"></div>
+        }
+        @if (!iframeHtml && videoSrc) {
+          <video
+            #topicVideo
+            [attr.id]="'topic-video-' + topic.id"
+            class="topic-video video-embed"
+            [ngClass]="{'desktop-view': !isMobile}"
+            width="100%"
+            controls
+            controlsList="nodownload"
+            preload="metadata"
+            playsinline
+            disabled
+            [src]="videoSrc"
+            (canplay)="onVideoCanPlay($event)"
+            (error)="handleVideoError($event)"
+            >
+            <p i18n="video not supported message">Your browser doesn't support HTML5 video. Here is a <a [href]="videoSrc">link to the video</a> instead.</p>
+          </video>
+        }
+      </div>
+    }
+    @if (topic.audio) {
+      <div class="audio-player-container ion-margin-vertical">
+        <div class="audio-player-header">
+          <ion-icon name="musical-notes-outline" class="audio-icon"></ion-icon>
+          <span class="headline-4" i18n="audio content">
         Listen to content {{ "(" + topic.audio.language + ")" | uppercase }}
       </span>
-    </div>
-    <div class="audio-player">
-      <audio [attr.id]="'topic-audio-' + topic.id" controls class="audio-element" preload="metadata">
-        <source [src]="topic.audio.link" type="audio/mpeg">
-        Your browser does not support the audio element.
-      </audio>
-    </div>
+        </div>
+        <div class="audio-player">
+          <audio [attr.id]="'topic-audio-' + topic.id" controls class="audio-element" preload="metadata">
+            <source [src]="topic.audio.link" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      </div>
+    }
+    @if (topic.content) {
+      <app-description
+        class="body-2"
+        [name]="'topic-description-' + topic.id"
+        [content]="topic.content"
+        [nonCollapsible]="true"
+        [ariaLabel]="'Topic content'"
+      ></app-description>
+    }
+    @if (topic.files && topic.files.length > 0) {
+      <ion-list class="ion-margin-vertical">
+        <ion-item class="headline-4 downloads" lines="none" i18n="downloadable reading materials">Supporting Downloads</ion-item>
+        @for (file of topic.files; track file) {
+          <app-list-item
+            [title]="file.name"
+            leadingIcon="document"
+            lines="full"
+            [endingActionBtnIcons]="getFileActionIcons(file)"
+            (actionBtnClick)="actionBtnClick(file, $event)"
+          ></app-list-item>
+        }
+      </ion-list>
+    }
   </div>
+}
 
-  <app-description *ngIf="topic.content"
-    class="body-2"
-    [name]="'topic-description-' + topic.id"
-    [content]="topic.content"
-    [nonCollapsible]="true"
-    [ariaLabel]="'Topic content'"
-  ></app-description>
+@if (topic) {
+  <app-bottom-action-bar
+    [disabled$]="buttonDisabled$"
+    [text]="task?.status === 'done' ? 'Continue' : 'Mark as complete and continue'"
+    (handleClick)="actionBarContinue(topic)"
+    i18n-text
+  ></app-bottom-action-bar>
+}
 
-  <ion-list *ngIf="topic.files && topic.files.length > 0" class="ion-margin-vertical">
-    <ion-item class="headline-4 downloads" lines="none" i18n="downloadable reading materials">Supporting Downloads</ion-item>
-
-    <app-list-item *ngFor="let file of topic.files"
-      [title]="file.name"
-      leadingIcon="document"
-      lines="full"
-      [endingActionBtnIcons]="getFileActionIcons(file)"
-      (actionBtnClick)="actionBtnClick(file, $event)"
-    ></app-list-item>
-
-  </ion-list>
-</div>
-
-<app-bottom-action-bar
-  *ngIf="topic"
-  [disabled$]="buttonDisabled$"
-  [text]="task?.status === 'done' ? 'Continue' : 'Mark as complete and continue'"
-  (handleClick)="actionBarContinue(topic)"
-  i18n-text
-></app-bottom-action-bar>
-
-<div *ngIf="!topic" class="ion-padding">
-  <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
-  <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
-</div>
+@if (!topic) {
+  <div class="ion-padding">
+    <ion-skeleton-text animated class="skeleton-header"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 70%"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 90%"></ion-skeleton-text>
+  </div>
+}

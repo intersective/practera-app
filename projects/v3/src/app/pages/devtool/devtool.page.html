@@ -75,11 +75,13 @@
           </ion-button>
         </ion-col>
       </ion-row>
-      <ion-row *ngIf="turnUppyOff === false">
-        <ion-col size="12">
-          <app-uppy-uploader [tusEndpoint]="tusUploadUrl" [source]="'chat'"></app-uppy-uploader>
-        </ion-col>
-      </ion-row>
+      @if (turnUppyOff === false) {
+        <ion-row>
+          <ion-col size="12">
+            <app-uppy-uploader [tusEndpoint]="tusUploadUrl" [source]="'chat'"></app-uppy-uploader>
+          </ion-col>
+        </ion-row>
+      }
     </ion-grid>
   </div>
 
@@ -87,44 +89,50 @@
     <h1>Video transcode with FFmpeg</h1>
     <ion-button (click)="transcodeVideo()">Transcode</ion-button>
 
-    <div *ngIf="isCompressing">Compressing video... Please wait.</div>
+    @if (isCompressing) {
+      <div>Compressing video... Please wait.</div>
+    }
   </div>
 
-  <ng-container class="device-info" *ngIf="info">
-    <h4>Device Information</h4>
-    <ion-list>
-      <ion-item>
-        <ion-label>User Agent</ion-label>
-        <ion-text>{{ info.userAgent }}</ion-text>
-      </ion-item>
-      <ion-item>
-        <ion-label>Viewport Width</ion-label>
-        <ion-text>{{ info.viewportWidth }}</ion-text>
-      </ion-item>
-      <ion-item>
-        <ion-label>Viewport Height</ion-label>
-        <ion-text>{{ info.viewportHeight }}</ion-text>
-      </ion-item>
-      <ion-item>
-        <ion-label>Screen Width</ion-label>
-        <ion-text>{{ info.screenWidth }}</ion-text>
-      </ion-item>
-      <ion-item>
-        <ion-label>Screen Height</ion-label>
-        <ion-text>{{ info.screenHeight }}</ion-text>
-      </ion-item>
-      <ion-item>
-        <ion-label>Pixel Ratio</ion-label>
-        <ion-text>{{ info.pixelRatio }}</ion-text>
-      </ion-item>
-      <ion-item *ngIf="info.location">
-        <ion-label>Location</ion-label>
-        <ion-text>
-          Latitude: {{ info.location.latitude }}, Longitude: {{ info.location.longitude }}
-        </ion-text>
-      </ion-item>
-    </ion-list>
-  </ng-container>
+  @if (info) {
+    <ng-container class="device-info">
+      <h4>Device Information</h4>
+      <ion-list>
+        <ion-item>
+          <ion-label>User Agent</ion-label>
+          <ion-text>{{ info.userAgent }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Viewport Width</ion-label>
+          <ion-text>{{ info.viewportWidth }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Viewport Height</ion-label>
+          <ion-text>{{ info.viewportHeight }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Screen Width</ion-label>
+          <ion-text>{{ info.screenWidth }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Screen Height</ion-label>
+          <ion-text>{{ info.screenHeight }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Pixel Ratio</ion-label>
+          <ion-text>{{ info.pixelRatio }}</ion-text>
+        </ion-item>
+        @if (info.location) {
+          <ion-item>
+            <ion-label>Location</ion-label>
+            <ion-text>
+              Latitude: {{ info.location.latitude }}, Longitude: {{ info.location.longitude }}
+            </ion-text>
+          </ion-item>
+        }
+      </ion-list>
+    </ng-container>
+  }
 
   <h4>Task Unlock indicator</h4>
   <ion-button (click)="triggerAchievement()">MarkAsDone</ion-button>
@@ -135,11 +143,15 @@
   <ion-input type="text" [(ngModel)]="identifier" placeholder="identifier"></ion-input>
   <ion-button (click)="triggerAchievement(identifier)">Submit</ion-button>
 
-  <pre *ngIf="sample">{{ sample | json }}</pre>
+  @if (sample) {
+    <pre>{{ sample | json }}</pre>
+  }
 
-  <ion-text *ngIf="doneLogin">
-    <p>{{ user | json }}</p>
-  </ion-text>
+  @if (doneLogin) {
+    <ion-text>
+      <p>{{ user | json }}</p>
+    </ion-text>
+  }
 
   <h4>Developer purpose only - Colors Example</h4>
   <p>Branding Colors</p>
@@ -162,21 +174,21 @@
   <ion-button color="light-grey-25">Light Grey 25</ion-button>
 
   <br>
-  <br>
-  <h3>Auth Urls</h3>
-  <ion-button routerLink="/auth/login">login</ion-button>
-  <ion-button routerLink="/auth/forgot_password">forgot password</ion-button>
-  <ion-button routerLink="/auth/reset_password/key/email">reset password</ion-button>
-  <ion-button routerLink="/auth/secure/authToken">direct login page</ion-button>
-  <ion-button routerLink="/auth/global_login/apikey">global login page</ion-button>
-  <br>
-  <h4> we have 2 different UIs for registration page</h4>
-  <h5>This is same page. but showing different UI based on user.</h5>
-  <p>One for normal registration - regitration page for leanners and experts</p>
-  <ion-button routerLink="/auth/registration/email/key">registration</ion-button>
-  <br>
-  <p>Registration page for unRegistered users who accessing app through direct links</p>
-  <ion-button routerLink="/auth/registration/email/unRegister">registration</ion-button>
-  <br>
+    <br>
+      <h3>Auth Urls</h3>
+      <ion-button routerLink="/auth/login">login</ion-button>
+      <ion-button routerLink="/auth/forgot_password">forgot password</ion-button>
+      <ion-button routerLink="/auth/reset_password/key/email">reset password</ion-button>
+      <ion-button routerLink="/auth/secure/authToken">direct login page</ion-button>
+      <ion-button routerLink="/auth/global_login/apikey">global login page</ion-button>
+      <br>
+        <h4> we have 2 different UIs for registration page</h4>
+        <h5>This is same page. but showing different UI based on user.</h5>
+        <p>One for normal registration - regitration page for leanners and experts</p>
+        <ion-button routerLink="/auth/registration/email/key">registration</ion-button>
+        <br>
+          <p>Registration page for unRegistered users who accessing app through direct links</p>
+          <ion-button routerLink="/auth/registration/email/unRegister">registration</ion-button>
+          <br>
 
-</ion-content>
+          </ion-content>

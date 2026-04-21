@@ -1,11 +1,12 @@
-<ng-container [ngSwitch]="page">
-  <ng-container *ngSwitchCase="'settings'">
+
+@switch (page) {
+  @case ('settings') {
     <ng-container *ngTemplateOutlet="settings"></ng-container>
-  </ng-container>
-  <ng-container *ngSwitchCase="'go-mobile'">
+  }
+  @case ('go-mobile') {
     <ng-container *ngTemplateOutlet="goMobile"></ng-container>
-  </ng-container>
-</ng-container>
+  }
+}
 
 <ng-template #settings>
   <ion-item [class]="{'higher': isMobile}">
@@ -23,11 +24,13 @@
             [(ngModel)]="countryModel"
             interface="popover"
             (ionChange)="updateCountry()">
-            <ion-select-option [value]="countryCode.code"
-              aria-labelledby="country-code"
-              *ngFor="let countryCode of contactNumberFormat.countryCodes">
-              {{countryCode.abbr}} {{contactNumberFormat.masks[countryCode.code].format}}
-            </ion-select-option>
+            @for (countryCode of contactNumberFormat.countryCodes; track countryCode) {
+              <ion-select-option [value]="countryCode.code"
+                aria-labelledby="country-code"
+                >
+                {{countryCode.abbr}} {{contactNumberFormat.masks[countryCode.code].format}}
+              </ion-select-option>
+            }
           </ion-select>
         </ion-col>
         <ion-col class="ion-align-self-end ion-no-padding ion-no-margin ion-nowrap">
@@ -58,9 +61,13 @@
       (click)="updateContactNumber()"
       [attr.aria-descripedby]="'updateMobileNumber'"
       role="button"
-    >
-      <ng-container id="updateMobileNumber" *ngIf="!updating" i18n>Update mobile number</ng-container>
-      <ng-container id="updateMobileNumber" *ngIf="updating" i18n>Updating..</ng-container>
+      >
+      @if (!updating) {
+        <ng-container id="updateMobileNumber" i18n>Update mobile number</ng-container>
+      }
+      @if (updating) {
+        <ng-container id="updateMobileNumber" i18n>Updating..</ng-container>
+      }
     </ion-button>
   </div>
 
@@ -90,9 +97,11 @@
             name="countryModel"
             [(ngModel)]="countryModel"
             (ionChange)="updateCountry()">
-            <ion-select-option *ngFor="let countryCode of contactNumberFormat.countryCodes" [value]="countryCode.code">
-              {{countryCode.name}}
-            </ion-select-option>
+            @for (countryCode of contactNumberFormat.countryCodes; track countryCode) {
+              <ion-select-option [value]="countryCode.code">
+                {{countryCode.name}}
+              </ion-select-option>
+            }
           </ion-select>
         </ion-col>
       </ion-row>

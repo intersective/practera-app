@@ -1,57 +1,57 @@
 <ion-content>
-  <ng-container *ngIf="loadingChatList">
+  @if (loadingChatList) {
     <div class="ion-text-center">
       <ion-spinner role="status" aria-live="polite" aria-label="Loading chat list"></ion-spinner>
     </div>
-  </ng-container>
+  }
   <ion-list class="ion-no-padding" [ngClass]="{'desktop-view': !isMobile}">
-    <app-clickable-item
-      *ngFor="let chat of chatList; let i = index"
-      (click)="goToChatRoom(chat)"
-      (keyup)="goToChatRoom(chat, $event)"
-      [active]="currentChat && currentChat.uuid === chat.uuid"
-      [ngClass]="{'unread': chat.unreadMessageCount > 0}"
-      [lines]="'none'"
-      [isCustomizedCard]="true"
-      [isChatCard]="true"
-      class="focusable"
-      role="button"
-      tabindex="0">
-      <ion-avatar slot="start" text-center
-        class="access-avatar"
-        aria-hidden="true">
-        <img [src]="chat.avatar" alt="chat room avatar">
-      </ion-avatar>
-      <ion-label class="chat-item-label" [attr.aria-describedby]="'chatroom-name-' + i">
-        <div class="chat-name-container caption" [attr.id]="'chatroom-name-' + i"
-          [attr.aria-label]="'chatroom: ' + chat.name">
-          <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}" [innerHTML]="chat.name"></p>
-          <ng-container *ngIf="(chat.roles.length === 1) && (chat.roles.includes('mentor'))">
-            <span>{{ utils.getUserRolesForUI('mentor') }}</span>
-          </ng-container>
+    @for (chat of chatList; track chat; let i = $index) {
+      <app-clickable-item
+        (click)="goToChatRoom(chat)"
+        (keyup)="goToChatRoom(chat, $event)"
+        [active]="currentChat && currentChat.uuid === chat.uuid"
+        [ngClass]="{'unread': chat.unreadMessageCount > 0}"
+        [lines]="'none'"
+        [isCustomizedCard]="true"
+        [isChatCard]="true"
+        class="focusable"
+        role="button"
+        tabindex="0">
+        <ion-avatar slot="start" text-center
+          class="access-avatar"
+          aria-hidden="true">
+          <img [src]="chat.avatar" alt="chat room avatar">
+        </ion-avatar>
+        <ion-label class="chat-item-label" [attr.aria-describedby]="'chatroom-name-' + i">
+          <div class="chat-name-container caption" [attr.id]="'chatroom-name-' + i"
+            [attr.aria-label]="'chatroom: ' + chat.name">
+            <p class="chat-name subtitle-1" [ngClass]="{'bold': chat.unreadMessageCount > 0}" [innerHTML]="chat.name"></p>
+            @if ((chat.roles.length === 1) && (chat.roles.includes('mentor'))) {
+              <span>{{ utils.getUserRolesForUI('mentor') }}</span>
+            }
+          </div>
+          @if (chat.lastMessage) {
+            <p class="body-2 last-message" [attr.aria-label]="'last message: ' + chat.lastMessage" [innerHTML]="chat.lastMessage"></p>
+          } @else {
+            <p class="body-2 gray-2" i18n>No messages.</p>
+          }
+        </ion-label>
+        <div slot="end" class="time-container">
+          <div class="caption gray-2">
+            <span>{{ getChatDate(chat.lastMessageCreated) }}</span>
+          </div>
+          <div class="indicator-container">
+            @if (chat.isAnnouncement) {
+              <ion-button aria-label="Announcement channel indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it." i18n-title>
+                <ion-icon color="grey-50" name="information-circle" slot="icon-only" aria-hidden="true"></ion-icon>
+              </ion-button>
+            }
+            @if (chat.unreadMessageCount > 0) {
+              <ion-badge class="caption" [attr.aria-label]="chat.unreadMessageCount + ' unread messages'">{{ chat.unreadMessageCount }}</ion-badge>
+            }
+          </div>
         </div>
-        <ng-container *ngIf="chat.lastMessage; else messgeElseBlock">
-          <p class="body-2 last-message" [attr.aria-label]="'last message: ' + chat.lastMessage" [innerHTML]="chat.lastMessage"></p>
-        </ng-container>
-        <ng-template #messgeElseBlock>
-          <p class="body-2 gray-2" i18n>No messages.</p>
-        </ng-template>
-      </ion-label>
-      <div slot="end" class="time-container">
-        <div class="caption gray-2">
-          <span>{{ getChatDate(chat.lastMessageCreated) }}</span>
-        </div>
-        <div class="indicator-container">
-          <ng-container *ngIf="chat.isAnnouncement">
-            <ion-button aria-label="Announcement channel indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it." i18n-title>
-              <ion-icon color="grey-50" name="information-circle" slot="icon-only" aria-hidden="true"></ion-icon>
-            </ion-button>
-          </ng-container>
-          <ng-container *ngIf="chat.unreadMessageCount > 0">
-            <ion-badge class="caption" [attr.aria-label]="chat.unreadMessageCount + ' unread messages'">{{ chat.unreadMessageCount }}</ion-badge>
-          </ng-container>
-        </div>
-      </div>
-    </app-clickable-item>
+      </app-clickable-item>
+    }
   </ion-list>
 </ion-content>

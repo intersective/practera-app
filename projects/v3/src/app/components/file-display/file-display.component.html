@@ -1,28 +1,24 @@
-<ng-container *ngIf="file">
+@if (file) {
   <h3 class="for-accessibility">Quick file display of uploaded file</h3>
-
-  <ng-container [ngSwitch]="fileType">
-    <ng-container *ngSwitchCase="'image'">
+  @switch (fileType) {
+    @case ('image') {
       <app-img [imgSrc]="file.directUrl || file.url" alt="generic image uploaded by user" i18n-alt></app-img>
-      <ng-container *ngIf="isFileComponent">
+      @if (isFileComponent) {
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
-      </ng-container>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'video'">
+      }
+    }
+    @case ('video') {
       <video controls preload #videoEle>
         <source [src]="file.directUrl || file.url">
       </video>
-      <ng-container *ngIf="isFileComponent">
+      @if (isFileComponent) {
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
-      </ng-container>
-    </ng-container>
-
-    <ng-container *ngSwitchCase="'any'">
-      <ng-container *ngIf="isFileComponent; else onlyfilename">
+      }
+    }
+    @case ('any') {
+      @if (isFileComponent) {
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
-      </ng-container>
-      <ng-template #onlyfilename>
+      } @else {
         <app-list-item
           [title]="file.name"
           leadingIcon="document"
@@ -30,10 +26,10 @@
           [endingActionBtnIcons]="endingActionBtnIcons"
           (actionBtnClick)="actionBtnClick(file, $event)"
         ></app-list-item>
-      </ng-template>
-    </ng-container>
-  </ng-container>
-</ng-container>
+      }
+    }
+  }
+}
 
 <ng-template #fileDetails>
   <app-list-item

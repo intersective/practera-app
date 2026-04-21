@@ -7,36 +7,43 @@
   </ion-segment-button>
 </ion-segment>
 
-<ion-list *ngIf="reviews">
-  <ng-container *ngFor="let review of reviews">
-    <app-list-item
-      class="focusable"
-      *ngIf="review.isDone === showDone"
-      [title]="review.name"
-      [subtitle1]="review.submitterName"
-      subtitle1Color="grey-75"
-      [subtitle2]="review.teamName"
-      subtitle2Color="grey-75"
-      leadingIcon="eye"
-      [active]="currentReview && currentReview.submissionId === review.submissionId"
-      lines="full"
-      (click)="goto(review)"
-      (keydown)="goto(review, $event)"
-      [endingText]="review.date"
-      endingTextColor="grey-75"
-      tabindex="0"
-      role="button"
-    ></app-list-item>
-  </ng-container>
-</ion-list>
+@if (reviews) {
+  <ion-list>
+    @for (review of reviews; track review) {
+      @if (review.isDone === showDone) {
+        <app-list-item
+          class="focusable"
+          [title]="review.name"
+          [subtitle1]="review.submitterName"
+          subtitle1Color="grey-75"
+          [subtitle2]="review.teamName"
+          subtitle2Color="grey-75"
+          leadingIcon="eye"
+          [active]="currentReview && currentReview.submissionId === review.submissionId"
+          lines="full"
+          (click)="goto(review)"
+          (keydown)="goto(review, $event)"
+          [endingText]="review.date"
+          endingTextColor="grey-75"
+          tabindex="0"
+          role="button"
+        ></app-list-item>
+      }
+    }
+  </ion-list>
+}
 
-<ion-list *ngIf="reviews === null">
-  <app-list-item [loading]="true"></app-list-item>
-  <app-list-item [loading]="true"></app-list-item>
-</ion-list>
+@if (reviews === null) {
+  <ion-list>
+    <app-list-item [loading]="true"></app-list-item>
+    <app-list-item [loading]="true"></app-list-item>
+  </ion-list>
+}
 
-<div *ngIf="noReviews" class="ion-text-center no-review">
-  <ion-icon class="large-icon" color="primary" name="chatbox-ellipses-outline"></ion-icon>
-  <p class="body-1" i18n="Sample: You have no pending/completed review yet!">You have no {{ noReviews }} review yet!</p>
-  <ion-text class="subtitle-2" color="grey-75" i18n>Reviews show up here, so you can easily view them here later.</ion-text>
-</div>
+@if (noReviews) {
+  <div class="ion-text-center no-review">
+    <ion-icon class="large-icon" color="primary" name="chatbox-ellipses-outline"></ion-icon>
+    <p class="body-1" i18n="Sample: You have no pending/completed review yet!">You have no {{ noReviews }} review yet!</p>
+    <ion-text class="subtitle-2" color="grey-75" i18n>Reviews show up here, so you can easily view them here later.</ion-text>
+  </div>
+}

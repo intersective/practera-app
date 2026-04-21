@@ -10,19 +10,20 @@
 </ion-header>
 
 <ion-content class="review-rating ion-padding">
-  <ng-container *ngIf="ratingSessionEnd === false; else successful">
+  @if (ratingSessionEnd === false) {
     <div class="rating-range">
-      <div class="mood" *ngFor="let mood of moods; let i = index"
-        [ngClass]="{'selected': moodSelected === i}"
-        (click)="rateMood(i)">
-        <span class="material-symbols-outlined">
-          {{ mood.icon }}
-        </span>
-        <p [innerHTML]="mood.description"></p>
-      </div>
+      @for (mood of moods; track mood; let i = $index) {
+        <div class="mood"
+          [ngClass]="{'selected': moodSelected === i}"
+          (click)="rateMood(i)">
+          <span class="material-symbols-outlined">
+            {{ mood.icon }}
+          </span>
+          <p [innerHTML]="mood.description"></p>
+        </div>
+      }
     </div>
-
-    <ng-container *ngIf="ratingData.rating >= 0 && this.moodSelected !== undefined">
+    @if (ratingData.rating >= 0 && this.moodSelected !== undefined) {
       <h2 class="subTitle" i18n>Send a quick thank you note!</h2>
       <div class="quick-tagging">
         <ion-button color="medium" class="toggle" fill="outline"
@@ -62,7 +63,6 @@
           i18n
         >Friendly</ion-button>
       </div>
-
       <ion-input placeholder="Add a comment"
         [disabled]="ratingData.tags.length > 0"
         aria-label="thank you message for reviewer"
@@ -71,8 +71,7 @@
         [clearInput]="true"
         i18n-placeholder
       ></ion-input>
-    </ng-container>
-
+    }
     <div class="ion-text-center ion-padding-top">
       <ion-button mode="ios"
         [disabled]="isSubmitting ||  this.moodSelected === undefined"
@@ -80,26 +79,28 @@
         shape="round"
         [ngClass]="{'btn-cta': !isMobile}"
         [expand]="isMobile ? 'block': ''">
-        <ng-container *ngIf="!isSubmitting" i18n>Submit Feedback</ng-container>
-        <ng-container *ngIf="isSubmitting" i18n>Submitting...</ng-container>
+        @if (!isSubmitting) {
+          <ng-container i18n>Submit Feedback</ng-container>
+        }
+        @if (isSubmitting) {
+          <ng-container i18n>Submitting...</ng-container>
+        }
       </ion-button>
     </div>
-  </ng-container>
-</ion-content>
-
-<ng-template #successful>
-  <h1 class="for-accessibility">Your information has been submitted successfully.</h1>
-  <div class="successful-submission" aria-hidden="true">
-    <ion-icon name="thumbs-up-sharp"></ion-icon>
-    <p i18n>Thank you, feedback received.</p>
-  </div>
-
-  <div class="ion-text-center ion-padding-top">
-    <ion-button mode="ios" i18n
-      (click)="dismissModal()"
-      [ngClass]="{'btn-cta': !isMobile}"
-      shape="round" [expand]="isMobile ? 'block': ''">
+  } @else {
+    <h1 class="for-accessibility">Your information has been submitted successfully.</h1>
+    <div class="successful-submission" aria-hidden="true">
+      <ion-icon name="thumbs-up-sharp"></ion-icon>
+      <p i18n>Thank you, feedback received.</p>
+    </div>
+    <div class="ion-text-center ion-padding-top">
+      <ion-button mode="ios" i18n
+        (click)="dismissModal()"
+        [ngClass]="{'btn-cta': !isMobile}"
+        shape="round" [expand]="isMobile ? 'block': ''">
       Continue
     </ion-button>
-  </div>
-</ng-template>
+    </div>
+  }
+</ion-content>
+

@@ -1,17 +1,19 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-icon *ngIf="file?.url"
-      name="download"
-      (click)="download()"
-      (keydown)="download($event)"
-      color="primary"
-      size="large"
-      slot="end"
-      margin-start
-      role="button"
-      tabindex="0"
-      aria-label="download"
-    ></ion-icon>
+    @if (file?.url) {
+      <ion-icon
+        name="download"
+        (click)="download()"
+        (keydown)="download($event)"
+        color="primary"
+        size="large"
+        slot="end"
+        margin-start
+        role="button"
+        tabindex="0"
+        aria-label="download"
+      ></ion-icon>
+    }
 
     <ion-icon name="close-circle-outline"
       (click)="close()"
@@ -29,11 +31,11 @@
 
 <ion-content text-center>
   <div class="wrapper">
-    <ng-container *ngIf="file?.type.includes('image')">
+    @if (file?.type.includes('image')) {
       <img [src]="file.url" alt="uploaded attachment preview" i18n-alt>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="isBrowserSupportedVideo()">
+    @if (isBrowserSupportedVideo()) {
       <video
         width="100%"
         controls
@@ -42,15 +44,15 @@
         playsinline
         [src]="file.url"
         (error)="handleVideoError($event)"
-      >
+        >
         <p i18n="video not supported message">
           Your browser doesn't support HTML5 video.
           Here is a <a [href]="file.url">link to the video</a> instead.
         </p>
       </video>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="file?.type?.includes('video') && !isBrowserSupportedVideo()">
+    @if (file?.type?.includes('video') && !isBrowserSupportedVideo()) {
       <div class="ion-padding ion-text-center">
         <ion-icon name="videocam-off-outline" size="large" color="medium"></ion-icon>
         <p class="body-2" i18n="unsupported video format message">
@@ -58,7 +60,7 @@
           <br>
           <a [href]="file.url" target="_blank" rel="noopener">Download to view</a>
         </p>
-      </div>
-    </ng-container>
-  </div>
-</ion-content>
+        </div>
+      }
+    </div>
+  </ion-content>

@@ -5,7 +5,9 @@
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
-  <ion-progress-bar type="indeterminate" *ngIf="loading === true"></ion-progress-bar>
+  @if (loading === true) {
+    <ion-progress-bar type="indeterminate"></ion-progress-bar>
+  }
 </ion-header>
 
 <ion-content>
@@ -21,24 +23,27 @@
       </ion-col>
 
       <ion-col size="12" size-md="8">
-        <app-assessment
-          *ngIf="!noReview"
-          [assessment]="assessment"
-          [submission]="submission"
-          [review]="review"
-          [savingMessage$]="savingText$"
-          [btnDisabled$]="btnDisabled$"
-          action="review"
-          (save)="saveReview($event)"
-          tabindex="0"
-          id="task-content"
-        ></app-assessment>
+        @if (!noReview) {
+          <app-assessment
+            [assessment]="assessment"
+            [submission]="submission"
+            [review]="review"
+            [savingMessage$]="savingText$"
+            [btnDisabled$]="btnDisabled$"
+            action="review"
+            (save)="saveReview($event)"
+            tabindex="0"
+            id="task-content"
+          ></app-assessment>
+        }
 
-        <div *ngIf="noReview" class="ion-text-center no-review">
-          <ion-icon class="large-icon" color="primary" name="clipboard-outline"></ion-icon>
-          <p class="headline-2" i18n>It's empty here.</p>
-          <ion-text class="subtitle-2" color="grey-75" i18n>Oops! Seems like there's nothing in this yet.</ion-text>
-        </div>
+        @if (noReview) {
+          <div class="ion-text-center no-review">
+            <ion-icon class="large-icon" color="primary" name="clipboard-outline"></ion-icon>
+            <p class="headline-2" i18n>It's empty here.</p>
+            <ion-text class="subtitle-2" color="grey-75" i18n>Oops! Seems like there's nothing in this yet.</ion-text>
+          </div>
+        }
       </ion-col>
     </ion-row>
   </ion-grid>

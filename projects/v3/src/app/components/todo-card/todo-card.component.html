@@ -1,20 +1,25 @@
-<app-list-item
-  *ngIf="todoItem.type"
-  [notificationIcon]="icon || 'information-circle-outline'"
-  [title]="todoItem.name"
-  titleColor="bolder"
-  [subtitle1]="todoItem.description"
-  [subtitle2]="todoItem.time"
-  subtitle2Color="grey-50"
-  tabindex="0"
-  class="focusable"
-  [callToActionBtn]="{ name: todoTitle, color: 'notification' }"
-  (anyBtnClick)="gotoAction($event)"
-></app-list-item>
+@if (todoItem.type) {
+  <app-list-item
+    [notificationIcon]="icon || 'information-circle-outline'"
+    [title]="todoItem.name"
+    titleColor="bolder"
+    [subtitle1]="todoItem.description"
+    [subtitle2]="todoItem.time"
+    subtitle2Color="grey-50"
+    tabindex="0"
+    class="focusable"
+    [callToActionBtn]="{ name: todoTitle, color: 'notification' }"
+    (anyBtnClick)="gotoAction($event)"
+  ></app-list-item>
+}
 
-<app-list-item *ngIf="loading" [loading]="true" lines="none"></app-list-item>
+@if (loading) {
+  <app-list-item [loading]="true" lines="none"></app-list-item>
+}
 
-<ion-item button *ngIf="!todoItem.type && !loading" lines="none">
-  <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
-  <ion-text color="medium" i18n>You have no new notifications.</ion-text>
-</ion-item>
+@if (!todoItem.type && !loading) {
+  <ion-item button lines="none">
+    <ion-icon name="notifications-outline" slot="start" color="primary"></ion-icon>
+    <ion-text color="medium" i18n>You have no new notifications.</ion-text>
+  </ion-item>
+}

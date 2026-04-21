@@ -1,3 +1,5 @@
 <div [style.background]="color" class="traffic-light-dot">
-  <ion-icon [name]="icon" aria-hidden="true" *ngIf="icon"></ion-icon>
+  @if (icon) {
+    <ion-icon [name]="icon" aria-hidden="true"></ion-icon>
+  }
 </div>

@@ -1,27 +1,29 @@
 <h3 class="for-accessibility" [id]="'multi-team-member-selector-question-' + question.id">{{question.name}}</h3>
-<ng-container *ngIf="isDisplayOnly">
+@if (isDisplayOnly) {
   <ion-list class="no-bg ion-no-padding">
-    <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
+    @for (teamMember of question.teamMembers; track teamMember; let i = $index) {
       <ion-item class="item-bottom-border" lines="none">
         <ion-label>
           <span [innerHTML]="teamMember.userName"></span>
-          <ng-container *ngIf="submission?.answer">
-            <p *ngIf="isSelectedInSubmission(teamMember)">
-              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
-            </p>
-          </ng-container>
-
-          <ng-container *ngIf="review?.answer">
-            <p *ngIf="isSelectedInReview(teamMember)">
-              <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
-            </p>
-          </ng-container>
+          @if (submission?.answer) {
+            @if (isSelectedInSubmission(teamMember)) {
+              <p>
+                <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
+              </p>
+            }
+          }
+          @if (review?.answer) {
+            @if (isSelectedInReview(teamMember)) {
+              <p>
+                <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
+              </p>
+            }
+          }
         </ion-label>
       </ion-item>
-    </ng-container>
+    }
   </ion-list>
-
-  <ng-container *ngIf="review?.comment && question.canComment === true">
+  @if (review?.comment && question.canComment === true) {
     <ion-item class="feedback-title ion-no-padding" lines="none">
       <ion-icon class="ion-padding-horizontal" name="eye" size="small"></ion-icon>
       <ion-label i18n>Feedback</ion-label>
@@ -31,96 +33,105 @@
       [value]="review.comment"
       [disabled]="true"
     ></ion-textarea>
-  </ng-container>
-</ng-container>
+  }
+}
 
-<ng-container *ngIf="doAssessment">
+@if (doAssessment) {
   <fieldset [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
     <legend class="for-accessibility" [id]="'multi-team-member-selector-legend-' + question.id">{{ question.name }}</legend>
     <ion-list class="no-bg ion-no-padding" role="group" [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
-      <ion-item
-        lines="none"
-        *ngFor="let teamMember of question.teamMembers;let i = index"
-        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
-        <ion-checkbox
-          [attr.aria-label]="teamMember.userName"
-          color="success"
-          [checked]="isSelected(teamMember)"
-          [value]="teamMember.key"
-          labelPlacement="end"
-          justify="start"
-          slot="start"
-          (ionChange)="onChange(teamMember.key)"
-          [disabled]="control?.disabled">
-          <div class="white-space-normal body-2 black">
-            <span [innerHTML]="teamMember.userName"
-              [appToggleLabel]="onLabelToggle"
-              [toggleId]="teamMember.key"
-              [toggleDisabled]="control?.disabled"
-              role="button"
-              tabindex="0">
-            </span>
-          </div>
-        </ion-checkbox>
-      </ion-item>
+      @for (teamMember of question.teamMembers; track teamMember; let i = $index) {
+        <ion-item
+          lines="none"
+          [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1}">
+          <ion-checkbox
+            [attr.aria-label]="teamMember.userName"
+            color="success"
+            [checked]="isSelected(teamMember)"
+            [value]="teamMember.key"
+            labelPlacement="end"
+            justify="start"
+            slot="start"
+            (ionChange)="onChange(teamMember.key)"
+            [disabled]="control?.disabled">
+            <div class="white-space-normal body-2 black">
+              <span [innerHTML]="teamMember.userName"
+                [appToggleLabel]="onLabelToggle"
+                [toggleId]="teamMember.key"
+                [toggleDisabled]="control?.disabled"
+                role="button"
+                tabindex="0">
+              </span>
+            </div>
+          </ion-checkbox>
+        </ion-item>
+      }
     </ion-list>
   </fieldset>
-</ng-container>
+}
 
-<ng-container *ngIf="doReview">
-  <fieldset [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id" *ngIf="question.canAnswer">
-    <legend class="for-accessibility" [id]="'multi-team-member-selector-review-legend-' + question.id">{{ question.name }}</legend>
-    <ion-list class="no-bg ion-no-padding" role="group" [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
-      <ion-list-header class="ion-no-padding ion-no-margin" *ngIf="!question.reviewerOnly">
-        <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
+@if (doReview) {
+  @if (question.canAnswer) {
+    <fieldset [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
+      <legend class="for-accessibility" [id]="'multi-team-member-selector-review-legend-' + question.id">{{ question.name }}</legend>
+      <ion-list class="no-bg ion-no-padding" role="group" [attr.aria-labelledby]="'multi-team-member-selector-question-' + question.id">
+        @if (!question.reviewerOnly) {
+          <ion-list-header class="ion-no-padding ion-no-margin">
+            <ion-label class="ion-text-wrap subtitle-2 black" i18n>Your Answer is</ion-label>
+          </ion-list-header>
+        }
+        @for (teamMember of question.teamMembers; track teamMember; let i = $index) {
+          <ion-item lines="none"
+            [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
+            <ion-checkbox color="success"
+              [attr.aria-label]="teamMember.userName"
+              [checked]="isSelected(teamMember)"
+              [value]="teamMember.key"
+              justify="start"
+              slot="start"
+              labelPlacement="end"
+              (ionChange)="onChange(teamMember.key, 'answer')"
+              [disabled]="control?.disabled">
+              <div class="white-space-normal body-2 black">
+                <span [innerHTML]="teamMember.userName"
+                  [appToggleLabel]="onLabelToggleReview"
+                  [toggleId]="teamMember.key"
+                  [toggleDisabled]="control?.disabled"
+                  role="button"
+                  tabindex="0">
+                </span>
+                @if (isSelectedInSubmission(teamMember)) {
+                  <p style="margin: 0; padding: 0;">
+                    <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
+                  </p>
+                }
+              </div>
+            </ion-checkbox>
+          </ion-item>
+        }
+      </ion-list>
+    </fieldset>
+  }
+  @if (question.canComment && submission?.answer) {
+    <ion-list class="ion-no-padding ion-padding-bottom"
+      >
+      <ion-list-header class="ion-no-padding" lines="none">
+        <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
       </ion-list-header>
-
-      <ion-item lines="none"
-        *ngFor="let teamMember of question.teamMembers;let i = index"
-        [ngClass]="{'item-bottom-border': i !== question.teamMembers.length - 1 }">
-
-        <ion-checkbox color="success"
-          [attr.aria-label]="teamMember.userName"
-          [checked]="isSelected(teamMember)"
-          [value]="teamMember.key"
-          justify="start"
-          slot="start"
-          labelPlacement="end"
-          (ionChange)="onChange(teamMember.key, 'answer')"
-          [disabled]="control?.disabled">
-          <div class="white-space-normal body-2 black">
-            <span [innerHTML]="teamMember.userName"
-              [appToggleLabel]="onLabelToggleReview"
-              [toggleId]="teamMember.key"
-              [toggleDisabled]="control?.disabled"
-              role="button"
-              tabindex="0">
-            </span>
-            <p *ngIf="isSelectedInSubmission(teamMember)" style="margin: 0; padding: 0;">
-              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
-            </p>
-          </div>
-        </ion-checkbox>
-      </ion-item>
+      @if (question.canComment) {
+        <ion-textarea
+          [autoGrow]="true"
+          [attr.aria-label]="'expert\'s review feedback'"
+          class="textarea"
+          #commentEle
+          rows="4"
+          [(ngModel)]="comment"
+          (ngModelChange)="onChange(comment, 'comment')"
+          placeholder="Please put your feedback here"
+          [disabled]="control?.disabled"
+          i18n-placeholder
+        ></ion-textarea>
+      }
     </ion-list>
-  </fieldset>
-
-  <ion-list class="ion-no-padding ion-padding-bottom"
-    *ngIf="question.canComment && submission?.answer">
-    <ion-list-header class="ion-no-padding" lines="none">
-      <ion-label class="subtitle-2 black" i18n>Feedback</ion-label>
-    </ion-list-header>
-    <ion-textarea *ngIf="question.canComment"
-      [autoGrow]="true"
-      [attr.aria-label]="'expert\'s review feedback'"
-      class="textarea"
-      #commentEle
-      rows="4"
-      [(ngModel)]="comment"
-      (ngModelChange)="onChange(comment, 'comment')"
-      placeholder="Please put your feedback here"
-      [disabled]="control?.disabled"
-      i18n-placeholder
-    ></ion-textarea>
-  </ion-list>
-</ng-container>
+  }
+}

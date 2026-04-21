@@ -15,51 +15,56 @@
     </ion-segment>
   </div>
 
-  <ion-item lines="none" color="light" class="ion-margin-top item-filter" *ngIf="hasActivitySession">
-    <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'" i18n>Filter by Activity</ion-label>
-    <ion-select
-      multiple="true"
-      aria-labelledby="activity-filter"
-      [value]="selectedActivities"
-      (ionChange)="onSelect(filterEle.value)"
-      #filterEle>
-      <ion-select-option *ngFor="let activity of activities" [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
-    </ion-select>
-  </ion-item>
+  @if (hasActivitySession) {
+    <ion-item lines="none" color="light" class="ion-margin-top item-filter">
+      <ion-label id="activity-filter" class="subtitle-1" [ngClass]="!events.length ? 'gray-0' : 'gray-2'" i18n>Filter by Activity</ion-label>
+      <ion-select
+        multiple="true"
+        aria-labelledby="activity-filter"
+        [value]="selectedActivities"
+        (ionChange)="onSelect(filterEle.value)"
+        #filterEle>
+        @for (activity of activities; track activity) {
+          <ion-select-option [value]="activity.id" selected>{{ activity.name }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+  }
 
-  <ng-container *ngIf="loadingEvents">
+  @if (loadingEvents) {
     <p><ion-skeleton-text animated style="width: 40%"></ion-skeleton-text></p>
     <ion-list>
       <app-list-item [loading]="true" lines="full"></app-list-item>
       <app-list-item [loading]="true" lines="full"></app-list-item>
     </ion-list>
-  </ng-container>
+  }
 
-  <ng-container *ngFor="let eventObj of events">
+  @for (eventObj of events; track eventObj) {
     <ion-list class="ion-no-padding">
       <ion-item class="headline-4 event-group" lines="none">{{ eventObj.date }}</ion-item>
       <!-- @TODO add isVideoConference by checking event zoom object -->
-      <app-list-item class="focusable"
-        *ngFor="let event of eventObj.events; let i = index"
-        leadingIcon="calendar-outline"
-        [isEventItem]="true"
-        [leadingIconColor]="eventService.isNotActionable(event) ? 'medium' : 'primary'"
-        [title]="event.name"
-        [titleColor]="eventService.isNotActionable(event) ? 'grey-100' : ''"
-        [subtitle1]="event.activityName"
-        [subtitle2]="eventService.timeDisplayed(event)"
-        [eventVideoConference]="event.videoConference"
-        [eventExpired]="event.isPast && !event.isBooked"
-        [eventFullyBooked]="event.remainingCapacity === 0"
-        [active]="event.isMultiDay ? (event.multiDayInfo.id === multiDayId) : (eventId === event.id)"
-        lines="full"
-        (click)="goto(event)"
-        (keydown)="goto(event, $event)"
-        tabindex="0"
-        [eventDayCount]="event.isMultiDay ? event.multiDayInfo.dayCount : null"
-      ></app-list-item>
+      @for (event of eventObj.events; track event; let i = $index) {
+        <app-list-item class="focusable"
+          leadingIcon="calendar-outline"
+          [isEventItem]="true"
+          [leadingIconColor]="eventService.isNotActionable(event) ? 'medium' : 'primary'"
+          [title]="event.name"
+          [titleColor]="eventService.isNotActionable(event) ? 'grey-100' : ''"
+          [subtitle1]="event.activityName"
+          [subtitle2]="eventService.timeDisplayed(event)"
+          [eventVideoConference]="event.videoConference"
+          [eventExpired]="event.isPast && !event.isBooked"
+          [eventFullyBooked]="event.remainingCapacity === 0"
+          [active]="event.isMultiDay ? (event.multiDayInfo.id === multiDayId) : (eventId === event.id)"
+          lines="full"
+          (click)="goto(event)"
+          (keydown)="goto(event, $event)"
+          tabindex="0"
+          [eventDayCount]="event.isMultiDay ? event.multiDayInfo.dayCount : null"
+        ></app-list-item>
+      }
     </ion-list>
-  </ng-container>
+  }
 
   <ion-infinite-scroll threshold="50px" (ionInfinite)="loadMoreEvents($event)">
     <ion-infinite-scroll-content
@@ -68,23 +73,25 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
-  <div *ngIf="!events.length && !loadingEvents">
-    <ion-card class="practera-card list-empty-message">
-      <ng-container [ngSwitch]="activated">
-        <ng-container *ngSwitchCase="'browse'">
-          <p aria-live="polite" class="subtitle-1 gray-3" i18n>There's no new event.</p>
-          <span class="gray-1 body-2" i18n>Go to the booked tab to see the events you've booked.</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="'booked'">
-          <p aria-live="polite" class="subtitle-1 gray-3" i18n>You have no booked events.</p>
-          <span class="gray-1 body-2" i18n>Go to the browse tab and book an event to see it here.</span>
-        </ng-container>
-        <ng-container *ngSwitchCase="'attended'">
-          <p aria-live="polite" class="subtitle-1 gray-3" i18n>You have not attended any events.</p>
-          <span class="gray-1 body-2" i18n>You can see all your past events in this tab.</span>
-        </ng-container>
-      </ng-container>
-    </ion-card>
-  </div>
+  @if (!events.length && !loadingEvents) {
+    <div>
+      <ion-card class="practera-card list-empty-message">
+        @switch (activated) {
+          @case ('browse') {
+            <p aria-live="polite" class="subtitle-1 gray-3" i18n>There's no new event.</p>
+            <span class="gray-1 body-2" i18n>Go to the booked tab to see the events you've booked.</span>
+          }
+          @case ('booked') {
+            <p aria-live="polite" class="subtitle-1 gray-3" i18n>You have no booked events.</p>
+            <span class="gray-1 body-2" i18n>Go to the browse tab and book an event to see it here.</span>
+          }
+          @case ('attended') {
+            <p aria-live="polite" class="subtitle-1 gray-3" i18n>You have not attended any events.</p>
+            <span class="gray-1 body-2" i18n>You can see all your past events in this tab.</span>
+          }
+        }
+      </ion-card>
+    </div>
+  }
 
 </ion-content>

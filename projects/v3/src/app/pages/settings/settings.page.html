@@ -7,89 +7,94 @@
 
 <ion-content fullscreen="true" class="settings-content">
   <main aria-label="Settings">
-  <ion-list lines="full" class="ion-no-margin ion-no-padding">
-    <ion-item-divider class="divider-title" lines="none">
-      <ion-label color="primary" class="headline-4" i18n>Your Details</ion-label>
-    </ion-item-divider>
+    <ion-list lines="full" class="ion-no-margin ion-no-padding">
+      <ion-item-divider class="divider-title" lines="none">
+        <ion-label color="primary" class="headline-4" i18n>Your Details</ion-label>
+      </ion-item-divider>
 
-    <ng-container *ngIf="!isMobile; else mobileProfile">
-      <div class="avatar-and-profile">
-        <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile?.avatar" alt="user profile" i18n-alt [appFallbackImage]="'assets/loading.gif'">
-          <p *ngIf="imageUpdating" class="loading-icon">
-            <ion-spinner name="bubbles"></ion-spinner>
-          </p>
-        </ion-avatar>
+      @if (!isMobile) {
+        <div class="avatar-and-profile">
+          <ion-avatar class="avatar" slot="start">
+            @if (!imageUpdating) {
+              <img [src]="profile?.avatar" alt="user profile" i18n-alt [appFallbackImage]="'assets/loading.gif'">
+            }
+            @if (imageUpdating) {
+              <p class="loading-icon">
+                <ion-spinner name="bubbles"></ion-spinner>
+              </p>
+            }
+          </ion-avatar>
+          <ion-label>
+            <ion-button (click)="profileImage()">Upload</ion-button>
+          </ion-label>
+        </div>
+      } @else {
+        <ion-item>
+          <ion-avatar class="avatar" slot="start">
+            @if (!imageUpdating) {
+              <img [src]="profile?.avatar || '/assets/loading.gif'" alt="user profile">
+            }
+            @if (imageUpdating) {
+              <p class="loading-icon">
+                <ion-spinner name="bubbles"></ion-spinner>
+              </p>
+            }
+          </ion-avatar>
+          <ion-label>
+            <ion-button (click)="profileImage()">Upload</ion-button>
+          </ion-label>
+        </ion-item>
+      }
 
+
+
+      <ion-item class="profile-name" [ngClass]="{'mobile': isMobile}">
         <ion-label>
-          <ion-button (click)="profileImage()">Upload</ion-button>
-        </ion-label>
-      </div>
-    </ng-container>
-
-    <ng-template #mobileProfile>
-      <ion-item>
-        <ion-avatar class="avatar" slot="start">
-          <img *ngIf="!imageUpdating" [src]="profile?.avatar || '/assets/loading.gif'" alt="user profile">
-          <p *ngIf="imageUpdating" class="loading-icon">
-            <ion-spinner name="bubbles"></ion-spinner>
-          </p>
-        </ion-avatar>
-
-        <ion-label>
-          <ion-button (click)="profileImage()">Upload</ion-button>
+          <ion-text class="headline-4 title" i18n="user's name">Name</ion-text>
+          <ion-text class="body-2">{{profile.name}}</ion-text>
         </ion-label>
       </ion-item>
-    </ng-template>
 
+      <ion-item class="profile-email" [ngClass]="{'mobile': isMobile}" id="user-email">
+        <ion-label>
+          <ion-text class="headline-4 title" i18n>Email</ion-text>
+          <ion-text class="body-2">{{profile.email}}</ion-text>
+        </ion-label>
+      </ion-item>
 
-    <ion-item class="profile-name" [ngClass]="{'mobile': isMobile}">
-      <ion-label>
-        <ion-text class="headline-4 title" i18n="user's name">Name</ion-text>
-        <ion-text class="body-2">{{profile.name}}</ion-text>
-      </ion-label>
-    </ion-item>
+      <ion-popover trigger="user-email" side="bottom" alignment="end">
+        <ng-template>
+          <ion-content>{{profile.email}}</ion-content>
+        </ng-template>
+      </ion-popover>
 
-    <ion-item class="profile-email" [ngClass]="{'mobile': isMobile}" id="user-email">
-      <ion-label>
-        <ion-text class="headline-4 title" i18n>Email</ion-text>
-        <ion-text class="body-2">{{profile.email}}</ion-text>
-      </ion-label>
-    </ion-item>
+      <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
+        <ion-note class="ion-padding body-3" i18n>If you need to update your name or email please contact the experience administrator.</ion-note>
+      </ion-item-divider>
 
-    <ion-popover trigger="user-email" side="bottom" alignment="end">
-      <ng-template>
-        <ion-content>{{profile.email}}</ion-content>
-      </ng-template>
-    </ion-popover>
+      <!-- <app-contact-number-form [page]="'settings'"></app-contact-number-form> -->
 
-    <ion-item-divider [ngClass]="{'ion-no-padding': isMobile}">
-      <ion-note class="ion-padding body-3" i18n>If you need to update your name or email please contact the experience administrator.</ion-note>
-    </ion-item-divider>
+      <ion-item-divider class="divider-title">
+        <ion-label color="primary" class="headline-4" i18n>Support</ion-label>
+      </ion-item-divider>
 
-    <!-- <app-contact-number-form [page]="'settings'"></app-contact-number-form> -->
+      <ion-item detail="true" button (click)="openBadgeApp($event)" class="body-2 black" (keydown)="openBadgeApp($event)" i18n>Your badges and certificates</ion-item>
 
-    <ion-item-divider class="divider-title">
-      <ion-label color="primary" class="headline-4" i18n>Support</ion-label>
-    </ion-item-divider>
+      <ion-item detail="true" button (click)="openSupportPopup($event)" class="body-2 black" (keydown)="openSupportPopup($event)" i18n>Contact support</ion-item>
 
-    <ion-item detail="true" button (click)="openBadgeApp($event)" class="body-2 black" (keydown)="openBadgeApp($event)" i18n>Your badges and certificates</ion-item>
+      <ion-item detail="true" button (click)="openLink($event)" class="body-2 black" (keydown)="openLink($event)" i18n>Terms and conditions</ion-item>
 
-    <ion-item detail="true" button (click)="openSupportPopup($event)" class="body-2 black" (keydown)="openSupportPopup($event)" i18n>Contact support</ion-item>
-
-    <ion-item detail="true" button (click)="openLink($event)" class="body-2 black" (keydown)="openLink($event)" i18n>Terms and conditions</ion-item>
-
-    <div [class]="{'xc': !isMobile }">
-      <ion-button i18n
-      class="ion-padding-horizontal ion-text-center btn-logout"
-      fill="outline"
-      expand="block"
-      (click)="logout($event)"
-      (keydown)="logout($event)"
-      >Log Out</ion-button>
-    </div>
-  </ion-list>
-</main>
+      <div [class]="{'xc': !isMobile }">
+        <ion-button i18n
+          class="ion-padding-horizontal ion-text-center btn-logout"
+          fill="outline"
+          expand="block"
+          (click)="logout($event)"
+          (keydown)="logout($event)"
+        >Log Out</ion-button>
+      </div>
+    </ion-list>
+  </main>
 </ion-content>
 
 

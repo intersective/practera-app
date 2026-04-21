@@ -1,10 +1,9 @@
 <div class="container">
   <div class="text-content" role="region" [attr.aria-label]="ariaLabel || name || 'Content'">
-    <ng-container *ngIf="nonCollapsible; else animated">
+    @if (nonCollapsible) {
       <div id="{{name}}" #description [innerHtml]="content | detectLanguage"
       class="full-height"></div>
-    </ng-container>
-    <ng-template #animated>
+    } @else {
       <div id="{{name}}" #description [innerHtml]="content | detectLanguage"
         [ngClass]="{
           'limit-height': isTruncating && !isInPopup,
@@ -15,10 +14,10 @@
         [attr.aria-expanded]="!isTruncating"
         style="overflow-wrap: anywhere;">
       </div>
-    </ng-template>
+    }
   </div>
 
-  <ng-container *ngIf="heightExceeded">
+  @if (heightExceeded) {
     <ion-button mode="ios" color="primary" fill="clear"
       #toggleButton
       (click)="openShut()"
@@ -29,14 +28,14 @@
       [attr.aria-label]="isTruncating ? ('Show more of ' + (ariaLabel || 'content')) : ('Show less of ' + (ariaLabel || 'content'))"
       i18n-aria-label
       class="ion-focusable">
-      <ng-container *ngIf="isTruncating">
+      @if (isTruncating) {
         <ng-container i18n="expand article">MORE</ng-container>
         <ion-icon slot="end" name="arrow-forward" aria-hidden="true"></ion-icon>
-      </ng-container>
-      <ng-container *ngIf="!isTruncating">
+      }
+      @if (!isTruncating) {
         <ion-icon slot="start" name="arrow-back" aria-hidden="true"></ion-icon>
         <ng-container i18n="shrink article">LESS</ng-container>
-      </ng-container>
+      }
     </ion-button>
-  </ng-container>
+  }
 </div>
