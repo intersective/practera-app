@@ -216,8 +216,9 @@
               </div>
             </ion-item>
 
-            <ng-container *ngIf="question"
-              [ngSwitch]="question.type">
+            <ng-container *ngIf="question">
+              <!-- tick-container and no-answer indicator are always-present siblings,
+                   not part of the switch — they must live outside [ngSwitch] -->
               <div class="tick-container"
                 role="status"
                 aria-live="polite"
@@ -271,6 +272,8 @@
                 </ion-item>
               </ng-container>
 
+              <!-- switch contains only *ngSwitchCase / *ngSwitchDefault children -->
+              <ng-container [ngSwitch]="question.type">
               <app-text *ngSwitchCase="'text'"
                 #questionField
                 [question]="question"
@@ -398,7 +401,8 @@
                   style="color:red;"
                   i18n>Unsupported question type: {{ question.type }}</p>
               </div>
-            </ng-container>
+              </ng-container><!-- end [ngSwitch] -->
+            </ng-container><!-- end *ngIf="question" -->
           </ion-list>
         </ng-container>
       </ng-container>

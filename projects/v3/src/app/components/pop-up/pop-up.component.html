@@ -1,13 +1,14 @@
 <ion-content color="light" text-center>
   <div class="content">
-    <ng-container [ngSwitch]="type">
+    <!-- div-logo is always shown; it must live outside [ngSwitch] -->
+    <div class="div-logo">
+      <ng-container *ngIf="data?.logo">
+        <ion-icon [name]="data.logo"
+          size="large"></ion-icon>
+      </ng-container>
+    </div>
 
-      <div class="div-logo">
-        <ng-container *ngIf="data?.logo">
-          <ion-icon [name]="data.logo"
-            size="large"></ion-icon>
-        </ng-container>
-      </div>
+    <ng-container [ngSwitch]="type">
       <!-- Forgot Password Confirmation -->
       <ng-container *ngSwitchCase="'forgotPasswordConfirmation'">
         <div class="div-after-logo">
