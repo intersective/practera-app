@@ -5,7 +5,7 @@ import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import Pusher, { Channel } from 'pusher-js';
+import Pusher, { Channel, Options } from 'pusher-js';
 import { ApolloService } from './apollo.service';
 
 const api = {
@@ -44,7 +44,7 @@ class PusherChannel {
 export class PusherService {
   private pusherKey: string;
   private apiurl: string;
-  private pusher: Pusher.Pusher;
+  private pusher: Pusher;
   private channels: {
     notification: PusherChannel;
     chat: PusherChannel[];
@@ -118,7 +118,7 @@ export class PusherService {
     return true;
   }
 
-  private async initialisePusher(): Promise<Pusher.Pusher> {
+  private async initialisePusher(): Promise<Pusher> {
     // during the app execution lifecycle
     // never reinstantiate another instance of Pusher
     const pusherHasInitiated = typeof this.pusher !== 'undefined' || !this.utils.isEmpty(this.pusher);
@@ -133,7 +133,7 @@ export class PusherService {
     }
 
     try {
-      const config: Pusher.Config = {
+      const config: Options = {
         cluster: environment.pusherCluster,
         forceTLS: true,
         authEndpoint: this.apiurl + api.pusherAuth,
