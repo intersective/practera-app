@@ -1,4 +1,4 @@
-import { ChannelMembers, ChatChannel } from '@v3/services/chat.service';
+import { ChannelMembers, ChatChannel, Message, MessageListResult, User } from '@v3/services/chat.service';
 
 const mockMembers: ChannelMembers[] = [
   {
@@ -69,8 +69,49 @@ const mockChats = {
   }
 };
 
-export { mockChats, mockMembers };
+// Create a user type that meets the requirements
+const createUser = (uuid: string): User => {
+  return {
+    id: parseInt(uuid),
+    uuid,
+    name: `User ${uuid}`,
+    email: `user${uuid}@example.com`,
+    role: 'participant',
+    avatar: 'https://sandbox.practera.com/img/user-512.png'
+  };
+};
 
+// Create a message that meets the Message interface requirements
+const createMessage = (uuid: string, senderUuid: string, messageText: string): Message => {
+  return {
+    uuid,
+    sender: createUser(senderUuid),
+    isSender: false,
+    message: messageText,
+    file: null,
+    created: '2023-04-16T10:00:00',
+    scheduled: null,
+    sentAt: '2023-04-16T10:00:00',
+
+    // Optional properties that may be needed in tests
+    senderUuid,
+    senderName: `User ${senderUuid}`,
+    senderRole: 'participant',
+    senderAvatar: 'https://sandbox.practera.com/img/user-512.png'
+  };
+};
+
+// Create a MessageListResult for mock chat messages
+const mockChatMessages: MessageListResult = {
+  cursor: 'next-page-cursor',
+  messages: [
+    createMessage('msg1', '1', 'Hello team'),
+    createMessage('msg2', '2', 'Hello everyone'),
+    createMessage('msg3', '3', 'What are we working on today?')
+  ]
+};
+
+export { mockChats, mockMembers, mockChatMessages, createMessage, createUser };
 
 const SAMPLE_AVATAR = 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW';
 const SAMPLE_PUSHER_CHANNEL = 'pusher-channel-name';

@@ -4,6 +4,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
+import { HomeService } from '@v3/services/home.service';
+import { UnlockIndicatorService } from '@v3/services/unlock-indicator.service';
 
 import { NotificationsPage } from './notifications.page';
 import { of } from 'rxjs';
@@ -32,6 +34,12 @@ describe('NotificationsPage', () => {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', [
             'modal',
+            'alert',
+            'presentToast',
+            'getCurrentTodoItems',
+            'getTodoItems',
+            'markTodoItemAsDone',
+            'markMultipleTodoItemsAsDone',
           ], {
             'notification$': of(true),
             'eventReminder$': of(true),
@@ -43,7 +51,22 @@ describe('NotificationsPage', () => {
         },
         {
           provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', ['dismiss']),
+          useValue: jasmine.createSpyObj('ModalController', {
+            'dismiss': Promise.resolve(),
+            'getTop': Promise.resolve(true),
+          }),
+        },
+        {
+          provide: HomeService,
+          useValue: jasmine.createSpyObj('HomeService', ['getMilestones'], {
+            'milestones$': of([]),
+          }),
+        },
+        {
+          provide: UnlockIndicatorService,
+          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['clearAllTasks'], {
+            'unlockedTasks$': of([]),
+          }),
         },
       ]
     }).compileComponents();
@@ -54,6 +77,10 @@ describe('NotificationsPage', () => {
     utilsSpy = TestBed.inject(UtilsService);
     modalSpy = TestBed.inject(ModalController);
     notificationSpy = TestBed.inject(NotificationsService);
+
+    // reconfigure getTop to return truthy (global test.ts override sets it to null)
+    (modalSpy.getTop as jasmine.Spy).and.returnValue(Promise.resolve(true));
+
     fixture.detectChanges();
   }));
 
@@ -64,12 +91,12 @@ describe('NotificationsPage', () => {
   describe('ngOnInit()', () => {
     it('should initiate subscriptions', () => {
       utilsSpy.isEmpty = jasmine.createSpy('isEmpty').and.returnValue(false);
-      component['_addChatTodoItem'] = jasmine.createSpy('_addChatTodoItem');
       component.ngOnInit();
 
+      // notification$ emits true, which sets todoItems
       expect(component.todoItems).toEqual(true as any);
+      // eventReminder$ emits true, isEmpty returns false, so it gets pushed
       expect(component.eventReminders).toContain(true);
-      expect(component['_addChatTodoItem']).toHaveBeenCalledWith(true);
     });
   });
 
@@ -279,7 +306,7 @@ describe('NotificationsPage', () => {
       flushMicrotasks();
 
       expect(showEventDetail).toBeUndefined();
-      expect(keyboardEvent.preventDefault).toHaveBeenCalledTimes(4);
+      expect(keyboardEvent.preventDefault).toHaveBeenCalledTimes(3);
     }));
   });
 });

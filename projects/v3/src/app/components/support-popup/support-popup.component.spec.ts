@@ -4,7 +4,7 @@ import { of, throwError } from 'rxjs';
 
 import { SupportPopupComponent } from './support-popup.component';
 import { HubspotService } from '@v3/services/hubspot.service';
-import { FilestackService } from '@v3/app/services/filestack.service';
+import { UppyUploaderService } from '@v3/services/uppy-uploader.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
@@ -26,7 +26,7 @@ describe('SupportPopupComponent', () => {
   let fixture: ComponentFixture<SupportPopupComponent>;
   let modalSpy: jasmine.SpyObj<ModalController>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
-  let filestackSpy: jasmine.SpyObj<FilestackService>;
+  let uppyUploaderSpy: jasmine.SpyObj<UppyUploaderService>;
   let hubspotSpy: jasmine.SpyObj<HubspotService>;
 
   beforeEach(async () => {
@@ -35,7 +35,7 @@ describe('SupportPopupComponent', () => {
       imports: [IonicModule.forRoot()],
       providers: [
         { provide: HubspotService, useValue: jasmine.createSpyObj('HubspotService', ['submitDataToHubspot']) },
-        { provide: FilestackService, useValue: jasmine.createSpyObj('FilestackService', ['deleteFile', 'open', 'getS3Config']) },
+        { provide: UppyUploaderService, useValue: jasmine.createSpyObj('UppyUploaderService', ['open']) },
         { provide: UtilsService, useClass: UtilsServiceMock },
         { provide: NotificationsService, useClass: NotificationsServiceMock },
         { provide: ModalController, useValue: jasmine.createSpyObj('ModalController', ['dismiss', 'getTop']) },
@@ -46,7 +46,7 @@ describe('SupportPopupComponent', () => {
     component = fixture.componentInstance;
     modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
-    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
+    uppyUploaderSpy = TestBed.inject(UppyUploaderService) as jasmine.SpyObj<UppyUploaderService>;
     hubspotSpy = TestBed.inject(HubspotService) as jasmine.SpyObj<HubspotService>;
     fixture.detectChanges();
   });
@@ -103,7 +103,15 @@ describe('SupportPopupComponent', () => {
     it('should return false when selectedFile is truthy', () => {
       component.problemSubject = '';
       component.problemContent = '';
-      component.selectedFile = { handle: 'abc123' };
+      component.selectedFile = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'http://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000
+      };
 
       const result = component.isPristine();
 
@@ -183,65 +191,81 @@ describe('SupportPopupComponent', () => {
   });
 
   describe('removeSelectedFile', () => {
-    it('should remove the selected file and call deleteFile with the file handle', fakeAsync(() => {
-      filestackSpy.deleteFile = jasmine.createSpy().and.returnValue(of({}));
-
-      component.selectedFile = { handle: 'abc123' };
+    it('should clear the selected file', fakeAsync(() => {
+      component.selectedFile = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'http://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
+      };
       component.removeSelectedFile();
       flushMicrotasks();
 
-      expect(filestackSpy.deleteFile).toHaveBeenCalledWith('abc123');
       expect(component.selectedFile).toBeUndefined();
     }));
   });
 
   describe('uploadFile', () => {
-    it('should call FilestackService open method and set the selectedFile on upload finished', fakeAsync(() => {
-      const mockResponse = { filename: 'test.jpg', handle: 'abc123', url: 'http://example.com/test.jpg' };
+    it('should open uppy uploader and set selectedFile on dismiss with data', fakeAsync(() => {
+      const mockFile = {
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test.jpg',
+        url: 'http://example.com/test.jpg',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000,
+      };
 
-      filestackSpy.open = jasmine.createSpy().and.callFake(options => {
-        return options.onFileUploadFinished(mockResponse);
-      });
+      uppyUploaderSpy.open.and.returnValue(Promise.resolve({
+        onDidDismiss: () => Promise.resolve({ data: mockFile, role: 'confirm' }),
+      } as any));
 
       component.uploadFile();
       flushMicrotasks();
 
-      expect(filestackSpy.open).toHaveBeenCalled();
-      expect(component.selectedFile).toEqual(mockResponse);
+      expect(uppyUploaderSpy.open).toHaveBeenCalledWith('any');
+      expect(component.selectedFile).toEqual(mockFile);
     }));
 
-    it('should handle file upload failure and not set selectedFile', fakeAsync(() => {
-      filestackSpy.open = jasmine.createSpy().and.callFake(options => {
-        return options.onFileUploadFailed('Error');
-      });
+    it('should not set selectedFile when uppy modal is dismissed without data', fakeAsync(() => {
+      uppyUploaderSpy.open.and.returnValue(Promise.resolve({
+        onDidDismiss: () => Promise.resolve({ data: undefined, role: 'cancel' }),
+      } as any));
 
       component.uploadFile();
       flushMicrotasks();
 
-      expect(filestackSpy.open).toHaveBeenCalled();
+      expect(uppyUploaderSpy.open).toHaveBeenCalledWith('any');
       expect(component.selectedFile).toBeUndefined();
     }));
 
-    it('should call FilestackService open method when keyboard event is Enter or Space', fakeAsync(() => {
-      filestackSpy.open = jasmine.createSpy().and.callThrough();
+    it('should open uppy uploader when keyboard event is Enter or Space', fakeAsync(() => {
+      uppyUploaderSpy.open.and.returnValue(Promise.resolve({
+        onDidDismiss: () => Promise.resolve({ data: undefined, role: 'cancel' }),
+      } as any));
 
       const enterEvent = new KeyboardEvent('keydown', { code: 'Enter' });
       const spaceEvent = new KeyboardEvent('keydown', { code: 'Space' });
 
       component.uploadFile(enterEvent);
+      flushMicrotasks();
       component.uploadFile(spaceEvent);
       flushMicrotasks();
 
-      expect(filestackSpy.open).toHaveBeenCalledTimes(2);
+      expect(uppyUploaderSpy.open).toHaveBeenCalledTimes(2);
     }));
 
-    it('should not call FilestackService open method when keyboard event is not Enter or Space', fakeAsync(() => {
+    it('should not open uppy uploader when keyboard event is not Enter or Space', fakeAsync(() => {
       const escapeEvent = new KeyboardEvent('keydown', { code: 'Escape' });
 
       component.uploadFile(escapeEvent);
       flushMicrotasks();
 
-      expect(filestackSpy.open).not.toHaveBeenCalled();
+      expect(uppyUploaderSpy.open).not.toHaveBeenCalled();
     }));
   });
 
@@ -280,9 +304,9 @@ describe('SupportPopupComponent', () => {
         file: undefined,
         consentToProcess: true,
       });
-      expect(component.selectedFile).toBeUndefined();
-      expect(component.problemContent).toBe('');
-      expect(component.problemSubject).toBe('');
+      // on error, form is NOT cleared - only cleared on success
+      expect(component.problemContent).toBe('Test Content');
+      expect(component.problemSubject).toBe('Test Subject');
       expect(component.isShowSuccess).toBeFalse();
       expect(component.isShowError).toBeTrue();
     });

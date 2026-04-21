@@ -19,6 +19,7 @@ import { Activity } from '@v3/app/services/activity.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 
 @Component({
+  standalone: false,
   selector: "app-home",
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"],

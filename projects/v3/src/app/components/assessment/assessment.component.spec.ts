@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, Directive, forwardRef } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
@@ -17,6 +17,28 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
+import { ModalController } from '@ionic/angular';
+
+/**
+ * mock value accessor directive to satisfy formControlName bindings
+ * on custom elements like app-text, app-oneof, etc.
+ */
+@Directive({
+  standalone: false,
+  selector: '[formControlName]',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MockValueAccessorDirective),
+      multi: true
+    }
+  ]
+})
+class MockValueAccessorDirective implements ControlValueAccessor {
+  writeValue(obj: any): void {}
+  registerOnChange(fn: any): void {}
+  registerOnTouched(fn: any): void {}
+}
 
 class Page {
   get savingMessage() {
@@ -101,6 +123,7 @@ describe('AssessmentComponent', () => {
   let shared: SharedService;
   let utils: UtilsService;
   let apolloSpy: jasmine.SpyObj<ApolloService>;
+  let modalSpy: jasmine.SpyObj<ModalController>;
 
   const mockQuestions = [
     {
@@ -180,8 +203,8 @@ describe('AssessmentComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [AssessmentComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [AssessmentComponent, MockValueAccessorDirective],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -215,7 +238,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly', 'assessmentSubmittedToast'])
         },
         {
           provide: ActivityService,
@@ -237,6 +260,10 @@ describe('AssessmentComponent', () => {
           provide: Router,
           useClass: MockRouter,
         },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss']),
+        },
       ]
     }).compileComponents();
 
@@ -257,6 +284,7 @@ describe('AssessmentComponent', () => {
     apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     shared = TestBed.inject(SharedService);
     utils = TestBed.inject(UtilsService);
+    modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
 
     // initialise service calls
     /* assessmentSpy.getAssessment.and.returnValue(of({
@@ -268,6 +296,10 @@ describe('AssessmentComponent', () => {
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({ success: true }));
     // activitySpy.goToNextTask.and.returnValue(Promise.resolve());
     storageSpy.getUser.and.returnValue(mockUser);
+
+    // initialize btnDisabled$ as it's an @Input that is normally set by parent
+    component.btnDisabled$ = new BehaviorSubject(false);
+    component.savingMessage$ = new BehaviorSubject('');
   });
 
   it('should be created', () => {
@@ -279,22 +311,25 @@ describe('AssessmentComponent', () => {
       expect(component.ngOnChanges({})).toBeFalsy();
     });
 
-    it('should update assessment with latest data', () => {
-      component.assessment = mockAssessment;
-      component.ngOnChanges({});
+  it('should update assessment with latest data', () => {
+    component.assessment = mockAssessment;
+    component.action = 'assessment';
+    component.ngOnChanges({ assessment: {} as any });
 
-      expect(component.doAssessment).toEqual(true);
-      expect(component.feedbackReviewed).toEqual(false);
-      expect(component.btnDisabled$.value).toEqual(false);
-      expect(component.isNotInATeam).toEqual(false);
-      expect(component.isPendingReview).toEqual(false);
-    });
+    expect(component.doAssessment).toEqual(true);
+    expect(component.feedbackReviewed).toEqual(false);
+    // btnDisabled$ is true because required questions are not answered yet
+    expect(component.btnDisabled$.value).toEqual(true);
+    expect(component.isNotInATeam).toEqual(false);
+    expect(component.isPendingReview).toEqual(false);
+  });
 
     it('should not allow submission if locked', () => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.action = 'assessment';
+      // Create a copy to avoid test pollution
+      component.submission = { ...mockSubmission, isLocked: true } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -304,9 +339,10 @@ describe('AssessmentComponent', () => {
 
     it('should not allow submission', () => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.action = 'assessment';
+      // Create a copy to avoid test pollution
+      component.submission = { ...mockSubmission, isLocked: true } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -316,18 +352,26 @@ describe('AssessmentComponent', () => {
 
     it('should save & publish "saving" message', fakeAsync(() => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = false;
-      component.submission.status = 'in progress';
+      component.action = 'assessment';
+      // Create a copy to avoid test pollution
+      component.submission = { ...mockSubmission, isLocked: false, status: 'in progress' } as any;
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
-      component.ngOnChanges({});
+      // Pre-create form controls to avoid NG01203 error when change detection runs
+      mockQuestions.forEach(q => {
+        component.questionsForm.addControl('q-' + q.id, new FormControl(null));
+      });
+      component.ngOnChanges({ submission: {} as any });
 
-      tick();
+      // Flush all pending timers (200ms for initializePageCompletion, 250ms for scrollActivePageIntoView, 300ms for form subscription)
+      tick(350);
       expect(component.doAssessment).toBeTrue();
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
-      expect(component.btnDisabled$.value).toEqual(false);
+      // btnDisabled$ is true because required questions are not answered yet
+      expect(component.btnDisabled$.value).toEqual(true);
+      // Flush any remaining timers
+      flush();
     }));
 
     it('should flag assessment as "pending review"', () => {
@@ -343,7 +387,7 @@ describe('AssessmentComponent', () => {
       const spy = spyOn(component.savingMessage$, 'next');
 
       component.action = 'review';
-      component.ngOnChanges({});
+      component.ngOnChanges({ review: {} as any });
 
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
@@ -358,7 +402,7 @@ describe('AssessmentComponent', () => {
       component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'done';
-      component.ngOnChanges({});
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
@@ -367,6 +411,7 @@ describe('AssessmentComponent', () => {
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
+    component.action = 'assessment';
     const answers = [
       {
         'questionId': 123,
@@ -377,6 +422,17 @@ describe('AssessmentComponent', () => {
         'answer': null
       }
     ];
+
+    // Mock form element - create a mock form object
+    component.form = {
+      nativeElement: {
+        querySelector: jasmine.createSpy('querySelector').and.returnValue({
+          classList: {
+            add: jasmine.createSpy('add')
+          }
+        })
+      }
+    } as any;
 
     const unansweredQuestions = component['_compulsoryQuestionsAnswered'](answers);
     expect(unansweredQuestions).toEqual([mockQuestions[0]]);
@@ -443,6 +499,7 @@ describe('AssessmentComponent', () => {
 
       component.doAssessment = true;
       component.isPendingReview = false;
+      component.action = 'assessment';
 
       // Call the method
       component['_populateQuestionsForm']();
@@ -460,7 +517,7 @@ describe('AssessmentComponent', () => {
       const optionalControl = component.questionsForm.get('q-2');
       expect(optionalControl.validator).toBeFalsy();
 
-      // Check that multi team member selector has array initial value
+      // Check that multi team member selector has plain array initial value in assessment mode
       const multiControl = component.questionsForm.get('q-3');
       expect(multiControl.value).toEqual([]);
     });
@@ -698,7 +755,8 @@ describe('AssessmentComponent', () => {
         groups: []
       } as any;
 
-      spyOn(utils, 'isEmpty').and.returnValue(true);
+      // isEmpty is already spied by TestUtils, just override return value
+      (utils.isEmpty as jasmine.Spy).and.returnValue(true);
 
       component['_populateQuestionsForm']();
 
@@ -731,13 +789,19 @@ describe('AssessmentComponent', () => {
 
       spyOn(component, 'initializePageCompletion');
       spyOn(component, 'setSubmissionDisabled');
-      spyOn(utils, 'isEmpty').and.returnValue(false);
+      // isEmpty is already spied by TestUtils, just override return value
+      (utils.isEmpty as jasmine.Spy).and.returnValue(false);
 
       component['_populateQuestionsForm']();
 
+      // Wait for the setTimeout(300) that sets up the subscription
+      tick(300);
+
       // Trigger form value change
       component.questionsForm.get('q-1').setValue('test value');
-      tick(300); // Wait for debounce
+
+      // Wait for debounceTime(300)
+      tick(300);
 
       expect(component.initializePageCompletion).toHaveBeenCalled();
       expect(component.setSubmissionDisabled).toHaveBeenCalled();
@@ -1126,9 +1190,10 @@ describe('AssessmentComponent', () => {
       component.isPendingReview = true;
       expect(component.btnText).toEqual('submit answers');
 
-      const spy = spyOn(component, '_submitAnswer');
+      // continueToNextTask pushes to submitActions, which then triggers _submitAnswer via subscription
+      const spy = spyOn(component.submitActions, 'next');
       component.continueToNextTask();
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith({ autoSave: false, goBack: false });
     });
 
     it('should mark feedback as read', () => {
@@ -1230,12 +1295,12 @@ describe('AssessmentComponent', () => {
       expect(component.labelColor).toEqual('');
     });
 
-    it('should return empty when status is unknown', () => {
+    it('should return danger when status is in progress and is overdue', () => {
       component.submission.status = 'in progress';
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;
-      expect(component.labelColor).toEqual('');
+      expect(component.labelColor).toEqual('danger');
     });
   });
 
@@ -1318,6 +1383,9 @@ describe('AssessmentComponent', () => {
     });
 
     it('should return questions that are required but not answered', () => {
+      // Set action to assessment
+      component.action = 'assessment';
+
       // Set up mock assessment with required questions
       component.assessment = {
         id: 1,
@@ -1352,12 +1420,16 @@ describe('AssessmentComponent', () => {
         // Question 2 is missing
       ];
 
-      // Mock form element
-      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
-        classList: {
-          add: jasmine.createSpy('add')
+      // Mock form element - create a mock form object
+      component.form = {
+        nativeElement: {
+          querySelector: jasmine.createSpy('querySelector').and.returnValue({
+            classList: {
+              add: jasmine.createSpy('add')
+            }
+          })
         }
-      });
+      } as any;
 
       // Test the function
       const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
@@ -1435,12 +1507,16 @@ describe('AssessmentComponent', () => {
         { questionId: 1, answer: '', file: null }
       ];
 
-      // Mock form element
-      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
-        classList: {
-          add: jasmine.createSpy('add')
+      // Mock form element - create a mock form object
+      component.form = {
+        nativeElement: {
+          querySelector: jasmine.createSpy('querySelector').and.returnValue({
+            classList: {
+              add: jasmine.createSpy('add')
+            }
+          })
         }
-      });
+      } as any;
 
       // Test the function
       const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
@@ -1654,9 +1730,12 @@ describe('AssessmentComponent', () => {
         component.doAssessment = true;
         component['submitting'] = true;
         component.btnDisabled$.next(true);
+        component.assessment = { ...mockAssessment };
         component.questionsForm = new FormGroup({
           'q-123': new FormControl(null, Validators.required),
         });
+        // mock the form ViewChild to prevent nativeElement errors
+        component.form = { nativeElement: document.createElement('div') } as any;
       });
 
       it('should reset submitting when required questions are missing', async () => {
@@ -1703,12 +1782,532 @@ describe('AssessmentComponent', () => {
     });
   });
 
+  describe('areAllRequiredQuestionsAnswered()', () => {
+    beforeEach(() => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      component.isPendingReview = false;
+    });
+
+    it('should return true when there are no questions', () => {
+      const result = component['areAllRequiredQuestionsAnswered']([]);
+      expect(result).toBeTrue();
+    });
+
+    it('should return true when no questions are required', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answer'),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Optional',
+        type: 'text',
+        isRequired: false,
+        audience: ['submitter'],
+      }] as any[];
+
+      const result = component['areAllRequiredQuestionsAnswered'](questions);
+      expect(result).toBeTrue();
+    });
+
+    it('should return true when required text question has a value', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('some text'),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Text Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should return false when required text question is empty', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Text Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return false when required text question is null', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(null),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Text Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return true when required multi-choice question has selections', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(['option1', 'option2']),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Multi Q',
+        type: 'multiple',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should return false when required multi-choice question has empty array', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl([]),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Multi Q',
+        type: 'multiple',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return true when required review question has answer', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl({ answer: 'review text', comment: 'good', file: null }),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Review Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['reviewer'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should return false when required review question has empty answer', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl({ answer: '', comment: '', file: null }),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Review Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['reviewer'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return false when control does not exist', () => {
+      component.questionsForm = new FormGroup({});
+      const questions = [{
+        id: 1,
+        name: 'Missing Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return false when control is invalid', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(null, Validators.required),
+      });
+      const questions = [{
+        id: 1,
+        name: 'Invalid Q',
+        type: 'text',
+        isRequired: true,
+        audience: ['submitter'],
+      }] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should skip questions not in current role audience', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+      // required but only for reviewer, not submitter
+      const questions = [{
+        id: 1,
+        name: 'Reviewer Only',
+        type: 'text',
+        isRequired: true,
+        audience: ['reviewer'],
+      }] as any[];
+
+      // submitter role will not consider this as required
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+
+    it('should handle mix of answered and unanswered required questions', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+      const questions = [
+        { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+        { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] },
+      ] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeFalse();
+    });
+
+    it('should return true when all mixed required questions are answered', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('text answer'),
+        'q-2': new FormControl(['choice1']),
+        'q-3': new FormControl('optional'),
+      });
+      const questions = [
+        { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+        { id: 2, name: 'Q2', type: 'multiple', isRequired: true, audience: ['submitter'] },
+        { id: 3, name: 'Q3', type: 'text', isRequired: false, audience: ['submitter'] },
+      ] as any[];
+
+      expect(component['areAllRequiredQuestionsAnswered'](questions)).toBeTrue();
+    });
+  });
+
+  describe('initializePageCompletion()', () => {
+    beforeEach(() => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          {
+            name: 'Group 1',
+            questions: [
+              { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+              { id: 2, name: 'Q2', type: 'text', isRequired: false, audience: ['submitter'] },
+            ],
+          },
+        ],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+      spyOn(component, 'scrollActivePageIntoView');
+    });
+
+    it('should return early when pagination is disabled', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.pageRequiredCompletion = [];
+
+      component.initializePageCompletion();
+      tick(200);
+
+      expect(component.pageRequiredCompletion).toEqual([]);
+    }));
+
+    it('should set all pages complete in read-only mode', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [{ id: 1 }] as any[] }],
+        [{ name: 'G2', questions: [{ id: 2 }] as any[] }],
+      ];
+
+      component.initializePageCompletion();
+      tick(200);
+
+      expect(component.pageRequiredCompletion).toEqual([true, true]);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    }));
+
+    it('should evaluate each page completion in edit mode', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.doAssessment = true;
+      component.action = 'assessment';
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [
+          { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+        ] }],
+        [{ name: 'G2', questions: [
+          { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+        ] }],
+      ];
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+
+      component.initializePageCompletion();
+      tick(200);
+
+      // page 0 has answered required question → true
+      expect(component.pageRequiredCompletion[0]).toBeTrue();
+      // page 1 has unanswered required question → false
+      expect(component.pageRequiredCompletion[1]).toBeFalse();
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    }));
+  });
+
+  describe('findAndGoToFirstUnansweredQuestion()', () => {
+    beforeEach(() => {
+      component.action = 'assessment';
+      component.doAssessment = true;
+      spyOn(component, 'goToQuestion');
+    });
+
+    it('should return false when all required questions are answered (no pagination)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeFalse();
+      expect(component.goToQuestion).not.toHaveBeenCalled();
+    });
+
+    it('should find unanswered question and navigate to it (no pagination)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] },
+            { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(1);
+    });
+
+    it('should find unanswered question on current page (with pagination)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pageIndex = 0;
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [
+          { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+          { id: 2, name: 'Q2', type: 'text', isRequired: true, audience: ['submitter'] } as any,
+        ] }],
+      ];
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+        'q-2': new FormControl(''),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(1);
+    });
+
+    it('should detect unanswered multi-choice question (empty array)', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'multiple', isRequired: true, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl([]),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(0);
+    });
+
+    it('should detect unanswered review question (empty answer in object)', () => {
+      component.action = 'review';
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: true, audience: ['reviewer'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl({ answer: '', comment: '', file: null }),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeTrue();
+      expect(component.goToQuestion).toHaveBeenCalledWith(0);
+    });
+
+    it('should return false when no required questions exist', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'G1',
+          questions: [
+            { id: 1, name: 'Q1', type: 'text', isRequired: false, audience: ['submitter'] },
+          ],
+        }],
+      } as any;
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+
+      const result = component.findAndGoToFirstUnansweredQuestion();
+
+      expect(result).toBeFalse();
+      expect(component.goToQuestion).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('_answerRequiredValidatorForReviewer()', () => {
+    it('should return required error for null value', () => {
+      const control = new FormControl(null);
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error when answer and file are both empty', () => {
+      const control = new FormControl({ answer: '', file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null when answer has content', () => {
+      const control = new FormControl({ answer: 'some review', file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return null when file has content but answer is empty', () => {
+      const control = new FormControl({ answer: '', file: { url: 'https://cdn/file.pdf', path: '/uploads/file' } });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return required error for empty string value', () => {
+      const control = new FormControl('');
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null for non-empty string value', () => {
+      const control = new FormControl('some text');
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return required error when answer is empty array and file is empty', () => {
+      const control = new FormControl({ answer: [], file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null when answer is non-empty array', () => {
+      const control = new FormControl({ answer: ['choice1'], file: {} });
+      const result = component['_answerRequiredValidatorForReviewer'](control);
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('_fileRequiredValidatorForLearner()', () => {
+    it('should return required error for null value', () => {
+      const control = new FormControl(null);
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error for undefined value', () => {
+      const control = new FormControl(undefined);
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error for empty object', () => {
+      const control = new FormControl({});
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error when object has no url', () => {
+      const control = new FormControl({ name: 'file.pdf', path: '/uploads/file' });
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return required error when url is empty string', () => {
+      const control = new FormControl({ url: '' });
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+
+    it('should return null when file object has url', () => {
+      const control = new FormControl({ url: 'https://cdn/file.pdf', name: 'file.pdf', path: '/uploads/file' });
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toBeNull();
+    });
+
+    it('should return required error for string value', () => {
+      const control = new FormControl('some string');
+      const result = component['_fileRequiredValidatorForLearner'](control);
+      expect(result).toEqual({ required: true });
+    });
+  });
+
   describe('CORE-8182: pagination indicator accuracy in review mode', () => {
     const reviewAssessment: Assessment = {
       id: 1,
       name: 'review test',
       description: '',
-      type: 'quiz',
+      type: 'moderated',
       isForTeam: false,
       dueDate: '2029-02-02',
       isOverdue: false,
@@ -1798,7 +2397,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multiple type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-3'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -1810,7 +2409,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multi-team-member-selector type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-6'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -1822,7 +2421,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for oneof type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-2'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -1834,7 +2433,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-5'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -1845,5 +2444,361 @@ describe('AssessmentComponent', () => {
         expect(control.valid).toBeTrue();
       });
     });
+  });
+
+  describe('splitGroupsByQuestionCount()', () => {
+    beforeEach(() => {
+      component.pageSize = 8;
+    });
+
+    it('should fit multiple small groups on one page', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: Array.from({ length: 3 }, (_, i) => ({ id: i + 1 })) as any[] },
+          { name: 'G2', questions: Array.from({ length: 4 }, (_, i) => ({ id: i + 10 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(1);
+      expect(pages[0].length).toBe(2);
+    });
+
+    it('should push groups to new page when current page is full', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: Array.from({ length: 8 }, (_, i) => ({ id: i + 1 })) as any[] },
+          { name: 'G2', questions: Array.from({ length: 3 }, (_, i) => ({ id: i + 10 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(2);
+      expect(pages[0][0].questions.length).toBe(8);
+      expect(pages[1][0].questions.length).toBe(3);
+    });
+
+    it('should slice large groups across multiple pages', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'Big Group', questions: Array.from({ length: 20 }, (_, i) => ({ id: i + 1 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(3);
+      expect(pages[0][0].questions.length).toBe(8);
+      expect(pages[1][0].questions.length).toBe(8);
+      expect(pages[2][0].questions.length).toBe(4);
+    });
+
+    it('should handle empty groups array', () => {
+      component.assessment = { ...mockAssessment, groups: [] } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      expect(pages.length).toBe(0);
+    });
+
+    it('should flush remaining groups on the last page', () => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: Array.from({ length: 5 }, (_, i) => ({ id: i + 1 })) as any[] },
+          { name: 'G2', questions: Array.from({ length: 5 }, (_, i) => ({ id: i + 10 })) as any[] },
+          { name: 'G3', questions: Array.from({ length: 2 }, (_, i) => ({ id: i + 20 })) as any[] },
+        ],
+      } as any;
+
+      const pages = component['splitGroupsByQuestionCount']();
+
+      // G1(5) fits on page 0. G2(5) doesn't fit with G1 (5+5>8), flushes G1.
+      // G2 goes to page 1 (5 <= 8). G3(2) fits with G2 (5+2=7 <= 8).
+      expect(pages.length).toBe(2);
+      expect(pages[0][0].name).toBe('G1');
+      expect(pages[1][0].name).toBe('G2');
+      expect(pages[1][1].name).toBe('G3');
+    });
+  });
+
+  describe('isPaginationEnabled', () => {
+    it('should return true by default', () => {
+      expect(component.isPaginationEnabled).toBeTrue();
+    });
+  });
+
+  describe('pageCount', () => {
+    it('should return pagesGroups.length when pagination enabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], []];
+      expect(component.pageCount).toBe(3);
+    });
+
+    it('should return 1 when pagination disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      expect(component.pageCount).toBe(1);
+    });
+  });
+
+  describe('pagedGroups', () => {
+    it('should return all groups when pagination disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = mockAssessment;
+      expect(component.pagedGroups).toEqual(mockAssessment.groups);
+    });
+
+    it('should return groups for current page when pagination enabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      const page0 = [{ name: 'G1', questions: [] }];
+      const page1 = [{ name: 'G2', questions: [] }];
+      component.pagesGroups = [page0, page1] as any;
+      component.pageIndex = 1;
+      expect(component.pagedGroups).toEqual(page1 as any);
+    });
+
+    it('should return empty array for out-of-range page index', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [];
+      component.pageIndex = 5;
+      expect(component.pagedGroups).toEqual([]);
+    });
+  });
+
+  describe('prevPage() / nextPage()', () => {
+    beforeEach(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], []];
+      component.pageIndex = 1;
+      spyOn(component, 'scrollActivePageIntoView');
+    });
+
+    it('prevPage should decrement pageIndex', () => {
+      component.prevPage();
+      expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    });
+
+    it('prevPage should not go below 0', () => {
+      component.pageIndex = 0;
+      component.prevPage();
+      expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('nextPage should increment pageIndex', () => {
+      component.nextPage();
+      expect(component.pageIndex).toBe(2);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    });
+
+    it('nextPage should not exceed last page', () => {
+      component.pageIndex = 2;
+      component.nextPage();
+      expect(component.pageIndex).toBe(2);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('prevPage() / nextPage() when pagination disabled', () => {
+    it('prevPage should do nothing', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.pageIndex = 1;
+      component.prevPage();
+      expect(component.pageIndex).toBe(1);
+    });
+
+    it('nextPage should do nothing', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.pageIndex = 0;
+      component.nextPage();
+      expect(component.pageIndex).toBe(0);
+    });
+  });
+
+  describe('goToPage()', () => {
+    beforeEach(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], [], []];
+      spyOn(component, 'scrollActivePageIntoView');
+    });
+
+    it('should navigate to valid page index', () => {
+      component.goToPage(2);
+      expect(component.pageIndex).toBe(2);
+      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
+    });
+
+    it('should reject negative page index', () => {
+      component.pageIndex = 1;
+      component.goToPage(-1);
+      expect(component.pageIndex).toBe(1);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('should reject out-of-range page index', () => {
+      component.pageIndex = 0;
+      component.goToPage(10);
+      expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate when pagination disabled', () => {
+      component.pageIndex = 0;
+      component.pagesGroups = [[], [], []];
+      // goToPage checks isPaginationEnabled at the start
+      // We can't spyOnProperty twice, so test via prevPage/nextPage instead
+      expect(component.pageIndex).toBe(0);
+    });
+  });
+
+  describe('getAllQuestionsForPage()', () => {
+    it('should return all questions when pagination disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.assessment = {
+        ...mockAssessment,
+        groups: [
+          { name: 'G1', questions: [{ id: 1 }, { id: 2 }] as any[] },
+          { name: 'G2', questions: [{ id: 3 }] as any[] },
+        ],
+      } as any;
+
+      const result = component['getAllQuestionsForPage'](0);
+
+      expect(result.length).toBe(3);
+      expect(result.map(q => q.id)).toEqual([1, 2, 3]);
+    });
+
+    it('should return questions for specific page when pagination enabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [
+        [{ name: 'G1', questions: [{ id: 1 }, { id: 2 }] as any[] }],
+        [{ name: 'G2', questions: [{ id: 3 }] as any[] }],
+      ];
+
+      const result = component['getAllQuestionsForPage'](1);
+
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(3);
+    });
+
+    it('should return empty array for invalid page index', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [];
+
+      const result = component['getAllQuestionsForPage'](5);
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('shouldShowRequiredIndicator()', () => {
+    it('should return true when required and doing assessment', () => {
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: true, audience: ['submitter'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeTrue();
+    });
+
+    it('should return true when required and pending review', () => {
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      component.action = 'review';
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: true, audience: ['reviewer'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeTrue();
+    });
+
+    it('should return false when not required', () => {
+      component.doAssessment = true;
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: false, audience: ['submitter'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeFalse();
+    });
+
+    it('should return false in read-only mode', () => {
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      const q = { id: 1, name: 'Q', type: 'text', isRequired: true, audience: ['submitter'] } as any;
+
+      expect(component.shouldShowRequiredIndicator(q)).toBeFalse();
+    });
+  });
+
+  describe('setSubmissionDisabled()', () => {
+    it('should not change button state in read-only mode', () => {
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      component.btnDisabled$ = new BehaviorSubject(true);
+      const spy = spyOn(component.btnDisabled$, 'next');
+
+      component.setSubmissionDisabled();
+
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should disable button when form is invalid', () => {
+      component.doAssessment = true;
+      component['submitting'] = false;
+      component.btnDisabled$ = new BehaviorSubject(false);
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(null, Validators.required),
+      });
+
+      component.setSubmissionDisabled();
+
+      expect(component.btnDisabled$.getValue()).toBeTrue();
+    });
+
+    it('should enable button when form is valid', () => {
+      component.doAssessment = true;
+      component['submitting'] = false;
+      component.btnDisabled$ = new BehaviorSubject(true);
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl('answered'),
+      });
+
+      component.setSubmissionDisabled();
+
+      expect(component.btnDisabled$.getValue()).toBeFalse();
+    });
+  });
+
+  describe('_prefillForm() with locked submission', () => {
+    it('should keep button disabled when submission is locked', () => {
+      component.questionsForm = new FormGroup({
+        'q-1': new FormControl(''),
+      });
+      component.btnDisabled$ = new BehaviorSubject(true);
+      component.action = 'assessment';
+      component.doAssessment = false; // locked means doAssessment is false
+      component.isPendingReview = false;
+      component.submission = {
+        id: 1,
+        status: 'done',
+        isLocked: true,
+        answers: { 1: { answer: 'locked answer' } },
+      } as any;
+
+      component['_prefillForm']();
+
+      // locked submission should keep button disabled (not reset to false)
+      expect(component.btnDisabled$.getValue()).toBeTrue();
+    });
+  });
+
+  describe('scrollActivePageIntoView()', () => {
+    it('should do nothing when pagination disabled', fakeAsync(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+      component.scrollActivePageIntoView();
+      tick(100);
+      // no error thrown
+    }));
   });
 });

@@ -8,7 +8,7 @@ import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
-import * as Pusher from 'pusher-js';
+import Pusher from 'pusher-js';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from './apollo.service';
 import { ApolloQueryResult } from '@apollo/client';
@@ -391,6 +391,36 @@ describe('PusherService', async () => {
     });
   });
 
+  describe('triggerDeleteMessage()', () => {
+    it('should do nothing if channel not found', () => {
+      service['channels'].chat = [];
+      service.triggerDeleteMessage('non-existent', { channelUuid: 'ch-1', uuid: 'msg-1' });
+      // no error thrown = pass
+    });
 
+    it('should call subscription.trigger with correct event name and data', () => {
+      const mockSubscription = { trigger: jasmine.createSpy('trigger') };
+      service['channels'].chat = [{ name: 'test-channel', subscription: mockSubscription as any }];
+      const data = { channelUuid: 'ch-1', uuid: 'msg-1' };
+      service.triggerDeleteMessage('test-channel', data);
+      expect(mockSubscription.trigger).toHaveBeenCalledWith('client-chat-delete-message', data);
+    });
+  });
+
+  describe('triggerEditMessage()', () => {
+    it('should do nothing if channel not found', () => {
+      service['channels'].chat = [];
+      service.triggerEditMessage('non-existent', {} as any);
+      // no error thrown = pass
+    });
+
+    it('should call subscription.trigger with correct event name and data', () => {
+      const mockSubscription = { trigger: jasmine.createSpy('trigger') };
+      service['channels'].chat = [{ name: 'test-channel', subscription: mockSubscription as any }];
+      const data = { channelUuid: 'ch-1', uuid: 'msg-1', message: 'hi', file: '', isSender: true, created: '', senderUuid: '', senderName: '', senderRole: '', senderAvatar: '', sentAt: '' };
+      service.triggerEditMessage('test-channel', data);
+      expect(mockSubscription.trigger).toHaveBeenCalledWith('client-chat-edit-message', data);
+    });
+  });
 });
 
