@@ -6,7 +6,7 @@ import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
 import { environment } from '../../../environments/environment';
 import { BrowserStorageService } from '../../services/storage.service';
-import { Dashboard } from 'uppy';
+import { Dashboard } from '@uppy/dashboard';
 
 export interface UppyUploaderResponse {
   path: string;

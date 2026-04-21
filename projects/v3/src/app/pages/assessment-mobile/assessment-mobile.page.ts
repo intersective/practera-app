@@ -1,4 +1,3 @@
-import { debounce } from 'lodash';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationsService } from '@v3/app/services/notifications.service';

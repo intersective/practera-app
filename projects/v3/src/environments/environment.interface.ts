@@ -48,7 +48,6 @@ export interface Environment {
   };
   defaultCountryModel?: string;
   intercom: boolean;
-  newrelic: boolean | string;
   goMobile: boolean;
   helpline: string;
   featureToggles?: FeatureToggles;

@@ -2,7 +2,6 @@ import { AuthLogoutComponent } from './auth-logout.component';
 import { waitForAsync, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { AuthService } from '@v3/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
-// import { NewRelicService } from '@v3/services/new-relic.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
 import { doesNotReject } from 'assert';
@@ -14,7 +13,6 @@ describe('AuthLogoutComponent', () => {
   let authSpy: jasmine.SpyObj<AuthService>;
   let routerSpy: jasmine.SpyObj<Router>;
   let routeSpy: ActivatedRoute;
-  // let newRelicSpy: jasmine.SpyObj<NewRelicService>;
 
 
   beforeEach(waitForAsync(() => {
@@ -27,10 +25,6 @@ describe('AuthLogoutComponent', () => {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', ['logout'])
         },
-        /* {
-          provide: NewRelicService,
-          useClass: MockNewRelicService
-        }, */
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({ t: 1 })
@@ -45,7 +39,6 @@ describe('AuthLogoutComponent', () => {
     authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     routeSpy = TestBed.inject(ActivatedRoute);
-    // newRelicSpy = TestBed.inject(NewRelicService) as jasmine.SpyObj<NewRelicService>;
   });
 
 

@@ -33,7 +33,6 @@ export const environment = {
   },
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,
-  newrelic: '<CUSTOM_NEWRELIC>',
   goMobile: false,
   helpline: '<CUSTOM_HELPLINE>',
   featureToggles: {
