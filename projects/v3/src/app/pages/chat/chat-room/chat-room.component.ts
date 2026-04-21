@@ -1,8 +1,8 @@
 import { NotificationsService } from './../../../services/notifications.service';
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit, DOCUMENT } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
-import { DOCUMENT } from '@angular/common';
+
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService, SendMessageParam } from '@v3/services/pusher.service';

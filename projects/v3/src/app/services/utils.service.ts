@@ -1,5 +1,5 @@
-import { Injectable, Inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { Injectable, Inject, DOCUMENT } from '@angular/core';
+
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { Platform } from '@ionic/angular';

@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, DOCUMENT } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationsService, TodoItem } from '@v3/app/services/notifications.service';
 import { UtilsService } from '@v3/app/services/utils.service';
@@ -6,7 +6,7 @@ import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeIn } from '@v3/app/animations';
 import { ModalController } from '@ionic/angular';
 import { HomeService, Milestone } from '@v3/app/services/home.service';
-import { DOCUMENT } from '@angular/common';
+
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -1,5 +1,5 @@
 import { UppyUploaderService } from './../../components/uppy-uploader/uppy-uploader.service';
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, DOCUMENT } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -7,7 +7,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { AlertOptions, ModalController } from '@ionic/angular';
-import { DOCUMENT } from '@angular/common';
+
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';

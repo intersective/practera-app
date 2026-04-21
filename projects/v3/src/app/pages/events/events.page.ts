@@ -1,8 +1,8 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild, DOCUMENT } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { Event } from '@v3/services/event.service';
-import { DOCUMENT } from '@angular/common';
+
 
 @Component({
   standalone: false,

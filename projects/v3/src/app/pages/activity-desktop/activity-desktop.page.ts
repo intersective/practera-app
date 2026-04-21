@@ -1,7 +1,7 @@
 import { AssessmentComponent } from './../../components/assessment/assessment.component';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
-import { DOCUMENT } from '@angular/common';
-import { Component, Inject, ViewChild } from '@angular/core';
+
+import { Component, Inject, ViewChild, DOCUMENT } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
