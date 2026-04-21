@@ -11,6 +11,15 @@ export interface Environment {
   appkey: string;
   pusherKey: string;
   pusherCluster?: string;
+  /** Optional explicit Pusher host (used when talking to a self-hosted
+   *  Pusher-compatible broker like Soketi instead of Pusher Cloud). */
+  pusherHost?: string;
+  /** Port the broker listens on. Kept as string to simplify build-time
+   *  template substitution; coerced to number at runtime. */
+  pusherPort?: string | number;
+  /** Whether the Pusher client should use TLS (wss). Defaults to true.
+   *  Accepted as either a boolean or its string form. */
+  pusherUseTLS?: string | boolean;
   env: string;
   APIEndpoint: string;
   graphQL: string;

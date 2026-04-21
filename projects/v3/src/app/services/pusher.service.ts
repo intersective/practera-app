@@ -121,6 +121,45 @@ export class PusherService {
     return true;
   }
 
+  /**
+   * Build-time template placeholders look like `<CUSTOM_FOO>`; if the deploy
+   * pipeline didn't substitute a value, treat it as "not configured" rather
+   * than trying to connect to the literal placeholder.
+   */
+  private normaliseTemplateValue(value: unknown): string {
+    if (value === undefined || value === null) {
+      return '';
+    }
+    const str = String(value).trim();
+    if (!str) {
+      return '';
+    }
+    if (str.startsWith('<') && str.endsWith('>')) {
+      return '';
+    }
+    return str;
+  }
+
+  private resolveUseTLS(): boolean {
+    const raw = this.normaliseTemplateValue(environment.pusherUseTLS);
+    if (!raw) {
+      return true;
+    }
+    return raw.toLowerCase() !== 'false';
+  }
+
+  private resolvePusherPort(_useTLS: boolean): number | undefined {
+    const raw = this.normaliseTemplateValue(environment.pusherPort);
+    if (!raw) {
+      return undefined;
+    }
+    const parsed = parseInt(raw, 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      return undefined;
+    }
+    return parsed;
+  }
+
   private async initialisePusher(): Promise<PusherInstance> {
     // during the app execution lifecycle
     // never reinstantiate another instance of Pusher
@@ -136,9 +175,9 @@ export class PusherService {
     }
 
     try {
+      const useTLS = this.resolveUseTLS();
       const config: Options = {
-        cluster: environment.pusherCluster,
-        forceTLS: true,
+        forceTLS: useTLS,
         authEndpoint: this.apiurl + api.pusherAuth,
         auth: {
           headers: {
@@ -149,6 +188,22 @@ export class PusherService {
           },
         },
       };
+
+      // If a custom host (e.g. self-hosted Soketi) is configured, use that;
+      // otherwise fall back to Pusher Cloud's cluster-based routing.
+      const host = this.normaliseTemplateValue(environment.pusherHost);
+      if (host) {
+        config.wsHost = host;
+        const port = this.resolvePusherPort(useTLS);
+        if (port) {
+          config.wsPort = port;
+          config.wssPort = port;
+        }
+        config.enabledTransports = ['ws', 'wss'];
+        config.disabledTransports = ['xhr_streaming', 'xhr_polling', 'sockjs'];
+      } else if (environment.pusherCluster) {
+        config.cluster = environment.pusherCluster;
+      }
       const newPusherInstance = new Pusher(this.pusherKey, config)
         .bind('pusher:connection_established', () => {
           // eslint-disable-next-line no-console
