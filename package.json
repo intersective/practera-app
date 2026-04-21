@@ -68,7 +68,7 @@
     "lodash-es": "^4.17.21",
     "moment": "^2.29.4",
     "ng-circle-progress": "~1.7.1",
-    "ngx-quill": "^27.0.0",
+    "ngx-quill": "^30.1.2",
     "plyr": "^3.6.12",
     "pusher-js": "^4.4.0",
     "quill": "^2.0.2",
@@ -81,13 +81,13 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "~0.2003.24",
-    "@angular-devkit/build-angular": "^20.3.24",
-    "@angular-eslint/builder": "~19.3.0",
-    "@angular-eslint/eslint-plugin": "~19.3.0",
-    "@angular-eslint/eslint-plugin-template": "~19.3.0",
-    "@angular-eslint/schematics": "~19.3.0",
-    "@angular-eslint/template-parser": "~19.3.0",
+    "@angular-devkit/architect": "~0.2102.0",
+    "@angular-devkit/build-angular": "^21.2.7",
+    "@angular-eslint/builder": "^21.3.1",
+    "@angular-eslint/eslint-plugin": "^21.3.1",
+    "@angular-eslint/eslint-plugin-template": "^21.3.1",
+    "@angular-eslint/schematics": "^21.3.1",
+    "@angular-eslint/template-parser": "^21.3.1",
     "@angular/cli": "^21.2.7",
     "@angular/compiler": "^21.2.9",
     "@angular/compiler-cli": "^21.2.9",
@@ -124,10 +124,13 @@
     "karma-junit-reporter": "~2.0.1",
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "karma-sonarqube-unit-reporter": "0.0.23",
-    "ng-packagr": "^20.3.2",
+    "ng-packagr": "^21.2.3",
     "serverless": "^3.38.0",
     "serverless-certificate-creator": "^1.6.0",
     "ts-node": "~10.9.0",
     "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "tar": "^7.5.13"
   }
 }
