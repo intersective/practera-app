@@ -216,7 +216,11 @@
           },
           "defaultConfiguration": "development",
           "options": {
-            "proxyConfig": "proxy.conf.json"
+            "proxyConfig": "proxy.conf.json",
+            "allowedHosts": [".practera.local", "localhost"],
+            "prebundle": {
+              "exclude": ["@ionic/angular", "@ionic/core", "@ionic/core/loader", "@stencil/core"]
+            }
           }
         },
         "extract-i18n": {
