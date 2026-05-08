@@ -1,8 +1,11 @@
 <ion-item [id]="id"
   [ngClass]="{'active': active, 'hasCallToActionBtn': callToActionBtn}"
   [lines]="lines"
-  tabindex="0"
-  role="listitem">
+  [button]="button"
+  [attr.tabindex]="button ? 0 : null"
+  [attr.role]="itemRole || (button ? 'button' : 'listitem')"
+  [attr.aria-selected]="ariaSelected === undefined ? null : (ariaSelected ? 'true' : 'false')"
+  [attr.aria-current]="ariaCurrent || null">
   <ng-container *ngIf="!loading; else loadingSkeleton">
     <div class="icon-container activitypage" *ngIf="!leadImage">
       <ion-icon *ngIf="leadingIcon"
