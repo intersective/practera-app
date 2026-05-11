@@ -49,7 +49,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // default card image (gracefully show broken url)
   defaultLeadImage: string = "";
 
-  lastVisitedActivityId: number = null;
+  lastVisitedActivityId?: number;
   bookmarkedActivities: {
     [key: number]: boolean;
   } = {};
@@ -64,6 +64,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   // project brief data from team storage
   projectBrief: ProjectBrief | null = null;
   showProjectHub = false;
+
+  // activity search/filter
+  activitySearchText = '';
+  filteredMilestones: Milestone[] | null = null;
 
   // Expose Math to template
   Math = Math;
@@ -124,6 +128,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       ).subscribe(
         (milestones) => {
           this.milestones = milestones;
+          this.filterActivities(); // apply filter when load
         }
       );
 
@@ -576,5 +581,63 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         routes,
       },
     );
+  }
+
+  /**
+   * filter activities based on search text
+   * searches through activity title and description
+   */
+  filterActivities(): void {
+    if (!this.milestones) {
+      this.filteredMilestones = null;
+      return;
+    }
+
+    const searchText = this.activitySearchText.toLowerCase().trim();
+
+    if (!searchText) {
+      this.filteredMilestones = this.milestones;
+      return;
+    }
+
+    // filter milestones and their activities
+    this.filteredMilestones = this.milestones
+      .map(milestone => {
+        const filteredActivities = milestone.activities?.filter(activity => {
+          const titleMatch = activity.name?.toLowerCase().includes(searchText);
+          const descriptionMatch = activity.description?.toLowerCase().includes(searchText);
+          return titleMatch || descriptionMatch;
+        }) ?? [];
+
+        // only include milestone if it has matching activities
+        if (filteredActivities.length > 0) {
+          return {
+            ...milestone,
+            activities: filteredActivities
+          };
+        }
+        return null;
+      })
+      .filter(milestone => milestone !== null);
+  }
+
+  /**
+   * clear search input and reset filter
+   */
+  clearSearch(): void {
+    this.activitySearchText = '';
+    this.filterActivities();
+  }
+
+  /**
+   * get total count of filtered activities across all milestones
+   */
+  getFilteredActivityCount(): number {
+    if (!this.filteredMilestones) {
+      return 0;
+    }
+    return this.filteredMilestones.reduce((total, milestone) => {
+      return total + (milestone.activities?.length || 0);
+    }, 0);
   }
 }

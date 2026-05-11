@@ -167,11 +167,42 @@
 <ng-template #activityList>
   <h3 class="for-accessibility"
     i18n>Activity list</h3>
+
+  <div class="activity-search-container">
+    <ion-searchbar [(ngModel)]="activitySearchText"
+      (ionInput)="filterActivities()"
+      (ionClear)="clearSearch()"
+      placeholder="Filter by activity title or description"
+      i18n-placeholder
+      mode="md"
+      debounce="300"
+      animated="true"
+      aria-label="Filter activities by title or description"
+      i18n-aria-label>
+    </ion-searchbar>
+
+    <div *ngIf="activitySearchText && filteredMilestones"
+      class="search-results-info"
+      role="status"
+      aria-live="polite">
+      <ion-text color="medium"
+        class="caption">
+        <ng-container *ngIf="getFilteredActivityCount() > 0"
+          i18n>
+          Showing {{ getFilteredActivityCount() }} {{ getFilteredActivityCount() === 1 ? 'activity' : 'activities' }}
+        </ng-container>
+      </ion-text>
+    </div>
+  </div>
+
   <div #activities
     id="activity-list-item"
-    *ngIf="milestones !== null; else loadingMilestones">
-    <ng-container *ngIf="milestones?.length > 0; else emptyMilestones">
-      <ng-container *ngFor="let milestone of milestones">
+    *ngIf="milestones !== null; else loadingMilestones"
+    role="region"
+    [attr.aria-label]="activitySearchText ? 'Filtered activity list' : 'Activity list'"
+    i18n-aria-label>
+    <ng-container *ngIf="filteredMilestones?.length > 0; else emptyMilestones">
+      <ng-container *ngFor="let milestone of filteredMilestones">
         <ion-item class="headline-4 milestone-name"
           [ngClass]="{'locked': milestone.isLocked}"
           lines="none"
@@ -273,27 +304,6 @@
     i18n-subtitle1></app-list-item>
 </ng-template>
 
-<ng-template #emptyMilestones>
-  <ion-item lines="none"
-    class="ion-text-center"
-    role="status"
-    aria-live="polite">
-    <ion-label>
-      <p class="body-1"
-        i18n>No activities available at the moment.</p>
-      <ion-button (click)="updateDashboard()"
-        fill="clear"
-        size="small"
-        aria-label="Retry loading activities" i18n-aria-label>
-        <ion-icon name="refresh"
-          slot="start"
-          aria-hidden="true"></ion-icon>
-        <span i18n>Retry</span>
-      </ion-button>
-    </ion-label>
-  </ion-item>
-</ng-template>
-
 <ng-template #pulseChecks>
   <h3 class="for-accessibility"
     i18n>Pulse checks and skills</h3>
@@ -391,6 +401,42 @@
       </ion-grid>
     </div>
   </ng-container>
+</ng-template>
+
+<ng-template #emptyMilestones>
+  <ion-item lines="none"
+    class="ion-text-center"
+    role="status"
+    aria-live="polite">
+    <ion-label>
+      <p class="body-1"
+        *ngIf="!activitySearchText"
+        i18n>No activities available at the moment.</p>
+      <p class="body-1"
+        *ngIf="activitySearchText"
+        i18n>No activities found matching "{{ activitySearchText }}".</p>
+      <ion-button *ngIf="!activitySearchText"
+        (click)="updateDashboard()"
+        fill="clear"
+        size="small"
+        aria-label="Retry loading activities" i18n-aria-label>
+        <ion-icon name="refresh"
+          slot="start"
+          aria-hidden="true"></ion-icon>
+        <span i18n>Retry</span>
+      </ion-button>
+      <ion-button *ngIf="activitySearchText"
+        (click)="clearSearch()"
+        fill="clear"
+        size="small"
+        aria-label="Clear search filter" i18n-aria-label>
+        <ion-icon name="close"
+          slot="start"
+          aria-hidden="true"></ion-icon>
+        <span i18n>Clear Filter</span>
+      </ion-button>
+    </ion-label>
+  </ion-item>
 </ng-template>
 
 <ng-template #loadingMilestones>
