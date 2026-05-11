@@ -10,6 +10,7 @@ import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers, FileResponse } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
+import { EditMessagePopupComponent } from '../edit-message-popup/edit-message-popup.component';
 import { Subject, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuillModules } from 'ngx-quill';
@@ -1097,5 +1098,100 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   download(file: FileResponse): void {
     return this.utils.downloadFile(file.url, file.name);
+  }
+
+  /**
+   * delete a message with confirmation dialog.
+   * flow: confirm → api call → remove from local list → trigger pusher
+   */
+  deleteMessage(messageUuid: string) {
+    this.notificationsService.alert({
+      header: $localize`Delete Message?`,
+      message: $localize`Are you sure you want to delete this message? This action cannot be undone.`,
+      cssClass: 'message-delete-alert',
+      buttons: [
+        {
+          text: $localize`Cancel`,
+          role: 'cancel',
+        },
+        {
+          text: $localize`Delete Message`,
+          cssClass: 'danger',
+          handler: () => {
+            this.chatService.deleteChatMessage(messageUuid).subscribe({
+              next: () => {
+                this.utils.broadcastEvent('chat:info-update', true);
+                this.removeMessageFromList(messageUuid);
+              },
+              error: (err) => {
+                console.error('error deleting message', err);
+              },
+            });
+          },
+        },
+      ],
+    });
+  }
+
+  /**
+   * remove message from local array and trigger pusher client event.
+   */
+  removeMessageFromList(messageUuid: string) {
+    const deletedMessageIndex = this.messageList.findIndex(
+      (message) => message.uuid === messageUuid
+    );
+    if (deletedMessageIndex === -1) {
+      return;
+    }
+    this.messageList.splice(deletedMessageIndex, 1);
+
+    this.pusherService.triggerDeleteMessage(this.chatChannel.pusherChannel, {
+      channelUuid: this.channelUuid,
+      uuid: messageUuid,
+    });
+  }
+
+  /**
+   * open edit modal for a sent message.
+   */
+  async openEditMessagePopup(index: number) {
+    const modal = await this.modalController.create({
+      component: EditMessagePopupComponent,
+      cssClass: 'chat-edit-message-popup',
+      componentProps: {
+        chatMessage: this.messageList[index],
+      },
+      backdropDismiss: false,
+    });
+    await modal.present();
+
+    modal.onWillDismiss().then((data) => {
+      if (data?.data?.updateSuccess && data?.data?.newMessageData) {
+        this.messageList[index].message = data.data.newMessageData;
+
+        // notify other clients via pusher
+        this.pusherService.triggerEditMessage(this.chatChannel.pusherChannel, {
+          channelUuid: this.channelUuid,
+          uuid: this.messageList[index].uuid,
+          isSender: this.messageList[index].isSender,
+          message: this.messageList[index].message,
+          file: JSON.stringify(this.messageList[index].file),
+          created: this.messageList[index].created,
+          senderUuid: this.messageList[index].senderUuid,
+          senderName: this.messageList[index].senderName,
+          senderRole: this.messageList[index].senderRole,
+          senderAvatar: this.messageList[index].senderAvatar,
+          sentAt: this.messageList[index].sentAt,
+        });
+      }
+      this.utils.broadcastEvent('chat:info-update', true);
+    });
+  }
+
+  /**
+   * returns true if the message has editable text content (not attachment-only).
+   */
+  hasEditableText(message: Message): boolean {
+    return !!message?.message && !this.utils.isQuillContentEmpty(message.message);
   }
 }
