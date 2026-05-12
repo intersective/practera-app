@@ -218,17 +218,18 @@ ion-footer {
 
 // styles for pagination section
 .pagination-container {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  min-width: 70%;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
   padding: 8px 0px;
   background-color: transparent;
   box-shadow: none;
+  gap: 4px;
 
   &.few-pages {
-    justify-content: space-evenly;
+    justify-content: center;
   }
 }
 
@@ -317,15 +318,6 @@ ion-footer {
   border-color: #81c784;
 }
 
-.page-indicator.incompleted {
-  background-color: rgba(255, 0, 0, 0.05);
-  border-color: var(--ion-color-danger);
-}
-
-.page-indicator.incompleted .page-number {
-  color: var(--ion-color-danger);
-}
-
 .progress-ring {
   position: relative;
   display: flex;
@@ -365,10 +357,6 @@ ion-footer {
   stroke-width: 4;
 }
 
-.page-indicator.incompleted .progress-ring-fill {
-  stroke: var(--ion-color-danger);
-}
-
 .page-number {
   font-size: 14px;
   font-weight: 600;
@@ -392,10 +380,6 @@ ion-footer {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.completion-icon:not(.completed) {
-  color: var(--ion-color-danger);
 }
 
 @media (max-width: 576px) {
@@ -433,17 +417,12 @@ ion-footer {
   }
 }
 
-// space for submit button (mid to large screens) — only inside bottom-action-bar
-@media (min-width: 769px) and (max-width: 1344px) {
-  app-bottom-action-bar .pagination-container {
-    max-width: calc(100% - 150px);
-  }
-}
-
-@media (min-width: 1345px) {
-  app-bottom-action-bar .pagination-container {
-    max-width: calc(100% - 40px);
-  }
+// team 360 progress indicator shown above pagination
+.team360-progress {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  text-align: center;
+  padding: 2px 0 4px;
 }
 
 // standalone pagination footer for completed reviews
