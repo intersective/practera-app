@@ -12,6 +12,8 @@ export interface CompressionOptions {
   preset?: 'ultrafast' | 'superfast' | 'veryfast' | 'faster' | 'fast' | 'medium' | 'slow';
   /** audio bitrate */
   audioBitrate?: string;
+  /** exec timeout in milliseconds (-1 = unlimited) */
+  timeout?: number;
 }
 
 export interface CompressionProgress {
@@ -30,12 +32,24 @@ export interface CompressionResult {
   skipReason?: string;
 }
 
+export interface VideoMetadata {
+  width: number;
+  height: number;
+  durationSec: number;
+}
+
+/** max time to wait for browser metadata probe (seconds) */
+const PROBE_TIMEOUT_SEC = 5;
+
 /** min file size worth compressing (5 MB) */
 const MIN_COMPRESS_SIZE = 5 * 1024 * 1024;
 /** max file size on mobile (200 MB) */
 const MAX_MOBILE_SIZE = 200 * 1024 * 1024;
 /** max file size on desktop (500 MB) */
 const MAX_DESKTOP_SIZE = 500 * 1024 * 1024;
+/** default exec timeout: 10 min desktop, 5 min mobile */
+const DESKTOP_TIMEOUT_MS = 10 * 60 * 1000;
+const MOBILE_TIMEOUT_MS = 5 * 60 * 1000;
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +67,20 @@ export class FfmpegService {
 
   isFfmpegLoaded(): boolean {
     return this.isLoaded;
+  }
+
+  /** terminate the wasm worker and reset state so a fresh load can happen */
+  terminate(): void {
+    try {
+      this.ffmpeg.terminate();
+    } catch { /* already terminated or never loaded */ }
+    this.isLoaded = false;
+    this.ffmpeg = new FFmpeg();
+  }
+
+  /** default exec timeout based on device type */
+  private getDefaultTimeout(): number {
+    return this.isMobile() ? MOBILE_TIMEOUT_MS : DESKTOP_TIMEOUT_MS;
   }
 
   /** detect if the current device is mobile */
@@ -113,6 +141,45 @@ export class FfmpegService {
     this.isLoaded = true;
   }
 
+  /** extract width, height, and duration from a video file using a temporary <video> element */
+  private probeMetadata(file: File): Promise<VideoMetadata | null> {
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+
+      const cleanup = () => {
+        URL.revokeObjectURL(url);
+        video.removeAttribute('src');
+        video.load();
+      };
+
+      const timer = window.setTimeout(() => {
+        cleanup();
+        resolve(null);
+      }, PROBE_TIMEOUT_SEC * 1000);
+
+      video.onloadedmetadata = () => {
+        clearTimeout(timer);
+        const { videoWidth, videoHeight, duration } = video;
+        cleanup();
+        if (!videoWidth || !videoHeight || !isFinite(duration)) {
+          resolve(null);
+          return;
+        }
+        resolve({ width: videoWidth, height: videoHeight, durationSec: duration });
+      };
+
+      video.onerror = () => {
+        clearTimeout(timer);
+        cleanup();
+        resolve(null);
+      };
+
+      video.src = url;
+    });
+  }
+
   /** compress a video file with size gating and device-aware presets */
   async compressVideo(file: File, options: CompressionOptions = {}): Promise<CompressionResult> {
     const check = this.shouldCompress(file);
@@ -133,7 +200,10 @@ export class FfmpegService {
       crf = defaults.crf,
       preset = defaults.preset,
       audioBitrate = defaults.audioBitrate,
+      timeout = this.getDefaultTimeout(),
     } = options;
+
+    const metadata = await this.probeMetadata(file);
 
     if (!this.isLoaded) {
       await this.loadFFmpeg();
@@ -143,11 +213,14 @@ export class FfmpegService {
     const inputName = 'input_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
     const outputName = 'compressed_' + Date.now() + '.mp4';
 
-    await this.ffmpeg.writeFile(inputName, await fetchFile(file));
+    // only scale when the source is taller than the target height
+    const needsScale = !metadata || metadata.height > (maxHeight ?? 0);
 
-    await this.ffmpeg.exec([
-      '-i', inputName,
-      '-vf', `scale=-2:${maxHeight}`,
+    const ffmpegArgs = ['-i', inputName];
+    if (needsScale) {
+      ffmpegArgs.push('-vf', `scale=-2:${maxHeight}`);
+    }
+    ffmpegArgs.push(
       '-c:v', 'libx264',
       '-crf', String(crf),
       '-preset', preset,
@@ -155,7 +228,11 @@ export class FfmpegService {
       '-b:a', audioBitrate,
       '-movflags', '+faststart',
       outputName,
-    ]);
+    );
+
+    await this.ffmpeg.writeFile(inputName, await fetchFile(file));
+
+    await this.ffmpeg.exec(ffmpegArgs, timeout);
 
     const fileData = await this.ffmpeg.readFile(outputName);
     const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
@@ -196,7 +273,7 @@ export class FfmpegService {
       '-b:a', '128k',
       '-movflags', '+faststart',
       outputName,
-    ]);
+    ], this.getDefaultTimeout());
 
     const fileData = await this.ffmpeg.readFile(outputName);
     const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
