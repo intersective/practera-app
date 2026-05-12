@@ -4,7 +4,7 @@
       <p i18n>Team assessment submissions restricted to participants only.</p>
     </ion-text>
     <ng-container *ngSwitchDefault>
-      <div class="action-container">
+      <div class="action-container" [class.stacked]="hasCustomContent">
         <ng-container *ngIf="hasCustomContent">
           <ng-content></ng-content>
         </ng-container>
