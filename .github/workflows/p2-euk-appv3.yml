@@ -180,6 +180,7 @@ jobs:
           export CUSTOM_HELPLINE=help@practera.com
           export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=false
           export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
+          export CUSTOM_PROJECTHUB_URL=https://projecthub.${{ env.PUBLICZONENAME }}/
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
