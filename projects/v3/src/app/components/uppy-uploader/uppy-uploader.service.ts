@@ -114,6 +114,21 @@ export class UppyUploaderService {
     private ffmpegService: FfmpegService,
     private ngZone: NgZone,
   ) {
+    // warn the user before tab close/reload if compression is active
+    window.addEventListener('beforeunload', (e) => {
+      if (this.compressingUppy) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  /** cancel any in-flight compression, terminate the wasm worker, and reset state */
+  cancelCompression(): void {
+    if (this.compressingUppy) {
+      this.ffmpegService.terminate();
+      this.compressionProgress$.next({ uppy: this.compressingUppy, progress: null });
+      this.compressingUppy = null;
+    }
   }
 
   /**
@@ -240,9 +255,13 @@ export class UppyUploaderService {
             this.compressionProgress$.next({ uppy, progress: p });
           });
 
-          const result = await this.ffmpegService.compressVideo(file);
+          let result;
+          try {
+            result = await this.ffmpegService.compressVideo(file);
+          } finally {
+            sub.unsubscribe();
+          }
 
-          sub.unsubscribe();
           this.ngZone.run(() => {
             this.compressionProgress$.next({ uppy, progress: null });
             this.compressingUppy = null;
