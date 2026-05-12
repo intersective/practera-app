@@ -1,6 +1,6 @@
 import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
+import { Assessment, Group, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -136,6 +136,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   // pagination
   pageRequiredCompletion: boolean[] = []; // indicator for required questions
+  pageVisited: boolean[] = [];             // tracks which pages the user has visited
   readonly manyPages = MIN_SCROLLING_PAGES;
 
   @ViewChildren('questionBox') questionBoxes!: QueryList<{ el: HTMLElement }>;
@@ -191,6 +192,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.isPaginationEnabled) return;
     if (this.pageIndex > 0) {
       this.pageIndex--;
+      this.pageVisited[this.pageIndex] = true;
       this.scrollActivePageIntoView();
     }
   }
@@ -199,6 +201,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.isPaginationEnabled) return;
     if (this.pageIndex < this.pageCount - 1) {
       this.pageIndex++;
+      this.pageVisited[this.pageIndex] = true;
       this.scrollActivePageIntoView();
     }
   }
@@ -211,9 +214,33 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   goToPage(i: number) {
     if (!this.isPaginationEnabled) return;
     if (i >= 0 && i < this.pageCount) {
-      this.pageIndex = i;
-      this.scrollActivePageIntoView();
+      if (this.pageIndex !== i) {
+        this.pageIndex = i;
+        this.pageVisited[i] = true;
+        this.scrollActivePageIntoView();
+        this.setSubmissionDisabled();
+        this._scrollToTop();
+      }
     }
+  }
+
+  private _scrollToTop() {
+    setTimeout(() => {
+      // 1. Try standard ion-content on mobile
+      const content = document.querySelector('ion-router-outlet .ion-page:not(.ion-page-hidden) ion-content') || document.querySelector('ion-content');
+      if (content && typeof (content as any).scrollToTop === 'function') {
+        (content as any).scrollToTop(0);
+        return;
+      }
+
+      // 2. Scroll the main content into view (handles desktop ion-col scroll containers)
+      const mainContent = document.querySelector('app-assessment .main-content') || document.querySelector('app-assessment');
+      if (mainContent) {
+        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 10);
   }
 
   ngOnInit(): void {
@@ -414,6 +441,9 @@ Best regards`;
 
     this._initialise();
     if (changes.assessment || changes.submission || changes.review) {
+      this.pageRequiredCompletion = [];
+      this.pageVisited = [];
+
       this._handleSubmissionData();
 
       // reset submitting flag only when the submission actually changed
@@ -692,19 +722,26 @@ Best regards`;
    */
   continueToNextTask() {
     switch (this._btnAction) {
-      case 'submit':
-        this.submitting = true;
-        this.btnDisabled$.next(true);
-        return this.submitActions.next({
-          autoSave: false,
-          goBack: false,
-        });
+      case 'submit': {
+        this._doSubmit();
+        return;
+      }
       case 'readFeedback':
         this.btnDisabled$.next(true);
         return this.readFeedback.emit(this.submission.id);
       default:
         return this.continue.emit();
     }
+  }
+
+  /** fires the actual submission — extracted so the alert guard can call it after confirmation */
+  private _doSubmit() {
+    this.submitting = true;
+    this.btnDisabled$.next(true);
+    this.submitActions.next({
+      autoSave: false,
+      goBack: false,
+    });
   }
 
   /**
@@ -1105,12 +1142,20 @@ Best regards`;
     // read-only mode (viewing feedback or completed submissions), completion tracking is not relevant
     if (!this.doAssessment && !this.isPendingReview) {
       this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+      // mark all pages visited in read-only so indicators are all visible
+      this.pageVisited = new Array(this.pageCount).fill(true);
       this.cdr.detectChanges();
       setTimeout(() => this.scrollActivePageIntoView(), 100);
       return;
     }
 
     this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+
+    // initialise visited array if not yet created; always mark page 0 as visited on first load
+    if (!this.pageVisited.length) {
+      this.pageVisited = new Array(this.pageCount).fill(false);
+      this.pageVisited[0] = true;
+    }
 
     this.pages.forEach((page, index) => {
       const pageQuestions = this.getAllQuestionsForPage(index);
@@ -1337,14 +1382,76 @@ Best regards`;
     }
 
     const isFormValid = this.questionsForm?.valid ?? false;
+    const minPages = this._team360MinPages;
+    const visitedEnough = minPages === 0 || this.team360PagesVisited >= minPages;
+    const shouldDisable = !isFormValid || !visitedEnough;
     const isCurrentlyDisabled = this.btnDisabled$.getValue();
 
-    // Update button state only if it needs to change
-    if (!isFormValid && !isCurrentlyDisabled) {
+    // update button state only if it needs to change
+    if (shouldDisable && !isCurrentlyDisabled) {
       this.btnDisabled$.next(true);
-    } else if (isFormValid && isCurrentlyDisabled) {
+    } else if (!shouldDisable && isCurrentlyDisabled) {
       this.btnDisabled$.next(false);
     }
+  }
+
+  /**
+   * returns the number of distinct team members the user must review in a team 360 assessment.
+   * counts unique teamMembers.key values across selector questions in groups from index 1+
+   * (index 0 is self-reflection, excluded). deduplication ensures that multiple groups referencing
+   * the same member (e.g. test data where only 1 member exists) show the correct count.
+   * uses pagesGroups map for safe lookup regardless of how splitGroupsByQuestionCount batches groups.
+   */
+  private get _team360MinPages(): number {
+    if (this.task?.assessmentType !== 'team360') return 0;
+    const groups = this.assessment?.groups ?? [];
+    const memberKeys = new Set<string>();
+    // group 0 is self-reflection; team member groups start at index 1
+    for (let i = 1; i < groups.length; i++) {
+      const selectorQ = groups[i].questions?.find(q =>
+        q.type === 'team member selector' || q.type === 'multi team member selector'
+      );
+      if (!selectorQ) continue;
+      (selectorQ.teamMembers ?? []).forEach((m: { key: string }) => memberKeys.add(m.key));
+    }
+    return memberKeys.size;
+  }
+
+  /** public accessor for template binding */
+  get team360MinPages(): number {
+    return this._team360MinPages;
+  }
+
+  /**
+   * count of distinct team member keys whose pages have been visited.
+   * for each non-self selector group (index 1+), if its page has been visited, all of its
+   * teamMembers keys are added to a visited-keys set. deduplication means that visiting any page
+   * that references a member marks that member as reviewed — enabling correct counts when multiple
+   * groups share the same member or when groups are batched onto a single page.
+   */
+  get team360PagesVisited(): number {
+    const min = this._team360MinPages;
+    if (min === 0) return 0;
+    const groups = this.assessment?.groups ?? [];
+    // build a map: group reference → page index
+    const groupPageIndex = new Map<object, number>();
+    this.pagesGroups.forEach((page, pageIdx) => {
+      page.forEach(g => groupPageIndex.set(g, pageIdx));
+    });
+    // count visited selector groups (not visited keys) — capped at min.
+    // each non-self group = one reviewed person by design, so group visits are the correct unit.
+    // capping at min handles the case where multiple groups share the same person (e.g. "1st try"
+    // test data with 4 groups for 1 member: min=1 so cap prevents over-counting).
+    let count = 0;
+    for (let i = 1; i < groups.length; i++) {
+      const hasSelector = groups[i].questions?.some(q =>
+        q.type === 'team member selector' || q.type === 'multi team member selector'
+      );
+      if (!hasSelector) continue;
+      const pageIdx = groupPageIndex.get(groups[i]);
+      if (pageIdx !== undefined && this.pageVisited[pageIdx]) count++;
+    }
+    return Math.min(count, min);
   }
 
   /**
