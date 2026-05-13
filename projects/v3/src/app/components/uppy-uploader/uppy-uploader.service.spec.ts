@@ -6,6 +6,8 @@ import { Uppy } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FfmpegService } from '../../services/ffmpeg.service';
 import { Subject } from 'rxjs';
+import { UppyUploaderComponent } from './uppy-uploader.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 describe('UppyUploaderService', () => {
   let service: UppyUploaderService;
@@ -51,6 +53,8 @@ describe('UppyUploaderService', () => {
     });
 
     service = TestBed.inject(UppyUploaderService);
+    // bind to the instance used by the injected service
+    modalCtrlSpy = (service as any).modalController as jasmine.SpyObj<ModalController>;
   });
 
   it('should be created', () => {

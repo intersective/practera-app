@@ -84,7 +84,7 @@ describe('ChatRoomComponent', () => {
         },
         {
           provide: ModalService,
-          useValue: jasmine.createSpyObj('ModalService', ['addModal', 'openUppyModal'])
+           useValue: jasmine.createSpyObj('ModalService', ['addModal', 'openUppyUploaderModal'])
         },
         {
           provide: PopoverController,
@@ -135,6 +135,9 @@ describe('ChatRoomComponent', () => {
     uppyUploaderServiceSpy = TestBed.inject(UppyUploaderService) as jasmine.SpyObj<UppyUploaderService>;
     modalCtrlSpy = TestBed.inject(ModalController);
     modalCtrlSpy.create.and.returnValue(Promise.resolve(modalSpy));
+    // configure the ModalService spy to return the mock modal for openUppyUploaderModal
+    const modalService = TestBed.inject(ModalService) as jasmine.SpyObj<ModalService>;
+    modalService.openUppyUploaderModal.and.returnValue(Promise.resolve(modalSpy));
     component.content = MockIoncontent;
     fixture.detectChanges();
   });
@@ -715,14 +718,15 @@ describe('ChatRoomComponent', () => {
   });
 
   describe('when testing attachmentSelectPopover()', () => {
-    it('should call uppyUploaderService.open with chat source', async () => {
+    it('should call modalService.openUppyUploaderModal with chat source', async () => {
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['onDidDismiss']);
       mockModal.onDidDismiss.and.returnValue(Promise.resolve({ data: null }));
-      uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve(mockModal));
+      const modalService = TestBed.inject(ModalService) as jasmine.SpyObj<ModalService>;
+      modalService.openUppyUploaderModal.and.returnValue(Promise.resolve(mockModal));
 
       await component.attachmentSelectPopover({});
 
-      expect(uppyUploaderServiceSpy.open).toHaveBeenCalledWith('chat');
+      expect(modalService.openUppyUploaderModal).toHaveBeenCalledWith('chat');
     });
 
     it('should add attachment when modal returns valid data', async () => {
@@ -747,7 +751,8 @@ describe('ChatRoomComponent', () => {
 
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['onDidDismiss']);
       mockModal.onDidDismiss.and.returnValue(Promise.resolve({ data: mockFileData }));
-      uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve(mockModal));
+      const modalService = TestBed.inject(ModalService) as jasmine.SpyObj<ModalService>;
+      modalService.openUppyUploaderModal.and.returnValue(Promise.resolve(mockModal));
 
       spyOn(component, 'addAttachment');
       await component.attachmentSelectPopover({});
@@ -758,7 +763,8 @@ describe('ChatRoomComponent', () => {
     it('should not add attachment when modal returns no data', async () => {
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['onDidDismiss']);
       mockModal.onDidDismiss.and.returnValue(Promise.resolve({ data: null }));
-      uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve(mockModal));
+      const modalService = TestBed.inject(ModalService) as jasmine.SpyObj<ModalService>;
+      modalService.openUppyUploaderModal.and.returnValue(Promise.resolve(mockModal));
 
       spyOn(component, 'addAttachment');
       await component.attachmentSelectPopover({});
@@ -766,5 +772,6 @@ describe('ChatRoomComponent', () => {
       expect(component.addAttachment).not.toHaveBeenCalled();
     });
   });
+
 
 });

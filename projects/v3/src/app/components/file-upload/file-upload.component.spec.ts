@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Uppy } from '@uppy/core';
 
@@ -11,7 +11,7 @@ describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
   let fixture: ComponentFixture<FileUploadComponent>;
   let uppyServiceSpy: jasmine.SpyObj<UppyUploaderService>;
-  let cdrSpy: jasmine.SpyObj<ChangeDetectorRef>;
+  let cdrSpy: jasmine.Spy;
   let compressionProgress$: Subject<{ uppy: Uppy<any, any>; progress: CompressionProgress | null }>;
   let mockUppy: any;
 
@@ -31,7 +31,7 @@ describe('FileUploadComponent', () => {
     // make .on() chainable properly
     mockUppy.on.and.returnValue(mockUppy);
 
-    uppyServiceSpy = jasmine.createSpyObj('UppyUploaderService', ['createUppyInstance'], {
+    uppyServiceSpy = jasmine.createSpyObj('UppyUploaderService', ['createUppyInstance', 'cancelCompression'], {
       compressionProgress$,
       uppyProps: {
         inline: true,

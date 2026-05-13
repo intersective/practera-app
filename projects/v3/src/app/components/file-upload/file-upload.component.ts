@@ -103,7 +103,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.compressionSub?.unsubscribe();
     this.uppyUploaderService.cancelCompression();
-    this.uppy.destroy();
+    this.uppy?.destroy();
   }
 
   ngOnInit() {
