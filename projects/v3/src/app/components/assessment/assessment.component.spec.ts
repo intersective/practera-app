@@ -2686,6 +2686,18 @@ describe('AssessmentComponent', () => {
       expect(component.pageIndex).toBe(2);
       expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
     });
+
+    it('prevPage should call setSubmissionDisabled', () => {
+      spyOn(component, 'setSubmissionDisabled');
+      component.prevPage();
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
+
+    it('nextPage should call setSubmissionDisabled', () => {
+      spyOn(component, 'setSubmissionDisabled');
+      component.nextPage();
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
+    });
   });
 
   describe('prevPage() / nextPage() when pagination disabled', () => {
@@ -2743,6 +2755,12 @@ describe('AssessmentComponent', () => {
       // goToPage checks isPaginationEnabled at the start
       // We can't spyOnProperty twice, so test via prevPage/nextPage instead
       expect(component.pageIndex).toBe(0);
+    });
+
+    it('should call setSubmissionDisabled when navigating to a valid page', () => {
+      spyOn(component, 'setSubmissionDisabled');
+      component.goToPage(2);
+      expect(component.setSubmissionDisabled).toHaveBeenCalled();
     });
   });
 
@@ -3289,6 +3307,130 @@ describe('AssessmentComponent', () => {
         // visit both team member pages → 2 of 2 → enabled
         component.pageVisited = [true, true, true];
         component.setSubmissionDisabled();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('navigating via nextPage() to the final team member page enables the button when form is valid', () => {
+        // end-to-end flow: button disabled → user navigates to last member page → button enables
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
+        component.assessment = { groups: [g0, g1, g2] } as any;
+        component.pagesGroups = [[g0], [g1], [g2]];
+        component.questionsForm = makeValidForm();
+        // user has visited self + member-1 pages but not member-2 yet
+        component.pageIndex = 1;
+        component.pageVisited = [true, true, false];
+        component.btnDisabled$ = new BehaviorSubject(true);
+        spyOn(component, 'scrollActivePageIntoView');
+
+        component.nextPage(); // visits page 2 → team360PagesVisited becomes 2 of 2
+
+        expect(component.pageIndex).toBe(2);
+        expect(component.pageVisited[2]).toBeTrue();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('keeps button disabled when required team member selector is unanswered despite all pages visited', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Member Group', description: '',
+          questions: [{
+            id: 20, type: 'team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":20}', userName: 'User 20' }],
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // required team member selector with no selection → form invalid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self-answer'),
+          'q-20': new FormControl('', Validators.required),
+        });
+        component.pageVisited = [true, true];
+        component.btnDisabled$ = new BehaviorSubject(false);
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('enables button when required team member selector is answered and all member pages visited', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Member Group', description: '',
+          questions: [{
+            id: 20, type: 'team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":20}', userName: 'User 20' }],
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // required team member selector answered → form valid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self-answer'),
+          'q-20': new FormControl('{"userId":20}'),
+        });
+        component.pageVisited = [true, true];
+        component.btnDisabled$ = new BehaviorSubject(true);
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('keeps button disabled when required multi-team-member selector has empty selection in team360', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Multi Member Group', description: '',
+          questions: [{
+            id: 30, type: 'multi team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":5}', userName: 'User 5' }], // 1 distinct member
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // empty array with required validator → form invalid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self'),
+          'q-30': new FormControl([], Validators.required),
+        });
+        component.pageVisited = [true, true]; // member page visited
+        component.btnDisabled$ = new BehaviorSubject(false);
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('enables button when required multi-team-member selector is answered and all pages visited', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Multi Member Group', description: '',
+          questions: [{
+            id: 30, type: 'multi team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":5}', userName: 'User 5' }],
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // non-empty array → form valid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self'),
+          'q-30': new FormControl(['{"userId":5}'], Validators.required),
+        });
+        component.pageVisited = [true, true];
+        component.btnDisabled$ = new BehaviorSubject(true);
+
+        component.setSubmissionDisabled();
+
         expect(component.btnDisabled$.getValue()).toBeFalse();
       });
     });
