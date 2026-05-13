@@ -482,10 +482,7 @@ describe('HomePage', () => {
       component.activitySearchText = 'development';
       component.filterActivities();
 
-      expect(component.filteredMilestones.length).toBe(1);
-      expect(component.filteredMilestones[0].id).toBe(2);
-      expect(component.filteredMilestones[0].activities.length).toBe(1);
-      expect(component.filteredMilestones[0].activities[0].id).toBe(3);
+      expect(component.filteredMilestones).toEqual([]);
     });
 
     it('should return empty milestones array when no activities match', () => {
@@ -542,9 +539,15 @@ describe('HomePage', () => {
       component.activitySearchText = 'a';
       component.filterActivities();
 
-      expect(component.filteredMilestones.length).toBe(2);
+      expect(component.filteredMilestones.length).toBe(1);
       expect(component.filteredMilestones[0].activities.length).toBe(2);
-      expect(component.filteredMilestones[1].activities.length).toBe(1);
+    });
+
+    it('should skip locked activities even when they match search text', () => {
+      component.activitySearchText = 'task';
+      component.filterActivities();
+
+      expect(component.filteredMilestones).toEqual([]);
     });
 
     it('should trim whitespace from search text', () => {

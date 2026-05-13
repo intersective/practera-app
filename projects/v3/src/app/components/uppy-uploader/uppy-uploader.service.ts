@@ -1,12 +1,14 @@
 /* eslint-disable no-console */
 
 import { ModalController } from '@ionic/angular';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Dashboard } from 'uppy';
 import { environment } from '../../../environments/environment';
+import { FfmpegService, CompressionProgress } from '../../services/ffmpeg.service';
+import { Subject } from 'rxjs';
 
 export interface UppyUploaderResponse {
   path: string;
@@ -100,10 +102,33 @@ export class UppyUploaderService {
     };
   };
 
+  /** emits compression progress scoped to a specific uppy instance */
+  readonly compressionProgress$ = new Subject<{ uppy: Uppy<any, any>; progress: CompressionProgress | null }>();
+
+  /** the uppy instance currently compressing, or null when idle */
+  compressingUppy: Uppy<any, any> | null = null;
+
   constructor(
     private modalController: ModalController,
     private storageService: BrowserStorageService,
+    private ffmpegService: FfmpegService,
+    private ngZone: NgZone,
   ) {
+    // warn the user before tab close/reload if compression is active
+    window.addEventListener('beforeunload', (e) => {
+      if (this.compressingUppy) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  /** cancel any in-flight compression, terminate the wasm worker, and reset state */
+  cancelCompression(): void {
+    if (this.compressingUppy) {
+      this.ffmpegService.terminate();
+      this.compressionProgress$.next({ uppy: this.compressingUppy, progress: null });
+      this.compressingUppy = null;
+    }
   }
 
   /**
@@ -162,6 +187,7 @@ export class UppyUploaderService {
     });
 
     this.initializeEventHandlers(uppy, events.onUploadSuccess);
+    this.registerCompressionPreProcessor(uppy);
 
     return uppy;
   }
@@ -193,6 +219,86 @@ export class UppyUploaderService {
   }
 
   /**
+   * register a preprocessor that compresses video files before upload.
+   * uppy waits for the returned promise to resolve before starting the upload.
+   */
+  private registerCompressionPreProcessor(uppy: Uppy<FileMetadata, FileBody>): void {
+    uppy.addPreProcessor(async (fileIDs: string[]) => {
+      const videoFileIDs = fileIDs.filter(id => {
+        const file = uppy.getFile(id);
+        return file?.type?.startsWith('video/');
+      });
+
+      if (videoFileIDs.length === 0) {
+        return;
+      }
+
+      for (const id of videoFileIDs) {
+        const uppyFile = uppy.getFile(id);
+        if (!uppyFile) continue;
+
+        const file = new File([uppyFile.data as Blob], uppyFile.name, { type: uppyFile.type });
+        const check = this.ffmpegService.shouldCompress(file);
+
+        if (!check.compress) {
+          console.log(`skipping compression for ${uppyFile.name}: ${check.reason}`);
+          continue;
+        }
+
+        try {
+          this.ngZone.run(() => {
+            this.compressingUppy = uppy;
+            this.compressionProgress$.next({ uppy, progress: { progress: 0, timeUs: 0 } });
+          });
+
+          const sub = this.ffmpegService.progress$.subscribe(p => {
+            this.compressionProgress$.next({ uppy, progress: p });
+          });
+
+          let result;
+          try {
+            result = await this.ffmpegService.compressVideo(file);
+          } finally {
+            sub.unsubscribe();
+          }
+
+          this.ngZone.run(() => {
+            this.compressionProgress$.next({ uppy, progress: null });
+            this.compressingUppy = null;
+          });
+
+          if (!result.skipped) {
+            console.log(`compressed ${uppyFile.name}: ${result.originalSize} → ${result.compressedSize} (${result.reductionPercent}% reduction)`);
+
+            // guard: file may have been removed during async compression
+            if (uppy.getFile(id)) {
+              uppy.setFileState(id, {
+                data: result.file,
+                size: result.compressedSize,
+                name: result.file.name,
+                type: 'video/mp4',
+                meta: {
+                  ...uppyFile.meta,
+                  name: result.file.name,
+                  type: 'video/mp4',
+                },
+              });
+            } else {
+              console.warn(`file ${id} was removed during compression, skipping state update`);
+            }
+          }
+        } catch (error) {
+          console.error(`compression failed for ${uppyFile.name}, uploading original:`, error);
+          this.ngZone.run(() => {
+            this.compressingUppy = null;
+            this.compressionProgress$.next({ uppy, progress: null });
+          });
+        }
+      }
+    });
+  }
+
+  /**
    * this will open up a modal showing the file upload component as the content
    *
    * @link https://intersective.slack.com/archives/C086A45JHSQ/p1736234870910269?thread_ts=1736232498.728959&cid=C086A45JHSQ
@@ -208,6 +314,8 @@ export class UppyUploaderService {
         source
       },
       cssClass: 'uppy-uploader-modal',
+      backdropDismiss: false,
+      canDismiss: () => Promise.resolve(this.compressingUppy === null),
     });
     await modal.present();
 

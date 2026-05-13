@@ -50,7 +50,19 @@
 <ng-container *ngIf="doAssessment">
   <div class="ion-padding">
     <div class="uppy-container" *ngIf="!uploadedFile && !submission?.answer">
-      <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
+      <div *ngIf="isCompressing" class="compression-overlay">
+        <div class="compression-status">
+          <div class="compression-icon">
+            <ion-icon name="videocam-outline" color="primary"></ion-icon>
+          </div>
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <h3 class="body-1" i18n>Compressing video...</h3>
+          <p class="body-2 gray-3" i18n>Please wait, this may take a moment</p>
+          <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
+          <p class="body-2 percentage">{{ compressionProgress }}%</p>
+        </div>
+      </div>
+      <uppy-dashboard [hidden]="isCompressing" [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
 
@@ -71,7 +83,19 @@
 <ng-container *ngIf="doReview">
   <ng-container *ngIf="question.canAnswer">
     <div class="uppy-container ion-padding"  *ngIf="!uploadedFile && !review?.answer">
-      <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
+      <div *ngIf="isCompressing" class="compression-overlay">
+        <div class="compression-status">
+          <div class="compression-icon">
+            <ion-icon name="videocam-outline" color="primary"></ion-icon>
+          </div>
+          <ion-spinner name="crescent" color="primary"></ion-spinner>
+          <h3 class="body-1" i18n>Compressing video...</h3>
+          <p class="body-2 gray-3" i18n>Please wait, this may take a moment</p>
+          <ion-progress-bar [value]="compressionProgress / 100" color="primary"></ion-progress-bar>
+          <p class="body-2 percentage">{{ compressionProgress }}%</p>
+        </div>
+      </div>
+      <uppy-dashboard [hidden]="isCompressing" [uppy]="uppy" [props]="uppyProps">
       </uppy-dashboard>
     </div>
 

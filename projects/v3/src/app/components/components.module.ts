@@ -40,7 +40,6 @@ import { ToggleLabelDirective } from '../directives/toggle-label/toggle-label.di
 import { TrafficLightGroupComponent } from './traffic-light-group/traffic-light-group.component';
 import { UppyUploaderComponent } from './uppy-uploader/uppy-uploader.component';
 import { FileUploadComponent } from './file-upload/file-upload.component';
-import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
 import { FilePopupComponent } from './file-popup/file-popup.component';
 import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { SliderComponent } from './slider/slider.component';
@@ -163,6 +162,5 @@ const largeCircleDefaultConfig = {
     FileUploadComponent,
     LanguageDetectionPipe,
   ],
-  providers: [UppyUploaderService]
 })
 export class ComponentsModule { }

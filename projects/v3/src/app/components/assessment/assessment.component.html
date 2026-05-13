@@ -421,7 +421,6 @@
         </ng-container>
       </ng-container>
     </form>
-
   </div>
 
   <div class="not-team ion-padding ion-text-center"
@@ -447,9 +446,15 @@
       (handleClick)="continueToNextTask()"
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
+      <!-- team 360 progress: show how many members have been reviewed -->
+      <div class="team360-progress" *ngIf="team360MinPages > 0 && doAssessment">
+        <span i18n>{{ team360PagesVisited }} of {{ team360MinPages }} member{{ team360MinPages > 1 ? 's' : '' }} reviewed</span>
+      </div>
+
+      <!-- PAGINATION MOVED BACK INTO BOTTOM BAR -->
       <div class="pagination-container"
         [class.few-pages]="pageCount < manyPages"
-        *ngIf="isPaginationEnabled">
+        *ngIf="isPaginationEnabled && pageCount > 1">
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
@@ -460,27 +465,26 @@
 
         <div class="page-indicators"
           [class.many-pages]="pageCount > manyPages"
-          *ngIf="pageCount > 1"
           #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
             <div class="page-indicator"
               [class.active]="pageIndex === page"
-              [class.incompleted]="!pageRequiredCompletion[page]"
+              [class.completed]="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
               [id]="'page-indicator-' + page"
               (click)="goToPage(page)"
-              (dblclick)="findAndGoToFirstUnansweredQuestion()">
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Page ' + (i + 1)"
+              (keydown.enter)="goToPage(page)"
+              (keydown.space)="goToPage(page); $event.preventDefault()">
 
               <div class="progress-ring">
                 <span class="page-number">{{ i + 1 }}</span>
               </div>
 
-              <ion-icon *ngIf="pageRequiredCompletion[page]"
+              <ion-icon *ngIf="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
                 name="checkmark-circle"
                 class="completion-icon completed">
-              </ion-icon>
-              <ion-icon *ngIf="!pageRequiredCompletion[page]"
-                name="close-circle-outline"
-                class="completion-icon">
               </ion-icon>
             </div>
           </ng-container>
@@ -494,6 +498,8 @@
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
       </div>
+      <!-- END PAGINATION MOVED BACK -->
+
     </app-bottom-action-bar>
 
     <!-- standalone pagination for completed reviews (bottom action bar hidden) -->
@@ -515,12 +521,11 @@
 
         <div class="page-indicators"
           [class.many-pages]="pageCount > manyPages"
-          *ngIf="pageCount > 1"
           #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
             <div class="page-indicator"
               [class.active]="pageIndex === page"
-              [class.incompleted]="!pageRequiredCompletion[page]"
+              [class.completed]="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
               [id]="'page-indicator-' + page"
               (click)="goToPage(page)"
               tabindex="0"
@@ -533,13 +538,9 @@
                 <span class="page-number">{{ i + 1 }}</span>
               </div>
 
-              <ion-icon *ngIf="pageRequiredCompletion[page]"
+              <ion-icon *ngIf="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
                 name="checkmark-circle"
                 class="completion-icon completed">
-              </ion-icon>
-              <ion-icon *ngIf="!pageRequiredCompletion[page]"
-                name="close-circle-outline"
-                class="completion-icon">
               </ion-icon>
             </div>
           </ng-container>
@@ -554,6 +555,7 @@
         </ion-button>
       </div>
     </ion-footer>
+
   </ng-container>
 
   <ng-template #blocked>

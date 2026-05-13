@@ -1,10 +1,11 @@
 import { UppyFileData, UppyUploaderService, ALLOWED_FILE_TYPES } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
+import { Subscription } from 'rxjs';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -26,6 +27,13 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   // Uppy UI
   uppyProps: any;
 
+  // compression state
+  compressionProgress = 0;
+  private compressionSub: Subscription | undefined;
+
+  /** true only when this component's own uppy instance is compressing */
+  isCompressing = false;
+
   s3Info: {
     path: string;
     bucket: string;
@@ -37,6 +45,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private modalController: ModalController,
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
+    private cdr: ChangeDetectorRef,
   ) {
     this.uppyProps = this.uppyUploaderService.uppyProps;
     this.uppyProps.height = '500px';
@@ -57,6 +66,13 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       onUploadSuccess: this.onUploadSuccess.bind(this),
     }, {
       allowedFileTypes: this.loadAllowedFileTypes(),
+    });
+
+    this.compressionSub = this.uppyUploaderService.compressionProgress$.subscribe(({ uppy, progress }) => {
+      if (uppy !== this.uppy) return;
+      this.isCompressing = progress !== null;
+      this.compressionProgress = progress ? Math.round(progress.progress * 100) : 0;
+      this.cdr.markForCheck();
     });
   }
 
@@ -102,13 +118,10 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.compressionSub?.unsubscribe();
+    this.uppyUploaderService.cancelCompression();
     if (this.uppy) {
-      // eslint-disable-next-line no-console
-      this.uppy.off("upload-success", (res) => console.info(res));
-
-      // eslint-disable-next-line no-console
-      this.uppy.off("complete", (res) => console.info(res));
-      this.uppy.resetProgress();
+      this.uppy.destroy();
     }
   }
 

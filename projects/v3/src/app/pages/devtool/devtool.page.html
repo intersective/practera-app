@@ -84,10 +84,72 @@
   </div>
 
   <div>
-    <h1>Video transcode with FFmpeg</h1>
-    <ion-button (click)="transcodeVideo()">Transcode</ion-button>
+    <h4>Video Compression with FFmpeg</h4>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12">
+          <ion-item>
+            <ion-label position="stacked">Select Video File</ion-label>
+            <input type="file" accept="video/*" (change)="handleFileInput($event)" style="margin-top: 8px;" />
+          </ion-item>
+        </ion-col>
+      </ion-row>
 
-    <div *ngIf="isCompressing">Compressing video... Please wait.</div>
+      <ion-row *ngIf="selectedFile">
+        <ion-col size="12">
+          <ion-note>{{ selectedFile.name }} — {{ (originalSize / 1024 / 1024).toFixed(2) }} MB</ion-note>
+        </ion-col>
+        <ion-col size="12" size-sm="6">
+          <ion-button expand="block" [disabled]="isCompressing || isTranscoding" (click)="compressSelectedVideo()">
+            {{ isCompressing ? 'Compressing...' : 'Compress Video' }}
+          </ion-button>
+        </ion-col>
+        <ion-col size="12" size-sm="6">
+          <ion-button expand="block" color="tertiary" [disabled]="isCompressing || isTranscoding" (click)="transcodeSelectedVideo()">
+            {{ isTranscoding ? 'Transcoding...' : 'Transcode to MP4' }}
+          </ion-button>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="isCompressing">
+        <ion-col size="12">
+          <p>Compressing: {{ compressionProgress }}%</p>
+          <ion-progress-bar [value]="compressionProgress / 100"></ion-progress-bar>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="isTranscoding">
+        <ion-col size="12">
+          <p>Transcoding: {{ transcodeProgress }}%</p>
+          <ion-progress-bar color="tertiary" [value]="transcodeProgress / 100"></ion-progress-bar>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="compressedSize > 0 && !isCompressing">
+        <ion-col size="12">
+          <ion-note color="success">
+            Compressed: {{ (compressedSize / 1024 / 1024).toFixed(2) }} MB
+            ({{ (100 - (compressedSize / originalSize * 100)).toFixed(1) }}% reduction)
+          </ion-note>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="transcodedSize > 0 && !isTranscoding">
+        <ion-col size="12">
+          <ion-note color="tertiary">
+            Transcoded: {{ (transcodedSize / 1024 / 1024).toFixed(2) }} MB → downloaded as MP4
+          </ion-note>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col size="12">
+          <ion-button fill="outline" color="medium" (click)="transcodeVideo()" [disabled]="isCompressing">
+            Test Transcode (remote AVI → MP4)
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </div>
 
   <ng-container class="device-info" *ngIf="info">

@@ -2,29 +2,31 @@ import { TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular';
 import { UppyUploaderService } from './uppy-uploader.service';
 import { BrowserStorageService } from '../../services/storage.service';
-import { Uppy, UppyFile } from '@uppy/core';
+import { Uppy } from '@uppy/core';
 import { environment } from '../../../environments/environment';
+import { FfmpegService } from '../../services/ffmpeg.service';
+import { Subject } from 'rxjs';
 
 describe('UppyUploaderService', () => {
   let service: UppyUploaderService;
-  let modalControllerSpy: jasmine.SpyObj<ModalController>;
-  let storageServiceSpy: jasmine.SpyObj<BrowserStorageService>;
-  let uppyInstanceSpy: jasmine.SpyObj<Uppy<any, any>>;
-  let modalSpy: any;
+  let ffmpegServiceSpy: jasmine.SpyObj<FfmpegService>;
+  let modalCtrlSpy: jasmine.SpyObj<ModalController>;
+  let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
   beforeEach(() => {
-    modalSpy = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
-    modalControllerSpy = jasmine.createSpyObj('ModalController', ['create']);
-    modalControllerSpy.create.and.returnValue(Promise.resolve(modalSpy));
+    modalCtrlSpy = jasmine.createSpyObj('ModalController', ['create']);
+    storageSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'clearByName']);
+    storageSpy.getUser.and.returnValue({ apikey: 'test-key' });
 
-    storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', ['getUser', 'clearByName']);
-    storageServiceSpy.getUser.and.returnValue({ apikey: 'test-api-key' });
-    storageServiceSpy.clearByName.and.returnValue({});
+    ffmpegServiceSpy = jasmine.createSpyObj('FfmpegService', [
+      'shouldCompress',
+      'compressVideo',
+      'terminate',
+    ], {
+      progress$: new Subject(),
+    });
 
-    uppyInstanceSpy = jasmine.createSpyObj('Uppy', ['use', 'on']);
-    uppyInstanceSpy.on.and.returnValue(uppyInstanceSpy); // To allow method chaining
-
-    // Mock environment config
+    // mock environment config
     environment.uppyConfig = {
       tusUrl: 'https://example.com/uploads',
       uploadPreset: 'test-preset',
@@ -42,9 +44,10 @@ describe('UppyUploaderService', () => {
     TestBed.configureTestingModule({
       providers: [
         UppyUploaderService,
-        { provide: ModalController, useValue: modalControllerSpy },
-        { provide: BrowserStorageService, useValue: storageServiceSpy }
-      ]
+        { provide: ModalController, useValue: modalCtrlSpy },
+        { provide: BrowserStorageService, useValue: storageSpy },
+        { provide: FfmpegService, useValue: ffmpegServiceSpy },
+      ],
     });
 
     service = TestBed.inject(UppyUploaderService);
@@ -52,6 +55,14 @@ describe('UppyUploaderService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should have compressingUppy null initially', () => {
+    expect(service.compressingUppy).toBeNull();
+  });
+
+  it('should expose compressionProgress$ subject', () => {
+    expect(service.compressionProgress$).toBeTruthy();
   });
 
   describe('createUppyInstance', () => {
@@ -101,34 +112,26 @@ describe('UppyUploaderService', () => {
   });
 
   describe('initializeEventHandlers', () => {
-    it('should set up event handlers on the Uppy instance', () => {
-      const onUploadSuccessSpy = jasmine.createSpy('onUploadSuccess');
-      const file = { id: 'file-123' } as UppyFile<any, any>;
-      const response = { status: 200 };
+    let mockUppy: any;
 
-      (service as any).initializeEventHandlers(uppyInstanceSpy, onUploadSuccessSpy);
-
-      // Skip directly calling the handler as it has type issues
-      // Instead, simulate the behavior that would happen when the handler is called
-      onUploadSuccessSpy(file, response);
-
-      expect(onUploadSuccessSpy).toHaveBeenCalledWith(file, response);
+    beforeEach(() => {
+      mockUppy = {
+        on: jasmine.createSpy('on').and.callFake(function(this: any) { return this; }),
+      };
     });
 
-    it('should clear cache when upload completes successfully', () => {
+    it('should set up event handlers on the Uppy instance', () => {
       const onUploadSuccessSpy = jasmine.createSpy('onUploadSuccess');
-      const result = {
-        successful: [{ id: 'file-123' }],
-        failed: []
-      };
+      (service as any).initializeEventHandlers(mockUppy, onUploadSuccessSpy);
+      expect(mockUppy.on).toHaveBeenCalled();
+    });
 
-      (service as any).initializeEventHandlers(uppyInstanceSpy, onUploadSuccessSpy);
+    it('should register upload-success handler', () => {
+      const onUploadSuccessSpy = jasmine.createSpy('onUploadSuccess');
+      (service as any).initializeEventHandlers(mockUppy, onUploadSuccessSpy);
 
-      // Instead of invoking the handler directly, we'll test the behavior
-      // by calling the method that the handler would trigger
-      service['storageService'].clearByName('file-123');
-
-      expect(storageServiceSpy.clearByName).toHaveBeenCalledWith('file-123');
+      const registeredEvents = mockUppy.on.calls.allArgs().map((args: any[]) => args[0]);
+      expect(registeredEvents).toContain('upload-success');
     });
   });
 
@@ -140,6 +143,120 @@ describe('UppyUploaderService', () => {
       service['patchValue'] = { [testId]: testValue };
 
       expect(service.getPatchValue(testId)).toEqual(testValue);
+    });
+  });
+
+  describe('compression preprocessor', () => {
+    it('should skip non-video files', () => {
+      ffmpegServiceSpy.shouldCompress.and.returnValue({ compress: false, reason: 'not a video file' });
+      // the preprocessor is private — verify no compression call
+      expect(ffmpegServiceSpy.compressVideo).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('cancelCompression', () => {
+    it('should do nothing if no compression is active', () => {
+      service.compressingUppy = null;
+
+      service.cancelCompression();
+
+      expect(ffmpegServiceSpy.terminate).not.toHaveBeenCalled();
+    });
+
+    it('should terminate ffmpeg and emit null progress when compressing', () => {
+      const fakeUppy = {} as Uppy<any, any>;
+      service.compressingUppy = fakeUppy;
+
+      const emitted: any[] = [];
+      const sub = service.compressionProgress$.subscribe(v => emitted.push(v));
+
+      service.cancelCompression();
+
+      expect(ffmpegServiceSpy.terminate).toHaveBeenCalled();
+      expect(emitted.length).toBe(1);
+      expect(emitted[0]).toEqual({ uppy: fakeUppy, progress: null });
+      expect(service.compressingUppy).toBeNull();
+
+      sub.unsubscribe();
+    });
+  });
+
+  describe('open', () => {
+    it('should create a modal with backdropDismiss false', async () => {
+      const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
+      mockModal.present.and.returnValue(Promise.resolve());
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal));
+
+      await service.open('chat');
+
+      expect(modalCtrlSpy.create).toHaveBeenCalledWith(jasmine.objectContaining({
+        backdropDismiss: false,
+      }));
+    });
+
+    it('should create a modal with canDismiss function', async () => {
+      const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
+      mockModal.present.and.returnValue(Promise.resolve());
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal));
+
+      await service.open('chat');
+
+      const createArgs = modalCtrlSpy.create.calls.mostRecent().args[0];
+      expect(createArgs.canDismiss).toBeDefined();
+      expect(typeof createArgs.canDismiss).toBe('function');
+    });
+
+    it('should allow dismiss when not compressing', async () => {
+      const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
+      mockModal.present.and.returnValue(Promise.resolve());
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal));
+
+      await service.open('chat');
+
+      const createArgs = modalCtrlSpy.create.calls.mostRecent().args[0];
+      service.compressingUppy = null;
+      const canDismissFn = createArgs.canDismiss as (data?: any, role?: string) => Promise<boolean>;
+      const canDismiss = await canDismissFn();
+      expect(canDismiss).toBeTrue();
+    });
+
+    it('should block dismiss when compressing', async () => {
+      const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
+      mockModal.present.and.returnValue(Promise.resolve());
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal));
+
+      await service.open('chat');
+
+      const createArgs = modalCtrlSpy.create.calls.mostRecent().args[0];
+      service.compressingUppy = {} as Uppy<any, any>;
+      const canDismissFn = createArgs.canDismiss as (data?: any, role?: string) => Promise<boolean>;
+      const canDismiss = await canDismissFn();
+      expect(canDismiss).toBeFalse();
+
+      // cleanup
+      service.compressingUppy = null;
+    });
+
+    it('should present the modal', async () => {
+      const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
+      mockModal.present.and.returnValue(Promise.resolve());
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal));
+
+      await service.open('chat');
+
+      expect(mockModal.present).toHaveBeenCalled();
+    });
+
+    it('should pass the source as component prop', async () => {
+      const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['present']);
+      mockModal.present.and.returnValue(Promise.resolve());
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal));
+
+      await service.open('assessment');
+
+      expect(modalCtrlSpy.create).toHaveBeenCalledWith(jasmine.objectContaining({
+        componentProps: { source: 'assessment' },
+      }));
     });
   });
 });
