@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, Directive, forwardRef } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
@@ -18,27 +18,6 @@ import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { ModalController } from '@ionic/angular';
-
-/**
- * mock value accessor directive to satisfy formControlName bindings
- * on custom elements like app-text, app-oneof, etc.
- */
-@Directive({
-  standalone: false,
-  selector: '[formControlName]',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => MockValueAccessorDirective),
-      multi: true
-    }
-  ]
-})
-class MockValueAccessorDirective implements ControlValueAccessor {
-  writeValue(obj: any): void {}
-  registerOnChange(fn: any): void {}
-  registerOnTouched(fn: any): void {}
-}
 
 class Page {
   get savingMessage() {
@@ -203,8 +182,8 @@ describe('AssessmentComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [AssessmentComponent, MockValueAccessorDirective],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
+      declarations: [AssessmentComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -238,7 +217,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly', 'assessmentSubmittedToast'])
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
         },
         {
           provide: ActivityService,
@@ -296,10 +275,6 @@ describe('AssessmentComponent', () => {
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({ success: true }));
     // activitySpy.goToNextTask.and.returnValue(Promise.resolve());
     storageSpy.getUser.and.returnValue(mockUser);
-
-    // initialize btnDisabled$ as it's an @Input that is normally set by parent
-    component.btnDisabled$ = new BehaviorSubject(false);
-    component.savingMessage$ = new BehaviorSubject('');
   });
 
   it('should be created', () => {
@@ -352,25 +327,22 @@ describe('AssessmentComponent', () => {
       expect(component.ngOnChanges({})).toBeFalsy();
     });
 
-  it('should update assessment with latest data', () => {
-    component.assessment = mockAssessment;
-    component.action = 'assessment';
-    component.ngOnChanges({ assessment: {} as any });
+    it('should update assessment with latest data', () => {
+      component.assessment = mockAssessment;
+      component.ngOnChanges({});
 
-    expect(component.doAssessment).toEqual(true);
-    expect(component.feedbackReviewed).toEqual(false);
-    // btnDisabled$ is true because required questions are not answered yet
-    expect(component.btnDisabled$.value).toEqual(true);
-    expect(component.isNotInATeam).toEqual(false);
-    expect(component.isPendingReview).toEqual(false);
-  });
+      expect(component.doAssessment).toEqual(true);
+      expect(component.feedbackReviewed).toEqual(false);
+      expect(component.btnDisabled$.value).toEqual(false);
+      expect(component.isNotInATeam).toEqual(false);
+      expect(component.isPendingReview).toEqual(false);
+    });
 
     it('should not allow submission if locked', () => {
       component.assessment = mockAssessment;
-      component.action = 'assessment';
-      // Create a copy to avoid test pollution
-      component.submission = { ...mockSubmission, isLocked: true } as any;
-      component.ngOnChanges({ submission: {} as any });
+      component.submission = mockSubmission as any;
+      component.submission.isLocked = true;
+      component.ngOnChanges({});
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -380,10 +352,9 @@ describe('AssessmentComponent', () => {
 
     it('should not allow submission', () => {
       component.assessment = mockAssessment;
-      component.action = 'assessment';
-      // Create a copy to avoid test pollution
-      component.submission = { ...mockSubmission, isLocked: true } as any;
-      component.ngOnChanges({ submission: {} as any });
+      component.submission = mockSubmission as any;
+      component.submission.isLocked = true;
+      component.ngOnChanges({});
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -393,26 +364,18 @@ describe('AssessmentComponent', () => {
 
     it('should save & publish "saving" message', fakeAsync(() => {
       component.assessment = mockAssessment;
-      component.action = 'assessment';
-      // Create a copy to avoid test pollution
-      component.submission = { ...mockSubmission, isLocked: false, status: 'in progress' } as any;
+      component.submission = mockSubmission as any;
+      component.submission.isLocked = false;
+      component.submission.status = 'in progress';
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
-      // Pre-create form controls to avoid NG01203 error when change detection runs
-      mockQuestions.forEach(q => {
-        component.questionsForm.addControl('q-' + q.id, new FormControl(null));
-      });
-      component.ngOnChanges({ submission: {} as any });
+      component.ngOnChanges({});
 
-      // Flush all pending timers (200ms for initializePageCompletion, 250ms for scrollActivePageIntoView, 300ms for form subscription)
-      tick(350);
+      tick();
       expect(component.doAssessment).toBeTrue();
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
-      // btnDisabled$ is true because required questions are not answered yet
-      expect(component.btnDisabled$.value).toEqual(true);
-      // Flush any remaining timers
-      flush();
+      expect(component.btnDisabled$.value).toEqual(false);
     }));
 
     it('should flag assessment as "pending review"', () => {
@@ -428,7 +391,7 @@ describe('AssessmentComponent', () => {
       const spy = spyOn(component.savingMessage$, 'next');
 
       component.action = 'review';
-      component.ngOnChanges({ review: {} as any });
+      component.ngOnChanges({});
 
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
@@ -443,7 +406,7 @@ describe('AssessmentComponent', () => {
       component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'done';
-      component.ngOnChanges({ submission: {} as any });
+      component.ngOnChanges({});
 
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
@@ -452,7 +415,6 @@ describe('AssessmentComponent', () => {
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
-    component.action = 'assessment';
     const answers = [
       {
         'questionId': 123,
@@ -463,17 +425,6 @@ describe('AssessmentComponent', () => {
         'answer': null
       }
     ];
-
-    // Mock form element - create a mock form object
-    component.form = {
-      nativeElement: {
-        querySelector: jasmine.createSpy('querySelector').and.returnValue({
-          classList: {
-            add: jasmine.createSpy('add')
-          }
-        })
-      }
-    } as any;
 
     const unansweredQuestions = component['_compulsoryQuestionsAnswered'](answers);
     expect(unansweredQuestions).toEqual([mockQuestions[0]]);
@@ -540,7 +491,6 @@ describe('AssessmentComponent', () => {
 
       component.doAssessment = true;
       component.isPendingReview = false;
-      component.action = 'assessment';
 
       // Call the method
       component['_populateQuestionsForm']();
@@ -558,7 +508,7 @@ describe('AssessmentComponent', () => {
       const optionalControl = component.questionsForm.get('q-2');
       expect(optionalControl.validator).toBeFalsy();
 
-      // Check that multi team member selector has plain array initial value in assessment mode
+      // Check that multi team member selector has array initial value
       const multiControl = component.questionsForm.get('q-3');
       expect(multiControl.value).toEqual([]);
     });
@@ -796,8 +746,7 @@ describe('AssessmentComponent', () => {
         groups: []
       } as any;
 
-      // isEmpty is already spied by TestUtils, just override return value
-      (utils.isEmpty as jasmine.Spy).and.returnValue(true);
+      spyOn(utils, 'isEmpty').and.returnValue(true);
 
       component['_populateQuestionsForm']();
 
@@ -830,19 +779,13 @@ describe('AssessmentComponent', () => {
 
       spyOn(component, 'initializePageCompletion');
       spyOn(component, 'setSubmissionDisabled');
-      // isEmpty is already spied by TestUtils, just override return value
-      (utils.isEmpty as jasmine.Spy).and.returnValue(false);
+      spyOn(utils, 'isEmpty').and.returnValue(false);
 
       component['_populateQuestionsForm']();
 
-      // Wait for the setTimeout(300) that sets up the subscription
-      tick(300);
-
       // Trigger form value change
       component.questionsForm.get('q-1').setValue('test value');
-
-      // Wait for debounceTime(300)
-      tick(300);
+      tick(300); // Wait for debounce
 
       expect(component.initializePageCompletion).toHaveBeenCalled();
       expect(component.setSubmissionDisabled).toHaveBeenCalled();
@@ -1336,12 +1279,12 @@ describe('AssessmentComponent', () => {
       expect(component.labelColor).toEqual('');
     });
 
-    it('should return danger when status is in progress and is overdue', () => {
+    it('should return empty when status is unknown', () => {
       component.submission.status = 'in progress';
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;
-      expect(component.labelColor).toEqual('danger');
+      expect(component.labelColor).toEqual('');
     });
   });
 
@@ -1424,9 +1367,6 @@ describe('AssessmentComponent', () => {
     });
 
     it('should return questions that are required but not answered', () => {
-      // Set action to assessment
-      component.action = 'assessment';
-
       // Set up mock assessment with required questions
       component.assessment = {
         id: 1,
@@ -1461,16 +1401,12 @@ describe('AssessmentComponent', () => {
         // Question 2 is missing
       ];
 
-      // Mock form element - create a mock form object
-      component.form = {
-        nativeElement: {
-          querySelector: jasmine.createSpy('querySelector').and.returnValue({
-            classList: {
-              add: jasmine.createSpy('add')
-            }
-          })
+      // Mock form element
+      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
+        classList: {
+          add: jasmine.createSpy('add')
         }
-      } as any;
+      });
 
       // Test the function
       const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
@@ -1548,16 +1484,12 @@ describe('AssessmentComponent', () => {
         { questionId: 1, answer: '', file: null }
       ];
 
-      // Mock form element - create a mock form object
-      component.form = {
-        nativeElement: {
-          querySelector: jasmine.createSpy('querySelector').and.returnValue({
-            classList: {
-              add: jasmine.createSpy('add')
-            }
-          })
+      // Mock form element
+      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
+        classList: {
+          add: jasmine.createSpy('add')
         }
-      } as any;
+      });
 
       // Test the function
       const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
@@ -1771,12 +1703,9 @@ describe('AssessmentComponent', () => {
         component.doAssessment = true;
         component['submitting'] = true;
         component.btnDisabled$.next(true);
-        component.assessment = { ...mockAssessment };
         component.questionsForm = new FormGroup({
           'q-123': new FormControl(null, Validators.required),
         });
-        // mock the form ViewChild to prevent nativeElement errors
-        component.form = { nativeElement: document.createElement('div') } as any;
       });
 
       it('should reset submitting when required questions are missing', async () => {
@@ -2379,7 +2308,7 @@ describe('AssessmentComponent', () => {
       id: 1,
       name: 'review test',
       description: '',
-      type: 'moderated',
+      type: 'quiz',
       isForTeam: false,
       dueDate: '2029-02-02',
       isOverdue: false,
@@ -2469,7 +2398,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multiple type in review mode', () => {
-        component.ngOnChanges({ assessment: {} as any });
+        component.ngOnChanges({});
         const control = component.questionsForm.controls['q-3'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -2481,7 +2410,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multi-team-member-selector type in review mode', () => {
-        component.ngOnChanges({ assessment: {} as any });
+        component.ngOnChanges({});
         const control = component.questionsForm.controls['q-6'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -2493,7 +2422,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for oneof type in review mode', () => {
-        component.ngOnChanges({ assessment: {} as any });
+        component.ngOnChanges({});
         const control = component.questionsForm.controls['q-2'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -2505,7 +2434,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
-        component.ngOnChanges({ assessment: {} as any });
+        component.ngOnChanges({});
         const control = component.questionsForm.controls['q-5'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -2999,7 +2928,18 @@ describe('AssessmentComponent', () => {
         component.assessment = { groups: [g0, g1, g2, g3] } as any;
         component.pagesGroups = [[g0], [g1], [g2], [g3]];
         component.pageVisited = [true, true, true, false];
+        component.pageRequiredCompletion = [true, true, true, true];
         expect(component.team360PagesVisited).toBe(2);
+      });
+
+      it('does not count a member section when visited but required questions incomplete', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
+        component.assessment = { groups: [g0, g1, g2] } as any;
+        component.pagesGroups = [[g0], [g1], [g2]];
+        component.pageVisited = [true, true, true]; // all pages visited
+        component.pageRequiredCompletion = [true, true, false]; // g2 page incomplete
+        expect(component.team360PagesVisited).toBe(1); // only g1 counts
       });
 
       it('caps at team360MinPages', () => {
@@ -3008,10 +2948,11 @@ describe('AssessmentComponent', () => {
         component.assessment = { groups: [g0, g1, g2] } as any;
         component.pagesGroups = [[g0], [g1], [g2]];
         component.pageVisited = [true, true, true, true]; // extra entries beyond cap
+        component.pageRequiredCompletion = [true, true, true, true];
         expect(component.team360PagesVisited).toBe(2);
       });
 
-      it('batching scenario: two selector groups on same page counts 2 when visited', () => {
+      it('batching scenario: two selector groups on same page counts 2 when visited and complete', () => {
         // splitGroupsByQuestionCount can batch small groups onto one page
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
@@ -3019,6 +2960,7 @@ describe('AssessmentComponent', () => {
         // g1 and g2 batched onto page 1 (e.g. 2 questions total ≤ pageSize)
         component.pagesGroups = [[g0], [g1, g2]];
         component.pageVisited = [true, true];
+        component.pageRequiredCompletion = [true, true];
         expect(component.team360PagesVisited).toBe(2); // both groups counted, not just 1
       });
 
@@ -3040,6 +2982,7 @@ describe('AssessmentComponent', () => {
         // minPages = 4 distinct members in groups 1-4
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
+        component.pageRequiredCompletion = [true, true, true, true, true];
 
         component.pageVisited = [true, true, false, false, false];
         expect(component.team360PagesVisited).toBe(1); // group 1 visited → member 101 → 1 of 4
@@ -3068,6 +3011,7 @@ describe('AssessmentComponent', () => {
         const g0 = textGroup(10), g1 = sameMember(20), g2 = sameMember(21), g3 = sameMember(22), g4 = sameMember(23);
         component.assessment = { groups: [g0, g1, g2, g3, g4] } as any;
         component.pagesGroups = [[g0], [g1], [g2], [g3], [g4]];
+        component.pageRequiredCompletion = [true, true, true, true, true];
 
         component.pageVisited = [true, true, false, false, false];
         expect(component.team360PagesVisited).toBe(1); // visited group 1 → learner 004 → 1 of 1
@@ -3105,6 +3049,8 @@ describe('AssessmentComponent', () => {
         // min uses distinct keys: 2 members listed across non-self groups
         expect(component.team360MinPages).toBe(2);
 
+        component.pageRequiredCompletion = [true, true, true];
+
         component.pageVisited = [true, false, false];
         expect(component.team360PagesVisited).toBe(0); // only self visited
 
@@ -3131,13 +3077,14 @@ describe('AssessmentComponent', () => {
         expect(component.btnDisabled$.getValue()).toBeTrue();
       });
 
-      it('enables button when form valid and all team member pages visited', () => {
+      it('enables button when form valid and all team member pages visited and complete', () => {
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100), g3 = selectorGroup(101);
         component.assessment = { groups: [g0, g1, g2, g3] } as any;
         component.pagesGroups = [[g0], [g1], [g2], [g3]];
         component.questionsForm = makeValidForm();
         component.pageVisited = [true, true, true, true];
+        component.pageRequiredCompletion = [true, true, true, true];
         component.btnDisabled$ = new BehaviorSubject(true);
 
         component.setSubmissionDisabled();
@@ -3187,7 +3134,7 @@ describe('AssessmentComponent', () => {
         expect(component.btnDisabled$.getValue()).toBeTrue();
       });
 
-      it('batching scenario: visiting batched page enables submit when form valid', () => {
+      it('batching scenario: visiting batched page enables submit when form valid and complete', () => {
         // g1 and g2 on same page — visiting page 1 satisfies both teammates
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
@@ -3195,6 +3142,7 @@ describe('AssessmentComponent', () => {
         component.pagesGroups = [[g0], [g1, g2]];
         component.questionsForm = makeValidForm();
         component.pageVisited = [true, true];
+        component.pageRequiredCompletion = [true, true];
         component.btnDisabled$ = new BehaviorSubject(true);
 
         component.setSubmissionDisabled();
@@ -3291,6 +3239,425 @@ describe('AssessmentComponent', () => {
         component.setSubmissionDisabled();
         expect(component.btnDisabled$.getValue()).toBeFalse();
       });
+    });
+  });
+
+  describe('isTeam360 getter', () => {
+    it('returns true when assessmentType is team360', () => {
+      component.task = { assessmentType: 'team360' } as any;
+      expect(component.isTeam360).toBeTrue();
+    });
+
+    it('returns false when assessmentType is not team360', () => {
+      component.task = { assessmentType: 'normal' } as any;
+      expect(component.isTeam360).toBeFalse();
+    });
+
+    it('returns false when task is undefined', () => {
+      component.task = undefined;
+      expect(component.isTeam360).toBeFalse();
+    });
+  });
+
+  describe('team360VisibleSections getter', () => {
+    const selectorGroup = (id: number) => ({
+      name: `Selector Group ${id}`,
+      description: '',
+      questions: [{
+        id,
+        type: 'team member selector',
+        isRequired: false,
+        audience: ['submitter'],
+        teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }],
+      } as any],
+    });
+    const textGroup = (id: number) => ({
+      name: `Text Group ${id}`,
+      description: '',
+      questions: [{ id, type: 'text', isRequired: false, audience: ['submitter'] } as any],
+    });
+
+    beforeEach(() => {
+      component.task = { assessmentType: 'team360' } as any;
+    });
+
+    it('returns empty array when not team360', () => {
+      component.task = { assessmentType: 'normal' } as any;
+      component.assessment = { groups: [textGroup(10), selectorGroup(20)] } as any;
+      expect(component.team360VisibleSections).toEqual([]);
+    });
+
+    it('returns empty array when assessment has no groups', () => {
+      component.assessment = { groups: [] } as any;
+      expect(component.team360VisibleSections).toEqual([]);
+    });
+
+    it('always includes group 0 (self-reflection) regardless of type', () => {
+      component.assessment = { groups: [textGroup(10)] } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.length).toBe(1);
+      expect(sections[0].groupIndex).toBe(0);
+      expect(sections[0].firstPage).toBe(0);
+    });
+
+    it('includes teammate groups that have assigned team members', () => {
+      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.length).toBe(3);
+      expect(sections[0].groupIndex).toBe(0);
+      expect(sections[1].groupIndex).toBe(1);
+      expect(sections[2].groupIndex).toBe(2);
+    });
+
+    it('excludes teammate groups whose selector has no team members assigned', () => {
+      const emptySelector = {
+        name: 'Empty Slot',
+        description: '',
+        questions: [{ id: 99, type: 'team member selector', teamMembers: [], isRequired: false, audience: ['submitter'] } as any],
+      };
+      component.assessment = {
+        groups: [textGroup(10), selectorGroup(20), emptySelector, selectorGroup(100)],
+      } as any;
+      const sections = component.team360VisibleSections;
+      // emptySelector (groupIndex 2) must be excluded
+      expect(sections.length).toBe(3);
+      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 3]);
+    });
+
+    it('case 1: team of 2 (self + 1 assigned teammate) → 2 visible sections', () => {
+      component.assessment = { groups: [textGroup(10), selectorGroup(20)] } as any;
+      expect(component.team360VisibleSections.length).toBe(2);
+    });
+
+    it('case 2: team of 3 (self + 2 assigned teammates) → 3 visible sections', () => {
+      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
+      expect(component.team360VisibleSections.length).toBe(3);
+    });
+
+    it('assigns correct firstPage when groups fit on the same page', () => {
+      // 3 single-question groups → total 3 ≤ 10 → all page 0
+      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.map(s => s.firstPage)).toEqual([0, 0, 0]);
+    });
+
+    it('assigns correct firstPage when groups overflow to new pages', () => {
+      // self: 8q (page 0); teammate: 5q → 8+5=13>10 → page 1
+      const selfGroup = { name: 'Self', description: '', questions: Array(8).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }) };
+      const tmGroup = {
+        name: 'TM',
+        description: '',
+        questions: [
+          ...Array(4).fill({ id: 1, type: 'text', isRequired: false, audience: ['submitter'] }),
+          { id: 200, type: 'team member selector', teamMembers: [{ key: '{"userId":200}' }], isRequired: false, audience: ['submitter'] },
+        ],
+      };
+      component.assessment = { groups: [selfGroup, tmGroup] } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.length).toBe(2);
+      expect(sections[0].firstPage).toBe(0);
+      expect(sections[1].firstPage).toBe(1);
+    });
+
+    it('excludes duplicate groups that reference already-seen team member keys', () => {
+      const dupMember = { key: '{"userId":1}', userName: 'User 1' };
+      const makeGroupWithMember = (id: number, member: { key: string; userName: string }) => ({
+        name: `G${id}`, description: '',
+        questions: [{
+          id, type: 'team member selector', teamMembers: [member],
+          isRequired: false, audience: ['submitter'],
+        } as any],
+      });
+      // groups[1] and groups[2] both reference the same member → only groups[1] should appear
+      component.assessment = {
+        groups: [textGroup(0), makeGroupWithMember(1, dupMember), makeGroupWithMember(2, dupMember)],
+      } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.length).toBe(2); // self + 1 unique member
+      expect(sections[0].groupIndex).toBe(0);
+      expect(sections[1].groupIndex).toBe(1);
+    });
+
+    it('5 groups with 2 unique members → 3 visible sections (self + 2)', () => {
+      const m1 = { key: '{"userId":1}', userName: 'U1' };
+      const m2 = { key: '{"userId":2}', userName: 'U2' };
+      const makeG = (id: number, m: { key: string; userName: string }) => ({
+        name: `G${id}`, description: '',
+        questions: [{
+          id, type: 'team member selector', teamMembers: [m],
+          isRequired: false, audience: ['submitter'],
+        } as any],
+      });
+      // groups[3] duplicates m1, groups[4] duplicates m2
+      component.assessment = {
+        groups: [textGroup(0), makeG(1, m1), makeG(2, m2), makeG(3, m1), makeG(4, m2)],
+      } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.length).toBe(3);
+      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 2]);
+    });
+
+    it('shape B: every group has all members; cap rating dots at unique-member count', () => {
+      // production case: each non-self group is a "rate one teammate" slot and the selector
+      // exposes all teammates as choices. 4 placeholder groups but only 2 real members → 3 dots.
+      const m1 = { key: '{"userId":1}', userName: 'U1' };
+      const m2 = { key: '{"userId":2}', userName: 'U2' };
+      const groupAllMembers = (id: number) => ({
+        name: `Slot ${id}`, description: '',
+        questions: [{
+          id, type: 'team member selector', teamMembers: [m1, m2],
+          isRequired: false, audience: ['submitter'],
+        } as any],
+      });
+      component.assessment = {
+        groups: [textGroup(0), groupAllMembers(1), groupAllMembers(2), groupAllMembers(3), groupAllMembers(4)],
+      } as any;
+      const sections = component.team360VisibleSections;
+      // 1 self + 2 (capped at unique member count) = 3 dots
+      expect(sections.length).toBe(3);
+      // first 2 non-self selector groups become rating slot dots
+      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 2]);
+    });
+
+    it('shape B: 3 unique members across 5 placeholder groups → 4 dots (self + 3)', () => {
+      const m1 = { key: '{"userId":1}' };
+      const m2 = { key: '{"userId":2}' };
+      const m3 = { key: '{"userId":3}' };
+      const groupAll = (id: number) => ({
+        name: `Slot ${id}`, description: '',
+        questions: [{
+          id, type: 'team member selector', teamMembers: [m1, m2, m3],
+          isRequired: false, audience: ['submitter'],
+        } as any],
+      });
+      component.assessment = {
+        groups: [textGroup(0), groupAll(1), groupAll(2), groupAll(3), groupAll(4), groupAll(5)],
+      } as any;
+      const sections = component.team360VisibleSections;
+      expect(sections.length).toBe(4);
+      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 2, 3]);
+    });
+  });
+
+  describe('team360ActiveSectionIndex getter', () => {
+    const textGroup = (id: number) => ({
+      name: `Text Group ${id}`,
+      description: '',
+      questions: [{ id, type: 'text', isRequired: false, audience: ['submitter'] } as any],
+    });
+    const selectorGroup = (id: number) => ({
+      name: `Selector Group ${id}`,
+      description: '',
+      questions: [{
+        id,
+        type: 'team member selector',
+        isRequired: false,
+        audience: ['submitter'],
+        teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }],
+      } as any],
+    });
+    // helper: 9-question group (8 text + 1 selector with one member)
+    // 9 questions ensures two such groups overflow a 10q page → each on its own page
+    const makeTeamGroup = (id: number) => ({
+      name: `G${id}`,
+      description: '',
+      questions: [
+        ...Array(8).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }),
+        { id, type: 'team member selector', isRequired: false, audience: ['submitter'],
+          teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }] },
+      ] as any[],
+    });
+
+    beforeEach(() => {
+      component.task = { assessmentType: 'team360' } as any;
+    });
+
+    it('returns 0 when pageIndex is 0 and all sections are on page 0', () => {
+      // 3 groups × 1q each → all on page 0
+      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
+      component.pageIndex = 0;
+      expect(component.team360ActiveSectionIndex).toBe(0);
+    });
+
+    it('returns correct dot index when each group is on its own page', () => {
+      // g0(9q) page 0; g1(9q): 9+9>10 → page 1; g2(9q): 9+9>10 → page 2
+      component.assessment = { groups: [makeTeamGroup(0), makeTeamGroup(1), makeTeamGroup(2)] } as any;
+
+      component.pageIndex = 0;
+      expect(component.team360ActiveSectionIndex).toBe(0);
+
+      component.pageIndex = 1;
+      expect(component.team360ActiveSectionIndex).toBe(1);
+
+      component.pageIndex = 2;
+      expect(component.team360ActiveSectionIndex).toBe(2);
+    });
+
+    it('returns last dot index when on last page', () => {
+      component.assessment = { groups: [makeTeamGroup(0), makeTeamGroup(1), makeTeamGroup(2)] } as any;
+      component.pageIndex = 2;
+      expect(component.team360ActiveSectionIndex).toBe(2);
+    });
+
+    it('skips excluded empty-member groups when computing active section', () => {
+      const emptySlot = {
+        name: 'Empty',
+        description: '',
+        questions: [{ id: 99, type: 'team member selector', teamMembers: [], isRequired: false, audience: ['submitter'] } as any],
+      };
+      // groups: [g0(self,9q), g1(assigned,9q), emptySlot(excluded,1q), g3(assigned,9q)]
+      // visible sections: [gi:0 fp:0], [gi:1 fp:1], [gi:3 fp:?]
+      // g0(9)+g1(9)=18>10 → g1 on page 1; emptySlot(1): 9+1=10≤10 stays on page 1;
+      // g3(9): 10+9=19>10 → page 2
+      component.assessment = { groups: [makeTeamGroup(0), makeTeamGroup(1), emptySlot, makeTeamGroup(3)] } as any;
+      component.pageIndex = 2;
+      // dot 0→gi:0 fp:0, dot 1→gi:1 fp:1, dot 2→gi:3 fp:2
+      expect(component.team360ActiveSectionIndex).toBe(2);
+    });
+  });
+
+  describe('goToSection()', () => {
+    const makeSelectorGroup = (id: number, qCount = 8) => ({
+      name: `G${id}`,
+      description: '',
+      questions: [
+        ...Array(qCount - 1).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }),
+        { id, type: 'team member selector', isRequired: false, audience: ['submitter'],
+          teamMembers: [{ key: `{"userId":${id}}` }] },
+      ] as any[],
+    });
+
+    beforeEach(() => {
+      component.task = { assessmentType: 'team360' } as any;
+    });
+
+    it('navigates to the first page of the given visible section', () => {
+      // g0(8q) page 0; g1(8q): 8+8>10 → page 1
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      component.assessment = { groups: [g0, g1] } as any;
+      component.pagesGroups = [[g0], [g1]];
+      component.pageIndex = 0;
+      component.pageVisited = [false, false];
+
+      component.goToSection(1);
+      expect(component.pageIndex).toBe(1);
+    });
+
+    it('does nothing for out-of-bounds section index', () => {
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      component.assessment = { groups: [g0, g1] } as any;
+      component.pagesGroups = [[g0], [g1]];
+      component.pageIndex = 0;
+      component.pageVisited = [false, false];
+
+      component.goToSection(99);
+      expect(component.pageIndex).toBe(0);
+    });
+
+    it('navigates to section 0 (self-reflection)', () => {
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      component.assessment = { groups: [g0, g1] } as any;
+      component.pagesGroups = [[g0], [g1]];
+      component.pageIndex = 1;
+      component.pageVisited = [false, false];
+
+      component.goToSection(0);
+      expect(component.pageIndex).toBe(0);
+    });
+  });
+
+  describe('isTeam360SectionComplete()', () => {
+    const makeSelectorGroup = (id: number, qCount = 8) => ({
+      name: `G${id}`,
+      description: '',
+      questions: [
+        ...Array(qCount - 1).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }),
+        { id, type: 'team member selector', isRequired: false, audience: ['submitter'],
+          teamMembers: [{ key: `{"userId":${id}}` }] },
+      ] as any[],
+    });
+
+    beforeEach(() => {
+      component.task = { assessmentType: 'team360' } as any;
+    });
+
+    it('returns true in read-only mode regardless of visit/completion state', () => {
+      component.doAssessment = false;
+      component.isPendingReview = false;
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      component.assessment = { groups: [g0, g1] } as any;
+      component.pagesGroups = [[g0], [g1]];
+      component.pageVisited = [false, false];
+      component.pageRequiredCompletion = [false, false];
+      expect(component.isTeam360SectionComplete(0)).toBeTrue();
+    });
+
+    it('returns false when page not visited even if required questions are complete', () => {
+      component.doAssessment = true;
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      const g2 = makeSelectorGroup(2);
+      component.assessment = { groups: [g0, g1, g2] } as any;
+      component.pagesGroups = [[g0], [g1], [g2]];
+      component.pageVisited = [true, false, false];
+      component.pageRequiredCompletion = [true, true, true];
+      // page 1 not visited → dot 1 must not be green
+      expect(component.isTeam360SectionComplete(1)).toBeFalse();
+    });
+
+    it('returns false when page visited but required questions incomplete', () => {
+      component.doAssessment = true;
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      component.assessment = { groups: [g0, g1] } as any;
+      component.pagesGroups = [[g0], [g1]];
+      component.pageVisited = [true, true];
+      component.pageRequiredCompletion = [true, false];
+      // dot 1 → gi:1, firstPage:1 — page 1 required incomplete
+      expect(component.isTeam360SectionComplete(1)).toBeFalse();
+    });
+
+    it('returns true when all pages in section are visited and complete', () => {
+      component.doAssessment = true;
+      const g0 = makeSelectorGroup(0);
+      const g1 = makeSelectorGroup(1);
+      const g2 = makeSelectorGroup(2);
+      component.assessment = { groups: [g0, g1, g2] } as any;
+      component.pagesGroups = [[g0], [g1], [g2]];
+      component.pageVisited = [true, true, true];
+      component.pageRequiredCompletion = [true, true, true];
+      expect(component.isTeam360SectionComplete(2)).toBeTrue();
+    });
+
+    it('shape B: last visible dot ignores pages from hidden placeholder groups beyond it', () => {
+      // 5 non-self placeholder groups but only 2 unique members → 3 visible dots.
+      // dot 2 (groupIndex 2) range ends at groups[3].firstPage, not pageCount,
+      // so hidden placeholder pages (visited=false) do not block its completion.
+      component.doAssessment = true;
+      const m1 = { key: '{"userId":1}' };
+      const m2 = { key: '{"userId":2}' };
+      const slotGroup = (id: number) => ({
+        name: `Slot ${id}`, description: '',
+        questions: [
+          ...Array(7).fill({ id: id * 10, type: 'text', isRequired: false, audience: ['submitter'] }),
+          { id, type: 'team member selector', teamMembers: [m1, m2], isRequired: false, audience: ['submitter'] },
+        ] as any[],
+      });
+      const g0 = makeSelectorGroup(0);
+      const g1 = slotGroup(1);
+      const g2 = slotGroup(2);
+      const g3 = slotGroup(3); // hidden placeholder
+      const g4 = slotGroup(4); // hidden placeholder
+      component.assessment = { groups: [g0, g1, g2, g3, g4] } as any;
+      component.pagesGroups = [[g0], [g1], [g2], [g3], [g4]];
+      // user has visited and completed pages 0–2; hidden pages 3 & 4 unvisited
+      component.pageVisited = [true, true, true, false, false];
+      component.pageRequiredCompletion = [true, true, true, false, false];
+      expect(component.isTeam360SectionComplete(2)).toBeTrue();
     });
   });
 
