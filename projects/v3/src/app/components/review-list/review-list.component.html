@@ -1,4 +1,23 @@
-<ion-segment (ionChange)="switchStatus()" value="pending">
+<div class="sr-only" [id]="searchLabelId" i18n>Search reviews</div>
+<div class="sr-only" [id]="searchHintId" i18n>Type a review name to filter the list.</div>
+
+<ion-searchbar
+  class="review-search"
+  [value]="searchTerm"
+  (ionInput)="onSearchTermChange($event.detail.value)"
+  [debounce]="200"
+  [attr.aria-labelledby]="searchLabelId"
+  [attr.aria-describedby]="searchHintId"
+  i18n-placeholder
+  placeholder="Search reviews"
+></ion-searchbar>
+
+<ion-segment
+  (ionChange)="switchStatus($event)"
+  [value]="segmentValue"
+  [attr.aria-controls]="listId"
+  aria-label="Filter reviews by status" i18n-aria-label
+>
   <ion-segment-button value="pending" mode="ios">
     <ion-label i18n>Pending</ion-label>
   </ion-segment-button>
@@ -7,11 +26,18 @@
   </ion-segment-button>
 </ion-segment>
 
-<ion-list *ngIf="reviews">
-  <ng-container *ngFor="let review of reviews">
+<h2 class="sr-only" [id]="listLabelId" i18n>Review list</h2>
+
+<ion-list *ngIf="reviews"
+  [attr.id]="listId"
+  role="list"
+  [attr.aria-labelledby]="listLabelId"
+>
+  <ng-container *ngFor="let review of filteredReviews; trackBy: trackBySubmission">
     <app-list-item
+      #reviewItem
       class="focusable"
-      *ngIf="review.isDone === showDone"
+      [id]="'review-' + review.submissionId"
       [title]="review.name"
       [subtitle1]="review.submitterName"
       subtitle1Color="grey-75"
@@ -19,23 +45,32 @@
       subtitle2Color="grey-75"
       leadingIcon="eye"
       [active]="currentReview && currentReview.submissionId === review.submissionId"
+      [button]="true"
+      [ariaSelected]="currentReview && currentReview.submissionId === review.submissionId"
+      [ariaCurrent]="currentReview && currentReview.submissionId === review.submissionId ? 'true' : null"
       lines="full"
       (click)="goto(review)"
       (keydown)="goto(review, $event)"
       [endingText]="review.date"
       endingTextColor="grey-75"
-      tabindex="0"
-      role="button"
     ></app-list-item>
   </ng-container>
 </ion-list>
 
-<ion-list *ngIf="reviews === null">
+<p *ngIf="resultsAnnouncement" class="sr-only" aria-live="polite">{{ resultsAnnouncement }}</p>
+
+<ion-list *ngIf="reviews === null" role="status" aria-live="polite">
   <app-list-item [loading]="true"></app-list-item>
   <app-list-item [loading]="true"></app-list-item>
 </ion-list>
 
-<div *ngIf="noReviews" class="ion-text-center no-review">
+<div *ngIf="hasSearchWithoutResults" class="ion-text-center no-review" role="status" aria-live="polite">
+  <ion-icon class="large-icon" color="primary" name="search-outline"></ion-icon>
+  <p class="body-1" i18n>No reviews match your search.</p>
+  <ion-text class="subtitle-2" color="grey-75" i18n>Try a different search term to find a review.</ion-text>
+</div>
+
+<div *ngIf="!hasSearchWithoutResults && noReviews" class="ion-text-center no-review" role="status" aria-live="polite">
   <ion-icon class="large-icon" color="primary" name="chatbox-ellipses-outline"></ion-icon>
   <p class="body-1" i18n="Sample: You have no pending/completed review yet!">You have no {{ noReviews }} review yet!</p>
   <ion-text class="subtitle-2" color="grey-75" i18n>Reviews show up here, so you can easily view them here later.</ion-text>
