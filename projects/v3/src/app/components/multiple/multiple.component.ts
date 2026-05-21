@@ -246,6 +246,51 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get displayChoices(): Array<any> {
+    if (!this.isDisplayOnly) {
+      return this.question?.choices || [];
+    }
+
+    const selectedChoiceIds = new Set<string | number>();
+    this._collectSelectedChoiceIds(this.submission?.answer, selectedChoiceIds);
+    this._collectSelectedChoiceIds(this.review?.answer, selectedChoiceIds);
+
+    return (this.question?.choices || []).filter(choice => selectedChoiceIds.has(choice.id));
+  }
+
+  private _collectSelectedChoiceIds(answer: any, selectedChoiceIds: Set<string | number>): void {
+    if (answer === null || answer === undefined) {
+      return;
+    }
+
+    if (typeof answer === 'string') {
+      try {
+        const parsedAnswer = JSON.parse(answer);
+        if (parsedAnswer !== answer) {
+          this._collectSelectedChoiceIds(parsedAnswer, selectedChoiceIds);
+          return;
+        }
+      } catch {
+        selectedChoiceIds.add(answer);
+        return;
+      }
+    }
+
+    if (Array.isArray(answer)) {
+      answer.forEach(choiceId => selectedChoiceIds.add(choiceId));
+      return;
+    }
+
+    if (typeof answer === 'number') {
+      selectedChoiceIds.add(answer);
+      return;
+    }
+
+    if (typeof answer === 'object' && answer.answer !== undefined) {
+      this._collectSelectedChoiceIds(answer.answer, selectedChoiceIds);
+    }
+  }
+
   // innerHTML text toggle
   onLabelToggle = (id: string): void => {
     if (this.doReview) {
