@@ -135,6 +135,51 @@ describe('MultipleComponent', () => {
     });
   });
 
+  describe('when testing display-only preview mode', () => {
+    it('should expose only selected choices', () => {
+      component.question = {
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: []
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: [2] };
+
+      fixture.detectChanges();
+
+      expect(component.isDisplayOnly).toBeTrue();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([2]);
+    });
+
+    it('should render only selected choices in the template', () => {
+      component.question = {
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: []
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: [2] };
+
+      fixture.detectChanges();
+
+      const items = fixture.nativeElement.querySelectorAll('ion-list ion-item');
+      expect(items.length).toBe(1);
+      expect(fixture.nativeElement.textContent).toContain('choice2');
+      expect(fixture.nativeElement.textContent).not.toContain('choice1');
+      expect(fixture.nativeElement.textContent).not.toContain('choice3');
+    });
+  });
+
   it('when testing writeValue(), it should call the method correctly', () => {
     // writeValue is empty in the component - it doesn't set innerValue
     component.writeValue({ data: 'data' });
