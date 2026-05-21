@@ -10,6 +10,7 @@ import { ChatInfoComponent } from './chat-info/chat-info.component';
 import { ComponentsModule } from '../../components/components.module';
 import { PersonalisedHeaderModule } from '@v3/app/personalised-header/personalised-header.module';
 import { AttachmentPopoverComponent } from './attachment-popover/attachment-popover.component';
+import { EditMessagePopupComponent } from './edit-message-popup/edit-message-popup.component';
 
 import Quill from 'quill';
 import MagicUrl from 'quill-magic-url';
@@ -39,6 +40,7 @@ Quill.register('modules/magicUrl', MagicUrl);
     ChatViewComponent,
     ChatInfoComponent,
     AttachmentPopoverComponent,
+    EditMessagePopupComponent,
   ],
   providers: [],
   exports: [ChatRoomComponent],
