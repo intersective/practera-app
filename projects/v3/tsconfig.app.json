@@ -5,6 +5,7 @@
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "outDir": "../../out-tsc/app",
+    "moduleResolution": "bundler",
     "types": [],
     "lib": [
       "es2022",
@@ -52,6 +53,7 @@
     "src/testing/**/*.ts",
     "**/*.spec.ts",
     "src/environments/environment.*.ts",
+    "src/assets/ffmpeg/worker.d.ts"
   ],
   "angularCompilerOptions": {
     "strictTemplates": true,
