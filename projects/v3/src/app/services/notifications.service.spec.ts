@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
 import { TestUtils } from '@testingv3/utils';
+import { of } from 'rxjs';
 import { RequestService } from 'request';
 import { AchievementService } from './achievement.service';
 import { ApolloService } from './apollo.service';
@@ -72,87 +73,49 @@ describe('NotificationsService', () => {
   });
 
   describe('markTodoItemAsDone', () => {
-    let requestService: jasmine.SpyObj<RequestService>;
-    let storageService: jasmine.SpyObj<BrowserStorageService>;
+    let apolloService: jasmine.SpyObj<ApolloService>;
 
     beforeEach(() => {
-      requestService = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-      storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+      apolloService = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+      apolloService.graphQLFetch.and.returnValue(of({ data: { updateTodoItem: { success: true } } } as any));
     });
 
-    it('should call request.post with correct parameters when identifier is provided', () => {
-      const projectId = 123;
-      const identifier = 'test-identifier';
-      storageService.getUser.and.returnValue({ projectId });
+    it('calls apolloService.graphQLMutate with updateTodoItem mutation when identifier provided', () => {
+      apolloService.graphQLFetch.and.returnValue(of({ data: {} } as any));
+      const mockMutate = jasmine.createSpy('graphQLMutate').and.returnValue(of({}));
+      (service as any).apolloService = { ...apolloService, graphQLMutate: mockMutate };
 
-      service.markTodoItemAsDone({ identifier });
+      service.markTodoItemAsDone({ identifier: 'test-identifier' });
 
-      expect(requestService.post).toHaveBeenCalledWith({
-        endPoint: api.post.todoItem,
-        data: {
-          identifier,
-          project_id: projectId,
-          is_done: true
-        }
-      });
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+      const [mutation, variables] = mockMutate.calls.mostRecent().args;
+      expect(mutation).toContain('updateTodoItem');
+      expect(variables.identifier).toBe('test-identifier');
+      expect(variables.isDone).toBe(true);
     });
 
-    it('should call request.post with correct parameters when id is provided', () => {
-      const projectId = 123;
-      const id = 456;
-      storageService.getUser.and.returnValue({ projectId });
+    it('calls apolloService.graphQLMutate with id when id provided', () => {
+      const mockMutate = jasmine.createSpy('graphQLMutate').and.returnValue(of({}));
+      (service as any).apolloService = { ...apolloService, graphQLMutate: mockMutate };
 
-      service.markTodoItemAsDone({ id });
+      service.markTodoItemAsDone({ id: 456 });
 
-      expect(requestService.post).toHaveBeenCalledWith({
-        endPoint: api.post.todoItem,
-        data: {
-          id,
-          project_id: projectId,
-          is_done: true
-        }
-      });
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+      const [, variables] = mockMutate.calls.mostRecent().args;
+      expect(variables.id).toBe('456');
+      expect(variables.isDone).toBe(true);
     });
 
-    it('should call request.post with correct parameters when both identifier and id are provided', () => {
-      const projectId = 123;
-      const identifier = 'test-identifier';
-      const id = 456;
-      storageService.getUser.and.returnValue({ projectId });
+    it('calls apolloService.graphQLMutate when both identifier and id provided', () => {
+      const mockMutate = jasmine.createSpy('graphQLMutate').and.returnValue(of({}));
+      (service as any).apolloService = { ...apolloService, graphQLMutate: mockMutate };
 
-      service.markTodoItemAsDone({ identifier, id });
+      service.markTodoItemAsDone({ identifier: 'test-identifier', id: 456 });
 
-      expect(requestService.post).toHaveBeenCalledWith({
-        endPoint: api.post.todoItem,
-        data: {
-          identifier,
-          id,
-          project_id: projectId,
-          is_done: true
-        }
-      });
-    });
-
-    it('should call requestService.post with correct parameters', () => {
-      // arrange
-      const projectId = 123;
-      storageService.getUser.and.returnValue({ projectId });
-      const todoItem: Partial<TodoItem> = {
-        identifier: 'test-todo'
-      };
-
-      // act
-      service.markTodoItemAsDone(todoItem);
-
-      // assert
-      expect(requestService.post).toHaveBeenCalledWith({
-        endPoint: api.post.todoItem,
-        data: {
-          ...todoItem,
-          project_id: projectId,
-          is_done: true
-        }
-      });
+      expect(mockMutate).toHaveBeenCalledTimes(1);
+      const [, variables] = mockMutate.calls.mostRecent().args;
+      expect(variables.identifier).toBe('test-identifier');
+      expect(variables.id).toBe('456');
     });
   });
 });

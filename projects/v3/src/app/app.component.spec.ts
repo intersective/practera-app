@@ -106,7 +106,7 @@ describe('AppComponent', () => {
 
   describe('initializeApp()', () => {
     it('should check version on Production mode', fakeAsync(() => {
-      environment.production = true;
+      (environment as any).production = true;
       TestBed.createComponent(AppComponent);
       tick();
       expect(platformSpy.ready).toHaveBeenCalled();

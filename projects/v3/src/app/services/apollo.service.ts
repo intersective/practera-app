@@ -185,7 +185,7 @@ export class ApolloService {
     success: boolean;
     message: string;
   }> {
-    if (environment.production !== true) {
+    if ((environment.production as any) !== true) {
       return of(null);
     }
 

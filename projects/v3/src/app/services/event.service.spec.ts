@@ -6,11 +6,13 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { TestUtils } from '@testingv3/utils';
 import { BrowserStorageService } from '@v3/services/storage.service';
+import { ApolloService } from '@v3/services/apollo.service';
 import dayjs from 'dayjs';
 
 describe('EventService', () => {
   let service: EventService;
   let requestSpy: jasmine.SpyObj<RequestService>;
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let utils: UtilsService;
   const testUtils = new TestUtils();
@@ -28,6 +30,10 @@ describe('EventService', () => {
           useValue: jasmine.createSpyObj('RequestService', ['get', 'delete', 'post', 'apiResponseFormatError'])
         },
         {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate'])
+        },
+        {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', ['modal'])
         },
@@ -43,6 +49,7 @@ describe('EventService', () => {
     });
     service = TestBed.inject(EventService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     utils = TestBed.inject(UtilsService);
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
   });
@@ -379,22 +386,28 @@ describe('EventService', () => {
     });
   });
 
-  it('should pass correct parameter to bookEvent()', () => {
-    requestSpy.post.and.returnValue(of({}));
-    service.bookEvent(mockEvent).subscribe();
-    expect(requestSpy.post.calls.first().args[0].data).toEqual({
-      event_id: mockEvent.id,
-      delete_previous: mockEvent.singleBooking
+  describe('bookEvent()', () => {
+    it('calls apolloService.graphQLMutate with the bookEvent mutation', () => {
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { bookEvent: { success: true } } }));
+      service.bookEvent(mockEvent).subscribe();
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalledTimes(1);
+      const [mutation, variables] = apolloSpy.graphQLMutate.calls.mostRecent().args;
+      expect(mutation).toContain('bookEvent');
+      expect(variables).toEqual({
+        eventId: mockEvent.id,
+        deletePrevious: mockEvent.singleBooking ?? false,
+      });
     });
   });
 
-  it('should pass correct parameter to cancelEvent()', () => {
-    requestSpy.delete.and.returnValue(of({}));
-    service.cancelEvent(mockEvent).subscribe();
-    expect(requestSpy.delete.calls.first().args[1]).toEqual({
-      params: {
-        event_id: mockEvent.id
-      }
+  describe('cancelEvent()', () => {
+    it('calls apolloService.graphQLMutate with the cancelEvent mutation', () => {
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { cancelEvent: { success: true } } }));
+      service.cancelEvent(mockEvent).subscribe();
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalledTimes(1);
+      const [mutation, variables] = apolloSpy.graphQLMutate.calls.mostRecent().args;
+      expect(mutation).toContain('cancelEvent');
+      expect(variables).toEqual({ eventId: mockEvent.id });
     });
   });
 

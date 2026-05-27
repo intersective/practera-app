@@ -156,7 +156,7 @@ export class SharedService {
   }
 
   private _ipAPI(): Observable<any> {
-    if (environment.production !== true) {
+    if ((environment.production as any) !== true) {
       // mock data for development mode
       return of({
         ip: '127.0.0.1',

@@ -4,7 +4,7 @@ import { of, throwError } from 'rxjs';
 
 import { SupportPopupComponent } from './support-popup.component';
 import { HubspotService } from '@v3/services/hubspot.service';
-import { UppyUploaderService } from '@v3/services/uppy-uploader.service';
+import { UppyUploaderService } from '@v3/components/uppy-uploader/uppy-uploader.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
@@ -111,7 +111,7 @@ describe('SupportPopupComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000
-      };
+      } as any;
 
       const result = component.isPristine();
 
@@ -200,7 +200,7 @@ describe('SupportPopupComponent', () => {
         extension: 'jpg',
         type: 'image/jpeg',
         size: 1000,
-      };
+      } as any;
       component.removeSelectedFile();
       flushMicrotasks();
 
@@ -228,7 +228,7 @@ describe('SupportPopupComponent', () => {
       flushMicrotasks();
 
       expect(uppyUploaderSpy.open).toHaveBeenCalledWith('any');
-      expect(component.selectedFile).toEqual(mockFile);
+      expect(component.selectedFile).toEqual(mockFile as any);
     }));
 
     it('should not set selectedFile when uppy modal is dismissed without data', fakeAsync(() => {

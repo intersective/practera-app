@@ -17,7 +17,7 @@ class PusherLib extends Pusher {
   connection;
 
   constructor() {
-    super('TESTAPIKEY');
+    super('TESTAPIKEY', { cluster: 'mt1' });
 
     this.connection = {
       state: 'test',
@@ -420,6 +420,68 @@ describe('PusherService', async () => {
       const data = { channelUuid: 'ch-1', uuid: 'msg-1', message: 'hi', file: '', isSender: true, created: '', senderUuid: '', senderName: '', senderRole: '', senderAvatar: '', sentAt: '' };
       service.triggerEditMessage('test-channel', data);
       expect(mockSubscription.trigger).toHaveBeenCalledWith('client-chat-edit-message', data);
+    });
+  });
+
+  describe('normaliseTemplateValue() (private, tested via resolveUseTLS)', () => {
+    it('returns empty string for unsubstituted template placeholders like <FOO>', () => {
+      // normaliseTemplateValue is called by resolveUseTLS when pusherUseTLS is a placeholder
+      const originalUseTLS = environment.pusherUseTLS;
+      (environment as any).pusherUseTLS = '<CUSTOMPLAIN_PUSHERUSETLS>';
+      // resolveUseTLS will normalise the placeholder to '' and default to TLS=true
+      const useTLS: boolean = service['resolveUseTLS']();
+      expect(useTLS).toBe(true); // placeholder → empty → default true
+      (environment as any).pusherUseTLS = originalUseTLS;
+    });
+
+    it('returns false when pusherUseTLS is explicitly set to "false"', () => {
+      const originalUseTLS = environment.pusherUseTLS;
+      (environment as any).pusherUseTLS = 'false';
+      const useTLS: boolean = service['resolveUseTLS']();
+      expect(useTLS).toBe(false);
+      (environment as any).pusherUseTLS = originalUseTLS;
+    });
+
+    it('returns true when pusherUseTLS is set to "true"', () => {
+      const originalUseTLS = environment.pusherUseTLS;
+      (environment as any).pusherUseTLS = 'true';
+      const useTLS: boolean = service['resolveUseTLS']();
+      expect(useTLS).toBe(true);
+      (environment as any).pusherUseTLS = originalUseTLS;
+    });
+  });
+
+  describe('resolvePusherPort() (private)', () => {
+    it('returns undefined when pusherPort is not configured', () => {
+      const originalPort = environment.pusherPort;
+      (environment as any).pusherPort = '';
+      const port = service['resolvePusherPort'](true);
+      expect(port).toBeUndefined();
+      (environment as any).pusherPort = originalPort;
+    });
+
+    it('returns undefined when pusherPort is an unsubstituted template', () => {
+      const originalPort = environment.pusherPort;
+      (environment as any).pusherPort = '<CUSTOMPLAIN_PUSHERPORT>';
+      const port = service['resolvePusherPort'](true);
+      expect(port).toBeUndefined();
+      (environment as any).pusherPort = originalPort;
+    });
+
+    it('returns the numeric port when pusherPort is a valid number string', () => {
+      const originalPort = environment.pusherPort;
+      (environment as any).pusherPort = '6001';
+      const port = service['resolvePusherPort'](true);
+      expect(port).toBe(6001);
+      (environment as any).pusherPort = originalPort;
+    });
+
+    it('returns undefined when pusherPort is not a valid integer', () => {
+      const originalPort = environment.pusherPort;
+      (environment as any).pusherPort = 'not-a-number';
+      const port = service['resolvePusherPort'](true);
+      expect(port).toBeUndefined();
+      (environment as any).pusherPort = originalPort;
     });
   });
 });

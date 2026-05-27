@@ -1,117 +1,130 @@
 import { TestBed } from '@angular/core/testing';
 import { TopicService } from './topic.service';
 import { of } from 'rxjs';
-import { RequestService } from 'request';
-import { UtilsService } from '@v3/services/utils.service';
-import { TestUtils } from '@testingv3/utils';
+import { ApolloService } from '@v3/services/apollo.service';
+import { DomSanitizer } from '@angular/platform-browser';
 
 describe('TopicService', () => {
   let service: TopicService;
-  let requestSpy: jasmine.SpyObj<RequestService>;
-  let utils: UtilsService;
-  const testUtils = new TestUtils();
+  let apolloSpy: jasmine.SpyObj<ApolloService>;
+
+  const mockSanitizer = {
+    bypassSecurityTrustHtml: (html: string) => html,
+  };
+
+  const mockTopicResponse = {
+    data: {
+      topics: [
+        {
+          id: 1,
+          title: 'Test Topic',
+          content: '<p>Content</p>',
+          videolink: 'https://youtube.com/watch?v=test',
+          files: [{ name: 'doc.pdf', url: 'https://example.com/doc.pdf' }],
+          audio: { link: 'https://audio.example.com/clip.mp3', language: 'en', status: 'ready' },
+        }
+      ]
+    }
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         TopicService,
         {
-          provide: UtilsService,
-          useClass: TestUtils,
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLMutate'])
         },
         {
-          provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post', 'apiResponseFormatError'])
-        }
+          provide: DomSanitizer,
+          useValue: mockSanitizer,
+        },
       ]
     });
     service = TestBed.inject(TopicService);
-    requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
-    utils = TestBed.inject(UtilsService);
+    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('when testing getTopic()', () => {
-    it('should get correct data #1', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: [{
-          Story: {
-            id: 1,
-            title: 'story',
-            has_comments: true
-          },
-          Filestore: [{
-            slug: 'abc',
-            name: 'file'
-          }]
-        }]
-      }));
+  describe('getTopic()', () => {
+    it('calls apolloService.graphQLFetch with the topics query', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(mockTopicResponse as any));
       service.getTopic(1);
-      service.topic$.subscribe(res => {
-        expect(res).toEqual({
-          id: 1,
-          title: 'story',
-          files: [{
-            url: 'abc',
-            name: 'file'
-          }],
-          content: '',
-          videolink: ''
-        });
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalledTimes(1);
+      const [query, options] = apolloSpy.graphQLFetch.calls.mostRecent().args;
+      expect(query).toContain('topics');
+      expect(options.variables).toEqual({ activityId: 1 });
+    });
+
+    it('normalises the topic and emits via topic$', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(of(mockTopicResponse as any));
+      service.getTopic(1);
+      service.topic$.subscribe(topic => {
+        if (topic) {
+          expect(topic.id).toBe(1);
+          expect(topic.title).toBe('Test Topic');
+          expect(topic.files).toEqual([{ url: 'https://example.com/doc.pdf', name: 'doc.pdf' }]);
+          done();
+        }
       });
     });
-    it('should get correct data #2', () => {
-      requestSpy.get.and.returnValue(of({
-        success: true,
-        data: [{
-          Story: {
-            id: 1,
-            title: 'story',
-            has_comments: true,
-            content: 'content',
-            videolink: 'video'
-          },
-          Filestore: [{
-            slug: 'abc',
-            name: 'file'
-          }]
-        }]
-      }));
+
+    it('sets audio when audio link is present', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(of(mockTopicResponse as any));
       service.getTopic(1);
-      service.topic$.subscribe(res => {
-        expect(res.videolink).toEqual('video');
+      service.topic$.subscribe(topic => {
+        if (topic) {
+          expect(topic.audio?.link).toBe('https://audio.example.com/clip.mp3');
+          expect(topic.audio?.language).toBe('en');
+          done();
+        }
       });
     });
-    describe('should throw error', () => {
-      afterEach(() => {
-        service.getTopic(1);
-        expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-      });
-      it('Story format error', () => {
-        requestSpy.get.and.returnValue(of({
-          success: true,
-          data: [{}]
-        }));
-      });
-      it('Story.Story format error', () => {
-        requestSpy.get.and.returnValue(of({
-          success: true,
-          data: [{
-            Story: {},
-            Filestore: {}
-          }]
-        }));
+
+    it('does not set audio when audio link is absent', (done) => {
+      const noAudioResponse = {
+        data: {
+          topics: [
+            { id: 2, title: 'No Audio', content: '', videolink: '', files: [], audio: null }
+          ]
+        }
+      };
+      apolloSpy.graphQLFetch.and.returnValue(of(noAudioResponse as any));
+      service.getTopic(2);
+      service.topic$.subscribe(topic => {
+        if (topic) {
+          expect(topic.audio).toBeUndefined();
+          done();
+        }
       });
     });
   });
 
-  it('when testing updateTopicProgress(), it should post data', () => {
-    requestSpy.post.and.returnValue(of(''));
-    service.updateTopicProgress(1, '').subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
+  describe('updateTopicProgress()', () => {
+    it('calls apolloService.graphQLMutate with the updateProgress mutation', () => {
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { updateProgress: { success: true } } }));
+      service.updateTopicProgress(1, 'completed').subscribe();
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalledTimes(1);
+      const [mutation, variables] = apolloSpy.graphQLMutate.calls.mostRecent().args;
+      expect(mutation).toContain('updateProgress');
+      expect(variables).toEqual({ model: 'topic', modelId: 1, state: 'completed' });
+    });
+  });
+
+  describe('clearTopic()', () => {
+    it('emits null on topic$', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(of(mockTopicResponse as any));
+      service.getTopic(1);
+      setTimeout(() => {
+        service.clearTopic();
+        service.topic$.subscribe(topic => {
+          expect(topic).toBeNull();
+          done();
+        });
+      }, 10);
+    });
   });
 });

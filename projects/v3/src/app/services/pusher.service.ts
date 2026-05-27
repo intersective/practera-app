@@ -176,7 +176,9 @@ export class PusherService {
 
     try {
       const useTLS = this.resolveUseTLS();
-      const config: Options = {
+      // cluster is required by the pusher-js Options type but is conditionally set below;
+      // using a type assertion here so we can assign it (or wsHost) in the branch below.
+      const config = {
         forceTLS: useTLS,
         authEndpoint: this.apiurl + api.pusherAuth,
         auth: {
@@ -187,7 +189,7 @@ export class PusherService {
             'timelineid': timelineId,
           },
         },
-      };
+      } as Options;
 
       // If a custom host (e.g. self-hosted Soketi) is configured, use that;
       // otherwise fall back to Pusher Cloud's cluster-based routing.

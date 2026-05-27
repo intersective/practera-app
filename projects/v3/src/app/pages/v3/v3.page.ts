@@ -207,7 +207,7 @@ export class V3Page implements OnInit, OnDestroy {
     });
 
     this.homeService.experience$.subscribe(expInfo => {
-      if (expInfo?.locale && environment.production === true) {
+      if (expInfo?.locale && (environment.production as any) === true) {
         this.utils.moveToNewLocale(expInfo?.locale);
       }
     });
