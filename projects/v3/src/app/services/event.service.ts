@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
+import { ApolloService } from './apollo.service';
 
 /**
  * @name api
@@ -83,7 +84,8 @@ export class EventService {
     private request: RequestService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
-    private demo: DemoService
+    private demo: DemoService,
+    private apolloService: ApolloService,
   ) {}
 
   /**
@@ -421,23 +423,26 @@ export class EventService {
     return multiDayEvents;
   }
 
-  bookEvent(event: Event) {
-    return this.request.post(
-      {
-        endPoint: api.post.book,
-        data: {
-          event_id: event.id,
-          delete_previous: event.singleBooking
+  bookEvent(event: Event): Observable<any> {
+    return this.apolloService.graphQLMutate(
+      `mutation bookEvent($eventId: ID!, $deletePrevious: Boolean) {
+        bookEvent(eventId: $eventId, deletePrevious: $deletePrevious) {
+          success
         }
-      });
+      }`,
+      { eventId: event.id, deletePrevious: event.singleBooking ?? false }
+    );
   }
 
-  cancelEvent(event: Event) {
-    return this.request.delete(api.delete.cancel, {
-      params: {
-        event_id: event.id
-      }
-    });
+  cancelEvent(event: Event): Observable<any> {
+    return this.apolloService.graphQLMutate(
+      `mutation cancelEvent($eventId: ID!) {
+        cancelEvent(eventId: $eventId) {
+          success
+        }
+      }`,
+      { eventId: event.id }
+    );
   }
 
 }

@@ -1049,14 +1049,18 @@ export class NotificationsService {
    * @param {Obj} todoItem
    */
   markTodoItemAsDone(match: { identifier?: string; id?: number }) {
-    return this.request.post({
-      endPoint: api.post.todoItem,
-      data: {
-        ...match,
-        project_id: this.storage.getUser().projectId,
-        is_done: true,
-      },
-    });
+    return this.apolloService.graphQLMutate(
+      `mutation updateTodoItem($id: ID, $identifier: String, $isDone: Boolean!) {
+        updateTodoItem(id: $id, identifier: $identifier, isDone: $isDone) {
+          success
+        }
+      }`,
+      {
+        id: match.id ? String(match.id) : null,
+        identifier: match.identifier ?? null,
+        isDone: true,
+      }
+    );
   }
 
   async trackInfo() {

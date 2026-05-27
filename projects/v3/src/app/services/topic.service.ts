@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { RequestService } from 'request';
-import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
-import { ApiResponse } from '@v3/app/models/api.model';
+import { ApolloService } from './apollo.service';
 
 export interface Topic {
   id: number;
@@ -21,63 +19,9 @@ export interface Topic {
   };
 }
 
-export interface TopicData {
-  Filestore: Array<{
-    url?: string;
-    name: string;
-    slug?: string;
-  }>;
-  Story: Story;
-}
-
-export interface Story {
-  id: number;
-  program_id: number;
-  title: string;
-  summary: string | null;
-  content: string;
-  videolink: string;
-  created: string;
-  modified: string;
-  story_type: string;
-  feature_image_id: number | null;
-  author_id: number;
-  has_comments: boolean;
-  tags: string;
-  slug: string | null;
-  collaboration_id: number | null;
-  comments: number;
-  experience_id: number;
-  assessment_id: number | null;
-  visibility: number;
-  view_time: string | null;
-  parent_id: number | null;
-  project_id: number;
-  meta?: {
-    audio_content?: {
-      language: string;
-      status: string;
-      audio_url: string;
-    }
-  };
-  deleted: boolean;
-  deleted_date: string | null;
-  audiolink: string | null;
-}
-
-const api = {
-  get: {
-    stories: 'api/stories.json',
-  },
-  post: {
-    updateProgress: 'api/v2/motivations/progress/create.json',
-  }
-};
-
 @Injectable({
   providedIn: 'root'
 })
-
 export class TopicService {
   private _topic$ = new BehaviorSubject<Topic>(null);
   topic$ = this._topic$.asObservable();
@@ -85,10 +29,9 @@ export class TopicService {
   topic: Topic;
 
   constructor(
-    private request: RequestService,
-    private utils: UtilsService,
     public sanitizer: DomSanitizer,
-    private demo: DemoService
+    private demo: DemoService,
+    private apolloService: ApolloService,
   ) {
     this.topic$.subscribe(res => this.topic = res);
   }
@@ -105,80 +48,73 @@ export class TopicService {
       return this.demo.topic().subscribe(res => this._normaliseTopic(res.data));
     }
 
-    return this.request.get(api.get.stories, {
-      params: { model_id: id }
-    }).pipe(map((response: ApiResponse<TopicData[]>) => {
-      if (response.success && response.data) {
-        return this._normaliseTopic(response.data);
-      }
-    })).subscribe();
+    return this.apolloService.graphQLFetch(
+      `query topics($activityId: ID!) {
+        topics(activityId: $activityId) {
+          id
+          title
+          content
+          videolink
+          files { name url }
+          audio { link language status }
+        }
+      }`,
+      { variables: { activityId: id } }
+    ).pipe(
+      map((response: any) => {
+        const topics: Topic[] = response?.data?.topics ?? [];
+        const topic = topics.find(t => t.id === id) ?? topics[0];
+        if (topic) {
+          this._setTopic(topic);
+        }
+        return topic;
+      })
+    ).subscribe();
   }
 
-  private _normaliseTopic(data: TopicData[]) {
-    // In API response, 'data' is an array of topics
-    // (since we passed topic id, it will return only one topic, but still in array format).
-    // That's why we use data[0]
-    if (!Array.isArray(data) || !this.utils.has(data[0], 'Story') || !this.utils.has(data[0], 'Filestore')) {
-      return this.request.apiResponseFormatError('Story format error');
-    }
-
+  private _setTopic(raw: any) {
     const topic: Topic = {
-      id: 0,
-      title: '',
-      content: '',
-      videolink: '',
-      files: []
+      id: raw.id,
+      title: raw.title,
+      content: raw.content ? this._processContent(raw.content) : '',
+      videolink: raw.videolink ?? '',
+      files: (raw.files ?? []).map((f: any) => ({ url: f.url, name: f.name })),
+      audio: raw.audio?.link ? {
+        link: raw.audio.link,
+        language: raw.audio.language ?? null,
+        status: raw.audio.status ?? undefined,
+      } : undefined,
     };
-    const thisTopic = data[0];
-    if (!this.utils.has(thisTopic.Story, 'id') ||
-      !this.utils.has(thisTopic.Story, 'title')) {
-      return this.request.apiResponseFormatError('Story.Story format error');
-    }
-    topic.id = thisTopic.Story.id;
-    topic.title = thisTopic.Story.title;
-    // if API return empty string ("") to content, utils.has (lodash) take it as a value and this if statement works and set json to content
-    // to privent that we checking topic content is not equels to empty string.
-    if (this.utils.has(thisTopic.Story, 'content') && !this.utils.isEmpty(thisTopic.Story.content)) {
-      thisTopic.Story.content = thisTopic.Story.content.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
-      thisTopic.Story.content = thisTopic.Story.content.replace(/(<iframe)/g, '<div class="video-embed"><iframe').replace(/(<\/iframe>)/g, '</iframe></div>');
-      thisTopic.Story.content = thisTopic.Story.content.replace(/(<video)/g, '<video  class="video-embed"');
-      topic.content = this.sanitizer.bypassSecurityTrustHtml(thisTopic.Story.content);
-    }
-    if (this.utils.has(thisTopic.Story, 'videolink')) {
-      topic.videolink = thisTopic.Story.videolink;
-    }
-
-    if (thisTopic.Story?.audiolink) {
-      topic.audio = {
-        link: thisTopic.Story.audiolink,
-        language: thisTopic.Story.meta?.audio_content?.language || null,
-        status: thisTopic.Story.meta?.audio_content?.status || undefined
-      };
-    }
-
-    topic.files = thisTopic.Filestore.map(item => ({
-      url: item.slug || item.url, name: item.name
-    }));
     this._topic$.next(topic);
     return topic;
   }
 
-  updateTopicProgress(id, state): Observable<ApiResponse<any>> {
+  private _normaliseTopic(data: any[]) {
+    if (!Array.isArray(data) || !data[0]) return null;
+    return this._setTopic(data[0]);
+  }
+
+  private _processContent(content: string): any {
+    let processed = content.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
+    processed = processed.replace(/(<iframe)/g, '<div class="video-embed"><iframe').replace(/(<\/iframe>)/g, '</iframe></div>');
+    processed = processed.replace(/(<video)/g, '<video  class="video-embed"');
+    return this.sanitizer.bypassSecurityTrustHtml(processed);
+  }
+
+  updateTopicProgress(id: number, state: string): Observable<any> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
       console.log('mark topic as ', state);
-      return this.demo.normalResponse('observable') as Observable<any>;
+      return new Observable(observer => { observer.next({ success: true }); observer.complete(); });
     }
-    const postData = {
-      model: 'topic',
-      model_id: +id,
-      state: state
-    };
 
-    return this.request.post({
-      endPoint: api.post.updateProgress,
-      data: postData,
-    });
+    return this.apolloService.graphQLMutate(
+      `mutation updateProgress($model: String!, $modelId: ID!, $state: String!) {
+        updateProgress(model: $model, modelId: $modelId, state: $state) {
+          success
+        }
+      }`,
+      { model: 'topic', modelId: id, state }
+    );
   }
-
 }

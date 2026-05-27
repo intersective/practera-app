@@ -9,20 +9,9 @@ import { ApolloService } from './apollo.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
-import { RequestService } from 'request';
 import { FileInput, FileResponse } from '../components/types/assessment';
 import { Choice, Question } from '@v3/components/types/assessment';
 
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-  post: {
-    resubmit: 'api/assessment_resubmit.json'
-  }
-};
 export interface DueAssessment {
   id: number;
   activityId: number;
@@ -112,7 +101,6 @@ export class AssessmentService {
     public sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private demo: DemoService,
-    private request: RequestService
   ) {
   }
 
@@ -890,13 +878,14 @@ export class AssessmentService {
   }
 
   resubmitAssessment({ assessment_id, submission_id }): Observable<any> {
-    return this.request.post({
-      endPoint: api.post.resubmit,
-      data: {
-        assessment_id,
-        submission_id,
-      },
-    });
+    return this.apolloService.graphQLMutate(
+      `mutation resubmitAssessment($assessmentId: ID!, $submissionId: ID!) {
+        resubmitAssessment(assessmentId: $assessmentId, submissionId: $submissionId) {
+          success
+        }
+      }`,
+      { assessmentId: assessment_id, submissionId: submission_id }
+    );
   }
 
   dueStatusAssessments(): Observable<DueAssessment[]> {

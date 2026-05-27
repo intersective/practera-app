@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
-import { RequestService } from 'request';
-
-const api = {
-  post: {
-    reviewRating: 'api/v2/observations/review_rating/create.json',
-  }
-};
+import { Observable } from 'rxjs';
+import { ApolloService } from './apollo.service';
 
 export interface ReviewRating {
   assessment_review_id: number;
@@ -20,21 +15,32 @@ export interface ReviewRating {
 export class ReviewRatingService {
 
   constructor(
-    private request: RequestService,
+    private apolloService: ApolloService,
   ) { }
 
-  submitRating(data: ReviewRating) {
-    const postData = {
-      assessment_review_id: data.assessment_review_id,
-      rating: data.rating,
-      comment: data.comment,
-      tags: data.tags
-    };
-
-    return this.request.post(
+  submitRating(data: ReviewRating): Observable<any> {
+    return this.apolloService.graphQLMutate(
+      `mutation submitReviewRating(
+        $assessmentReviewId: ID!,
+        $rating: Float!,
+        $comment: String,
+        $tags: [String]
+      ) {
+        submitReviewRating(
+          assessmentReviewId: $assessmentReviewId,
+          rating: $rating,
+          comment: $comment,
+          tags: $tags
+        ) {
+          success
+        }
+      }`,
       {
-        endPoint: api.post.reviewRating,
-        data: postData
-      });
+        assessmentReviewId: data.assessment_review_id,
+        rating: data.rating,
+        comment: data.comment,
+        tags: data.tags,
+      }
+    );
   }
 }
