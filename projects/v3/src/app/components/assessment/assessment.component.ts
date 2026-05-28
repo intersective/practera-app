@@ -19,9 +19,11 @@ import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
+import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
+import { ModalController } from '@ionic/angular';
 
-const MIN_SCROLLING_PAGES = 8; // minimum number of pages to show pagination scrolling
-const MAX_QUESTIONS_PER_PAGE = 8; // maximum number of questions to display per paginated view (controls pagination granularity)
+const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
+const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per paginated view (controls pagination granularity)
 
 /**
  * Assessment Component with optional pagination feature
@@ -151,6 +153,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private sharedService: SharedService,
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
+    private modalController: ModalController,
     private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
@@ -1027,6 +1030,21 @@ Best regards`;
       this.utils.scrollToElement(element);
       this.flashBlink(element);
     }
+  }
+
+  /**
+   * open the project brief modal for the submitter's team
+   */
+  async showProjectBrief(): Promise<void> {
+    if (!this.review?.projectBrief) {
+      return;
+    }
+    const modal = await this.modalController.create({
+      component: ProjectBriefModalComponent,
+      componentProps: { projectBrief: this.review.projectBrief },
+      cssClass: 'project-brief-modal',
+    });
+    await modal.present();
   }
 
   /**
