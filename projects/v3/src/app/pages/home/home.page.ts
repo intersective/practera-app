@@ -462,7 +462,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     window.open(url, '_blank');
   }
 
-  achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
+  achievePopup(achievement: Achievement, keyboardEvent?: Event): void {
     if (
       keyboardEvent instanceof KeyboardEvent &&
       (keyboardEvent.code === "Space" || keyboardEvent.code === "Enter")
