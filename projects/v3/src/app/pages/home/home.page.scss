@@ -65,6 +65,42 @@ ion-content.scrollable-desktop {
   padding: 0 18px;
 }
 
+.exp-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  h2 {
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+.project-brief-btn {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  font-size: 0.875rem;
+  text-transform: none;
+  letter-spacing: normal;
+
+  ion-icon {
+    font-size: 1rem;
+    margin-right: 4px;
+  }
+}
+
+.button-group-no-gap {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  flex-basis: 100%;
+
+  ion-button {
+    margin: 0;
+  }
+}
+
 .total-points {
   ion-label {
     margin: 17px 0px;
@@ -74,6 +110,31 @@ ion-content.scrollable-desktop {
 .focusable:focus {
   border: 1px solid var(--ion-color-primary);
   display: block;
+}
+
+.activity-search-container {
+  padding: 8px 0;
+  margin-bottom: 8px;
+
+  ion-searchbar {
+    --background: var(--ion-color-light);
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 0;
+
+    &::part(clear-button) {
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .search-results-info {
+    padding: 4px 16px;
+    text-align: center;
+
+    ion-text {
+      font-size: 0.875rem;
+    }
+  }
 }
 
 

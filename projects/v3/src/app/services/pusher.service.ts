@@ -28,6 +28,11 @@ export interface SendMessageParam {
   sentAt: string;
 }
 
+export interface DeleteMessageTriggerParam {
+  channelUuid: string;
+  uuid: string;
+}
+
 class PusherChannel {
   name: string;
   subscription?: Channel;
@@ -349,6 +354,28 @@ export class PusherService {
       return;
     }
     channel.subscription.trigger('client-chat-new-message', data);
+  }
+
+  /**
+   * trigger a client event to notify other members that a message was deleted.
+   */
+  triggerDeleteMessage(channelName: string, data: DeleteMessageTriggerParam) {
+    const channel = this.channels.chat.find(c => c.name === channelName);
+    if (!channel) {
+      return;
+    }
+    channel.subscription.trigger('client-chat-delete-message', data);
+  }
+
+  /**
+   * trigger a client event to notify other members that a message was edited.
+   */
+  triggerEditMessage(channelName: string, data: SendMessageParam) {
+    const channel = this.channels.chat.find(c => c.name === channelName);
+    if (!channel) {
+      return;
+    }
+    channel.subscription.trigger('client-chat-edit-message', data);
   }
 
 }

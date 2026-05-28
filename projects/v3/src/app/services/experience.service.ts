@@ -90,6 +90,7 @@ export interface Experience {
   truncateDescription: boolean;
   featureToggle: {
     pulseCheckIndicator: boolean;
+    showProjectHub: boolean;
   };
   progress: number;
   config: {
@@ -191,6 +192,7 @@ export class ExperienceService {
           truncateDescription
           featureToggle {
             pulseCheckIndicator
+            showProjectHub
           }
         }
       }`
