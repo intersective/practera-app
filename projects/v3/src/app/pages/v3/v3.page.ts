@@ -100,7 +100,7 @@ export class V3Page implements OnInit, OnDestroy {
   ) {
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   ionViewDidEnter() {
     let menuEnabled = true;
     let splitpaneEnabled = false;

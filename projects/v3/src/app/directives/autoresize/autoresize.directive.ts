@@ -9,8 +9,8 @@ export class AutoresizeDirective implements OnInit {
   // tslint:disable-next-line:no-input-rename
   @Input('appAutoresize') maxHeight;
 
-  @HostListener('input', ['$event.target'])
-  onInput(textArea: HTMLTextAreaElement): void {
+  @HostListener('input')
+  onInput(): void {
     this.adjust();
   }
 

@@ -15,6 +15,7 @@ import { SharedService } from '@v3/services/shared.service';
  * AuthDirectLoginComponent.
  */
 @Component({
+  standalone: false,
   selector: 'app-auth-jwt-login',
   template: `
     <ion-content color="light" class="ion-text-center">

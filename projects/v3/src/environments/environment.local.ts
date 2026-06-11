@@ -23,7 +23,7 @@ export const environment = {
   stackUuid: 'a1b2c3d4-e5f6-7890-local-app-stack',
   intercomAppId: ' ',
   uppyConfig: {
-    tusUrl: 'https://127.0.0.1:8000/uploads',
+    tusUrl: 'https://upload.practera.local/uploads/',
     uploadPreset: 'practera',
     restrictions: {
       minFileSize: undefined, // No minimum size

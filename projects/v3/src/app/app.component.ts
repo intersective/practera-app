@@ -19,6 +19,7 @@ import { takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
+  standalone: false,
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
