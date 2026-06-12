@@ -72,7 +72,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.saveAppState();
   }
 
-  @HostListener("window:beforeunload", ["$event"])
+  @HostListener("window:beforeunload")
   saveAppState(): void {
     if (this.lastVisitedUrl) {
       this.storage.lastVisited("url", this.lastVisitedUrl);
