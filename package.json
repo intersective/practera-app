@@ -26,6 +26,7 @@
     "postdeploy": "npm run generate-version",
     "test": "ng test v3 --no-watch",
     "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=src/karma.conf.sonarci.js",
+    "check": "npm run lint && npm run test",
     "lint": "ng lint v3",
     "lint-fix": "ng lint --fix",
     "lintv3": "ng lint v3",
