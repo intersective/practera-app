@@ -448,13 +448,14 @@
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
       <!-- team 360 progress: show how many members have been reviewed -->
-      <div class="team360-progress" *ngIf="team360MinPages > 0 && doAssessment">
-        <span i18n>{{ team360PagesVisited }} of {{ team360MinPages }} member{{ team360MinPages > 1 ? 's' : '' }} reviewed</span>
+      <div class="team360-progress" *ngIf="team360MemberCount > 0 && doAssessment">
+        <span i18n>{{ team360PagesVisited }} of {{ team360MemberCount }} member{{ team360MemberCount > 1 ? 's' : '' }} reviewed</span>
       </div>
 
       <!-- PAGINATION MOVED BACK INTO BOTTOM BAR -->
       <div class="pagination-container"
         [class.few-pages]="pageCount < manyPages"
+        [class.nav-only]="!showPageIndicators"
         *ngIf="isPaginationEnabled && pageCount > 1">
         <ion-button fill="clear"
           class="nav-button prev-button"
@@ -464,37 +465,8 @@
           <span>Prev</span>
         </ion-button>
 
-        <!-- team360: one dot per visible section (self-reflection + one per assigned teammate) -->
-        <div class="page-indicators team360-indicators"
-          *ngIf="isTeam360"
-          #pageIndicatorsContainer>
-          <ng-container *ngFor="let section of team360VisibleSections; let i = index">
-            <div class="page-indicator"
-              [class.active]="team360ActiveSectionIndex === i"
-              [class.completed]="isTeam360SectionComplete(i)"
-              [id]="'page-indicator-section-' + i"
-              (click)="goToSection(i)"
-              tabindex="0"
-              role="button"
-              [attr.aria-label]="i === 0 ? 'Self-reflection' : 'Teammate ' + i"
-              (keydown.enter)="goToSection(i)"
-              (keydown.space)="goToSection(i); $event.preventDefault()">
-
-              <div class="progress-ring">
-                <span class="page-number">{{ i + 1 }}</span>
-              </div>
-
-              <ion-icon *ngIf="isTeam360SectionComplete(i)"
-                name="checkmark-circle"
-                class="completion-icon completed">
-              </ion-icon>
-            </div>
-          </ng-container>
-        </div>
-
-        <!-- standard: numbered dots for non-team360 assessments -->
         <div class="page-indicators"
-          *ngIf="!isTeam360"
+          *ngIf="showPageIndicators"
           [class.many-pages]="pageCount > manyPages"
           #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
@@ -524,7 +496,7 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= pageCount - 1">
+          [disabled]="pageIndex >= maxAccessiblePageIndex">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
@@ -541,7 +513,8 @@
         && isPaginationEnabled
         && pageCount > 1">
       <div class="pagination-container"
-        [class.few-pages]="pageCount < manyPages">
+        [class.few-pages]="pageCount < manyPages"
+        [class.nav-only]="!showPageIndicators">
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
@@ -550,37 +523,8 @@
           <span>Prev</span>
         </ion-button>
 
-        <!-- team360: one dot per visible section (self-reflection + one per assigned teammate) -->
-        <div class="page-indicators team360-indicators"
-          *ngIf="isTeam360"
-          #pageIndicatorsContainer>
-          <ng-container *ngFor="let section of team360VisibleSections; let i = index">
-            <div class="page-indicator"
-              [class.active]="team360ActiveSectionIndex === i"
-              [class.completed]="isTeam360SectionComplete(i)"
-              [id]="'page-indicator-section-' + i"
-              (click)="goToSection(i)"
-              tabindex="0"
-              role="button"
-              [attr.aria-label]="i === 0 ? 'Self-reflection' : 'Teammate ' + i"
-              (keydown.enter)="goToSection(i)"
-              (keydown.space)="goToSection(i); $event.preventDefault()">
-
-              <div class="progress-ring">
-                <span class="page-number">{{ i + 1 }}</span>
-              </div>
-
-              <ion-icon *ngIf="isTeam360SectionComplete(i)"
-                name="checkmark-circle"
-                class="completion-icon completed">
-              </ion-icon>
-            </div>
-          </ng-container>
-        </div>
-
-        <!-- standard: numbered dots for non-team360 assessments -->
         <div class="page-indicators"
-          *ngIf="!isTeam360"
+          *ngIf="showPageIndicators"
           [class.many-pages]="pageCount > manyPages"
           #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
@@ -610,7 +554,7 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= pageCount - 1">
+          [disabled]="pageIndex >= maxAccessiblePageIndex">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
