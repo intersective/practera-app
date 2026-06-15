@@ -38,6 +38,9 @@ export const environment = {
 ### When `assessmentPagination: true` (Default)
 - assessment questions are split across multiple pages (10 questions per page)
 - pagination controls (Prev/Next buttons and page indicators) are visible in the bottom action bar
+- Team360 assessments are the exception: they show only Prev/Next buttons, with no page numbers, dots, completion icons, or direct page-indicator navigation
+- Team360 forward navigation is capped at one self-reflection page plus the number of selected team members
+- Team360 assumes page 0 is self-reflection and each following accessible page maps to one team-member group
 - page indicator states depend on the current mode:
 
   **edit mode** (`doAssessment = true` or `isPendingReview = true`):
@@ -66,6 +69,7 @@ export const environment = {
 the feature toggle affects:
 
 1. **template rendering** — pagination UI is conditionally rendered based on `isPaginationEnabled`
+   - `showPageIndicators` keeps numbered page indicators available for non-Team360 assessments only
 2. **question display** — questions are either paginated or shown all at once via `pagedGroups` getter
 3. **navigation methods** — `prevPage()`, `nextPage()`, `goToPage()` are no-ops when pagination is disabled; each marks the destination page in `pageVisited[]`
 4. **page completion** — `pageRequiredCompletion[]` tracks whether all required questions on each page are answered; indicators are gated on `pageVisited[]` so unvisited pages always show neutral

@@ -231,6 +231,12 @@ ion-footer {
   &.few-pages {
     justify-content: center;
   }
+
+  &.nav-only {
+    justify-content: space-between;
+    min-width: 180px;
+    gap: 24px;
+  }
 }
 
 .nav-button {
