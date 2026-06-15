@@ -21,7 +21,7 @@ Activity Pages (Desktop/Mobile)
     ↓
 Assessment Component (Central Hub)
     ↓ (with Pagination enabled)
-Page Indicators ←→ Question Groups (Split into Pages) ←→ Navigation Controls
+Page Indicators (non-Team360) / Prev-Next Only (Team360) ←→ Question Groups (Split into Pages) ←→ Navigation Controls
     ↓
 Question Components (Text, File, Multiple Choice, etc.)
     ↓
@@ -33,11 +33,14 @@ When pagination is enabled (`environment.featureToggles.assessmentPagination = t
 
 ```
 1. Assessment loads → splitGroupsByQuestionCount()
-2. Groups divided into pages (≤8 questions per page)
-3. Page indicators show completion status
-4. Users navigate: Prev/Next buttons or click page indicators
-5. Form validation tracks completion per page
-6. Submit button integrates with pagination controls
+2. Groups divided into pages (≤10 questions per page)
+3. Non-Team360 page indicators show completion status
+4. Users navigate with Prev/Next buttons; non-Team360 users can also click page indicators
+5. Team360 assessments hide page numbers/dots and use Prev/Next-only pagination
+6. Team360 Next navigation stops after self-reflection plus the selected team-member count
+   - Team360 page 0 is self-reflection; each following accessible page maps to one team-member group
+7. Form validation tracks completion per page
+8. Submit button integrates with pagination controls
 ```
 
 ## Core Components
