@@ -17,6 +17,7 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
+import { ModalController } from '@ionic/angular';
 
 class Page {
   get savingMessage() {
@@ -101,6 +102,7 @@ describe('AssessmentComponent', () => {
   let shared: SharedService;
   let utils: UtilsService;
   let apolloSpy: jasmine.SpyObj<ApolloService>;
+  let modalSpy: jasmine.SpyObj<ModalController>;
 
   const mockQuestions = [
     {
@@ -237,6 +239,10 @@ describe('AssessmentComponent', () => {
           provide: Router,
           useClass: MockRouter,
         },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss']),
+        },
       ]
     }).compileComponents();
 
@@ -257,6 +263,7 @@ describe('AssessmentComponent', () => {
     apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     shared = TestBed.inject(SharedService);
     utils = TestBed.inject(UtilsService);
+    modalSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
 
     // initialise service calls
     /* assessmentSpy.getAssessment.and.returnValue(of({
@@ -272,6 +279,47 @@ describe('AssessmentComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('showProjectBrief()', () => {
+    it('should open project brief modal when review has projectBrief', async () => {
+      const mockProjectBrief = {
+        id: 'brief-1',
+        title: 'Test Brief',
+        description: 'Test Description',
+      };
+      component.review = {
+        id: 1,
+        answers: {},
+        status: 'pending review',
+        modified: '2024-01-01',
+        projectBrief: mockProjectBrief,
+      };
+      const mockModal = { present: jasmine.createSpy('present') };
+      modalSpy.create.and.returnValue(Promise.resolve(mockModal as any));
+
+      await component.showProjectBrief();
+
+      expect(modalSpy.create).toHaveBeenCalledWith({
+        component: jasmine.any(Function),
+        componentProps: { projectBrief: mockProjectBrief },
+        cssClass: 'project-brief-modal',
+      });
+      expect(mockModal.present).toHaveBeenCalled();
+    });
+
+    it('should not open modal when review has no projectBrief', async () => {
+      component.review = {
+        id: 1,
+        answers: {},
+        status: 'pending review',
+        modified: '2024-01-01',
+      };
+
+      await component.showProjectBrief();
+
+      expect(modalSpy.create).not.toHaveBeenCalled();
+    });
   });
 
   describe('ngOnChanges()', () => {
