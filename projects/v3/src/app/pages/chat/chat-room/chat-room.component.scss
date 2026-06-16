@@ -52,7 +52,33 @@ $message-body-size: 60%;
         text-align: center;
         margin-bottom: 8px;
       }
+      // message container wraps action buttons + message body
+      .message-container {
+        .action-container {
+          display: none;
 
+          ion-button {
+            --color: var(--ion-color-medium);
+
+            ion-icon {
+              color: var(--ion-color-medium);
+              font-size: 18px;
+            }
+
+            &:hover {
+              &.delete-btn {
+                --color: var(--ion-color-danger);
+                ion-icon { color: var(--ion-color-danger); }
+              }
+
+              &:not(.delete-btn) {
+                --color: var(--ion-color-primary);
+                ion-icon { color: var(--ion-color-primary); }
+              }
+            }
+          }
+        }
+      }
       .message-body {
         padding: 8px 16px;
         min-width: 48px;
@@ -198,6 +224,22 @@ $message-body-size: 60%;
 
         .time.caption {
           color: initial;
+        }
+
+        .message-container {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          flex-direction: row;
+
+          // reveal action buttons on hover
+          &:hover {
+            .action-container {
+              display: flex;
+              align-items: center;
+              margin-right: 4px;
+            }
+          }
         }
 
         .message-body {

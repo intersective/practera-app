@@ -12,7 +12,28 @@ ion-segment {
     border: 1px solid var(--ion-color-primary);
   }
 }
-.focusable:focus {
-  border: 1px solid var(--ion-color-primary);
-  display: block;
+
+.review-search {
+  padding: 0;
+}
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
+}
+
+.focusable ::ng-deep ion-item:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+.focusable ::ng-deep ion-item.active {
+  border-left: 4px solid var(--ion-color-primary);
 }
