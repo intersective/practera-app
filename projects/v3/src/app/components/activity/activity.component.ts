@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedService } from '@v3/app/services/shared.service';
@@ -271,7 +271,7 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
    */
   private async _validateTeamAssessment(task: Task, proceedCB): Promise<void> {
     // update teamId
-    await this.sharedService.getTeamInfo().toPromise();
+    await firstValueFrom(this.sharedService.getTeamInfo());
 
     const doAssessment = (this.utils.isEmpty(this.submission) || ['in progress', 'pending review'].includes(this.submission.status));
     const teamId = this.storageService.getUser().teamId;

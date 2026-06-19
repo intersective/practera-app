@@ -1,5 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { TopicComponent } from './topic.component';
@@ -42,10 +43,11 @@ describe('TopicComponent', () => {
     activitySpy = jasmine.createSpyObj('ActivityService', ['gotoNextTask']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       declarations: [TopicComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         { provide: TopicService, useValue: topicSpy },
         { provide: FilePreviewService, useValue: filePreviewSpy },
         { provide: EmbedVideoService, useValue: embedSpy },

@@ -13,7 +13,8 @@ import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { of } from 'rxjs';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 import { ActivityDesktopPage } from './activity-desktop.page';
 import { NormalisedTaskFixture, TaskFixture } from '@testingv3/fixtures/tasks';
@@ -34,6 +35,8 @@ describe('ActivityDesktopPage', () => {
     TestBed.configureTestingModule({
       declarations: [ ActivityDesktopPage ],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({
@@ -112,7 +115,7 @@ describe('ActivityDesktopPage', () => {
           }),
         },
       ],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      imports: [IonicModule.forRoot()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
@@ -183,8 +183,8 @@ export class PusherService {
    * connected + authorised pusher
    */
   async getChannels() {
-    await this.getNotificationChannel().toPromise();
-    await this.getChatChannels().toPromise();
+    await firstValueFrom(this.getNotificationChannel());
+    await firstValueFrom(this.getChatChannels());
   }
 
   getNotificationChannel(): Observable<any> {

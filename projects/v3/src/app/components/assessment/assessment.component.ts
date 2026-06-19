@@ -6,7 +6,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, debounceTime, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, debounceTime, firstValueFrom, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
@@ -830,7 +830,7 @@ Best regards`;
     if (this.doAssessment === true) {
       try {
         // make sure teamId is up to date
-        await this.sharedService.getTeamInfo().toPromise();
+        await firstValueFrom(this.sharedService.getTeamInfo());
 
         if (this.assessment.isForTeam) {
           const teamId = this.storage.getUser().teamId;
@@ -1001,7 +1001,7 @@ Best regards`;
     }).subscribe({
       next: async () => {
         this.activityService.getActivity(this.activityId);
-        await this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id).toPromise();
+        await firstValueFrom(this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id));
         this.btnDisabled$.next(false);
       },
       error: async () => {
