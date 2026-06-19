@@ -6,6 +6,7 @@ import { ExperienceService } from '@v3/services/experience.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/app/services/utils.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -32,8 +33,8 @@ export class AuthGlobalLoginComponent implements OnInit {
       return this._error();
     }
     try {
-      const authed = await this.authService.autologin({ apikey }).toPromise();
-      await this.authService.getMyInfo().toPromise();
+      const authed = await firstValueFrom(this.authService.autologin({ apikey }));
+      await firstValueFrom(this.authService.getMyInfo());
       await this.experienceService.switchProgram({
         experience: authed.experience
       });
@@ -48,8 +49,9 @@ export class AuthGlobalLoginComponent implements OnInit {
         }, 3000);
       } else {
         const currentLocation = window.location.href;
-        // check if the current location is localhost
-        if (currentLocation.indexOf('localhost') === -1) {
+        const currentHostname = window.location.hostname;
+        const isLocalhost = /(^localhost$)|(^127\.)|(^::1$)/.test(currentHostname);
+        if (!isLocalhost) {
           const locale = authed.experience.locale;
           // if current locale is not in the current location, redirect to the locale
           if (currentLocation.indexOf(locale) === -1) {
