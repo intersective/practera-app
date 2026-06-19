@@ -2547,6 +2547,131 @@ describe('AssessmentComponent', () => {
     });
   });
 
+  describe('showPageIndicators', () => {
+    beforeEach(() => {
+      component.assessment = mockAssessment;
+      component.pagesGroups = [[], []];
+    });
+
+    it('should return true for non-team360 paginated assessments', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.task = { assessmentType: 'moderated' } as any;
+
+      expect(component.showPageIndicators).toBeTrue();
+    });
+
+    it('should return false for team360 task assessments', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.task = { assessmentType: 'team360' } as any;
+
+      expect(component.showPageIndicators).toBeFalse();
+    });
+
+    it('should return false when pagination is disabled', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
+
+      expect(component.showPageIndicators).toBeFalse();
+    });
+
+    it('should return false when there is only one page', () => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[]];
+
+      expect(component.showPageIndicators).toBeFalse();
+    });
+  });
+
+  describe('maxAccessiblePageIndex', () => {
+    beforeEach(() => {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      component.pagesGroups = [[], [], [], [], []];
+    });
+
+    it('should allow all pages for non-team360 assessments', () => {
+      component.task = { assessmentType: 'moderated' } as any;
+      component.assessment = { ...mockAssessment, type: 'quiz' };
+
+      expect(component.maxAccessiblePageIndex).toBe(4);
+    });
+
+    it('should cap team360 pages to self-reflection plus team member count', () => {
+      component.task = { assessmentType: 'team360' } as any;
+      component.assessment = {
+        ...mockAssessment,
+        type: 'team360',
+        groups: [
+          { name: 'Self', description: '', questions: [{ id: 1, type: 'text' }] },
+          {
+            name: 'Team member selection',
+            description: '',
+            questions: [{
+              id: 2,
+              type: 'team member selector',
+              teamMembers: [
+                { key: '{"userId":1}', userName: 'Member 1' },
+                { key: '{"userId":2}', userName: 'Member 2' },
+              ],
+            }],
+          },
+        ],
+      } as any;
+
+      expect(component.maxAccessiblePageIndex).toBe(2);
+    });
+
+    it('should not allow pages beyond self-reflection when team360 has no selected team members', () => {
+      component.task = { assessmentType: 'team360' } as any;
+      component.assessment = {
+        ...mockAssessment,
+        type: 'team360',
+        groups: [
+          { name: 'Self', description: '', questions: [{ id: 1, type: 'text' }] },
+          {
+            name: 'Empty team member selection',
+            description: '',
+            questions: [{ id: 2, type: 'team member selector', teamMembers: [] }],
+          },
+        ],
+      } as any;
+
+      expect(component.maxAccessiblePageIndex).toBe(0);
+    });
+
+    it('should never exceed the actual last page', () => {
+      component.task = { assessmentType: 'team360' } as any;
+      component.pagesGroups = [[], []];
+      component.assessment = {
+        ...mockAssessment,
+        type: 'team360',
+        groups: [
+          { name: 'Self', description: '', questions: [{ id: 1, type: 'text' }] },
+          {
+            name: 'Team member selection',
+            description: '',
+            questions: [{
+              id: 2,
+              type: 'team member selector',
+              teamMembers: [
+                { key: '{"userId":1}' },
+                { key: '{"userId":2}' },
+                { key: '{"userId":3}' },
+              ],
+            }],
+          },
+        ],
+      } as any;
+
+      expect(component.maxAccessiblePageIndex).toBe(1);
+    });
+
+    it('should return -1 when there are no pages', () => {
+      component.pagesGroups = [];
+      component.assessment = { ...mockAssessment, type: 'quiz' };
+
+      expect(component.maxAccessiblePageIndex).toBe(-1);
+    });
+  });
+
   describe('pagedGroups', () => {
     it('should return all groups when pagination disabled', () => {
       spyOnProperty(component, 'isPaginationEnabled').and.returnValue(false);
@@ -2627,6 +2752,32 @@ describe('AssessmentComponent', () => {
       component.nextPage();
       expect(component.setSubmissionDisabled).toHaveBeenCalled();
     });
+
+    it('nextPage should not exceed the team360 accessible page range', () => {
+      component.task = { assessmentType: 'team360' } as any;
+      component.assessment = {
+        ...mockAssessment,
+        type: 'team360',
+        groups: [
+          { name: 'Self', description: '', questions: [{ id: 1, type: 'text' }] },
+          {
+            name: 'Team member selection',
+            description: '',
+            questions: [{
+              id: 2,
+              type: 'team member selector',
+              teamMembers: [{ key: '{"userId":1}' }],
+            }],
+          },
+        ],
+      } as any;
+      component.pageIndex = 1;
+
+      component.nextPage();
+
+      expect(component.pageIndex).toBe(1);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
   });
 
   describe('prevPage() / nextPage() when pagination disabled', () => {
@@ -2675,6 +2826,32 @@ describe('AssessmentComponent', () => {
       component.pageIndex = 0;
       component.goToPage(10);
       expect(component.pageIndex).toBe(0);
+      expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
+    });
+
+    it('should reject team360 pages beyond the accessible team member range', () => {
+      component.task = { assessmentType: 'team360' } as any;
+      component.assessment = {
+        ...mockAssessment,
+        type: 'team360',
+        groups: [
+          { name: 'Self', description: '', questions: [{ id: 1, type: 'text' }] },
+          {
+            name: 'Team member selection',
+            description: '',
+            questions: [{
+              id: 2,
+              type: 'team member selector',
+              teamMembers: [{ key: '{"userId":1}' }],
+            }],
+          },
+        ],
+      } as any;
+
+      component.goToPage(2);
+
+      expect(component.pageIndex).toBe(0);
+      expect(component.pageVisited[2]).toBeFalse();
       expect(component.scrollActivePageIntoView).not.toHaveBeenCalled();
     });
 
@@ -2852,42 +3029,42 @@ describe('AssessmentComponent', () => {
       component['submitting'] = false;
     });
 
-    describe('team360MinPages getter', () => {
+    describe('team360MemberCount getter', () => {
       it('returns 0 for non-team-360 task', () => {
         component.task = { assessmentType: 'normal' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
         component.assessment = { groups: [g0, g1, g2] } as any;
-        expect(component.team360MinPages).toBe(0);
+        expect(component.team360MemberCount).toBe(0);
       });
 
       it('returns 0 when task is undefined', () => {
         component.task = undefined;
         component.assessment = { groups: [textGroup(10), selectorGroup(20)] } as any;
-        expect(component.team360MinPages).toBe(0);
+        expect(component.team360MemberCount).toBe(0);
       });
 
       it('returns 0 when assessment has no groups', () => {
         component.task = { assessmentType: 'team360' } as any;
         component.assessment = { groups: [] } as any;
-        expect(component.team360MinPages).toBe(0);
+        expect(component.team360MemberCount).toBe(0);
       });
 
       it('group 0 (self) is excluded — selector groups from index 1 are counted', () => {
         component.task = { assessmentType: 'team360' } as any;
         component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
-        expect(component.team360MinPages).toBe(2);
+        expect(component.team360MemberCount).toBe(2);
       });
 
       it('counts multi-member selector groups: distinct member keys, not group count', () => {
         component.task = { assessmentType: 'team360' } as any;
         // multiSelectorGroup(100) has 3 members (U1, U2, U3) → 3 distinct keys
         component.assessment = { groups: [textGroup(10), multiSelectorGroup(100)] } as any;
-        expect(component.team360MinPages).toBe(3);
+        expect(component.team360MemberCount).toBe(3);
       });
 
       it('deduplication: multiple groups with same member count as 1 (the live-data bug)', () => {
         // actual scenario: 4 non-self groups all show the same 1 team member (e.g. test data with
-        // only learner 004 on the team). minPages should be 1, not 4.
+        // only learner 004 on the team). memberCount should be 1, not 4.
         component.task = { assessmentType: 'team360' } as any;
         const sameMember = (id: number) => ({
           name: `Group ${id}`,
@@ -2903,21 +3080,21 @@ describe('AssessmentComponent', () => {
         component.assessment = {
           groups: [textGroup(10), sameMember(20), sameMember(21), sameMember(22), sameMember(23)],
         } as any;
-        expect(component.team360MinPages).toBe(1); // 1 distinct member, not 4 groups
+        expect(component.team360MemberCount).toBe(1); // 1 distinct member, not 4 groups
       });
 
       it('does not count groups without selector questions', () => {
         component.task = { assessmentType: 'team360' } as any;
         component.assessment = { groups: [textGroup(10), textGroup(20), textGroup(30)] } as any;
-        expect(component.team360MinPages).toBe(0);
+        expect(component.team360MemberCount).toBe(0);
       });
 
-      it('4-teammate scenario: 1 self + 4 selector groups → minPages = 4', () => {
+      it('4-teammate scenario: 1 self + 4 selector groups → memberCount = 4', () => {
         component.task = { assessmentType: 'team360' } as any;
         component.assessment = {
           groups: [textGroup(10), selectorGroup(20), selectorGroup(100), selectorGroup(101), selectorGroup(102)],
         } as any;
-        expect(component.team360MinPages).toBe(4);
+        expect(component.team360MemberCount).toBe(4);
       });
     });
 
@@ -2950,7 +3127,7 @@ describe('AssessmentComponent', () => {
         expect(component.team360PagesVisited).toBe(2);
       });
 
-      it('does not count a member section when visited but required questions incomplete', () => {
+      it('does not count a member page when visited but required questions incomplete', () => {
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
         component.assessment = { groups: [g0, g1, g2] } as any;
@@ -2960,7 +3137,7 @@ describe('AssessmentComponent', () => {
         expect(component.team360PagesVisited).toBe(1); // only g1 counts
       });
 
-      it('caps at team360MinPages', () => {
+      it('caps at team360MemberCount', () => {
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
         component.assessment = { groups: [g0, g1, g2] } as any;
@@ -2970,34 +3147,13 @@ describe('AssessmentComponent', () => {
         expect(component.team360PagesVisited).toBe(2);
       });
 
-      it('batching scenario: two selector groups on same page counts 2 when visited and complete', () => {
-        // splitGroupsByQuestionCount can batch small groups onto one page
-        component.task = { assessmentType: 'team360' } as any;
-        const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
-        component.assessment = { groups: [g0, g1, g2] } as any;
-        // g1 and g2 batched onto page 1 (e.g. 2 questions total ≤ pageSize)
-        component.pagesGroups = [[g0], [g1, g2]];
-        component.pageVisited = [true, true];
-        component.pageRequiredCompletion = [true, true];
-        expect(component.team360PagesVisited).toBe(2); // both groups counted, not just 1
-      });
-
-      it('batching scenario: page not yet visited → 0 even if groups exist', () => {
-        component.task = { assessmentType: 'team360' } as any;
-        const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
-        component.assessment = { groups: [g0, g1, g2] } as any;
-        component.pagesGroups = [[g0], [g1, g2]];
-        component.pageVisited = [true, false]; // page 1 not visited yet
-        expect(component.team360PagesVisited).toBe(0);
-      });
-
       it('"1st try" scenario: 5 groups with unique single-member selectors, increments per visit', () => {
         // real design: each non-self group has 1 specific member (unique key per group).
         // visiting each page increments count by 1. group 0 excluded (index 0).
         component.task = { assessmentType: 'team360' } as any;
         const groups = Array.from({ length: 5 }, (_, i) => selectorGroup(100 + i));
         // keys: {"userId":100} (excluded), {"userId":101}, {"userId":102}, {"userId":103}, {"userId":104}
-        // minPages = 4 distinct members in groups 1-4
+        // memberCount = 4 distinct members in groups 1-4
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
         component.pageRequiredCompletion = [true, true, true, true, true];
@@ -3009,10 +3165,10 @@ describe('AssessmentComponent', () => {
         expect(component.team360PagesVisited).toBe(2); // groups 1-2 → 2 of 4
 
         component.pageVisited = [true, true, true, true, true];
-        expect(component.team360PagesVisited).toBe(4); // groups 1-4 → 4 of 4 (capped at minPages)
+        expect(component.team360PagesVisited).toBe(4); // groups 1-4 → 4 of 4 (capped at memberCount)
       });
 
-      it('deduplication: 4 groups same member → visiting any one marks 1 of 1 reviewed', () => {
+      it('deduplication: 4 groups same member → visiting the first member page marks 1 of 1 reviewed', () => {
         // the live-data scenario: 4 non-self groups all showing learner 004
         component.task = { assessmentType: 'team360' } as any;
         const sameMember = (id: number) => ({
@@ -3043,7 +3199,7 @@ describe('AssessmentComponent', () => {
         // each selector question lists ALL team members as options.
         // old key-based visited counting instantly showed "2 of 2" when visiting group 1
         // because both keys were added to the visited set from that one group's teamMembers.
-        // new group-count approach: visiting group 1 → 1 of 2 (not 2 of 2).
+        // new page-count approach: visiting page 1 → 1 of 2 (not 2 of 2).
         component.task = { assessmentType: 'team360' } as any;
         const allMemberKeys = [
           { key: '{"userId":1}', userName: 'Member 1' },
@@ -3064,8 +3220,8 @@ describe('AssessmentComponent', () => {
         component.assessment = { groups: [g0, g1, g2] } as any;
         component.pagesGroups = [[g0], [g1], [g2]];
 
-        // min uses distinct keys: 2 members listed across non-self groups
-        expect(component.team360MinPages).toBe(2);
+        // member count uses distinct keys: 2 members listed across non-self groups
+        expect(component.team360MemberCount).toBe(2);
 
         component.pageRequiredCompletion = [true, true, true];
 
@@ -3152,26 +3308,10 @@ describe('AssessmentComponent', () => {
         expect(component.btnDisabled$.getValue()).toBeTrue();
       });
 
-      it('batching scenario: visiting batched page enables submit when form valid and complete', () => {
-        // g1 and g2 on same page — visiting page 1 satisfies both teammates
-        component.task = { assessmentType: 'team360' } as any;
-        const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
-        component.assessment = { groups: [g0, g1, g2] } as any;
-        component.pagesGroups = [[g0], [g1, g2]];
-        component.questionsForm = makeValidForm();
-        component.pageVisited = [true, true];
-        component.pageRequiredCompletion = [true, true];
-        component.btnDisabled$ = new BehaviorSubject(true);
-
-        component.setSubmissionDisabled();
-
-        expect(component.btnDisabled$.getValue()).toBeFalse();
-      });
-
       it('"1st try" scenario: 5 groups unique members → increments per visit, enables at 4 of 4', () => {
         component.task = { assessmentType: 'team360' } as any;
         const groups = Array.from({ length: 5 }, (_, i) => selectorGroup(100 + i));
-        // group 0 (key {"userId":100}) excluded; groups 1-4 have unique keys → minPages = 4
+        // group 0 (key {"userId":100}) excluded; groups 1-4 have unique keys → memberCount = 4
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
         component.questionsForm = makeValidForm();
@@ -3216,7 +3356,7 @@ describe('AssessmentComponent', () => {
         component.setSubmissionDisabled();
         expect(component.btnDisabled$.getValue()).toBeTrue();
 
-        // visit any one non-self page → learner 004 reviewed → 1 of 1 → enabled
+        // visit the first non-self page → learner 004 reviewed → 1 of 1 → enabled
         component.pageVisited = [true, true, false, false, false];
         component.setSubmissionDisabled();
         expect(component.btnDisabled$.getValue()).toBeFalse();
@@ -3384,422 +3524,99 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  describe('isTeam360 getter', () => {
+  describe('Team360 detection', () => {
     it('returns true when assessmentType is team360', () => {
       component.task = { assessmentType: 'team360' } as any;
-      expect(component.isTeam360).toBeTrue();
+      expect(component.isTeam360Assessment).toBeTrue();
+    });
+
+    it('returns true when assessment type is team360 without a task flag', () => {
+      component.task = undefined;
+      component.assessment = { ...mockAssessment, type: 'team360' };
+      expect(component.isTeam360Assessment).toBeTrue();
     });
 
     it('returns false when assessmentType is not team360', () => {
       component.task = { assessmentType: 'normal' } as any;
-      expect(component.isTeam360).toBeFalse();
+      component.assessment = { ...mockAssessment, type: 'quiz' };
+      expect(component.isTeam360Assessment).toBeFalse();
     });
 
     it('returns false when task is undefined', () => {
       component.task = undefined;
-      expect(component.isTeam360).toBeFalse();
+      component.assessment = undefined;
+      expect(component.isTeam360Assessment).toBeFalse();
+    });
+
+    it('does not treat normal team assessments as team360', () => {
+      component.task = undefined;
+      component.assessment = { ...mockAssessment, isForTeam: true, type: 'quiz' };
+      expect(component.isTeam360Assessment).toBeFalse();
     });
   });
 
-  describe('team360VisibleSections getter', () => {
-    const selectorGroup = (id: number) => ({
-      name: `Selector Group ${id}`,
-      description: '',
-      questions: [{
-        id,
-        type: 'team member selector',
-        isRequired: false,
-        audience: ['submitter'],
-        teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }],
-      } as any],
-    });
-    const textGroup = (id: number) => ({
-      name: `Text Group ${id}`,
-      description: '',
-      questions: [{ id, type: 'text', isRequired: false, audience: ['submitter'] } as any],
-    });
-
-    beforeEach(() => {
-      component.task = { assessmentType: 'team360' } as any;
-    });
-
-    it('returns empty array when not team360', () => {
-      component.task = { assessmentType: 'normal' } as any;
-      component.assessment = { groups: [textGroup(10), selectorGroup(20)] } as any;
-      expect(component.team360VisibleSections).toEqual([]);
-    });
-
-    it('returns empty array when assessment has no groups', () => {
-      component.assessment = { groups: [] } as any;
-      expect(component.team360VisibleSections).toEqual([]);
-    });
-
-    it('always includes group 0 (self-reflection) regardless of type', () => {
-      component.assessment = { groups: [textGroup(10)] } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.length).toBe(1);
-      expect(sections[0].groupIndex).toBe(0);
-      expect(sections[0].firstPage).toBe(0);
-    });
-
-    it('includes teammate groups that have assigned team members', () => {
-      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.length).toBe(3);
-      expect(sections[0].groupIndex).toBe(0);
-      expect(sections[1].groupIndex).toBe(1);
-      expect(sections[2].groupIndex).toBe(2);
-    });
-
-    it('excludes teammate groups whose selector has no team members assigned', () => {
-      const emptySelector = {
-        name: 'Empty Slot',
-        description: '',
-        questions: [{ id: 99, type: 'team member selector', teamMembers: [], isRequired: false, audience: ['submitter'] } as any],
+  describe('pagination control template', () => {
+    function renderPaginatedAssessment(options: { team360?: boolean; completedReview?: boolean } = {}) {
+      component.assessment = {
+        ...mockAssessment,
+        type: options.team360 ? 'team360' : 'quiz',
+        groups: [],
       };
-      component.assessment = {
-        groups: [textGroup(10), selectorGroup(20), emptySelector, selectorGroup(100)],
+      component.task = {
+        id: 1,
+        type: 'Assessment',
+        name: 'Assessment',
+        assessmentType: options.team360 ? 'team360' : 'moderated',
       } as any;
-      const sections = component.team360VisibleSections;
-      // emptySelector (groupIndex 2) must be excluded
-      expect(sections.length).toBe(3);
-      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 3]);
-    });
-
-    it('case 1: team of 2 (self + 1 assigned teammate) → 2 visible sections', () => {
-      component.assessment = { groups: [textGroup(10), selectorGroup(20)] } as any;
-      expect(component.team360VisibleSections.length).toBe(2);
-    });
-
-    it('case 2: team of 3 (self + 2 assigned teammates) → 3 visible sections', () => {
-      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
-      expect(component.team360VisibleSections.length).toBe(3);
-    });
-
-    it('assigns correct firstPage when groups fit on the same page', () => {
-      // 3 single-question groups → total 3 ≤ 10 → all page 0
-      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.map(s => s.firstPage)).toEqual([0, 0, 0]);
-    });
-
-    it('assigns correct firstPage when groups overflow to new pages', () => {
-      // self: 8q (page 0); teammate: 5q → 8+5=13>10 → page 1
-      const selfGroup = { name: 'Self', description: '', questions: Array(8).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }) };
-      const tmGroup = {
-        name: 'TM',
-        description: '',
-        questions: [
-          ...Array(4).fill({ id: 1, type: 'text', isRequired: false, audience: ['submitter'] }),
-          { id: 200, type: 'team member selector', teamMembers: [{ key: '{"userId":200}' }], isRequired: false, audience: ['submitter'] },
-        ],
-      };
-      component.assessment = { groups: [selfGroup, tmGroup] } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.length).toBe(2);
-      expect(sections[0].firstPage).toBe(0);
-      expect(sections[1].firstPage).toBe(1);
-    });
-
-    it('excludes duplicate groups that reference already-seen team member keys', () => {
-      const dupMember = { key: '{"userId":1}', userName: 'User 1' };
-      const makeGroupWithMember = (id: number, member: { key: string; userName: string }) => ({
-        name: `G${id}`, description: '',
-        questions: [{
-          id, type: 'team member selector', teamMembers: [member],
-          isRequired: false, audience: ['submitter'],
-        } as any],
-      });
-      // groups[1] and groups[2] both reference the same member → only groups[1] should appear
-      component.assessment = {
-        groups: [textGroup(0), makeGroupWithMember(1, dupMember), makeGroupWithMember(2, dupMember)],
-      } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.length).toBe(2); // self + 1 unique member
-      expect(sections[0].groupIndex).toBe(0);
-      expect(sections[1].groupIndex).toBe(1);
-    });
-
-    it('5 groups with 2 unique members → 3 visible sections (self + 2)', () => {
-      const m1 = { key: '{"userId":1}', userName: 'U1' };
-      const m2 = { key: '{"userId":2}', userName: 'U2' };
-      const makeG = (id: number, m: { key: string; userName: string }) => ({
-        name: `G${id}`, description: '',
-        questions: [{
-          id, type: 'team member selector', teamMembers: [m],
-          isRequired: false, audience: ['submitter'],
-        } as any],
-      });
-      // groups[3] duplicates m1, groups[4] duplicates m2
-      component.assessment = {
-        groups: [textGroup(0), makeG(1, m1), makeG(2, m2), makeG(3, m1), makeG(4, m2)],
-      } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.length).toBe(3);
-      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 2]);
-    });
-
-    it('shape B: every group has all members; cap rating dots at unique-member count', () => {
-      // production case: each non-self group is a "rate one teammate" slot and the selector
-      // exposes all teammates as choices. 4 placeholder groups but only 2 real members → 3 dots.
-      const m1 = { key: '{"userId":1}', userName: 'U1' };
-      const m2 = { key: '{"userId":2}', userName: 'U2' };
-      const groupAllMembers = (id: number) => ({
-        name: `Slot ${id}`, description: '',
-        questions: [{
-          id, type: 'team member selector', teamMembers: [m1, m2],
-          isRequired: false, audience: ['submitter'],
-        } as any],
-      });
-      component.assessment = {
-        groups: [textGroup(0), groupAllMembers(1), groupAllMembers(2), groupAllMembers(3), groupAllMembers(4)],
-      } as any;
-      const sections = component.team360VisibleSections;
-      // 1 self + 2 (capped at unique member count) = 3 dots
-      expect(sections.length).toBe(3);
-      // first 2 non-self selector groups become rating slot dots
-      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 2]);
-    });
-
-    it('shape B: 3 unique members across 5 placeholder groups → 4 dots (self + 3)', () => {
-      const m1 = { key: '{"userId":1}' };
-      const m2 = { key: '{"userId":2}' };
-      const m3 = { key: '{"userId":3}' };
-      const groupAll = (id: number) => ({
-        name: `Slot ${id}`, description: '',
-        questions: [{
-          id, type: 'team member selector', teamMembers: [m1, m2, m3],
-          isRequired: false, audience: ['submitter'],
-        } as any],
-      });
-      component.assessment = {
-        groups: [textGroup(0), groupAll(1), groupAll(2), groupAll(3), groupAll(4), groupAll(5)],
-      } as any;
-      const sections = component.team360VisibleSections;
-      expect(sections.length).toBe(4);
-      expect(sections.map(s => s.groupIndex)).toEqual([0, 1, 2, 3]);
-    });
-  });
-
-  describe('team360ActiveSectionIndex getter', () => {
-    const textGroup = (id: number) => ({
-      name: `Text Group ${id}`,
-      description: '',
-      questions: [{ id, type: 'text', isRequired: false, audience: ['submitter'] } as any],
-    });
-    const selectorGroup = (id: number) => ({
-      name: `Selector Group ${id}`,
-      description: '',
-      questions: [{
-        id,
-        type: 'team member selector',
-        isRequired: false,
-        audience: ['submitter'],
-        teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }],
-      } as any],
-    });
-    // helper: 9-question group (8 text + 1 selector with one member)
-    // 9 questions ensures two such groups overflow a 10q page → each on its own page
-    const makeTeamGroup = (id: number) => ({
-      name: `G${id}`,
-      description: '',
-      questions: [
-        ...Array(8).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }),
-        { id, type: 'team member selector', isRequired: false, audience: ['submitter'],
-          teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }] },
-      ] as any[],
-    });
-
-    beforeEach(() => {
-      component.task = { assessmentType: 'team360' } as any;
-    });
-
-    it('returns 0 when pageIndex is 0 and all sections are on page 0', () => {
-      // 3 groups × 1q each → all on page 0
-      component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
+      component.pagesGroups = [[], []];
       component.pageIndex = 0;
-      expect(component.team360ActiveSectionIndex).toBe(0);
-    });
-
-    it('returns correct dot index when each group is on its own page', () => {
-      // g0(9q) page 0; g1(9q): 9+9>10 → page 1; g2(9q): 9+9>10 → page 2
-      component.assessment = { groups: [makeTeamGroup(0), makeTeamGroup(1), makeTeamGroup(2)] } as any;
-
-      component.pageIndex = 0;
-      expect(component.team360ActiveSectionIndex).toBe(0);
-
-      component.pageIndex = 1;
-      expect(component.team360ActiveSectionIndex).toBe(1);
-
-      component.pageIndex = 2;
-      expect(component.team360ActiveSectionIndex).toBe(2);
-    });
-
-    it('returns last dot index when on last page', () => {
-      component.assessment = { groups: [makeTeamGroup(0), makeTeamGroup(1), makeTeamGroup(2)] } as any;
-      component.pageIndex = 2;
-      expect(component.team360ActiveSectionIndex).toBe(2);
-    });
-
-    it('skips excluded empty-member groups when computing active section', () => {
-      const emptySlot = {
-        name: 'Empty',
-        description: '',
-        questions: [{ id: 99, type: 'team member selector', teamMembers: [], isRequired: false, audience: ['submitter'] } as any],
-      };
-      // groups: [g0(self,9q), g1(assigned,9q), emptySlot(excluded,1q), g3(assigned,9q)]
-      // visible sections: [gi:0 fp:0], [gi:1 fp:1], [gi:3 fp:?]
-      // g0(9)+g1(9)=18>10 → g1 on page 1; emptySlot(1): 9+1=10≤10 stays on page 1;
-      // g3(9): 10+9=19>10 → page 2
-      component.assessment = { groups: [makeTeamGroup(0), makeTeamGroup(1), emptySlot, makeTeamGroup(3)] } as any;
-      component.pageIndex = 2;
-      // dot 0→gi:0 fp:0, dot 1→gi:1 fp:1, dot 2→gi:3 fp:2
-      expect(component.team360ActiveSectionIndex).toBe(2);
-    });
-  });
-
-  describe('goToSection()', () => {
-    const makeSelectorGroup = (id: number, qCount = 8) => ({
-      name: `G${id}`,
-      description: '',
-      questions: [
-        ...Array(qCount - 1).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }),
-        { id, type: 'team member selector', isRequired: false, audience: ['submitter'],
-          teamMembers: [{ key: `{"userId":${id}}` }] },
-      ] as any[],
-    });
-
-    beforeEach(() => {
-      component.task = { assessmentType: 'team360' } as any;
-    });
-
-    it('navigates to the first page of the given visible section', () => {
-      // g0(8q) page 0; g1(8q): 8+8>10 → page 1
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      component.assessment = { groups: [g0, g1] } as any;
-      component.pagesGroups = [[g0], [g1]];
-      component.pageIndex = 0;
-      component.pageVisited = [false, false];
-
-      component.goToSection(1);
-      expect(component.pageIndex).toBe(1);
-    });
-
-    it('does nothing for out-of-bounds section index', () => {
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      component.assessment = { groups: [g0, g1] } as any;
-      component.pagesGroups = [[g0], [g1]];
-      component.pageIndex = 0;
-      component.pageVisited = [false, false];
-
-      component.goToSection(99);
-      expect(component.pageIndex).toBe(0);
-    });
-
-    it('navigates to section 0 (self-reflection)', () => {
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      component.assessment = { groups: [g0, g1] } as any;
-      component.pagesGroups = [[g0], [g1]];
-      component.pageIndex = 1;
-      component.pageVisited = [false, false];
-
-      component.goToSection(0);
-      expect(component.pageIndex).toBe(0);
-    });
-  });
-
-  describe('isTeam360SectionComplete()', () => {
-    const makeSelectorGroup = (id: number, qCount = 8) => ({
-      name: `G${id}`,
-      description: '',
-      questions: [
-        ...Array(qCount - 1).fill({ id: 0, type: 'text', isRequired: false, audience: ['submitter'] }),
-        { id, type: 'team member selector', isRequired: false, audience: ['submitter'],
-          teamMembers: [{ key: `{"userId":${id}}` }] },
-      ] as any[],
-    });
-
-    beforeEach(() => {
-      component.task = { assessmentType: 'team360' } as any;
-    });
-
-    it('returns true in read-only mode regardless of visit/completion state', () => {
-      component.doAssessment = false;
-      component.isPendingReview = false;
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      component.assessment = { groups: [g0, g1] } as any;
-      component.pagesGroups = [[g0], [g1]];
-      component.pageVisited = [false, false];
-      component.pageRequiredCompletion = [false, false];
-      expect(component.isTeam360SectionComplete(0)).toBeTrue();
-    });
-
-    it('returns false when page not visited even if required questions are complete', () => {
-      component.doAssessment = true;
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      const g2 = makeSelectorGroup(2);
-      component.assessment = { groups: [g0, g1, g2] } as any;
-      component.pagesGroups = [[g0], [g1], [g2]];
-      component.pageVisited = [true, false, false];
-      component.pageRequiredCompletion = [true, true, true];
-      // page 1 not visited → dot 1 must not be green
-      expect(component.isTeam360SectionComplete(1)).toBeFalse();
-    });
-
-    it('returns false when page visited but required questions incomplete', () => {
-      component.doAssessment = true;
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      component.assessment = { groups: [g0, g1] } as any;
-      component.pagesGroups = [[g0], [g1]];
       component.pageVisited = [true, true];
-      component.pageRequiredCompletion = [true, false];
-      // dot 1 → gi:1, firstPage:1 — page 1 required incomplete
-      expect(component.isTeam360SectionComplete(1)).toBeFalse();
+      component.pageRequiredCompletion = [true, true];
+      component.questionsForm = new FormGroup({});
+      component.savingMessage$ = new BehaviorSubject('');
+      component.btnDisabled$ = new BehaviorSubject(false);
+      component.isPendingReview = false;
+
+      if (options.completedReview) {
+        component.action = 'review';
+        component.doAssessment = false;
+        component.submission = { ...mockSubmission, status: 'feedback available' } as any;
+        component.review = { ...mockReview, status: 'done' } as any;
+      } else {
+        component.action = 'assessment';
+        component.doAssessment = true;
+        component.submission = { ...mockSubmission, status: 'in progress' } as any;
+        component.review = mockReview as any;
+      }
+
+      fixture.detectChanges();
+    }
+
+    it('renders Prev and Next without page indicators for team360 assessments', () => {
+      renderPaginatedAssessment({ team360: true });
+
+      const navButtons = fixture.nativeElement.querySelectorAll('.pagination-container ion-button.nav-button');
+      expect(navButtons.length).toBe(2);
+      expect(fixture.nativeElement.querySelector('.pagination-container.nav-only')).toBeTruthy();
+      expect(fixture.nativeElement.querySelectorAll('.page-indicator').length).toBe(0);
     });
 
-    it('returns true when all pages in section are visited and complete', () => {
-      component.doAssessment = true;
-      const g0 = makeSelectorGroup(0);
-      const g1 = makeSelectorGroup(1);
-      const g2 = makeSelectorGroup(2);
-      component.assessment = { groups: [g0, g1, g2] } as any;
-      component.pagesGroups = [[g0], [g1], [g2]];
-      component.pageVisited = [true, true, true];
-      component.pageRequiredCompletion = [true, true, true];
-      expect(component.isTeam360SectionComplete(2)).toBeTrue();
+    it('keeps page indicators for non-team360 assessments', () => {
+      renderPaginatedAssessment({ team360: false });
+
+      const navButtons = fixture.nativeElement.querySelectorAll('.pagination-container ion-button.nav-button');
+      expect(navButtons.length).toBe(2);
+      expect(fixture.nativeElement.querySelectorAll('.page-indicator').length).toBe(2);
     });
 
-    it('shape B: last visible dot ignores pages from hidden placeholder groups beyond it', () => {
-      // 5 non-self placeholder groups but only 2 unique members → 3 visible dots.
-      // dot 2 (groupIndex 2) range ends at groups[3].firstPage, not pageCount,
-      // so hidden placeholder pages (visited=false) do not block its completion.
-      component.doAssessment = true;
-      const m1 = { key: '{"userId":1}' };
-      const m2 = { key: '{"userId":2}' };
-      const slotGroup = (id: number) => ({
-        name: `Slot ${id}`, description: '',
-        questions: [
-          ...Array(7).fill({ id: id * 10, type: 'text', isRequired: false, audience: ['submitter'] }),
-          { id, type: 'team member selector', teamMembers: [m1, m2], isRequired: false, audience: ['submitter'] },
-        ] as any[],
-      });
-      const g0 = makeSelectorGroup(0);
-      const g1 = slotGroup(1);
-      const g2 = slotGroup(2);
-      const g3 = slotGroup(3); // hidden placeholder
-      const g4 = slotGroup(4); // hidden placeholder
-      component.assessment = { groups: [g0, g1, g2, g3, g4] } as any;
-      component.pagesGroups = [[g0], [g1], [g2], [g3], [g4]];
-      // user has visited and completed pages 0–2; hidden pages 3 & 4 unvisited
-      component.pageVisited = [true, true, true, false, false];
-      component.pageRequiredCompletion = [true, true, true, false, false];
-      expect(component.isTeam360SectionComplete(2)).toBeTrue();
+    it('renders completed review standalone pagination without page indicators for team360', () => {
+      renderPaginatedAssessment({ team360: true, completedReview: true });
+
+      const footer = fixture.nativeElement.querySelector('ion-footer.standalone-pagination-footer');
+      expect(footer).toBeTruthy();
+      expect(footer.querySelectorAll('ion-button.nav-button').length).toBe(2);
+      expect(footer.querySelector('.pagination-container.nav-only')).toBeTruthy();
+      expect(footer.querySelectorAll('.page-indicator').length).toBe(0);
     });
   });
 

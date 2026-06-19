@@ -181,6 +181,26 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return environment.featureToggles?.assessmentPagination ?? true;
   }
 
+  get isTeam360Assessment(): boolean {
+    return this.task?.assessmentType === 'team360' || this.assessment?.type === 'team360';
+  }
+
+  get showPageIndicators(): boolean {
+    return this.isPaginationEnabled && this.pageCount > 1 && !this.isTeam360Assessment;
+  }
+
+  // Team360 page 0 is self-reflection. Pages after that correspond to selected team members,
+  // so forward navigation is capped by the selected team member count.
+  get maxAccessiblePageIndex(): number {
+    const lastPageIndex = this.pageCount - 1;
+
+    if (!this.isTeam360Assessment) {
+      return lastPageIndex;
+    }
+
+    return Math.min(lastPageIndex, this.team360MemberCount);
+  }
+
   // override to use question‑based pages
   get pageCount() {
     return this.isPaginationEnabled ? this.pagesGroups.length : 1;
@@ -206,7 +226,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   nextPage() {
     if (!this.isPaginationEnabled) return;
-    if (this.pageIndex < this.pageCount - 1) {
+    if (this.pageIndex < this.maxAccessiblePageIndex) {
       this.pageIndex++;
       this.pageVisited[this.pageIndex] = true;
       this.scrollActivePageIntoView();
@@ -221,7 +241,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   goToPage(i: number) {
     if (!this.isPaginationEnabled) return;
-    if (i >= 0 && i < this.pageCount) {
+    if (i >= 0 && i <= this.maxAccessiblePageIndex) {
       if (this.pageIndex !== i) {
         this.pageIndex = i;
         this.pageVisited[i] = true;
@@ -907,8 +927,8 @@ Best regards`;
     });
   }
 
-  showQuestionInfo(info, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+  showQuestionInfo(info, keyboardEvent?: Event) {
+    if (keyboardEvent instanceof KeyboardEvent && (keyboardEvent.code === 'Space' || keyboardEvent.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
@@ -1373,8 +1393,8 @@ Best regards`;
     }
 
     const isFormValid = this.questionsForm?.valid ?? false;
-    const minPages = this._team360MinPages;
-    const visitedEnough = minPages === 0 || this.team360PagesVisited >= minPages;
+    const memberCount = this.team360MemberCount;
+    const visitedEnough = memberCount === 0 || this.team360PagesVisited >= memberCount;
     const shouldDisable = !isFormValid || !visitedEnough;
     const isCurrentlyDisabled = this.btnDisabled$.getValue();
 
@@ -1387,17 +1407,15 @@ Best regards`;
   }
 
   /**
-   * returns the number of distinct team members the user must review in a team 360 assessment.
+   * returns the number of distinct team members the user must review in a team360 assessment.
    * counts unique teamMembers.key values across selector questions in groups from index 1+
-   * (index 0 is self-reflection, excluded). deduplication ensures that multiple groups referencing
-   * the same member (e.g. test data where only 1 member exists) show the correct count.
-   * uses pagesGroups map for safe lookup regardless of how splitGroupsByQuestionCount batches groups.
+   * because index 0 is the self-reflection group.
    */
-  private get _team360MinPages(): number {
-    if (this.task?.assessmentType !== 'team360') return 0;
+  get team360MemberCount(): number {
+    if (!this.isTeam360Assessment) return 0;
     const groups = this.assessment?.groups ?? [];
     const memberKeys = new Set<string>();
-    // group 0 is self-reflection; team member groups start at index 1
+
     for (let i = 1; i < groups.length; i++) {
       const selectorQ = groups[i].questions?.find(q =>
         q.type === 'team member selector' || q.type === 'multi team member selector'
@@ -1408,35 +1426,14 @@ Best regards`;
     return memberKeys.size;
   }
 
-  /** public accessor for template binding */
-  get team360MinPages(): number {
-    return this._team360MinPages;
-  }
-
-  /**
-   * count of distinct team member keys whose pages have been visited.
-   * for each non-self selector group (index 1+), if its page has been visited, all of its
-   * teamMembers keys are added to a visited-keys set. deduplication means that visiting any page
-   * that references a member marks that member as reviewed — enabling correct counts when multiple
-   * groups share the same member or when groups are batched onto a single page.
-   */
   get team360PagesVisited(): number {
-    const min = this._team360MinPages;
-    if (min === 0) return 0;
-    const groups = this.assessment?.groups ?? [];
-    // build page-index map from pagesGroups (source of truth for actual page layout)
-    const groupPageIndex = new Map<object, number>();
-    this.pagesGroups.forEach((page, pageIdx) => {
-      page.forEach(g => groupPageIndex.set(g, pageIdx));
-    });
-    // iterate visible sections only (excludes hidden placeholder groups)
-    const sections = this.team360VisibleSections;
+    if (!this.isTeam360Assessment) return 0;
+
     let count = 0;
-    for (let i = 1; i < sections.length; i++) { // skip index 0 (self-reflection)
-      const gi = sections[i].groupIndex;
-      const pageIdx = groupPageIndex.get(groups[gi]);
-      // a member counts as reviewed only when their page is both visited AND required-complete
-      if (pageIdx !== undefined && this.pageVisited[pageIdx] && this.pageRequiredCompletion[pageIdx]) count++;
+    for (let page = 1; page <= this.maxAccessiblePageIndex; page++) {
+      if (this.pageVisited[page] && this.pageRequiredCompletion[page]) {
+        count++;
+      }
     }
     return count;
   }
@@ -1464,126 +1461,4 @@ Best regards`;
     await modal.present();
   }
 
-  /** true when the current task is a team360 assessment */
-  get isTeam360(): boolean {
-    return this.task?.assessmentType === 'team360';
-  }
-
-  /**
-   * for team360: computes first-page index for every group by mirroring splitGroupsByQuestionCount.
-   * internal helper consumed by team360VisibleSections.
-   */
-  private get _team360AllSectionFirstPages(): number[] {
-    const groups = this.assessment?.groups ?? [];
-    if (!groups.length) return [];
-    const result: number[] = new Array(groups.length).fill(0);
-    let pageIdx = 0;
-    let count = 0;
-    for (let gi = 0; gi < groups.length; gi++) {
-      const qCount = groups[gi].questions?.length ?? 0;
-      if (count + qCount <= this.pageSize) {
-        result[gi] = pageIdx;
-        count += qCount;
-      } else {
-        if (count > 0) {
-          pageIdx++;
-          count = 0;
-        }
-        if (qCount > this.pageSize) {
-          result[gi] = pageIdx;
-          pageIdx += Math.ceil(qCount / this.pageSize);
-          count = 0;
-        } else {
-          result[gi] = pageIdx;
-          count = qCount;
-        }
-      }
-    }
-    return result;
-  }
-
-  /**
-   * for team360: returns only the sections (groups) that should render as pagination dots.
-   * always includes group 0 (self-reflection); teammate groups are included only when their
-   * selector question has at least one team member assigned — empty placeholder groups are excluded.
-   */
-  /**
-   * for team360: returns the visible pagination sections.
-   * dot 1 = self-reflection (group 0). dots 2..N+1 = one per real teammate to rate.
-   * the assessment template can have more non-self "rating slot" groups than there are actual
-   * teammates (e.g. 4 placeholder groups for only 2 real members). cap the rating dots at the
-   * unique team member key count so the dot total reflects who actually needs rating.
-   * each non-self dot maps to the first page of the i-th non-self selector group.
-   */
-  get team360VisibleSections(): { groupIndex: number; firstPage: number }[] {
-    if (!this.isTeam360) return [];
-    const groups = this.assessment?.groups ?? [];
-    if (!groups.length) return [];
-    const firstPages = this._team360AllSectionFirstPages;
-    // self-reflection always first
-    const result: { groupIndex: number; firstPage: number }[] = [
-      { groupIndex: 0, firstPage: firstPages[0] ?? 0 },
-    ];
-    // cap rating dots at the number of unique team members
-    const memberCap = this._team360MinPages;
-    if (memberCap === 0) return result;
-    let added = 0;
-    for (let gi = 1; gi < groups.length && added < memberCap; gi++) {
-      const selectorQ = groups[gi].questions?.find(q =>
-        q.type === 'team member selector' || q.type === 'multi team member selector'
-      );
-      if (!selectorQ) continue;
-      if ((selectorQ.teamMembers?.length ?? 0) === 0) continue;
-      result.push({ groupIndex: gi, firstPage: firstPages[gi] ?? 0 });
-      added++;
-    }
-    return result;
-  }
-
-  /**
-   * for team360: returns the dot index (within team360VisibleSections) that contains the current
-   * pageIndex. the active dot is the highest one whose firstPage <= pageIndex.
-   */
-  get team360ActiveSectionIndex(): number {
-    const sections = this.team360VisibleSections;
-    let active = 0;
-    for (let i = 0; i < sections.length; i++) {
-      if (sections[i].firstPage <= this.pageIndex) {
-        active = i;
-      }
-    }
-    return active;
-  }
-
-  /** for team360: navigate to the first page of the given visible-section dot index */
-  goToSection(dotIndex: number): void {
-    const sections = this.team360VisibleSections;
-    if (dotIndex >= 0 && dotIndex < sections.length) {
-      this.goToPage(sections[dotIndex].firstPage);
-    }
-  }
-
-  /**
-   * for team360: returns true when all pages belonging to the given visible-section dot index
-   * have been visited AND have all required questions answered.
-   * end boundary uses the next consecutive group's firstPage (not the next visible section's
-   * firstPage) so that hidden placeholder groups beyond the last visible dot do not inflate
-   * the range and cause the dot to stay permanently incomplete.
-   */
-  isTeam360SectionComplete(dotIndex: number): boolean {
-    if (!this.doAssessment && !this.isPendingReview) return true;
-    const sections = this.team360VisibleSections;
-    const section = sections[dotIndex];
-    if (!section) return false;
-    const allFirstPages = this._team360AllSectionFirstPages;
-    const start = section.firstPage;
-    // end at the immediately next group's firstPage (in original group order); this excludes
-    // pages belonging to hidden placeholder groups that come after the last visible dot.
-    const nextGroupIdx = section.groupIndex + 1;
-    const end = nextGroupIdx < allFirstPages.length ? allFirstPages[nextGroupIdx] : this.pageCount;
-    for (let p = start; p < end; p++) {
-      if (!this.pageVisited[p] || !this.pageRequiredCompletion[p]) return false;
-    }
-    return true;
-  }
 }

@@ -339,15 +339,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    * @param keyboardEvent The keyboard event object, if the function was called by a keyboard event.
    * @returns A Promise that resolves when the navigation is complete.
    */
-  async gotoActivity({ activity, milestone }, keyboardEvent?: KeyboardEvent) {
+  async gotoActivity({ activity, milestone }, keyboardEvent?: Event) {
     // UI: clear lastVisited indicator (italic + grayed background)
     this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
       ele.classList.remove('lastVisited');
     });
 
     if (
-      keyboardEvent &&
-      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
+      keyboardEvent instanceof KeyboardEvent &&
+      (keyboardEvent.code === "Space" || keyboardEvent.code === "Enter")
     ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
@@ -483,10 +483,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     window.open(url, '_blank');
   }
 
-  achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
+  achievePopup(achievement: Achievement, keyboardEvent?: Event): void {
     if (
-      keyboardEvent &&
-      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
+      keyboardEvent instanceof KeyboardEvent &&
+      (keyboardEvent.code === "Space" || keyboardEvent.code === "Enter")
     ) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
