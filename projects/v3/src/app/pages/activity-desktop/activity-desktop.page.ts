@@ -204,10 +204,10 @@ export class ActivityDesktopPage {
 
             if (targetTask) {
               this.goToTask({
+                ...targetTask,
                 id: assessmentId || directTaskId,
                 contextId: this.urlParams.contextId,
-                type: targetTask.type,
-                name: targetTask.name,
+
               });
             }
           }
