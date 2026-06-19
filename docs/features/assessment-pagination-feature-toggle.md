@@ -1,3 +1,11 @@
+---
+status: stable
+authority: canonical
+scope: frontend
+last_reviewed: 2026-05-05
+supersedes: none
+---
+
 # Assessment Pagination Feature Toggle
 
 This document explains how to enable/disable the assessment pagination feature using environment flags.
@@ -28,10 +36,27 @@ export const environment = {
 ## Behavior
 
 ### When `assessmentPagination: true` (Default)
-- Assessment questions are split across multiple pages (8 questions per page by default)
-- Pagination controls (Previous/Next buttons and page indicators) are visible
-- Users can navigate between pages using buttons or clicking page indicators
-- Page completion indicators show which pages have unanswered required questions
+- assessment questions are split across multiple pages (10 questions per page)
+- pagination controls (Prev/Next buttons and page indicators) are visible in the bottom action bar
+- Team360 assessments are the exception: they show only Prev/Next buttons, with no page numbers, dots, completion icons, or direct page-indicator navigation
+- Team360 forward navigation is capped at one self-reflection page plus the number of selected team members
+- Team360 assumes page 0 is self-reflection and each following accessible page maps to one team-member group
+- page indicator states depend on the current mode:
+
+  **edit mode** (`doAssessment = true` or `isPendingReview = true`):
+
+  | visited | required complete | indicator |
+  |---|---|---|
+  | no | any | plain number (neutral) |
+  | yes | no | plain number (neutral) |
+  | yes | yes | green checkmark |
+
+  **read-only mode** (feedback viewing, completed submission, locked team assessment):
+  - all indicators show plain numbers only — completion state is irrelevant when nothing is editable
+
+- when the user clicks Submit and unvisited pages exist, they are submitted directly — no confirmation dialog is shown
+- navigating to a new page automatically scrolls the view back to the top of the form (handles both mobile `ion-content` and desktop split-pane `ion-col` scroll containers)
+- the submit button is centered directly below the pagination row in the bottom action bar
 
 ### When `assessmentPagination: false`
 - All assessment questions are displayed on a single page
@@ -41,12 +66,14 @@ export const environment = {
 
 ## Technical Implementation
 
-The feature toggle affects:
+the feature toggle affects:
 
-1. **Template Rendering**: Pagination UI is conditionally rendered based on `isPaginationEnabled`
-2. **Question Display**: Questions are either paginated or shown all at once via `pagedGroups` getter
-3. **Navigation Methods**: Pagination methods (`prevPage`, `nextPage`, etc.) are safe-guarded
-4. **Page Completion**: Completion tracking is only active when pagination is enabled
+1. **template rendering** — pagination UI is conditionally rendered based on `isPaginationEnabled`
+   - `showPageIndicators` keeps numbered page indicators available for non-Team360 assessments only
+2. **question display** — questions are either paginated or shown all at once via `pagedGroups` getter
+3. **navigation methods** — `prevPage()`, `nextPage()`, `goToPage()` are no-ops when pagination is disabled; each marks the destination page in `pageVisited[]`
+4. **page completion** — `pageRequiredCompletion[]` tracks whether all required questions on each page are answered; indicators are gated on `pageVisited[]` so unvisited pages always show neutral
+5. **submit guard** — `continueToNextTask()` checks `pageVisited[]` before submitting; shows a confirmation alert when any page is unvisited
 
 ## Usage Examples
 
