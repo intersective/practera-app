@@ -1,3 +1,11 @@
+---
+status: stable
+authority: canonical
+scope: frontend
+last_reviewed: 2026-05-01
+supersedes: none
+---
+
 # Assessment Flow Documentation
 
 ## Overview
@@ -13,7 +21,7 @@ Activity Pages (Desktop/Mobile)
     ↓
 Assessment Component (Central Hub)
     ↓ (with Pagination enabled)
-Page Indicators ←→ Question Groups (Split into Pages) ←→ Navigation Controls
+Page Indicators (non-Team360) / Prev-Next Only (Team360) ←→ Question Groups (Split into Pages) ←→ Navigation Controls
     ↓
 Question Components (Text, File, Multiple Choice, etc.)
     ↓
@@ -25,11 +33,14 @@ When pagination is enabled (`environment.featureToggles.assessmentPagination = t
 
 ```
 1. Assessment loads → splitGroupsByQuestionCount()
-2. Groups divided into pages (≤8 questions per page)
-3. Page indicators show completion status
-4. Users navigate: Prev/Next buttons or click page indicators
-5. Form validation tracks completion per page
-6. Submit button integrates with pagination controls
+2. Groups divided into pages (≤10 questions per page)
+3. Non-Team360 page indicators show completion status
+4. Users navigate with Prev/Next buttons; non-Team360 users can also click page indicators
+5. Team360 assessments hide page numbers/dots and use Prev/Next-only pagination
+6. Team360 Next navigation stops after self-reflection plus the selected team-member count
+   - Team360 page 0 is self-reflection; each following accessible page maps to one team-member group
+7. Form validation tracks completion per page
+8. Submit button integrates with pagination controls
 ```
 
 ## Core Components
@@ -431,12 +442,26 @@ setSubmissionDisabled() {
 
 ### Core Properties
 ```typescript
-pageSize = 8;                           // Maximum questions per page
-pageIndex: number = 0;                  // Current page (0-based)
-pagesGroups: any[] = [];               // Pages containing question groups
-pageRequiredCompletion: boolean[] = []; // Completion status per page
-readonly manyPages = 6;                 // Minimum pages for scrollable pagination
+pageSize = 10;                          // maximum questions per page
+pageIndex: number = 0;                  // current page (0-based)
+pagesGroups: any[] = [];               // pages containing question groups
+pageRequiredCompletion: boolean[] = []; // completion status per page (required questions answered?)
+pageVisited: boolean[] = [];            // whether the user has navigated to each page
+readonly manyPages = 10;               // minimum pages to show scrollable pagination
 ```
+
+#### page indicator state model
+
+| `pageVisited[i]` | `pageRequiredCompletion[i]` | visual state |
+|---|---|---|
+| `false` | any | plain number (neutral — not yet visited) |
+| `true` | `true` | green checkmark (visited + required complete) |
+| `true` | `false` | plain number (neutral — visited but incomplete; no red) |
+
+- on first load, only page 0 is marked visited.
+- pages are marked visited when the user navigates to them via `prevPage()`, `nextPage()`, or `goToPage()`.
+- `pageVisited` is reset to `[]` in `ngOnChanges` whenever `assessment`, `submission`, or `review` changes.
+- in read-only mode all pages are marked visited (all indicators show green).
 
 ### Page Generation Logic
 ```typescript
@@ -450,14 +475,14 @@ splitGroupsByQuestionCount() {
 
 ### Navigation Methods
 ```typescript
-prevPage()              // Go to previous page with boundary check
-nextPage()              // Go to next page with boundary check
-goToPage(i: number)     // Jump to specific page with validation
+prevPage()              // go to previous page; marks destination as visited
+nextPage()              // go to next page; marks destination as visited
+goToPage(i: number)     // jump to specific page; marks target as visited
 ```
 
 ### Completion Tracking
 
-The completion tracking system has been improved to handle proper initialization timing and avoid the "incompleted" class showing incorrectly on first load.
+completion tracking is gated on `pageVisited` so optional-only pages never show false-positive red indicators.
 
 ```typescript
 ngOnChanges(changes: SimpleChanges): void {
@@ -468,9 +493,8 @@ ngOnChanges(changes: SimpleChanges): void {
   this._initialise();
 
   if (changes.assessment || changes.submission || changes.review) {
-    // reset button state when assessment changes
-    this.btnDisabled$.next(false);
     this.pageRequiredCompletion = [];
+    this.pageVisited = [];           // reset visited state on new assessment/submission
 
     this._handleSubmissionData();
     this._populateQuestionsForm();
@@ -478,34 +502,28 @@ ngOnChanges(changes: SimpleChanges): void {
     this._prefillForm();
   }
 
-  // split by question count every time assessment changes - only if pagination is enabled
   if (this.isPaginationEnabled) {
     this.pagesGroups = this.splitGroupsByQuestionCount();
     this.pageIndex = 0;
 
-    // initialize page completion after form is fully set up
-    // use delay to ensure form values are populated
     setTimeout(() => {
       this.initializePageCompletion();
     }, 200);
   } else {
-    // Reset pagination data when disabled
     this.pagesGroups = [];
     this.pageIndex = 0;
   }
 
-  // scroll to the active page into view after rendering
   setTimeout(() => this.scrollActivePageIntoView(), 250);
 }
 
 initializePageCompletion() {
   if (!this.isPaginationEnabled) return;
 
-  // Only track completion status when user can actually edit the form
-  // In read-only mode (viewing feedback or completed submissions), completion tracking is not relevant
   if (!this.doAssessment && !this.isPendingReview) {
-    // Set all pages as completed for read-only mode to avoid showing incomplete indicators
+    // read-only mode: mark everything visited and complete
     this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+    this.pageVisited = new Array(this.pageCount).fill(true);
     this.cdr.detectChanges();
     setTimeout(() => this.scrollActivePageIntoView(), 100);
     return;
@@ -513,32 +531,26 @@ initializePageCompletion() {
 
   this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
 
+  // only initialise visited array on first call; preserve state on re-runs (e.g. form value changes)
+  if (!this.pageVisited.length) {
+    this.pageVisited = new Array(this.pageCount).fill(false);
+    this.pageVisited[0] = true;        // page 0 is always visited on load
+  }
+
   this.pages.forEach((page, index) => {
     const pageQuestions = this.getAllQuestionsForPage(index);
     this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
   });
 
-  // trigger change detection to update the view
   this.cdr.detectChanges();
-
-  // Update the scroll position when page completion status changes
   setTimeout(() => this.scrollActivePageIntoView(), 100);
 }
 ```
 
-**Key Improvements for First Load Issue:**
-1. **Timing Fix**: `initializePageCompletion()` is now called in `ngOnChanges()` after pagination setup with a 200ms delay
-2. **Change Detection**: Added `this.cdr.detectChanges()` to ensure the view updates when completion status changes
-3. **Form Population Order**: Form values are populated via `_prefillForm()` before completion tracking runs
-4. **Race Condition Prevention**: Delayed form valueChanges subscription to avoid interference during initialization
-5. **Read-Only Mode Handling**: Completion tracking is disabled when users are viewing feedback or completed submissions (`!doAssessment && !isPendingReview`), showing all pages as completed instead
-
-## Pagination Issue Fixes
-
-### Problem: "Incompleted" Class on First Load
+### Problem: Stale Completion State on First Load
 
 **Issue Description:**
-Page indicators showed up with the "incompleted" class on first load of assessments, even when questions were already answered. This occurred due to a timing mismatch between form population and completion tracking initialization.
+Page indicators could show an incorrect state on first load of assessments, even when questions were already answered. This occurred due to a timing mismatch between form population and completion tracking initialization.
 
 **Root Cause:**
 The `initializePageCompletion()` method was being called before form values were fully populated, causing `areAllRequiredQuestionsAnswered()` to return false for completed questions.
@@ -584,6 +596,28 @@ The `initializePageCompletion()` method was being called before form values were
 
 **Result:**
 Page indicators now correctly show completion status on first load, with proper visual feedback for answered and unanswered required questions.
+
+### Unvisited-pages confirmation guard (Team 360 early-submit prevention)
+
+**context:** in Team 360 assessments, the first N question groups (pages) contain required questions for mandatory team members; additional pages contain optional questions for extra members. once the required pages are answered the form becomes valid and the submit button enables — but the learner may not have visited the optional pages. clicking submit at that point would silently skip feedback for the remaining team members.
+
+**solution (`assessment.component.ts:continueToNextTask()`):**
+
+```
+continueToNextTask() is now async
+↓
+on submit action, check: isPaginationEnabled && pageCount > 1 && any pageVisited[i] === false
+↓
+if unvisited pages exist → present AlertController dialog
+  "Review pages" → goToPage(firstUnvisited); cancel submission
+  "Submit anyway" → proceed to _doSubmit()
+↓
+if no unvisited pages → proceed directly to _doSubmit()
+```
+
+relevant source: `projects/v3/src/app/components/assessment/assessment.component.ts` — `continueToNextTask()`, `_doSubmit()`, `_confirmSubmitWithUnvisitedPages()`
+
+**the guard is generic** — it fires for any multi-page assessment where the learner has not visited every page, not just Team 360. zero friction when all pages have been visited.
 
 ## Error Handling
 
@@ -753,7 +787,7 @@ Key strengths:
 - Robust error handling and network resilience
 - Performance optimizations for large assessments
 - Comprehensive pagination system for long assessments
-- **Improved initialization timing** to prevent incorrect "incompleted" status on first load
+- **Improved initialization timing** to prevent incorrect completion status on first load
 - **Proper change detection management** with OnPush strategy
 - **Race condition prevention** through strategic delays and sequencing
 
