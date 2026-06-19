@@ -4,18 +4,22 @@
 
 ## Requirements
 
-- Ionic v7
-- Angular v17
+- Node.js 20.20.2 or newer within the Angular-supported Node 20 range
+- npm 10.8.2 or newer
+- Ionic v8
+- Angular v20
 
 ## Development Notes
 
-Run `npm install` to install necessary packages
+Run `npm install --ignore-scripts` to install necessary packages. `package-lock.json` is the dependency lockfile and npm is the package manager source of truth.
 
 Run `npm run lint` to lint app codebase
 
 Run `npm start` to launch App locally
 
 Run `npm run i18n` to update coverage of translateable static text
+
+Angular 21 is intentionally gated until the app's framework peers officially support it, especially Ionic and the Uppy Angular wrapper. See [Angular 20 baseline and 21 gate](./docs/upgrades/angular-20-baseline-and-21-gate.md).
 
 ### Localisation & Internationalisation
 This should be applied only to `trunk` (development) or `release/live` separately. Both `messages.xlf` files in the both branches can never be the same because `trunk` has more untested code.

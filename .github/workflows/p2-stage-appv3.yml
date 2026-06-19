@@ -95,7 +95,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20.20.2
 
 
 ################################################
@@ -124,7 +124,7 @@ jobs:
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run:  npm install
+        run:  npm ci --ignore-scripts
 
 
 ################################################

@@ -12,8 +12,9 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
 
 import { HomePage } from './home.page';
 import { of } from 'rxjs';
@@ -85,9 +86,11 @@ describe('HomePage', () => {
 
     TestBed.configureTestingModule({
       declarations: [ HomePage ],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      imports: [IonicModule.forRoot()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({}),

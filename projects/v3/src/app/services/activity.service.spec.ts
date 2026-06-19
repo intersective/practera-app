@@ -1,5 +1,6 @@
 import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { ActivityService } from './activity.service';
 import { of, throwError } from 'rxjs';
 import { RequestService } from 'request';
@@ -27,8 +28,9 @@ describe('ActivityService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         ActivityService,
         {
           provide: UtilsService,
