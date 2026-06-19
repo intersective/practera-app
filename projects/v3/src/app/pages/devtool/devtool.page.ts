@@ -11,6 +11,7 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { environment } from '../../../environments/environment';
 import { FfmpegService } from '../../services/ffmpeg.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -221,7 +222,7 @@ export class DevtoolPage implements OnInit, OnDestroy {
 
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
-    const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    const response = await firstValueFrom(this.fastFeedbackService.pullFastFeedback({ modalOnly: true }));
     if (response.error) {
       console.error(response.message);
       return;

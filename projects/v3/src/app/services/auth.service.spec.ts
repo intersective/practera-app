@@ -7,7 +7,8 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from './notifications.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { ApolloService } from './apollo.service';
 import { DemoService } from './demo.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
@@ -26,8 +27,9 @@ describe('AuthService', () => {
   beforeEach(() => {
     const notificationsSpy = jasmine.createSpyObj('NotificationsService', ['alert']);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         AuthService,
         {
           provide: DemoService,
@@ -368,4 +370,3 @@ describe('AuthService', () => {
     }));
   });
 });
-

@@ -39,11 +39,8 @@ export class ApolloService {
         }
       }),
       link: this.httpLink.create({
-        uri: environment.graphQL
-      }),
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-      }
+        uri: environment.graphQL,
+      })
     });
 
     this.apolloInstance = this.apollo;
@@ -122,10 +119,7 @@ export class ApolloService {
   }): Observable<any> {
     // Direct login is using GraphQL before landing on AppComponent,
     // so need force instantiation beforehand
-    let apollo: Apollo = this.apollo;
-    if (!!(this.apolloInstance || this.apollo).client) {
-      apollo = this.initiateCoreClient();
-    }
+    const apollo = this.initiateCoreClient();
 
     const watch = apollo.query({
       query: gql(query),

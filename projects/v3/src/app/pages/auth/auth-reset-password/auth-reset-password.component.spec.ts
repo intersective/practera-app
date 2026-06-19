@@ -116,7 +116,7 @@ describe('AuthResetPasswordComponent', () => {
     });
 
     it('should pop up alert and redirect if verify resetpassword failed', () => {
-      authServiceSpy.verifyResetPassword.and.returnValue(throwError(''));
+      authServiceSpy.verifyResetPassword.and.returnValue(throwError(() => ''));
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -153,9 +153,9 @@ describe('AuthResetPasswordComponent', () => {
     });
 
     it('should pop up alert if password compromised', fakeAsync(() => {
-      authServiceSpy.resetPassword.and.returnValue(throwError({
+      authServiceSpy.resetPassword.and.returnValue(throwError(() => ({
         data: { type: 'password_compromised' }
-      }));
+      })));
       component.resetPassword();
       tick();
       expect(notificationSpy.alert.calls.count()).toBe(1);
@@ -163,7 +163,7 @@ describe('AuthResetPasswordComponent', () => {
     }));
 
     it('should pop up alert if reset password failed', () => {
-      authServiceSpy.resetPassword.and.returnValue(throwError(''));
+      authServiceSpy.resetPassword.and.returnValue(throwError(() => ''));
       component.resetPassword();
       expect(notificationSpy.presentToast.calls.count()).toBe(1);
     });
@@ -187,4 +187,3 @@ describe('AuthResetPasswordComponent', () => {
     });
   });
 });
-

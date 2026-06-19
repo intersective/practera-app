@@ -5,10 +5,10 @@ import { RequestInterceptor } from '@v3/services/request.interceptor';
 import { IonicModule } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
 import { RequestModule } from 'request';
+import { Apollo } from 'apollo-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SnowOverlayComponent } from './components/snow-overlay/snow-overlay.component';
@@ -28,7 +28,6 @@ import { SnowOverlayComponent } from './components/snow-overlay/snow-overlay.com
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
-    ApolloModule,
     SnowOverlayComponent,
   ],
   providers: [
@@ -38,6 +37,7 @@ import { SnowOverlayComponent } from './components/snow-overlay/snow-overlay.com
       useClass: RequestInterceptor,
       multi: true,
     },
+    Apollo,
     ApolloService,
   ],
   bootstrap: [AppComponent]

@@ -4,8 +4,9 @@ import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule } from '@ionic/angular';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { provideHttpClient } from '@angular/common/http';
 
 import { ActivityMobilePage } from './activity-mobile.page';
 import { of, Subject } from 'rxjs';
@@ -27,9 +28,11 @@ describe('ActivityMobilePage', () => {
 
     TestBed.configureTestingModule({
       declarations: [ ActivityMobilePage ],
-      imports: [IonicModule.forRoot(), HttpClientTestingModule],
+      imports: [IonicModule.forRoot()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -59,10 +62,7 @@ describe('ActivityMobilePage', () => {
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', {
-            setPageTitle: undefined,
-            getEvent: new Subject(),
-          }),
+          useValue: jasmine.createSpyObj('UtilsService', ['setPageTitle']),
         },
       ],
     }).compileComponents();
