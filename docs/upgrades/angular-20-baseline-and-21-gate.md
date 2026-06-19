@@ -1,5 +1,7 @@
 # Angular 20 baseline and Angular 21 gate
 
+Related planning note: [Angular 21 evaluation for `projects/v3`](./angular-21-evaluation-v3.md)
+
 ## Current baseline
 
 `projects/v3` and the internal `projects/request` library are pinned to an Angular 20 baseline:
