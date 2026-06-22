@@ -209,6 +209,26 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get displayChoices(): Array<any> {
+    if (!this.isDisplayOnly) {
+      return this.question?.choices || [];
+    }
+
+    const selectedIds = new Set<any>();
+    if (this.submission?.answer !== null && this.submission?.answer !== undefined) {
+      selectedIds.add(this.submission.answer);
+    }
+    if (this.review?.answer !== null && this.review?.answer !== undefined) {
+      selectedIds.add(this.review.answer);
+    }
+
+    if (selectedIds.size === 0) {
+      return [];
+    }
+
+    return (this.question?.choices || []).filter(choice => selectedIds.has(choice.id));
+  }
+
   // innerHTML text toggle
   onLabelToggle = (id: string): void => {
     this.onChange(id);
