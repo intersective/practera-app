@@ -135,7 +135,13 @@ describe('HomePage', () => {
   describe('updateDashboard', () => {
     beforeEach(() => {
       sharedService.refreshJWT.and.returnValue(Promise.resolve());
-      storageService.get.and.returnValue({ name: 'Test Experience', cardUrl: 'test-url' });
+      storageService.get.and.returnValue({
+        leadImage: '',
+        name: 'Test Experience',
+        description: '',
+        locale: 'en',
+        cardUrl: 'test-url',
+      });
       storageService.getFeature.and.returnValue(true);
       achievementService.getIsPointsConfigured.and.returnValue(true);
       achievementService.getEarnedPoints.and.returnValue(100);
@@ -143,7 +149,7 @@ describe('HomePage', () => {
         success: true,
         status: 'success',
         cache: false,
-        data: { pulseCheckStatus: { red: 1, orange: 2, green: 3 } }
+        data: { pulseCheckStatus: { self: 1, expert: 2, team: 3, teams: [] } }
       }));
       homeService.getPulseCheckSkills.and.returnValue(of({
         success: true,
@@ -163,7 +169,13 @@ describe('HomePage', () => {
     it('should get experience from storage', async () => {
       await component.updateDashboard();
       expect(storageService.get).toHaveBeenCalledWith('experience');
-      expect(component.experience).toEqual({ name: 'Test Experience', cardUrl: 'test-url' });
+      expect(component.experience).toEqual({
+        leadImage: '',
+        name: 'Test Experience',
+        description: '',
+        locale: 'en',
+        cardUrl: 'test-url',
+      });
     });
 
     it('should set project hub visibility from feature toggle', async () => {
@@ -211,7 +223,7 @@ describe('HomePage', () => {
       component.pulseCheckIndicatorEnabled = true;
       await component.updateDashboard();
       expect(homeService.getPulseCheckStatuses).toHaveBeenCalled();
-      expect(component.pulseCheckStatus).toEqual({ red: 1, orange: 2, green: 3 });
+      expect(component.pulseCheckStatus).toEqual({ self: 1, expert: 2, team: 3, teams: [] });
     });
 
     it('should not get pulse check statuses when pulse check indicator is disabled', async () => {
