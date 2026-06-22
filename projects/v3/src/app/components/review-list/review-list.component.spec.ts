@@ -54,23 +54,17 @@ describe('ReviewListComponent', () => {
   });
 
   describe('switchStatus()', () => {
-    it('should switch status', () => {
+    it('should toggle showDone and navigate to first matching review', () => {
       component.reviews = [
         { isDone: false, name: 'Pending review', submissionId: 1 } as any,
         { isDone: true, name: 'Completed review', submissionId: 2 } as any,
       ];
       component.currentReview = component.reviews[0];
-      component.ngOnChanges({
-        reviews: new SimpleChange(null, component.reviews, true),
-        currentReview: new SimpleChange(null, component.currentReview, true),
-      });
       component.goToFirstOnSwitch = true;
       const spy = spyOn(component.navigate, 'emit');
-      component.switchStatus({
-        detail: {
-          value: 'completed',
-        },
-      } as any);
+      component.switchStatus(new CustomEvent('ionChange', {
+        detail: { value: 'completed' },
+      }));
       expect(spy).toHaveBeenCalledWith(component.reviews[1]);
       expect(component.showDone).toBeTrue();
       expect(component.segmentValue).toBe('completed');

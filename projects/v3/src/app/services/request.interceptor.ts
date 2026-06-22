@@ -32,7 +32,7 @@ export class RequestInterceptor implements HttpInterceptor {
           error?.error?.text === 'success') {
           return of(error);
         }
-        return throwError(error);
+        return throwError(() => error);
       }));
     }
     const apikey = this.storage.getUser().apikey;

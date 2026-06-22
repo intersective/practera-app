@@ -109,7 +109,7 @@ export class ReviewRatingComponent implements OnInit {
   private async fastFeedbackOrRedirect(): Promise<any> {
     // if this.redirect == false, don't redirect to another page
     if (!this.redirect) {
-      return await this.fastFeedbackService.pullFastFeedback().toPromise();
+      return await firstValueFrom(this.fastFeedbackService.pullFastFeedback());
     }
 
     if (!this.utils.isMobile()) {

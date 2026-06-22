@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { AuthService } from '@v3/app/services/auth.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -218,7 +218,7 @@ export class DevtoolPage implements OnInit, OnDestroy {
 
   async pulsecheck() {
     this.storageService.set('fastFeedbackOpening', false);
-    const response = await this.fastFeedbackService.pullFastFeedback({ modalOnly: true }).toPromise();
+    const response = await firstValueFrom(this.fastFeedbackService.pullFastFeedback({ modalOnly: true }));
     if (response.error) {
       console.error(response.message);
       return;

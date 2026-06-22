@@ -289,7 +289,7 @@ describe('SupportPopupComponent', () => {
       component.problemContent = 'Test Content';
       component.hasConsent = true;
 
-      hubspotSpy.submitDataToHubspot = jasmine.createSpy().and.returnValue(throwError('An error occurred'));
+      hubspotSpy.submitDataToHubspot = jasmine.createSpy().and.returnValue(throwError(() => 'An error occurred'));
 
       component.submitForm();
 
