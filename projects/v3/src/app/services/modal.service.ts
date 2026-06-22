@@ -60,4 +60,28 @@ export class ModalService {
 
     return await modal.present();
   }
+
+  /**
+   * opens a modal with the uppyuploadercomponent.
+   * @param source the context or type of upload.
+   * @return a promise that resolves with the modal element.
+   */
+  async openUppyUploaderModal(source: string): Promise<HTMLIonModalElement> {
+    // Load the component lazily to avoid the runtime cycle:
+    // NotificationsService -> ModalService -> UppyUploaderComponent -> NotificationsService.
+    const { UppyUploaderComponent } = await import('../components/uppy-uploader/uppy-uploader.component');
+
+    const modal = await this.modalController.create({
+      component: UppyUploaderComponent,
+      componentProps: {
+        // 'source' will be passed to uppyuploadercomponent's @input() source.
+        // there's an existing type mismatch between uppymodalsource and the component's expected source type.
+        // using 'as any' to bypass this for now, as in the previous implementation.
+        source: source as any
+      },
+      cssClass: 'uppy-uploader-modal',
+    });
+    await modal.present();
+    return modal;
+  }
 }

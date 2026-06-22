@@ -6,6 +6,7 @@ import { Uppy } from '@uppy/core';
 import { FileUploadComponent } from './file-upload.component';
 import { UppyUploaderService } from '../uppy-uploader/uppy-uploader.service';
 import { CompressionProgress } from '../../services/ffmpeg.service';
+import { FormControl } from '@angular/forms';
 
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
@@ -135,6 +136,7 @@ describe('FileUploadComponent', () => {
       fixture.detectChanges();
       component.ngOnDestroy();
       expect(mockUppy.destroy).toHaveBeenCalled();
+      expect(uppyServiceSpy.cancelCompression).toHaveBeenCalled();
     });
   });
 
@@ -152,6 +154,239 @@ describe('FileUploadComponent', () => {
     it('should return generic message for any fileType', () => {
       component.question = { ...component.question, fileType: 'any' };
       expect(component.noteMessage()).toContain('Docs, images and videos');
+    });
+  });
+
+  describe('Uppy configuration and events', () => {
+    it('should restrict video questions to video files', () => {
+      component.question = { ...component.question, fileType: 'video' };
+
+      component.ngOnInit();
+
+      expect(uppyServiceSpy.createUppyInstance.calls.mostRecent().args[3]).toEqual({
+        allowedFileTypes: ['video/*'],
+      });
+    });
+
+    it('should restrict image questions to image files', () => {
+      component.question = { ...component.question, fileType: 'image' };
+
+      component.ngOnInit();
+
+      expect(uppyServiceSpy.createUppyInstance.calls.mostRecent().args[3]).toEqual({
+        allowedFileTypes: ['image/*'],
+      });
+    });
+
+    it('should parse the TUS response body', () => {
+      spyOn(console, 'log');
+      const body = { bucket: 'files', path: '/file.pdf', cdnUrl: 'cdn/file.pdf', directUrl: 'direct/file.pdf' };
+
+      component.onAfterResponse({}, { getBody: () => JSON.stringify(body) });
+
+      expect(component.tusResponse).toEqual(body);
+    });
+
+    it('should register file handlers and remove deleted files', () => {
+      spyOn(console, 'log');
+      component.uppy = mockUppy;
+      component.initializeEventHandlers(mockUppy);
+      const filesAdded = mockUppy.on.calls.argsFor(0)[1];
+      const fileRemoved = mockUppy.on.calls.argsFor(1)[1];
+
+      filesAdded([{ id: 'added' }]);
+      fileRemoved({ id: 'removed' });
+
+      expect(mockUppy.on).toHaveBeenCalledWith('files-added', jasmine.any(Function));
+      expect(mockUppy.on).toHaveBeenCalledWith('file-removed', jasmine.any(Function));
+      expect(mockUppy.removeFile).toHaveBeenCalledWith('removed');
+    });
+  });
+
+  describe('upload completion and form propagation', () => {
+    const uploadedData = {
+      id: 'file-1',
+      name: 'evidence.pdf',
+      type: 'application/pdf',
+      size: 1024,
+      extension: 'pdf',
+    } as any;
+
+    beforeEach(() => {
+      component.tusResponse = {
+        bucket: 'assessment',
+        path: '/evidence.pdf',
+        cdnUrl: 'https://cdn/evidence.pdf',
+        directUrl: 'https://direct/evidence.pdf',
+      };
+    });
+
+    it('should map a successful assessment upload and trigger answer change', () => {
+      component.doReview = false;
+      const changeSpy = spyOn(component, 'onChange');
+
+      component.onFileUploadCompleted(uploadedData, { status: 200 } as any);
+
+      expect(component.uploadedFile.url).toBe('https://cdn/evidence.pdf');
+      expect(changeSpy).toHaveBeenCalledWith('', undefined);
+      expect(component.errors).toEqual([]);
+    });
+
+    it('should trigger review answer change and expose non-200 failures', () => {
+      component.doReview = true;
+      const changeSpy = spyOn(component, 'onChange');
+
+      component.onFileUploadCompleted(uploadedData, { status: 500 } as any);
+
+      expect(changeSpy).toHaveBeenCalledWith('', 'answer');
+      expect(component.errors).toEqual(['File upload failed, please try again later.']);
+    });
+
+    it('should emit an assessment save and update its form control', () => {
+      component.doAssessment = true;
+      component.doReview = false;
+      component.submissionId = 10;
+      component.question = { ...component.question, id: 20 };
+      component.innerValue = { url: 'https://cdn/evidence.pdf' };
+      component.control = new FormControl();
+      const actions: any[] = [];
+      component.submitActions$.subscribe(action => actions.push(action));
+
+      component.triggerSave();
+
+      expect(component.control.value).toEqual(component.innerValue);
+      expect(actions[0].questionSave).toEqual({
+        submissionId: 10,
+        questionId: 20,
+        file: component.innerValue,
+      });
+    });
+
+    it('should emit a review save with comment and file', () => {
+      component.doAssessment = false;
+      component.doReview = true;
+      component.reviewId = 30;
+      component.submissionId = 10;
+      component.question = { ...component.question, id: 20 };
+      component.innerValue = { comment: 'Looks good', file: { url: 'https://cdn/evidence.pdf' } };
+      const actions: any[] = [];
+      component.submitActions$.subscribe(action => actions.push(action));
+
+      component.triggerSave();
+
+      expect(actions[0].reviewSave).toEqual({
+        reviewId: 30,
+        submissionId: 10,
+        questionId: 20,
+        file: component.innerValue.file,
+        comment: 'Looks good',
+      });
+    });
+
+    it('should initialise review state and mark the control as edited', () => {
+      component.doReview = true;
+      component.control = new FormControl();
+      component.uploadedFile = {
+        name: 'evidence.pdf', type: 'application/pdf', size: 1, extension: 'pdf',
+        bucket: 'assessment', path: '/evidence.pdf', url: 'unused',
+        cdnUrl: 'https://cdn/evidence.pdf', directUrl: 'https://direct/evidence.pdf',
+      };
+      spyOn(component, 'triggerSave');
+
+      component.onChange('review comment', 'comment');
+
+      expect(component.innerValue.comment).toBe('review comment');
+      expect(component.innerValue.file.url).toBe('https://cdn/evidence.pdf');
+      expect(component.control.dirty).toBeTrue();
+      expect(component.control.touched).toBeTrue();
+      expect(component.triggerSave).toHaveBeenCalled();
+    });
+
+    it('should return empty and populated API file formats', () => {
+      expect(component.fileRequestFormat()).toEqual({} as any);
+
+      component.uploadedFile = {
+        name: 'evidence.pdf', type: 'application/pdf', size: 1, extension: 'pdf',
+        bucket: 'assessment', path: '/evidence.pdf', url: 'unused',
+        cdnUrl: 'https://cdn/evidence.pdf', directUrl: 'https://direct/evidence.pdf',
+      };
+
+      expect(component.fileRequestFormat()).toEqual({
+        name: 'evidence.pdf', type: 'application/pdf', size: 1, extension: 'pdf',
+        bucket: 'assessment', path: '/evidence.pdf', url: 'https://cdn/evidence.pdf',
+      });
+    });
+  });
+
+  describe('saved answers and removal', () => {
+    it('should restore an edited review file from the control', () => {
+      component.doReview = true;
+      component.reviewStatus = 'in progress';
+      component.review = { answer: '', comment: 'saved', file: null };
+      component.control = new FormControl({
+        answer: '', comment: 'edited', file: { url: 'https://cdn/edited.pdf' },
+      });
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.comment).toBe('edited');
+      expect(component.uploadedFile.cdnUrl).toBe('https://cdn/edited.pdf');
+    });
+
+    it('should restore pristine review data', () => {
+      component.doReview = true;
+      component.reviewStatus = 'not start';
+      component.review = { answer: 'review', comment: 'saved', file: { url: 'saved.pdf' } };
+      component.control = new FormControl();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue).toEqual(component.review);
+      expect(component.comment).toBe('saved');
+    });
+
+    it('should restore an edited assessment file from the control', () => {
+      component.doAssessment = true;
+      component.submissionStatus = 'in progress';
+      component.submission = { answer: { url: 'saved.pdf' } };
+      component.control = new FormControl({ url: 'https://cdn/edited.pdf' });
+      component.control.markAsDirty();
+
+      component['_showSavedAnswers']();
+
+      expect(component.innerValue.url).toBe('https://cdn/edited.pdf');
+      expect(component.uploadedFile.cdnUrl).toBe('https://cdn/edited.pdf');
+    });
+
+    it('should clear assessment files from state and Uppy', () => {
+      component.doAssessment = true;
+      component.submission = { answer: { url: 'saved.pdf' } };
+      component.uppy = mockUppy;
+      spyOn(component, 'onChange');
+
+      component.removeSubmitFile({ handle: 'file-1' });
+
+      expect(component.submission.answer).toBeNull();
+      expect(component.onChange).toHaveBeenCalledWith('');
+      expect(mockUppy.removeFile).toHaveBeenCalledWith('file-1');
+      expect(mockUppy.clear).toHaveBeenCalled();
+    });
+
+    it('should clear review files and identify display helpers', () => {
+      component.doReview = true;
+      component.review = { answer: { url: 'saved.pdf' } };
+      component.uppy = mockUppy;
+      component.question = { ...component.question, audience: ['submitter', 'reviewer'] };
+      spyOn(component, 'onChange');
+
+      component.removeSubmitFile();
+
+      expect(component.review.answer).toBeNull();
+      expect(component.onChange).toHaveBeenCalledWith('', 'answer');
+      expect(component.audienceContainReviewer()).toBeTrue();
+      expect(component.extractFilenameFromUrl('/uploads/report.pdf+token')).toBe('report.pdf');
+      expect(component.extractFilenameFromUrl('/other/report.pdf')).toBeNull();
     });
   });
 });

@@ -485,4 +485,27 @@ describe('MultipleComponent', () => {
       expect(component.checkInnerValue(null)).toBeUndefined();
     });
   });
+
+  it('should expose non-required validation errors and request autosave', () => {
+    component.control = new FormControl([]);
+    component.control.setErrors({ invalidSelection: 'Selection is invalid' });
+    const autosaveSpy = spyOn(component.autosave$, 'next');
+
+    component.onChange(1);
+
+    expect(component.errors).toContain('Selection is invalid');
+    expect(autosaveSpy).toHaveBeenCalled();
+  });
+
+  it('should restore assessment data when no form control is supplied', () => {
+    component.submissionStatus = 'in progress';
+    component.doAssessment = true;
+    component.doReview = false;
+    component.submission = { answer: [1, 2] };
+    component.control = null;
+
+    component['_showSavedAnswers']();
+
+    expect(component.innerValue).toEqual([1, 2]);
+  });
 });

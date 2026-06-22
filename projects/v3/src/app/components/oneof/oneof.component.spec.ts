@@ -414,4 +414,27 @@ describe('OneofComponent', () => {
       expect(component.isDisplayOnly).toBeFalse();
     });
   });
+
+  it('should expose non-required validation errors after a change', () => {
+    component.control = new FormControl('choice');
+    component.control.setErrors({ invalidChoice: 'Choose an available option' });
+    const autosaveSpy = spyOn(component.autosave$, 'next');
+
+    component.onChange('choice');
+
+    expect(component.errors).toContain('Choose an available option');
+    expect(autosaveSpy).toHaveBeenCalled();
+  });
+
+  it('should restore pristine review state without a form control', () => {
+    component.reviewStatus = 'in progress';
+    component.doReview = true;
+    component.review = { answer: 2, comment: 'review comment' };
+    component.control = null;
+
+    component['_showSavedAnswers']();
+
+    expect(component.innerValue).toEqual({ answer: 2, comment: 'review comment' });
+    expect(component.comment).toBe('review comment');
+  });
 });

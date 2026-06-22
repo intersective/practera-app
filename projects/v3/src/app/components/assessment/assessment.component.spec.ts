@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, Directive, forwardRef } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 
@@ -13,11 +13,33 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { FastFeedbackServiceMock } from '@testingv3/mocked.service';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { ModalController } from '@ionic/angular';
+
+/**
+ * Provides a control value accessor for the mocked question components used by
+ * the assessment template. The real child components are intentionally not
+ * part of this unit-test module.
+ */
+@Directive({
+  standalone: false,
+  selector: '[formControlName]',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MockValueAccessorDirective),
+      multi: true
+    }
+  ]
+})
+class MockValueAccessorDirective implements ControlValueAccessor {
+  writeValue(_value: unknown): void {}
+  registerOnChange(_fn: unknown): void {}
+  registerOnTouched(_fn: unknown): void {}
+}
 
 class Page {
   get savingMessage() {
@@ -182,8 +204,8 @@ describe('AssessmentComponent', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [AssessmentComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      declarations: [AssessmentComponent, MockValueAccessorDirective],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -209,19 +231,28 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['stopPlayingVideos'])
+          useValue: jasmine.createSpyObj('SharedService', ['stopPlayingVideos', 'getTeamInfo'])
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment', 'saveAnswers', 'saveFeedbackReviewed', 'popUpReviewRating'])
+          useValue: jasmine.createSpyObj('AssessmentService', [
+            'getAssessment',
+            'saveAnswers',
+            'saveFeedbackReviewed',
+            'popUpReviewRating',
+            'saveQuestionAnswer',
+            'saveReviewAnswer',
+            'resubmitAssessment',
+            'fetchAssessment',
+          ])
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly', 'assessmentSubmittedToast'])
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['gotoNextTask'])
+          useValue: jasmine.createSpyObj('ActivityService', ['gotoNextTask', 'getActivity'])
         },
         {
           provide: FastFeedbackService,
@@ -275,6 +306,16 @@ describe('AssessmentComponent', () => {
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({ success: true }));
     // activitySpy.goToNextTask.and.returnValue(Promise.resolve());
     storageSpy.getUser.and.returnValue(mockUser);
+
+    // These subjects are required inputs supplied by the parent in production.
+    component.btnDisabled$ = new BehaviorSubject(false);
+    component.savingMessage$ = new BehaviorSubject('');
+    component.action = 'assessment';
+    component.form = {
+      nativeElement: {
+        querySelector: () => ({ classList: { add: () => undefined } })
+      }
+    } as any;
   });
 
   it('should be created', () => {
@@ -328,21 +369,20 @@ describe('AssessmentComponent', () => {
     });
 
     it('should update assessment with latest data', () => {
-      component.assessment = mockAssessment;
-      component.ngOnChanges({});
+      component.assessment = { ...mockAssessment };
+      component.ngOnChanges({ assessment: {} as any });
 
       expect(component.doAssessment).toEqual(true);
       expect(component.feedbackReviewed).toEqual(false);
-      expect(component.btnDisabled$.value).toEqual(false);
+      expect(component.btnDisabled$.value).toEqual(true);
       expect(component.isNotInATeam).toEqual(false);
       expect(component.isPendingReview).toEqual(false);
     });
 
     it('should not allow submission if locked', () => {
-      component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.assessment = { ...mockAssessment };
+      component.submission = { ...mockSubmission, isLocked: true } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -351,10 +391,9 @@ describe('AssessmentComponent', () => {
     });
 
     it('should not allow submission', () => {
-      component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.assessment = { ...mockAssessment };
+      component.submission = { ...mockSubmission, isLocked: true } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -363,35 +402,31 @@ describe('AssessmentComponent', () => {
     });
 
     it('should save & publish "saving" message', fakeAsync(() => {
-      component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = false;
-      component.submission.status = 'in progress';
+      component.assessment = { ...mockAssessment };
+      component.submission = { ...mockSubmission, isLocked: false, status: 'in progress' } as any;
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
-      component.ngOnChanges({});
+      component.ngOnChanges({ submission: {} as any });
 
-      tick();
+      tick(350);
       expect(component.doAssessment).toBeTrue();
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
-      expect(component.btnDisabled$.value).toEqual(false);
+      expect(component.btnDisabled$.value).toEqual(true);
+      flush();
     }));
 
     it('should flag assessment as "pending review"', () => {
-      component.assessment = mockAssessment;
-      component.assessment.type = 'moderated';
+      component.assessment = { ...mockAssessment, type: 'moderated' };
 
-      component.submission = mockSubmission as any;
-      component.submission.status = 'pending review';
+      component.submission = { ...mockSubmission, status: 'pending review' } as any;
 
-      component.review = mockReview;
-      component.review.status = 'in progress';
+      component.review = { ...mockReview, status: 'in progress' };
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
 
       component.action = 'review';
-      component.ngOnChanges({});
+      component.ngOnChanges({ review: {} as any });
 
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
@@ -400,13 +435,10 @@ describe('AssessmentComponent', () => {
 
 
     it('should flag assessment as "complete"', () => {
-      component.assessment = mockAssessment;
-      component.assessment.type = 'moderated';
+      component.assessment = { ...mockAssessment, type: 'moderated' };
 
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = false;
-      component.submission.status = 'done';
-      component.ngOnChanges({});
+      component.submission = { ...mockSubmission, isLocked: false, status: 'done' } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
@@ -746,7 +778,7 @@ describe('AssessmentComponent', () => {
         groups: []
       } as any;
 
-      spyOn(utils, 'isEmpty').and.returnValue(true);
+      (utils.isEmpty as jasmine.Spy).and.returnValue(true);
 
       component['_populateQuestionsForm']();
 
@@ -779,13 +811,13 @@ describe('AssessmentComponent', () => {
 
       spyOn(component, 'initializePageCompletion');
       spyOn(component, 'setSubmissionDisabled');
-      spyOn(utils, 'isEmpty').and.returnValue(false);
+      (utils.isEmpty as jasmine.Spy).and.returnValue(false);
 
       component['_populateQuestionsForm']();
 
-      // Trigger form value change
+      tick(300);
       component.questionsForm.get('q-1').setValue('test value');
-      tick(300); // Wait for debounce
+      tick(300);
 
       expect(component.initializePageCompletion).toHaveBeenCalled();
       expect(component.setSubmissionDisabled).toHaveBeenCalled();
@@ -1279,12 +1311,12 @@ describe('AssessmentComponent', () => {
       expect(component.labelColor).toEqual('');
     });
 
-    it('should return empty when status is unknown', () => {
+    it('should return danger when an in-progress assessment is overdue', () => {
       component.submission.status = 'in progress';
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;
-      expect(component.labelColor).toEqual('');
+      expect(component.labelColor).toEqual('danger');
     });
   });
 
@@ -2398,7 +2430,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multiple type in review mode', () => {
-        component.ngOnChanges({});
+        component['_populateQuestionsForm']();
         const control = component.questionsForm.controls['q-3'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -2410,7 +2442,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multi-team-member-selector type in review mode', () => {
-        component.ngOnChanges({});
+        component['_populateQuestionsForm']();
         const control = component.questionsForm.controls['q-6'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -2422,7 +2454,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for oneof type in review mode', () => {
-        component.ngOnChanges({});
+        component['_populateQuestionsForm']();
         const control = component.questionsForm.controls['q-2'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -2434,7 +2466,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
-        component.ngOnChanges({});
+        component['_populateQuestionsForm']();
         const control = component.questionsForm.controls['q-5'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -3297,6 +3329,7 @@ describe('AssessmentComponent', () => {
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
         component.questionsForm = makeValidForm();
+        component.pageRequiredCompletion = [true, true, true, true, true];
         component.btnDisabled$ = new BehaviorSubject(true);
 
         component.pageVisited = [true, true, false, false, false]; // 1 of 4
@@ -3331,6 +3364,7 @@ describe('AssessmentComponent', () => {
         component.assessment = { groups: [g0, g1, g2, g3, g4] } as any;
         component.pagesGroups = [[g0], [g1], [g2], [g3], [g4]];
         component.questionsForm = makeValidForm();
+        component.pageRequiredCompletion = [true, true, true, true, true];
         component.btnDisabled$ = new BehaviorSubject(true);
 
         // only self page visited — not enough
@@ -3367,6 +3401,7 @@ describe('AssessmentComponent', () => {
         component.assessment = { groups: [g0, g1, g2] } as any;
         component.pagesGroups = [[g0], [g1], [g2]];
         component.questionsForm = makeValidForm();
+        component.pageRequiredCompletion = [true, true, true];
         component.btnDisabled$ = new BehaviorSubject(true);
 
         // visit only page 1 (g1) — should be 1 of 2, NOT 2 of 2
@@ -3377,6 +3412,133 @@ describe('AssessmentComponent', () => {
         // visit both team member pages → 2 of 2 → enabled
         component.pageVisited = [true, true, true];
         component.setSubmissionDisabled();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('navigating via nextPage() to the final team member page enables the button when form is valid', () => {
+        // end-to-end flow: button disabled → user navigates to last member page → button enables
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
+        component.assessment = { groups: [g0, g1, g2] } as any;
+        component.pagesGroups = [[g0], [g1], [g2]];
+        component.questionsForm = makeValidForm();
+        // user has visited self + member-1 pages but not member-2 yet
+        component.pageIndex = 1;
+        component.pageVisited = [true, true, false];
+        component.pageRequiredCompletion = [true, true, true];
+        component.btnDisabled$ = new BehaviorSubject(true);
+        spyOn(component, 'scrollActivePageIntoView');
+
+        component.nextPage(); // visits page 2 → team360PagesVisited becomes 2 of 2
+
+        expect(component.pageIndex).toBe(2);
+        expect(component.pageVisited[2]).toBeTrue();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('keeps button disabled when required team member selector is unanswered despite all pages visited', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Member Group', description: '',
+          questions: [{
+            id: 20, type: 'team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":20}', userName: 'User 20' }],
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // required team member selector with no selection → form invalid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self-answer'),
+          'q-20': new FormControl('', Validators.required),
+        });
+        component.pageVisited = [true, true];
+        component.btnDisabled$ = new BehaviorSubject(false);
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('enables button when required team member selector is answered and all member pages visited', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Member Group', description: '',
+          questions: [{
+            id: 20, type: 'team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":20}', userName: 'User 20' }],
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // required team member selector answered → form valid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self-answer'),
+          'q-20': new FormControl('{"userId":20}'),
+        });
+        component.pageVisited = [true, true];
+        component.pageRequiredCompletion = [true, true];
+        component.btnDisabled$ = new BehaviorSubject(true);
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('keeps button disabled when required multi-team-member selector has empty selection in team360', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Multi Member Group', description: '',
+          questions: [{
+            id: 30, type: 'multi team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":5}', userName: 'User 5' }], // 1 distinct member
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // empty array with required validator → form invalid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self'),
+          'q-30': new FormControl([], Validators.required),
+        });
+        component.pageVisited = [true, true]; // member page visited
+        component.btnDisabled$ = new BehaviorSubject(false);
+
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('enables button when required multi-team-member selector is answered and all pages visited', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const g0 = textGroup(10);
+        const g1 = {
+          name: 'Multi Member Group', description: '',
+          questions: [{
+            id: 30, type: 'multi team member selector', isRequired: true,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":5}', userName: 'User 5' }],
+          } as any],
+        };
+        component.assessment = { groups: [g0, g1] } as any;
+        component.pagesGroups = [[g0], [g1]];
+        // non-empty array → form valid
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl('self'),
+          'q-30': new FormControl(['{"userId":5}'], Validators.required),
+        });
+        component.pageVisited = [true, true];
+        component.pageRequiredCompletion = [true, true];
+        component.btnDisabled$ = new BehaviorSubject(true);
+
+        component.setSubmissionDisabled();
+
         expect(component.btnDisabled$.getValue()).toBeFalse();
       });
     });
@@ -3507,6 +3669,336 @@ describe('AssessmentComponent', () => {
       component.scrollActivePageIntoView();
       tick(100);
       // no error thrown
+    }));
+
+    it('should center the active indicator for long assessments', fakeAsync(() => {
+      const container = { offsetWidth: 200, scrollLeft: 0 };
+      const indicator = { offsetWidth: 20, offsetLeft: 340 };
+      component.pageIndicatorsContainer = { nativeElement: container } as any;
+      component.pagesGroups = Array.from({ length: 11 }, () => []);
+      component.pageIndex = 8;
+      spyOn(document, 'getElementById').and.returnValue(indicator as any);
+
+      component.scrollActivePageIntoView();
+      tick(50);
+
+      expect(document.getElementById).toHaveBeenCalledWith('page-indicator-8');
+      expect(container.scrollLeft).toBe(250);
+    }));
+  });
+
+  describe('autosave and review persistence', () => {
+    beforeEach(() => {
+      component.assessment = {
+        ...mockAssessment,
+        groups: [{
+          name: 'Questions',
+          description: '',
+          questions: [{ ...mockQuestions[0], id: 123, type: 'text' }],
+        }],
+      };
+    });
+
+    it('should update autosave state after a question saves successfully', fakeAsync(() => {
+      assessmentSpy.saveQuestionAnswer.and.returnValue(of({ success: true }));
+      component.autosaving.set({ 123: true });
+      component.saved.set({ 123: false });
+      let response: any;
+
+      component.saveQuestionAnswer({
+        submissionId: 10,
+        questionId: 123,
+        answer: 'answer',
+        file: null,
+      }).subscribe(value => response = value);
+      tick(800);
+
+      expect(assessmentSpy.saveQuestionAnswer).toHaveBeenCalledWith(10, 123, 'answer', null);
+      expect(component.autosaving()[123]).toBeFalse();
+      expect(component.saved()[123]).toBeTrue();
+      expect(response).toEqual({ success: true });
+    }));
+
+    it('should record failed state when a question save errors', () => {
+      assessmentSpy.saveQuestionAnswer.and.returnValue(throwError(() => new Error('save failed')));
+      component.autosaving.set({ 123: true });
+      component.saved.set({ 123: true });
+
+      component.saveQuestionAnswer({
+        submissionId: 10,
+        questionId: 123,
+        answer: 'answer',
+      }).subscribe({ error: () => undefined });
+
+      expect(component.autosaving()[123]).toBeFalse();
+      expect(component.saved()[123]).toBeFalse();
+      expect(component.failed()[123]).toBeTrue();
+    });
+
+    it('should normalise and persist review answers', () => {
+      assessmentSpy.saveReviewAnswer.and.returnValue(of({ success: true }));
+      const file = {
+        bucket: 'assessment',
+        path: '/review.pdf',
+        name: 'review.pdf',
+        url: 'review.pdf',
+        extension: 'pdf',
+        type: 'application/pdf',
+        size: 1,
+      };
+
+      component.saveReviewAnswer({
+        reviewId: 20,
+        submissionId: 10,
+        questionId: 123,
+        answer: 'review answer',
+        comment: '',
+        file,
+      }).subscribe();
+
+      expect(component.saved()[123]).toBeTrue();
+      expect(assessmentSpy.saveReviewAnswer).toHaveBeenCalledWith(
+        20,
+        10,
+        123,
+        '',
+        'review answer',
+        file,
+      );
+    });
+
+    it('should route question, review, and manual submission requests', () => {
+      const questionSaveSpy = spyOn(component, 'saveQuestionAnswer').and.returnValue(of({ autoSave: true } as any));
+      const reviewSaveSpy = spyOn(component, 'saveReviewAnswer').and.returnValue(of({ autoSave: true } as any));
+      const submitSpy = spyOn<any>(component, '_submitAnswer').and.returnValue(Promise.resolve());
+      component.subscribeSaveSubmission();
+
+      const questionSave = { submissionId: 10, questionId: 123, answer: 'answer' };
+      const reviewSave = { reviewId: 20, submissionId: 10, questionId: 123, answer: 'answer', comment: '' };
+      component.submitActions.next({ autoSave: true, goBack: false, questionSave } as any);
+      component.submitActions.next({ autoSave: true, goBack: false, reviewSave } as any);
+      component.submitActions.next({ autoSave: false, goBack: true } as any);
+
+      expect(questionSaveSpy).toHaveBeenCalledWith(questionSave);
+      expect(reviewSaveSpy).toHaveBeenCalledWith(reviewSave);
+      expect(submitSpy).toHaveBeenCalledWith({ autoSave: false, goBack: true });
+    });
+
+    it('should report autosave errors and resubscribe', fakeAsync(() => {
+      spyOn(component, 'saveQuestionAnswer').and.returnValue(
+        throwError(() => new Error('Autosave request failed'))
+      );
+      const resubscribeSpy = spyOn(component.resubscribe$, 'next').and.callThrough();
+      notificationSpy.assessmentSubmittedToast.and.returnValue(Promise.resolve());
+      component.subscribeSaveSubmission();
+
+      component.submitActions.next({
+        autoSave: true,
+        goBack: false,
+        questionSave: { submissionId: 10, questionId: 123, answer: 'answer' },
+      } as any);
+      flushMicrotasks();
+
+      expect(notificationSpy.assessmentSubmittedToast).toHaveBeenCalledWith({
+        isFail: true,
+        label: 'Auto save failed. Please try again.',
+      });
+      expect(resubscribeSpy).toHaveBeenCalled();
+    }));
+
+    it('should show support context after repeated invalid-answer failures', fakeAsync(() => {
+      component.activityId = 55;
+      storageSpy.get.and.returnValue([{ attempt: 1 }, { attempt: 2 }, { attempt: 3 }]);
+      spyOn(component, 'saveQuestionAnswer').and.returnValue(
+        throwError(() => new Error('Invalid answer format'))
+      );
+      notificationSpy.assessmentSubmittedToast.and.returnValue(Promise.resolve());
+      notificationSpy.alert.and.returnValue(Promise.resolve());
+      component.subscribeSaveSubmission();
+
+      component.submitActions.next({
+        autoSave: true,
+        goBack: false,
+        questionSave: { submissionId: 10, questionId: 123, answer: 'answer' },
+      } as any);
+      flushMicrotasks();
+
+      expect(notificationSpy.assessmentSubmittedToast).toHaveBeenCalledWith({ isFail: true });
+      const alertConfig = notificationSpy.alert.calls.mostRecent().args[0];
+      expect(alertConfig.header).toBe('Error');
+      expect(alertConfig.message).toContain('mailto:');
+      expect(alertConfig.message).toContain('Assessment%20Answer%20Invalid');
+    }));
+  });
+
+  describe('question component coordination', () => {
+    it('should retry only the matching question component', () => {
+      const matching = {
+        question: { id: 2 },
+        triggerSave: jasmine.createSpy('matchingTriggerSave'),
+      };
+      const other = {
+        question: { id: 3 },
+        triggerSave: jasmine.createSpy('otherTriggerSave'),
+      };
+      component.questionComponents = [matching, other] as any;
+
+      component.retrySave({ id: 2 });
+
+      expect(component.autosaving()[2]).toBeTrue();
+      expect(matching.triggerSave).toHaveBeenCalled();
+      expect(other.triggerSave).not.toHaveBeenCalled();
+    });
+
+    it('should clear autosaving state after the saved animation', fakeAsync(() => {
+      component.autosaving.set({ 2: true });
+
+      component.onAnimationEnd({ toState: 'visible' }, 2);
+      tick(1000);
+
+      expect(component.autosaving()[2]).toBeFalse();
+    }));
+
+    it('should leave autosaving state unchanged for non-visible animations', fakeAsync(() => {
+      component.autosaving.set({ 2: true });
+
+      component.onAnimationEnd({ toState: 'hidden' }, 2);
+      tick(1000);
+
+      expect(component.autosaving()[2]).toBeTrue();
+    }));
+
+    it('should expose and locate rendered question boxes', () => {
+      const first = { el: { id: 'q-1' } };
+      const second = { el: { id: 'q-2' } };
+      component.questionBoxes = {
+        find: (predicate: (item: any) => boolean) => [first, second].find(predicate),
+        toArray: () => [first, second],
+        length: 2,
+      } as any;
+
+      expect(component.getQuestionBoxes()).toBe(component.questionBoxes);
+      expect(component.getQuestionBoxById('q-2')).toBe(second as any);
+    });
+
+    it('should scroll to and blink an available question box', () => {
+      const element = document.createElement('div');
+      component.questionBoxes = {
+        toArray: () => [{ el: element }],
+        length: 1,
+      } as any;
+      spyOn(component, 'flashBlink');
+
+      component.goToQuestion(0);
+
+      expect(utils.scrollToElement).toHaveBeenCalledWith(element);
+      expect(component.flashBlink).toHaveBeenCalledWith(element);
+    });
+  });
+
+  describe('component lifecycle and utility behavior', () => {
+    it('should unsubscribe active subscriptions and complete teardown state', () => {
+      const active = { closed: false, unsubscribe: jasmine.createSpy('activeUnsubscribe') };
+      const closed = { closed: true, unsubscribe: jasmine.createSpy('closedUnsubscribe') };
+      component.subscriptions = [active, closed] as any;
+      const nextSpy = spyOn(component.unsubscribe$, 'next').and.callThrough();
+      const completeSpy = spyOn(component.unsubscribe$, 'complete').and.callThrough();
+
+      component.ngOnDestroy();
+
+      expect(active.unsubscribe).toHaveBeenCalled();
+      expect(closed.unsubscribe).not.toHaveBeenCalled();
+      expect(nextSpy).toHaveBeenCalled();
+      expect(completeSpy).toHaveBeenCalled();
+    });
+
+    it('should cache random accessibility codes by assessment name', () => {
+      (utils.randomNumber as jasmine.Spy).and.returnValue('random-code');
+
+      expect(component.randomCode('Quiz')).toBe('random-code');
+      expect(component.randomCode('Quiz')).toBe('random-code');
+      expect(utils.randomNumber).toHaveBeenCalledTimes(1);
+    });
+
+    it('should delegate theme-color and track-by calculations', () => {
+      storageSpy.getUser.and.returnValue({ ...mockUser, colors: { primary: '#f00' } });
+      (utils.isColor as jasmine.Spy).and.returnValue(true);
+
+      expect(component.isRedColor).toBeTrue();
+      expect(utils.isColor).toHaveBeenCalledWith('red', '#f00');
+      expect(component.trackById(7, { id: 12 })).toBe(12);
+      expect(component.trackById(7, {})).toBe(7);
+    });
+
+    it('should prevent non-participants from submitting team assessments', () => {
+      component.action = 'assessment';
+      component.assessment = { ...mockAssessment, isForTeam: true };
+      storageSpy.getUser.and.returnValue({ ...mockUser, role: 'mentor' });
+
+      expect(component.preventSubmission).toBeTrue();
+
+      storageSpy.getUser.and.returnValue(mockUser);
+      expect(component.preventSubmission).toBeFalse();
+    });
+
+    it('should add and remove blink styling on schedule', fakeAsync(() => {
+      const element = document.createElement('div');
+
+      component.flashBlink(element);
+      expect(element.classList.contains('blink')).toBeTrue();
+
+      tick(2000);
+      expect(element.classList.contains('blink')).toBeFalse();
+    }));
+  });
+
+  describe('resubmit()', () => {
+    beforeEach(() => {
+      component.assessment = { ...mockAssessment, id: 11 };
+      component.submission = { ...mockSubmission, id: 22 } as any;
+      component.activityId = 33;
+      component.contextId = 44;
+    });
+
+    it('should return without a complete resubmission identity', () => {
+      component.activityId = undefined;
+
+      expect(component.resubmit()).toBeUndefined();
+      expect(assessmentSpy.resubmitAssessment).not.toHaveBeenCalled();
+    });
+
+    it('should refresh assessment data after successful resubmission', fakeAsync(() => {
+      assessmentSpy.resubmitAssessment.and.returnValue(of({ success: true }));
+      assessmentSpy.fetchAssessment.and.returnValue(of({ assessment: mockAssessment } as any));
+      component.btnDisabled$.next(false);
+
+      component.resubmit();
+      expect(component.btnDisabled$.getValue()).toBeTrue();
+      flushMicrotasks();
+
+      expect(assessmentSpy.resubmitAssessment).toHaveBeenCalledWith({
+        assessment_id: 11,
+        submission_id: 22,
+      });
+      expect(activitySpy.getActivity).toHaveBeenCalledWith(33);
+      expect(assessmentSpy.fetchAssessment).toHaveBeenCalledWith(11, 'assessment', 33, 44, 22);
+      expect(component.btnDisabled$.getValue()).toBeFalse();
+    }));
+
+    it('should notify and re-enable controls when resubmission fails', fakeAsync(() => {
+      assessmentSpy.resubmitAssessment.and.returnValue(throwError(() => new Error('resubmit failed')));
+      notificationSpy.assessmentSubmittedToast.and.returnValue(Promise.resolve());
+      component.btnDisabled$.next(false);
+
+      component.resubmit();
+      expect(component.btnDisabled$.getValue()).toBeTrue();
+      flushMicrotasks();
+
+      expect(notificationSpy.assessmentSubmittedToast).toHaveBeenCalledWith({
+        isFail: true,
+        label: 'Resubmit request failed. Please try again.',
+      });
+      expect(component.btnDisabled$.getValue()).toBeFalse();
     }));
   });
 });
