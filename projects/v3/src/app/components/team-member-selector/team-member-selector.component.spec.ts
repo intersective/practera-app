@@ -399,4 +399,17 @@ describe('TeamMemberSelectorComponent', () => {
       expect(component.propagateChange).toHaveBeenCalledWith('member-1');
     });
   });
+
+  it('should require saved answer data before entering display-only mode', () => {
+    component.doAssessment = false;
+    component.doReview = false;
+    component.submissionStatus = 'feedback available';
+    component.submission = { answer: null };
+    component.review = { answer: null };
+
+    expect(component.isDisplayOnly).toBeFalsy();
+
+    component.review.answer = 'member-1';
+    expect(component.isDisplayOnly).toBeTruthy();
+  });
 });

@@ -575,5 +575,19 @@ describe('TextComponent', () => {
     });
   });
 
-});
+  it('should restore pristine reviewer answer and comment without a form control', () => {
+    component.reviewStatus = 'in progress';
+    component.doReview = true;
+    component.doAssessment = false;
+    component.review = { answer: 'review answer', comment: 'review comment' };
+    component.control = null;
 
+    component['_showSavedAnswers']();
+
+    expect(component.innerValue).toEqual({
+      answer: 'review answer',
+      comment: 'review comment',
+    });
+  });
+
+});

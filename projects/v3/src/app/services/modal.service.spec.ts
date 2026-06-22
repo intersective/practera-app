@@ -67,4 +67,18 @@ describe('ModalService', () => {
     expect(modalSpy.present.calls.count()).toEqual(2);
   }));
 
+  it('should lazily open the Uppy uploader modal', async () => {
+    const modalSpy = jasmine.createSpyObj('Modal', ['present']);
+    modalControllerSpy.create.and.returnValue(Promise.resolve(modalSpy));
+
+    const modal = await service.openUppyUploaderModal('chat');
+    const modalConfig = modalControllerSpy.create.calls.mostRecent().args[0];
+
+    expect(modalConfig.component).toEqual(jasmine.any(Function));
+    expect(modalConfig.componentProps).toEqual({ source: 'chat' });
+    expect(modalConfig.cssClass).toBe('uppy-uploader-modal');
+    expect(modalSpy.present).toHaveBeenCalled();
+    expect(modal).toBe(modalSpy);
+  });
+
 });

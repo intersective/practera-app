@@ -22,8 +22,8 @@
 
 This project uses:
 - **Test Runner**: Karma with Jasmine
-- **Framework**: Angular 17 with Ionic 7
-- **Total Tests**: ~900 tests
+- **Framework**: Angular 20 with Ionic 7
+- **Total Tests**: ~1,482 tests
 - **Test Location**: `*.spec.ts` files alongside source files
 
 ### Running Tests
@@ -41,6 +41,21 @@ npm test 2>&1 | tee test-run.log
 ### Coverage Run Cookbook
 
 - Quick copy-paste coverage commands are in [coverage-run-cookbook.md](./coverage-run-cookbook.md).
+
+### Assessment question-type coverage
+
+Question component tests should exercise the same data flow used by
+`AssessmentComponent`, including:
+
+- restoring pristine and dirty assessment/review answers;
+- propagating form-control values, dirty/touched state, and autosave actions;
+- required/custom validation and malformed saved values;
+- file-type restrictions, upload response mapping, upload failures, file
+  removal, and compression cancellation during destruction;
+- display-only audience rules and selector membership matching.
+
+The focused command and current per-component metrics are maintained in the
+[coverage run cookbook](./coverage-run-cookbook.md#assessment-question-components).
 
 ---
 
@@ -95,6 +110,20 @@ describe('MyComponent', () => {
 
 ```typescript
 schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
+```
+
+### Required Inputs and `ngOnChanges`
+
+Component tests must initialise required `@Input()` values that the production
+parent supplies. For `BehaviorSubject` inputs, create fresh subjects in
+`beforeEach` so state cannot leak between specs. Tests that invoke
+`ngOnChanges` must also pass the changed input key; an empty object does not
+exercise input-specific update logic.
+
+```typescript
+component.btnDisabled$ = new BehaviorSubject(false);
+component.savingMessage$ = new BehaviorSubject('');
+component.ngOnChanges({ assessment: {} as SimpleChanges['assessment'] });
 ```
 
 ---

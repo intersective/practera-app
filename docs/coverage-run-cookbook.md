@@ -2,6 +2,46 @@
 
 > Fast, repeatable coverage workflow for this repo.
 
+## Current baseline
+
+Full-suite baseline recorded on 2026-06-22 with `npm test`:
+
+| Metric | Covered | Percentage |
+|---|---:|---:|
+| Statements | 5,676 / 8,286 | 68.50% |
+| Branches | 2,712 / 4,632 | 58.54% |
+| Functions | 1,288 / 1,931 | 66.70% |
+| Lines | 5,470 / 8,010 | 68.28% |
+
+The suite contains 1,482 specs: 1,466 passing and 16 skipped. When adding
+coverage, prioritise business logic with a large number of uncovered executable
+statements and branches. Assert state transitions, persistence, emitted values,
+and error paths rather than adding creation-only specs.
+
+The core `AssessmentComponent` baseline is 95.31% statements, 89.13%
+branches, 97.32% functions, and 95.18% lines.
+
+### Assessment question components
+
+A focused run recorded on 2026-06-22 covers the seven question component
+suites rendered by `AssessmentComponent`. These percentages come from the
+focused run only and must not be compared with the full-suite totals above,
+which can include incidental coverage from other specs.
+
+| Component | Statements | Branches | Functions | Lines |
+|---|---:|---:|---:|---:|
+| Text | 94.02% | 89.79% | 94.73% | 93.75% |
+| Slider | 83.16% | 79.16% | 90.00% | 82.82% |
+| One-of | 80.00% | 73.13% | 80.00% | 80.88% |
+| Multiple | 83.16% | 80.85% | 91.30% | 82.47% |
+| File upload (file and video) | 98.13% | 87.69% | 100.00% | 98.11% |
+| Team-member selector | 96.07% | 93.87% | 93.33% | 96.00% |
+| Multi-team-member selector | 94.89% | 94.31% | 95.23% | 94.84% |
+
+The seven focused suites contain 277 passing specs. Running them with the
+parent assessment suite results in 500 passing and 6 intentionally skipped
+specs.
+
 ## Quick Rules
 
 - Use targeted coverage runs first; use full-suite only after targeted changes pass.

@@ -592,4 +592,24 @@ describe('MultiTeamMemberSelectorComponent', () => {
       expect(utilsSpy.addOrRemove).toHaveBeenCalledWith([], 'member-1');
     });
   });
+
+  it('should safely reject malformed member identifiers in every saved-answer source', () => {
+    const malformedMember = { key: 'not-json' };
+    component.doAssessment = true;
+    component.innerValue = ['{"userId":1}'];
+    component.submission = { answer: ['{"userId":1}'] };
+    component.review = { answer: ['{"userId":1}'] };
+
+    expect(component.isSelected(malformedMember)).toBeFalse();
+    expect(component.isSelectedInSubmission(malformedMember)).toBeFalse();
+    expect(component.isSelectedInReview(malformedMember)).toBeFalse();
+  });
+
+  it('should ignore malformed saved entries while matching a valid team member', () => {
+    const member = { key: '{"userId":2}' };
+    component.doAssessment = true;
+    component.innerValue = ['not-json', '{"userId":2}'];
+
+    expect(component.isSelected(member)).toBeTrue();
+  });
 });

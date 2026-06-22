@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { UppyUploaderComponent } from '../components/uppy-uploader/uppy-uploader.component';
 
 // type for the source parameter, matching the original method signature
 export type UppyModalSource = 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | null;
@@ -70,6 +69,10 @@ export class ModalService {
    * @return a promise that resolves with the modal element.
    */
   async openUppyUploaderModal(source: UppyModalSource): Promise<HTMLIonModalElement> {
+    // Load the component lazily to avoid the runtime cycle:
+    // NotificationsService -> ModalService -> UppyUploaderComponent -> NotificationsService.
+    const { UppyUploaderComponent } = await import('../components/uppy-uploader/uppy-uploader.component');
+
     const modal = await this.modalController.create({
       component: UppyUploaderComponent,
       componentProps: {

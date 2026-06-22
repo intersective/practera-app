@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { BrowserStorageService } from './storage.service';
-import { Activity, ActivityService } from './activity.service';
-import { NotificationsService } from './notifications.service';
+import type { Activity } from './activity.service';
+import type { NotificationsService } from './notifications.service';
 
 export interface UnlockedTask {
   id?: number;

@@ -391,4 +391,27 @@ describe('SliderComponent', () => {
       expect(component.audienceContainReviewer()).toBeFalse();
     });
   });
+
+  it('should leave the existing range unchanged for a non-slider question', () => {
+    const generatedChoices = [{ id: 10, name: '10' }];
+    component.sliderMin = 10;
+    component.sliderMax = 20;
+    component.generatedChoices = generatedChoices;
+    component.question = { ...component.question, type: 'text', min: undefined, max: undefined };
+
+    component.ngOnInit();
+
+    expect(component.sliderMin).toBe(10);
+    expect(component.sliderMax).toBe(20);
+    expect(component.generatedChoices).toBe(generatedChoices);
+  });
+
+  it('should fall back to the minimum for non-numeric saved slider answers', () => {
+    component.sliderMin = 2;
+    component.submission = { answer: 'invalid' };
+    component.innerValue = { answer: 'invalid' };
+
+    expect(component.getSubmissionSliderValue()).toBe(2);
+    expect(component.getReviewSliderValue()).toBe(2);
+  });
 });
