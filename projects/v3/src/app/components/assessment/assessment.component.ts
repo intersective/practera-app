@@ -921,8 +921,8 @@ Best regards`;
     });
   }
 
-  showQuestionInfo(info, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
+  showQuestionInfo(info, keyboardEvent?: Event) {
+    if (keyboardEvent instanceof KeyboardEvent && (keyboardEvent.code === 'Space' || keyboardEvent.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
