@@ -28,6 +28,7 @@ Compatibility cleanup applied for the Angular 20 baseline:
 - `projects/v3/.browserslistrc` was aligned with Angular 20-supported browser targets.
 - `v3` remains on the classic Angular browser builder instead of the newer application builder.
 - Karma tests use the classic browser builder mode instead of the application/esbuild test path.
+- Deferred Karma test maintenance was brought forward for the Angular 20 baseline: test fixtures now use the current Uppy file, experience, pulse-check, Ionic segment-event, and FFmpeg argument contracts.
 - Apollo Angular v14 no longer uses the old module import path for this NgModule app. Keep `Apollo` in `AppModule.providers` because `ApolloService` still owns the existing `apollo.createDefault(...)` lifecycle. GraphQL fetches should call `ApolloService.initiateCoreClient()` before querying so direct-login routes can run before the normal app startup services complete.
 - Do not send `Access-Control-Allow-Origin` as a request header from the Apollo client. That header belongs on server responses and breaks localhost auth flows with a browser CORS preflight failure.
 - Unused dependency risk was reduced by removing unused text mask, Intercom, and unused Uppy package entries from the root manifest.

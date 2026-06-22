@@ -4,7 +4,7 @@ import { of, throwError } from 'rxjs';
 
 import { SupportPopupComponent } from './support-popup.component';
 import { HubspotService } from '@v3/services/hubspot.service';
-import { UppyUploaderService } from '@v3/services/uppy-uploader.service';
+import { UppyFileData, UppyUploaderService } from '../uppy-uploader/uppy-uploader.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 
@@ -20,6 +20,38 @@ class UtilsServiceMock {
 class NotificationsServiceMock {
   alert() { return of({}); }
 }
+
+const createMockFile = (overrides: Partial<UppyFileData> = {}): UppyFileData => ({
+  source: 'test',
+  id: 'test-file-id',
+  name: 'test-file',
+  extension: 'jpg',
+  meta: {
+    relativePath: null,
+    name: 'test-file',
+    type: 'image/jpeg',
+  },
+  type: 'image/jpeg',
+  data: {},
+  progress: {
+    uploadStarted: 0,
+    uploadComplete: true,
+    percentage: 100,
+    bytesUploaded: 1000,
+    bytesTotal: 1000,
+  },
+  size: 1000,
+  isGhost: false,
+  isRemote: false,
+  preview: 'http://example.com/test.jpg',
+  tus: {
+    uploadUrl: 'http://example.com/uploads/test-file',
+  },
+  bucket: 'test-bucket',
+  path: 'test-path',
+  url: 'http://example.com/test.jpg',
+  ...overrides,
+});
 
 describe('SupportPopupComponent', () => {
   let component: SupportPopupComponent;
@@ -103,15 +135,7 @@ describe('SupportPopupComponent', () => {
     it('should return false when selectedFile is truthy', () => {
       component.problemSubject = '';
       component.problemContent = '';
-      component.selectedFile = {
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
-        url: 'http://example.com/test.jpg',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000
-      };
+      component.selectedFile = createMockFile();
 
       const result = component.isPristine();
 
@@ -192,15 +216,7 @@ describe('SupportPopupComponent', () => {
 
   describe('removeSelectedFile', () => {
     it('should clear the selected file', fakeAsync(() => {
-      component.selectedFile = {
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test-file',
-        url: 'http://example.com/test.jpg',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000,
-      };
+      component.selectedFile = createMockFile();
       component.removeSelectedFile();
       flushMicrotasks();
 
@@ -210,15 +226,7 @@ describe('SupportPopupComponent', () => {
 
   describe('uploadFile', () => {
     it('should open uppy uploader and set selectedFile on dismiss with data', fakeAsync(() => {
-      const mockFile = {
-        bucket: 'test-bucket',
-        path: 'test-path',
-        name: 'test.jpg',
-        url: 'http://example.com/test.jpg',
-        extension: 'jpg',
-        type: 'image/jpeg',
-        size: 1000,
-      };
+      const mockFile = createMockFile({ name: 'test.jpg' });
 
       uppyUploaderSpy.open.and.returnValue(Promise.resolve({
         onDidDismiss: () => Promise.resolve({ data: mockFile, role: 'confirm' }),
