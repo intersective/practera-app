@@ -821,13 +821,6 @@
           <context context-type="linenumber">5</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="460045477894362015" datatype="html">
-        <source>Please rank this feedback from Very Poor to Excellent</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="4746172751926416876" datatype="html">
         <source>Send a quick thank you note!</source>
         <context-group purpose="location">
