@@ -1,6 +1,6 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import { UtilsService } from '@v3/services/utils.service';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { of, Subject } from 'rxjs';
 
 export class SpyObject {
@@ -65,6 +65,17 @@ export class TestUtils extends SpyObject {
   getCurrentLocale;
   urlQueryToObject;
   getFormatedCurrentTime;
+  setPageLanguage;
+  isHour12Format;
+  setPageTitle;
+  addLanguageAttributes;
+  moveToNewLocale;
+  detectLanguage;
+  decodeHtmlEntities;
+  isQuillContentEmpty;
+  checkIsPracteraSupportEmail;
+  scrollToElement;
+  isColor;
 
   protected _eventsSubject = new Subject<{ key: string, value: any }>();
 
@@ -73,7 +84,10 @@ export class TestUtils extends SpyObject {
     this.lodash = _;
     // UtilsService.prototype['lodash'] = (UtilsService.prototype['lodash']) ? UtilsService.prototype['lodash'] : _;
     this.isEmpty = this.spy('isEmpty').and.callFake(UtilsService.prototype.isEmpty);
-    this.isMobile = this.spy('isMobile');
+    this.isMobile = this.spy('isMobile').and.returnValue(false);
+    this.isQuillContentEmpty = this.spy('isQuillContentEmpty').and.returnValue(false);
+    this.scrollToElement = this.spy('scrollToElement');
+    this.isColor = this.spy('isColor').and.returnValue(false);
     this.each = this.spy('each').and.callFake(UtilsService.prototype.each);
     this.find = this.spy('find');
     this.indexOf = this.spy('indexOf').and.callFake(UtilsService.prototype.indexOf);
@@ -99,7 +113,15 @@ export class TestUtils extends SpyObject {
     this.downloadFile = this.spy('downloadFile');
     this.getCurrentLocation = this.spy('getCurrentLocation');
     this.getFormatedCurrentTime = this.spy('getFormatedCurrentTime');
-    this.getCurrentLocale = this.spy('getCurrentLocale');
+    this.getCurrentLocale = this.spy('getCurrentLocale').and.returnValue('en-US');
+    this.setPageLanguage = this.spy('setPageLanguage');
+    this.isHour12Format = this.spy('isHour12Format').and.returnValue(true);
+    this.setPageTitle = this.spy('setPageTitle');
+    this.addLanguageAttributes = this.spy('addLanguageAttributes').and.callFake((htmlContent: any) => htmlContent);
+    this.moveToNewLocale = this.spy('moveToNewLocale');
+    this.detectLanguage = this.spy('detectLanguage').and.returnValue(null);
+    this.decodeHtmlEntities = this.spy('decodeHtmlEntities').and.callFake((text: any) => text);
+    this.checkIsPracteraSupportEmail = this.spy('checkIsPracteraSupportEmail').and.returnValue(false);
   }
 
   static createRouterSpy() {

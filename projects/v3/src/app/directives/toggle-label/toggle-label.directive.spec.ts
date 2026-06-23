@@ -6,7 +6,7 @@ import { ToggleLabelDirective } from './toggle-label.directive';
 @Component({
   template: `
     <span
-      [toggleLabel]="toggleFunction"
+      [appToggleLabel]="toggleFunction"
       [toggleId]="'test-id'"
       [toggleDisabled]="disabled">
       Test Label

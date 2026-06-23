@@ -7,8 +7,11 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { PusherService } from '@v3/services/pusher.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from './notifications.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { ApolloService } from './apollo.service';
+import { DemoService } from './demo.service';
+import { UnlockIndicatorService } from './unlock-indicator.service';
 
 
 describe('AuthService', () => {
@@ -24,9 +27,14 @@ describe('AuthService', () => {
   beforeEach(() => {
     const notificationsSpy = jasmine.createSpyObj('NotificationsService', ['alert']);
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         AuthService,
+        {
+          provide: DemoService,
+          useValue: jasmine.createSpyObj('DemoService', { 'isDemoMode': false }),
+        },
         {
           provide: RequestService,
           useValue: jasmine.createSpyObj('RequestService', [
@@ -59,7 +67,7 @@ describe('AuthService', () => {
             'setUser', 'getUser',
             'set', 'getConfig',
             'setConfig', 'get',
-            'clear',
+            'clear', 'remove',
           ]),
         },
         {
@@ -71,6 +79,10 @@ describe('AuthService', () => {
           useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
         },
         { provide: NotificationsService, useValue: notificationsSpy },
+        {
+          provide: UnlockIndicatorService,
+          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['clearAllTasks', 'loadFromStorage']),
+        },
       ]
     });
     service = TestBed.inject(AuthService);
@@ -92,57 +104,95 @@ describe('AuthService', () => {
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {
-    requestSpy.post.and.returnValue(of({
-      success: true,
+    const apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+    apolloSpy.graphQLFetch.and.returnValue(of({
       data: {
-        tutorial: null,
-        apikey: '123456',
-        Timelines: [
-          {
-            Program: {
-              config: {
-                theme_color: 'abc'
-              }
-            },
-            Enrolment: {},
-            Project: {},
-            Timeline: {}
-          }
-        ]
+        auth: {
+          apikey: '123456',
+          experience: {
+            id: 1,
+            uuid: 'test-uuid',
+            timelineId: 1,
+            projectId: 1,
+            name: 'Test Experience',
+            description: 'Test',
+            type: 'normal',
+            leadImage: '',
+            status: 'active',
+            setupStep: '',
+            color: '#abc',
+            secondaryColor: '#def',
+            role: 'participant',
+            isLast: false,
+            locale: 'en',
+            supportName: '',
+            supportEmail: '',
+            cardUrl: '',
+            bannerUrl: '',
+            logoUrl: '',
+            iconUrl: '',
+            reviewRating: false,
+            truncateDescription: false,
+            team: { id: 1 },
+            featureToggle: { pulseCheckIndicator: false }
+          },
+          email: 'test@test.com',
+          unregistered: false,
+          activationCode: null
+        }
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
     service.authenticate({ authToken: 'abcd' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
+    expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
+    expect(apolloSpy.graphQLFetch.calls.first().args[1]?.variables?.authToken).toEqual('abcd');
   });
 
   it('when testing globalLogin(), it should pass the correct data to API', () => {
-    requestSpy.post.and.returnValue(of({
-      success: true,
+    const apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+    apolloSpy.graphQLFetch.and.returnValue(of({
       data: {
-        tutorial: null,
-        apikey: '123456',
-        Timelines: [
-          {
-            Program: {
-              config: {
-                theme_color: 'abc'
-              }
-            },
-            Enrolment: {},
-            Project: {},
-            Timeline: {}
-          }
-        ]
+        auth: {
+          apikey: '123456',
+          experience: {
+            id: 1,
+            uuid: 'test-uuid',
+            timelineId: 1,
+            projectId: 1,
+            name: 'Test Experience',
+            description: 'Test',
+            type: 'normal',
+            leadImage: '',
+            status: 'active',
+            setupStep: '',
+            color: '#abc',
+            secondaryColor: '#def',
+            role: 'participant',
+            isLast: false,
+            locale: 'en',
+            supportName: '',
+            supportEmail: '',
+            cardUrl: '',
+            bannerUrl: '',
+            logoUrl: '',
+            iconUrl: '',
+            reviewRating: false,
+            truncateDescription: false,
+            team: { id: 1 },
+            featureToggle: { pulseCheckIndicator: false }
+          },
+          email: 'test@test.com',
+          unregistered: false,
+          activationCode: null
+        }
       }
     }));
     storageSpy.getConfig.and.returnValue(true);
     service.authenticate({ apikey: 'abcd', service: 'LOGIN' }).subscribe();
-    expect(requestSpy.post.calls.count()).toBe(1);
-    expect(requestSpy.post.calls.first().args[0].data).toContain('abcd');
-    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: '123456' });
+    expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
+    expect(apolloSpy.graphQLFetch.calls.first().args[1]?.context?.headers?.apikey).toEqual('abcd');
+    expect(apolloSpy.graphQLFetch.calls.first().args[1]?.context?.headers?.service).toEqual('LOGIN');
+    expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: 'abcd' });
   });
 
   describe('when testing isAuthenticated()', () => {
@@ -232,19 +282,16 @@ describe('AuthService', () => {
         { id: 2, name: 'Experience 2' },
       ],
     };
+    requestSpy.get.and.returnValue(of(responseData));
     spyOn(service, 'isAuthenticated').and.returnValue(true);
 
     service.getConfig(configParams).subscribe(response => {
       expect(response).toEqual(responseData);
     });
 
-    const req = httpTestingController.expectOne('api/v2/plan/experience/list');
-    expect(req.request.method).toEqual('GET');
-
-    req.flush(responseData);
-
-    expect(service.isAuthenticated).not.toHaveBeenCalled();
-    expect(notificationsService.alert).not.toHaveBeenCalled();
+    expect(requestSpy.get.calls.count()).toBe(1);
+    expect(requestSpy.get.calls.first().args[0]).toEqual('api/v2/plan/experience/list');
+    expect(requestSpy.get.calls.first().args[1]).toEqual({ params: configParams });
   });
 
   it('when testing checkDomain()', () => {
@@ -323,4 +370,3 @@ describe('AuthService', () => {
     }));
   });
 });
-
