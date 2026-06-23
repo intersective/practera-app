@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthLoginComponent } from './auth-login.component';
 import { AuthService } from '@v3/services/auth.service';
@@ -8,8 +8,7 @@ import { Router } from '@angular/router';
 import { Observable, of, pipe, throwError } from 'rxjs';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 
@@ -23,12 +22,10 @@ describe('AuthLoginComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, ReactiveFormsModule],
+      imports: [RouterTestingModule, ReactiveFormsModule, HttpClientTestingModule],
       declarations: [ AuthLoginComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils
@@ -96,7 +93,7 @@ describe('AuthLoginComponent', () => {
 
     xit('should pop up password compromised alert if login failed', fakeAsync(() => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.authenticate.and.returnValue(throwError(() => ({data: {type: 'password_compromised'}})));
+      serviceSpy.authenticate.and.returnValue(throwError({data: {type: 'password_compromised'}}));
       component.login();
       tick();
       expect(serviceSpy.authenticate.calls.count()).toBe(1);
@@ -107,7 +104,7 @@ describe('AuthLoginComponent', () => {
 
     xit(`should pop up 'incorrect' alert if login failed`, fakeAsync(() => {
       component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.authenticate.and.returnValue(throwError(() => ({})));
+      serviceSpy.authenticate.and.returnValue(throwError({}));
       component.login();
       tick();
       expect(serviceSpy.authenticate.calls.count()).toBe(1);
@@ -122,3 +119,4 @@ describe('AuthLoginComponent', () => {
     }));
   });
 });
+

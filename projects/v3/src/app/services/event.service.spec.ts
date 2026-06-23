@@ -6,7 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { TestUtils } from '@testingv3/utils';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import moment from 'moment';
+import * as moment from 'moment';
 
 describe('EventService', () => {
   moment.updateLocale('en', {

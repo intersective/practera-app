@@ -12,7 +12,6 @@ describe('AssessmentService', () => {
   let service: AssessmentService;
   let requestSpy: jasmine.SpyObj<RequestService>;
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
-  let apolloSpy: jasmine.SpyObj<ApolloService>;
   let utils: UtilsService;
 
   beforeEach(() => {
@@ -25,7 +24,7 @@ describe('AssessmentService', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['modal', 'markTodoItemAsDone'])
+          useValue: jasmine.createSpyObj('NotificationsService', ['modal'])
         },
         {
           provide: RequestService,
@@ -44,14 +43,13 @@ describe('AssessmentService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate', 'graphQLWatch', 'graphQLFetch'])
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate', 'graphQLWatch'])
         },
       ]
     });
     service = TestBed.inject(AssessmentService);
     requestSpy = TestBed.inject(RequestService) as jasmine.SpyObj<RequestService>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
-    apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
     utils = TestBed.inject(UtilsService);
   });
 
@@ -74,7 +72,6 @@ describe('AssessmentService', () => {
             isTeam: false,
             dueDate: '2019-02-02',
             pulseCheck: false,
-            allowResubmit: false,
             groups: [
               {
                 name: 'g name',
@@ -170,7 +167,7 @@ describe('AssessmentService', () => {
             submissions: [
               {
                 id: 1,
-                status: 'published',
+                status: 'feedback available',
                 modified: '2019-02-02',
                 locked: false,
                 completed: false,
@@ -265,8 +262,6 @@ describe('AssessmentService', () => {
         dueDate: assessment.dueDate,
         isOverdue: assessment.dueDate ? utils.timeComparer(assessment.dueDate) < 0 : false,
         pulseCheck: assessment.pulseCheck,
-        hasReviewRating: assessment.hasReviewRating,
-        allowResubmit: assessment.allowResubmit,
         groups: [
           {
             name: group0.name,
@@ -281,8 +276,6 @@ describe('AssessmentService', () => {
                 canComment: question0.hasComment,
                 canAnswer: question0.audience.includes('submitter'),
                 audience: question0.audience,
-                min: undefined,
-                max: undefined,
                 submitterOnly: true,
                 reviewerOnly: false
               },
@@ -295,8 +288,6 @@ describe('AssessmentService', () => {
                 canComment: question1.hasComment,
                 canAnswer: question1.audience.includes('submitter'),
                 audience: question1.audience,
-                min: undefined,
-                max: undefined,
                 submitterOnly: false,
                 reviewerOnly: true,
                 info: '',
@@ -322,8 +313,6 @@ describe('AssessmentService', () => {
                 canComment: question2.hasComment,
                 canAnswer: question2.audience.includes('submitter'),
                 audience: question2.audience,
-                min: undefined,
-                max: undefined,
                 submitterOnly: false,
                 reviewerOnly: false,
                 info: `<h3>Choice Description:</h3><p>${question2.choices[0].name} ` +
@@ -357,8 +346,6 @@ describe('AssessmentService', () => {
                 canComment: question3.hasComment,
                 canAnswer: question3.audience.includes('submitter'),
                 audience: question3.audience,
-                min: undefined,
-                max: undefined,
                 submitterOnly: false,
                 reviewerOnly: false,
                 fileType: question3.fileType
@@ -372,8 +359,6 @@ describe('AssessmentService', () => {
                 canComment: question4.hasComment,
                 canAnswer: question4.audience.includes('submitter'),
                 audience: question4.audience,
-                min: undefined,
-                max: undefined,
                 submitterOnly: false,
                 reviewerOnly: false,
                 teamMembers: [
@@ -394,7 +379,7 @@ describe('AssessmentService', () => {
       submission = assessment.submissions[0];
       expectedSubmission = {
         id: submission.id,
-        status: 'feedback available',
+        status: submission.status,
         submitterName: submission.submitter.name,
         submitterImage: submission.submitter.image,
         modified: submission.modified,
@@ -412,8 +397,7 @@ describe('AssessmentService', () => {
             answer: submission.answers[2].answer
           },
           11: {
-            // file type answers normalize empty strings to null
-            answer: null
+            answer: submission.answers[3].answer
           },
           12: {
             answer: submission.answers[4].answer
@@ -452,7 +436,7 @@ describe('AssessmentService', () => {
     });
 
     afterEach(() => {
-      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLWatch.and.returnValue(of(requestResponse));
       service.getAssessment(1, 'assessment', 2, 3);
       service.assessment$.subscribe(assessment => {
         expect(assessment).toEqual(expectedAssessment);
@@ -463,7 +447,7 @@ describe('AssessmentService', () => {
       service.review$.subscribe(review => {
         expect(review).toEqual(expectedReview);
       });
-      expect(apolloSpy.graphQLFetch.calls.count()).toBe(1);
+      expect(apolloSpy.graphQLWatch.calls.count()).toBe(1);
     });
 
     it(`should not include a question group if there's no question inside`, () => {
@@ -475,6 +459,9 @@ describe('AssessmentService', () => {
       expectedAssessment.groups.splice(1, 1);
       delete expectedSubmission.answers[11];
       delete expectedSubmission.answers[12];
+      delete expectedReview.answers[1];
+      delete expectedReview.answers[2];
+      delete expectedReview.answers[3];
       delete expectedReview.answers[11];
       delete expectedReview.answers[12];
     });
@@ -564,11 +551,12 @@ describe('AssessmentService', () => {
 
   describe('when testing saveFeedbackReviewed()', () => {
     it('should post correct data', () => {
-      notificationSpy.markTodoItemAsDone.and.returnValue(of(true));
       service.saveFeedbackReviewed(11);
-      expect(notificationSpy.markTodoItemAsDone.calls.count()).toBe(1);
-      expect(notificationSpy.markTodoItemAsDone.calls.first().args[0]).toEqual({
+      expect(requestSpy.post.calls.count()).toBe(1);
+      expect(requestSpy.post.calls.first().args[0].data).toEqual({
+        project_id: 1,
         identifier: 'AssessmentSubmission-11',
+        is_done: true
       });
     });
   });
@@ -608,8 +596,7 @@ describe('AssessmentService', () => {
 
     it('should handle non-array string by wrapping it in an array for multiple question type', () => {
       const result = service['_normaliseAnswer'](2, 'not an array');
-      // non-numeric strings convert to NaN when the code attempts to convert to numbers
-      expect(result).toEqual([NaN]);
+      expect(result).toEqual(['not an array']);
     });
 
     it('should parse string to array for multi team member selector question type', () => {
@@ -827,19 +814,16 @@ describe('AssessmentService', () => {
         });
 
         // Verify review answers normalization
-        // Note: When answer is null and no file exists, the expression (answer || file) evaluates to undefined
-        expect(result.review.answers[1].answer).toBeUndefined();
+        expect(result.review.answers[1].answer).toBeNull();
         expect(result.review.answers[1].comment).toBe('Good answer');
         expect(result.review.answers[2].answer).toBe(22);
         expect(result.review.answers[2].comment).toBe('Consider the other option');
-        // file is normalized and stored as answer, not as separate file property
-        expect(result.review.answers[4].answer).toEqual({
+        expect(result.review.answers[4].file).toEqual({
           name: 'feedback.jpg',
           url: 'http://example.com/feedback.jpg',
           type: 'image/jpeg',
           size: 1024
         });
-        expect(result.review.answers[4].comment).toBe('Clear image');
 
         done();
       });
@@ -890,38 +874,34 @@ describe('AssessmentService', () => {
 
     it('should handle different types of answers in _normaliseAnswer', (done) => {
       // Modify the mock response to test various answer formats
-      // Note: only one answer per questionId since the service uses questionId as key
-      // Using question IDs from the mock: 1 (text), 2 (oneof), 3 (multiple), 11 (file)
       mockResponse.data.assessment.submissions[0].answers = [
-        { questionId: 1, answer: 'some text' }, // Non-empty text (empty string becomes undefined due to || logic)
+        { questionId: 1, answer: '' }, // Empty string for text
         { questionId: 2, answer: '22' }, // String that should be converted to number for oneof
-        { questionId: 3, answer: '[31, 32]' }, // Multi-item array as string for multiple
-        { questionId: 11, file: null } // Null file (question 11 is the file type)
+        { questionId: 3, answer: '[]' }, // Empty array as string for multiple
+        { questionId: 3, answer: '[31]' }, // Single item array as string
+        { questionId: 3, answer: '[31, 32]' }, // Multi-item array as string
+        { questionId: 4, file: null } // Null file
       ];
 
       service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
-        // Text question - answer should remain as is
-        expect(result.submission.answers[1].answer).toBe('some text');
+        // Text question - empty answer should remain empty string
+        expect(result.submission.answers[1].answer).toBe('');
 
         // Oneof question - string should be converted to number
         expect(result.submission.answers[2].answer).toBe(22);
 
-        // Multiple question - array string should be parsed to array of numbers
-        expect(result.submission.answers[3].answer).toEqual([31, 32]);
-
-        // File question - null file should result in null (question 11 is file type)
-        expect(result.submission.answers[11].answer).toBeNull();
+        // Multiple question - empty array string should be parsed to empty array
+        expect(result.submission.answers[3].answer).toEqual([]);
 
         done();
       });
     });
 
     it('should handle file answers correctly', (done) => {
-      // Modify the mock to include a file answer in the submission
-      // Using question ID 11 which is the file type question
+      // Modify the mock to include a file answer in the review
       mockResponse.data.assessment.submissions[0].answers = [
         {
-          questionId: 11,
+          questionId: 4,
           file: {
             name: 'submission.pdf',
             url: 'http://example.com/submission.pdf',
@@ -931,8 +911,8 @@ describe('AssessmentService', () => {
       ];
 
       service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
-        // File should be normalized properly in submission (question 11 is file type)
-        expect(result.submission.answers[11].answer).toEqual({
+        // File should be normalized properly in submission
+        expect(result.submission.answers[4].answer).toEqual({
           name: 'submission.pdf',
           url: 'http://example.com/submission.pdf',
           type: 'application/pdf'

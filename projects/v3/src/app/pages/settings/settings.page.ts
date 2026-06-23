@@ -13,7 +13,6 @@ import { first, takeUntil } from 'rxjs/operators';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
 
 @Component({
-  standalone: false,
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],

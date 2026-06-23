@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 
 @Component({
-  standalone: false,
   selector: 'app-auth-logout',
   template: '',
 })

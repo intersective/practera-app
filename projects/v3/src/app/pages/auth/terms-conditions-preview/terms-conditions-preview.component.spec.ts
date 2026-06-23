@@ -1,4 +1,4 @@
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ModalController } from '@ionic/angular';
 
 import { TermsConditionsPreviewComponent } from './terms-conditions-preview.component';
@@ -8,7 +8,7 @@ describe('TermsConditionsPreviewComponent', () => {
   let fixture: ComponentFixture<TermsConditionsPreviewComponent>;
   let ModalControllerSpy: jasmine.SpyObj<ModalController>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ TermsConditionsPreviewComponent ],
       providers: [

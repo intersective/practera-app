@@ -231,11 +231,11 @@ describe('ChatService', () => {
             expect(message.message).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].message);
             expect(message.created).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].created);
             expect(message.file).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
-            expect((message as any).fileObject).toBeDefined();
+            expect(message.fileObject).toBeDefined();
             if ((typeof messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file) === 'string') {
-              expect((message as any).fileObject).toEqual(fileJson);
+              expect(message.fileObject).toEqual(fileJson);
             } else {
-              expect((message as any).fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
+              expect(message.fileObject).toEqual(messageListRequestResponse.data.channel.chatLogsConnection.chatLogs[i].file);
             }
           });
         }
@@ -348,7 +348,7 @@ describe('ChatService', () => {
         {
           message: 'test message',
           channelUuid: '10',
-          fileObj: undefined
+          file: undefined
         }
       ));
     });
@@ -357,15 +357,12 @@ describe('ChatService', () => {
       const attachmentMessageParam = {
         message: 'test message',
         channelUuid: '10',
-        file: {
-          path: '/path/to/file',
-          bucket: 'file-bucket',
-          name: 'unnamed.jpg',
+        file: JSON.stringify({
+          filename: 'unnamed.jpg',
+          mimetype: 'image/jpeg',
           url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
-          extension: 'jpg',
-          type: 'image/jpeg',
-          size: 12345
-        }
+          status: 'Stored'
+        })
       };
       const newMessageRes = {
         data: {
@@ -396,13 +393,19 @@ describe('ChatService', () => {
         status: 'Stored'
       };
       apolloSpy.graphQLMutate.and.returnValue(of(newMessageRes));
-      service.postNewMessage(attachmentMessageParam).subscribe(
+      service.postAttachmentMessage(attachmentMessageParam).subscribe(
         message => {
           expect(message.uuid).toEqual(newMessageRes.data.createChatLog.uuid);
           expect(message.isSender).toEqual(newMessageRes.data.createChatLog.isSender);
           expect(message.message).toEqual(newMessageRes.data.createChatLog.message);
           expect(message.created).toEqual(newMessageRes.data.createChatLog.created);
           expect(message.file).toEqual(newMessageRes.data.createChatLog.file);
+          expect(message.fileObject).toBeDefined();
+          if ((typeof newMessageRes.data.createChatLog.file) === 'string') {
+            expect(message.fileObject).toEqual(fileJson);
+          } else {
+            expect(message.fileObject).toEqual(newMessageRes.data.createChatLog.file);
+          }
         }
       );
       expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);
@@ -410,7 +413,12 @@ describe('ChatService', () => {
         {
           message: 'test message',
           channelUuid: '10',
-          fileObj: attachmentMessageParam.file
+          file: JSON.stringify({
+            filename: 'unnamed.jpg',
+            mimetype: 'image/jpeg',
+            url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+            status: 'Stored'
+          })
         }
       ));
     });

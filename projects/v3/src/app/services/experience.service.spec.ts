@@ -2,7 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { TestUtils } from '@testingv3/utils';
 import { RequestService } from 'request';
 import { ApolloService } from './apollo.service';
-import { AuthService } from './auth.service';
 import { DemoService } from './demo.service';
 import { EventService } from './event.service';
 
@@ -29,35 +28,31 @@ describe('ExperienceService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLMutate', 'graphQLWatch']),
+          useValue: jasmine.createSpyObj('ApolloService', ['']),
         },
         {
           provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['getConfig']),
+          useValue: jasmine.createSpyObj('SharedService', ['']),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'set', 'getUser', 'getConfig']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['']),
         },
         {
           provide: RequestService,
-          useValue: jasmine.createSpyObj('RequestService', ['get', 'post']),
+          useValue: jasmine.createSpyObj('RequestService', ['']),
         },
         {
           provide: EventService,
-          useValue: jasmine.createSpyObj('EventService', ['trigger', 'listen']),
+          useValue: jasmine.createSpyObj('EventService', ['']),
         },
         {
           provide: ReviewService,
-          useValue: jasmine.createSpyObj('ReviewService', ['getReviews']),
+          useValue: jasmine.createSpyObj('ReviewService', ['']),
         },
         {
           provide: HomeService,
-          useValue: jasmine.createSpyObj('HomeService', ['getTodoItems']),
-        },
-        {
-          provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['getConfig']),
+          useValue: jasmine.createSpyObj('HomeService', ['']),
         },
       ],
     });

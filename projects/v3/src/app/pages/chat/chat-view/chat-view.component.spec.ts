@@ -1,16 +1,12 @@
-import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
-import { of } from 'rxjs';
 
 import { ChatViewComponent } from './chat-view.component';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
-import { AuthService } from '@v3/app/services/auth.service';
 
 describe('ChatViewComponent', () => {
   let component: ChatViewComponent;
@@ -23,8 +19,6 @@ describe('ChatViewComponent', () => {
       declarations: [ChatViewComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils,
@@ -36,15 +30,7 @@ describe('ChatViewComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: new ActivatedRouteStub({})
-        },
-        {
-          provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', {
-            'isAuthenticated': true,
-            'logout': of(true),
-            'authenticate': of({})
-          }),
-        },
+        }
       ]
     })
     .compileComponents();

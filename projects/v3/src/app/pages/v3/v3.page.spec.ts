@@ -16,7 +16,6 @@ import { TestUtils } from '@testingv3/utils';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
-import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 describe('V3Page', () => {
   let component: V3Page;
@@ -61,8 +60,7 @@ describe('V3Page', () => {
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
-            getUser: jasmine.createSpy(),
-            get: jasmine.createSpy().and.returnValue([]),
+            getUser: jasmine.createSpy()
           }),
         },
         {
@@ -83,17 +81,8 @@ describe('V3Page', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', {
-            'getTodoItems': of(),
-            'getChatMessage': of(),
-          }, {
+          useValue: jasmine.createSpyObj('NotificationsService', ['getTodoItems', 'getChatMessage'], {
             'notification$': of(),
-          }),
-        },
-        {
-          provide: UnlockIndicatorService,
-          useValue: jasmine.createSpyObj('UnlockIndicatorService', [], {
-            'unlockedTasks$': of([]),
           }),
         },
       ]
@@ -119,6 +108,7 @@ describe('V3Page', () => {
   it('should call required methods and set component properties correctly', () => {
     // Prepare data and spies
     const getReviewsSpy = reviewSpy.getReviews;
+    const getExperienceSpy = homeSpy.getExperience;
     utilsSpy.moveToNewLocale.and.stub();
     const getTodoItemsSpy = notificationsSpy.getTodoItems.and.returnValue(of());
     const getChatListSpy = chatSpy.getChatList.and.returnValue(of([]));
@@ -131,13 +121,14 @@ describe('V3Page', () => {
     component.ngOnInit();
 
     // Check if the required methods are called
-    // Note: getExperience is only called on NavigationEnd events to /v3/home, not during ngOnInit
     expect(getReviewsSpy).toHaveBeenCalled();
+    expect(getExperienceSpy).toHaveBeenCalled();
     expect(getTodoItemsSpy).toHaveBeenCalled();
     expect(getChatListSpy).toHaveBeenCalled();
 
     // Check if component properties are set correctly
     expect(component.showEvents).toBeTrue();
+    expect(component.openMenu).toBeFalse();
     expect(component.showMessages).toBeFalse();
   });
 });

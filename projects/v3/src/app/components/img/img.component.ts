@@ -28,7 +28,6 @@ const swapWidthAndHeight = img => {
 };
 
 @Component({
-  standalone: false,
   selector: 'app-img',
   templateUrl: './img.component.html',
   styleUrls: ['./img.component.scss']

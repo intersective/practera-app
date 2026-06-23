@@ -1,6 +1,4 @@
 import { TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
 import { ActivityService } from './activity.service';
 import { of, throwError } from 'rxjs';
 import { RequestService } from 'request';
@@ -13,9 +11,6 @@ import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from './apollo.service';
 import { AssessmentService } from './assessment.service';
 import { TopicService } from './topic.service';
-import { DemoService } from './demo.service';
-import { SharedService } from './shared.service';
-import { UnlockIndicatorService } from './unlock-indicator.service';
 
 describe('ActivityService', () => {
   let service: ActivityService;
@@ -29,8 +24,6 @@ describe('ActivityService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         ActivityService,
         {
           provide: UtilsService,
@@ -49,7 +42,7 @@ describe('ActivityService', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer', 'get', 'set'])
+          useValue: jasmine.createSpyObj('BrowserStorageService', ['getUser', 'getReferrer'])
         },
         {
           provide: Router,
@@ -65,23 +58,11 @@ describe('ActivityService', () => {
         },
         {
           provide: TopicService,
-          useValue: jasmine.createSpyObj('TopicService', ['getTopic']),
+          useValue: jasmine.createSpyObj('TopicService', ['']),
         },
         {
           provide: AssessmentService,
-          useValue: jasmine.createSpyObj('AssessmentService', ['getAssessment']),
-        },
-        {
-          provide: DemoService,
-          useValue: jasmine.createSpyObj('DemoService', ['normalResponse'])
-        },
-        {
-          provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['getTeamInfo', 'getTeamMembers'])
-        },
-        {
-          provide: UnlockIndicatorService,
-          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['loadFromStorage', 'clearAllTasks', 'addTask', 'removeTask'])
+          useValue: jasmine.createSpyObj('AssessmentService', ['']),
         },
       ]
     });
@@ -105,7 +86,6 @@ describe('ActivityService', () => {
           id: 1,
           name: 'activity',
           description: 'des',
-          unlockConditions: [],
           tasks: [
             {
               id: 1,
@@ -167,7 +147,6 @@ describe('ActivityService', () => {
       id: activity.id,
       name: activity.name,
       description: activity.description,
-      unlockConditions: [],
       tasks: [
         {
           id: 0,

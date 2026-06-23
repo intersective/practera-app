@@ -21,7 +21,6 @@ export interface Meta {
 }
 
 @Component({
-  standalone: false,
   selector: "app-fast-feedback",
   templateUrl: "./fast-feedback.component.html",
   styleUrls: ["./fast-feedback.component.scss"],

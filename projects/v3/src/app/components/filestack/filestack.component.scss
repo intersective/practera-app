@@ -1,0 +1,68 @@
+  .upload-button {
+    max-width: 200px;
+    // margin: auto;
+  }
+
+  .drop-zone {
+    height: 6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: dashed 1px var(--practera-30-percent-gray);
+    position: relative;
+    margin: 0 auto;
+    vertical-align: -webkit-baseline-middle;
+    border-radius: 12px;
+    p {
+      ion-icon {
+        vertical-align: middle;
+      }
+      ion-button {
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .fileover {
+    border: 2px solid var(--ion-color-primary);
+  }
+
+  .upload-progress {
+    --ion-grid-column-padding: 0;
+    .fileTypeIcon {
+      text-align: center;
+      ion-icon {
+        padding: 10px;
+      }
+    }
+    .file-size-container, .file-name-container {
+      text-align: left;
+    }
+    .file-name-container {
+      p {
+        margin: 0;
+        height: 29px;
+        padding-bottom: 4px;
+        padding-top: 4px;
+      }
+    }
+    .file-progress-container, .cancel-btn-container {
+      text-align: right;
+    }
+    .size-and-progress {
+      margin-top: 10px;
+    }
+    .cancel-btn {
+      --padding-start: 0;
+      --padding-end: 0;
+    }
+  }
+
+  ion-icon {
+    font-size: 24px;
+  }
+
+  ion-button.ion-focused {
+    border: 1px solid var(--ion-color-primary);
+  }
