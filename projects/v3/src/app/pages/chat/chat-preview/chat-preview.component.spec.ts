@@ -3,7 +3,8 @@ import { ChatPreviewComponent } from './chat-preview.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
 describe('ChatPreviewComponent', () => {
   const TEST_URL = 'https://www.practera.com';
@@ -13,9 +14,11 @@ describe('ChatPreviewComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [ IonicModule, CommonModule, HttpClientTestingModule ],
+      imports: [ IonicModule, CommonModule ],
       declarations: [ ChatPreviewComponent ],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ModalController,
           useValue: jasmine.createSpyObj('ModalController', ['dismiss']),

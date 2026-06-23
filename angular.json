@@ -31,7 +31,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "allowedCommonJsDependencies": [
               "pusher-js",
@@ -49,7 +49,7 @@
             "i18nDuplicateTranslation": "warning",
             "outputPath": "dist/v3",
             "index": "projects/v3/src/index.html",
-            "browser": "projects/v3/src/main.ts",
+            "main": "projects/v3/src/main.ts",
             "polyfills": ["projects/v3/src/polyfills.ts"],
             "tsConfig": "projects/v3/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -222,7 +222,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "builderMode": "application",
+            "builderMode": "browser",
             "main": "projects/v3/src/test.ts",
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",
@@ -274,7 +274,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "builderMode": "application",
+            "builderMode": "browser",
             "main": "projects/request/src/test.ts",
             "karmaConfig": "projects/request/karma.conf.js",
             "tsConfig": "projects/request/tsconfig.spec.json",
