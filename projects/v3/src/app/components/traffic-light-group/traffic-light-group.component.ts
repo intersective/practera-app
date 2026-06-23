@@ -4,7 +4,6 @@ import { BrowserStorageService } from "@v3/app/services/storage.service";
 import { NotificationsService } from '@v3/services/notifications.service';
 
 @Component({
-  standalone: false,
   selector: "app-traffic-light-group",
   templateUrl: "./traffic-light-group.component.html",
   styleUrls: ["./traffic-light-group.component.scss"],

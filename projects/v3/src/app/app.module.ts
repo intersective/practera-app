@@ -1,14 +1,14 @@
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RequestInterceptor } from '@v3/services/request.interceptor';
 import { IonicModule } from '@ionic/angular';
 import { environment } from '@v3/environments/environment';
 import { RequestModule } from 'request';
-import { Apollo } from 'apollo-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ApolloModule } from 'apollo-angular';
 import { ApolloService } from './services/apollo.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -27,15 +27,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
       appkey: environment.appkey,
       prefixUrl: environment.APIEndpoint,
     }),
+    ApolloModule,
   ],
   providers: [
-    provideHttpClient(withInterceptorsFromDi()),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: RequestInterceptor,
       multi: true,
     },
-    Apollo,
     ApolloService,
   ],
   bootstrap: [AppComponent]

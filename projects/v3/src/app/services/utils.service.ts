@@ -14,9 +14,9 @@ import indexOf from 'lodash-es/indexOf';
 import remove from 'lodash-es/remove';
 import isEqual from 'lodash-es/isEqual';
 import upperFirst from 'lodash-es/upperFirst';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
-import convert from 'color-convert';
+import * as convert from 'color-convert';
 import { Title } from '@angular/platform-browser';
 import { francAll } from 'franc-min';
 

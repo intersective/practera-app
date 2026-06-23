@@ -37,7 +37,7 @@ Resources:
     Properties:
       Handler: index.handler
       CodeUri: ./bin/handler.zip
-      Runtime: nodejs22.x
+      Runtime: nodejs18.x
       Timeout: 10
       Role: !GetAtt HandlerRole.Arn
   HandlerVersion:

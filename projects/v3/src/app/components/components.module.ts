@@ -1,4 +1,4 @@
-import { DashboardModalComponent, DashboardComponent } from '@uppy/angular';
+import { UppyAngularDashboardModalModule, UppyAngularDashboardModule } from '@uppy/angular';
 import { TrafficLightComponent } from './traffic-light/traffic-light.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -18,7 +18,8 @@ import { FastFeedbackComponent } from './fast-feedback/fast-feedback.component';
 import { ReviewRatingComponent } from './review-rating/review-rating.component';
 import { CircleProgressComponent } from './circle-progress/circle-progress.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
-import { FilePreviewComponent } from './file-preview/file-preview.component';
+import { FilestackComponent } from './filestack/filestack.component';
+import { FilestackPreviewComponent } from './filestack-preview/filestack-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
 import { AssessmentComponent } from './assessment/assessment.component';
@@ -70,8 +71,8 @@ const largeCircleDefaultConfig = {
     FormsModule,
     ReactiveFormsModule,
     ToggleLabelDirective,
-    DashboardModalComponent,
-    DashboardComponent,
+    UppyAngularDashboardModalModule,
+    UppyAngularDashboardModule,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
   declarations: [
@@ -90,7 +91,8 @@ const largeCircleDefaultConfig = {
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
-    FilePreviewComponent,
+    FilestackComponent,
+    FilestackPreviewComponent,
     ImgComponent,
     ListItemComponent,
     LockTeamAssessmentPopUpComponent,
@@ -136,7 +138,8 @@ const largeCircleDefaultConfig = {
     FilePopupComponent,
     FileDisplayComponent,
     VideoConversionComponent,
-    FilePreviewComponent,
+    FilestackComponent,
+    FilestackPreviewComponent,
     ImgComponent,
     IonicModule,
     ListItemComponent,

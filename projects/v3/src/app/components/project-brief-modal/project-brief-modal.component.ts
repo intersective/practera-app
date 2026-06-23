@@ -22,7 +22,6 @@ export interface ProjectBrief {
  */
 @Component({
   selector: 'app-project-brief-modal',
-  standalone: false,
   templateUrl: './project-brief-modal.component.html',
   styleUrls: ['./project-brief-modal.component.scss']
 })

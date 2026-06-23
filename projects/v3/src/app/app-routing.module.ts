@@ -11,27 +11,27 @@ const routes: Routes = [
   {
     path: 'experiences',
     loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule),
-    canMatch: [AuthGuard],
+    canLoad: [AuthGuard],
   },
   {
     path: 'v3',
     loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule),
-    canMatch: [AuthGuard],
+    canLoad: [AuthGuard],
   },
   {
     path: 'topic-mobile',
     loadChildren: () => import('./pages/topic-mobile/topic-mobile.module').then(m => m.TopicMobilePageModule),
-    canMatch: [AuthGuard],
+    canLoad: [AuthGuard],
   },
   {
     path: 'assessment-mobile',
     loadChildren: () => import('./pages/assessment-mobile/assessment-mobile.module').then(m => m.AssessmentMobilePageModule),
-    canMatch: [AuthGuard],
+    canLoad: [AuthGuard],
   },
   {
     path: 'devtool',
     loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule),
-    canMatch: [DevOnlyGuard],
+    canLoad: [DevOnlyGuard],
   },
   {
     path: '',

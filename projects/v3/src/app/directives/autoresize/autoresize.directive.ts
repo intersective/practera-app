@@ -1,7 +1,6 @@
 import { Directive, ElementRef, Input, HostListener, OnInit } from '@angular/core';
 
 @Directive({
-  standalone: false,
   selector: '[appAutoresize]'
 })
 export class AutoresizeDirective implements OnInit {

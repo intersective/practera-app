@@ -3,10 +3,10 @@ import { Component, Input, Output, EventEmitter, Inject, OnChanges, SimpleChange
 import { DOCUMENT } from '@angular/common';
 import { UtilsService } from '@v3/services/utils.service';
 import { SharedService } from '@v3/services/shared.service';
-import Plyr from 'plyr';
+import * as Plyr from 'plyr';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
-import { FilePreviewService } from '@v3/app/services/file-preview.service';
+import { FilestackService } from '@v3/app/services/filestack.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
 import { Task } from '@v3/app/services/activity.service';
@@ -15,7 +15,6 @@ import { ModalController } from '@ionic/angular';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 
 @Component({
-  standalone: false,
   selector: 'app-topic',
   templateUrl: './topic.component.html',
   styleUrls: ['./topic.component.scss']
@@ -50,7 +49,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
     private notification: NotificationsService,
     private utils: UtilsService,
     private sharedService: SharedService,
-    private filePreviewService: FilePreviewService,
+    private filestack: FilestackService,
     private topicService: TopicService,
     private sanitizer: DomSanitizer,
     private cleanupService: ComponentCleanupService,
@@ -285,9 +284,9 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
       this.isLoadingPreview = true;
       try {
 
-        const result = await this.filePreviewService.preview(file);
+        const filestack = await this.filestack.previewFile(file);
         this.isLoadingPreview = false;
-        return result;
+        return filestack;
       } catch (err) {
         const toasted = await this.notification.alert({
           header: 'Error Previewing file',

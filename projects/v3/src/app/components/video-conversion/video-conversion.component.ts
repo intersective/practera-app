@@ -1,15 +1,22 @@
-import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { FilePreviewService } from '@v3/app/services/file-preview.service';
+import { Component, Input, Output, OnChanges, SimpleChanges, EventEmitter, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
+import { FilestackService } from '@v3/app/services/filestack.service';
 import { Subject, Subscription } from 'rxjs';
+import { delay, repeat, takeUntil } from 'rxjs/operators';
+
+interface FilestackConversionResponse {
+  status: string;
+  data: {
+    url: string;
+  };
+}
 
 @Component({
-  standalone: false,
   selector: 'app-video-conversion',
   templateUrl: 'video-conversion.component.html',
   styleUrls: ['video-conversion.component.scss'],
   encapsulation: ViewEncapsulation.None,
 })
-export class VideoConversionComponent implements OnChanges, OnDestroy {
+export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
   @Input() video?;
   @Output() preview = new EventEmitter();
   result = null;
@@ -17,12 +24,23 @@ export class VideoConversionComponent implements OnChanges, OnDestroy {
   subscriptions: Subscription[] = [];
   waitedTooLong: boolean = false;
 
-  constructor(private filePreviewService: FilePreviewService) {}
+  constructor(private filestackService: FilestackService) {}
+
+  ngOnInit(): void {
+    const stillWaiting = setTimeout(() => {
+      this.waitedTooLong = true;
+    }, 10000);
+
+    this.subscriptions.push(this.stop$.subscribe(res => {
+      if (res === true) {
+        clearTimeout(stillWaiting);
+      }
+    }));
+  }
 
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.video?.fileObject?.mimetype !== 'video/mp4') {
-      // filestack video conversion no longer available — show download fallback immediately
-      this.waitedTooLong = true;
+      this.convertVideo(this.video.fileObject);
     }
   }
 
@@ -33,16 +51,29 @@ export class VideoConversionComponent implements OnChanges, OnDestroy {
     }
   }
 
-  showPreview(file: { data?: { url: string } }, keyboardEvent?: KeyboardEvent) {
+  convertVideo(file) {
+    this.subscriptions.push(this.filestackService.videoConversion(file.handle).pipe(
+      delay(2000),
+      repeat(10),
+      takeUntil(this.stop$),
+    ).subscribe((res: FilestackConversionResponse) => {
+      this.result = res;
+      if (res?.status === 'completed') {
+        this.stop$.next(true);
+      }
+    }));
+  }
+
+  showInFilestackPreview(file: FilestackConversionResponse, keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
     } else if (keyboardEvent) {
       return;
     }
 
-    const downloadURL = file.data?.url;
-    const streamURL = this.video?.fileObject?.url;
-    return this.filePreviewService.openModal(downloadURL, {
+    const downloadURL = file.data.url;
+    const streamURL = this.video.fileObject.url;
+    return this.filestackService.previewModal(downloadURL, {
       url: streamURL
     });
   }

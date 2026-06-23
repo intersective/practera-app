@@ -10,7 +10,6 @@ type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
 
 @Component({
-  standalone: false,
   selector: "app-uppy-uploader",
   templateUrl: "./uppy-uploader.component.html",
   styleUrls: ["./uppy-uploader.component.scss"],
@@ -24,7 +23,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
 
   uppy: Uppy<FileMetadata, FileBody>;
   // Uppy UI
-  uppyProps: any;
+  uppyProps = this.uppyUploaderService.uppyProps;
 
   s3Info: {
     path: string;
@@ -38,7 +37,6 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
   ) {
-    this.uppyProps = this.uppyUploaderService.uppyProps;
     this.uppyProps.height = '500px';
     this.uppyProps.note = "Upload a file here";
   }

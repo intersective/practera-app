@@ -2,14 +2,13 @@ import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { PusherService } from '@v3/services/pusher.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
-import Pusher from 'pusher-js';
+import * as Pusher from 'pusher-js';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from './apollo.service';
 import { ApolloQueryResult } from '@apollo/client';
@@ -86,9 +85,8 @@ describe('PusherService', async () => {
     // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         PusherService,
         {
           provide: UtilsService,
@@ -424,4 +422,4 @@ describe('PusherService', async () => {
       expect(mockSubscription.trigger).toHaveBeenCalledWith('client-chat-edit-message', data);
     });
   });
-});
+

@@ -20,7 +20,6 @@ import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
   selector: "app-root",
-  standalone: false,
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
@@ -81,7 +80,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.configVerification();
     this.sharedService.onPageLoad();
-
+    
     // Set initial lang attribute based on current locale (WCAG 3.1.1)
     this.utils.setPageLanguage();
 
@@ -157,10 +156,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     searchParams = new URLSearchParams(queryString);
 
-    if (searchParams.has('stack_uuid')) {
-      this.storage.set('stackUuid', searchParams.get('stack_uuid'));
-    }
-
     if (searchParams.has("apikey")) {
       const queries = this.utils.urlQueryToObject(queryString);
       return this.navigate([
@@ -215,7 +210,7 @@ export class AppComponent implements OnInit, OnDestroy {
   // redirect to the last visited url/assessment if available
   redirectToLastVisitedUrl(): Promise<boolean> {
     if (this.noneCachedUrl.some((url) => window.location?.href?.includes(url))) {
-      return; // special urls (login, register, etc.) are already handled by the router
+      return this.navigate(window.location.href);
     }
 
     const lastVisitedUrl = this.storage.lastVisited("url") as string;

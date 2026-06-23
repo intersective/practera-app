@@ -16,7 +16,7 @@
         <ng-container *ngFor="let question of questionList">
           <ion-accordion value="{{ question.questionId}}" class="question-item">
             <ion-item slot="header">
-              <ion-label class="subtitle-1 black"><span [innerHTML]="question.question"></span></ion-label>
+              <ion-label class="subtitle-1 black" [innerHTML]="question.question"></ion-label>
             </ion-item>
             <div class="ion-padding body-2" slot="content">
               <ng-container *ngFor="let answer of question.answer">
@@ -63,7 +63,7 @@
         (click)="uploadFile()"
       >Choose file</ion-button>
 
-      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.name : 'No file chosen' }}</p>
+      <p class="grey-75 body-2 file-name">{{ selectedFile ? selectedFile?.filename : 'No file chosen' }}</p>
       <button
         type="button"
         class="remove-button icon-button"
@@ -71,7 +71,7 @@
         (click)="removeSelectedFile()"
         (keydown.enter)="removeSelectedFile()"
         (keydown.space)="removeSelectedFile(); $event.preventDefault()"
-        [attr.aria-label]="'Remove file ' + selectedFile?.name">
+        [attr.aria-label]="'Remove file ' + selectedFile?.filename">
         <ion-icon name="close-circle" aria-hidden="true"></ion-icon>
       </button>
     </div>

@@ -5,7 +5,6 @@ interface CTABtnType {
 }
 
 @Component({
-  standalone: false,
   selector: 'app-list-item',
   templateUrl: './list-item.component.html',
   styleUrls: ['./list-item.component.scss'],

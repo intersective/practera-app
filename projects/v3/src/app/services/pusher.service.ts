@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
@@ -28,7 +28,7 @@ export interface SendMessageParam {
   sentAt: string;
 }
 
-export interface DeleteMessageParam {
+export interface DeleteMessageTriggerParam {
   channelUuid: string;
   uuid: string;
 }
@@ -183,8 +183,8 @@ export class PusherService {
    * connected + authorised pusher
    */
   async getChannels() {
-    await firstValueFrom(this.getNotificationChannel());
-    await firstValueFrom(this.getChatChannels());
+    await this.getNotificationChannel().toPromise();
+    await this.getChatChannels().toPromise();
   }
 
   getNotificationChannel(): Observable<any> {
@@ -356,7 +356,10 @@ export class PusherService {
     channel.subscription.trigger('client-chat-new-message', data);
   }
 
-  triggerDeleteMessage(channelName: string, data: DeleteMessageParam) {
+  /**
+   * trigger a client event to notify other members that a message was deleted.
+   */
+  triggerDeleteMessage(channelName: string, data: DeleteMessageTriggerParam) {
     const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {
       return;
@@ -364,6 +367,9 @@ export class PusherService {
     channel.subscription.trigger('client-chat-delete-message', data);
   }
 
+  /**
+   * trigger a client event to notify other members that a message was edited.
+   */
   triggerEditMessage(channelName: string, data: SendMessageParam) {
     const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {

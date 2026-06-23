@@ -46,21 +46,18 @@
           <ion-radio
             [ariaLabel]="teamMember.userName"
             color="success"
-            justify="start"
-            labelPlacement="end"
             slot="start"
             [value]="teamMember.key"
-            [disabled]="control?.disabled">
-            <div class="white-space-normal body-2 black">
-              <span [innerHTML]="teamMember.userName"
-                [appToggleLabel]="onLabelToggle"
-                [toggleId]="teamMember.key"
-                [toggleDisabled]="control?.disabled"
-                role="button"
-                tabindex="0">
-              </span>
-            </div>
-          </ion-radio>
+            [disabled]="control?.disabled"
+          ></ion-radio>
+          <ion-label class="white-space-normal body-2 black"
+            [innerHTML]="teamMember.userName"
+            [appToggleLabel]="onLabelToggle"
+            [toggleId]="teamMember.key"
+            [toggleDisabled]="control?.disabled"
+            role="button"
+            tabindex="0">
+          </ion-label>
         </ion-item>
       </ion-radio-group>
     </ion-list>
@@ -87,7 +84,7 @@
             labelPlacement="end"
             [value]="teamMember.key"
             [disabled]="control?.disabled">
-            <div class="white-space-normal body-2 black">
+            <ion-label class="white-space-normal body-2 black">
               <span [innerHTML]="teamMember.userName"
                 [appToggleLabel]="onLabelToggleReview"
                 [toggleId]="teamMember.key"
@@ -100,7 +97,7 @@
                   Learner's Answer
                 </ion-chip>
               </p>
-            </div>
+            </ion-label>
           </ion-radio>
 
         </ion-item>
