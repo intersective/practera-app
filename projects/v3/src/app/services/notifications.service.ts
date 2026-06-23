@@ -8,6 +8,7 @@ import { Achievement, AchievementService } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
+import { FastFeedbackComponent } from '../components/fast-feedback/fast-feedback.component';
 import { firstValueFrom, Observable, of, Subject } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
@@ -452,7 +453,7 @@ export class NotificationsService {
   /**
    * Pop up the fast feedback modal window
    */
-  async fastFeedbackModal(
+  fastFeedbackModal(
     props: {
       questions?: Question[];
       meta?: Meta | Object;
@@ -469,9 +470,6 @@ export class NotificationsService {
     const cssClass = this.utils.isMobile()
       ? 'modal-fullscreen'
       : '';
-
-    // lazy import to break circular dependency with FastFeedbackService
-    const { FastFeedbackComponent } = await import('../components/fast-feedback/fast-feedback.component');
 
     const modalConfig = {
       cssClass,

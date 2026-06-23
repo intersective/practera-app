@@ -51,9 +51,7 @@ export class FfmpegService {
     await this.ffmpeg.writeFile("input.avi", await fetchFile(videoURL));
     await this.ffmpeg.exec(["-i", "input.avi", "output.mp4"]);
     const fileData = await this.ffmpeg.readFile('output.mp4');
-    const data = typeof fileData === 'string'
-      ? new TextEncoder().encode(fileData)
-      : new Uint8Array(fileData);
+    const data = new Uint8Array(fileData as ArrayBuffer);
     const blob = new Blob([data.buffer], { type: 'video/mp4' });
     this.videoURL = URL.createObjectURL(blob);
 

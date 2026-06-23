@@ -39,7 +39,7 @@ describe("UnlockIndicatorService", () => {
         { id: 2, identifier: "task2", taskId: 102 },
       ];
       storageService.get.and.returnValue(initialTasks);
-      service["_unlockedTasksSubject"].next(initialTasks);
+      service["_unlockedTasksSubject$"].next(initialTasks);
 
       const removedTasks = service.removeTasks(101);
 
@@ -58,7 +58,7 @@ describe("UnlockIndicatorService", () => {
         { id: 2, identifier: "task2", taskId: 102, activityId: 202 },
       ];
       storageService.get.and.returnValue(initialTasks);
-      service["_unlockedTasksSubject"].next(initialTasks);
+      service["_unlockedTasksSubject$"].next(initialTasks);
 
       const removedTasks = service.removeTasks(101);
 
@@ -90,7 +90,7 @@ describe("UnlockIndicatorService", () => {
         },
       ];
       storageService.get.and.returnValue(initialTasks);
-      service["_unlockedTasksSubject"].next(initialTasks);
+      service["_unlockedTasksSubject$"].next(initialTasks);
 
       const removedTasks = service.removeTasks(101);
 
@@ -116,7 +116,7 @@ describe("UnlockIndicatorService", () => {
         { id: 2, identifier: "task2", taskId: 102 },
       ];
       storageService.get.and.returnValue(initialTasks);
-      service["_unlockedTasksSubject"].next(initialTasks);
+      service["_unlockedTasksSubject$"].next(initialTasks);
 
       service.removeTasks(101);
 

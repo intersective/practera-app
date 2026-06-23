@@ -16,7 +16,6 @@ import { environment } from '@v3/environments/environment';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 @Component({
-  standalone: false,
   selector: 'app-v3',
   templateUrl: './v3.page.html',
   styleUrls: ['./v3.page.scss'],

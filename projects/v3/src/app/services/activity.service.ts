@@ -407,7 +407,7 @@ export class ActivityService {
     }
 
     // update teamId
-    await firstValueFrom(this.sharedService.getTeamInfo());
+    await this.sharedService.getTeamInfo().toPromise();
 
     this._currentTask$.next(task);
 
@@ -486,7 +486,7 @@ export class ActivityService {
    * @return  {Promise<boolean>}  false when inaccessible, otherwise true
    */
   async nonTeamActivity(tasks?: Task[]): Promise<boolean> {
-    const teamStatus = await firstValueFrom(this.sharedService.getTeamInfo());
+    const teamStatus = await this.sharedService.getTeamInfo().toPromise();
     if (teamStatus?.data?.user?.teams.length > 0) {
       return true;
     }

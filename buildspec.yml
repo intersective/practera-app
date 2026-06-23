@@ -3,10 +3,15 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 12
     commands:
       - echo Installing source NPM dependencies...
-      - npm ci --ignore-scripts
+      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+      - apt-get update -y
+      - apt-get install -y apt-transport-https
+      - npm install forever -g
+      - npm install -g @angular/cli
+      - npm install
   build:
     commands:
       - echo Build started on `date`
@@ -16,7 +21,7 @@ phases:
       - chmod +x ./env.sh
       - ./env.sh
       # - while IFS='=' read -r name value ; do  if [[ $name == 'FILESTACK_'* ]]; then sed -i "s#<$name>#${!name}#g" src/environments/filestack.ts; fi; done < <(env)
-      - node_modules/.bin/ng build --configuration=$BUILD_CONFIG
+      - ng build --configuration=$BUILD_CONFIG
       - npm run generate-version
       - cp -R src/well-known www/.well-known/
   post_build:

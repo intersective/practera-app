@@ -6,7 +6,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
-import { BehaviorSubject, debounceTime, firstValueFrom, Observable, of, Subject, Subscription, timer } from 'rxjs';
+import { BehaviorSubject, debounceTime, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
@@ -33,7 +33,6 @@ const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per
  * When enabled, questions are split across multiple pages based on pageSize
  */
 @Component({
-  standalone: false,
   selector: 'app-assessment',
   templateUrl: './assessment.component.html',
   styleUrls: ['./assessment.component.scss'],
@@ -887,7 +886,7 @@ Best regards`;
     if (this.doAssessment === true) {
       try {
         // make sure teamId is up to date
-        await firstValueFrom(this.sharedService.getTeamInfo());
+        await this.sharedService.getTeamInfo().toPromise();
 
         if (this.assessment.isForTeam) {
           const teamId = this.storage.getUser().teamId;
@@ -1058,7 +1057,7 @@ Best regards`;
     }).subscribe({
       next: async () => {
         this.activityService.getActivity(this.activityId);
-        await firstValueFrom(this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id));
+        await this.assessmentService.fetchAssessment(this.assessment.id, 'assessment', this.activityId, this.contextId, this.submission.id).toPromise();
         this.btnDisabled$.next(false);
       },
       error: async () => {
@@ -1384,8 +1383,8 @@ Best regards`;
     if (this.doAssessment || this.isPendingReview) {
       // in edit mode, check form validation
       this.setSubmissionDisabled();
-    } else if (!this.submission?.isLocked) {
-      // in read-only mode (not locked), ensure button is enabled
+    } else {
+      // in read-only mode, ensure button is enabled
       this.btnDisabled$.next(false);
     }
   }

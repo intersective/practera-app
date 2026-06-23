@@ -1,6 +1,6 @@
 const path = require('path');
 
-exports.handler = async (evt) => {
+exports.handler = async (evt, context, cb) => {
   const { request } = evt.Records[0].cf;
 
   console.log(`Original Uri: ${request.uri}`);
@@ -11,27 +11,21 @@ exports.handler = async (evt) => {
   const locales = ["en-US", "ja", "ms", "es"];
   const lastPartUrl = uriParts[uriParts.length - 1];
 
-  // whitelisted version.json request — note: query strings are in request.querystring,
-  // not in request.uri, so only the path filename is tested here
+  // whitelisted version.json request
   console.log("trailingURL::", lastPartUrl);
-  if (lastPartUrl.match(/^version\.json$/) !== null) {
-    return request;
+  if (lastPartUrl.match(/^version\.json(?:\?t=\d+)?$/) !== null) {
+    return cb(null, request);
   }
 
   if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
     request.uri = "/en-US/index.html";
     console.log("Go to default page and locale.");
-    return request;
+    return cb(null, request);
   }
 
   const fileExt = path.extname(lastPartUrl);
-  if (!fileExt) {
-    request.uri = `/browser/${locale}/index.html`;
-  } else if (!request.uri.startsWith('/browser/')) {
-    // rewrite static asset paths to match Angular 19+ application builder output
-    request.uri = `/browser${request.uri}`;
-  }
+  if (!fileExt) request.uri = `/${locale}/index.html`;
 
   console.log(`New Uri: ${request.uri}`);
-  return request;
+  return cb(null, request);
 };

@@ -210,12 +210,12 @@
                 [attr.aria-label]="'Preview ' + (attachment?.name || 'attachment')"
                 (keydown.enter)="preview(attachment)"
                 (keydown.space)="preview(attachment); $event.preventDefault()">
-              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)"
                 role="button"
                 tabindex="0"
                 [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
-                (keydown.enter)="removeSelectAttachment(attachment, i)"
-                (keydown.space)="removeSelectAttachment(attachment, i); $event.preventDefault()">
+                (keydown.enter)="removeSelectAttachment(attachment, i, true)"
+                (keydown.space)="removeSelectAttachment(attachment, i, true); $event.preventDefault()">
                 <ion-icon name="close" aria-hidden="true"></ion-icon>
               </span>
             </div>
@@ -231,12 +231,12 @@
                 (keydown.space)="preview(attachment); $event.preventDefault()">
                 <ion-icon name="play" color="ocean" aria-hidden="true"></ion-icon>
               </div>
-              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)"
                 role="button"
                 tabindex="0"
                 [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
-                (keydown.enter)="removeSelectAttachment(attachment, i)"
-                (keydown.space)="removeSelectAttachment(attachment, i); $event.preventDefault()">
+                (keydown.enter)="removeSelectAttachment(attachment, i, true)"
+                (keydown.space)="removeSelectAttachment(attachment, i, true); $event.preventDefault()">
                 <ion-icon name="close" aria-hidden="true"></ion-icon>
               </span>
             </div>
@@ -253,12 +253,12 @@
                 </ion-label>
               </ion-item>
               <div class="overlay" (click)="preview(attachment)"></div>
-              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
+              <span class="remove-attach" (click)="removeSelectAttachment(attachment, i, true)"
                 role="button"
                 tabindex="0"
                 [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
-                (keydown.enter)="removeSelectAttachment(attachment, i)"
-                (keydown.space)="removeSelectAttachment(attachment, i); $event.preventDefault()">
+                (keydown.enter)="removeSelectAttachment(attachment, i, true)"
+                (keydown.space)="removeSelectAttachment(attachment, i, true); $event.preventDefault()">
                 <ion-icon name="close" aria-hidden="true"></ion-icon>
               </span>
             </div>

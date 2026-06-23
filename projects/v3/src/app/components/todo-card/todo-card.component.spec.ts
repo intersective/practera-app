@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TodoCardComponent } from './todo-card.component';
 
@@ -33,7 +33,7 @@ describe('TodoCardComponent', () => {
   let fixture: ComponentFixture<TodoCardComponent>;
   let page: Page;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       declarations: [ TodoCardComponent ],

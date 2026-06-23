@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
@@ -54,15 +54,23 @@ describe('ReviewListComponent', () => {
   });
 
   describe('switchStatus()', () => {
-    it('should toggle showDone and navigate to first matching review', () => {
+    it('should switch status', () => {
       component.reviews = [
         { isDone: false, name: 'Pending review', submissionId: 1 } as any,
         { isDone: true, name: 'Completed review', submissionId: 2 } as any,
       ];
       component.currentReview = component.reviews[0];
+      component.ngOnChanges({
+        reviews: new SimpleChange(null, component.reviews, true),
+        currentReview: new SimpleChange(null, component.currentReview, true),
+      });
       component.goToFirstOnSwitch = true;
       const spy = spyOn(component.navigate, 'emit');
-      component.switchStatus();
+      component.switchStatus({
+        detail: {
+          value: 'completed',
+        },
+      } as any);
       expect(spy).toHaveBeenCalledWith(component.reviews[1]);
       expect(component.showDone).toBeTrue();
       expect(component.segmentValue).toBe('completed');
@@ -71,12 +79,10 @@ describe('ReviewListComponent', () => {
   });
 
   describe('noReviews()', () => {
-    it('should be empty string when reviews is null', () => {
+    it('should be null', () => {
       component.reviews = null;
       expect(component.noReviews).toEqual('');
-    });
 
-    it('should be empty string when matching reviews exist', () => {
       component.showDone = true;
       component.reviews = [{
         isDone: true,
@@ -85,7 +91,7 @@ describe('ReviewListComponent', () => {
       expect(component.noReviews).toEqual('');
     });
 
-    it('should return "completed" when showDone but no completed reviews', () => {
+    it('should return "completed"', () => {
       component.reviews = [
         { isDone: false } as any
       ];
@@ -94,7 +100,7 @@ describe('ReviewListComponent', () => {
       expect(component.noReviews).toEqual('completed');
     });
 
-    it('should return "pending" when not showDone but no pending reviews', () => {
+    it('should return "pending"', () => {
       component.reviews = [
         { isDone: true } as any
       ];

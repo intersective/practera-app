@@ -21,8 +21,6 @@ export class MockRouter extends SpyObject {
   events;
   url;
   createUrlTree;
-  getCurrentNavigation;
-  serializeUrl;
 
   constructor() {
     super(Router);
@@ -40,8 +38,6 @@ export class MockRouter extends SpyObject {
     ));
     this.createUrlTree = this.spy('createUrlTree');
     this.url = 'abc';
-    this.getCurrentNavigation = this.spy('getCurrentNavigation').and.returnValue(null);
-    this.serializeUrl = this.spy('serializeUrl').and.returnValue('/test');
   }
 }
 

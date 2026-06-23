@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { map } from 'rxjs/operators';
-import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -132,14 +131,14 @@ export class EmbedVideoService {
 
     options.image = this.validVimeoOptions.indexOf(options.image) >= 0 ? options.image : 'thumbnail_large';
 
-    return firstValueFrom(this.http.get('https://vimeo.com/api/v2/video/' + id + '.json').pipe(
+    return this.http.get('https://vimeo.com/api/v2/video/' + id + '.json').pipe(
       map((res: any) => {
         return {
           'link': res[0][options.image],
           'html': '<img src="' + res[0][options.image] + '"/>'
         };
       })
-    ))
+    ).toPromise()
       // eslint-disable-next-line no-console
       .catch(error => console.log(error));
   }
@@ -153,13 +152,14 @@ export class EmbedVideoService {
 
     options.image = this.validDailyMotionOptions.indexOf(options.image) >= 0 ? options.image : 'thumbnail_480_url';
 
-    return firstValueFrom(this.http.get('https://api.dailymotion.com/video/' + id + '?fields=' + options.image)
+    return this.http.get('https://api.dailymotion.com/video/' + id + '?fields=' + options.image)
       .pipe(map((res: any) => {
         return {
           'link': res[options.image],
           'html': '<img src="' + res[options.image] + '"/>'
         };
-      })))
+      }))
+      .toPromise()
       // eslint-disable-next-line no-console
       .catch(error => console.log(error));
   }

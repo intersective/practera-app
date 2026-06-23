@@ -9,7 +9,6 @@ import { QuillModules } from 'ngx-quill';
  */
 @Component({
   selector: 'app-edit-message-popup',
-  standalone: false,
   templateUrl: './edit-message-popup.component.html',
   styleUrls: ['./edit-message-popup.component.scss'],
 })

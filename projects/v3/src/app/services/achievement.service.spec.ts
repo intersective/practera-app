@@ -5,16 +5,12 @@ import { RequestService } from 'request';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
-import { ApolloService } from './apollo.service';
-import { DemoService } from './demo.service';
 
 describe('AchievementService', () => {
   let service: AchievementService;
   let requestSpy: jasmine.SpyObj<RequestService>;
-  let apolloSpy: jasmine.SpyObj<ApolloService>;
 
   beforeEach(() => {
-    apolloSpy = jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch']);
     TestBed.configureTestingModule({
       providers: [
         {
@@ -34,14 +30,6 @@ describe('AchievementService', () => {
             }
           })
         },
-        {
-          provide: ApolloService,
-          useValue: apolloSpy,
-        },
-        {
-          provide: DemoService,
-          useValue: jasmine.createSpyObj('DemoService', ['normalResponse'])
-        }
       ]
     });
     service = TestBed.inject(AchievementService) as jasmine.SpyObj<AchievementService>;
@@ -53,54 +41,49 @@ describe('AchievementService', () => {
   });
 
   describe('when testing getAchievements()', () => {
-    // graphql response format - achievements are in data.achievements
-    const graphqlResponse = {
-      data: {
-        achievements: [
-          {
-            id: 1,
-            name: 'achieve 1',
-            description: 'des',
-            badge: '',
-            type: 'achievement',
-            points: 100,
-            isEarned: true,
-            earnedDate: '2019-02-02'
-          },
-          {
-            id: 2,
-            name: 'achieve 2',
-            description: 'des',
-            badge: '',
-            type: 'achievement',
-            points: 200,
-            isEarned: false,
-            earnedDate: '2019-02-02'
-          },
-          {
-            id: 3,
-            name: 'achieve 3',
-            description: 'des',
-            badge: '',
-            type: 'achievement',
-            points: 300,
-            isEarned: true,
-            earnedDate: '2019-02-02'
-          },
-          {
-            id: 4,
-            name: 'achieve 4',
-            description: 'des',
-            badge: '',
-            type: 'achievement',
-            points: 0,
-            isEarned: true,
-            earnedDate: '2019-02-02'
-          }
-        ]
-      }
+    const requestResponse = {
+      success: true,
+      data: [
+        {
+          id: 1,
+          name: 'achieve 1',
+          description: 'des',
+          badge: '',
+          points: 100,
+          isEarned: true,
+          earnedDate: '2019-02-02'
+        },
+        {
+          id: 2,
+          name: 'achieve 2',
+          description: 'des',
+          badge: '',
+          points: 200,
+          isEarned: false,
+          earnedDate: '2019-02-02'
+        },
+        {
+          id: 3,
+          name: 'achieve 3',
+          description: 'des',
+          badge: '',
+          points: 300,
+          isEarned: true,
+          earnedDate: '2019-02-02'
+        },
+        {
+          id: 4,
+          name: 'achieve 4',
+          description: 'des',
+          badge: '',
+          points: 0,
+          isEarned: true,
+          earnedDate: '2019-02-02'
+        }
+      ]
     };
-    const expected = JSON.parse(JSON.stringify(graphqlResponse.data.achievements)).map(res => {
+    const achievements = requestResponse.data[0];
+    const expected = JSON.parse(JSON.stringify(requestResponse.data)).map(res => {
       return {
         id: res.id,
         name: res.name,
@@ -108,37 +91,35 @@ describe('AchievementService', () => {
         image: res.badge,
         points: res.points,
         isEarned: res.isEarned,
-        earnedDate: res.earnedDate,
-        type: res.type,
-        badge: res.badge
+        earnedDate: res.earnedDate
       };
     });
 
     describe('should throw error', () => {
-      let tmpAchievements;
+      let tmpRes;
       let errMsg;
       beforeEach(() => {
-        tmpAchievements = JSON.parse(JSON.stringify(graphqlResponse.data.achievements));
+        tmpRes = JSON.parse(JSON.stringify(requestResponse));
       });
       afterEach(() => {
-        apolloSpy.graphQLFetch.and.returnValue(of({ data: { achievements: tmpAchievements } }));
+        requestSpy.get.and.returnValue(of(tmpRes));
         service.getAchievements();
         service.achievements$.subscribe();
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
         expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual(errMsg);
       });
       it('Achievement format error', () => {
-        tmpAchievements = {}; // not an array
+        tmpRes.data = {};
         errMsg = 'Achievement format error';
       });
       it('Achievement object format error', () => {
-        tmpAchievements[0] = {}; // missing required fields
+        tmpRes.data[0] = {};
         errMsg = 'Achievement object format error';
       });
     });
 
     it('should get the correct data', () => {
-      apolloSpy.graphQLFetch.and.returnValue(of(graphqlResponse));
+      requestSpy.get.and.returnValue(of(requestResponse));
       service.getAchievements();
       service.achievements$.subscribe(res => {
         expect(res).toEqual(expected);
@@ -152,7 +133,7 @@ describe('AchievementService', () => {
     it('should return an array of achievements', (done) => {
       const mockResponse = {
         data: {
-          achievements: [
+          badges: [
             {
               id: 1,
               name: 'Achievement 1',
@@ -185,13 +166,11 @@ describe('AchievementService', () => {
         }
       };
 
-      // reset the spy for this describe block
-      apolloSpy.graphQLFetch.calls.reset();
-      apolloSpy.graphQLFetch.and.returnValue(of(mockResponse));
+      spyOn(service['apolloService'], 'graphQLFetch').and.returnValue(of(mockResponse));
 
       service.graphQLGetAchievements().subscribe((achievements) => {
         expect(achievements.length).toBe(2);
-        expect(achievements).toEqual(mockResponse.data.achievements);
+        expect(achievements).toEqual(mockResponse.data.badges);
         done();
       });
     });
@@ -199,12 +178,11 @@ describe('AchievementService', () => {
     it('should return an empty array if no badges are returned', (done) => {
       const mockResponse = {
         data: {
-          achievements: []
+          badges: []
         }
       };
 
-      apolloSpy.graphQLFetch.calls.reset();
-      apolloSpy.graphQLFetch.and.returnValue(of(mockResponse));
+      spyOn(service['apolloService'], 'graphQLFetch').and.returnValue(of(mockResponse));
 
       service.graphQLGetAchievements().subscribe((achievements) => {
         expect(achievements.length).toBe(0);
@@ -214,8 +192,7 @@ describe('AchievementService', () => {
     });
 
     it('should handle errors gracefully', (done) => {
-      apolloSpy.graphQLFetch.calls.reset();
-      apolloSpy.graphQLFetch.and.returnValue(of({ data: null }));
+      spyOn(service['apolloService'], 'graphQLFetch').and.returnValue(of({ data: null }));
 
       service.graphQLGetAchievements().subscribe((achievements) => {
         expect(achievements.length).toBe(0);
