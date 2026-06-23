@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
-import { devOnlyGuard } from './guards/dev-only.guard';
+import { DevOnlyGuard } from './guards/dev-only.guard';
 
 const routes: Routes = [
   {
@@ -11,27 +11,27 @@ const routes: Routes = [
   {
     path: 'experiences',
     loadChildren: () => import('./pages/experiences/experiences.module').then(m => m.ExperiencesPageModule),
-    canLoad: [AuthGuard],
+    canMatch: [AuthGuard],
   },
   {
     path: 'v3',
     loadChildren: () => import('./pages/v3/v3.module').then( m => m.V3PageModule),
-    canLoad: [AuthGuard],
+    canMatch: [AuthGuard],
   },
   {
     path: 'topic-mobile',
     loadChildren: () => import('./pages/topic-mobile/topic-mobile.module').then(m => m.TopicMobilePageModule),
-    canLoad: [AuthGuard],
+    canMatch: [AuthGuard],
   },
   {
     path: 'assessment-mobile',
     loadChildren: () => import('./pages/assessment-mobile/assessment-mobile.module').then(m => m.AssessmentMobilePageModule),
-    canLoad: [AuthGuard],
+    canMatch: [AuthGuard],
   },
   {
     path: 'devtool',
     loadChildren: () => import('./pages/devtool/devtool.module').then( m => m.DevtoolPageModule),
-    canMatch: [devOnlyGuard],
+    canMatch: [DevOnlyGuard],
   },
   {
     path: '',

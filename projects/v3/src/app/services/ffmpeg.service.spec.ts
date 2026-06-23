@@ -251,7 +251,7 @@ describe('FfmpegService', () => {
 
       await service.compressVideo(file);
 
-      const args: string[] = execSpy.calls.mostRecent().args[0];
+      const args = execSpy.calls.mostRecent().args[0] as string[];
       expect(args).toContain('-vf');
       expect(args).toContain('scale=-2:720');
     });
@@ -270,7 +270,7 @@ describe('FfmpegService', () => {
 
       await service.compressVideo(file);
 
-      const args: string[] = execSpy.calls.mostRecent().args[0];
+      const args = execSpy.calls.mostRecent().args[0] as string[];
       expect(args).not.toContain('-vf');
     });
 
@@ -288,7 +288,7 @@ describe('FfmpegService', () => {
 
       await service.compressVideo(file);
 
-      const args: string[] = execSpy.calls.mostRecent().args[0];
+      const args = execSpy.calls.mostRecent().args[0] as string[];
       expect(args).toContain('-vf');
       expect(args).toContain('scale=-2:720');
     });
