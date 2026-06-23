@@ -160,10 +160,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     searchParams = new URLSearchParams(queryString);
 
-    if (searchParams.has('stack_uuid')) {
-      this.storage.set('stackUuid', searchParams.get('stack_uuid'));
-    }
-
     if (searchParams.has("apikey")) {
       const queries = this.utils.urlQueryToObject(queryString);
       return this.navigate([

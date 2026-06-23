@@ -1,8 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable, of, pipe } from 'rxjs';
-import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
@@ -21,11 +20,10 @@ describe('ReviewRatingComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
+      imports: [HttpClientModule],
       declarations: [ReviewRatingComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils,

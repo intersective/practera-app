@@ -5,6 +5,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
 import { BrowserStorageService } from '../../services/storage.service';
+import { Dashboard } from 'uppy';
 import { environment } from '../../../environments/environment';
 import { FfmpegService, CompressionProgress } from '../../services/ffmpeg.service';
 import { Subject } from 'rxjs';

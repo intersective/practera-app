@@ -1,8 +1,7 @@
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA, Directive } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 import { ChatViewComponent } from './chat-view.component';
@@ -21,11 +20,9 @@ describe('ChatViewComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ChatViewComponent],
-      imports: [],
+      imports: [HttpClientTestingModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils,

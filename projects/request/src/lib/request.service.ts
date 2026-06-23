@@ -262,14 +262,14 @@ export class RequestService {
 
     // if error.error is a html template error (when try to read remote version.txt)
     if (typeof error?.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
-      return throwError(() => error?.message);
+      return throwError(error?.message);
     }
     if (error?.status === 0) {
       console.error('An error occurred:', error.error);
     }
     if (error?.graphQLErrors?.length > 0) {
-      return throwError(() => error?.graphQLErrors[0]);
+      return throwError(error?.graphQLErrors[0]);
     }
-    return throwError(() => error);
+    return throwError(error);
   }
 }

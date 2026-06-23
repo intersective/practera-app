@@ -61,7 +61,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 20.20.2
+          node-version: 18
       
 
 ################################################
@@ -90,7 +90,7 @@ jobs:
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run:  npm ci --ignore-scripts
+        run:  npm install
       
 ################################################
 #  GET P2 SANDBOX AWS ORGANIZATION NUMBER

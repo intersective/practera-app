@@ -45,8 +45,7 @@
 
         // disable standalone preference rule — app uses ngmodule architecture
         "@angular-eslint/prefer-standalone": "off",
-        // keep constructor injection during the Angular 20 baseline upgrade
-        "@angular-eslint/prefer-inject": "off",
+
         // General TypeScript best practices
         "prefer-const": "error",
         "no-console": [

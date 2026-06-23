@@ -1,8 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA, ElementRef } from '@angular/core';
 import { waitForAsync, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChatRoomComponent } from './chat-room.component';
 import { ChannelMembers, ChatService, Message } from '@v3/services/chat.service';
 import { of, Subject } from 'rxjs';
@@ -40,12 +39,10 @@ describe('ChatRoomComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [ChatRoomComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils,

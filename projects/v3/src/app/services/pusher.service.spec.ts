@@ -2,8 +2,7 @@ import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { PusherService } from '@v3/services/pusher.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -86,9 +85,8 @@ describe('PusherService', async () => {
     // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         PusherService,
         {
           provide: UtilsService,
@@ -174,8 +172,6 @@ describe('PusherService', async () => {
     },
     loading: false,
     networkStatus: 7,
-    partial: false,
-    dataState: 'complete',
   };
 
   describe('getChannels()', async () => {
@@ -427,3 +423,4 @@ describe('PusherService', async () => {
     });
   });
 });
+

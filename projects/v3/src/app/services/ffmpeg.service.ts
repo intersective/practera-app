@@ -180,14 +180,6 @@ export class FfmpegService {
     });
   }
 
-  private toMp4Blob(fileData: Uint8Array | string): Blob {
-    if (typeof fileData === 'string') {
-      return new Blob([new TextEncoder().encode(fileData)], { type: 'video/mp4' });
-    }
-
-    return new Blob([Uint8Array.from(fileData).buffer], { type: 'video/mp4' });
-  }
-
   /** compress a video file with size gating and device-aware presets */
   async compressVideo(file: File, options: CompressionOptions = {}): Promise<CompressionResult> {
     const check = this.shouldCompress(file);
@@ -243,7 +235,7 @@ export class FfmpegService {
     await this.ffmpeg.exec(ffmpegArgs, timeout);
 
     const fileData = await this.ffmpeg.readFile(outputName);
-    const blob = this.toMp4Blob(fileData);
+    const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
     const compressedFile = new File([blob], outputName, { type: 'video/mp4' });
 
     // clean up virtual fs to free memory
@@ -284,7 +276,7 @@ export class FfmpegService {
     ], this.getDefaultTimeout());
 
     const fileData = await this.ffmpeg.readFile(outputName);
-    const blob = this.toMp4Blob(fileData);
+    const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
     const outputFile = new File(
       [blob],
       file.name.replace(/\.[^.]+$/, '') + '.mp4',
@@ -306,7 +298,7 @@ export class FfmpegService {
     await this.ffmpeg.writeFile('input.avi', await fetchFile(videoURL));
     await this.ffmpeg.exec(['-i', 'input.avi', 'output.mp4']);
     const fileData = await this.ffmpeg.readFile('output.mp4');
-    const blob = this.toMp4Blob(fileData);
+    const blob = new Blob([fileData as ArrayBuffer], { type: 'video/mp4' });
 
     try { await this.ffmpeg.deleteFile('input.avi'); } catch { /* already removed */ }
     try { await this.ffmpeg.deleteFile('output.mp4'); } catch { /* already removed */ }

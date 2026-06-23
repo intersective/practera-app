@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthRegistrationComponent } from './auth-registration.component';
 import { AuthService } from '@v3/services/auth.service';
@@ -12,7 +12,7 @@ import { ModalController, IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 
 describe('AuthRegistrationComponent', () => {
   let component: AuthRegistrationComponent;
@@ -54,6 +54,7 @@ describe('AuthRegistrationComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [
+        HttpClientTestingModule,
         RouterTestingModule,
         IonicModule.forRoot(),
         ReactiveFormsModule
@@ -61,8 +62,6 @@ describe('AuthRegistrationComponent', () => {
       declarations: [AuthRegistrationComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         { provide: AuthService, useValue: authServiceSpy },
         { provide: BrowserStorageService, useValue: storageSpy },
         { provide: ExperienceService, useValue: experienceSpy },

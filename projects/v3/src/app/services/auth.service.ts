@@ -362,8 +362,6 @@ export class AuthService {
     this.pusherService.unsubscribeChannels();
     this.pusherService.disconnect();
     const config = this.storage.getConfig();
-    const stackUuid = this.storage.get('stackUuid');
-    const hasMultipleStacks = this.storage.get('hasMultipleStacks');
 
     this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)
     this.storage.clear();
@@ -372,12 +370,6 @@ export class AuthService {
     } else if (redirect === true) {
       // still store config info even logout
       this.storage.setConfig(config);
-      if (stackUuid) {
-        this.storage.set('stackUuid', stackUuid);
-      }
-      if (hasMultipleStacks) {
-        this.storage.set('hasMultipleStacks', hasMultipleStacks);
-      }
       return this.router.navigate(['/'], navigationParams);
     }
   }

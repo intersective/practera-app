@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 // import { NewRelicService } from '@v3/services/new-relic.service';
 import { Observable, of } from 'rxjs';
 import { RouterTestingModule } from '@angular/router/testing';
+import { doesNotReject } from 'assert';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 
 describe('AuthLogoutComponent', () => {

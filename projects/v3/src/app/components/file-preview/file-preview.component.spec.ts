@@ -3,8 +3,10 @@ import { FilePreviewComponent } from './file-preview.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
 
 describe('FilePreviewComponent', () => {
   const TEST_URL = 'https://www.practera.com';
@@ -15,11 +17,9 @@ describe('FilePreviewComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ IonicModule, CommonModule ],
+      imports: [ IonicModule, CommonModule, HttpClientTestingModule ],
       declarations: [ FilePreviewComponent ],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         ModalController,
         {
           provide: DomSanitizer,

@@ -11,7 +11,7 @@ describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
   let fixture: ComponentFixture<FileUploadComponent>;
   let uppyServiceSpy: jasmine.SpyObj<UppyUploaderService>;
-  let cdrSpy: jasmine.Spy;
+  let cdrSpy: jasmine.SpyObj<ChangeDetectorRef>;
   let compressionProgress$: Subject<{ uppy: Uppy<any, any>; progress: CompressionProgress | null }>;
   let mockUppy: any;
 

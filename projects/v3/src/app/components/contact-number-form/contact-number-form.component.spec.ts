@@ -1,8 +1,10 @@
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import {
+  HttpTestingController,
+  HttpClientTestingModule
+} from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ContactNumberFormComponent, COUNTRIES } from './contact-number-form.component';
 import { CommonModule } from '@angular/common';
@@ -23,12 +25,10 @@ describe('ContactNumberFormComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [IonicModule, CommonModule, FormsModule, RouterModule],
+      imports: [IonicModule, CommonModule, FormsModule, HttpClientTestingModule, RouterModule],
       declarations: [ContactNumberFormComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: BrowserStorageService,
           useClass: BrowserStorageServiceMock,

@@ -33,6 +33,13 @@ describe('VideoConversionComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('ngOnInit()', () => {
+    it('should be a no-op after filestack removal', () => {
+      component.ngOnInit();
+      expect(component.waitedTooLong).toBeFalse();
+    });
+  });
+
   describe('ngOnChange()', () => {
     it('should show download fallback for non-mp4 video', () => {
       component.video = {

@@ -2,7 +2,8 @@ import { inject, TestBed, fakeAsync, flushMicrotasks, flush } from '@angular/cor
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { EmbedVideoService } from './ngx-embed-video.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 
 describe('EmbedVideoService', () => {
@@ -12,6 +13,10 @@ describe('EmbedVideoService', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      imports: [
+        HttpClientModule,
+        HttpClientTestingModule,
+      ],
       providers: [
         EmbedVideoService,
         {

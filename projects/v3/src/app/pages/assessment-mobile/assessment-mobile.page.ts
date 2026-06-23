@@ -206,13 +206,13 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
           this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review' });
         }
 
-        await firstValueFrom(this.assessmentService.fetchAssessment(
+        await this.assessmentService.fetchAssessment(
           this.assessment.id,
           this.action,
           this.activityId,
           this.contextId,
           this.submissionId
-        ));
+        ).toPromise();
 
         if (this.action === 'assessment') {
           // get the latest activity tasks and refresh the assessment submission data

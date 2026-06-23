@@ -7,8 +7,7 @@ import { Observable, of, pipe, throwError } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestUtils } from '@testingv3/utils';
 
 describe('AuthForgotPasswordComponent', () => {
@@ -21,12 +20,10 @@ describe('AuthForgotPasswordComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule],
       declarations: [AuthForgotPasswordComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils,
@@ -86,11 +83,11 @@ describe('AuthForgotPasswordComponent', () => {
     }));
 
     it('should pop up reset too frequently alert if forgot password failed', fakeAsync(() => {
-      serviceSpy.forgotPassword.and.returnValue(throwError(() => ({
+      serviceSpy.forgotPassword.and.returnValue(throwError({
         data: {
           type: 'reset_too_frequently'
         }
-      })));
+      }));
       component.send();
       tick();
       expect(component.isSending).toBe(false);
@@ -98,7 +95,7 @@ describe('AuthForgotPasswordComponent', () => {
     }));
 
     it('should pop up try again alert if forgot password failed', fakeAsync(() => {
-      serviceSpy.forgotPassword.and.returnValue(throwError(() => ({})));
+      serviceSpy.forgotPassword.and.returnValue(throwError({}));
       component.send();
       tick();
       expect(component.isSending).toBe(false);
@@ -106,3 +103,4 @@ describe('AuthForgotPasswordComponent', () => {
     }));
   });
 });
+

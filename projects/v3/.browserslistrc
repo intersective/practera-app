@@ -8,9 +8,9 @@
 # You can see what browsers were selected by your queries by running:
 #   npx browserslist
 
-# Angular 20 supported browser floors (also satisfy Ionic 8 requirements)
-Chrome >= 107
-Firefox >= 104
-Edge >= 107
-Safari >= 16
-iOS >= 16
+# Ionic 8 minimum browser requirements
+Chrome >= 89
+Firefox >= 75
+Edge >= 89
+Safari >= 15
+iOS >= 15

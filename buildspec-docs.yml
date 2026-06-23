@@ -3,9 +3,9 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 20
+      nodejs: 10
     commands:
-      - npm ci --ignore-scripts
+      - npm install
       - git config credential.helper 'cache --timeout=90'
       - git config user.email "$USER_EMAIL"
       - git config github.token $GITHUB_TOKEN

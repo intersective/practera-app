@@ -1,7 +1,6 @@
 import { Apollo } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
 
 import { ApolloService } from './apollo.service';
 import { RequestService } from 'request';
@@ -17,7 +16,6 @@ describe('ApolloService', () => {
           'createDefault',
           'getClient',
           'watchQuery',
-          'query',
           'mutate',
           'use',
         ]),
@@ -54,20 +52,6 @@ describe('ApolloService', () => {
       apollo.createDefault = jasmine.createSpy('createDefault');
       expect(() => service.initiateCoreClient()).not.toThrow();
       expect(apollo.createDefault).toHaveBeenCalled();
-    });
-  });
-
-  describe('graphQLFetch()', () => {
-    it('initializes the core client before querying', () => {
-      const service: ApolloService = TestBed.inject(ApolloService);
-      const apollo: any = TestBed.inject(Apollo);
-      apollo.createDefault = jasmine.createSpy('createDefault');
-      apollo.query.and.returnValue(of({ data: {} }));
-
-      service.graphQLFetch('query test { test }').subscribe();
-
-      expect(apollo.createDefault).toHaveBeenCalled();
-      expect(apollo.query).toHaveBeenCalled();
     });
   });
 });
