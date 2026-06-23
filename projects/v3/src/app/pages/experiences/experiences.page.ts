@@ -8,10 +8,9 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { firstValueFrom, Subject, Observable } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 
 @Component({
-  standalone: false,
   selector: 'app-experiences',
   templateUrl: './experiences.page.html',
   styleUrls: ['./experiences.page.scss'],
@@ -78,7 +77,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   }
 
   async getProgress(projectId: number) {
-    return firstValueFrom(this.experienceService.getProgresses([projectId]));
+    return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
   get instituteLogo() {

@@ -4,7 +4,6 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
-  standalone: false,
   selector: 'app-oneof',
   templateUrl: 'oneof.component.html',
   styleUrls: ['./oneof.component.scss'],

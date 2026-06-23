@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
 import { EventListComponent } from './event-list.component';
 import { EventService, Event } from '@v3/services/event.service';
 import { Observable, of, pipe } from 'rxjs';
@@ -37,7 +37,7 @@ describe('EventListComponent', () => {
   let utils: UtilsService;
   const testUtils = new TestUtils();
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [ComponentsModule],
       declarations: [EventListComponent],

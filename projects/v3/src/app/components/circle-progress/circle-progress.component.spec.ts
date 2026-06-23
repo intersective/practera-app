@@ -97,8 +97,10 @@ describe('CircleProgressComponent', () => {
 
   describe('isMobile()', () => {
     it('should return utils.isMobile value', () => {
-      // isMobile is set during ngOnInit which runs during fixture.detectChanges()
-      // The TestUtils mock's isMobile returns false by default, so component.isMobile should be false
+      utilsSpy.isMobile = jasmine.createSpy('isMobile').and.returnValue(true);
+      expect(component.isMobile).toEqual(true);
+
+      utilsSpy.isMobile = jasmine.createSpy('isMobile').and.returnValue(false);
       expect(component.isMobile).toEqual(false);
     });
   });

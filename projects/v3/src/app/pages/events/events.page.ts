@@ -5,7 +5,6 @@ import { Event } from '@v3/services/event.service';
 import { DOCUMENT } from '@angular/common';
 
 @Component({
-  standalone: false,
   selector: 'app-events',
   templateUrl: './events.page.html',
   styleUrls: ['./events.page.scss'],

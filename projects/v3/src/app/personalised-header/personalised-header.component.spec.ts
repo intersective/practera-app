@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { of, Subject } from 'rxjs';
 import { AnimationsService } from '../services/animations.service';
 import { NotificationsService } from '../services/notifications.service';
 import { BrowserStorageService } from '../services/storage.service';
@@ -14,54 +12,35 @@ describe('PersonalisedHeaderComponent', () => {
   let component: PersonalisedHeaderComponent;
   let fixture: ComponentFixture<PersonalisedHeaderComponent>;
 
-  const mockModalSpy = jasmine.createSpyObj('Modal', ['present', 'onDidDismiss']);
-  mockModalSpy.onDidDismiss.and.returnValue(Promise.resolve({ data: {} }));
-
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PersonalisedHeaderComponent ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', {
-            'create': Promise.resolve(mockModalSpy),
-            'dismiss': Promise.resolve()
-          }),
+          useValue: jasmine.createSpyObj('ModalController', ['']),
         },
         {
           provide: AnimationsService,
-          useValue: {
-            enterAnimation: jasmine.createSpy('enterAnimation'),
-            leaveAnimation: jasmine.createSpy('leaveAnimation')
-          },
+          useValue: jasmine.createSpyObj('AnimationsService', ['']),
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', {
-            'getUser': { name: 'Test User', image: '' },
-            'get': { supportEmail: 'test@example.com' }
-          }),
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'getUser',
+          ]),
         },
         {
           provide: UtilsService,
-          useValue: jasmine.createSpyObj('UtilsService', {
-            'isMobile': false,
-            'getEvent': of({}),
-            'checkIsPracteraSupportEmail': undefined
-          }),
+          useValue: jasmine.createSpyObj('UtilsService', ['']),
         },
         {
           provide: Router,
-          useValue: jasmine.createSpyObj('Router', {
-            'navigate': Promise.resolve(true)
-          }),
+          useValue: jasmine.createSpyObj('Router', ['']),
         },
         {
           provide: NotificationsService,
-          useValue: {
-            notification$: new Subject()
-          },
+          useValue: jasmine.createSpyObj('NotificationsService', ['']),
         },
       ],
       imports: [IonicModule.forRoot()]

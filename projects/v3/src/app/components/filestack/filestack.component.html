@@ -1,0 +1,94 @@
+<ng-container [ngSwitch]="type">
+  <ng-container *ngSwitchCase="'profileImage'">
+    <ion-button class="upload"
+      mode="ios" size="large"
+      fill="outline" expand="block"
+      (click)="uploadFile()" i18n>
+      Upload Profile Image
+    </ion-button>
+  </ng-container>
+
+  <ng-container *ngSwitchDefault>
+    <ng-container *ngIf="isMobile">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <ion-text i18n>Upload file(s)</ion-text>
+        <ion-button mode="ios" size="small"
+          class="upload-button"
+          shape="round"
+          fill="outline"
+          (click)="uploadFile()"
+          [disabled]="disabled"
+          i18n="attachment upload button"
+        >UPLOAD</ion-button>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="!isMobile">
+      <div *ngIf="!isDroped"
+        class="drop-zone"
+        appDragAndDrop
+        (fileDropped)="dragAndDropUpload($event)"
+        [acceptFileType]="fileType"
+        [disabled]="disabled"
+      >
+        <p class="gray-2 subtitle-1">
+          <ion-icon name="cloud-upload-outline"></ion-icon>&nbsp;
+          <ion-text i18n>Drag and drop file here or</ion-text>
+          <ion-button mode="ios" size="small" i18n
+            class="upload-button" shape="round"
+            (click)="uploadFile()" (keydown)="uploadFile($event)"
+            [disabled]="disabled"
+          >UPLOAD FILE</ion-button>
+        </p>
+      </div>
+      <div *ngIf="isDroped" class="upload-progress">
+        <ion-grid>
+          <ion-row>
+            <ion-col size="1" class="fileTypeIcon">
+              <ng-container [ngSwitch]="fileType">
+                <ng-container *ngSwitchCase="'video'">
+                  <ion-icon name="film-outline"></ion-icon>
+                </ng-container>
+                <ng-container *ngSwitchCase="'image'">
+                  <ion-icon name="image-outline"></ion-icon>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <ion-icon name="document-outline"></ion-icon>
+                </ng-container>
+              </ng-container>
+            </ion-col>
+            <ion-col size="11">
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="11" class="file-name-container">
+                    <p class="black subtitle-1">{{ uploadingFile.fileName }}</p>
+                  </ion-col>
+                  <ion-col size="1" class="cancel-btn-container">
+                    <ion-button mode="ios" size="small" fill="clear" class="cancel-btn" (click)="cancelFileUpload()"
+                      [attr.aria-label]="'Cancel file upload'" i18n-aria-label>
+                      <ion-icon slot="icon-only" name="close-outline" aria-hidden="true"></ion-icon>
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="12">
+                    <ion-progress-bar color="primary" value="{{ (uploadingFile.uploadProgress) / 100 }}" mode="ios">
+                    </ion-progress-bar>
+                  </ion-col>
+                </ion-row>
+                <ion-row class="size-and-progress">
+                  <ion-col size="6" class="file-size-container">
+                    <p class="file-size caption gray-2">{{ uploadingFile.uploadSize }} of {{ uploadingFile.fileSize }}
+                    </p>
+                  </ion-col>
+                  <ion-col size="6" class="file-progress-container">
+                    <p class="file-upload-progress caption gray-2">{{ uploadingFile.uploadProgress }}%</p>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-container>

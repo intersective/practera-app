@@ -4,7 +4,6 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
 
 @Component({
-  standalone: false,
   selector: 'app-review-mobile',
   templateUrl: './review-mobile.page.html',
   styleUrls: ['./review-mobile.page.scss'],

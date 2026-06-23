@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  standalone: false,
   selector: 'app-traffic-light',
   templateUrl: './traffic-light.component.html',
   styleUrls: ['./traffic-light.component.scss']

@@ -6,7 +6,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { EventDetailComponent } from '../event-detail/event-detail.component';
 
 @Component({
-  standalone: false,
   selector: 'app-event-list',
   templateUrl: 'event-list.component.html',
   styleUrls: ['event-list.component.scss']

@@ -319,8 +319,8 @@ export class ExperienceService {
     // initialise Pusher
     this.sharedService.initWebServices();
     try {
-      const teamInfo = await firstValueFrom(this.sharedService.getTeamInfo());
-      const me = await firstValueFrom(this.authService.getMyInfo());
+      const teamInfo = await this.sharedService.getTeamInfo().toPromise();
+      const me = await this.authService.getMyInfo().toPromise();
 
       this._experience$.next(exp);
 

@@ -3,7 +3,6 @@ import { SafeHtml } from '@angular/platform-browser';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Component({
-  standalone: false,
   selector: 'app-description',
   templateUrl: 'description.component.html',
   styleUrls: ['./description.component.scss'],

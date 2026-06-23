@@ -51,8 +51,8 @@ describe('TeamMemberSelectorComponent', () => {
       component.review = {};
       component.control = new FormControl('');
       fixture.detectChanges();
-      // component sets innerValue from submission.answer when control is pristine
       expect(component.innerValue).toEqual(component.submission.answer);
+      expect(component.control.value).toEqual(component.submission.answer);
     });
 
     it('should get correct data for in progress review', () => {
@@ -74,12 +74,9 @@ describe('TeamMemberSelectorComponent', () => {
       };
       component.control = new FormControl('');
       fixture.detectChanges();
-      // component sets innerValue to review data
-      expect(component.innerValue).toEqual({
-        answer: component.review.answer,
-        comment: component.review.comment
-      });
+      expect(component.innerValue).toEqual(component.review);
       expect(component.comment).toEqual(component.review.comment);
+      expect(component.control.value).toEqual(component.review);
     });
   });
 
@@ -166,7 +163,6 @@ describe('TeamMemberSelectorComponent', () => {
       component.submission = {
         answer: 'Test submission answer',
       };
-      component.control = new FormControl('');
 
       component['_showSavedAnswers']();
 
@@ -182,51 +178,6 @@ describe('TeamMemberSelectorComponent', () => {
       component['_showSavedAnswers']();
 
       expect(component.innerValue).toBeUndefined();
-    });
-
-    it('should preserve control value when control is dirty in review mode', () => {
-      component.reviewStatus = 'in progress';
-      component.doReview = true;
-      component.review = {
-        comment: 'saved comment',
-        answer: 'saved answer',
-      };
-      component.control = new FormControl({ answer: 'user edited', comment: 'user comment' });
-      component.control.markAsDirty();
-
-      component['_showSavedAnswers']();
-
-      expect(component.innerValue).toEqual({ answer: 'user edited', comment: 'user comment' });
-      expect(component.comment).toBe('user comment');
-    });
-
-    it('should fallback to review comment when dirty value has no comment', () => {
-      component.reviewStatus = 'in progress';
-      component.doReview = true;
-      component.review = {
-        comment: 'saved comment',
-        answer: 'saved answer',
-      };
-      component.control = new FormControl({ answer: 'user edited' });
-      component.control.markAsDirty();
-
-      component['_showSavedAnswers']();
-
-      expect(component.comment).toBe('saved comment');
-    });
-
-    it('should preserve control value when control is dirty in assessment mode', () => {
-      component.reviewStatus = '';
-      component.doReview = false;
-      component.submissionStatus = 'in progress';
-      component.doAssessment = true;
-      component.submission = { answer: 'saved' };
-      component.control = new FormControl('user edited');
-      component.control.markAsDirty();
-
-      component['_showSavedAnswers']();
-
-      expect(component.innerValue).toBe('user edited');
     });
   });
 
@@ -255,148 +206,5 @@ describe('TeamMemberSelectorComponent', () => {
       expect(component.audienceContainReviewer()).toBe(false);
     });
   });
-
-  describe('triggerSave()', () => {
-    beforeEach(() => {
-      component.question = { id: 15, audience: [] };
-      component.submissionId = 70;
-      component.reviewId = 80;
-      component.submitActions$ = jasmine.createSpyObj('Subject', ['next']);
-    });
-
-    it('should emit review save action when doReview is true', () => {
-      component.doReview = true;
-      component.doAssessment = false;
-      component.innerValue = { answer: 'member-1', comment: 'good choice' };
-
-      component.triggerSave();
-
-      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
-        autoSave: true,
-        goBack: false,
-        reviewSave: {
-          reviewId: 80,
-          submissionId: 70,
-          questionId: 15,
-          answer: 'member-1',
-          comment: 'good choice',
-        },
-      }));
-    });
-
-    it('should emit question save action when doAssessment is true', () => {
-      component.doAssessment = true;
-      component.doReview = false;
-      component.innerValue = 'member-2';
-
-      component.triggerSave();
-
-      expect(component.submitActions$.next).toHaveBeenCalledWith(jasmine.objectContaining({
-        autoSave: true,
-        goBack: false,
-        questionSave: {
-          submissionId: 70,
-          questionId: 15,
-          answer: 'member-2',
-        },
-      }));
-    });
-  });
-
-  describe('onLabelToggle / onLabelToggleReview', () => {
-    beforeEach(() => {
-      component.control = new FormControl('');
-      component.submitActions$ = new Subject();
-      spyOn(component, 'onChange');
-    });
-
-    it('onLabelToggle should call onChange with id', () => {
-      component.onLabelToggle('member-1');
-      expect(component.onChange).toHaveBeenCalledWith('member-1');
-    });
-
-    it('onLabelToggleReview should call onChange with id and answer type', () => {
-      component.onLabelToggleReview('member-1');
-      expect(component.onChange).toHaveBeenCalledWith('member-1', 'answer');
-    });
-  });
-
-  describe('isDisplayOnly()', () => {
-    it('should be true when reviewer has canAnswer false', () => {
-      component.doReview = true;
-      component.doAssessment = false;
-      component.question = { canAnswer: false, audience: [] };
-      expect(component.isDisplayOnly).toBeTrue();
-    });
-
-    it('should be true when status is feedback available', () => {
-      component.doAssessment = false;
-      component.doReview = false;
-      component.submissionStatus = 'feedback available';
-      component.submission = { answer: 'member-1' };
-      expect(component.isDisplayOnly).toBeTruthy();
-    });
-
-    it('should be true when status is pending review', () => {
-      component.doAssessment = false;
-      component.doReview = false;
-      component.submissionStatus = 'pending review';
-      component.submission = { answer: 'member-1' };
-      expect(component.isDisplayOnly).toBeTruthy();
-    });
-
-    it('should be true when done with empty review status', () => {
-      component.doAssessment = false;
-      component.doReview = false;
-      component.submissionStatus = 'done';
-      component.reviewStatus = '';
-      component.submission = { answer: 'member-1' };
-      expect(component.isDisplayOnly).toBeTruthy();
-    });
-
-    it('should be false when doing assessment', () => {
-      component.doAssessment = true;
-      component.doReview = false;
-      expect(component.isDisplayOnly).toBeFalse();
-    });
-
-    it('should be false when doing review with canAnswer true', () => {
-      component.doAssessment = false;
-      component.doReview = true;
-      component.question = { canAnswer: true, audience: [] };
-      expect(component.isDisplayOnly).toBeFalse();
-    });
-  });
-
-  describe('_showSavedAnswers() - "not start" review status', () => {
-    it('should load review data when reviewStatus is "not start"', () => {
-      component.reviewStatus = 'not start';
-      component.doReview = true;
-      component.review = { answer: 'member-x', comment: 'test' };
-      component.control = new FormControl('');
-
-      component['_showSavedAnswers']();
-
-      expect(component.innerValue).toEqual({
-        answer: 'member-x',
-        comment: 'test',
-      });
-    });
-  });
-
-  describe('_showSavedAnswers() - propagateChange call', () => {
-    it('should call propagateChange with innerValue', () => {
-      component.submissionStatus = 'in progress';
-      component.doAssessment = true;
-      component.submission = { answer: 'member-1' };
-      component.reviewStatus = '';
-      component.doReview = false;
-      component.control = new FormControl('');
-      spyOn(component, 'propagateChange');
-
-      component['_showSavedAnswers']();
-
-      expect(component.propagateChange).toHaveBeenCalledWith('member-1');
-    });
-  });
 });
+

@@ -18,13 +18,10 @@ export interface GoogleCalendarParams {
   providedIn: 'root'
 })
 export class DueDatesService {
-  // wrapped for testability (esbuild freezes module namespaces)
-  icsCreateEvent = createEvent;
-
   constructor() { }
 
   createCalendarEvent(eventData: EventAttributes): void {
-    return this.icsCreateEvent(eventData, (error, value) => {
+    return createEvent(eventData, (error, value) => {
       if (error) {
         throw new Error('Failed to create event: ' + error.message);
       }

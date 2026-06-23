@@ -1,9 +1,16 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { RequestConfig, RequestService } from './request.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
+  imports: [
+    HttpClientModule,
+  ],
   providers: [
     RequestService,
+  ],
+  exports: [
+    HttpClientModule,
   ],
 })
 export class RequestModule {

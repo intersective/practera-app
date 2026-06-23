@@ -104,8 +104,8 @@ clickable-item {
 }
 
 .focusable:focus {
-  outline: 2px solid var(--ion-color-primary);
-  outline-offset: -2px;
+  border: 1px solid var(--ion-color-primary);
+  display: block;
 }
 
 .indicator-container {
