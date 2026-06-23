@@ -6,6 +6,7 @@ import { DOCUMENT } from '@angular/common';
 import { AuthService } from '@v3/app/services/auth.service';
 
 @Component({
+  standalone: false,
   selector: 'app-chat-view',
   templateUrl: './chat-view.component.html',
   styleUrls: ['./chat-view.component.scss']

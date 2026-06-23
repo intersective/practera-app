@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -17,8 +17,14 @@ export class FastFeedbackService {
 
   private currentPulseCheckId: string = null; // temporary store active pulse check ID
 
+  // lazily resolved to break circular dependency with NotificationsService
+  private _notificationsService: NotificationsService;
+  private get notificationsService(): NotificationsService {
+    return (this._notificationsService ??= this.injector.get(NotificationsService));
+  }
+
   constructor(
-    private notificationsService: NotificationsService,
+    private injector: Injector,
     private storage: BrowserStorageService,
     private utils: UtilsService,
     private demo: DemoService,

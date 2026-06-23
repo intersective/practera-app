@@ -9,7 +9,6 @@ import {
 import { Router } from '@angular/router';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap } from 'rxjs/operators';
-import { has, isEmpty, each } from 'lodash-es';
 
 interface RequestOptions {
   headers?: any;
@@ -92,9 +91,9 @@ export class RequestService {
    */
   setParams(options: {[key:string]: any}) {
     let params: any;
-    if (!isEmpty(options)) {
+    if (options && Object.keys(options).length > 0) {
       params = new HttpParams();
-      each(options, (value, key) => {
+      Object.entries(options).forEach(([key, value]) => {
         params = params.append(key, value);
       });
     }
@@ -122,13 +121,13 @@ export class RequestService {
       httpOptions = {};
     }
 
-    if (!has(httpOptions, 'headers')) {
+    if (!('headers' in httpOptions)) {
       httpOptions.headers = '';
     }
-    if (!has(httpOptions, 'params')) {
+    if (!('params' in httpOptions)) {
       httpOptions.params = '';
     }
-    if (!has(httpOptions, 'observe')) {
+    if (!('observe' in httpOptions)) {
       httpOptions.observe = 'body';
     }
 
@@ -149,10 +148,10 @@ export class RequestService {
       params.httpOptions = {};
     }
 
-    if (!has(params.httpOptions, 'headers')) {
+    if (!('headers' in params.httpOptions)) {
       params.httpOptions.headers = '';
     }
-    if (!has(params.httpOptions, 'params')) {
+    if (!('params' in params.httpOptions)) {
       params.httpOptions.params = '';
     }
 
@@ -179,10 +178,10 @@ export class RequestService {
       httpOptions = {};
     }
 
-    if (!has(httpOptions, 'headers')) {
+    if (!('headers' in httpOptions)) {
       httpOptions.headers = '';
     }
-    if (!has(httpOptions, 'params')) {
+    if (!('params' in httpOptions)) {
       httpOptions.params = '';
     }
 
@@ -203,10 +202,10 @@ export class RequestService {
    *
    */
   delete(endPoint: string, httpOptions: RequestOptions = {}): Observable<any> {
-    if (!has(httpOptions, 'headers')) {
+    if (!('headers' in httpOptions)) {
       httpOptions.headers = '';
     }
-    if (!has(httpOptions, 'params')) {
+    if (!('params' in httpOptions)) {
       httpOptions.params = '';
     }
 
@@ -245,11 +244,11 @@ export class RequestService {
     }
 
     // log the user out if jwt expired
-    if (has(error, 'error.message') && [
+    if (error?.error?.message && [
       'Request must contain an apikey',
       'Expired apikey',
       'Invalid apikey'
-    ].includes(error?.error?.message) && !this.loggedOut) {
+    ].includes(error.error.message) && !this.loggedOut) {
       // in case lots of api returns the same apikey invalid at the same time
       this.loggedOut = true;
       setTimeout(
@@ -263,14 +262,14 @@ export class RequestService {
 
     // if error.error is a html template error (when try to read remote version.txt)
     if (typeof error?.error === 'string' && error.error.indexOf('<!DOCTYPE html>') !== -1) {
-      return throwError(error?.message);
+      return throwError(() => error?.message);
     }
     if (error?.status === 0) {
       console.error('An error occurred:', error.error);
     }
     if (error?.graphQLErrors?.length > 0) {
-      return throwError(error?.graphQLErrors[0]);
+      return throwError(() => error?.graphQLErrors[0]);
     }
-    return throwError(error);
+    return throwError(() => error);
   }
 }

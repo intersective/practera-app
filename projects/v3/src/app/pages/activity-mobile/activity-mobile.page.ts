@@ -6,6 +6,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'app-activity-mobile',
   templateUrl: './activity-mobile.page.html',
   styleUrls: ['./activity-mobile.page.scss'],

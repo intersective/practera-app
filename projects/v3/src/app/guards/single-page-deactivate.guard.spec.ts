@@ -1,4 +1,4 @@
-import { TestBed, async, inject } from '@angular/core/testing';
+import { TestBed, waitForAsync, inject } from '@angular/core/testing';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SinglePageDeactivateGuard } from './single-page-deactivate.guard';
 

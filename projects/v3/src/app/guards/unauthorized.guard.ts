@@ -4,6 +4,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, Route
 import { Observable } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { environment } from '@v3/environments/environment';
+import { BrowserStorageService } from '@v3/services/storage.service';
 
 @Injectable()
 export class UnauthorizedGuard implements CanActivate {
@@ -12,7 +13,8 @@ export class UnauthorizedGuard implements CanActivate {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private storage: BrowserStorageService,
   ) {}
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
@@ -25,8 +27,9 @@ export class UnauthorizedGuard implements CanActivate {
       if (state.url.includes('registration')) {
         return true;
       }
+      const stackUuid = this.storage.get('stackUuid') || environment.stackUuid;
       // redirect to global login
-      this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ environment.stackUuid }`);
+      this.utils.openUrl(`${ environment.globalLoginUrl }?referrer=${ window.location.hostname }&stackUuid=${ stackUuid }`);
       return false;
     }
 

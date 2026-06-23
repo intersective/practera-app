@@ -2,8 +2,7 @@ import { inject, TestBed, fakeAsync, flushMicrotasks, flush } from '@angular/cor
 import { DomSanitizer } from '@angular/platform-browser';
 
 import { EmbedVideoService } from './ngx-embed-video.service';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpClient } from '@angular/common/http';
 import { of } from 'rxjs';
 
 describe('EmbedVideoService', () => {
@@ -13,10 +12,6 @@ describe('EmbedVideoService', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [
-        HttpClientModule,
-        HttpClientTestingModule,
-      ],
       providers: [
         EmbedVideoService,
         {
@@ -44,63 +39,74 @@ describe('EmbedVideoService', () => {
   });
 
   it('converts vimeo.com url', () => {
-    const target = service.embed('http://vimeo.com/19339941');
-    const result = '<iframe src="https://player.vimeo.com/video/19339941" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
-
-    expect(target).toEqual(`sanitized:${result}`);
+    const target = service.embed('http://vimeo.com/19339941') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="vimeo-embed-19339941-\d+" src="https:\/\/player\.vimeo\.com\/video\/19339941" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen><\/iframe>$/);
   });
 
 
   it('converts youtube.com url', () => {
-    expect(service.embed('https://www.youtube.com/watch?v=twE64AuqE9A')).toEqual('sanitized:<iframe src="https://www.youtube.com/embed/twE64AuqE9A" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed('https://www.youtube.com/watch?v=twE64AuqE9A') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="youtube-embed-twE64AuqE9A-\d+" src="https:\/\/www\.youtube\.com\/embed\/twE64AuqE9A" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('converts youtu.be url', () => {
-    expect(service.embed('http://youtu.be/9XeNNqeHVDw#aid=P-Do3JLm4A0')).toEqual('sanitized:<iframe src="https://www.youtube.com/embed/9XeNNqeHVDw" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed('http://youtu.be/9XeNNqeHVDw#aid=P-Do3JLm4A0') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="youtube-embed-9XeNNqeHVDw-\d+" src="https:\/\/www\.youtube\.com\/embed\/9XeNNqeHVDw" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('converts dailymotion.com url', () => {
-    expect(service.embed('https://www.dailymotion.com/video/x20qnej_red-bull-presents-wild-ride-bmx-mtb-dirt_sport')).toEqual('sanitized:<iframe src="https://www.dailymotion.com/embed/video/x20qnej" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed('https://www.dailymotion.com/video/x20qnej_red-bull-presents-wild-ride-bmx-mtb-dirt_sport') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="dailymotion-embed-x20qnej-\d+" src="https:\/\/www\.dailymotion\.com\/embed\/video\/x20qnej" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('converts dai.ly url', () => {
-    expect(service.embed('http://dai.ly/x20qnej')).toEqual('sanitized:<iframe src="https://www.dailymotion.com/embed/video/x20qnej" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed('http://dai.ly/x20qnej') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="dailymotion-embed-x20qnej-\d+" src="https:\/\/www\.dailymotion\.com\/embed\/video\/x20qnej" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('converts vimeo id', () => {
-    expect(service.embed_vimeo('19339941')).toEqual('sanitized:<iframe src="https://player.vimeo.com/video/19339941" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>')
+    const target = service.embed_vimeo('19339941') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="vimeo-embed-19339941-\d+" src="https:\/\/player\.vimeo\.com\/video\/19339941" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen><\/iframe>$/);
   });
 
   it('converts youtube id', () => {
-    expect(service.embed_youtube('9XeNNqeHVDw')).toEqual('sanitized:<iframe src="https://www.youtube.com/embed/9XeNNqeHVDw" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed_youtube('9XeNNqeHVDw') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="youtube-embed-9XeNNqeHVDw-\d+" src="https:\/\/www\.youtube\.com\/embed\/9XeNNqeHVDw" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('converts dailymotion id', () => {
-    expect(service.embed_dailymotion('x20qnej')).toEqual('sanitized:<iframe src="https://www.dailymotion.com/embed/video/x20qnej" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed_dailymotion('x20qnej') as string;
+    expect(target).toMatch(/^sanitized:<iframe id="dailymotion-embed-x20qnej-\d+" src="https:\/\/www\.dailymotion\.com\/embed\/video\/x20qnej" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('accepts query param youtube', () => {
-    expect(service.embed_youtube('9XeNNqeHVDw', { query: { rel: 0, showinfo: 0 } })).toEqual('sanitized:<iframe src="https://www.youtube.com/embed/9XeNNqeHVDw?rel=0&showinfo=0" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed_youtube('9XeNNqeHVDw', { query: { rel: 0, showinfo: 0 } }) as string;
+    expect(target).toMatch(/^sanitized:<iframe id="youtube-embed-9XeNNqeHVDw-\d+" src="https:\/\/www\.youtube\.com\/embed\/9XeNNqeHVDw\?rel=0&showinfo=0" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('accepts attributes youtube', () => {
-    expect(service.embed_youtube('9XeNNqeHVDw', { query: { rel: 0, showinfo: 0 }, attr: { width: 400, height: 200 } })).toEqual('sanitized:<iframe src="https://www.youtube.com/embed/9XeNNqeHVDw?rel=0&showinfo=0" width="400" height="200" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed_youtube('9XeNNqeHVDw', { query: { rel: 0, showinfo: 0 }, attr: { width: 400, height: 200 } }) as string;
+    expect(target).toMatch(/^sanitized:<iframe id="youtube-embed-9XeNNqeHVDw-\d+" src="https:\/\/www\.youtube\.com\/embed\/9XeNNqeHVDw\?rel=0&showinfo=0" width="400" height="200" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('accepts query param vimeo', () => {
-    expect(service.embed_vimeo('19339941', { query: { portrait: 0, color: '333' } })).toEqual('sanitized:<iframe src="https://player.vimeo.com/video/19339941?portrait=0&color=333" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>')
+    const target = service.embed_vimeo('19339941', { query: { portrait: 0, color: '333' } }) as string;
+    expect(target).toMatch(/^sanitized:<iframe id="vimeo-embed-19339941-\d+" src="https:\/\/player\.vimeo\.com\/video\/19339941\?portrait=0&color=333" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen><\/iframe>$/);
   });
 
   it('accepts attributes vimeo', () => {
-    expect(service.embed_vimeo('19339941', { query: { portrait: 0, color: '333' }, attr: { width: 400, height: 200 } })).toEqual('sanitized:<iframe src="https://player.vimeo.com/video/19339941?portrait=0&color=333" width="400" height="200" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>')
+    const target = service.embed_vimeo('19339941', { query: { portrait: 0, color: '333' }, attr: { width: 400, height: 200 } }) as string;
+    expect(target).toMatch(/^sanitized:<iframe id="vimeo-embed-19339941-\d+" src="https:\/\/player\.vimeo\.com\/video\/19339941\?portrait=0&color=333" width="400" height="200" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen><\/iframe>$/);
   });
 
   it('accepts query param dailymotion', () => {
-    expect(service.embed_dailymotion('x20qnej', { query: { autoPlay: 1, start: 66 } })).toEqual('sanitized:<iframe src="https://www.dailymotion.com/embed/video/x20qnej?autoPlay=1&start=66" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed_dailymotion('x20qnej', { query: { autoPlay: 1, start: 66 } }) as string;
+    expect(target).toMatch(/^sanitized:<iframe id="dailymotion-embed-x20qnej-\d+" src="https:\/\/www\.dailymotion\.com\/embed\/video\/x20qnej\?autoPlay=1&start=66" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   it('accepts attributes dailymotion', () => {
-    expect(service.embed_dailymotion('x20qnej', { query: { autoPlay: 1, start: 66 }, attr: { width: 400, height: 200 } })).toEqual('sanitized:<iframe src="https://www.dailymotion.com/embed/video/x20qnej?autoPlay=1&start=66" width="400" height="200" frameborder="0" allowfullscreen></iframe>')
+    const target = service.embed_dailymotion('x20qnej', { query: { autoPlay: 1, start: 66 }, attr: { width: 400, height: 200 } }) as string;
+    expect(target).toMatch(/^sanitized:<iframe id="dailymotion-embed-x20qnej-\d+" src="https:\/\/www\.dailymotion\.com\/embed\/video\/x20qnej\?autoPlay=1&start=66" width="400" height="200" frameborder="0" allowfullscreen><\/iframe>$/);
   });
 
   describe('embed_image', () => {

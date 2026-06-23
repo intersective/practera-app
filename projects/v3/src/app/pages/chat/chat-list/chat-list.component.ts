@@ -9,6 +9,7 @@ import { PusherService } from '@v3/services/pusher.service';
  * this is an app chat list component
  */
 @Component({
+  standalone: false,
   selector: 'app-chat-list',
   templateUrl: 'chat-list.component.html',
   styleUrls: ['chat-list.component.scss']
