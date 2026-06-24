@@ -21,6 +21,7 @@ import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 @Component({
+  standalone: false,
   selector: "app-home",
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"],

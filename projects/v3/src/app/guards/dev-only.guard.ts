@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { CanLoad, Router } from '@angular/router';
+import { CanMatch, Router } from '@angular/router';
 import { environment } from '@v3/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DevOnlyGuard implements CanLoad {
+export class DevOnlyGuard implements CanMatch {
   constructor(
     private router: Router
   ) {}
 
-  canLoad(): boolean {
+  canMatch(): boolean {
     const isLive = environment.production;
     if (isLive === true) {
       this.router.navigate(['/']);

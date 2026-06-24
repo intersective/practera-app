@@ -7,8 +7,10 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { environment } from '@v3/environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-auth-direct-login',
   templateUrl: 'auth-direct-login.component.html',
 })
@@ -33,7 +35,7 @@ export class AuthDirectLoginComponent implements OnInit {
 
     this.authService.autologin({ authToken }).subscribe({
       next: async (authed) => {
-        await this.authService.getMyInfo().toPromise();
+        await firstValueFrom(this.authService.getMyInfo());
         return this._redirect({ experience: authed.experience });
       },
       error: err => {
@@ -210,8 +212,10 @@ export class AuthDirectLoginComponent implements OnInit {
     experience?: any;
   }): void | Promise<boolean> {
     const currentLocation = window.location.href;
+    const currentHostname = window.location.hostname;
+    const isLocalhost = /(^localhost$)|(^127\.)|(^::1$)/.test(currentHostname);
     const locale = options?.experience?.locale;
-    if (currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
+    if (!isLocalhost && locale && currentLocation.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else { // Info: This block is only for development purpose
@@ -244,7 +248,7 @@ export class AuthDirectLoginComponent implements OnInit {
       return this.navigate(['auth', 'registration', res.data.user.email, res.data.user.key]);
     }
 
-    const errorMessage = res.message.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
+    const errorMessage = res?.message?.includes('User not enrolled') ? res.message : $localize`Your link is invalid or expired.`;
 
     return this.notificationsService.alert({
       message: errorMessage,

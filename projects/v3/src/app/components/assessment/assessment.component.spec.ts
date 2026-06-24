@@ -1,7 +1,8 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { async, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, Directive, forwardRef } from '@angular/core';
+import { ReactiveFormsModule, FormGroup, FormControl, NG_VALUE_ACCESSOR, ControlValueAccessor, Validators } from '@angular/forms';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick, inject, flushMicrotasks, flush } from '@angular/core/testing';
 
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AssessmentComponent } from './assessment.component';
@@ -18,6 +19,27 @@ import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { ModalController } from '@ionic/angular';
+
+/**
+ * mock value accessor directive to satisfy formControlName bindings
+ * on custom elements like app-text, app-oneof, etc.
+ */
+@Directive({
+  standalone: false,
+  selector: '[formControlName]',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => MockValueAccessorDirective),
+      multi: true
+    }
+  ]
+})
+class MockValueAccessorDirective implements ControlValueAccessor {
+  writeValue(obj: any): void {}
+  registerOnChange(fn: any): void {}
+  registerOnTouched(fn: any): void {}
+}
 
 class Page {
   get savingMessage() {
@@ -181,10 +203,12 @@ describe('AssessmentComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, HttpClientTestingModule],
-      declarations: [AssessmentComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [ReactiveFormsModule],
+      declarations: [AssessmentComponent, MockValueAccessorDirective],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -217,7 +241,7 @@ describe('AssessmentComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly'])
+          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'customToast', 'popUp', 'presentToast', 'modalOnly', 'assessmentSubmittedToast'])
         },
         {
           provide: ActivityService,
@@ -275,6 +299,10 @@ describe('AssessmentComponent', () => {
     assessmentSpy.saveFeedbackReviewed.and.returnValue(of({ success: true }));
     // activitySpy.goToNextTask.and.returnValue(Promise.resolve());
     storageSpy.getUser.and.returnValue(mockUser);
+
+    // initialize btnDisabled$ as it's an @Input that is normally set by parent
+    component.btnDisabled$ = new BehaviorSubject(false);
+    component.savingMessage$ = new BehaviorSubject('');
   });
 
   it('should be created', () => {
@@ -327,22 +355,25 @@ describe('AssessmentComponent', () => {
       expect(component.ngOnChanges({})).toBeFalsy();
     });
 
-    it('should update assessment with latest data', () => {
-      component.assessment = mockAssessment;
-      component.ngOnChanges({});
+  it('should update assessment with latest data', () => {
+    component.assessment = mockAssessment;
+    component.action = 'assessment';
+    component.ngOnChanges({ assessment: {} as any });
 
-      expect(component.doAssessment).toEqual(true);
-      expect(component.feedbackReviewed).toEqual(false);
-      expect(component.btnDisabled$.value).toEqual(false);
-      expect(component.isNotInATeam).toEqual(false);
-      expect(component.isPendingReview).toEqual(false);
-    });
+    expect(component.doAssessment).toEqual(true);
+    expect(component.feedbackReviewed).toEqual(false);
+    // btnDisabled$ is true because required questions are not answered yet
+    expect(component.btnDisabled$.value).toEqual(true);
+    expect(component.isNotInATeam).toEqual(false);
+    expect(component.isPendingReview).toEqual(false);
+  });
 
     it('should not allow submission if locked', () => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.action = 'assessment';
+      // Create a copy to avoid test pollution
+      component.submission = { ...mockSubmission, isLocked: true } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -352,9 +383,10 @@ describe('AssessmentComponent', () => {
 
     it('should not allow submission', () => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = true;
-      component.ngOnChanges({});
+      component.action = 'assessment';
+      // Create a copy to avoid test pollution
+      component.submission = { ...mockSubmission, isLocked: true } as any;
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.doAssessment).toEqual(false);
       expect(component.submission.status).toEqual('done');
@@ -364,18 +396,26 @@ describe('AssessmentComponent', () => {
 
     it('should save & publish "saving" message', fakeAsync(() => {
       component.assessment = mockAssessment;
-      component.submission = mockSubmission as any;
-      component.submission.isLocked = false;
-      component.submission.status = 'in progress';
+      component.action = 'assessment';
+      // Create a copy to avoid test pollution
+      component.submission = { ...mockSubmission, isLocked: false, status: 'in progress' } as any;
       component.savingMessage$ = new BehaviorSubject('');
       const spy = spyOn(component.savingMessage$, 'next');
-      component.ngOnChanges({});
+      // Pre-create form controls to avoid NG01203 error when change detection runs
+      mockQuestions.forEach(q => {
+        component.questionsForm.addControl('q-' + q.id, new FormControl(null));
+      });
+      component.ngOnChanges({ submission: {} as any });
 
-      tick();
+      // Flush all pending timers (200ms for initializePageCompletion, 250ms for scrollActivePageIntoView, 300ms for form subscription)
+      tick(350);
       expect(component.doAssessment).toBeTrue();
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.submission.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
-      expect(component.btnDisabled$.value).toEqual(false);
+      // btnDisabled$ is true because required questions are not answered yet
+      expect(component.btnDisabled$.value).toEqual(true);
+      // Flush any remaining timers
+      flush();
     }));
 
     it('should flag assessment as "pending review"', () => {
@@ -391,7 +431,7 @@ describe('AssessmentComponent', () => {
       const spy = spyOn(component.savingMessage$, 'next');
 
       component.action = 'review';
-      component.ngOnChanges({});
+      component.ngOnChanges({ review: {} as any });
 
       const lastSaveMsg = 'Last saved ' + utils.timeFormatter(component.review.modified);
       expect(spy).toHaveBeenCalledWith(lastSaveMsg);
@@ -406,7 +446,7 @@ describe('AssessmentComponent', () => {
       component.submission = mockSubmission as any;
       component.submission.isLocked = false;
       component.submission.status = 'done';
-      component.ngOnChanges({});
+      component.ngOnChanges({ submission: {} as any });
 
       expect(component.feedbackReviewed).toEqual(component.submission.completed);
     });
@@ -415,6 +455,7 @@ describe('AssessmentComponent', () => {
   it('should list unanswered required questions from compulsoryQuestionsAnswered()', () => {
     expect(component['_compulsoryQuestionsAnswered']).toBeDefined();
     component.assessment = mockAssessment;
+    component.action = 'assessment';
     const answers = [
       {
         'questionId': 123,
@@ -425,6 +466,17 @@ describe('AssessmentComponent', () => {
         'answer': null
       }
     ];
+
+    // Mock form element - create a mock form object
+    component.form = {
+      nativeElement: {
+        querySelector: jasmine.createSpy('querySelector').and.returnValue({
+          classList: {
+            add: jasmine.createSpy('add')
+          }
+        })
+      }
+    } as any;
 
     const unansweredQuestions = component['_compulsoryQuestionsAnswered'](answers);
     expect(unansweredQuestions).toEqual([mockQuestions[0]]);
@@ -491,6 +543,7 @@ describe('AssessmentComponent', () => {
 
       component.doAssessment = true;
       component.isPendingReview = false;
+      component.action = 'assessment';
 
       // Call the method
       component['_populateQuestionsForm']();
@@ -508,7 +561,7 @@ describe('AssessmentComponent', () => {
       const optionalControl = component.questionsForm.get('q-2');
       expect(optionalControl.validator).toBeFalsy();
 
-      // Check that multi team member selector has array initial value
+      // Check that multi team member selector has plain array initial value in assessment mode
       const multiControl = component.questionsForm.get('q-3');
       expect(multiControl.value).toEqual([]);
     });
@@ -746,7 +799,8 @@ describe('AssessmentComponent', () => {
         groups: []
       } as any;
 
-      spyOn(utils, 'isEmpty').and.returnValue(true);
+      // isEmpty is already spied by TestUtils, just override return value
+      (utils.isEmpty as jasmine.Spy).and.returnValue(true);
 
       component['_populateQuestionsForm']();
 
@@ -779,13 +833,19 @@ describe('AssessmentComponent', () => {
 
       spyOn(component, 'initializePageCompletion');
       spyOn(component, 'setSubmissionDisabled');
-      spyOn(utils, 'isEmpty').and.returnValue(false);
+      // isEmpty is already spied by TestUtils, just override return value
+      (utils.isEmpty as jasmine.Spy).and.returnValue(false);
 
       component['_populateQuestionsForm']();
 
+      // Wait for the setTimeout(300) that sets up the subscription
+      tick(300);
+
       // Trigger form value change
       component.questionsForm.get('q-1').setValue('test value');
-      tick(300); // Wait for debounce
+
+      // Wait for debounceTime(300)
+      tick(300);
 
       expect(component.initializePageCompletion).toHaveBeenCalled();
       expect(component.setSubmissionDisabled).toHaveBeenCalled();
@@ -1279,12 +1339,12 @@ describe('AssessmentComponent', () => {
       expect(component.labelColor).toEqual('');
     });
 
-    it('should return empty when status is unknown', () => {
+    it('should return danger when status is in progress and is overdue', () => {
       component.submission.status = 'in progress';
       component.assessment.isForTeam = false;
       component.assessment.isOverdue = true;
       component.submission.isLocked = false;
-      expect(component.labelColor).toEqual('');
+      expect(component.labelColor).toEqual('danger');
     });
   });
 
@@ -1367,6 +1427,9 @@ describe('AssessmentComponent', () => {
     });
 
     it('should return questions that are required but not answered', () => {
+      // Set action to assessment
+      component.action = 'assessment';
+
       // Set up mock assessment with required questions
       component.assessment = {
         id: 1,
@@ -1401,12 +1464,16 @@ describe('AssessmentComponent', () => {
         // Question 2 is missing
       ];
 
-      // Mock form element
-      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
-        classList: {
-          add: jasmine.createSpy('add')
+      // Mock form element - create a mock form object
+      component.form = {
+        nativeElement: {
+          querySelector: jasmine.createSpy('querySelector').and.returnValue({
+            classList: {
+              add: jasmine.createSpy('add')
+            }
+          })
         }
-      });
+      } as any;
 
       // Test the function
       const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
@@ -1484,12 +1551,16 @@ describe('AssessmentComponent', () => {
         { questionId: 1, answer: '', file: null }
       ];
 
-      // Mock form element
-      spyOn(component.form.nativeElement, 'querySelector').and.returnValue({
-        classList: {
-          add: jasmine.createSpy('add')
+      // Mock form element - create a mock form object
+      component.form = {
+        nativeElement: {
+          querySelector: jasmine.createSpy('querySelector').and.returnValue({
+            classList: {
+              add: jasmine.createSpy('add')
+            }
+          })
         }
-      });
+      } as any;
 
       // Test the function
       const missingQuestions = component['_compulsoryQuestionsAnswered'](answers);
@@ -1703,9 +1774,12 @@ describe('AssessmentComponent', () => {
         component.doAssessment = true;
         component['submitting'] = true;
         component.btnDisabled$.next(true);
+        component.assessment = { ...mockAssessment };
         component.questionsForm = new FormGroup({
           'q-123': new FormControl(null, Validators.required),
         });
+        // mock the form ViewChild to prevent nativeElement errors
+        component.form = { nativeElement: document.createElement('div') } as any;
       });
 
       it('should reset submitting when required questions are missing', async () => {
@@ -2308,7 +2382,7 @@ describe('AssessmentComponent', () => {
       id: 1,
       name: 'review test',
       description: '',
-      type: 'quiz',
+      type: 'moderated',
       isForTeam: false,
       dueDate: '2029-02-02',
       isOverdue: false,
@@ -2398,7 +2472,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multiple type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-3'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -2410,7 +2484,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for multi-team-member-selector type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-6'];
         expect(control).toBeTruthy();
         // empty array answer should be invalid
@@ -2422,7 +2496,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for oneof type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-2'];
         expect(control).toBeTruthy();
         // empty answer should be invalid
@@ -2434,7 +2508,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
-        component.ngOnChanges({});
+        component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-5'];
         expect(control).toBeTruthy();
         // empty answer should be invalid

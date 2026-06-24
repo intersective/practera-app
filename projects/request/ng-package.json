@@ -3,8 +3,5 @@
   "dest": "../../dist/request",
   "lib": {
     "entryFile": "src/public-api.ts"
-  },
-  "allowedNonPeerDependencies": [
-    "lodash"
-  ]
+  }
 }

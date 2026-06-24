@@ -10,6 +10,7 @@ import { DOCUMENT } from '@angular/common';
 import { Subscription } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-notifications',
   templateUrl: './notifications.page.html',
   styleUrls: ['./notifications.page.scss'],

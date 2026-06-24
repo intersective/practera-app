@@ -7,6 +7,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-review-desktop',
   templateUrl: './review-desktop.page.html',
   styleUrls: ['./review-desktop.page.scss'],
