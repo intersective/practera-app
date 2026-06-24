@@ -15,10 +15,11 @@ The `forwarder` function is **tightly coupled** to the Angular build output dire
 
 `projects/v3` is compiled with `"localize": true` in `angular.json`, producing one subfolder per locale:
 
-| Angular version | Build output path | S3 object key prefix |
-|-----------------|-------------------|----------------------|
-| 17 / 18 (webpack builder) | `dist/v3/{locale}/` | `/{locale}/` |
-| **19+ (application builder)** | `dist/v3/browser/{locale}/` | `/browser/{locale}/` |
+| Angular version / mode | Build output path | S3 object key prefix |
+|------------------------|-------------------|----------------------|
+| 17 / 18 (webpack browser builder) | `dist/v3/{locale}/` | `/{locale}/` |
+| 19 (application builder rollout) | `dist/v3/browser/{locale}/` | `/browser/{locale}/` |
+| **20 baseline in this repo (browser builder)** | `dist/v3/{locale}/` | `/{locale}/` |
 
 The `aws s3 sync dist/v3/ s3://$BUCKET --delete` step (CI/CD step 22) mirrors this structure directly into S3, so the S3 key prefix always matches the build output.
 
@@ -28,9 +29,10 @@ CloudFront does **not** forward query strings to S3 (`QueryString: false`). When
 
 1. Extracts the first path segment as the locale (`en-US`, `ja`, `ms`, `es`).
 2. For unknown locales or bare `/`, falls back to the default locale.
-3. For SPA routes (no file extension), rewrites to `/{prefix}/{locale}/index.html`.
-4. For static assets (with file extension), rewrites to `/{prefix}{original_uri}`.
-5. Passes `version.json` requests through unchanged (whitelist).
+3. For SPA routes (no file extension), rewrites to `/{locale}/index.html`.
+4. For static assets (with file extension), keeps `/{locale}/asset.ext` unchanged.
+5. For legacy `/browser/...` requests, strips the `/browser` prefix and rewrites to locale-root keys.
+6. Passes `version.json` requests through unchanged (whitelist).
 
 #### Supported locales
 
@@ -49,8 +51,8 @@ When upgrading Angular major versions, verify the build output structure has not
 ```bash
 # after building, check what subdirectories are produced
 ls dist/v3/
-# Angular 19+: should show  browser/
-# Angular 17/18: should show  en-US/  ja/  ms/  es/
+# browser builder layout: should show locale folders directly
+# e.g. en-US/  ja/  ms/  es/
 ```
 
 If the output structure changes, update the path prefix in `forwarder/index.js` **before** merging to trunk so both changes deploy together in the same CI/CD run.
@@ -59,7 +61,18 @@ If the output structure changes, update the path prefix in `forwarder/index.js` 
 
 | Date | Trigger | Symptom | Fix |
 |------|---------|---------|-----|
-| March 2026 | Angular 18 → 19 upgrade | S3 `AccessDenied` XML shown to all users on `app.p2-stage.practera.com` | Added `/browser/` prefix to all rewritten URIs in `forwarder/index.js` |
+| March 2026 | Angular 18 → 19 upgrade (application builder layout) | S3 `AccessDenied` XML shown to users on deep links | Added `/browser/` prefix rewrites in `forwarder/index.js` |
+| June 2026 | Angular 20 baseline kept classic browser builder layout | Root and deep links returned S3 `AccessDenied` due to `/browser/...` rewrite mismatch | Restored locale-root rewrites and added backward-compatible `/browser` stripping in `forwarder/index.js` |
+
+#### quick verification matrix after deploy
+
+run these checks after lambda + app deploy:
+
+1. `/version.json` returns JSON (200).
+2. `/` resolves to app html shell (not xml `AccessDenied`).
+3. `/en-US/` resolves to app html shell.
+4. `/en-US/v3/messages` resolves to app html shell.
+5. `/browser/en-US/index.html` either resolves via compatibility rewrite or redirects to locale-root shell.
 
 ---
 

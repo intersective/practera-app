@@ -2,13 +2,19 @@ const path = require('path');
 
 exports.handler = async (evt) => {
   const { request } = evt.Records[0].cf;
+  const locales = ["en-US", "ja", "ms", "es"];
+  const defaultLocale = "en-US";
 
   console.log(`Original Uri: ${request.uri}`);
 
-  const uriParts = request.uri.split("/");
+  // backward-compatible rewrite: accept legacy /browser/* requests
+  // and normalize them to the locale-root key layout.
+  if (request.uri.startsWith('/browser/')) {
+    request.uri = request.uri.replace('/browser', '');
+  }
 
-  const locale = uriParts.length > 1 ? uriParts[1] : "";
-  const locales = ["en-US", "ja", "ms", "es"];
+  const uriParts = request.uri.split('/');
+  const locale = uriParts.length > 1 ? uriParts[1] : '';
   const lastPartUrl = uriParts[uriParts.length - 1];
 
   // whitelisted version.json request — note: query strings are in request.querystring,
@@ -18,18 +24,15 @@ exports.handler = async (evt) => {
     return request;
   }
 
-  if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
-    request.uri = "/en-US/index.html";
-    console.log("Go to default page and locale.");
+  if (locale === '' || locale === 'index.html' || !locales.includes(locale)) {
+    request.uri = `/${defaultLocale}/index.html`;
+    console.log('go to default page and locale.');
     return request;
   }
 
   const fileExt = path.extname(lastPartUrl);
   if (!fileExt) {
-    request.uri = `/browser/${locale}/index.html`;
-  } else if (!request.uri.startsWith('/browser/')) {
-    // rewrite static asset paths to match Angular 19+ application builder output
-    request.uri = `/browser${request.uri}`;
+    request.uri = `/${locale}/index.html`;
   }
 
   console.log(`New Uri: ${request.uri}`);
