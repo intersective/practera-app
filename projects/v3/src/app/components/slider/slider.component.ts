@@ -5,6 +5,7 @@ import { debounceTime } from 'rxjs/operators';
 import { Question } from '../types/assessment';
 
 @Component({
+  standalone: false,
   selector: 'app-slider',
   templateUrl: 'slider.component.html',
   styleUrls: ['./slider.component.scss'],

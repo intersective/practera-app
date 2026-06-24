@@ -1,16 +1,18 @@
 version: 0.2
 phases:
   install:
+    runtime-versions:
+      nodejs: 20
     commands:
-      - npm install
+      - npm ci --ignore-scripts
   pre_build:
     commands:
       - echo "Nothing to pre_build"
   build:
     commands:
       - cp src/environments/environment.local.ts src/environments/environment.ts
-      - ng build
-      - ng test --karmaConfig=src/karma.conf.aws.js --no-watch
+      - node_modules/.bin/ng build
+      - node_modules/.bin/ng test --karmaConfig=src/karma.conf.aws.js --no-watch
   post_build:
     commands:
       - export now=$(date -u +'%Y-%m-%d-%H-%M-%S')

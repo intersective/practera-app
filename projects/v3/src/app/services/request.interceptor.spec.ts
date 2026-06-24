@@ -1,9 +1,9 @@
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { RequestModule } from 'request';
 import { RequestInterceptor } from './request.interceptor';
-import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 import { Router } from '@angular/router';
@@ -22,14 +22,14 @@ describe('RequestInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         RequestModule.forRoot({
           appkey: APPKEY,
           prefixUrl: 'test.com'
         })
       ],
       providers: [
-        HttpClient,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
         {
           provide: Router,
           useValue: routerSpy

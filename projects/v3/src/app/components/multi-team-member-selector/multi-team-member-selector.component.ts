@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 import { Question } from '../types/assessment';
 
 @Component({
+  standalone: false,
   selector: 'app-multi-team-member-selector',
   templateUrl: 'multi-team-member-selector.component.html',
   styleUrls: ['multi-team-member-selector.component.scss'],
