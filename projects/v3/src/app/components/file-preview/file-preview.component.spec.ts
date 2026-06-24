@@ -1,25 +1,25 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { FilestackPreviewComponent } from './filestack-preview.component';
+import { FilePreviewComponent } from './file-preview.component';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
-import {
-  HttpTestingController,
-  HttpClientTestingModule
-} from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 
-describe('FilestackPreviewComponent', () => {
+describe('FilePreviewComponent', () => {
   const TEST_URL = 'https://www.practera.com';
-  let component: FilestackPreviewComponent;
-  let fixture: ComponentFixture<FilestackPreviewComponent>;
+  let component: FilePreviewComponent;
+  let fixture: ComponentFixture<FilePreviewComponent>;
   let modalSpy: ModalController;
   let domSanitizerSpy: DomSanitizer;
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      imports: [ IonicModule, CommonModule, HttpClientTestingModule ],
-      declarations: [ FilestackPreviewComponent ],
+      imports: [ IonicModule, CommonModule ],
+      declarations: [ FilePreviewComponent ],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         ModalController,
         {
           provide: DomSanitizer,
@@ -32,7 +32,7 @@ describe('FilestackPreviewComponent', () => {
       ],
     });
 
-    fixture = TestBed.createComponent(FilestackPreviewComponent);
+    fixture = TestBed.createComponent(FilePreviewComponent);
     component = fixture.componentInstance;
     modalSpy = TestBed.inject(ModalController);
     domSanitizerSpy = TestBed.inject(DomSanitizer);
@@ -46,7 +46,6 @@ describe('FilestackPreviewComponent', () => {
 
   it('should has toolbar to control modal content', () => {
     spyOn(window, 'open');
-    spyOn(modalSpy, 'dismiss');
 
     component.file = { url: TEST_URL };
     component.url = TEST_URL;
@@ -77,7 +76,6 @@ describe('FilestackPreviewComponent', () => {
 
   describe('close()', () => {
     it('should close opened modal', () => {
-      spyOn(modalSpy, 'dismiss');
       component.close();
       expect(modalSpy.dismiss).toHaveBeenCalled();
     });

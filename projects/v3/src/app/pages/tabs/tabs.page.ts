@@ -10,6 +10,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 
 @Component({
+  standalone: false,
   selector: 'app-tabs',
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],

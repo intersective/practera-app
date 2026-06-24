@@ -14,6 +14,7 @@ import { debounceTime } from 'rxjs/operators';
 const SAVE_PROGRESS_TIMEOUT = 10000;
 
 @Component({
+  standalone: false,
   selector: 'app-assessment-mobile',
   templateUrl: './assessment-mobile.page.html',
   styleUrls: ['./assessment-mobile.page.scss'],
@@ -205,18 +206,19 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
           this.notificationsService.assessmentSubmittedToast({ isReview: this.action === 'review' });
         }
 
-        await this.assessmentService.fetchAssessment(
+        await firstValueFrom(this.assessmentService.fetchAssessment(
           this.assessment.id,
           this.action,
           this.activityId,
           this.contextId,
           this.submissionId
-        ).toPromise();
+        ));
 
         if (this.action === 'assessment') {
           // get the latest activity tasks and refresh the assessment submission data
           this.activityService.getActivity(this.activityId, false, null, () => {
             this.btnDisabled$.next(false);
+            this.saving = false;
           });
         } else {
           this.btnDisabled$.next(false);

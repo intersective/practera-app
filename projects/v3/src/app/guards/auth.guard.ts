@@ -5,7 +5,7 @@ import {
   RouterStateSnapshot,
   CanActivateChild,
   NavigationExtras,
-  CanLoad, Route
+  CanMatch, Route
 } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { environment } from '@v3/environments/environment';
@@ -13,7 +13,7 @@ import { environment } from '@v3/environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
+export class AuthGuard implements CanActivate, CanActivateChild, CanMatch {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     return this.canActivate(route, state);
   }
 
-  canLoad(route: Route): boolean {
+  canMatch(route: Route): boolean {
     return this.checkLogin();
   }
 

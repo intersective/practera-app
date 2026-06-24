@@ -6,7 +6,6 @@ import { DOCUMENT } from '@angular/common';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService, SendMessageParam } from '@v3/services/pusher.service';
-import { FilestackService } from '@v3/services/filestack.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers, FileResponse } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
@@ -34,6 +33,7 @@ interface selectedAttachment {
 }
 
 @Component({
+  standalone: false,
   selector: "app-chat-room",
   templateUrl: "./chat-room.component.html",
   styleUrls: ["./chat-room.component.scss"],
@@ -153,7 +153,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     private storage: BrowserStorageService,
     public utils: UtilsService,
     private pusherService: PusherService,
-    private filestackService: FilestackService,
     private modalController: ModalController,
     private ngZone: NgZone,
     public element: ElementRef,
@@ -336,7 +335,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe((_event) => {
         this._checkScrollPosition();
       });
-    
+
     // Set aria-labels for Quill toolbar elements (WCAG 4.1.2)
     setTimeout(() => {
       this._setQuillToolbarAriaLabels();
@@ -349,7 +348,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   private _setQuillToolbarAriaLabels(): void {
     // Scope queries to the component's native element to avoid conflicts
     const componentElement = this.element.nativeElement;
-    
+
     const previewLink = componentElement.querySelector('.ql-preview') as HTMLElement;
     if (previewLink && !previewLink.getAttribute('aria-label')) {
       previewLink.setAttribute('aria-label', 'Preview link');
@@ -1075,11 +1074,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  getResizedImageUrl(fileStackObject, dimension) {
-    return `https://cdn.filestackcontent.com/quality=value:70/resize=w:${dimension},h:${dimension},fit:crop/${fileStackObject.handle}`;
-  }
-
-  removeSelectAttachment(attachment, index?: number, isDelete = false) {
+  removeSelectAttachment(attachment, index?: number) {
     if (!attachment) {
       return;
     }
@@ -1088,12 +1083,6 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       attachIndex = index;
     }
     this.selectedAttachments.splice(attachIndex, 1);
-    if (isDelete) {
-      this.filestackService
-      .deleteFile(attachment.handle)
-      // eslint-disable-next-line no-console
-      .subscribe(console.log);
-    }
   }
 
   download(file: FileResponse): void {

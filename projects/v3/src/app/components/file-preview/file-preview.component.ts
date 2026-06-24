@@ -3,11 +3,12 @@ import { ModalController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-filestack-preview',
-  templateUrl: './filestack-preview.component.html',
-  styleUrls: ['filestack-preview.component.scss']
+  standalone: false,
+  selector: 'app-file-preview',
+  templateUrl: './file-preview.component.html',
+  styleUrls: ['file-preview.component.scss']
 })
-export class FilestackPreviewComponent {
+export class FilePreviewComponent {
   url = '';
   file: any = {};
 
