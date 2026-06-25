@@ -64,7 +64,7 @@ describe('AutoresizeDirective', () => {
     const { directive } = createDirective();
     spyOn(directive, 'adjust');
 
-    directive.onInput({} as HTMLTextAreaElement);
+    directive.onInput();
 
     expect(directive.adjust).toHaveBeenCalled();
   });

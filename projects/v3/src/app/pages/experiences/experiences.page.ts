@@ -82,7 +82,7 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   }
 
   get instituteLogo() {
-    return this.storage.getConfig().logo;
+    return this.storage.getConfig().logo || this.storage.getUser()?.institutionLogo;
   }
 
   async switchProgram(experience: ProgramObj, keyEvent?: KeyboardEvent) {

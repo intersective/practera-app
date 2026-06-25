@@ -1,6 +1,5 @@
 import { NgZone } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Platform } from '@ionic/angular';
@@ -67,13 +66,8 @@ describe('AppComponent', () => {
           useClass: TestUtils,
         },
         {
-          provide: DomSanitizer,
-          useValue: jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustHtml']),
-        },
-        {
           provide: AuthService,
           useValue: jasmine.createSpyObj('AuthService', {
-            getConfig: of({data: []}),
             logout: undefined,
           }),
         },
@@ -137,19 +131,12 @@ describe('AppComponent', () => {
       expect(routerSpy.navigate).toHaveBeenCalled();
     }));
 
-    it('should initialize app with config', fakeAsync(() => {
-      storageSpy.get = jasmine.createSpy('storageSpy.get').and.callThrough();
-      authSpy.getConfig = jasmine.createSpy('getConfig').and.returnValue(of({ data: [
-        {
-          logo: '',
-          config: {
-            html_branding: {
-              header: '',
-              theme_color: '',
-            }
-          }
-        }
-      ] }));
+    it('should restore branding from storage on init', fakeAsync(() => {
+      storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
+        colors: { primary: '#ff0000' },
+        institutionLogo: 'https://example.com/logo.png',
+      });
+      storageSpy.getConfig = jasmine.createSpy('getConfig').and.returnValue({});
       utilsSpy.getCurrentLocation = jasmine.createSpy('getCurrentURL').and.returnValue({
         domain: '',
         search: '?apikey=abcdefg'
@@ -158,9 +145,8 @@ describe('AppComponent', () => {
       const app = fixture.componentInstance;
       app.ngOnInit();
       tick();
-      expect(storageSpy.get).toHaveBeenCalled();
-      expect(storageSpy.setConfig).toHaveBeenCalled();
       expect(storageSpy.getUser).toHaveBeenCalled();
+      expect(storageSpy.setConfig).toHaveBeenCalled();
       expect(routerSpy.navigate).toHaveBeenCalled();
     }));
 

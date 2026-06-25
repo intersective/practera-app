@@ -11,11 +11,10 @@ import { SharedService } from "@v3/services/shared.service";
 import { environment } from "@v3/environments/environment";
 import { BrowserStorageService } from "@v3/services/storage.service";
 import { UtilsService } from "@v3/services/utils.service";
-import { DomSanitizer } from "@angular/platform-browser";
 import { AuthService } from "@v3/services/auth.service";
 import { VersionCheckService } from "@v3/services/version-check.service";
-import { Subject, of } from "rxjs";
-import { catchError, takeUntil } from "rxjs/operators";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
@@ -26,7 +25,6 @@ import { ComponentCleanupService } from "./services/component-cleanup.service";
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = "v3";
-  customHeader: string | any;
   $unsubscribe = new Subject();
   lastVisitedUrl: string;
 
@@ -53,12 +51,10 @@ export class AppComponent implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private storage: BrowserStorageService,
     private utils: UtilsService,
-    private sanitizer: DomSanitizer,
     private authService: AuthService,
     private versionCheckService: VersionCheckService,
     private cleanupService: ComponentCleanupService,
   ) {
-    this.customHeader = null;
     this.initializeApp();
 
     this.router.events.subscribe(event => {
@@ -87,73 +83,20 @@ export class AppComponent implements OnInit, OnDestroy {
     this.utils.setPageLanguage();
 
     const currentLocation = this.utils.getCurrentLocation();
-    // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
-    // Get the custom branding info and update the theme color if needed
-    const domain = currentLocation.hostname;
 
-    // Re-apply any login-app brand color stored from a previous JWT login so that
-    // page refreshes restore the color before the async API call resolves.
-    const storedBrandColor = this.storage.getConfig().brandColor;
-    if (storedBrandColor) {
-      this.utils.changeThemeColor({ primary: storedBrandColor });
+    // Restore branding from storage on page load/refresh.
+    // Branding data comes from the GraphQL `auth` query (experience.color, experience.logoUrl)
+    // and is stored by switchProgram() in user.colors and user.institutionLogo.
+    // Login-app brand params are stored in config.brandColor / config.logo by auth-jwt-login.
+    const user = this.storage.getUser();
+    const config = this.storage.getConfig();
+    const brandColor = user?.colors?.primary || user?.colors?.theme || config.brandColor;
+    if (brandColor) {
+      this.utils.changeThemeColor({ primary: brandColor });
     }
-
-    this.authService.getConfig({ domain })
-      .pipe(
-        catchError(() => of(null)), // branding config is non-critical; fail gracefully
-        takeUntil(this.$unsubscribe),
-      )
-      .subscribe((response: any) => {
-        if (response !== null) {
-          const expConfig = response.data;
-          const numOfConfigs = expConfig.length;
-          if (numOfConfigs > 0 && numOfConfigs < 2) {
-            let logo: string = expConfig[0].logo;
-
-            const config = expConfig[0].config || {}; // let it fail gracefully
-
-            if (config.html_branding && config.html_branding.header) {
-              this.customHeader = config.html_branding.header;
-            }
-            if (this.customHeader) {
-              this.customHeader = this.sanitizer.bypassSecurityTrustHtml(
-                this.customHeader
-              );
-            }
-
-            // add the domain if the logo url is not a full url
-            if (!this.utils.isEmpty(logo) && logo?.includes("http")) {
-              logo = environment.APIEndpoint + logo;
-            }
-
-            const currentConfig = this.storage.getConfig();
-
-            // Only update logo when CakePHP returns a non-empty value;
-            // otherwise preserve the login-app brand logo already in storage.
-            const effectiveLogo = !this.utils.isEmpty(logo) ? logo : currentConfig.logo;
-
-            // Prefer CakePHP theme_color; fall back to login-app brand color for
-            // institutions that configure branding only in login-api (DynamoDB).
-            const effectiveTheme = config.theme_color || currentConfig.brandColor;
-            const colors = {
-              theme: effectiveTheme,
-            };
-            this.storage.setConfig({
-              logo: effectiveLogo,
-              colors,
-            });
-
-            // use brand color from getConfig API if no cached color available
-            // in storage.getUser()
-            if (
-              !this.utils.has(this.storage.getUser(), "colors") ||
-              !this.storage.getUser().colors
-            ) {
-              this.utils.changeThemeColor(colors);
-            }
-          }
-        }
-      });
+    if (user?.institutionLogo && !config.logo) {
+      this.storage.setConfig({ logo: user.institutionLogo });
+    }
 
     this.router.events
       .pipe(takeUntil(this.$unsubscribe))

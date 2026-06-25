@@ -35,7 +35,18 @@ module.exports = function (config) {
       ]
     },
     reporters: ['progress', 'kjhtml'],
-    browsers: ['ChromeHeadless'],
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-gpu',
+          '--disable-dev-shm-usage'
+        ]
+      }
+    },
+    browsers: ['ChromeHeadlessNoSandbox'],
     browserNoActivityTimeout: 120000,
     browserDisconnectTimeout: 30000,
     browserDisconnectTolerance: 3,

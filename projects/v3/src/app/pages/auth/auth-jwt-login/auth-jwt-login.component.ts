@@ -185,13 +185,9 @@ export class AuthJwtLoginComponent implements OnInit {
       this.storage.setConfig({ brandColor: rawColor });
       this.storage.setUser({ colors: { primary: rawColor } });
     }
-    if (rawLogo) {
+    if (rawLogo && rawLogo.startsWith('http')) {
       this.brandLogo = rawLogo;
-      // Only persist the logo when it's an absolute URL. A relative path (e.g.
-      // /img/logo.svg from login.practera.local) would 404 on app.practera.local.
-      if (rawLogo.startsWith('http')) {
-        this.storage.setConfig({ logo: rawLogo });
-      }
+      this.storage.setConfig({ logo: rawLogo });
     }
 
     this.authService.authenticate({ forceRefresh: true }).subscribe({
@@ -201,6 +197,23 @@ export class AuthJwtLoginComponent implements OnInit {
           this.storage.setUser({ apikey: data.apikey });
           this.storage.set('experience', data.experience);
           this.storage.set('isLoggedIn', true);
+
+          // Persist experience branding from GraphQL into config so that
+          // the experiences page (and any refresh) has access to logo/color
+          // without needing the deprecated CakePHP getConfig endpoint.
+          const exp = data.experience;
+          if (exp?.logoUrl) {
+            this.storage.setConfig({ logo: exp.logoUrl });
+            if (!this.brandLogo) { this.brandLogo = exp.logoUrl; }
+          }
+          if (exp?.color) {
+            this.storage.setConfig({ brandColor: exp.color });
+            this.storage.setUser({ colors: { primary: exp.color, theme: exp.color } });
+            if (!this.brandColor) {
+              this.brandColor = exp.color;
+              this.utils.changeThemeColor({ primary: exp.color });
+            }
+          }
         }
         await this.authService.getMyInfo().toPromise();
         return this._redirect({ experience: data?.experience });
