@@ -1,87 +1,96 @@
-<ion-header class="ion-no-border header-border"
-  role="banner"
-  aria-label="Home header" i18n-aria-label>
+<ion-header class="ion-no-border exp-header" role="banner" aria-label="Home header" i18n-aria-label>
   <h1 class="for-accessibility" i18n>Home</h1>
   <ion-toolbar>
-    <img class="ion-padding-start"
+    <img
+      class="exp-header-logo"
       [src]="instituteLogo || './assets/logo.svg'"
-      [alt]="'Institution branding logo'" i18n-alt>
+      [alt]="'Practera'" i18n-alt>
     <ion-buttons slot="end">
       <app-personalised-header [isExpPage]="true"></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="experience-page" [class]="{'mobile': isMobile}">
-  @if ((experiences$ | async ); as experiences) {
-    <header role="region" aria-label="Institution branding" i18n-aria-label>
-      <h2 class="for-accessibility" i18n>Experiences</h2>
-      <ion-grid class="ion-no-padding ion-no-margin">
-        <ion-row class="ion-justify-content-start ion-align-items-start ion-no-padding ion-no-margin">
-          <ion-col class="ion-no-padding ion-no-margin">
-            <div class="institute-logo-container ion-text-center">
-              <img [src]="instituteLogo || './assets/logo.svg'"
-                [alt]="'Institution branding logo'" i18n-alt>
+<ion-content class="experience-page">
+  @if ((experiences$ | async); as experiences) {
+    <div class="exp-page-body">
+
+      <!-- Hero strip -->
+      <div class="exp-hero">
+        <div class="exp-hero-inner">
+          <h2 class="exp-hero-title" i18n>Your experiences</h2>
+          <p class="exp-hero-sub" i18n>Select an experience to continue your learning journey</p>
+        </div>
+      </div>
+
+      <!-- Grid -->
+      <main class="exp-grid-section" role="main" aria-labelledby="experiences-heading">
+        <h2 id="experiences-heading" class="for-accessibility" i18n>Experiences</h2>
+
+        @if (experiences.length === 0) {
+          <div class="exp-empty">
+            <div class="exp-empty-icon">
+              <ion-icon name="school-outline" aria-hidden="true"></ion-icon>
             </div>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </header>
-    <main role="main" aria-labelledby="experiences-heading">
-      <ion-grid class="ion-no-padding ion-no-margin">
-        <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
-          <ion-col class="ion-no-padding ion-no-margin">
-            <ion-item class="headline-4 experiences-block ion-hide-sm-up" lines="none">
-              <h3 id="experiences-heading-mobile" i18n>Experiences</h3>
-            </ion-item>
-          </ion-col>
-        </ion-row>
-        <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
-          <ion-col class="ion-no-padding ion-no-margin exp-col">
-            <ion-card class="exp-card-container">
-              <ion-card-header class="title-container ion-hide-sm-down">
-                <h2 id="experiences-heading" class="headline-1 m-0 black ion-hide-sm-down" i18n>Your experiences</h2>
-                <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down" i18n>Access and check the progress of your experiences below
-                </p>
-              </ion-card-header>
-              <ion-card-content class="cards" [ngClass]="experiences.length > 1 ? 'left' : 'center'">
-                <ion-grid>
-                  <ion-row role="list" aria-label="Available experiences" i18n-aria-label>
-                    @for (experience of experiences; track experience) {
-                      <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
-                        <ion-card class="exp-card ion-no-margin"
-                          [attr.aria-label]="experience.name"
-                          (click)="switchProgram(experience)" (keydown)="switchProgram(experience, $event)" tabindex="0">
-                          <div class="exp-image-container">
-                            <img
-                              [src]="experience.leadImage ? experience.leadImage : '../../../assets/default-experience-image.svg'"
-                              [attr.alt]="experience.name + ' experience selection'">
-                          </div>
-                          <ion-card-content>
-                            <p class="m-0 headline-3 exp-title black" [innerHTML]="experience.name"></p>
-                            @if (progresses[experience.projectId]) {
-                              <div class="exp-info subtitle-3 grey-50"
-                                >
-                                <p class="m-0 subtitle-3 grey-50" i18n>{{progresses[experience.projectId]}}% Progress</p>
-                              </div>
-                            }
-                          </ion-card-content>
-                        </ion-card>
-                      </ion-col>
-                    }
-                  </ion-row>
-                </ion-grid>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </main>
+            <p class="exp-empty-text" i18n>No experiences found. Please contact your program coordinator.</p>
+          </div>
+        }
+
+        <div class="exp-grid" role="list" aria-label="Available experiences" i18n-aria-label
+          [class.exp-grid--center]="experiences.length === 1">
+          @for (experience of experiences; track experience) {
+            <div class="exp-card-wrap" role="listitem">
+              <button
+                class="exp-card"
+                [attr.aria-label]="experience.name"
+                (click)="switchProgram(experience)"
+                (keydown)="switchProgram(experience, $event)">
+
+                <div class="exp-card-image-wrap">
+                  <img
+                    class="exp-card-image"
+                    [src]="experience.leadImage ? experience.leadImage : '../../../assets/default-experience-image.svg'"
+                    [attr.alt]="experience.name">
+                  @if (progresses[experience.projectId] != null) {
+                    <div class="exp-card-progress-badge">
+                      <svg viewBox="0 0 32 32" aria-hidden="true">
+                        <circle cx="16" cy="16" r="14" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2.5"/>
+                        <circle cx="16" cy="16" r="14" fill="none"
+                          stroke="white" stroke-width="2.5"
+                          stroke-dasharray="87.96"
+                          [style.stroke-dashoffset]="87.96 * (1 - progresses[experience.projectId] / 100)"
+                          stroke-linecap="round"
+                          transform="rotate(-90 16 16)"/>
+                      </svg>
+                      <span>{{progresses[experience.projectId]}}%</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="exp-card-body">
+                  <p class="exp-card-name">{{experience.name}}</p>
+                  @if (progresses[experience.projectId] != null) {
+                    <div class="exp-card-progress-bar-wrap">
+                      <div class="exp-card-progress-bar">
+                        <div class="exp-card-progress-fill"
+                          [style.width.%]="progresses[experience.projectId]"></div>
+                      </div>
+                      <span class="exp-card-progress-label" i18n>{{progresses[experience.projectId]}}% complete</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="exp-card-footer">
+                  <span class="exp-card-cta" i18n>Continue <ion-icon name="arrow-forward-outline" aria-hidden="true"></ion-icon></span>
+                </div>
+              </button>
+            </div>
+          }
+        </div>
+      </main>
+    </div>
   } @else {
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;"
-      role="status"
-      aria-live="polite"
-      aria-label="Loading experiences" i18n-aria-label>
+    <div class="exp-loading" role="status" aria-live="polite" aria-label="Loading experiences" i18n-aria-label>
       <ion-spinner name="bubbles" aria-hidden="true"></ion-spinner>
     </div>
   }

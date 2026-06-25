@@ -10,7 +10,9 @@ export class BrandingLogoComponent {
   @Input() logo: string;
   @Input() name?: string;
 
-  constructor(public storage: BrowserStorageService) {
-    this.logo = this.logo || this.storage.getConfig().logo;
+  constructor(public storage: BrowserStorageService) {}
+
+  get resolvedLogo(): string {
+    return this.logo || this.storage.getConfig().logo;
   }
 }

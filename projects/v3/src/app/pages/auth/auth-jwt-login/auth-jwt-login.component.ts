@@ -13,30 +13,116 @@ import { SharedService } from '@v3/services/shared.service';
  * After storing it, a regular authenticate() call fetches the experience data.
  * Deep link parameters are read from route params and handled identically to
  * AuthDirectLoginComponent.
+ *
+ * Brand continuity: brandColor and brandLogo params (passed by login-app via the
+ * redirect URL) are applied immediately so the splash matches the login-app branding
+ * while the full institution config loads in the background.
  */
 @Component({
   standalone: false,
   selector: 'app-auth-jwt-login',
   template: `
-    <ion-content color="light" class="ion-text-center">
-      <header>
-        <h1 class="for-accessibility" i18n>Logging in</h1>
-        <div class="div-logo">
-          <app-branding-logo></app-branding-logo>
-        </div>
-      </header>
-      <main aria-label="authentication" aria-live="polite" aria-busy="true">
-        <div class="div-after-logo">
-          <p role="status" aria-live="polite" i18n>
-            We are logging you in, please be patient
-            <ion-spinner name="dots" class="vertical-middle" aria-label="Loading" i18n-aria-label role="img"></ion-spinner>
+    <ion-content class="jwt-login-content">
+      <div class="jwt-login-backdrop" [style.background]="brandColor ? 'linear-gradient(135deg, ' + brandColor + '22 0%, ' + brandColor + '08 100%)' : null"></div>
+      <div class="jwt-login-container">
+        <div class="jwt-login-card">
+          <div class="jwt-login-logo-wrap">
+            <img
+              *ngIf="brandLogo"
+              [src]="brandLogo"
+              alt="Organisation logo"
+              class="jwt-login-logo"
+              (error)="brandLogo = null"
+            />
+            <app-branding-logo *ngIf="!brandLogo" class="jwt-login-logo-fallback"></app-branding-logo>
+          </div>
+          <div class="jwt-login-spinner-wrap">
+            <div class="jwt-login-ring" [style.border-top-color]="brandColor || null">
+              <ion-spinner name="dots" aria-hidden="true"></ion-spinner>
+            </div>
+          </div>
+          <p class="jwt-login-message" role="status" aria-live="polite" i18n>
+            Signing you in&hellip;
           </p>
         </div>
-      </main>
+      </div>
     </ion-content>
   `,
+  styles: [`
+    .jwt-login-content {
+      --background: #f7f9fc;
+    }
+    .jwt-login-backdrop {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }
+    .jwt-login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .jwt-login-card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 32px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+      padding: 48px 40px 40px;
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .jwt-login-logo-wrap {
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .jwt-login-logo {
+      max-height: 56px;
+      max-width: 200px;
+      object-fit: contain;
+    }
+    .jwt-login-logo-fallback {
+      max-height: 56px;
+      display: block;
+    }
+    .jwt-login-spinner-wrap {
+      margin-bottom: 20px;
+    }
+    .jwt-login-ring {
+      border: 3px solid rgba(0, 0, 0, 0.08);
+      border-top-color: var(--ion-color-primary, #2bbfd4);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      animation: jwt-spin 0.8s linear infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .jwt-login-ring ion-spinner {
+      display: none;
+    }
+    @keyframes jwt-spin {
+      to { transform: rotate(360deg); }
+    }
+    .jwt-login-message {
+      margin: 0;
+      font-size: 14px;
+      color: #6b7280;
+      letter-spacing: 0.01em;
+    }
+  `],
 })
 export class AuthJwtLoginComponent implements OnInit {
+  brandColor: string | null = null;
+  brandLogo: string | null = null;
+
   constructor(
     readonly utils: UtilsService,
     private router: Router,
@@ -53,6 +139,18 @@ export class AuthJwtLoginComponent implements OnInit {
     const jwt = this.route.snapshot.paramMap.get('jwt');
     if (!jwt) {
       return this._error();
+    }
+
+    // Apply login-app branding immediately for visual continuity
+    const rawColor = this.route.snapshot.paramMap.get('brandColor');
+    const rawLogo = this.route.snapshot.paramMap.get('brandLogo');
+    if (rawColor && /^#[0-9A-Fa-f]{6}$/.test(rawColor)) {
+      this.brandColor = rawColor;
+      this.utils.changeThemeColor({ primary: rawColor });
+    }
+    if (rawLogo) {
+      this.brandLogo = rawLogo;
+      this.storage.setConfig({ logo: rawLogo });
     }
 
     this.authService.logout({}, false);
@@ -205,7 +303,8 @@ export class AuthJwtLoginComponent implements OnInit {
   }): void | Promise<boolean> {
     const currentLocation = window.location.href;
     const locale = options?.experience?.locale;
-    if (currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
+    const isLocalDev = currentLocation.indexOf('localhost') !== -1 || currentLocation.indexOf('.local') !== -1;
+    if (!isLocalDev && locale && currentLocation.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else {
