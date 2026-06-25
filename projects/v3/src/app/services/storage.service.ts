@@ -75,6 +75,7 @@ export interface Colors {
 export interface Config {
   logo?: string;
   colors?: Colors;
+  brandColor?: string; // persisted from login-app brand params, used as fallback on page refresh
 }
 
 @Injectable({

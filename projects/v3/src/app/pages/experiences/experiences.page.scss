@@ -8,10 +8,40 @@
     --padding-end: 8px;
   }
 
+  .exp-header-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 0;
+  }
+
   .exp-header-logo {
-    height: 32px;
-    max-width: 160px;
+    height: 40px;
+    max-width: 200px;
     object-fit: contain;
+    object-position: left center;
+    display: block;
+  }
+
+  .exp-header-powered {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .exp-header-powered-text {
+    font-size: 10px;
+    color: #b8bfcc;
+    letter-spacing: 0.03em;
+    line-height: 1;
+  }
+
+  .exp-header-powered-logo {
+    height: 11px;
+    opacity: 0.38;
+    display: block;
   }
 }
 

@@ -120,12 +120,10 @@ export class ApolloService {
     variables?: any;
     context?: any;
   }): Observable<any> {
-    // Direct login is using GraphQL before landing on AppComponent,
-    // so need force instantiation beforehand
-    let apollo: Apollo = this.apollo;
-    if (!!(this.apolloInstance || this.apollo).client) {
-      apollo = this.initiateCoreClient();
-    }
+    // Always ensure the client is initialised before querying.
+    // initiateCoreClient() is idempotent — it returns the existing instance when
+    // _hasInitiated() is true, so calling it here is always safe.
+    const apollo = this.initiateCoreClient();
 
     const watch = apollo.query({
       query: gql(query),

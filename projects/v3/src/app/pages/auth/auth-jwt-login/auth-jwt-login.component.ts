@@ -44,6 +44,10 @@ import { SharedService } from '@v3/services/shared.service';
           <p class="jwt-login-message" role="status" aria-live="polite" i18n>
             Signing you in&hellip;
           </p>
+          <div *ngIf="brandLogo" class="jwt-login-powered" aria-hidden="true">
+            <span class="jwt-login-powered-text" i18n>Powered by</span>
+            <img src="./assets/logo.svg" alt="Practera" class="jwt-login-powered-logo">
+          </div>
         </div>
       </div>
     </ion-content>
@@ -68,9 +72,9 @@ import { SharedService } from '@v3/services/shared.service';
       background: #ffffff;
       border-radius: 20px;
       box-shadow: 0 4px 32px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
-      padding: 48px 40px 40px;
+      padding: 48px 40px 32px;
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -81,10 +85,11 @@ import { SharedService } from '@v3/services/shared.service';
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
     }
     .jwt-login-logo {
-      max-height: 56px;
-      max-width: 200px;
+      max-height: 72px;
+      max-width: 240px;
       object-fit: contain;
     }
     .jwt-login-logo-fallback {
@@ -117,6 +122,25 @@ import { SharedService } from '@v3/services/shared.service';
       color: #6b7280;
       letter-spacing: 0.01em;
     }
+    .jwt-login-powered {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid #f0f2f5;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+    .jwt-login-powered-text {
+      font-size: 11px;
+      color: #b8bfcc;
+      letter-spacing: 0.03em;
+    }
+    .jwt-login-powered-logo {
+      height: 14px;
+      opacity: 0.4;
+    }
   `],
 })
 export class AuthJwtLoginComponent implements OnInit {
@@ -141,20 +165,34 @@ export class AuthJwtLoginComponent implements OnInit {
       return this._error();
     }
 
-    // Apply login-app branding immediately for visual continuity
-    const rawColor = this.route.snapshot.paramMap.get('brandColor');
-    const rawLogo = this.route.snapshot.paramMap.get('brandLogo');
+    // Decode brand params — double-encoded because urlQueryToObject uses decodeURI
+    // (which preserves %23, %2F, etc.) and Angular re-encodes those % signs as %25.
+    const _decode = (s: string | null) => { try { return s ? decodeURIComponent(s) : null; } catch { return s; } };
+    const rawColor = _decode(this.route.snapshot.paramMap.get('brandColor'));
+    const rawLogo = _decode(this.route.snapshot.paramMap.get('brandLogo'));
+
+    // Clear existing session — storage.clear() is called inside logout({}, false).
+    // Brand params are stored AFTER this clear so they are not wiped.
+    this.authService.logout({}, false);
+    this.storage.setUser({ apikey: jwt });
+
+    // Apply and persist brand params now that storage has been cleared and re-seeded.
+    // Storing brandColor in both config (survives page refresh) and user.colors
+    // (prevents AppComponent.getConfig() from overwriting via its changeThemeColor guard).
     if (rawColor && /^#[0-9A-Fa-f]{6}$/.test(rawColor)) {
       this.brandColor = rawColor;
       this.utils.changeThemeColor({ primary: rawColor });
+      this.storage.setConfig({ brandColor: rawColor });
+      this.storage.setUser({ colors: { primary: rawColor } });
     }
     if (rawLogo) {
       this.brandLogo = rawLogo;
-      this.storage.setConfig({ logo: rawLogo });
+      // Only persist the logo when it's an absolute URL. A relative path (e.g.
+      // /img/logo.svg from login.practera.local) would 404 on app.practera.local.
+      if (rawLogo.startsWith('http')) {
+        this.storage.setConfig({ logo: rawLogo });
+      }
     }
-
-    this.authService.logout({}, false);
-    this.storage.setUser({ apikey: jwt });
 
     this.authService.authenticate({ forceRefresh: true }).subscribe({
       next: async (res) => {

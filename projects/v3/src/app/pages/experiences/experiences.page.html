@@ -1,10 +1,19 @@
 <ion-header class="ion-no-border exp-header" role="banner" aria-label="Home header" i18n-aria-label>
   <h1 class="for-accessibility" i18n>Home</h1>
   <ion-toolbar>
-    <img
-      class="exp-header-logo"
-      [src]="instituteLogo || './assets/logo.svg'"
-      [alt]="'Practera'" i18n-alt>
+    <div class="exp-header-brand" slot="start">
+      <img
+        class="exp-header-logo"
+        [src]="instituteLogo || './assets/logo.svg'"
+        [alt]="instituteLogo ? 'Organisation logo' : 'Practera'"
+        i18n-alt>
+      @if (instituteLogo) {
+        <span class="exp-header-powered" aria-hidden="true">
+          <span class="exp-header-powered-text" i18n>Powered by</span>
+          <img src="./assets/logo.svg" alt="" class="exp-header-powered-logo">
+        </span>
+      }
+    </div>
     <ion-buttons slot="end">
       <app-personalised-header [isExpPage]="true"></app-personalised-header>
     </ion-buttons>

@@ -14,8 +14,8 @@ import { UtilsService } from "@v3/services/utils.service";
 import { DomSanitizer } from "@angular/platform-browser";
 import { AuthService } from "@v3/services/auth.service";
 import { VersionCheckService } from "@v3/services/version-check.service";
-import { Subject } from "rxjs";
-import { takeUntil } from "rxjs/operators";
+import { Subject, of } from "rxjs";
+import { catchError, takeUntil } from "rxjs/operators";
 import { ComponentCleanupService } from "./services/component-cleanup.service";
 
 @Component({
@@ -90,8 +90,19 @@ export class AppComponent implements OnInit, OnDestroy {
     // @TODO: need to build a new micro service to get the config and serve the custom branding config from a microservice
     // Get the custom branding info and update the theme color if needed
     const domain = currentLocation.hostname;
+
+    // Re-apply any login-app brand color stored from a previous JWT login so that
+    // page refreshes restore the color before the async API call resolves.
+    const storedBrandColor = this.storage.getConfig().brandColor;
+    if (storedBrandColor) {
+      this.utils.changeThemeColor({ primary: storedBrandColor });
+    }
+
     this.authService.getConfig({ domain })
-      .pipe(takeUntil(this.$unsubscribe))
+      .pipe(
+        catchError(() => of(null)), // branding config is non-critical; fail gracefully
+        takeUntil(this.$unsubscribe),
+      )
       .subscribe((response: any) => {
         if (response !== null) {
           const expConfig = response.data;
@@ -114,11 +125,21 @@ export class AppComponent implements OnInit, OnDestroy {
             if (!this.utils.isEmpty(logo) && logo?.includes("http")) {
               logo = environment.APIEndpoint + logo;
             }
+
+            const currentConfig = this.storage.getConfig();
+
+            // Only update logo when CakePHP returns a non-empty value;
+            // otherwise preserve the login-app brand logo already in storage.
+            const effectiveLogo = !this.utils.isEmpty(logo) ? logo : currentConfig.logo;
+
+            // Prefer CakePHP theme_color; fall back to login-app brand color for
+            // institutions that configure branding only in login-api (DynamoDB).
+            const effectiveTheme = config.theme_color || currentConfig.brandColor;
             const colors = {
-              theme: config.theme_color,
+              theme: effectiveTheme,
             };
             this.storage.setConfig({
-              logo,
+              logo: effectiveLogo,
               colors,
             });
 

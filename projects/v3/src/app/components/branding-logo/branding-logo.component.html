@@ -1,1 +1,1 @@
-<img [src]="resolvedLogo || './assets/logo.svg'" width="100%" [attr.alt]="!resolvedLogo ? 'Practera logo' : (name || 'branding logo')" i18n-alt>
+<img [src]="resolvedLogo || './assets/logo.svg'" width="100%" [attr.alt]="!resolvedLogo ? 'Practera logo' : (name || 'Organisation logo')" i18n-alt (error)="onImgError()">
