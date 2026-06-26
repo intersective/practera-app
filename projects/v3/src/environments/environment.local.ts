@@ -19,7 +19,6 @@ export const environment = {
   graphQL: 'https://graphql.practera.local/',
   chatGraphQL: 'https://graphql.practera.local/',
   globalLoginUrl: 'https://login.practera.local',
-  badgeProjectUrl: 'https://badge-issuer.p2.practera.com',
   stackUuid: 'a1b2c3d4-e5f6-7890-local-app-stack',
   intercomAppId: ' ',
   uppyConfig: {

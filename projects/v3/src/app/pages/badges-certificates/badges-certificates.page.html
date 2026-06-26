@@ -1,0 +1,116 @@
+<ion-header class="ion-no-border header-border" aria-label="badges and certificates">
+  <h1 class="for-accessibility" i18n>Badges &amp; Certificates</h1>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" aria-label="back to settings" i18n-aria-label>
+        <ion-icon slot="icon-only" color="grey-75" name="arrow-back-outline" aria-hidden="true"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="ion-no-padding headline-4 grey-75" i18n>Badges &amp; Certificates</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main aria-labelledby="badges-content-heading">
+    <h2 id="badges-content-heading" class="for-accessibility" i18n>Your badges and certificates</h2>
+
+    <ion-segment
+      [value]="activeTab"
+      (ionChange)="switchTab($event)"
+      role="tablist"
+      aria-label="Badge type filter" i18n-aria-label>
+      <ion-segment-button
+        value="badge"
+        mode="ios"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'badge'"
+        aria-controls="badges-panel">
+        <ion-label i18n>Badges</ion-label>
+      </ion-segment-button>
+      <ion-segment-button
+        value="superbadge"
+        mode="ios"
+        role="tab"
+        [attr.aria-selected]="activeTab === 'superbadge'"
+        aria-controls="badges-panel">
+        <ion-label i18n>Super Badges</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div id="badges-panel" role="tabpanel">
+
+      @if (loading) {
+        <div role="status" aria-label="Loading badges" i18n-aria-label>
+          @for (i of [1,2,3]; track i) {
+            <ion-item lines="full">
+              <ion-thumbnail slot="start">
+                <ion-skeleton-text animated></ion-skeleton-text>
+              </ion-thumbnail>
+              <ion-label>
+                <ion-skeleton-text animated style="width: 60%;"></ion-skeleton-text>
+                <ion-skeleton-text animated style="width: 40%;"></ion-skeleton-text>
+              </ion-label>
+            </ion-item>
+          }
+        </div>
+      }
+
+      @if (!loading && filteredBadges.length === 0) {
+        <div
+          class="ion-text-center no-badges"
+          role="status"
+          aria-live="polite">
+          <ion-icon
+            class="large-icon"
+            color="primary"
+            name="ribbon-outline"
+            aria-hidden="true"
+            role="img">
+          </ion-icon>
+          <p class="body-1" i18n>No badges here yet.</p>
+          <ion-text class="subtitle-2" color="grey-75" i18n>
+            Earn badges by completing your program activities.
+          </ion-text>
+        </div>
+      }
+
+      @if (!loading && displayedBadges.length > 0) {
+        <ion-list>
+          @for (badge of displayedBadges; track badge.id) {
+            <app-list-item
+              [title]="badge.name"
+              [subtitle1]="badge.points ? (badge.points + ' Pts') : ''"
+              subtitle1Color="medium"
+              [leadImage]="badge.badge"
+              lines="full"
+              [leadImageClass]="!badge.isEarned ? 'black-white-image' : ''"
+              [endingIcon]="badge.isEarned ? 'checkmark-circle' : 'lock-closed'"
+              [endingIconColor]="badge.isEarned ? 'success' : 'medium'"
+              (click)="openBadgeDetail(badge)"
+              (keydown.enter)="openBadgeDetail(badge, $event)"
+              (keydown.space)="openBadgeDetail(badge, $event); $event.preventDefault()"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="badge.name + (badge.isEarned ? ' (earned)' : ' (not yet earned)') + (badge.points ? ', ' + badge.points + ' points' : '')"
+              i18n-subtitle1>
+            </app-list-item>
+          }
+        </ion-list>
+
+        @if (hasMore) {
+          <div class="ion-text-center load-more-section">
+            <ion-button
+              fill="clear"
+              (click)="loadMore()"
+              aria-label="Load more badges" i18n-aria-label
+              i18n>
+              Load more
+            </ion-button>
+          </div>
+        }
+      }
+
+    </div>
+
+  </main>
+</ion-content>

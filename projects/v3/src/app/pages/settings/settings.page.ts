@@ -268,9 +268,9 @@ export class SettingsPage implements OnInit, OnDestroy {
   }
 
   openBadgeApp(event) {
-    this.utils.openUrl(
-      `${environment.badgeProjectUrl}?apikey=${this.storage.getUser().apikey}&appkey=${environment.appkey}`,
-      { target: '_blank' }
-    );
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    this.router.navigate(['v3', 'badges-certificates']);
   }
 }

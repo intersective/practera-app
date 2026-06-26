@@ -25,7 +25,6 @@ export interface Environment {
   graphQL: string;
   chatGraphQL: string;
   globalLoginUrl: string;
-  badgeProjectUrl?: string;
   loginAPIUrl?: string;
   stackUuid: string;
   intercomAppId: string;

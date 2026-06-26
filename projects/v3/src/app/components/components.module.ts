@@ -9,6 +9,7 @@ import { ImgComponent } from './img/img.component';
 import { DragAndDropDirective } from '../directives/drag-and-drop/drag-and-drop.directive';
 import { AutoresizeDirective } from '../directives/autoresize/autoresize.directive';
 import { AchievementPopUpComponent } from './achievement-pop-up/achievement-pop-up.component';
+import { BadgeDetailModalComponent } from './badge-detail-modal/badge-detail-modal.component';
 import { PopUpComponent } from './pop-up/pop-up.component';
 import { LockTeamAssessmentPopUpComponent } from './lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
 import { MultiTeamMemberSelectorComponent } from './multi-team-member-selector/multi-team-member-selector.component';
@@ -77,6 +78,7 @@ const largeCircleDefaultConfig = {
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AchievementPopUpComponent,
+    BadgeDetailModalComponent,
     ActivityCompletePopUpComponent,
     ActivityComponent,
     AssessmentComponent,
@@ -118,6 +120,7 @@ const largeCircleDefaultConfig = {
   ],
   exports: [
     AchievementPopUpComponent,
+    BadgeDetailModalComponent,
     ActivityCompletePopUpComponent,
     ActivityComponent,
     AssessmentComponent,

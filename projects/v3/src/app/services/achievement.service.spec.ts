@@ -224,4 +224,165 @@ describe('AchievementService', () => {
       });
     });
   });
+
+  describe('getBadges()', () => {
+    const mockBadgesResponse = {
+      data: {
+        badges: [
+          {
+            id: 10,
+            name: 'Badge One',
+            description: '<p>Desc</p>',
+            type: 'badge',
+            badge: 'https://cdn/badge1.png',
+            openBadge: 'https://cdn/openbadge1.png',
+            points: 50,
+            isEarned: true,
+            earnedDate: '2024-01-15',
+            progress: 1,
+            active: true,
+            certificateUrl: 'https://s3/cert1.pdf',
+          },
+          {
+            id: 11,
+            name: 'Super Badge One',
+            description: '<p>Super desc</p>',
+            type: 'superbadge',
+            badge: 'https://cdn/superbadge1.png',
+            openBadge: null,
+            points: 200,
+            isEarned: true,
+            earnedDate: '2024-03-01',
+            progress: 1,
+            active: true,
+            certificateUrl: null,
+          },
+        ],
+      },
+    };
+
+    it('should return badges from the badges query', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(of(mockBadgesResponse));
+
+      service.getBadges().subscribe((badges) => {
+        expect(badges.length).toBe(2);
+        expect(badges[0].id).toBe(10);
+        expect(badges[0].type).toBe('badge');
+        expect(badges[1].type).toBe('superbadge');
+        done();
+      });
+    });
+
+    it('should call graphQLFetch with the badges query', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(mockBadgesResponse));
+
+      service.getBadges().subscribe();
+
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalledWith(
+        jasmine.stringContaining('badges')
+      );
+    });
+
+    it('should return empty array when badges data is null', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(of({ data: { badges: null } }));
+
+      service.getBadges().subscribe((badges) => {
+        expect(badges).toEqual([]);
+        done();
+      });
+    });
+
+    it('should return empty array when data is missing', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(of({ data: null }));
+
+      service.getBadges().subscribe((badges) => {
+        expect(badges).toEqual([]);
+        done();
+      });
+    });
+  });
+
+  describe('getCertificateUrl()', () => {
+    it('should return certificate URL from graphql', (done) => {
+      const pdfUrl = 'https://s3/presigned/cert.pdf';
+      apolloSpy.graphQLFetch.and.returnValue(
+        of({ data: { certificateUrl: pdfUrl } })
+      );
+
+      service.getCertificateUrl(42).subscribe((url) => {
+        expect(url).toBe(pdfUrl);
+        done();
+      });
+    });
+
+    it('should pass userName variable when provided', () => {
+      apolloSpy.graphQLFetch.and.returnValue(
+        of({ data: { certificateUrl: 'https://s3/cert.pdf' } })
+      );
+
+      service.getCertificateUrl(42, 'Jane Doe').subscribe();
+
+      const callArgs = apolloSpy.graphQLFetch.calls.mostRecent().args;
+      expect(callArgs[1]).toEqual(
+        jasmine.objectContaining({
+          variables: jasmine.objectContaining({ achievementId: 42, userName: 'Jane Doe' }),
+        })
+      );
+    });
+
+    it('should not include userName when not provided', () => {
+      apolloSpy.graphQLFetch.and.returnValue(
+        of({ data: { certificateUrl: null } })
+      );
+
+      service.getCertificateUrl(99).subscribe();
+
+      const callArgs = apolloSpy.graphQLFetch.calls.mostRecent().args;
+      expect(callArgs[1].variables.userName).toBeUndefined();
+    });
+
+    it('should return null when API returns null', (done) => {
+      apolloSpy.graphQLFetch.and.returnValue(
+        of({ data: { certificateUrl: null } })
+      );
+
+      service.getCertificateUrl(42).subscribe((url) => {
+        expect(url).toBeNull();
+        done();
+      });
+    });
+  });
+
+  describe('rebadgeOpenBadge()', () => {
+    it('should POST to the rebadge endpoint with achievement_id and email', () => {
+      requestSpy.post.and.returnValue(of({ success: true }));
+
+      service.rebadgeOpenBadge(55, 'new@example.com').subscribe();
+
+      expect(requestSpy.post).toHaveBeenCalledWith(
+        jasmine.objectContaining({
+          data: { achievement_id: 55, email: 'new@example.com' },
+        })
+      );
+    });
+
+    it('should include APIEndpoint in the endPoint', () => {
+      requestSpy.post.and.returnValue(of({ success: true }));
+
+      service.rebadgeOpenBadge(55, 'test@example.com').subscribe();
+
+      const callArgs = requestSpy.post.calls.mostRecent().args[0];
+      expect(callArgs.endPoint).toContain('motivations/achievement/rebadge');
+    });
+
+    it('should propagate the API response', (done) => {
+      const mockResponse = { success: true, data: { id: 55 } };
+      requestSpy.post.and.returnValue(of(mockResponse));
+
+      service.rebadgeOpenBadge(55, 'test@example.com').subscribe((res) => {
+        expect(res).toEqual(mockResponse);
+        done();
+      });
+    });
+  });
 });

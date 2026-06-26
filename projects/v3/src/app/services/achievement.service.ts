@@ -1,7 +1,7 @@
 import { ApolloService } from '@v3/services/apollo.service';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subscription, of } from 'rxjs';
-import { first, map, shareReplay, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { first, map, shareReplay } from 'rxjs/operators';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
@@ -158,5 +158,78 @@ export class AchievementService {
 
   getIsPointsConfigured() {
     return this.isPointsConfigured;
+  }
+
+  /**
+   * Fetch all earned badges across all institutions for this user.
+   * Only returns achievements that have badge_delivery.email = true.
+   * This is the `badges` query — distinct from the experience-scoped `achievements` query.
+   */
+  getBadges(): Observable<Achievement[]> {
+    return this.apolloService
+      .graphQLFetch(
+        `query badges {
+          badges {
+            id
+            name
+            description
+            type
+            badge
+            openBadge
+            points
+            isEarned
+            earnedDate
+            progress
+            active
+            certificateUrl
+          }
+        }`
+      )
+      .pipe(
+        map(
+          (res: {
+            data: {
+              badges: Achievement[];
+            };
+          }) => res?.data?.badges || []
+        )
+      );
+  }
+
+  /**
+   * Get (or regenerate) the certificate PDF URL for a given achievement.
+   * When userName is provided a personalized certificate is generated.
+   */
+  getCertificateUrl(achievementId: number, userName?: string): Observable<string | null> {
+    const variables: { achievementId: number; userName?: string } = { achievementId };
+    if (userName) {
+      variables.userName = userName;
+    }
+    return this.apolloService
+      .graphQLFetch(
+        `query certificateUrl($achievementId: Int!, $userName: String) {
+          certificateUrl(achievementId: $achievementId, userName: $userName)
+        }`,
+        { variables }
+      )
+      .pipe(
+        map(
+          (res: { data: { certificateUrl: string | null } }) =>
+            res?.data?.certificateUrl ?? null
+        )
+      );
+  }
+
+  /**
+   * Change the email address associated with an Open Badge before downloading.
+   * Calls the Core Admin API rebadge endpoint.
+   */
+  rebadgeOpenBadge(achievementId: number, email: string): Observable<any> {
+    return this.request.post(
+      {
+        endPoint: `${environment.APIEndpoint}motivations/achievement/rebadge`,
+        data: { achievement_id: achievementId, email },
+      }
+    );
   }
 }

@@ -59,6 +59,10 @@ const routes: Routes = [
         ]
       },
       {
+        path: 'badges-certificates',
+        loadChildren: () => import('../badges-certificates/badges-certificates.module').then(m => m.BadgesCertificatesPageModule)
+      },
+      {
         path: '',
         redirectTo: '/v3/home',
         pathMatch: 'full'

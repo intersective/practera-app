@@ -1,0 +1,115 @@
+<ion-content
+  color="light"
+  class="badge-detail-content"
+  [ngClass]="{'desktop-view': !isMobile}"
+  role="dialog"
+  aria-modal="true"
+  aria-hidden="false">
+
+  <h2 class="for-accessibility">{{achievement?.name}}</h2>
+
+  <div class="image-section ion-text-center">
+    <img
+      [src]="achievement?.badge || '/assets/achievement-popup-default.svg'"
+      [alt]="achievement?.name"
+      [ngClass]="{'black-white-image': !achievement?.isEarned}"
+      class="badge-image" />
+  </div>
+
+  <div class="details-section ion-text-center">
+    @if (achievement?.name) {
+      <p class="headline-6 badge-name">{{achievement.name}}</p>
+    }
+
+    @if (achievement?.type) {
+      <ion-badge color="primary" class="type-badge">
+        {{achievement.type === 'superbadge' ? 'Super Badge' : 'Badge'}}
+      </ion-badge>
+    }
+
+    @if (achievement?.points) {
+      <p class="body-1 points-text">
+        <span i18n>{{achievement.points}}&nbsp;{achievement.points, plural, =1 {point} other {points}}</span>
+      </p>
+    }
+
+    @if (achievement?.isEarned && achievement?.earnedDate) {
+      <p class="body-2 earned-date" i18n>
+        Earned: {{achievement.earnedDate | date:'mediumDate'}}
+      </p>
+    }
+
+    @if (achievement?.progress !== undefined && achievement?.progress !== null) {
+      <div class="progress-section" role="progressbar"
+        [attr.aria-valuenow]="achievement.progress * 100"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-label]="'Progress: ' + (achievement.progress * 100 | number:'1.0-0') + '%'">
+        <ion-progress-bar [value]="achievement.progress" color="primary"></ion-progress-bar>
+        <p class="caption progress-label">{{achievement.progress * 100 | number:'1.0-0'}}% <span i18n>complete</span></p>
+      </div>
+    }
+
+    @if (achievement?.description) {
+      <ion-text color="medium">
+        <app-description
+          class="body-2 badge-description"
+          [content]="achievement.description"
+          [isInPopup]="true">
+        </app-description>
+      </ion-text>
+    }
+  </div>
+
+</ion-content>
+
+<ion-footer class="light" mode="ios">
+  <div class="footer-buttons ion-text-center">
+
+    @if (hasCertificate) {
+      <ion-button
+        mode="ios"
+        color="primary"
+        fill="outline"
+        expand="full"
+        shape="round"
+        (click)="downloadCertificate()"
+        (keydown)="downloadCertificate($event)"
+        tabindex="0"
+        aria-label="Download certificate" i18n-aria-label
+        i18n>
+        Download Certificate
+      </ion-button>
+    }
+
+    @if (hasOpenBadge) {
+      <ion-button
+        mode="ios"
+        color="secondary"
+        fill="outline"
+        expand="full"
+        shape="round"
+        (click)="downloadOpenBadge()"
+        (keydown)="downloadOpenBadge($event)"
+        tabindex="0"
+        aria-label="Download Open Badge" i18n-aria-label
+        i18n>
+        Download Open Badge
+      </ion-button>
+    }
+
+    <ion-button
+      mode="ios"
+      color="medium"
+      fill="clear"
+      expand="full"
+      shape="round"
+      (click)="dismiss()"
+      tabindex="0"
+      aria-label="Close badge details" i18n-aria-label
+      i18n>
+      Close
+    </ion-button>
+
+  </div>
+</ion-footer>

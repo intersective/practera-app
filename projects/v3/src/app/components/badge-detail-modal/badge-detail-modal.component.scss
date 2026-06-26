@@ -1,0 +1,77 @@
+.badge-detail-content {
+  --background: var(--ion-color-light);
+}
+
+.image-section {
+  padding: 16px 16px 8px;
+
+  .badge-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: contain;
+  }
+}
+
+.details-section {
+  padding: 0 24px 16px;
+
+  .badge-name {
+    margin: 8px 0 4px;
+  }
+
+  .type-badge {
+    margin-bottom: 8px;
+    text-transform: capitalize;
+  }
+
+  .points-text {
+    margin: 4px 0;
+  }
+
+  .earned-date {
+    color: var(--ion-color-medium);
+    margin: 4px 0;
+  }
+
+  .progress-section {
+    margin: 12px 0;
+
+    ion-progress-bar {
+      border-radius: 4px;
+      height: 6px;
+    }
+
+    .progress-label {
+      margin-top: 4px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .badge-description {
+    text-align: left;
+    margin-top: 8px;
+  }
+}
+
+.light {
+  background: var(--ion-color-light, #f4f5f8);
+}
+
+.footer-buttons {
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  ion-button {
+    margin: 2px 0;
+  }
+}
+
+.desktop-view {
+  .image-section .badge-image {
+    width: 100px;
+    height: 100px;
+  }
+}

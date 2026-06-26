@@ -269,10 +269,31 @@ describe('SettingsPage', () => {
     expect((component.window.history.back as any)).toHaveBeenCalled();
   });
 
-  it('should open badge app url', () => {
-    component.openBadgeApp(new Event('click'));
+  describe('openBadgeApp()', () => {
+    it('navigates to badges-certificates on click', () => {
+      component.openBadgeApp(new Event('click'));
 
-    expect(utilsSpy.openUrl).toHaveBeenCalled();
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'badges-certificates']);
+    });
+
+    it('navigates on Enter key', () => {
+      component.openBadgeApp(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'badges-certificates']);
+    });
+
+    it('navigates on Space key', () => {
+      component.openBadgeApp(new KeyboardEvent('keydown', { key: ' ' }));
+
+      expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'badges-certificates']);
+    });
+
+    it('does nothing for other keyboard keys', () => {
+      routerSpy.navigate.calls.reset();
+      component.openBadgeApp(new KeyboardEvent('keydown', { key: 'Escape' }));
+
+      expect(routerSpy.navigate).not.toHaveBeenCalled();
+    });
   });
 
   it('should handle retrieve user info failure with alert', async () => {
