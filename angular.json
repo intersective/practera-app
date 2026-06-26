@@ -233,6 +233,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "builderMode": "application",
+            "browsers": "ChromeHeadlessNoSandbox",
             "main": "projects/v3/src/test.ts",
             "karmaConfig": "projects/v3/karma.conf.js",
             "tsConfig": "projects/v3/tsconfig.spec.json",

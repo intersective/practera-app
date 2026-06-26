@@ -66,6 +66,7 @@ describe('ExperiencesPage', () => {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
             'getConfig': {},
+            'getUser': null,
             'get': null,
           }),
         },
@@ -94,7 +95,7 @@ describe('ExperiencesPage', () => {
   describe('instituteLogo()', () => {
     it('should get instituteLogo value from localStorage', () => {
       storageSpy.getConfig = jasmine.createSpy('getConfig').and.returnValue({
-        instituteLogo: 'abcdefg'
+        logo: 'abcdefg'
       });
       expect(component.instituteLogo).toEqual('abcdefg');
     });

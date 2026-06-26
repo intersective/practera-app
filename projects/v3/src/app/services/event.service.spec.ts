@@ -373,10 +373,12 @@ describe('EventService', () => {
     });
 
     it(`should return 'Until time' if event is multiday, end time and multi day start time same`, () => {
+      const sameDay = testUtils.getDateString(5, 1);
       tmpEvent.startTime = testUtils.getDateString(1, 1);
-      tmpEvent.multiDayInfo.startTime = testUtils.getDateString(5, 1);
+      tmpEvent.endTime = sameDay;
+      tmpEvent.multiDayInfo.startTime = sameDay;
       const time = service.timeDisplayed(tmpEvent);
-      expect(time).toEqual(`Until ${utils.utcToLocal(tmpEvent.startTime, 'time')}`);
+      expect(time).toEqual(`Until ${utils.utcToLocal(tmpEvent.endTime, 'time')}`);
     });
 
     it(`should return time if event is not multiday`, () => {

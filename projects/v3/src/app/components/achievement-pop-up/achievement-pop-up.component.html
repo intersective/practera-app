@@ -4,13 +4,13 @@
   aria-modal="true"
   aria-hidden="false"
   #achievementBadgePopup>
-  <h2 class="for-accessibility">{{achievement.name}}</h2>
+  <h2 class="for-accessibility">{{achievement?.name}}</h2>
   <div class="image-content">
     <div class="image ion-text-center">
-      <img alt="{{achievement.name}}"
-        [src]="achievement.image ? achievement.image : '/assets/achievement-popup-default.svg'"
+      <img alt="{{achievement?.name}}"
+        [src]="achievement?.image ? achievement.image : '/assets/achievement-popup-default.svg'"
         id="achievement-image"
-        [ngClass]="type === 'notification'? '' : !achievement.isEarned ? 'black-white-image': ''"
+        [ngClass]="type === 'notification'? '' : !achievement?.isEarned ? 'black-white-image': ''"
         tabindex="0"
         #badgeImage>
     </div>
@@ -21,7 +21,7 @@
       <div class="div-after-img">
         <p class="headline-6" i18n>Congratulations</p>
         <p class="body-1" i18n>You have earned a new badge</p>
-        @if (achievement.name) {
+        @if (achievement?.name) {
           <div class="description subtitle-1 gray-2" tabindex="0" #achievementName>{{achievement.name}}</div>
         }
       </div>
@@ -29,16 +29,16 @@
 
     @if (type !== 'notification' && hideName !== true) {
       <div class="div-after-img">
-        @if (achievement.name) {
+        @if (achievement?.name) {
           <p class="headline-6" tabindex="0" [attr.aria-label]="achievement.name" #achievementName>{{achievement.name}}</p>
         }
-        @if (achievement.points && type !== 'notification') {
+        @if (achievement?.points && type !== 'notification') {
           <p class="body-1" i18n>{{achievement.points}}&nbsp;{achievement.points, plural, =1 {point} other {points}}!</p>
         }
       </div>
     }
 
-    @if (achievement.description) {
+    @if (achievement?.description) {
       <ion-text color="medium" text-center>
         <app-description class="body-1 gray-2"
           [content]="achievement.description"

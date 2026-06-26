@@ -156,7 +156,7 @@ describe('EventDetailComponent', () => {
     });
     afterEach(() => {
       component.event = tmpEvent;
-      fixture.detectChanges();
+      fixture.componentRef.changeDetectorRef.detectChanges();
       component.event = tmpEvent;
       expect(component.buttonText.label).toEqual(expected);
       expect(page.eventName.innerHTML.trim()).toEqual(tmpEvent.name);

@@ -84,6 +84,11 @@ describe('AppComponent', () => {
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     authSpy = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+
+    // Provide safe defaults so ngOnInit's getConfig()/getUser() calls don't throw.
+    // Individual tests may override these with more specific values.
+    (storageSpy.getConfig as jasmine.Spy).and.returnValue({});
+    (storageSpy.getUser as jasmine.Spy).and.returnValue({});
   });
 
   it('should create the app', () => {

@@ -226,16 +226,24 @@ describe('ContactNumberFormComponent', () => {
   });
 
   describe('disableArrowKeys()', () => {
+    beforeEach(() => {
+      // Re-create fixture with page='settings' set before initial detectChanges to avoid
+      // NG0100 caused by ion-select/ion-input initialising tabIndex when rendered for the first time
+      fixture = TestBed.createComponent(ContactNumberFormComponent);
+      component = fixture.componentInstance;
+      component.page = 'settings';
+      fixture.detectChanges();
+    });
+
     it('should check input when user enter value', () => {
       spyOn(component, 'disableArrowKeys');
 
-      component.page = 'settings';
       component.countryModel = COUNTRIES['AUS'];
       storageSpy.getUser = jasmine.createSpy('getUser').and.returnValue({
         contactNumber: '012345678912',
       });
       component.ngOnInit();
-      fixture.detectChanges();
+      fixture.detectChanges(false);
       const inputField: HTMLElement = fixture.nativeElement.querySelector('input.contact-input');
 
       expect(inputField).toBeTruthy();
@@ -248,8 +256,6 @@ describe('ContactNumberFormComponent', () => {
     });
 
     it('should be truthy if Arrow right/left, Backspace or Delete key is pressed', () => {
-      component.page = 'settings';
-      fixture.detectChanges();
       const inputField: HTMLElement = fixture.nativeElement.querySelector('input.contact-input');
 
       expect(inputField).toBeTruthy();

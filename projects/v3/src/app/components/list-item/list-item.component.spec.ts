@@ -9,12 +9,16 @@ import { ListItemComponent } from './list-item.component';
   standalone: false,
   template: `<app-list-item
     [title]="title"
+    [isEventItem]="isEventItem"
+    [loading]="loading"
     [eventDayCount]="null"
     titleColor="sample-100"
   ></app-list-item>`
 })
 class TestHostComponent {
   title = 'Test Title';
+  isEventItem = true;
+  loading = false;
 }
 
 describe('ListItemComponent', () => {
@@ -46,9 +50,8 @@ describe('ListItemComponent', () => {
   });
 
   it('should display the title', () => {
-    listItemComponent.isEventItem = true;
-    listItemComponent.loading = false;
-    listItemComponent.title = testHost.title;
+    testHost.isEventItem = true;
+    testHost.loading = false;
     fixture.detectChanges();
 
     const listItemDe: DebugElement = fixture.debugElement.query(By.css('[role="heading"]'));

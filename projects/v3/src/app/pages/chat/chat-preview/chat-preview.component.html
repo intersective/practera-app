@@ -31,7 +31,7 @@
 
 <ion-content text-center>
   <div class="wrapper">
-    @if (file?.type.includes('image')) {
+    @if (file?.type?.includes('image')) {
       <img [src]="file.url" alt="uploaded attachment preview" i18n-alt>
     }
 

@@ -1,5 +1,4 @@
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import * as exifr from 'exifr';
 
 import { ImgComponent } from './img.component';
 
@@ -34,7 +33,7 @@ describe('ImgComponent', () => {
 
     it('should accept "alt" value', () => {
       const TEST_ALT = 'test';
-      component.alt = TEST_ALT;
+      fixture.componentRef.setInput('alt', TEST_ALT);
       fixture.detectChanges();
       fixture.whenStable().then(() => {
         expect(component.alt).toEqual(TEST_ALT);
@@ -72,7 +71,7 @@ describe('ImgComponent', () => {
     } as any;
     const event = { target: imageElement } as unknown as Event;
 
-    spyOn(exifr, 'parse').and.returnValue(Promise.resolve({ Orientation: 6 }));
+    spyOn(component, 'parseExif').and.returnValue(Promise.resolve({ Orientation: 6 }));
 
     await component.imageLoaded(event);
 
@@ -90,7 +89,7 @@ describe('ImgComponent', () => {
     } as any;
     const event = { target: imageElement } as unknown as Event;
 
-    spyOn(exifr, 'parse').and.returnValue(Promise.resolve({ Orientation: 1 }));
+    spyOn(component, 'parseExif').and.returnValue(Promise.resolve({ Orientation: 1 }));
 
     await component.imageLoaded(event);
 

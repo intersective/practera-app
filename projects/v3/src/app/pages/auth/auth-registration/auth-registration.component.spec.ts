@@ -10,7 +10,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -57,6 +57,7 @@ describe('AuthRegistrationComponent', () => {
         HttpClientTestingModule,
         RouterTestingModule,
         IonicModule.forRoot(),
+        FormsModule,
         ReactiveFormsModule
       ],
       declarations: [AuthRegistrationComponent],

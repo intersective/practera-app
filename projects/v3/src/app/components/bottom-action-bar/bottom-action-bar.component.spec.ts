@@ -37,8 +37,7 @@ describe('BottomActionBarComponent', () => {
   it('should set the input properties', () => {
     component.text = 'Click me';
     component.color = 'secondary';
-    component.disabled$ = new BehaviorSubject<boolean>(false);
-    component.disabled$.next(true);
+    fixture.componentRef.setInput('disabled$', new BehaviorSubject<boolean>(true));
     component.buttonType = 'submit';
     fixture.detectChanges();
 

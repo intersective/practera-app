@@ -57,8 +57,8 @@ describe('ToggleLabelDirective', () => {
   });
 
   it('should not call toggle function when disabled', () => {
-    component.disabled = true;
-    fixture.detectChanges();
+    const directive = spanElement.injector.get(ToggleLabelDirective);
+    directive.toggleDisabled = true;
 
     spanElement.triggerEventHandler('click', { preventDefault: () => {}, stopPropagation: () => {}, target: spanElement.nativeElement });
     spanElement.triggerEventHandler('keydown', { key: 'Enter', preventDefault: () => {}, stopPropagation: () => {} });

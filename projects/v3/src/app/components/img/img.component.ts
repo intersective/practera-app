@@ -62,10 +62,14 @@ export class ImgComponent implements OnChanges {
   }
 
 
+  parseExif(src: string) {
+    return parse(src, { pick: ['Orientation'] });
+  }
+
   async imageLoaded(e: Event) {
     const imgElement = e.target as HTMLImageElement;
     try {
-      const metadata = await parse(imgElement.src, { pick: ['Orientation'] });
+      const metadata = await this.parseExif(imgElement.src);
       if (!metadata?.Orientation) return;
 
       const orientationClassFix = getImageClassToFixOrientation(metadata.Orientation);

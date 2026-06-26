@@ -2,6 +2,7 @@ import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, waitForAsync } f
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, ModalController } from '@ionic/angular';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { HomeService } from '@v3/services/home.service';
@@ -23,7 +24,7 @@ describe('NotificationsPage', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ NotificationsPage ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), NoopAnimationsModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {

@@ -1,6 +1,26 @@
 // Karma configuration file, see link for more information
 // https://karma-runner.github.io/1.0/config/configuration-file.html
 
+// Ensure the Chromium binary is found in Alpine/Debian-based Docker environments.
+// The CHROME_BIN env var may not propagate through some process chains (e.g.
+// docker exec via the test dashboard). Detect it here so karma-chrome-launcher
+// always has a valid binary path.
+const { existsSync } = require('fs');
+if (!process.env.CHROME_BIN) {
+  const candidates = [
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable',
+  ];
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      process.env.CHROME_BIN = candidate;
+      break;
+    }
+  }
+}
+
 module.exports = function (config) {
   config.set({
     basePath: '',

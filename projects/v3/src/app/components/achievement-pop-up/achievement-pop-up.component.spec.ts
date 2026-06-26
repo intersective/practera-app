@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { AchievementPopUpComponent } from './achievement-pop-up.component';
-import { ModalController, IonicModule } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { UtilsService } from '@v3/services/utils.service';
 
 class AchievementModalPage {
@@ -27,11 +27,24 @@ describe('AchievementPopUpComponent', () => {
   let component: AchievementPopUpComponent;
   let fixture: ComponentFixture<AchievementPopUpComponent>;
   let page: AchievementModalPage;
-  let modalCtrlSpy: any;
+  let modalCtrlSpy: jasmine.SpyObj<ModalController>;
+
+  // Set achievement immediately after component creation, before any Zone-triggered
+  // auto CD pass can run (waitForAsync + compileComponents resolving can trigger one).
+  // This ensures the initial LView snapshot for achievement?.name is always 'achieve',
+  // so no test's detectChanges() call sees a null → 'achieve' transition (NG0100).
+  const defaultAchievement = {
+    id: 1,
+    name: 'achieve',
+    description: '',
+    type: 'badge',
+    badge: 'badge',
+  };
 
   beforeEach(waitForAsync(() => {
+    modalCtrlSpy = jasmine.createSpyObj('ModalController', ['dismiss']);
+
     TestBed.configureTestingModule({
-      imports: [ IonicModule ],
       declarations: [ AchievementPopUpComponent ],
       schemas: [ CUSTOM_ELEMENTS_SCHEMA ],
       providers: [
@@ -49,94 +62,86 @@ describe('AchievementPopUpComponent', () => {
 
     fixture = TestBed.createComponent(AchievementPopUpComponent);
     component = fixture.componentInstance;
-    modalCtrlSpy = TestBed.inject(ModalController);
-
+    component.achievement = { ...defaultAchievement };
     page = new AchievementModalPage(fixture);
   }));
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeDefined();
   });
 
   describe('ionViewDidEnter()', () => {
-    beforeEach(() => {
-      component.achievement = {
-        id: 1,
-        name: 'achieve',
-        description: '',
-        type: 'badge',
-        badge: 'badge',
-      };
-    });
+    // detectChanges() runs here after achievement is already set (from outer beforeEach),
+    // so NG0100 cannot occur. The .el mocks are required because CUSTOM_ELEMENTS_SCHEMA
+    // returns an ElementRef for ion-content / ion-button (no Ionic directive wrapper),
+    // while ionViewDidEnter() accesses the Ionic-specific .el property.
+    beforeEach(waitForAsync(() => {
+      fixture.detectChanges();
+      return fixture.whenStable().then(() => {
+        component.achievementBadgePopup = {
+          el: fixture.nativeElement.querySelector('ion-content'),
+        } as any;
+        component.dismissButton = {
+          el: fixture.nativeElement.querySelector('ion-button[dismiss]') ||
+              fixture.nativeElement.querySelector('ion-button'),
+        } as any;
+      });
+    }));
 
     it('should prepare accessibility controls', () => {
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        component.ionViewDidEnter();
-        const event = new KeyboardEvent('keydown', {
-          code: 'Tab',
-          key: 'Tab',
-        });
-
-        spyOn(component.achievementName.nativeElement, 'focus');
-        spyOn(component.badgeImage.nativeElement, 'focus');
-        spyOn(component.dismissButton.el, 'focus');
-
-        component.achievementBadgePopup.el.dispatchEvent(event);
-        expect(component.achievementName.nativeElement.focus).toHaveBeenCalled();
-
-        component.achievementBadgePopup.el.dispatchEvent(event);
-        expect(component.dismissButton.el.focus).toHaveBeenCalled();
-
-        component.achievementBadgePopup.el.dispatchEvent(event);
-        expect(component.badgeImage.nativeElement.focus).toHaveBeenCalled();
+      component.ionViewDidEnter();
+      const event = new KeyboardEvent('keydown', {
+        code: 'Tab',
+        key: 'Tab',
       });
+
+      spyOn(component.achievementName.nativeElement, 'focus');
+      spyOn(component.badgeImage.nativeElement, 'focus');
+      spyOn(component.dismissButton.el, 'focus');
+
+      component.achievementBadgePopup.el.dispatchEvent(event);
+      expect(component.achievementName.nativeElement.focus).toHaveBeenCalled();
+
+      component.achievementBadgePopup.el.dispatchEvent(event);
+      expect(component.dismissButton.el.focus).toHaveBeenCalled();
+
+      component.achievementBadgePopup.el.dispatchEvent(event);
+      expect(component.badgeImage.nativeElement.focus).toHaveBeenCalled();
     });
 
     it('should not trigger "navigation" if no tab pressed', () => {
-      fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        component.ionViewDidEnter();
-        const event = new KeyboardEvent('keydown', {
-          code: 'Shift',
-          key: 'Shift',
-        });
-
-        spyOn(component.achievementName.nativeElement, 'focus');
-        spyOn(component.badgeImage.nativeElement, 'focus');
-        spyOn(component.dismissButton.el, 'focus');
-
-        component.achievementBadgePopup.el.dispatchEvent(event);
-        expect(component.achievementName.nativeElement.focus).not.toHaveBeenCalled();
-        expect(component.badgeImage.nativeElement.focus).not.toHaveBeenCalled();
-        expect(component.dismissButton.el.focus).not.toHaveBeenCalled();
+      component.ionViewDidEnter();
+      const event = new KeyboardEvent('keydown', {
+        code: 'Shift',
+        key: 'Shift',
       });
+
+      spyOn(component.achievementName.nativeElement, 'focus');
+      spyOn(component.badgeImage.nativeElement, 'focus');
+      spyOn(component.dismissButton.el, 'focus');
+
+      component.achievementBadgePopup.el.dispatchEvent(event);
+      expect(component.achievementName.nativeElement.focus).not.toHaveBeenCalled();
+      expect(component.badgeImage.nativeElement.focus).not.toHaveBeenCalled();
+      expect(component.dismissButton.el.focus).not.toHaveBeenCalled();
     });
   });
 
   describe('confirm()', () => {
     it('should dismiss with Enter/Space', () => {
-      component.achievement = {
-        id: 1,
-        name: 'achieve',
-        description: '',
-        type: 'badge',
-        badge: 'badge-image'
-      };
+      // Directly replace the component's modalController with a spy to bypass any
+      // DI override issues where Ionic's root provider may win over the TestBed provider.
+      const dismissSpy = jasmine.createSpy('dismiss');
+      (component as any).modalController = { dismiss: dismissSpy };
 
-      let keyboardEvent = new KeyboardEvent('keydown', {
-        key: 'Enter'
-      });
-      component.confirmed(keyboardEvent);
-
-      keyboardEvent = new KeyboardEvent('keydown', {
-        key: ' '
-      });
-      component.confirmed(keyboardEvent);
-      expect(modalCtrlSpy.dismiss).toHaveBeenCalledTimes(2);
+      component.confirmed(new KeyboardEvent('keydown', { key: 'Enter' }));
+      component.confirmed(new KeyboardEvent('keydown', { key: ' ' }));
+      expect(dismissSpy).toHaveBeenCalledTimes(2);
     });
 
     it('should not dismiss with keyboardEvent', () => {
+      fixture.detectChanges();
       component.confirmed(new KeyboardEvent('keydown', {
         key: 'Tab',
         code: 'Tab',
@@ -145,4 +150,3 @@ describe('AchievementPopUpComponent', () => {
     });
   });
 });
-

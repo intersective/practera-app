@@ -2528,8 +2528,9 @@ describe('AssessmentComponent', () => {
   });
 
   describe('isPaginationEnabled', () => {
-    it('should return true by default', () => {
-      expect(component.isPaginationEnabled).toBeTrue();
+    it('should return the value from environment feature toggles', () => {
+      // The test environment has assessmentPagination: false in environment.featureToggles
+      expect(component.isPaginationEnabled).toBeFalse();
     });
   });
 

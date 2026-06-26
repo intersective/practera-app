@@ -117,7 +117,7 @@ describe('HubspotService', () => {
         },
         {
             "name": "TICKET.server_location",
-            "value": "AU"
+            "value": "<CUSTOM_LIVE_SERVER_REGION>"
         },
         {
             "name": "TICKET.phone_number",
@@ -173,7 +173,7 @@ describe('HubspotService', () => {
     });
 
     it('should return correct user role "Learner"', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       storageSpy.getUser.and.returnValue(tempUser);
       storageSpy.get.and.returnValue(tempExperience);
       service.submitDataToHubspot(params);
@@ -181,7 +181,7 @@ describe('HubspotService', () => {
     });
 
     it('should return correct user role "Expert"', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[9].value = 'Expert';
       const user = { ... tempUser };
       user.role = 'mentor';
@@ -192,7 +192,7 @@ describe('HubspotService', () => {
     });
 
     it('should return same user role if it not match', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[9].value = 'admin';
       const user = { ... tempUser };
       user.role = 'admin';
@@ -203,7 +203,7 @@ describe('HubspotService', () => {
     });
 
     it('should return empty string for "firstname" if it not found', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[9].value = 'Learner';
       hubspotFields[1].value = '';
       const user = { ... tempUser };
@@ -215,7 +215,7 @@ describe('HubspotService', () => {
     });
 
     it('should return empty string for "lastName" if it not found', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[1].value = 'test';
       hubspotFields[2].value = '';
       const user = { ... tempUser };
@@ -228,7 +228,7 @@ describe('HubspotService', () => {
     });
 
     it('should return empty string for "contactNumber" if it not found', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[2].value = 'user';
       hubspotFields[7].value = '';
       const user = { ... tempUser };
@@ -241,7 +241,7 @@ describe('HubspotService', () => {
     });
 
     it('should return empty string for "teamName" if it not found', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[7].value = '1212121212';
       hubspotFields[10].value = '';
       const user = { ... tempUser };
@@ -254,7 +254,7 @@ describe('HubspotService', () => {
     });
 
     it('should return empty string for "hs_file_upload" if it not found', () => {
-      const hubspotFields = [ ...hubspotSubmitData.fields ];
+      const hubspotFields = JSON.parse(JSON.stringify(hubspotSubmitData.fields));
       hubspotFields[10].value = 'team 1';
       hubspotFields[11].value = '{}';
       const user = { ... tempUser };

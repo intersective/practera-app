@@ -112,7 +112,7 @@ export class TestUtils extends SpyObject {
     this.getFutureDated = this.spy('getFutureDated').and.callFake(UtilsService.prototype.getFutureDated);
     this.urlQueryToObject = this.spy('urlQueryToObject').and.callFake(UtilsService.prototype.urlQueryToObject);
     this.downloadFile = this.spy('downloadFile');
-    this.getCurrentLocation = this.spy('getCurrentLocation');
+    this.getCurrentLocation = this.spy('getCurrentLocation').and.returnValue({ search: null, hash: null });
     this.getFormatedCurrentTime = this.spy('getFormatedCurrentTime');
     this.getCurrentLocale = this.spy('getCurrentLocale').and.returnValue('en-US');
     this.setPageLanguage = this.spy('setPageLanguage');

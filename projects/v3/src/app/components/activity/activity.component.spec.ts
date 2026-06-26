@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 import { IonicModule } from '@ionic/angular';
 import { of } from 'rxjs';
 import { TestUtils } from '@testingv3/utils';
@@ -39,14 +40,16 @@ describe('ActivityComponent', () => {
         },
         {
           provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            'alert': Promise.resolve(),
+            'markTodoItemAsDone': of(null),
+          }),
         },
         {
           provide: BrowserStorageService,
           useValue: jasmine.createSpyObj('BrowserStorageService', {
-            'getUser': {
-              teamId: undefined
-            },
+            'getUser': { teamId: undefined },
+            'get': null,
           }),
         },
         {
@@ -55,16 +58,21 @@ describe('ActivityComponent', () => {
         },
         {
           provide: ActivityService,
-          useValue: jasmine.createSpyObj('ActivityService', ['goToNextTask']),
+          useValue: jasmine.createSpyObj('ActivityService', {
+            'goToNextTask': Promise.resolve(),
+            'nonTeamActivity': Promise.resolve(true),
+          }),
         },
         {
           provide: UnlockIndicatorService,
-          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['getUnlockIndicatorForTask'], {
-            unlockIndicators$: { pipe: () => ({ subscribe: () => {} }) }
-          }),
+          // Component uses unlockedTasks$ (Observable), getTasksByActivity, clearActivity
+          useValue: jasmine.createSpyObj('UnlockIndicatorService',
+            { 'getUnlockIndicatorForTask': null, 'getTasksByActivity': [], 'clearActivity': [] },
+            { unlockedTasks$: of([]) }
+          ),
         },
       ],
-      imports: [IonicModule.forRoot()]
+      imports: [IonicModule.forRoot(), RouterTestingModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActivityComponent);
