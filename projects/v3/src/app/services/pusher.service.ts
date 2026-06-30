@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { RequestService } from 'request';
 import { environment } from '@v3/environments/environment';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -13,7 +12,6 @@ import { ApolloService } from './apollo.service';
 
 const api = {
   pusherAuth: '/pusher_auth',
-  channels: 'api/v2/message/notify/channels.json'
 };
 
 
@@ -57,7 +55,6 @@ export class PusherService {
   };
 
   constructor(
-    private request: RequestService,
     private utils: UtilsService,
     public storage: BrowserStorageService,
     private apolloService: ApolloService,
@@ -203,6 +200,9 @@ export class PusherService {
         }
         config.enabledTransports = ['ws', 'wss'];
         config.disabledTransports = ['xhr_streaming', 'xhr_polling', 'sockjs'];
+        // pusher-js 8.x requires cluster to be set even when using a custom wsHost;
+        // use a placeholder so the SDK constructor does not throw.
+        config.cluster = 'local';
       } else if (environment.pusherCluster) {
         config.cluster = environment.pusherCluster;
       }
@@ -248,19 +248,19 @@ export class PusherService {
   }
 
   getNotificationChannel(): Observable<any> {
-    // if apikey not exist, we don't need to call API to get channel
     const { apikey } = this.storage.getUser();
     if (!apikey) {
       return of();
     }
-    return this.request.get(api.channels, {
-      params: {
-        env: environment.env,
-        for: 'notification'
-      }
-    }).pipe(map(response => {
-      if (response.data) {
-        this.subscribeChannel('notification', response.data[0].channel);
+    return this.apolloService.graphQLFetch(
+      `query notificationChannel($env: String!) {
+        notificationChannel(env: $env)
+      }`,
+      { variables: { env: environment.env } }
+    ).pipe(map(response => {
+      const channel = response?.data?.notificationChannel;
+      if (channel) {
+        this.subscribeChannel('notification', channel);
       }
     }));
   }

@@ -86,17 +86,9 @@ export interface TodoItem {
   };
   project_id?: number;
   timeline_id?: number;
+  created?: string;
 }
 
-export const api = {
-  get: {
-    todoItem: 'api/v2/motivations/todo_item/list.json',
-    events: 'api/v2/act/event/list.json',
-  },
-  post: {
-    todoItem: 'api/v2/motivations/todo_item/edit.json'
-  }
-};
 
 @Injectable({
   providedIn: "root",
@@ -486,22 +478,52 @@ export class NotificationsService {
   }
 
   getTodoItems(): Observable<any> {
-    return this.request
-      .get(api.get.todoItem, {
-        params: {
-          project_id: this.storage.getUser().projectId,
-        },
-      })
-      .pipe(
-        map((response) => {
-          if (response.success && response.data) {
-            const normalised = this._normaliseTodoItems(response.data);
-            this.notifications = normalised;
-            this._notification$.next(this.notifications);
-            return normalised;
+    return this.apolloService.graphQLFetch(
+      `query project {
+        project {
+          todoItems {
+            id
+            name
+            identifier
+            isDone
+            meta
+            model
+            foreignKey
+            created
           }
-        })
-      );
+        }
+      }`
+    ).pipe(
+      map((response) => {
+        const rawItems = response?.data?.project?.todoItems;
+        if (rawItems) {
+          const legacyItems = (rawItems as any[]).map(item => this._fromGqlTodoItem(item));
+          const normalised = this._normaliseTodoItems(legacyItems);
+          this.notifications = normalised;
+          this._notification$.next(this.notifications);
+          return normalised;
+        }
+      })
+    );
+  }
+
+  private _fromGqlTodoItem(item: any): TodoItem {
+    let metaObj: any = {};
+    try {
+      metaObj = item.meta ? JSON.parse(item.meta) : {};
+    } catch {
+      metaObj = {};
+    }
+    return {
+      id: item.id,
+      name: item.name,
+      identifier: item.identifier,
+      is_done: item.isDone,
+      meta: metaObj,
+      model: item.model,
+      foreign_key: item.foreignKey,
+      created: item.created,
+    };
   }
 
   /**
@@ -1013,29 +1035,56 @@ export class NotificationsService {
       );
       return of(null);
     }
-    return this.request
-      .get(api.get.events, {
-        params: {
-          type: "activity_session",
-          id: data.meta.id,
-        },
+    return this.apolloService.graphQLFetch(
+      `query event($id: Int!) {
+        event(id: $id) {
+          id
+          name
+          description
+          location
+          activityId
+          activityName
+          eventStart
+          eventEnd
+          capacity
+          remainingCapacity
+          isBooked
+          singleBooking
+          canBook
+          isAllDay
+          type
+          videoConference {
+            provider
+            url
+            meetingId
+            password
+          }
+          assessment {
+            id
+            contextId
+          }
+        }
+      }`,
+      { variables: { id: data.meta.id } }
+    ).pipe(
+      map((response) => {
+        const raw = response?.data?.event;
+        if (!raw) {
+          return null;
+        }
+        const events = this.eventsService.normaliseGqlEvents([raw]);
+        if (!events.length) {
+          return null;
+        }
+        const event = events[0];
+        if (event.isPast) {
+          this.postEventReminder(event);
+          return null;
+        }
+        this._eventReminder$.next(event);
+        return event;
       })
-      .pipe(
-        map((response) => {
-          if (this.utils.isEmpty(response.data)) {
-            return null;
-          }
-          const event = this.eventsService.normaliseEvents(response.data)[0];
-          if (event.isPast) {
-            // mark the todo item as done if event starts
-            this.postEventReminder(event);
-            return null;
-          }
-
-          this._eventReminder$.next(event);
-          return event;
-        })
-      );
+    );
   }
 
   postEventReminder(event) {

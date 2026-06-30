@@ -8,23 +8,10 @@ import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
 
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
 const api = {
   get: {
-    events: 'api/v2/act/event/list.json',
     submissions: 'api/submissions.json',
-    activities: 'api/v2/plan/activity/list.json'
   },
-  post: {
-    book: 'api/book_events.json'
-  },
-  delete: {
-    cancel: 'api/book_events.json'
-  }
 };
 
 export interface Event {
@@ -99,20 +86,105 @@ export class EventService {
       return of(this.normaliseEvents(this.demo.eventList));
     }
 
-    const params: any = {
-      types: ['activity_session', 'other']
-    };
-    // getting events link with activity
+    const types = activityId ? ['activity_session'] : ['activity_session', 'other'];
+    const variables: any = { types };
     if (activityId) {
-      params.activity_id = activityId;
-      params.types = ['activity_session'];
+      variables.activityId = activityId;
     }
 
-    return this.request.get(api.get.events, {params: params})
-      .pipe(map(response => {
-        return this.normaliseEvents(response.data);
-      })
-    );
+    return this.apolloService.graphQLFetch(
+      `query events($types: [EventType], $activityId: Int) {
+        events(types: $types, activityId: $activityId) {
+          id
+          name
+          description
+          location
+          activityId
+          activityName
+          eventStart
+          eventEnd
+          capacity
+          remainingCapacity
+          isBooked
+          singleBooking
+          canBook
+          isAllDay
+          type
+          videoConference {
+            provider
+            url
+            meetingId
+            password
+          }
+          assessment {
+            id
+            contextId
+          }
+        }
+      }`,
+      { variables }
+    ).pipe(map(response => {
+      if (response?.data?.events) {
+        return this.normaliseGqlEvents(response.data.events);
+      }
+      return [];
+    }));
+  }
+
+  normaliseGqlEvents(data: any[]): Event[] {
+    if (!Array.isArray(data)) {
+      this.request.apiResponseFormatError('Event format error');
+      return [];
+    }
+    let events: Event[] = [];
+    this.storage.initBookedEventActivityIds();
+    data.forEach(event => {
+      if (!event?.id) {
+        return this.request.apiResponseFormatError('Event object format error');
+      }
+      const eventObj: Event = {
+        id: event.id,
+        name: event.name ?? '',
+        description: event.description ?? '',
+        location: event.location ?? '',
+        activityId: event.activityId,
+        activityName: event.activityName ?? '',
+        startTime: event.eventStart ?? '',
+        endTime: event.eventEnd ?? '',
+        capacity: event.capacity ?? 0,
+        remainingCapacity: event.remainingCapacity ?? 0,
+        isBooked: event.isBooked ?? false,
+        singleBooking: event.singleBooking ?? false,
+        canBook: event.canBook ?? false,
+        isPast: this.utils.timeComparer(event.eventStart) < 0,
+        assessment: event.assessment?.id ? {
+          id: event.assessment.id,
+          contextId: event.assessment.contextId,
+          isDone: false,
+        } : null,
+        videoConference: event.videoConference?.url ? {
+          provider: event.videoConference.provider,
+          url: event.videoConference.url,
+          meetingId: event.videoConference.meetingId,
+          password: event.videoConference.password,
+        } : null,
+        type: event.type,
+        allDay: event.isAllDay ?? false,
+      };
+
+      if (this._isMultipleAllDay(eventObj)) {
+        events = events.concat(this._getMultiDayEvent(eventObj, { isAllDay: true }));
+      } else if (eventObj.allDay !== true && !this._checkIsSingleDay(eventObj) && this.utils.timeComparer(eventObj.startTime) >= 0) {
+        events = events.concat(this._getMultiDayEvent(eventObj));
+      } else {
+        events.push(eventObj);
+      }
+
+      if (event.singleBooking && event.isBooked) {
+        this.storage.setBookedEventActivityIds(event.activityId);
+      }
+    });
+    return this._sortEvent(events);
   }
 
   normaliseEvents(data): Array<Event> {
@@ -241,12 +313,29 @@ export class EventService {
         }
       }));
     }
-    return this.request.get(api.get.activities)
-      .pipe(map(response => {
-        if (response.success && response.data) {
-          return this._normaliseActivities(response.data);
+    return this.apolloService.graphQLFetch(
+      `query milestones {
+        milestones {
+          activities {
+            id
+            name
+          }
         }
-      }));
+      }`
+    ).pipe(map(response => {
+      if (!response?.data?.milestones) {
+        return [];
+      }
+      const allActivities: Activity[] = [];
+      (response.data.milestones as any[]).forEach(milestone => {
+        (milestone.activities ?? []).forEach((a: any) => {
+          if (a?.id && a?.name) {
+            allActivities.push({ id: a.id, name: a.name });
+          }
+        });
+      });
+      return allActivities.sort((a, b) => a.name.localeCompare(b.name));
+    }));
   }
 
   private _normaliseActivities(data): Array<Activity> {
@@ -265,7 +354,6 @@ export class EventService {
         id: activity.id,
         name: activity.name
       };
-      // sort activity by name alphabetically
     }).sort((a, b) => a.name.localeCompare(b.name));
   }
 

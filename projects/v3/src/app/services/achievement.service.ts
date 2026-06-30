@@ -7,16 +7,6 @@ import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { environment } from '@v3/environments/environment';
 
-/**
- * @name api
- * @description list of api endpoint involved in this service
- * @type {Object}
- */
-const api = {
-  get: {
-    achievements: 'api/v2/motivations/achievement/list.json'
-  },
-};
 
 export interface Achievement {
   id: number;
@@ -222,14 +212,16 @@ export class AchievementService {
 
   /**
    * Change the email address associated with an Open Badge before downloading.
-   * Calls the Core Admin API rebadge endpoint.
+   * Calls the GraphQL rebadgeOpenBadge mutation which proxies to CakePHP.
    */
   rebadgeOpenBadge(achievementId: number, email: string): Observable<any> {
-    return this.request.post(
-      {
-        endPoint: `${environment.APIEndpoint}motivations/achievement/rebadge`,
-        data: { achievement_id: achievementId, email },
-      }
+    return this.apolloService.graphQLMutate(
+      `mutation rebadgeOpenBadge($achievementId: Int!, $email: String!) {
+        rebadgeOpenBadge(achievementId: $achievementId, email: $email) {
+          success
+        }
+      }`,
+      { achievementId, email }
     );
   }
 }
