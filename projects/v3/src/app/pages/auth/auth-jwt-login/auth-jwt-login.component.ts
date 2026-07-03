@@ -352,10 +352,15 @@ export class AuthJwtLoginComponent implements OnInit {
     save?: boolean;
     experience?: any;
   }): void | Promise<boolean> {
-    const currentLocation = window.location.href;
     const locale = options?.experience?.locale;
-    const isLocalDev = currentLocation.indexOf('localhost') !== -1 || currentLocation.indexOf('.local') !== -1;
-    if (!isLocalDev && locale && currentLocation.indexOf(locale) === -1) {
+    // Any non-routable hostname (Docker service names like practera-app, IP addresses, or
+    // the standard dev/local hostnames) should skip locale-prefixed hard redirects.
+    const hostname = window.location.hostname;
+    const isLocalDev = hostname === 'localhost' ||
+      hostname.endsWith('.local') ||
+      /^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname) || // IP address
+      !hostname.includes('.'); // bare hostname (e.g. Docker service name)
+    if (!isLocalDev && locale && window.location.href.indexOf(locale) === -1) {
       route = [`/${locale}`, ...route];
       return this.utils.redirectToUrl(`${window.location.origin}${route.join('/')}`);
     } else {
