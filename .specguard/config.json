@@ -1,0 +1,38 @@
+{
+  "apps": [
+    {
+      "name": "app-v3",
+      "repo": "projects/v3",
+      "language": "typescript",
+      "specDir": "../../specs",
+      "sources": {
+        "pages": ["src/app/pages/**/*.ts", "src/app/pages/**/*.html"],
+        "routes": ["src/app/app-routing.module.ts"],
+        "api": ["src/app/services/**/*.ts"],
+        "tests": ["src/**/*.spec.ts"]
+      },
+      "framework": "playwright",
+      "testOutput": "e2e",
+      "docs": "docs/user",
+      "security": {
+        "enabled": true,
+        "paths": ["src/app/services/**/*.ts"]
+      }
+    }
+  ],
+  "llm": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-5",
+    "apiKeyEnv": "ANTHROPIC_API_KEY"
+  },
+  "auth": {
+    "profiles": [
+      {
+        "name": "learner",
+        "loginUrl": "http://localhost:4200",
+        "usernameEnvVar": "APP_TEST_EMAIL",
+        "passwordEnvVar": "APP_TEST_PASSWORD"
+      }
+    ]
+  }
+}

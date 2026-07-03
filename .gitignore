@@ -28,3 +28,8 @@ www/*
 projects/v3/src/environments/environment.ts
 projects/v3/src/environments/environment.prod.ts
 output/
+
+# SpecGuard local secrets
+.specguard/.env
+.specguard/evidence/
+.specguard/reports/
