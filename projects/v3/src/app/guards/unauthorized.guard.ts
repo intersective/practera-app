@@ -30,8 +30,8 @@ export class UnauthorizedGuard implements CanActivate {
       return false;
     }
 
-    // navigate to not found page
-    this.router.navigate(['/v3']);
+    // Redirect authenticated users to the experience picker
+    this.router.navigate(['/experiences']);
     return false;
   }
 

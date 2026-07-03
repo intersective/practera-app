@@ -67,13 +67,11 @@ export class TabsPage implements OnInit, OnDestroy {
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
     } else {
-      // display chat tab if a user has chatroom available
+      // Optimistically show the Messages tab immediately so ion-tabs can
+      // activate the route; getChatList() updates to false if no channels exist.
+      this.showMessages = true;
       this.subscriptions.push(this.chatService.getChatList().subscribe(chats => {
-        if (chats && chats.length > 0) {
-          this.showMessages = true;
-        } else {
-          this.showMessages = false;
-        }
+        this.showMessages = !!(chats && chats.length > 0);
       }));
     }
 

@@ -242,15 +242,13 @@ export class V3Page implements OnInit, OnDestroy {
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
     } else {
-      // display chat tab if a user has chatroom available
+      // Optimistically show the Messages link immediately so navigation is
+      // accessible; getChatList() updates to false if no channels exist.
+      this.showMessages = true;
       this.chatService.getChatList()
         .pipe(takeUntil(this.unsubscribe$))
         .subscribe(chats => {
-          if (chats && chats.length > 0) {
-            this.showMessages = true;
-          } else {
-            this.showMessages = false;
-          }
+          this.showMessages = !!(chats && chats.length > 0);
         });
     }
     this.isMenuOpen = false;
