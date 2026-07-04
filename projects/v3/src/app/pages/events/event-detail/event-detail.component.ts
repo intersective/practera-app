@@ -69,26 +69,32 @@ export class EventDetailComponent implements OnInit {
         break;
 
       case 'cancel-booking':
-        this.eventService.cancelEvent(this.event).subscribe(response => {
-          if (response.success) {
-            this.NotificationsService.alert({
-              message: `<p aria-live="assertive">${$localize`Booking cancelled Successfully!`}</p>`,
-              buttons: [
-                {
-                  text: $localize`OK`,
-                  role: 'cancel'
-                }
-              ]
-            });
-            // update the event list & activity detail page
-            this.utils.broadcastEvent('update-event', null);
-            this.event.isBooked = false;
-            // remove the activity id from storage if it is single booking
-            if (this.event.singleBooking) {
-              this.storage.removeBookedEventActivityIds(this.event.activityId);
+        this.eventService.cancelEvent(this.event).subscribe({
+          next: response => {
+            if (response?.data?.cancelEvent?.success) {
+              this.NotificationsService.alert({
+                message: `<p aria-live="assertive">${$localize`Booking cancelled Successfully!`}</p>`,
+                buttons: [
+                  {
+                    text: $localize`OK`,
+                    role: 'cancel'
+                  }
+                ]
+              });
+              // update the event list & activity detail page
+              this.utils.broadcastEvent('update-event', null);
+              this.event.isBooked = false;
+              this.event.canBook = true;
+              // remove the activity id from storage if it is single booking
+              if (this.event.singleBooking) {
+                this.storage.removeBookedEventActivityIds(this.event.activityId);
+              }
             }
-          }
-          this.ctaIsActing = false;
+            this.ctaIsActing = false;
+          },
+          error: () => {
+            this.ctaIsActing = false;
+          },
         });
         break;
 
