@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/services/activity.service';
 import { AssessmentService, Submission } from '@v3/services/assessment.service';
@@ -21,18 +21,28 @@ export class ActivityMobilePage implements OnInit {
     private activityService: ActivityService,
     private assessmentService: AssessmentService,
     private utils: UtilsService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit() {
     this.activityService.activity$
       .pipe(filter(res => res?.id === +this.route.snapshot.paramMap.get('id')))
       .subscribe(res => {
-        this.activity = res;
+        this.ngZone.run(() => {
+          this.activity = res;
+          this.cdr.markForCheck();
+        });
         if (res?.name) {
           this.utils.setPageTitle(`${res.name} - Practera`);
         }
       });
-    this.assessmentService.submission$.subscribe(res => this.submission = res);
+    this.assessmentService.submission$.subscribe(res => {
+      this.ngZone.run(() => {
+        this.submission = res;
+        this.cdr.markForCheck();
+      });
+    });
     this.route.params.subscribe(params => {
       this.activityService.getActivity(+params.id, false);
     });

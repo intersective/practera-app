@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -16,11 +16,15 @@ export class ReviewMobilePage implements OnInit {
     private router: Router,
     private reviewService: ReviewService,
     private utils: UtilsService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit(): void {
     this.utils.setPageTitle('Reviews - Practera');
-    this.reviewService.reviews$.subscribe(res => this.reviews = res);
+    this.reviewService.reviews$.subscribe(res => {
+      this.ngZone.run(() => { this.reviews = res; this.cdr.markForCheck(); });
+    });
     this.route.queryParams.subscribe(_params => {
       this.reviewService.getReviews();
     });

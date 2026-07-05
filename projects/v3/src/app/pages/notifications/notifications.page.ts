@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Router } from '@angular/router';
 import { NotificationsService, TodoItem } from '@v3/app/services/notifications.service';
@@ -41,6 +41,8 @@ export class NotificationsPage implements OnInit, OnDestroy {
     private router: Router,
     private modalController: ModalController,
     private readonly homeService: HomeService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
     @Inject(DOCUMENT) private document: Document
   ) {
     this.window = this.document.defaultView;
@@ -52,24 +54,30 @@ export class NotificationsPage implements OnInit, OnDestroy {
       if (milestones === null) {
         this.homeService.getMilestones();
       }
-
-      this.milestones = milestones;
-
-      (milestones || []).forEach(milestone => {
-        // API won't return activities when milestone is locked
-        milestone?.activities?.forEach(activity => {
-          this.isLockedActivities[activity.id] = activity.isLocked;
+      this.ngZone.run(() => {
+        this.milestones = milestones;
+        (milestones || []).forEach(milestone => {
+          milestone?.activities?.forEach(activity => {
+            this.isLockedActivities[activity.id] = activity.isLocked;
+          });
         });
+        this.cdr.markForCheck();
       });
     }));
 
     this.subscriptions.push(this.notificationsService.notification$.subscribe(items => {
-      this.todoItems = items;
+      this.ngZone.run(() => {
+        this.todoItems = items;
+        this.cdr.markForCheck();
+      });
     }));
 
     this.subscriptions.push(this.notificationsService.eventReminder$.subscribe(session => {
       if (!this.utils.isEmpty(session)) {
-        this.eventReminders.push(session);
+        this.ngZone.run(() => {
+          this.eventReminders.push(session);
+          this.cdr.markForCheck();
+        });
       }
     }));
   }

@@ -2,7 +2,7 @@ import { AssessmentComponent } from './../../components/assessment/assessment.co
 import { DOCUMENT } from '@angular/common';
 import { UnlockIndicatorService } from './../../services/unlock-indicator.service';
 
-import { Component, Inject, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, NgZone, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task, Activity } from '@v3/app/services/activity.service';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
@@ -68,6 +68,8 @@ export class ActivityDesktopPage {
     private utils: UtilsService,
     private unlockIndicatorService: UnlockIndicatorService,
     private componentCleanupService: ComponentCleanupService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
     this.assessment = this.assessmentService.assessment$;
@@ -306,11 +308,15 @@ export class ActivityDesktopPage {
             this.activity.tasks.splice(index, 1);
           }
         });
+        this.cdr.markForCheck();
       }
       return;
     }
 
-    this.activity = res;
+    this.ngZone.run(() => {
+      this.activity = res;
+      this.cdr.markForCheck();
+    });
     // Set page title when activity is loaded
     if (res?.name) {
       this.utils.setPageTitle(`${res.name} - Practera`);

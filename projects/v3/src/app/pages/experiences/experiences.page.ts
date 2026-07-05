@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExperienceService, ProgramObj } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -34,6 +34,8 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     private utils: UtilsService,
     private storage: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {
     this.experiences$ = this.experienceService.experiences$;
     this.programs$ = this.experienceService.programsWithProgress$;
@@ -55,16 +57,17 @@ export class ExperiencesPage implements OnInit, OnDestroy {
       .subscribe(experiences => {
         const ids = experiences.map(experience => experience.projectId);
         this.experienceService.getProgresses(ids).subscribe(res => {
-          res.forEach(progress => {
-            if (Array.isArray(progress)) {
-              progress.forEach(project => {
-                this.progresses[project.id] = Math.round(project.progress * 100);
-              });
-              return;
-            }
-
-            // single progress objects
-            this.progresses[progress.id] = Math.round(progress.progress * 100);
+          this.ngZone.run(() => {
+            res.forEach(progress => {
+              if (Array.isArray(progress)) {
+                progress.forEach(project => {
+                  this.progresses[project.id] = Math.round(project.progress * 100);
+                });
+                return;
+              }
+              this.progresses[progress.id] = Math.round(progress.progress * 100);
+            });
+            this.cdr.markForCheck();
           });
         });
       });

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
@@ -47,6 +47,8 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private readonly utils: UtilsService,
     private reviewService: ReviewService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {
     const scrollSub = this.scrollSubject
       .pipe(debounceTime(300))
@@ -97,19 +99,28 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
         }
 
         if (res) {
-          this.assessment = res;
-          this.utils.setPageTitle(this.assessment?.name);
+          this.ngZone.run(() => {
+            this.assessment = res;
+            this.cdr.markForCheck();
+          });
+          this.utils.setPageTitle(res?.name);
         }
       });
     this.subscriptions.add(assessmentSub);
 
-    const taskSub = this.activityService.currentTask$.subscribe(res => this.currentTask = res);
+    const taskSub = this.activityService.currentTask$.subscribe(res => {
+      this.ngZone.run(() => { this.currentTask = res; this.cdr.markForCheck(); });
+    });
     this.subscriptions.add(taskSub);
 
-    const submissionSub = this.assessmentService.submission$.subscribe(res => this.submission = res);
+    const submissionSub = this.assessmentService.submission$.subscribe(res => {
+      this.ngZone.run(() => { this.submission = res; this.cdr.markForCheck(); });
+    });
     this.subscriptions.add(submissionSub);
 
-    const reviewSub = this.assessmentService.review$.subscribe(res => this.review = res);
+    const reviewSub = this.assessmentService.review$.subscribe(res => {
+      this.ngZone.run(() => { this.review = res; this.cdr.markForCheck(); });
+    });
     this.subscriptions.add(reviewSub);
   }
 

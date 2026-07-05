@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
@@ -27,6 +27,8 @@ export class EventDetailComponent implements OnInit {
     private NotificationsService: NotificationsService,
     private utils: UtilsService,
     private storage: BrowserStorageService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -83,17 +85,20 @@ export class EventDetailComponent implements OnInit {
               });
               // update the event list & activity detail page
               this.utils.broadcastEvent('update-event', null);
-              this.event.isBooked = false;
-              this.event.canBook = true;
+              this.ngZone.run(() => {
+                this.event.isBooked = false;
+                this.event.canBook = true;
+                this.cdr.markForCheck();
+              });
               // remove the activity id from storage if it is single booking
               if (this.event.singleBooking) {
                 this.storage.removeBookedEventActivityIds(this.event.activityId);
               }
             }
-            this.ctaIsActing = false;
+            this.ngZone.run(() => { this.ctaIsActing = false; this.cdr.markForCheck(); });
           },
           error: () => {
-            this.ctaIsActing = false;
+            this.ngZone.run(() => { this.ctaIsActing = false; this.cdr.markForCheck(); });
           },
         });
         break;
@@ -131,13 +136,15 @@ export class EventDetailComponent implements OnInit {
         });
         // update the event list & activity detail page
         this.utils.broadcastEvent('update-event', null);
-        this.event.isBooked = true;
+        this.ngZone.run(() => {
+          this.event.isBooked = true;
+          this.ctaIsActing = false;
+          this.cdr.markForCheck();
+        });
         // save the activity id if it is single booking
         if (this.event.singleBooking) {
           this.storage.setBookedEventActivityIds(this.event.activityId);
         }
-
-        this.ctaIsActing = false;
       },
       error => {
         this.NotificationsService.alert({
@@ -149,7 +156,7 @@ export class EventDetailComponent implements OnInit {
             }
           ]
         });
-        this.ctaIsActing = false;
+        this.ngZone.run(() => { this.ctaIsActing = false; this.cdr.markForCheck(); });
       }
     );
   }

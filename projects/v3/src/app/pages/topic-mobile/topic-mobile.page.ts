@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService, Task } from '@v3/app/services/activity.service';
 import { TopicService, Topic } from '@v3/app/services/topic.service';
@@ -24,19 +24,29 @@ export class TopicMobilePage implements OnInit {
     private router: Router,
     private topicService: TopicService,
     private activityService: ActivityService,
-    private utils: UtilsService
+    private utils: UtilsService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {
     this.topic$ = this.topicService.topic$;
   }
 
   ngOnInit() {
     this.topic$.subscribe(res => {
-      this.topic = res;
+      this.ngZone.run(() => {
+        this.topic = res;
+        this.cdr.markForCheck();
+      });
       if (res?.title) {
         this.utils.setPageTitle(`${res.title} - Practera`);
       }
     });
-    this.activityService.currentTask$.subscribe(res => this.currentTask = res);
+    this.activityService.currentTask$.subscribe(res => {
+      this.ngZone.run(() => {
+        this.currentTask = res;
+        this.cdr.markForCheck();
+      });
+    });
     this.route.params.subscribe(params => {
       this.topicService.getTopic(params.id);
       this.activityId = +params.activityId;

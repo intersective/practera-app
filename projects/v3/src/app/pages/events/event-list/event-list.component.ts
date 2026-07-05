@@ -1,4 +1,4 @@
-import { Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, NgZone, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { EventService, Event, EventGroup, Activity } from '@v3/services/event.service';
@@ -45,8 +45,9 @@ export class EventListComponent {
     private notificationsService: NotificationsService,
     public eventService: EventService,
     private utils: UtilsService,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
   ) {
-    // update event list after book/cancel an event
     this.utils.getEvent('update-event').subscribe(event => {
       this.onEnter();
     });
@@ -70,7 +71,7 @@ export class EventListComponent {
     this._initialise();
     this.eventService.getEvents().subscribe(events => {
       if (this.utils.isEmpty(events)) {
-        this.loadingEvents = false;
+        this.ngZone.run(() => { this.loadingEvents = false; this.cdr.markForCheck(); });
         return;
       }
       // initialise the date to compare with
@@ -161,11 +162,14 @@ export class EventListComponent {
       } else {
         this._rearrangeEvents();
       }
-      this.loadingEvents = false;
+      this.ngZone.run(() => { this.loadingEvents = false; this.cdr.markForCheck(); });
       // get activity list
       this.eventService.getActivities().subscribe(activities => {
         // only display activity that has event
-        this.activities = activities.filter(activity => activityIdsWithEvent.includes(activity.id));
+        this.ngZone.run(() => {
+          this.activities = activities.filter(activity => activityIdsWithEvent.includes(activity.id));
+          this.cdr.markForCheck();
+        });
       });
     });
   }

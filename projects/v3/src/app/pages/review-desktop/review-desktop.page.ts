@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Assessment, AssessmentReview, AssessmentService, Submission } from '@v3/app/services/assessment.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -33,13 +33,21 @@ export class ReviewDesktopPage implements OnInit {
     private assessmentService: AssessmentService,
     private reviewService: ReviewService,
     private notificationsService: NotificationsService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit(): void {
     this.utils.setPageTitle('Reviews - Practera');
-    this.assessmentService.assessment$.subscribe(res => this.assessment = res);
-    this.assessmentService.submission$.subscribe(res => this.submission = res);
-    this.assessmentService.review$.subscribe(res => this.review = res);
+    this.assessmentService.assessment$.subscribe(res => {
+      this.ngZone.run(() => { this.assessment = res; this.cdr.markForCheck(); });
+    });
+    this.assessmentService.submission$.subscribe(res => {
+      this.ngZone.run(() => { this.submission = res; this.cdr.markForCheck(); });
+    });
+    this.assessmentService.review$.subscribe(res => {
+      this.ngZone.run(() => { this.review = res; this.cdr.markForCheck(); });
+    });
     this.route.paramMap.subscribe(_params => {
       this.reviewService.getReviews();
     });
@@ -47,7 +55,10 @@ export class ReviewDesktopPage implements OnInit {
       this.submissionId = +params?.submissionId;
     });
     this.reviewService.reviews$.subscribe(reviews => {
-      this.reviews = reviews;
+      this.ngZone.run(() => {
+        this.reviews = reviews;
+        this.cdr.markForCheck();
+      });
       if (this.utils.isEmpty(this.submissionId) || this.submissionId === 0) {
         this.gotoFirstReview(reviews);
       } else if (reviews.length > 0) { // handle directlink

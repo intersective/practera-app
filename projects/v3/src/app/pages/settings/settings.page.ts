@@ -1,6 +1,6 @@
 import { UppyUploaderService } from './../../components/uppy-uploader/uppy-uploader.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Inject, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '@v3/services/auth.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -55,6 +55,8 @@ export class SettingsPage implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private modalController: ModalController,
     private uppyUploaderService: UppyUploaderService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -77,14 +79,16 @@ export class SettingsPage implements OnInit, OnDestroy {
         LtiReturnUrl,
         programImage
       } = user;
-      // get contact number and email from local storage
-      this.profile.email = email;
-      this.profile.contactNumber = contactNumber;
-      this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
-      this.profile.name = name;
-      this.currentProgramName = programName;
-      this.returnLtiUrl = LtiReturnUrl;
-      this.currentProgramImage = programImage;
+      this.ngZone.run(() => {
+        this.profile.email = email;
+        this.profile.contactNumber = contactNumber;
+        this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
+        this.profile.name = name;
+        this.currentProgramName = programName;
+        this.returnLtiUrl = LtiReturnUrl;
+        this.currentProgramImage = programImage;
+        this.cdr.markForCheck();
+      });
     } catch (error) {
       this.notificationsService.alert({
         message: $localize`Failed to retrieve user information`,
@@ -104,7 +108,10 @@ export class SettingsPage implements OnInit, OnDestroy {
     this.utils.getEvent('support-email-checked')
     .pipe(takeUntil(this.unsubscribe$))
     .subscribe(event => {
-      this.hubspotActivated = event;
+      this.ngZone.run(() => {
+        this.hubspotActivated = event;
+        this.cdr.markForCheck();
+      });
     });
     this.utils.checkIsPracteraSupportEmail();
   }

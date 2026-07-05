@@ -1,6 +1,6 @@
 import { NotificationsService } from './../../../services/notifications.service';
 import { DOCUMENT } from '@angular/common';
-import { Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 
@@ -155,6 +155,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     private pusherService: PusherService,
     private modalController: ModalController,
     private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
     public element: ElementRef,
     private route: ActivatedRoute,
     public popoverController: PopoverController,
@@ -192,12 +193,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           if (!this.utils.isEmpty(receivedMessage)) {
-            this.messageList.push(receivedMessage);
-            if (this.scrollPosition === ScrollPosition.Bottom) {
-              this._scrollToBottom();
-            } else {
-              this.hasUnreadMessages = true;
-            }
+            this.ngZone.run(() => {
+              this.messageList.push(receivedMessage);
+              if (this.scrollPosition === ScrollPosition.Bottom) {
+                this._scrollToBottom();
+              } else {
+                this.hasUnreadMessages = true;
+              }
+              this.cdr.markForCheck();
+            });
           }
         }
       });
@@ -211,7 +215,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
             return message.uuid === event.uuid;
           });
           if (deletedMessageIndex > -1) {
-            this.messageList.splice(deletedMessageIndex, 1);
+            this.ngZone.run(() => {
+              this.messageList.splice(deletedMessageIndex, 1);
+              this.cdr.markForCheck();
+            });
           }
         }
       });
@@ -226,7 +233,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
             return message.uuid === event.uuid;
           });
           if (editedMessageIndex > -1 && !this.utils.isEmpty(receivedMessage)) {
-            this.messageList[editedMessageIndex] = receivedMessage;
+            this.ngZone.run(() => {
+              this.messageList[editedMessageIndex] = receivedMessage;
+              this.cdr.markForCheck();
+            });
           }
         }
       });
@@ -243,13 +253,19 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.typingSubject
       .pipe(
         tap((username) => {
-          this.whoIsTyping = username + " is typing";
+          this.ngZone.run(() => {
+            this.whoIsTyping = username + " is typing";
+            this.cdr.markForCheck();
+          });
         }),
         switchMap(() => timer(3000)),
         takeUntil(this.destroy$)
       )
       .subscribe(() => {
-        this.whoIsTyping = "";
+        this.ngZone.run(() => {
+          this.whoIsTyping = "";
+          this.cdr.markForCheck();
+        });
       });
 
     this.isMobile = this.utils.isMobile();
@@ -417,7 +433,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           if (response.length === 0) {
             return;
           }
-          this.memberList = response;
+          this.ngZone.run(() => {
+            this.memberList = response;
+            this.cdr.markForCheck();
+          });
         },
         (error) => {
           console.error(error);
@@ -445,16 +464,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(
         (messageListResult: MessageListResult) => {
           if (!messageListResult) {
-            this.loadingChatMessages = false;
+            this.ngZone.run(() => { this.loadingChatMessages = false; this.cdr.markForCheck(); });
             return;
           }
           let messages = messageListResult.messages;
           if (messages.length === 0) {
-            this.loadingChatMessages = false;
+            this.ngZone.run(() => { this.loadingChatMessages = false; this.cdr.markForCheck(); });
             return;
           }
-          this.messagePageCursor = messageListResult.cursor;
-          this.loadingChatMessages = false;
           messages = messages.map((msg) => {
             if (msg.file && msg.file) {
               msg.preview = this.attachmentPreview(msg.file);
@@ -462,18 +479,23 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
             return msg;
           });
           messages.reverse();
-          if (this.messageList.length > 0) {
-            this.messageList = messages.concat(this.messageList);
-          } else {
-            this.messageList = messages;
-            this._scrollToBottom();
-          }
+          this.ngZone.run(() => {
+            this.messagePageCursor = messageListResult.cursor;
+            this.loadingChatMessages = false;
+            if (this.messageList.length > 0) {
+              this.messageList = messages.concat(this.messageList);
+            } else {
+              this.messageList = messages;
+              this._scrollToBottom();
+            }
+            this.cdr.markForCheck();
+          });
 
           this._markAsSeen();
         },
         (error) => {
           console.error("Error", error);
-          this.loadingChatMessages = false;
+          this.ngZone.run(() => { this.loadingChatMessages = false; this.cdr.markForCheck(); });
         }
       );
   }
@@ -683,7 +705,10 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
             channelUuid: this.chatChannel.uuid,
             readcount: messageIds.length,
           });
-          this.hasUnreadMessages = false;
+          this.ngZone.run(() => {
+            this.hasUnreadMessages = false;
+            this.cdr.markForCheck();
+          });
         },
         (err) => {
           console.error(err);

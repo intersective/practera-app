@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -28,6 +28,7 @@ export class ChatListComponent {
     private router: Router,
     private storage: BrowserStorageService,
     private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
     private pusherService: PusherService
   ) {
     this.isMobile = this.utils.isMobile();
@@ -39,12 +40,14 @@ export class ChatListComponent {
       this.utils.getEvent('chat-badge-update').subscribe(event => {
         const chatIndex = this.chatList.findIndex(data => data.uuid === event.channelUuid);
         if (chatIndex > -1) {
-          // set time out because when this calling from pusher events it need a time out.
           setTimeout(() => {
-            this.chatList[chatIndex].unreadMessageCount -= event.readcount;
-            if (this.chatList[chatIndex].unreadMessageCount < 0) {
-              this.chatList[chatIndex].unreadMessageCount = 0;
-            }
+            this.ngZone.run(() => {
+              this.chatList[chatIndex].unreadMessageCount -= event.readcount;
+              if (this.chatList[chatIndex].unreadMessageCount < 0) {
+                this.chatList[chatIndex].unreadMessageCount = 0;
+              }
+              this.cdr.markForCheck();
+            });
           });
         }
       });
@@ -76,8 +79,11 @@ export class ChatListComponent {
     */
   private _loadChatData(): void {
     this.chatService.getChatList().subscribe(chats => {
-      this.chatList = chats;
-      this.loadingChatList = false;
+      this.ngZone.run(() => {
+        this.chatList = chats;
+        this.loadingChatList = false;
+        this.cdr.markForCheck();
+      });
       this.chatListReady.emit(this.chatList);
     });
   }

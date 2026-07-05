@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Subject } from 'rxjs';
@@ -35,6 +35,8 @@ export class BadgesCertificatesPage implements OnInit, OnDestroy {
     private modalController: ModalController,
     private achievementService: AchievementService,
     private utils: UtilsService,
+    private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) {}
 
   ngOnInit() {
@@ -56,9 +58,12 @@ export class BadgesCertificatesPage implements OnInit, OnDestroy {
         catchError(() => of([]))
       )
       .subscribe((badges) => {
-        this.allBadges = badges;
-        this.loading = false;
-        this._applyFilter();
+        this.ngZone.run(() => {
+          this.allBadges = badges;
+          this.loading = false;
+          this._applyFilter();
+          this.cdr.markForCheck();
+        });
       });
   }
 
