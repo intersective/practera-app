@@ -23,3 +23,8 @@ jobs:
             exit 1
           fi
           echo "OK: No tracked-but-gitignored files found."
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
