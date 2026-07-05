@@ -1,0 +1,25 @@
+name: Check gitignore hygiene
+
+on:
+  pull_request:
+  push:
+    branches: [trunk, release/live, prerelease, login-refactor, stable]
+
+jobs:
+  check-tracked-ignored:
+    name: No tracked-but-gitignored files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail if any tracked files match .gitignore
+        run: |
+          tracked_ignored=$(git ls-files --cached --ignored --exclude-standard)
+          if [ -n "$tracked_ignored" ]; then
+            echo "ERROR: The following files are tracked by git but match .gitignore patterns."
+            echo "Run 'git rm -r --cached <paths>' and commit to fix this."
+            echo ""
+            echo "$tracked_ignored"
+            exit 1
+          fi
+          echo "OK: No tracked-but-gitignored files found."
