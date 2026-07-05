@@ -55,7 +55,9 @@ describe('HomePage', () => {
       'achievements$': of(),
     });
 
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT'], {
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', {
+      'refreshJWT': Promise.resolve(),
+    }, {
       'team$': of(null),
     });
     const storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', [

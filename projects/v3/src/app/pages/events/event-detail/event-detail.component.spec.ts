@@ -121,7 +121,7 @@ describe('EventDetailComponent', () => {
 
   beforeEach(() => {
     serviceSpy.bookEvent.and.returnValue(of({}));
-    serviceSpy.cancelEvent.and.returnValue(of({ success: true }));
+    serviceSpy.cancelEvent.and.returnValue(of({ data: { cancelEvent: { success: true } } }));
   });
 
   const mockEvent = {

@@ -7,7 +7,7 @@ import { AchievementService } from './achievement.service';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 
-import { NotificationsService, TodoItem, api } from './notifications.service';
+import { NotificationsService } from './notifications.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
 

@@ -233,12 +233,6 @@ export class V3Page implements OnInit, OnDestroy {
         }
       });
 
-    this.router.events.subscribe(event => {
-      if (event instanceof NavigationEnd && event.urlAfterRedirects === '/v3/home') {
-        this.homeService.getExperience();
-      }
-    });
-
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
     } else {

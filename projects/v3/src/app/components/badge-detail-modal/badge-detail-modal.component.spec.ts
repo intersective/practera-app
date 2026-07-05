@@ -117,6 +117,7 @@ describe('BadgeDetailModalComponent', () => {
 
   describe('dismiss()', () => {
     it('dismisses the modal', () => {
+      modalCtrlSpy.dismiss.and.returnValue(Promise.resolve(true));
       component.dismiss();
       expect(modalCtrlSpy.dismiss).toHaveBeenCalled();
     });
@@ -182,28 +183,29 @@ describe('BadgeDetailModalComponent', () => {
       spyOn(window, 'open');
       achievementSvcSpy.getCertificateUrl.and.returnValue(of('https://s3/renamed.pdf'));
 
-      // Capture both button handlers
+      let resolveInnerComplete: () => void;
+      const innerComplete = new Promise<void>(res => resolveInnerComplete = res);
+
       let changeNameHandler: Function;
       alertCtrlSpy.create.and.callFake((opts: any) => {
         if (opts.inputs) {
-          // This is the inner name-entry alert — capture its download button
           const downloadBtn = opts.buttons.find((b: any) => typeof b.handler === 'function' && !b.role);
           const capturedHandler = downloadBtn?.handler;
           return Promise.resolve({
-            present: () => {
-              capturedHandler?.({ userName: 'Jane Doe' });
-              return Promise.resolve();
+            present: async () => {
+              await capturedHandler?.({ userName: 'Jane Doe' });
+              resolveInnerComplete();
             }
           } as any);
         } else {
-          // This is the outer confirm alert — capture "Yes" handler
           changeNameHandler = opts.buttons[1].handler;
           return Promise.resolve({ present: () => Promise.resolve() } as any);
         }
       });
 
       await component.downloadCertificate();
-      await changeNameHandler();
+      changeNameHandler();
+      await innerComplete;
 
       expect(achievementSvcSpy.getCertificateUrl).toHaveBeenCalledWith(
         EARNED_BADGE.id,

@@ -55,6 +55,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   unsubscribe$ = new Subject();
   milestones$: Observable<Milestone[]>;
 
+  /** Timestamp of last full dashboard refresh, used to debounce NavigationEnd refreshes. */
+  private lastDashboardRefreshMs = 0;
+  private static DASHBOARD_REFRESH_DEBOUNCE_MS = 10_000;
+
   @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
   @ViewChild('activities', { static: false }) activities!: ElementRef;
   pulseCheckSkills: PulseCheckSkill[] = [];
@@ -181,7 +185,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((event) => {
         if (event instanceof NavigationEnd) {
-          this.updateDashboard();
+          // Debounce: skip if the dashboard was refreshed recently (e.g. on tab switch
+          // while Ionic keeps HomePage mounted in the background).
+          const now = Date.now();
+          if (now - this.lastDashboardRefreshMs > HomePage.DASHBOARD_REFRESH_DEBOUNCE_MS) {
+            this.updateDashboard();
+          }
         }
       });
 
@@ -221,18 +230,27 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   async updateDashboard() {
-    await this.sharedService.refreshJWT(); // refresh JWT token [CORE-6083]
+    this.lastDashboardRefreshMs = Date.now();
 
-    // re-evaluate user role and team status after JWT refresh updates teamId
-    const role = this.storageService.getUser().role;
-    const teamId = this.storageService.getUser().teamId;
-    this.isParticipant = role === 'participant';
-    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
-
-    this.experience = this.storageService.get("experience");
+    // Start data fetches immediately — they use the JWT already stored in the
+    // Angular app. The JWT refresh runs in parallel: if the teamId changes the
+    // auth service broadcasts a team$ update that downstream services react to.
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
+
+    // JWT refresh runs concurrently — do NOT await it before starting data calls
+    // (original CORE-6083 fix: refresh happens in background; re-evaluates role/team)
+    this.sharedService.refreshJWT().then(() => {
+      const role = this.storageService.getUser().role;
+      const teamId = this.storageService.getUser().teamId;
+      this.isParticipant = role === 'participant';
+      this.isExpertWithoutTeam = role === 'mentor' && !teamId;
+    }).catch((err) => {
+      console.error('JWT refresh failed:', err);
+    });
+
+    this.experience = this.storageService.get("experience");
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();

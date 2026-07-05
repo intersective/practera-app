@@ -124,9 +124,7 @@ describe('PusherService', async () => {
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
-            graphQLFetch: of({
-              pipe: of({ data: [] })
-            })
+            graphQLFetch: of({ data: { notificationChannel: null, channels: [] } })
           }),
         },
         {
@@ -176,13 +174,14 @@ describe('PusherService', async () => {
 
   describe('getChannels()', async () => {
 
-    it(`should call getNotificationChannel() and make API request to ${APIURL}`, () => {
-      requestSpy.get.and.returnValue(of(notificationRes));
+    it('calls graphQLFetch with the notificationChannel query', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of({ data: { notificationChannel: null } }));
       spyOn(service, 'isSubscribed').and.returnValue(true);
       service.getNotificationChannel().subscribe();
-      expect(requestSpy.get).toHaveBeenCalledWith(APIURL, {
-        params: { env: environment.env, for: 'notification' }
-      });
+      expect(apolloSpy.graphQLFetch).toHaveBeenCalledWith(
+        jasmine.stringContaining('notificationChannel'),
+        jasmine.objectContaining({ variables: { env: environment.env } })
+      );
     });
 
     it('should call getChatChannels() and make API request to chat GraphQL Server', () => {
@@ -262,14 +261,10 @@ describe('PusherService', async () => {
     });
 
     it('should subscribe to notification channel', fakeAsync(() => {
-      const channels = [
-        {
-          channel: `private-${environment.env}-notification-`,
-        }
-      ];
+      const channelName = `private-${environment.env}-notification-`;
 
-      requestSpy.get.and.returnValue(of({
-        data: channels
+      apolloSpy.graphQLFetch.and.returnValue(of({
+        data: { notificationChannel: channelName, channels: [] }
       }));
 
       service.getChannels();

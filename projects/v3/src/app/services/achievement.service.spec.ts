@@ -14,7 +14,7 @@ describe('AchievementService', () => {
   let apolloSpy: jasmine.SpyObj<ApolloService>;
 
   beforeEach(() => {
-    apolloSpy = jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch']);
+    apolloSpy = jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch', 'graphQLMutate']);
     TestBed.configureTestingModule({
       providers: [
         {
@@ -354,30 +354,20 @@ describe('AchievementService', () => {
   });
 
   describe('rebadgeOpenBadge()', () => {
-    it('should POST to the rebadge endpoint with achievement_id and email', () => {
-      requestSpy.post.and.returnValue(of({ success: true }));
+    it('calls graphQLMutate with achievementId and email', () => {
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { rebadgeOpenBadge: { success: true } } }));
 
       service.rebadgeOpenBadge(55, 'new@example.com').subscribe();
 
-      expect(requestSpy.post).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          data: { achievement_id: 55, email: 'new@example.com' },
-        })
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalledWith(
+        jasmine.stringContaining('rebadgeOpenBadge'),
+        { achievementId: 55, email: 'new@example.com' }
       );
     });
 
-    it('should include APIEndpoint in the endPoint', () => {
-      requestSpy.post.and.returnValue(of({ success: true }));
-
-      service.rebadgeOpenBadge(55, 'test@example.com').subscribe();
-
-      const callArgs = requestSpy.post.calls.mostRecent().args[0];
-      expect(callArgs.endPoint).toContain('motivations/achievement/rebadge');
-    });
-
-    it('should propagate the API response', (done) => {
-      const mockResponse = { success: true, data: { id: 55 } };
-      requestSpy.post.and.returnValue(of(mockResponse));
+    it('should propagate the GraphQL response', (done) => {
+      const mockResponse = { data: { rebadgeOpenBadge: { success: true } } };
+      apolloSpy.graphQLMutate.and.returnValue(of(mockResponse));
 
       service.rebadgeOpenBadge(55, 'test@example.com').subscribe((res) => {
         expect(res).toEqual(mockResponse);

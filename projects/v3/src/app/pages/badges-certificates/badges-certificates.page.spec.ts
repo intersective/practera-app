@@ -147,7 +147,7 @@ describe('BadgesCertificatesPage', () => {
       }));
       achievementSvcSpy.getBadges.and.returnValue(of(manyBadges));
       component.ngOnInit();
-      fixture.detectChanges();
+      // No detectChanges - of() is synchronous, state is already updated
 
       expect(component.hasMore).toBeTrue();
       expect(component.displayedBadges.length).toBe(10);
@@ -161,7 +161,7 @@ describe('BadgesCertificatesPage', () => {
       }));
       achievementSvcSpy.getBadges.and.returnValue(of(manyBadges));
       component.ngOnInit();
-      fixture.detectChanges();
+      // No detectChanges - of() is synchronous, state is already updated
 
       const before = component.displayedBadges.length;
       component.loadMore();

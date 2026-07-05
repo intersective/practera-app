@@ -31,7 +31,7 @@ describe('EventService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate'])
+          useValue: jasmine.createSpyObj('ApolloService', ['graphQLMutate', 'graphQLFetch'])
         },
         {
           provide: NotificationsService,
@@ -93,49 +93,50 @@ describe('EventService', () => {
         testUtils.getDateString(-2, -1)
       ];
       requestResponse = {
-        success: true,
-        data: Array.from({ length: startTimes.length }, (x, i) => {
-          return {
-            id: i + 1,
-            title: 'event' + i,
-            description: 'des' + i,
-            location: 'location' + i,
-            activity_id: 2,
-            activity_name: 'activity2',
-            start: startTimes[i],
-            end: startTimes[i],
-            capacity: 10,
-            remaining_capacity: 1,
-            is_booked: false,
-            single_booking: true,
-            can_book: true,
-            assessment: null,
-            video_conference: null,
-            type: null,
-            all_day: false
-          };
-        })
+        data: {
+          events: Array.from({ length: startTimes.length }, (x, i) => {
+            return {
+              id: i + 1,
+              name: 'event' + i,
+              description: 'des' + i,
+              location: 'location' + i,
+              activityId: 2,
+              activityName: 'activity2',
+              eventStart: startTimes[i],
+              eventEnd: startTimes[i],
+              capacity: 10,
+              remainingCapacity: 1,
+              isBooked: false,
+              singleBooking: true,
+              canBook: true,
+              assessment: null,
+              videoConference: null,
+              type: null,
+              isAllDay: false
+            };
+          })
+        }
       };
-      formatted = requestResponse.data.map(event => {
+      formatted = requestResponse.data.events.map(event => {
         return {
           id: event.id,
-          name: event.title,
+          name: event.name,
           description: event.description,
           location: event.location,
-          activityId: event.activity_id,
-          activityName: event.activity_name,
-          startTime: event.start,
-          endTime: event.end,
+          activityId: event.activityId,
+          activityName: event.activityName,
+          startTime: event.eventStart,
+          endTime: event.eventEnd,
           capacity: event.capacity,
-          remainingCapacity: event.remaining_capacity,
-          isBooked: event.is_booked,
-          singleBooking: event.single_booking,
-          canBook: event.can_book,
-          isPast: utils.timeComparer(event.start) < 0,
+          remainingCapacity: event.remainingCapacity,
+          isBooked: event.isBooked,
+          singleBooking: event.singleBooking,
+          canBook: event.canBook,
+          isPast: utils.timeComparer(event.eventStart) < 0,
           assessment: null,
           videoConference: null,
           type: null,
-          allDay: event.all_day
+          allDay: event.isAllDay
         };
       });
       expected = [formatted[2], formatted[1], formatted[3], formatted[4], formatted[0], formatted[5]];
@@ -150,88 +151,88 @@ describe('EventService', () => {
         tmpExpected = JSON.parse(JSON.stringify(expected));
       });
       afterEach(() => {
-        requestSpy.get.and.returnValue(of(tmpRes));
+        apolloSpy.graphQLFetch.and.returnValue(of(tmpRes));
         service.getEvents().subscribe();
         expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
         expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual(errMsg);
       });
 
       it('Event format error', () => {
-        tmpRes.data = {};
+        tmpRes.data.events = {};
         errMsg = 'Event format error';
       });
       it('Event object format error', () => {
-        tmpRes.data[0] = { id: 11 };
+        tmpRes.data.events[0] = {};
         errMsg = 'Event object format error';
       });
     });
 
     it('should get correct data', () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => expect(res).toEqual(expected));
     });
 
     it('should get correct multi day events', () => {
       const multiDayEvent = {
         id: 7,
-        title: 'event' + 6,
-        description: 'des' + 6,
-        location: 'location' + 6,
-        activity_id: 2,
-        activity_name: 'activity2',
-        start: testUtils.getDateString(2, 1),
-        end: testUtils.getDateString(4, 1),
+        name: 'event6',
+        description: 'des6',
+        location: 'location6',
+        activityId: 2,
+        activityName: 'activity2',
+        eventStart: testUtils.getDateString(2, 1),
+        eventEnd: testUtils.getDateString(4, 1),
         capacity: 10,
-        remaining_capacity: 1,
-        is_booked: false,
-        single_booking: true,
-        can_book: true,
+        remainingCapacity: 1,
+        isBooked: false,
+        singleBooking: true,
+        canBook: true,
         assessment: null,
-        video_conference: null,
+        videoConference: null,
         type: null,
-        all_day: false
+        isAllDay: false
       };
-      requestResponse.data[7] = multiDayEvent;
-      const dateDifference = (utils.getDateDifference(multiDayEvent.start, multiDayEvent.end) + 1);
+      requestResponse.data.events[7] = multiDayEvent;
+      const dateDifference = (utils.getDateDifference(multiDayEvent.eventStart, multiDayEvent.eventEnd) + 1);
       const multiDayEvents: Array<Event> = [];
       let eventObj = null;
       for (let index = 0; index < dateDifference; index++) {
-        const startTime = dayjs(utils.iso8601Formatter(multiDayEvent.start));
+        const startTime = dayjs(utils.iso8601Formatter(multiDayEvent.eventStart));
         eventObj = {
           id: multiDayEvent.id,
-          name: multiDayEvent.title,
+          name: multiDayEvent.name,
           description: multiDayEvent.description,
           location: multiDayEvent.location,
-          activityId: multiDayEvent.activity_id,
-          activityName: multiDayEvent.activity_name,
-          startTime: multiDayEvent.start,
-          endTime: multiDayEvent.end,
+          activityId: multiDayEvent.activityId,
+          activityName: multiDayEvent.activityName,
+          startTime: multiDayEvent.eventStart,
+          endTime: multiDayEvent.eventEnd,
           capacity: multiDayEvent.capacity,
-          remainingCapacity: multiDayEvent.remaining_capacity,
-          isBooked: multiDayEvent.is_booked,
-          singleBooking: multiDayEvent.single_booking,
-          canBook: multiDayEvent.can_book,
-          isPast: utils.timeComparer(multiDayEvent.start) < 0,
+          remainingCapacity: multiDayEvent.remainingCapacity,
+          isBooked: multiDayEvent.isBooked,
+          singleBooking: multiDayEvent.singleBooking,
+          canBook: multiDayEvent.canBook,
+          isPast: utils.timeComparer(multiDayEvent.eventStart) < 0,
           assessment: multiDayEvent.assessment,
-          videoConference: multiDayEvent.video_conference,
+          videoConference: multiDayEvent.videoConference,
           type: multiDayEvent.type,
           allDay: true,
           isMultiDay: true,
           multiDayInfo: {
             startTime: startTime.add(index, 'day').format('YYYY-MM-DD hh:mm:ss'),
-            endTime: multiDayEvent.end,
+            endTime: multiDayEvent.eventEnd,
             dayCount: `(Day ${index + 1}/${dateDifference})`,
             id: `E${multiDayEvent.id}${index + 1}`,
             isMiddleDay: true
           }
         };
         if (index === 0) {
-          eventObj.multiDayInfo.startTime = multiDayEvent.start;
+          eventObj.multiDayInfo.startTime = multiDayEvent.eventStart;
           eventObj.multiDayInfo.isMiddleDay = false;
-          eventObj.allDay = multiDayEvent.all_day;
+          eventObj.allDay = multiDayEvent.isAllDay;
         }
         if (index === (dateDifference - 1)) {
-          eventObj.allDay = multiDayEvent.all_day;
+          eventObj.allDay = multiDayEvent.isAllDay;
           eventObj.multiDayInfo.isMiddleDay = false;
         }
         multiDayEvents.push(eventObj);
@@ -247,7 +248,7 @@ describe('EventService', () => {
         formatted[0],
         formatted[5],
       ];
-      requestSpy.get.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
       service.getEvents(2).subscribe(res => {
         expect(res).toEqual(expected);
       });
@@ -274,38 +275,20 @@ describe('EventService', () => {
   });
 
   describe('when testing getActivities()', () => {
-    const requestResponse = {
-      success: true,
-      data: Array.from({ length: 4 }, (x, i) => {
-        return {
-          id: i + 1,
-          name: 'activity' + i
-        };
-      })
-    };
-    const expected = requestResponse.data;
+    const activities = Array.from({ length: 4 }, (x, i) => ({
+      id: i + 1,
+      name: 'activity' + i
+    }));
+    const requestResponse = { data: { milestones: [{ activities }] } };
+    const expected = activities.slice();
 
-    describe('should throw format error', () => {
-      let tmpRes;
-      let errMsg;
-      beforeEach(() => {
-        tmpRes = JSON.parse(JSON.stringify(requestResponse));
-      });
-      afterEach(() => {
-        requestSpy.get.and.returnValue(of(tmpRes));
-        service.getActivities().subscribe();
-        expect(requestSpy.apiResponseFormatError.calls.count()).toBe(1);
-        expect(requestSpy.apiResponseFormatError.calls.first().args[0]).toEqual(errMsg);
-      });
-
-      it('Activity array format error', () => {
-        tmpRes.data = {};
-        errMsg = 'Activity array format error';
-      });
+    it('returns empty array when milestones is missing', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of({ data: {} }));
+      service.getActivities().subscribe(res => expect(res).toEqual([]));
     });
 
     it(`should return correct data`, () => {
-      requestSpy.get.and.returnValue(of(requestResponse));
+      apolloSpy.graphQLFetch.and.returnValue(of(requestResponse));
       service.getActivities().subscribe(res => expect(res).toEqual(expected));
     });
   });

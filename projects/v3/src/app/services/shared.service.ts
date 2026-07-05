@@ -21,6 +21,11 @@ export class SharedService {
   private _team$ = new BehaviorSubject<any>(null);
   public team$ = this._team$.asObservable();
 
+  /** In-flight team info request, shared across concurrent callers to avoid duplicate queries. */
+  private _teamInfoRequest$: Observable<any> | null = null;
+  private _teamInfoCacheMs = 0;
+  private static TEAM_INFO_CACHE_TTL_MS = 30_000;
+
   constructor(
     private utils: UtilsService,
     private storage: BrowserStorageService,
@@ -88,7 +93,14 @@ export class SharedService {
    *                            this return value anywhere.
    */
   getTeamInfo(): Observable<any> {
-    return this.apolloService.graphQLFetch(
+    const now = Date.now();
+    // Return a fresh in-flight request if one is already pending, or serve the
+    // recently cached result to avoid redundant calls during activity navigation.
+    if (this._teamInfoRequest$ && (now - this._teamInfoCacheMs) < SharedService.TEAM_INFO_CACHE_TTL_MS) {
+      return this._teamInfoRequest$;
+    }
+    this._teamInfoCacheMs = now;
+    this._teamInfoRequest$ = this.apolloService.graphQLFetch(
       `query user {
         user {
           teams {
@@ -125,6 +137,7 @@ export class SharedService {
       }
       return response;
     }));
+    return this._teamInfoRequest$;
   }
 
   /**
