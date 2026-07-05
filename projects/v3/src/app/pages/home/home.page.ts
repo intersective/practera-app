@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, isDevMode } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, NgZone, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
@@ -72,6 +72,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private storageService: BrowserStorageService,
     private unlockIndicatorService: UnlockIndicatorService,
     private cdr: ChangeDetectorRef,
+    private ngZone: NgZone,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
     private pulsecheckService: PulsecheckService,
@@ -81,8 +82,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   ngAfterViewChecked() {
     const id = this.storageService.lastVisited('activityId') as number;
-    this.lastVisitedActivityId = id;
-    this.cdr.detectChanges();
+    // Only trigger detectChanges when lastVisitedActivityId actually changes — calling
+    // detectChanges() unconditionally here creates an infinite CD loop that prevents
+    // the milestones$ subscription from ever committing its update to the view.
+    if (this.lastVisitedActivityId !== id) {
+      this.lastVisitedActivityId = id;
+      this.cdr.detectChanges();
+    }
 
     if (this.activities && this.isElementVisible(this.activities.nativeElement) && id !== null && this.milestones?.length > 0) {
       this.scrollToElement(id);
@@ -121,7 +127,12 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         })
       ).subscribe(
         (milestones) => {
-          this.milestones = milestones;
+          // Set milestones inside Angular's zone to trigger CD. Also call markForCheck()
+          // so the view is checked even if Ionic has detached it during a page transition.
+          this.ngZone.run(() => {
+            this.milestones = milestones;
+            this.cdr.markForCheck();
+          });
         }
       );
 
@@ -529,3 +540,4 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     );
   }
 }
+
