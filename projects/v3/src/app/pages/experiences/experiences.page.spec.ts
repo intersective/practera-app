@@ -101,6 +101,14 @@ describe('ExperiencesPage', () => {
     });
   });
 
+  describe('layout helpers', () => {
+    it('should mark compact layout only for one or two experiences', () => {
+      expect(component.isCompactLayout(1)).toBeTrue();
+      expect(component.isCompactLayout(2)).toBeTrue();
+      expect(component.isCompactLayout(3)).toBeFalse();
+    });
+  });
+
   describe('switchProgram()', () => {
     let presentLoading: any;
     let dismissLoading: any;

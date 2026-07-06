@@ -84,6 +84,11 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     return this.experienceService.getProgresses([projectId]).toPromise();
   }
 
+  // display experience tile in compact UI
+  isCompactLayout(experienceCount: number): boolean {
+    return experienceCount <= 2;
+  }
+
   get instituteLogo() {
     return this.storage.getConfig().logo || this.storage.getUser()?.institutionLogo;
   }
