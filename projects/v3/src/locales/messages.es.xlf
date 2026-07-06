@@ -887,14 +887,6 @@ Please help us to improve your experience.<x id="LINE_BREAK" ctype="lb" equiv-te
           <context context-type="linenumber">5</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="460045477894362015" datatype="html">
-        <source>Please rank this feedback from Very Poor to Excellent</source>
-        <target>Por favor evalúa este comentario de muy malo a excelente</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">projects/v3/src/app/components/review-rating/review-rating.component.html</context>
-          <context context-type="linenumber">8</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="4746172751926416876" datatype="html">
         <source>Send a quick thank you note!</source>
         <target>Envía una nota de agradecimiento</target>
