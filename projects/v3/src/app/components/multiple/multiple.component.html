@@ -1,7 +1,7 @@
 <h3 class="for-accessibility" [id]="'multiple-choice-question-' + question.id">{{question.name}}</h3>
 @if (isDisplayOnly) {
   <ion-list class="ion-no-padding">
-    @for (choice of question.choices; track choice; let i = $index) {
+    @for (choice of displayChoices; track choice; let i = $index) {
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">

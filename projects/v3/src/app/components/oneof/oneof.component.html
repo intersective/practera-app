@@ -3,7 +3,7 @@
 @if (isDisplayOnly) {
   <ion-list class="ion-no-padding">
     <ion-radio-group [value]="submission?.answer || review?.answer">
-      @for (choice of question.choices; track choice) {
+      @for (choice of displayChoices; track choice) {
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
