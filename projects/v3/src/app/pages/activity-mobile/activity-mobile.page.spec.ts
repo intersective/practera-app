@@ -10,6 +10,8 @@ import { provideHttpClient } from '@angular/common/http';
 
 import { ActivityMobilePage } from './activity-mobile.page';
 import { of, Subject } from 'rxjs';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 
 describe('ActivityMobilePage', () => {
   let component: ActivityMobilePage;
@@ -63,6 +65,21 @@ describe('ActivityMobilePage', () => {
         {
           provide: UtilsService,
           useValue: jasmine.createSpyObj('UtilsService', ['setPageTitle']),
+        },
+        {
+          provide: UnlockIndicatorService,
+          useValue: jasmine.createSpyObj('UnlockIndicatorService', {
+            getTasksByActivityId: [],
+            clearByActivityId: [],
+            findRelatedIndicators: [],
+            clearRelatedIndicators: [],
+          }),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            markTodoItemAsDone: of({}),
+          }),
         },
       ],
     }).compileComponents();

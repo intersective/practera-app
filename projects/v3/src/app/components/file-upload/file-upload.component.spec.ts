@@ -32,7 +32,7 @@ describe('FileUploadComponent', () => {
     // make .on() chainable properly
     mockUppy.on.and.returnValue(mockUppy);
 
-    uppyServiceSpy = jasmine.createSpyObj('UppyUploaderService', ['createUppyInstance'], {
+    uppyServiceSpy = jasmine.createSpyObj('UppyUploaderService', ['createUppyInstance', 'cancelCompression'], {
       compressionProgress$,
       uppyProps: {
         inline: true,
@@ -60,6 +60,7 @@ describe('FileUploadComponent', () => {
 
     fixture = TestBed.createComponent(FileUploadComponent);
     component = fixture.componentInstance;
+    component.uppy = mockUppy;
     component.source = 'assessment';
     component.submitActions$ = new Subject();
     cdrSpy = spyOn(component['cdr'], 'markForCheck');

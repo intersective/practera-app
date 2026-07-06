@@ -84,10 +84,12 @@ describe('EditMessagePopupComponent', () => {
     });
 
     it('should set sending to false on error', () => {
+      spyOn(console, 'error');
       chatServiceSpy.editChatMessage.and.returnValue(throwError(() => new Error('api error')));
       component.editMessage();
       expect(component.sending).toBeFalse();
       expect(component.updateSuccess).toBeFalse();
+      expect(console.error).toHaveBeenCalledWith('error editing message', jasmine.any(Error));
     });
 
     it('should not call api if messageUuid is empty', () => {

@@ -320,7 +320,7 @@ describe('EventDetailComponent', () => {
 
   it('when testing close(), it should dismiss the modal controller', () => {
     component.close();
-    // expect(modalSpy.dismiss.calls.count()).toEqual(1);
+    expect(modalSpy.dismiss.calls.count()).toEqual(1);
   });
 
   it('when testing confirmed(), it should not do anything if keyboard event key is not enter or space', () => {
@@ -373,4 +373,3 @@ describe('EventDetailComponent', () => {
   });
 
 });
-

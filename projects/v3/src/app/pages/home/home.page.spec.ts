@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
 import { AchievementService } from '@v3/app/services/achievement.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -52,7 +54,9 @@ describe('HomePage', () => {
       'achievements$': of(),
     });
 
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT']);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT'], {
+      team$: of(null),
+    });
     const storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', [
       'get',
       'lastVisited',
@@ -62,9 +66,23 @@ describe('HomePage', () => {
     const fastFeedbackServiceSpy = jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback']);
     const utilsServiceSpy = jasmine.createSpyObj('UtilsService', ['setPageTitle', 'isMobile']);
 
+    sharedServiceSpy.refreshJWT.and.returnValue(Promise.resolve());
+    storageServiceSpy.get.and.returnValue({});
+    storageServiceSpy.getUser.and.returnValue({});
+    storageServiceSpy.getFeature.and.returnValue(false);
+    storageServiceSpy.lastVisited.and.returnValue([]);
+    fastFeedbackServiceSpy.pullFastFeedback.and.returnValue(of({}));
+    homeServiceSpy.getPulseCheckSkills.and.returnValue(of({
+      success: true,
+      status: 'success',
+      cache: false,
+      data: { pulseCheckSkills: [] },
+    }));
+
     TestBed.configureTestingModule({
       declarations: [ HomePage ],
-      imports: [IonicModule.forRoot()],
+      imports: [IonicModule.forRoot(), FormsModule],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -105,6 +123,15 @@ describe('HomePage', () => {
         {
           provide: UtilsService,
           useValue: utilsServiceSpy
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', {
+            getCurrentTodoItems: [],
+            markTodoItemAsDone: of({}),
+            achievementPopUp: undefined,
+            popUp: Promise.resolve(),
+          }),
         },
         {
           provide: UnlockIndicatorService,
@@ -295,7 +322,7 @@ describe('HomePage', () => {
         data: { pulseCheckSkills: null }
       }));
       await component.updateDashboard();
-      expect(component.pulseCheckSkills).toBeNull();
+      expect(component.pulseCheckSkills).toEqual([]);
     });
 
     it('should handle empty pulse check skills response', async () => {
@@ -454,11 +481,12 @@ describe('HomePage', () => {
       expect(component.filteredMilestones[0].activities[0].id).toBe(2);
     });
 
-    it('should filter activities matching either name or description', () => {
+    it('should filter activities matching locked activity name or description', () => {
       component.activitySearchText = 'development';
       component.filterActivities();
 
-      expect(component.filteredMilestones).toEqual([]);
+      expect(component.filteredMilestones.length).toBe(1);
+      expect(component.filteredMilestones[0].activities[0].id).toBe(3);
     });
 
     it('should return empty milestones array when no activities match', () => {
@@ -515,15 +543,17 @@ describe('HomePage', () => {
       component.activitySearchText = 'a';
       component.filterActivities();
 
-      expect(component.filteredMilestones.length).toBe(1);
+      expect(component.filteredMilestones.length).toBe(2);
       expect(component.filteredMilestones[0].activities.length).toBe(2);
+      expect(component.filteredMilestones[1].activities.length).toBe(1);
     });
 
-    it('should skip locked activities even when they match search text', () => {
+    it('should include locked activities when they match search text', () => {
       component.activitySearchText = 'task';
       component.filterActivities();
 
-      expect(component.filteredMilestones).toEqual([]);
+      expect(component.filteredMilestones.length).toBe(1);
+      expect(component.filteredMilestones[0].activities[0].id).toBe(3);
     });
 
     it('should trim whitespace from search text', () => {

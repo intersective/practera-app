@@ -51,6 +51,7 @@ describe('UppyUploaderService', () => {
     });
 
     service = TestBed.inject(UppyUploaderService);
+    modalCtrlSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
   });
 
   it('should be created', () => {
