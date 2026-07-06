@@ -460,8 +460,12 @@ export class NotificationsService {
   ): Promise<HTMLIonModalElement | void> {
     // lazy import to break circular dependency with FastFeedbackService
     const { FastFeedbackComponent } = await import('../components/fast-feedback/fast-feedback.component');
+    const cssClass = this.utils.isMobile()
+      ? 'modal-fullscreen'
+      : '';
 
     const modalConfig = {
+      cssClass,
       backdropDismiss: options?.closable === true,
       showBackdrop: false,
       ...options

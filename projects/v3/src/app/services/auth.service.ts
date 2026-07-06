@@ -124,6 +124,7 @@ interface AuthEndpointExperience {
   };
   featureToggle: {
     pulseCheckIndicator: boolean;
+    showProjectHub: boolean;
   };
 }
 
@@ -252,6 +253,7 @@ export class AuthService {
             }
             featureToggle {
               pulseCheckIndicator
+              showProjectHub
             }
           }
           email

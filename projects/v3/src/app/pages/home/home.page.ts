@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, NgZone, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { environment } from '@v3/environments/environment';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
   Achievement,
@@ -14,9 +15,10 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
+import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 @Component({
   standalone: false,
@@ -36,6 +38,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   isMobile: boolean;
   isParticipant: boolean;
+  isExpert: boolean;
   isExpertWithoutTeam: boolean;
   pulseCheckIndicatorEnabled: boolean;
   activityProgresses = {};
@@ -63,6 +66,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('activities', { static: false }) activities!: ElementRef;
   pulseCheckSkills: PulseCheckSkill[] = [];
 
+  // project brief data from team storage
+  projectBrief: ProjectBrief | null = null;
+  showProjectHub = false;
+
   // activity search/filter
   activitySearchText = '';
   filteredMilestones: Milestone[] | null = null;
@@ -83,6 +90,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private ngZone: NgZone,
     private fastFeedbackService: FastFeedbackService,
     private alertController: AlertController,
+    private modalController: ModalController,
     private pulsecheckService: PulsecheckService,
   ) {
     this.activityCount$ = homeService.activityCount$;
@@ -104,10 +112,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit() {
-    const role = this.storageService.getUser().role;
-    const teamId = this.storageService.getUser().teamId;
-    this.isParticipant = role === 'participant';
-    this.isExpertWithoutTeam = role === 'mentor' && !teamId;
+    this.updateUserRoleState();
     this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.isMobile = this.utils.isMobile();
 
@@ -118,10 +123,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         takeUntil(this.unsubscribe$)
       )
       .subscribe(() => {
-        // re-evaluate expert without team status when team changes
-        const currentRole = this.storageService.getUser().role;
-        const currentTeamId = this.storageService.getUser().teamId;
-        this.isExpertWithoutTeam = currentRole === 'mentor' && !currentTeamId;
+        // re-evaluate role state when team changes
+        this.updateUserRoleState();
       });
 
     this.homeService.milestones$
@@ -240,6 +243,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     // Start data fetches immediately — they use the JWT already stored in the
     // Angular app. The JWT refresh runs in parallel: if the teamId changes the
     // auth service broadcasts a team$ update that downstream services react to.
+    // re-evaluate user role and team status after JWT refresh updates teamId
+    this.updateUserRoleState();
+
+    this.experience = this.storageService.get("experience");
+    this.showProjectHub = this.storageService.getFeature('showProjectHub');
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
@@ -256,6 +264,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
 
     this.experience = this.storageService.get("experience");
+    const user = this.storageService.getUser();
+
+    // load project brief from user storage
+    this.projectBrief = user.projectBrief || null;
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
@@ -303,6 +315,16 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   goBack() {
     this.router.navigate(["experiences"]);
+  }
+
+  private updateUserRoleState(): void {
+    const user = this.storageService.getUser() || {};
+    const role = user.role;
+    const teamId = user.teamId;
+
+    this.isParticipant = role === 'participant';
+    this.isExpert = role === 'mentor';
+    this.isExpertWithoutTeam = this.isExpert && !teamId;
   }
 
   switchContent(event) {
@@ -440,6 +462,40 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     });
 
     await alert.present();
+  }
+
+  /**
+   * @name showProjectBrief
+   * @description opens modal to display project brief details
+   */
+  async showProjectBrief(): Promise<void> {
+    if (!this.projectBrief) {
+      return;
+    }
+
+    const cssClass = this.isMobile
+      ? ['project-brief-modal', 'modal-fullscreen']
+      : 'project-brief-modal';
+
+    const modal = await this.modalController.create({
+      component: ProjectBriefModalComponent,
+      componentProps: {
+        projectBrief: this.projectBrief
+      },
+      cssClass
+    });
+
+    await modal.present();
+  }
+
+  /**
+   * @name openProjectBriefExternal
+   * @description opens project brief in external projecthub application with authentication token
+   */
+  openProjectBriefExternal(): void {
+    const apikey = this.storageService.getUser().apikey;
+    const url = `${environment.projecthub}login?token=${apikey}`;
+    window.open(url, '_blank');
   }
 
   achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {

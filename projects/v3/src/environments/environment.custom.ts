@@ -36,8 +36,13 @@ export const environment = {
   defaultCountryModel: '<CUSTOM_COUNTRY>',
   intercom: false,
   goMobile: false,
+  projecthub: '<CUSTOM_PROJECTHUB_URL>',
   helpline: '<CUSTOM_HELPLINE>',
   featureToggles: {
     assessmentPagination: <CUSTOM_ENABLE_ASSESSMENT_PAGINATION>,
+  },
+  snowAnimation: {
+    enabled: false,
+    snowflakeCount: 30,
   },
 };

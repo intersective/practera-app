@@ -306,6 +306,47 @@ describe('AssessmentComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('showProjectBrief()', () => {
+    it('should open project brief modal when review has projectBrief', async () => {
+      const mockProjectBrief = {
+        id: 'brief-1',
+        title: 'Test Brief',
+        description: 'Test Description',
+      };
+      component.review = {
+        id: 1,
+        answers: {},
+        status: 'pending review',
+        modified: '2024-01-01',
+        projectBrief: mockProjectBrief,
+      };
+      const mockModal = { present: jasmine.createSpy('present') };
+      modalSpy.create.and.returnValue(Promise.resolve(mockModal as any));
+
+      await component.showProjectBrief();
+
+      expect(modalSpy.create).toHaveBeenCalledWith({
+        component: jasmine.any(Function),
+        componentProps: { projectBrief: mockProjectBrief },
+        cssClass: 'project-brief-modal',
+      });
+      expect(mockModal.present).toHaveBeenCalled();
+    });
+
+    it('should not open modal when review has no projectBrief', async () => {
+      component.review = {
+        id: 1,
+        answers: {},
+        status: 'pending review',
+        modified: '2024-01-01',
+      };
+
+      await component.showProjectBrief();
+
+      expect(modalSpy.create).not.toHaveBeenCalled();
+    });
+  });
+
   describe('ngOnChanges()', () => {
     it('should straightaway return when assessment not loaded', () => {
       expect(component.ngOnChanges({})).toBeFalsy();

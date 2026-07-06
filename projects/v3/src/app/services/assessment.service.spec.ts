@@ -820,6 +820,11 @@ describe('AssessmentService', () => {
         expect(result.review.id).toBe(201);
         expect(result.review.status).toBe('done');
         expect(result.review.teamName).toBe('Team Alpha');
+        expect(result.review.projectBrief).toEqual({
+          id: 'brief-1',
+          title: 'Team Alpha Brief',
+          description: 'Brief description',
+        });
 
         // Verify review answers normalization
         // Note: When answer is null and no file exists, the expression (answer || file) evaluates to undefined

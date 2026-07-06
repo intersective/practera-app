@@ -215,6 +215,32 @@ describe('HomePage', () => {
       expect(storageService.getFeature).toHaveBeenCalledWith('pulseCheckIndicator');
     });
 
+    it('should set project hub visibility from feature toggle', async () => {
+      await component.updateDashboard();
+      expect(storageService.getFeature).toHaveBeenCalledWith('showProjectHub');
+      expect(component.showProjectHub).toBe(true);
+    });
+
+    it('should hide project hub when feature toggle is disabled', async () => {
+      storageService.getFeature.and.returnValue(false);
+      await component.updateDashboard();
+      expect(component.showProjectHub).toBe(false);
+    });
+
+    it('should treat mentor users as expert users', async () => {
+      storageService.getUser.and.returnValue({
+        role: 'mentor',
+        apikey: 'test-key',
+        projectId: 1,
+        teamId: 1,
+      });
+
+      await component.updateDashboard();
+
+      expect(component.isExpert).toBe(true);
+      expect(component.isParticipant).toBe(false);
+    });
+
     it('should call service methods to fetch data', async () => {
       await component.updateDashboard();
       expect(homeService.getMilestones).toHaveBeenCalled();

@@ -11,6 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
 import { FileInput, FileResponse } from '../components/types/assessment';
 import { Choice, Question } from '@v3/components/types/assessment';
+import { ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 export interface DueAssessment {
   id: number;
@@ -78,6 +79,7 @@ export interface AssessmentReview {
   status: string;
   modified: string;
   teamName?: string;
+  projectBrief?: ProjectBrief;
 }
 
 @Injectable({
@@ -149,7 +151,7 @@ export class AssessmentService {
             submitter {
               name image
               team {
-                name
+                id name projectBrief
               }
             }
             answers {
@@ -425,6 +427,7 @@ export class AssessmentService {
       status: firstSubmissionReview.status,
       modified: firstSubmissionReview.modified,
       teamName: firstSubmission.submitter.team?.name,
+      projectBrief: this._parseProjectBrief(firstSubmission.submitter.team?.projectBrief),
       answers: {},
     };
 
@@ -445,6 +448,27 @@ export class AssessmentService {
       };
     });
     return review;
+  }
+
+  /**
+   * parse project brief from raw string or object
+   */
+  private _parseProjectBrief(brief: string | object | null): ProjectBrief | null {
+    if (!brief) {
+      return null;
+    }
+    if (typeof brief === 'object') {
+      return brief as ProjectBrief;
+    }
+    if (typeof brief === 'string') {
+      try {
+        return JSON.parse(brief);
+      } catch (e) {
+        console.error('failed to parse project brief:', e);
+        return null;
+      }
+    }
+    return null;
   }
 
   /**
