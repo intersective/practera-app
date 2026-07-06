@@ -1,6 +1,6 @@
 import { environment } from '@v3/environments/environment';
 import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, OnInit, QueryList, ViewChildren, ChangeDetectionStrategy, ViewChild, signal, ElementRef, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-import { Assessment, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
+import { Assessment, Group, Submission, AssessmentReview, AssessmentSubmitParams, AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -135,6 +135,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   // pagination
   pageRequiredCompletion: boolean[] = []; // indicator for required questions
+  pageVisited: boolean[] = [];             // tracks which pages the user has visited
   readonly manyPages = MIN_SCROLLING_PAGES;
 
   @ViewChildren('questionBox') questionBoxes!: QueryList<{ el: HTMLElement }>;
@@ -172,6 +173,26 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return environment.featureToggles?.assessmentPagination ?? true;
   }
 
+  get isTeam360Assessment(): boolean {
+    return this.task?.assessmentType === 'team360' || this.assessment?.type === 'team360';
+  }
+
+  get showPageIndicators(): boolean {
+    return this.isPaginationEnabled && this.pageCount > 1 && !this.isTeam360Assessment;
+  }
+
+  // Team360 page 0 is self-reflection. Pages after that correspond to selected team members,
+  // so forward navigation is capped by the selected team member count.
+  get maxAccessiblePageIndex(): number {
+    const lastPageIndex = this.pageCount - 1;
+
+    if (!this.isTeam360Assessment) {
+      return lastPageIndex;
+    }
+
+    return Math.min(lastPageIndex, this.team360MemberCount);
+  }
+
   // override to use question‑based pages
   get pageCount() {
     return this.isPaginationEnabled ? this.pagesGroups.length : 1;
@@ -189,14 +210,16 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.isPaginationEnabled) return;
     if (this.pageIndex > 0) {
       this.pageIndex--;
+      this.pageVisited[this.pageIndex] = true;
       this.scrollActivePageIntoView();
     }
   }
 
   nextPage() {
     if (!this.isPaginationEnabled) return;
-    if (this.pageIndex < this.pageCount - 1) {
+    if (this.pageIndex < this.maxAccessiblePageIndex) {
       this.pageIndex++;
+      this.pageVisited[this.pageIndex] = true;
       this.scrollActivePageIntoView();
     }
   }
@@ -208,10 +231,34 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   goToPage(i: number) {
     if (!this.isPaginationEnabled) return;
-    if (i >= 0 && i < this.pageCount) {
-      this.pageIndex = i;
-      this.scrollActivePageIntoView();
+    if (i >= 0 && i <= this.maxAccessiblePageIndex) {
+      if (this.pageIndex !== i) {
+        this.pageIndex = i;
+        this.pageVisited[i] = true;
+        this.scrollActivePageIntoView();
+        this.setSubmissionDisabled();
+        this._scrollToTop();
+      }
     }
+  }
+
+  private _scrollToTop() {
+    setTimeout(() => {
+      // 1. Try standard ion-content on mobile
+      const content = document.querySelector('ion-router-outlet .ion-page:not(.ion-page-hidden) ion-content') || document.querySelector('ion-content');
+      if (content && typeof (content as any).scrollToTop === 'function') {
+        (content as any).scrollToTop(0);
+        return;
+      }
+
+      // 2. Scroll the main content into view (handles desktop ion-col scroll containers)
+      const mainContent = document.querySelector('app-assessment .main-content') || document.querySelector('app-assessment');
+      if (mainContent) {
+        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 10);
   }
 
   ngOnInit(): void {
@@ -412,6 +459,9 @@ Best regards`;
 
     this._initialise();
     if (changes.assessment || changes.submission || changes.review) {
+      this.pageRequiredCompletion = [];
+      this.pageVisited = [];
+
       this._handleSubmissionData();
 
       // reset submitting flag only when the submission actually changed
@@ -690,19 +740,26 @@ Best regards`;
    */
   continueToNextTask() {
     switch (this._btnAction) {
-      case 'submit':
-        this.submitting = true;
-        this.btnDisabled$.next(true);
-        return this.submitActions.next({
-          autoSave: false,
-          goBack: false,
-        });
+      case 'submit': {
+        this._doSubmit();
+        return;
+      }
       case 'readFeedback':
         this.btnDisabled$.next(true);
         return this.readFeedback.emit(this.submission.id);
       default:
         return this.continue.emit();
     }
+  }
+
+  /** fires the actual submission — extracted so the alert guard can call it after confirmation */
+  private _doSubmit() {
+    this.submitting = true;
+    this.btnDisabled$.next(true);
+    this.submitActions.next({
+      autoSave: false,
+      goBack: false,
+    });
   }
 
   /**
@@ -1088,12 +1145,20 @@ Best regards`;
     // read-only mode (viewing feedback or completed submissions), completion tracking is not relevant
     if (!this.doAssessment && !this.isPendingReview) {
       this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+      // mark all pages visited in read-only so indicators are all visible
+      this.pageVisited = new Array(this.pageCount).fill(true);
       this.cdr.detectChanges();
       setTimeout(() => this.scrollActivePageIntoView(), 100);
       return;
     }
 
     this.pageRequiredCompletion = new Array(this.pageCount).fill(true);
+
+    // initialise visited array if not yet created; always mark page 0 as visited on first load
+    if (!this.pageVisited.length) {
+      this.pageVisited = new Array(this.pageCount).fill(false);
+      this.pageVisited[0] = true;
+    }
 
     this.pages.forEach((page, index) => {
       const pageQuestions = this.getAllQuestionsForPage(index);
@@ -1320,14 +1385,49 @@ Best regards`;
     }
 
     const isFormValid = this.questionsForm?.valid ?? false;
+    const memberCount = this.team360MemberCount;
+    const visitedEnough = memberCount === 0 || this.team360PagesVisited >= memberCount;
+    const shouldDisable = !isFormValid || !visitedEnough;
     const isCurrentlyDisabled = this.btnDisabled$.getValue();
 
-    // Update button state only if it needs to change
-    if (!isFormValid && !isCurrentlyDisabled) {
+    // update button state only if it needs to change
+    if (shouldDisable && !isCurrentlyDisabled) {
       this.btnDisabled$.next(true);
-    } else if (isFormValid && isCurrentlyDisabled) {
+    } else if (!shouldDisable && isCurrentlyDisabled) {
       this.btnDisabled$.next(false);
     }
+  }
+
+  /**
+   * returns the number of distinct team members the user must review in a team360 assessment.
+   * counts unique teamMembers.key values across selector questions in groups from index 1+
+   * because index 0 is the self-reflection group.
+   */
+  get team360MemberCount(): number {
+    if (!this.isTeam360Assessment) return 0;
+    const groups = this.assessment?.groups ?? [];
+    const memberKeys = new Set<string>();
+
+    for (let i = 1; i < groups.length; i++) {
+      const selectorQ = groups[i].questions?.find(q =>
+        q.type === 'team member selector' || q.type === 'multi team member selector'
+      );
+      if (!selectorQ) continue;
+      (selectorQ.teamMembers ?? []).forEach((m: { key: string }) => memberKeys.add(m.key));
+    }
+    return memberKeys.size;
+  }
+
+  get team360PagesVisited(): number {
+    if (!this.isTeam360Assessment) return 0;
+
+    let count = 0;
+    for (let page = 1; page <= this.maxAccessiblePageIndex; page++) {
+      if (this.pageVisited[page] && this.pageRequiredCompletion[page]) {
+        count++;
+      }
+    }
+    return count;
   }
 
   /**

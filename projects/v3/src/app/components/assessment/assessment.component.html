@@ -407,7 +407,6 @@
         </ng-container>
       </ng-container>
     </form>
-
   </div>
 
   <div class="not-team ion-padding ion-text-center"
@@ -433,9 +432,16 @@
       (handleClick)="continueToNextTask()"
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
+      <!-- team 360 progress: show how many members have been reviewed -->
+      <div class="team360-progress" *ngIf="team360MemberCount > 0 && doAssessment">
+        <span i18n>{{ team360PagesVisited }} of {{ team360MemberCount }} member{{ team360MemberCount > 1 ? 's' : '' }} reviewed</span>
+      </div>
+
+      <!-- PAGINATION MOVED BACK INTO BOTTOM BAR -->
       <div class="pagination-container"
         [class.few-pages]="pageCount < manyPages"
-        *ngIf="isPaginationEnabled">
+        [class.nav-only]="!showPageIndicators"
+        *ngIf="isPaginationEnabled && pageCount > 1">
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
@@ -445,68 +451,13 @@
         </ion-button>
 
         <div class="page-indicators"
+          *ngIf="showPageIndicators"
           [class.many-pages]="pageCount > manyPages"
-          *ngIf="pageCount > 1"
           #pageIndicatorsContainer>
           <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
             <div class="page-indicator"
               [class.active]="pageIndex === page"
-              [class.incompleted]="!pageRequiredCompletion[page]"
-              [id]="'page-indicator-' + page"
-              (click)="goToPage(page)"
-              (dblclick)="findAndGoToFirstUnansweredQuestion()">
-
-              <div class="progress-ring">
-                <span class="page-number">{{ i + 1 }}</span>
-              </div>
-
-              <ion-icon *ngIf="pageRequiredCompletion[page]"
-                name="checkmark-circle"
-                class="completion-icon completed">
-              </ion-icon>
-              <ion-icon *ngIf="!pageRequiredCompletion[page]"
-                name="close-circle-outline"
-                class="completion-icon">
-              </ion-icon>
-            </div>
-          </ng-container>
-        </div>
-
-        <ion-button fill="clear"
-          class="nav-button next-button"
-          (click)="nextPage()"
-          [disabled]="pageIndex >= pageCount - 1">
-          <span>Next</span>
-          <ion-icon name="chevron-forward-outline"></ion-icon>
-        </ion-button>
-      </div>
-    </app-bottom-action-bar>
-
-    <!-- standalone pagination for completed reviews (bottom action bar hidden) -->
-    <ion-footer class="standalone-pagination-footer"
-      *ngIf="action === 'review'
-        && submission?.status === 'feedback available'
-        && review?.status === 'done'
-        && isPaginationEnabled
-        && pageCount > 1">
-      <div class="pagination-container"
-        [class.few-pages]="pageCount < manyPages">
-        <ion-button fill="clear"
-          class="nav-button prev-button"
-          (click)="prevPage()"
-          [disabled]="pageIndex === 0">
-          <ion-icon name="chevron-back-outline"></ion-icon>
-          <span>Prev</span>
-        </ion-button>
-
-        <div class="page-indicators"
-          [class.many-pages]="pageCount > manyPages"
-          *ngIf="pageCount > 1"
-          #pageIndicatorsContainer>
-          <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
-            <div class="page-indicator"
-              [class.active]="pageIndex === page"
-              [class.incompleted]="!pageRequiredCompletion[page]"
+              [class.completed]="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
               [id]="'page-indicator-' + page"
               (click)="goToPage(page)"
               tabindex="0"
@@ -519,13 +470,9 @@
                 <span class="page-number">{{ i + 1 }}</span>
               </div>
 
-              <ion-icon *ngIf="pageRequiredCompletion[page]"
+              <ion-icon *ngIf="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
                 name="checkmark-circle"
                 class="completion-icon completed">
-              </ion-icon>
-              <ion-icon *ngIf="!pageRequiredCompletion[page]"
-                name="close-circle-outline"
-                class="completion-icon">
               </ion-icon>
             </div>
           </ng-container>
@@ -534,12 +481,71 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= pageCount - 1">
+          [disabled]="pageIndex >= maxAccessiblePageIndex">
+          <span>Next</span>
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </ion-button>
+      </div>
+      <!-- END PAGINATION MOVED BACK -->
+
+    </app-bottom-action-bar>
+
+    <!-- standalone pagination for completed reviews (bottom action bar hidden) -->
+    <ion-footer class="standalone-pagination-footer"
+      *ngIf="action === 'review'
+        && submission?.status === 'feedback available'
+        && review?.status === 'done'
+        && isPaginationEnabled
+        && pageCount > 1">
+      <div class="pagination-container"
+        [class.few-pages]="pageCount < manyPages"
+        [class.nav-only]="!showPageIndicators">
+        <ion-button fill="clear"
+          class="nav-button prev-button"
+          (click)="prevPage()"
+          [disabled]="pageIndex === 0">
+          <ion-icon name="chevron-back-outline"></ion-icon>
+          <span>Prev</span>
+        </ion-button>
+
+        <div class="page-indicators"
+          *ngIf="showPageIndicators"
+          [class.many-pages]="pageCount > manyPages"
+          #pageIndicatorsContainer>
+          <ng-container *ngFor="let page of pages; trackBy: trackById; let i = index">
+            <div class="page-indicator"
+              [class.active]="pageIndex === page"
+              [class.completed]="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
+              [id]="'page-indicator-' + page"
+              (click)="goToPage(page)"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'Page ' + (i + 1)"
+              (keydown.enter)="goToPage(page)"
+              (keydown.space)="goToPage(page); $event.preventDefault()">
+
+              <div class="progress-ring">
+                <span class="page-number">{{ i + 1 }}</span>
+              </div>
+
+              <ion-icon *ngIf="(doAssessment || isPendingReview) && pageVisited[page] && pageRequiredCompletion[page]"
+                name="checkmark-circle"
+                class="completion-icon completed">
+              </ion-icon>
+            </div>
+          </ng-container>
+        </div>
+
+        <ion-button fill="clear"
+          class="nav-button next-button"
+          (click)="nextPage()"
+          [disabled]="pageIndex >= maxAccessiblePageIndex">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
       </div>
     </ion-footer>
+
   </ng-container>
 
   <ng-template #blocked>
