@@ -84,6 +84,9 @@ describe('BadgesCertificatesPage', () => {
     fixture = TestBed.createComponent(BadgesCertificatesPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    // Directly replace the component's modalController with a spy to bypass any
+    // DI override issues where Ionic's root provider may win over the TestBed provider.
+    (component as any).modalController = modalCtrlSpy;
   }));
 
   it('should create', () => {

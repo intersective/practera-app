@@ -1,0 +1,56 @@
+---
+description: Angular unit testing conventions for practera-app — Ionic DI overrides, NgZone mocks, ChangeDetectorRef
+globs: projects/**/*.spec.ts
+alwaysApply: false
+---
+
+# Angular Unit Testing Conventions
+
+## Ionic Overlay Controllers — DI Override Issue
+
+`ModalController`, `PopoverController`, `AlertController`, `LoadingController` are Ionic overlay controllers. Ionic's root provider **may win over TestBed's provider**, meaning `{ provide: ModalController, useValue: spy }` is NOT reliably injected into the component.
+
+**Always** directly assign the spy to the component property after creation:
+
+```typescript
+// ✅ CORRECT — works even when Ionic overrides TestBed provider
+(component as any).modalController = modalCtrlSpy;
+
+// ❌ UNRELIABLE — TestBed provider may be overridden by Ionic root
+providers: [{ provide: ModalController, useValue: modalCtrlSpy }]
+```
+
+Do this in `beforeEach` immediately after `fixture.detectChanges()`:
+
+```typescript
+beforeEach(waitForAsync(() => {
+  modalCtrlSpy = jasmine.createSpyObj('ModalController', ['create', 'dismiss']);
+  TestBed.configureTestingModule({ ... }).compileComponents();
+  fixture = TestBed.createComponent(MyComponent);
+  component = fixture.componentInstance;
+  fixture.detectChanges();
+  // Directly replace to bypass Ionic DI override
+  (component as any).modalController = modalCtrlSpy;
+}));
+```
+
+See `achievement-pop-up.component.spec.ts` for the canonical example.
+
+## NgZone and ChangeDetectorRef in Direct-Constructor Tests
+
+When tests instantiate components directly (`new MyPage(...)`) rather than via TestBed, every constructor parameter must be passed explicitly. For `NgZone` and `ChangeDetectorRef`, use these inline mocks:
+
+```typescript
+component = new MyPage(
+  serviceSpy,
+  // ...other deps...
+  { markForCheck: jasmine.createSpy('markForCheck') } as any,  // ChangeDetectorRef
+  { run: jasmine.createSpy('run').and.callFake((fn: () => any) => fn()) } as any, // NgZone
+);
+```
+
+The `NgZone` mock must call `fn()` synchronously via `callFake` so that subscription callbacks wrapped in `ngZone.run(() => {...})` execute immediately in tests.
+
+## Why NgZone.run() Is Used in Production
+
+Components use `this.ngZone.run(() => { ...; this.cdr.markForCheck(); })` inside subscription callbacks to ensure change detection fires correctly in browser contexts (Cypress, Playwright). Do not remove this pattern.

@@ -93,6 +93,8 @@ describe('SettingsPage', () => {
       notificationsServiceSpy,
       modalControllerSpy,
       uppyUploaderServiceSpy,
+      { markForCheck: jasmine.createSpy('markForCheck') } as any,
+      { run: jasmine.createSpy('ngZoneRun').and.callFake((fn: () => any) => fn()) } as any,
       documentMock
     );
   };

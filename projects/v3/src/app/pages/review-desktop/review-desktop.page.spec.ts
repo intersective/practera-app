@@ -58,7 +58,9 @@ describe('ReviewDesktopPage', () => {
       activatedRoute,
       assessmentService,
       reviewService,
-      notificationsService
+      notificationsService,
+      { markForCheck: jasmine.createSpy('markForCheck') } as any,
+      { run: jasmine.createSpy('ngZoneRun').and.callFake((fn: () => any) => fn()) } as any,
     );
 
     component.ngOnInit();
