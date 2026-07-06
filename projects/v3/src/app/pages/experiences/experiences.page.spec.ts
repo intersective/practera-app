@@ -100,6 +100,27 @@ describe('ExperiencesPage', () => {
     });
   });
 
+  describe('layout helpers', () => {
+    it('should use wider desktop column for one experience', () => {
+      expect(component.getDesktopColumnSize(1)).toEqual('8');
+    });
+
+    it('should use half-width desktop columns for two experiences', () => {
+      expect(component.getDesktopColumnSize(2)).toEqual('6');
+    });
+
+    it('should use three-column desktop layout for three or more experiences', () => {
+      expect(component.getDesktopColumnSize(3)).toEqual('4');
+      expect(component.getDesktopColumnSize(10)).toEqual('4');
+    });
+
+    it('should mark compact layout only for one or two experiences', () => {
+      expect(component.isCompactLayout(1)).toBeTrue();
+      expect(component.isCompactLayout(2)).toBeTrue();
+      expect(component.isCompactLayout(3)).toBeFalse();
+    });
+  });
+
   describe('switchProgram()', () => {
     let presentLoading: any;
     let dismissLoading: any;
