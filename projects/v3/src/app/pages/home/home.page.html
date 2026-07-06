@@ -150,12 +150,37 @@
 <ng-template #activityList>
   <h3 class="for-accessibility"
   i18n>Activity list</h3>
+
+  <div class="activity-search-container">
+    <ion-searchbar [(ngModel)]="activitySearchText"
+      (ionInput)="filterActivities()"
+      (ionClear)="clearSearch()"
+      placeholder="Filter by activity title or description"
+      i18n-placeholder
+      mode="md"
+      animated="true"
+      aria-label="Filter activities by title or description"
+      i18n-aria-label>
+    </ion-searchbar>
+    @if (activitySearchText && filteredMilestones) {
+      <div class="search-results-info"
+        role="status"
+        aria-live="polite">
+        <ion-text color="medium">
+          <p i18n>{{ filteredMilestones.length }} milestone(s) found</p>
+        </ion-text>
+      </div>
+    }
+  </div>
+
   @if (milestones !== null) {
     <div #activities
       id="activity-list-item"
-      >
-      @if (milestones?.length > 0) {
-        @for (milestone of milestones; track milestone) {
+      role="region"
+      [attr.aria-label]="activitySearchText ? 'Filtered activity list' : 'Activity list'"
+      i18n-aria-label>
+      @if ((activitySearchText ? filteredMilestones : milestones)?.length > 0) {
+        @for (milestone of (activitySearchText ? filteredMilestones : milestones)!; track milestone) {
           <ion-item class="headline-4 milestone-name"
             [ngClass]="{'locked': milestone.isLocked}"
             lines="none"
@@ -211,17 +236,22 @@
           role="status"
           aria-live="polite">
           <ion-label>
-            <p class="body-1"
-            i18n>No activities available at the moment.</p>
-            <ion-button (click)="updateDashboard()"
-              fill="clear"
-              size="small"
-              aria-label="Retry loading activities" i18n-aria-label>
-              <ion-icon name="refresh"
-                slot="start"
-              aria-hidden="true"></ion-icon>
-              <span i18n>Retry</span>
-            </ion-button>
+            @if (!activitySearchText) {
+              <p class="body-1"
+              i18n>No activities available at the moment.</p>
+              <ion-button (click)="updateDashboard()"
+                fill="clear"
+                size="small"
+                aria-label="Retry loading activities" i18n-aria-label>
+                <ion-icon name="refresh"
+                  slot="start"
+                aria-hidden="true"></ion-icon>
+                <span i18n>Retry</span>
+              </ion-button>
+            } @else {
+              <p class="body-1"
+              i18n>No activities found matching "{{ activitySearchText }}".</p>
+            }
           </ion-label>
         </ion-item>
       }

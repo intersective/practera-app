@@ -50,6 +50,10 @@ export class ListItemComponent {
 
   // used if there are ending action buttons
   @Input() endingActionBtnIcons: string[];
+  @Input() itemRole: string = 'listitem';
+  @Input() ariaSelected?: boolean;
+  @Input() ariaCurrent?: string;
+  @Input() button = false;
   // named as "any" to support any callback parameter format
   @Output() anyBtnClick = new EventEmitter<any>();
   @Output() actionBtnClick = new EventEmitter<number>();
