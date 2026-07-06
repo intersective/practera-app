@@ -38,7 +38,7 @@
         </ion-row>
         <ion-row class="card-row ion-justify-content-center ion-align-items-center ion-no-padding ion-no-margin">
           <ion-col class="ion-no-padding ion-no-margin exp-col">
-            <ion-card class="exp-card-container">
+            <ion-card class="exp-card-container" [class.compact]="isCompactLayout(experiences.length)">
               <ion-card-header class="title-container ion-hide-sm-down">
                 <h2 id="experiences-heading" class="headline-1 m-0 black ion-hide-sm-down" i18n>Your experiences</h2>
                 <p class="subtitle-1 m-0 grey-75 ion-hide-sm-down" i18n>Access and check the progress of your experiences below
@@ -46,10 +46,19 @@
               </ion-card-header>
               <ion-card-content class="cards" [ngClass]="experiences.length > 1 ? 'left' : 'center'">
                 <ion-grid>
-                  <ion-row role="list" aria-label="Available experiences" i18n-aria-label>
+                  <ion-row
+                    role="list"
+                    aria-label="Available experiences"
+                    i18n-aria-label
+                    [class.ion-justify-content-center]="isCompactLayout(experiences.length)"
+                    [class.ion-justify-content-start]="!isCompactLayout(experiences.length)">
 
                   <ng-container *ngFor="let experience of experiences">
-                    <ion-col class="ion-align-self-center" size="12" size-sm="6" size-md="4">
+                    <ion-col
+                      class="ion-align-self-center"
+                      size="12"
+                      size-sm="6"
+                      [sizeMd]="getDesktopColumnSize(experiences.length)">
                       <ion-card class="exp-card ion-no-margin"
                         [attr.aria-label]="experience.name"
                         (click)="switchProgram(experience)" (keydown)="switchProgram(experience, $event)" tabindex="0">
