@@ -498,41 +498,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     window.open(url, '_blank');
   }
 
-  achievePopup(achievement: Achievement, keyboardEvent?: KeyboardEvent): void {
-  /**
-   * @name showProjectBrief
-   * @description opens modal to display project brief details
-   */
-  async showProjectBrief(): Promise<void> {
-    if (!this.projectBrief) {
-      return;
-    }
-
-    const cssClass = this.isMobile
-      ? ['project-brief-modal', 'modal-fullscreen']
-      : 'project-brief-modal';
-
-    const modal = await this.modalController.create({
-      component: ProjectBriefModalComponent,
-      componentProps: {
-        projectBrief: this.projectBrief
-      },
-      cssClass
-    });
-
-    await modal.present();
-  }
-
-  /**
-   * @name openProjectBriefExternal
-   * @description opens project brief in external projecthub application with authentication token
-   */
-  openProjectBriefExternal(): void {
-    const apikey = this.storageService.getUser().apikey;
-    const url = `${environment.projecthub}login?token=${apikey}`;
-    window.open(url, '_blank');
-  }
-
   achievePopup(achievement: Achievement, keyboardEvent?: Event): void {
     if (
       keyboardEvent instanceof KeyboardEvent &&

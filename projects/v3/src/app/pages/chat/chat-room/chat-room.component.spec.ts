@@ -5,13 +5,10 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChatRoomComponent } from './chat-room.component';
 import { ChannelMembers, ChatService, Message } from '@v3/services/chat.service';
 import { of, Subject } from 'rxjs';
-import { ChannelMembers, ChatService } from '@v3/services/chat.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { of } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
-import { NotificationsService } from '@v3/services/notifications.service';
 import { ModalService } from '@v3/services/modal.service';
 import { MockRouter } from '@testingv3/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
@@ -111,10 +108,6 @@ describe('ChatRoomComponent', () => {
         {
           provide: ModalController,
           useValue: modalCtrlSpy
-        },
-        {
-          provide: NotificationsService,
-          useValue: jasmine.createSpyObj('NotificationsService', ['alert', 'presentToast']),
         },
       ]
     })
@@ -628,6 +621,7 @@ describe('ChatRoomComponent', () => {
     });
 
     it('should return false for a message with only empty html tags', () => {
+      (utils as any).isQuillContentEmpty.and.returnValue(true);
       const message: any = { uuid: '1', message: '<p></p>' };
       expect(component.hasEditableText(message)).toBeFalse();
     });
@@ -683,7 +677,6 @@ describe('ChatRoomComponent', () => {
     });
 
     it('should call notificationsService.alert for confirmation', () => {
-      spyOn(notificationsService, 'alert');
       component.deleteMessage('msg-1');
       expect(notificationsService.alert).toHaveBeenCalled();
     });

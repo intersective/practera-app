@@ -426,6 +426,7 @@ describe('AssessmentService', () => {
         status: review.status,
         modified: review.modified,
         teamName: submission.submitter.team.name,
+        projectBrief: null,
         answers: {
           1: {
             answer: review.answers[0].answer,

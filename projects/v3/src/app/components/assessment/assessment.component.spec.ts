@@ -2111,11 +2111,6 @@ describe('AssessmentComponent', () => {
       expect(component.pageRequiredCompletion[1]).toBeFalse();
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
     }));
-      // page 0 should be visited (first page), page 1 not yet
-      expect(component.pageVisited[0]).toBeTrue();
-      expect(component.pageVisited[1]).toBeFalse();
-      expect(component.scrollActivePageIntoView).toHaveBeenCalled();
-    }));
 
     it('should preserve existing pageVisited state across re-runs', fakeAsync(() => {
       spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
@@ -2605,8 +2600,6 @@ describe('AssessmentComponent', () => {
     it('should return the value from environment feature toggles', () => {
       // The test environment has assessmentPagination: false in environment.featureToggles
       expect(component.isPaginationEnabled).toBeFalse();
-    it('should return true by default', () => {
-      expect(component.isPaginationEnabled).toBeTrue();
     });
   });
 
@@ -3157,6 +3150,10 @@ describe('AssessmentComponent', () => {
     });
 
     describe('team360PagesVisited getter', () => {
+      beforeEach(() => {
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      });
+
       it('returns 0 for non-team-360 task', () => {
         component.task = { assessmentType: 'normal' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100);
@@ -3310,6 +3307,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('enables button when form valid and all team member pages visited and complete', () => {
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100), g3 = selectorGroup(101);
         component.assessment = { groups: [g0, g1, g2, g3] } as any;
@@ -3367,6 +3365,7 @@ describe('AssessmentComponent', () => {
       });
 
       it('"1st try" scenario: 5 groups unique members → increments per visit, enables at 4 of 4', () => {
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
         component.task = { assessmentType: 'team360' } as any;
         const groups = Array.from({ length: 5 }, (_, i) => selectorGroup(100 + i));
         // group 0 (key {"userId":100}) excluded; groups 1-4 have unique keys → memberCount = 4
@@ -3374,6 +3373,7 @@ describe('AssessmentComponent', () => {
         component.pagesGroups = groups.map(g => [g]);
         component.questionsForm = makeValidForm();
         component.btnDisabled$ = new BehaviorSubject(true);
+        component.pageRequiredCompletion = [true, true, true, true, true];
 
         component.pageVisited = [true, true, false, false, false]; // 1 of 4
         component.setSubmissionDisabled();
@@ -3391,6 +3391,7 @@ describe('AssessmentComponent', () => {
       it('deduplication: 4 groups same member → visiting 1 page enables submit', () => {
         // actual live-data bug: 4 non-self groups all showing learner 004. should need only 1 page
         // visit, not 4.
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
         component.task = { assessmentType: 'team360' } as any;
         const sameMember = (id: number) => ({
           name: `Group ${id}`,
@@ -3408,6 +3409,7 @@ describe('AssessmentComponent', () => {
         component.pagesGroups = [[g0], [g1], [g2], [g3], [g4]];
         component.questionsForm = makeValidForm();
         component.btnDisabled$ = new BehaviorSubject(true);
+        component.pageRequiredCompletion = [true, true, true, true, true];
 
         // only self page visited — not enough
         component.pageVisited = [true, false, false, false, false];
@@ -3423,6 +3425,7 @@ describe('AssessmentComponent', () => {
       it('3-member team: all-members selector does not instantly enable submit after first page visit', () => {
         // regression for bug: visiting page 1 (g1) was adding both member keys to visited set
         // → instantly showing "2 of 2" → enabling submit prematurely.
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
         component.task = { assessmentType: 'team360' } as any;
         const allMemberKeys = [
           { key: '{"userId":1}', userName: 'Member 1' },
@@ -3444,6 +3447,7 @@ describe('AssessmentComponent', () => {
         component.pagesGroups = [[g0], [g1], [g2]];
         component.questionsForm = makeValidForm();
         component.btnDisabled$ = new BehaviorSubject(true);
+        component.pageRequiredCompletion = [true, true, true];
 
         // visit only page 1 (g1) — should be 1 of 2, NOT 2 of 2
         component.pageVisited = [true, true, false];
@@ -3491,6 +3495,7 @@ describe('AssessmentComponent', () => {
 
   describe('pagination control template', () => {
     function renderPaginatedAssessment(options: { team360?: boolean; completedReview?: boolean } = {}) {
+      spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
       component.assessment = {
         ...mockAssessment,
         type: options.team360 ? 'team360' : 'quiz',
@@ -3585,4 +3590,5 @@ describe('AssessmentComponent', () => {
       // no error thrown
     }));
   });
+
 });

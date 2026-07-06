@@ -62,7 +62,8 @@ describe('ReviewListComponent', () => {
       component.currentReview = component.reviews[0];
       component.goToFirstOnSwitch = true;
       const spy = spyOn(component.navigate, 'emit');
-      component.switchStatus();
+      const mockEvent = { detail: { value: 'completed' } } as CustomEvent<any>;
+      component.switchStatus(mockEvent);
       expect(spy).toHaveBeenCalledWith(component.reviews[1]);
       expect(component.showDone).toBeTrue();
     });
@@ -79,6 +80,7 @@ describe('ReviewListComponent', () => {
       component.reviews = [{
         isDone: true,
       } as any];
+      component.filteredReviews = component.reviews as any;
       expect(component.noReviews).toEqual('');
     });
 

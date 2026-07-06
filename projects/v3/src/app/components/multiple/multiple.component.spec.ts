@@ -180,7 +180,6 @@ describe('MultipleComponent', () => {
     });
   });
 
-  it('when testing writeValue(), it should pass data correctly', () => {
   it('when testing writeValue(), it should call the method correctly', () => {
     // writeValue is empty in the component - it doesn't set innerValue
     component.writeValue({ data: 'data' });

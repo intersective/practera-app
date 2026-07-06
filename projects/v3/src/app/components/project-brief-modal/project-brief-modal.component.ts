@@ -21,12 +21,14 @@ export interface ProjectBrief {
  * empty fields show "none specified"
  */
 @Component({
+  standalone: false,
   selector: 'app-project-brief-modal',
   templateUrl: './project-brief-modal.component.html',
   styleUrls: ['./project-brief-modal.component.scss']
 })
 export class ProjectBriefModalComponent {
   projectBrief: ProjectBrief = {};
+  readonly openAccordionValues = ['description', 'deliverables'];
 
   constructor(
     private modalController: ModalController

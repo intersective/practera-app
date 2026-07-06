@@ -115,8 +115,6 @@ export class SharedService {
     }
     this._teamInfoCacheMs = now;
     this._teamInfoRequest$ = this.apolloService.graphQLFetch(
-  getTeamInfo(): Observable<UserTeamsResponse> {
-    return this.apolloService.graphQLFetch(
       `query user {
         user {
           teams {
@@ -135,12 +133,10 @@ export class SharedService {
           const newTeamId: number | null = teams.length > 0 ? teams[0].id : null;
           const currentTeamId: number = this.storage.getUser().teamId;
 
-          // get latest jwt if teamid changed
           if (currentTeamId !== newTeamId) {
             await this.refreshJWT();
           }
 
-          // update storage with team information
           if (teams.length > 0) {
             this.storage.setUser({
               teamId: teams[0].id,
@@ -154,20 +150,10 @@ export class SharedService {
             });
           }
         }
-
-        if (thisUser.teams.length > 0) {
-          this.storage.setUser({
-            teamId: thisUser.teams[0].id,
-            teamName: thisUser.teams[0].name
-          });
-        }
-      }
-      return response;
-    }));
-    return this._teamInfoRequest$;
         return response;
       })
     );
+    return this._teamInfoRequest$;
   }
 
   /**

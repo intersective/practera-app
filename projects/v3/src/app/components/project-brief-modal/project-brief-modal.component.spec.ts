@@ -1,5 +1,6 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } from '@angular/core/testing';
+import { ModalController } from '@ionic/angular';
 import { ProjectBriefModalComponent, ProjectBrief } from './project-brief-modal.component';
 
 describe('ProjectBriefModalComponent', () => {
@@ -12,7 +13,7 @@ describe('ProjectBriefModalComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ProjectBriefModalComponent],
-      imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         { provide: ModalController, useValue: modalControllerSpy }
       ]
@@ -20,7 +21,7 @@ describe('ProjectBriefModalComponent', () => {
 
     fixture = TestBed.createComponent(ProjectBriefModalComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    (component as any).modalController = modalControllerSpy;
   }));
 
   it('should create', () => {
@@ -75,13 +76,19 @@ describe('ProjectBriefModalComponent', () => {
   });
 
   describe('template rendering', () => {
+    let cd: ChangeDetectorRef;
+
+    beforeEach(() => {
+      cd = fixture.debugElement.injector.get(ChangeDetectorRef);
+    });
+
     it('should display project brief title when provided', () => {
       const testBrief: ProjectBrief = {
         title: 'Test Project Title',
         description: 'Test description'
       };
       component.projectBrief = testBrief;
-      fixture.detectChanges();
+      cd.detectChanges();
 
       const titleElement = fixture.nativeElement.querySelector('#project-brief-title');
       expect(titleElement.textContent).toContain('Test Project Title');
@@ -89,7 +96,7 @@ describe('ProjectBriefModalComponent', () => {
 
     it('should display "none specified" for empty fields', () => {
       component.projectBrief = {};
-      fixture.detectChanges();
+      cd.detectChanges();
 
       const noneSpecifiedElements = fixture.nativeElement.querySelectorAll('.none-specified');
       expect(noneSpecifiedElements.length).toBeGreaterThan(0);
@@ -100,7 +107,7 @@ describe('ProjectBriefModalComponent', () => {
         industry: ['Health', 'Technology']
       };
       component.projectBrief = testBrief;
-      fixture.detectChanges();
+      cd.detectChanges();
 
       const chips = fixture.nativeElement.querySelectorAll('ion-chip');
       expect(chips.length).toBe(2);
@@ -112,7 +119,7 @@ describe('ProjectBriefModalComponent', () => {
         professionalSkills: ['Leadership', 'Communication']
       };
       component.projectBrief = testBrief;
-      fixture.detectChanges();
+      cd.detectChanges();
 
       const chips = fixture.nativeElement.querySelectorAll('ion-chip');
       expect(chips.length).toBe(4);
