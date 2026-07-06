@@ -249,11 +249,11 @@ ion-chip.label {
   text-decoration: none;
   z-index: 10000;
   border-radius: 0 0 4px 0;
-  
+
   // Calculate darker shade if primary color is too light
   // Falls back to a WCAG-compliant dark green (#2a6d3f = white:dark green = ~7.5:1)
   background-color: color-mix(in srgb, var(--ion-color-primary) 60%, #1a4d2a);
-  
+
   // Fallback for browsers without color-mix support
   @supports not (color-mix(in srgb, white, black)) {
     background-color: var(--ion-color-primary-shade, #2a6d3f);
@@ -513,6 +513,16 @@ quill-editor .ql-toolbar.ql-snow {
 
 .uppy-uploader-modal {
   --height: 500px;
+}
+
+// edit message modal sizing
+.chat-edit-message-popup {
+  --width: 600px;
+  --max-width: 90vw;
+  --height: 500px;
+  --max-height: 80vh;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
 }
 
 // Alert styles

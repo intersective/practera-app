@@ -122,6 +122,24 @@
               }
             }
           </div>
+          @if (message.isSender) {
+            <div class="action-container">
+              <ion-button class="delete-btn" fill="clear" size="small"
+                title="Delete Message"
+                aria-label="Delete message"
+                (click)="deleteMessage(message.uuid)">
+                <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
+              </ion-button>
+              @if (hasEditableText(message)) {
+                <ion-button class="edit-btn" fill="clear" size="small"
+                  title="Edit Message"
+                  aria-label="Edit message"
+                  (click)="openEditMessagePopup(message)">
+                  <ion-icon slot="icon-only" name="pencil-outline" aria-hidden="true"></ion-icon>
+                </ion-button>
+              }
+            </div>
+          }
         </ion-label>
       </ion-item>
     }

@@ -424,6 +424,9 @@ export class PusherService {
     channel.subscription.trigger('client-chat-delete-message', data);
   }
 
+  /**
+   * trigger a client event to notify other members that a message was edited.
+   */
   triggerEditMessage(channelName: string, data: SendMessageParam) {
     const channel = this.channels.chat.find(c => c.name === channelName);
     if (!channel) {

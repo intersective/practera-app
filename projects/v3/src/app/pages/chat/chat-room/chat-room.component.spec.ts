@@ -5,6 +5,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ChatRoomComponent } from './chat-room.component';
 import { ChannelMembers, ChatService, Message } from '@v3/services/chat.service';
 import { of, Subject } from 'rxjs';
+import { ChannelMembers, ChatService } from '@v3/services/chat.service';
+import { NotificationsService } from '@v3/services/notifications.service';
+import { of } from 'rxjs';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { PusherService } from '@v3/services/pusher.service';
@@ -605,6 +608,110 @@ describe('ChatRoomComponent', () => {
       component.messageList = mockChatMessages.messages as Message[];
       component.isLastMessage(mockChatMessages.messages[1]);
       expect(component.messageList[1].noAvatar).toEqual(false);
+    });
+  });
+
+  describe('when testing hasEditableText()', () => {
+    it('should return true for a message with text content', () => {
+      const message: any = { uuid: '1', message: '<p>hello</p>' };
+      expect(component.hasEditableText(message)).toBeTrue();
+    });
+
+    it('should return false for a message with empty text', () => {
+      const message: any = { uuid: '1', message: '' };
+      expect(component.hasEditableText(message)).toBeFalse();
+    });
+
+    it('should return false for a message with null text', () => {
+      const message: any = { uuid: '1', message: null };
+      expect(component.hasEditableText(message)).toBeFalse();
+    });
+
+    it('should return false for a message with only empty html tags', () => {
+      const message: any = { uuid: '1', message: '<p></p>' };
+      expect(component.hasEditableText(message)).toBeFalse();
+    });
+  });
+
+  describe('when testing removeMessageFromList()', () => {
+    beforeEach(() => {
+      component.messageList = [
+        { uuid: 'msg-1', isSender: true, message: 'a', file: null, created: '', scheduled: '', sentAt: '' } as any,
+        { uuid: 'msg-2', isSender: true, message: 'b', file: null, created: '', scheduled: '', sentAt: '' } as any,
+        { uuid: 'msg-3', isSender: false, message: 'c', file: null, created: '', scheduled: '', sentAt: '' } as any,
+      ];
+      component.chatChannel = {
+        uuid: 'ch-1', name: 'Team 1', avatar: '', pusherChannel: 'pusher-ch',
+        isAnnouncement: false, isDirectMessage: false, readonly: false,
+        roles: [], unreadMessageCount: 0, lastMessage: '', lastMessageCreated: '', canEdit: false,
+      };
+      component.channelUuid = 'ch-1';
+    });
+
+    it('should remove the message from the list and trigger pusher', () => {
+      pusherSpy.triggerDeleteMessage.and.returnValue();
+      component.removeMessageFromList('msg-2');
+      expect(component.messageList.length).toBe(2);
+      expect(component.messageList.find(m => m.uuid === 'msg-2')).toBeUndefined();
+      expect(pusherSpy.triggerDeleteMessage).toHaveBeenCalledWith('pusher-ch', {
+        channelUuid: 'ch-1',
+        uuid: 'msg-2',
+      });
+    });
+
+    it('should do nothing if message uuid not found', () => {
+      component.removeMessageFromList('non-existent');
+      expect(component.messageList.length).toBe(3);
+      expect(pusherSpy.triggerDeleteMessage).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing deleteMessage()', () => {
+    let notificationsService: any;
+
+    beforeEach(() => {
+      notificationsService = TestBed.inject(NotificationsService);
+      component.chatChannel = {
+        uuid: 'ch-1', name: 'Team 1', avatar: '', pusherChannel: 'pusher-ch',
+        isAnnouncement: false, isDirectMessage: false, readonly: false,
+        roles: [], unreadMessageCount: 0, lastMessage: '', lastMessageCreated: '', canEdit: false,
+      };
+      component.channelUuid = 'ch-1';
+      component.messageList = [
+        { uuid: 'msg-1', isSender: true, message: 'a', file: null, created: '', scheduled: '', sentAt: '' } as any,
+      ];
+    });
+
+    it('should call notificationsService.alert for confirmation', () => {
+      spyOn(notificationsService, 'alert');
+      component.deleteMessage('msg-1');
+      expect(notificationsService.alert).toHaveBeenCalled();
+    });
+  });
+
+  describe('when testing openEditMessagePopup()', () => {
+    it('should create a modal with the correct message', async () => {
+      component.messageList = [
+        { uuid: 'msg-1', isSender: true, message: '<p>hello</p>', file: null, created: '2025-01-01', scheduled: '', sentAt: '2025-01-01', senderUuid: 'u1', senderName: 'user', senderRole: 'participant', senderAvatar: '' } as any,
+      ];
+      component.chatChannel = {
+        uuid: 'ch-1', name: 'Team 1', avatar: '', pusherChannel: 'pusher-ch',
+        isAnnouncement: false, isDirectMessage: false, readonly: false,
+        roles: [], unreadMessageCount: 0, lastMessage: '', lastMessageCreated: '', canEdit: false,
+      };
+      component.channelUuid = 'ch-1';
+
+      const dismissPromise = new Promise<any>(resolve => resolve({ data: { updateSuccess: false } }));
+      const mockModal = {
+        present: jasmine.createSpy('present').and.returnValue(Promise.resolve()),
+        onWillDismiss: jasmine.createSpy('onWillDismiss').and.returnValue(dismissPromise),
+      };
+      modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal as any));
+
+      await component.openEditMessagePopup(0);
+
+      expect(modalCtrlSpy.create).toHaveBeenCalled();
+      expect(mockModal.present).toHaveBeenCalled();
     });
   });
 
