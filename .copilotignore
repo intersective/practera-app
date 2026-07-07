@@ -23,7 +23,6 @@ appspec*.yml
 serverless*.yml
 docker-compose*.yml
 *.sh
-sonar-project.properties
 
 # ignore temporary and log files
 tmp/
