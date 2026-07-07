@@ -468,7 +468,7 @@ export class ActivityService {
           activityId,
           task.id
         ].join('/'));
-        this.topic.getTopic(task.id);
+        this.topic.getTopic(activityId, task.id);
         break;
     }
   }

@@ -40,8 +40,9 @@ export class TopicService {
     this._topic$.next(null);
   }
 
-  getTopic(id: number) {
-    if (!this.topic || this.topic.id !== id) {
+  getTopic(activityId: number, topicId?: number) {
+    const resolvedTopicId = topicId ?? activityId;
+    if (!this.topic || this.topic.id !== resolvedTopicId) {
       this.clearTopic();
     }
     if (environment.demo) {
@@ -59,11 +60,11 @@ export class TopicService {
           audio { link language status }
         }
       }`,
-      { variables: { activityId: id } }
+      { variables: { activityId: activityId } }
     ).pipe(
       map((response: any) => {
         const topics: Topic[] = response?.data?.topics ?? [];
-        const topic = topics.find(t => t.id === id) ?? topics[0];
+        const topic = topics.find(t => t.id === resolvedTopicId) ?? topics[0];
         if (topic) {
           this._setTopic(topic);
         }

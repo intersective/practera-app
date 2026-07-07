@@ -48,8 +48,8 @@ export class TopicMobilePage implements OnInit {
       });
     });
     this.route.params.subscribe(params => {
-      this.topicService.getTopic(params.id);
       this.activityId = +params.activityId;
+      this.topicService.getTopic(this.activityId, +params.id);
     });
   }
 

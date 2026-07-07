@@ -391,7 +391,7 @@ export class AssessmentService {
       submission.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
       };
-      if (["published", "done"].includes(submission.status)) {
+      if (["published", "feedback available", "done"].includes(submission.status)) {
         submission = this._addChoiceExplanation(eachAnswer, submission);
       }
     });
@@ -433,7 +433,8 @@ export class AssessmentService {
 
     // only get the review answer if the review is published, or it is for the reviewer to see the review
     // i.e. don't display the review answer if it is for submitter and review not published yet
-    if (firstSubmission.status !== "published" && action === "assessment") {
+    // "feedback available" is the normalised form of "published" (see _submissionStatus)
+    if (!["published", "feedback available"].includes(firstSubmission.status) && action === "assessment") {
       return review;
     }
 

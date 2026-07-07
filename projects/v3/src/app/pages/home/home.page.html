@@ -34,7 +34,8 @@
           i18n>Experience Details</h2>
           @if (experience) {
             <img [src]="experience.leadImage"
-              [alt]="experience.name || 'Experience lead image'" />
+              [alt]="experience.name || 'Experience lead image'"
+              [appFallbackImage]="'assets/default-experience-image.svg'" />
             @if (experienceProgress >= 0) {
               <ion-progress-bar
                 color="primary"

@@ -4,7 +4,7 @@
   tabindex="0"
   role="listitem">
   @if (!loading) {
-    @if (!leadImage) {
+    @if (!leadImage && !fallbackLeadImage) {
       <div class="icon-container activitypage">
         @if (leadingIcon) {
           <ion-icon
@@ -30,9 +30,9 @@
         }
       </div>
     }
-    @if (leadImage) {
+    @if (leadImage || fallbackLeadImage) {
       <ion-avatar class="icon-container homepage" slot="start" aria-hidden="true">
-        <img [src]="leadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
+        <img [src]="leadImage || fallbackLeadImage" [ngClass]="leadImageClass" [alt]="title" [appFallbackImage]="fallbackLeadImage">
         @if (bookmarked === true) {
           <ion-icon name="bookmark"
             class="bookmark-icon"
