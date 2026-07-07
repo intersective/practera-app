@@ -1169,7 +1169,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * open edit modal for a sent message.
    */
-  async openEditMessagePopup(index: number) {
+  async openEditMessagePopup(message: Message) {
+    const index = this.messageList.findIndex((m) => m.uuid === message.uuid);
+    if (index === -1) {
+      return;
+    }
     const modal = await this.modalController.create({
       component: EditMessagePopupComponent,
       cssClass: 'chat-edit-message-popup',
