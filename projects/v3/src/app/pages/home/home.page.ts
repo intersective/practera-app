@@ -285,7 +285,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
-    this.defaultLeadImage = this.experience.cardUrl || '';
+    this.defaultLeadImage = this.experience.cardUrl || 'assets/default-experience-image.svg';
 
     // reset & load bookmarks
     this.bookmarkedActivities = {};
