@@ -62,17 +62,19 @@ export class ReviewListComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   // go to the review
-  goto(review: Review, keyboardEvent?: KeyboardEvent) {
-    if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
-      keyboardEvent.preventDefault();
-    } else if (keyboardEvent) {
-      return;
+  goto(review: Review, keyboardEvent?: Event) {
+    if (keyboardEvent instanceof KeyboardEvent) {
+      if (keyboardEvent.code === 'Space' || keyboardEvent.code === 'Enter') {
+        keyboardEvent.preventDefault();
+      } else {
+        return;
+      }
     }
 
     this.navigate.emit(review);
   }
 
-  switchStatus(event: CustomEvent<SegmentChangeEventDetail>) {
+  switchStatus(event?: CustomEvent<SegmentChangeEventDetail>) {
     if (!event) {
       return;
     }

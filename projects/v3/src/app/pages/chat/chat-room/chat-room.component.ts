@@ -1024,14 +1024,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     return result;
   }
 
-  async preview(file, keyboardEvent?: KeyboardEvent) {
-    if (
-      keyboardEvent &&
-      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
-    ) {
-      keyboardEvent.preventDefault();
-    } else if (keyboardEvent) {
-      return;
+  async preview(file, keyboardEvent?: Event) {
+    if (keyboardEvent instanceof KeyboardEvent) {
+      if (keyboardEvent.code === "Space" || keyboardEvent.code === "Enter") {
+        keyboardEvent.preventDefault();
+      } else {
+        return;
+      }
     }
 
     const modal = await this.modalController.create({
@@ -1169,7 +1168,14 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   /**
    * open edit modal for a sent message.
    */
-  async openEditMessagePopup(index: number) {
+  async openEditMessagePopup(messageOrIndex: Message | number) {
+    const index =
+      typeof messageOrIndex === 'number'
+        ? messageOrIndex
+        : this.messageList.findIndex((message) => message.uuid === messageOrIndex.uuid);
+    if (index < 0) {
+      return;
+    }
     const modal = await this.modalController.create({
       component: EditMessagePopupComponent,
       cssClass: 'chat-edit-message-popup',

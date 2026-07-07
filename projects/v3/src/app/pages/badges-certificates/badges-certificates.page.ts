@@ -93,15 +93,11 @@ export class BadgesCertificatesPage implements OnInit, OnDestroy {
     this._updatePage();
   }
 
-  async openBadgeDetail(achievement: Achievement, keyboardEvent?: KeyboardEvent) {
-    if (
-      keyboardEvent &&
-      keyboardEvent.key !== 'Enter' &&
-      keyboardEvent.key !== ' '
-    ) {
-      return;
-    }
-    if (keyboardEvent) {
+  async openBadgeDetail(achievement: Achievement, keyboardEvent?: Event) {
+    if (keyboardEvent instanceof KeyboardEvent) {
+      if (keyboardEvent.key !== 'Enter' && keyboardEvent.key !== ' ') {
+        return;
+      }
       keyboardEvent.preventDefault();
     }
     const modal = await this.modalController.create({
