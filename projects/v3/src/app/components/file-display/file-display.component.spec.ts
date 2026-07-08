@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 import { CUSTOM_ELEMENTS_SCHEMA, SimpleChange, DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync, tick } from '@angular/core/testing';
 import { FileDisplayComponent } from './file-display.component';
-import { FilestackService } from '@v3/services/filestack.service';
 import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { environment } from '@v3/environments/environment';
+import { FileInput, TusFileResponse } from '../types/assessment';
+import { ModalController } from '@ionic/angular';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -17,7 +18,6 @@ class OnChangedValues extends SimpleChange {
 describe('FileDisplayComponent', () => {
   let component: FileDisplayComponent;
   let fixture: ComponentFixture<FileDisplayComponent>;
-  let filestackSpy: jasmine.SpyObj<FilestackService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
 
   beforeEach(waitForAsync(() => {
@@ -31,12 +31,11 @@ describe('FileDisplayComponent', () => {
           useClass: TestUtils,
         },
         {
-          provide: FilestackService,
-          useValue: jasmine.createSpyObj('FilestackService', [
-            'previewFile',
-            'getWorkflowStatus',
-            'metadata'
-          ])
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', {
+            create: Promise.resolve({ present: jasmine.createSpy('present').and.returnValue(Promise.resolve()) }),
+            dismiss: Promise.resolve()
+          })
         },
       ],
     })
@@ -46,7 +45,6 @@ describe('FileDisplayComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDisplayComponent);
     component = fixture.debugElement.componentInstance;
-    filestackSpy = TestBed.inject(FilestackService) as jasmine.SpyObj<FilestackService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
   });
 
@@ -54,26 +52,62 @@ describe('FileDisplayComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should preview file', () => {
-    component.previewFile({url: 'DUMMY_URL'});
-    expect(filestackSpy.previewFile.calls.count()).toBe(1);
+  it('should preview file with modal', async () => {
+    const modalControllerSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
+    await component.previewFile({
+      bucket: 'test-bucket',
+      path: 'test-path',
+      name: 'test-file',
+      url: 'DUMMY_URL',
+      extension: 'jpg',
+      type: 'image/jpeg',
+      size: 1000
+    });
+    expect(modalControllerSpy.create).toHaveBeenCalled();
   });
 
-  it('should fail, if preview file api is faulty', fakeAsync(() => {
-    const error = 'PREVIEW FILE SAMPLE ERROR';
-    // filestackSpy.metadata.and.rejectWith(error);
-    filestackSpy.previewFile.and.rejectWith(error);
-    component.previewFile('file').then(res => {
-      console.info('afterPreview', res);
+  it('should open application files in new window', async () => {
+    spyOn(window, 'open');
+    component.file = {
+      bucket: 'test-bucket',
+      path: 'test-path',
+      name: 'test-file.pdf',
+      filename: 'test-file.pdf',
+      url: 'DUMMY_URL',
+      extension: 'pdf',
+      type: 'application/pdf',
+      mimetype: 'application/pdf',
+      size: 1000,
+      directUrl: 'DUMMY_URL',
+      cdnUrl: 'DUMMY_URL',
+    };
+    await component.previewFile({
+      bucket: 'test-bucket',
+      path: 'test-path',
+      name: 'test-file.pdf',
+      url: 'DUMMY_URL',
+      extension: 'pdf',
+      type: 'application/pdf',
+      size: 1000
     });
-    flushMicrotasks();
-  }));
+    expect(window.open).toHaveBeenCalledWith('DUMMY_URL', '_system');
+  });
 
   describe('UI logic', () => {
     const url = 'test.com/uilogic';
     beforeEach(() => {
       component.file = {
-        url
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        filename: 'test-file',
+        url: url,
+        extension: 'jpg',
+        type: 'image/jpeg',
+        mimetype: 'image/jpeg',
+        size: 1000,
+        directUrl: url,
+        cdnUrl: url,
       };
     });
     it('should display image element based on filetype', () => {
@@ -82,10 +116,8 @@ describe('FileDisplayComponent', () => {
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeTruthy();
       expect(videoEle).toBeFalsy();
-      expect(anyEle).toBeFalsy();
     });
 
     it('should display video element based on filetype', () => {
@@ -94,140 +126,20 @@ describe('FileDisplayComponent', () => {
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
       expect(imageEle).toBeFalsy();
       expect(videoEle).toBeTruthy();
-      expect(anyEle).toBeFalsy();
     });
 
-    it('should display "any" element based on filetype', () => {
+    it('should display list-item element for "any" filetype', () => {
       component.fileType = 'any';
       fixture.detectChanges();
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const anyEle: HTMLElement = fixture.nativeElement.querySelector('div');
+      const listItemEle: HTMLElement = fixture.nativeElement.querySelector('app-list-item');
       expect(imageEle).toBeFalsy();
       expect(videoEle).toBeFalsy();
-      expect(anyEle).toBeTruthy();
-    });
-  });
-
-  describe('ngOnInit()', () => {
-    beforeEach(() => {
-      component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
-    });
-
-    it('should check workflow status if workflow object is available', () => {
-      component.file = {
-        workflows: 'isAvailable'
-      };
-      component.ngOnInit();
-      expect(component.updateWorkflowStatus).toHaveBeenCalled();
-    });
-
-    it('should not update workflow status if file not available', () => {
-      component.file = undefined;
-      component.ngOnInit();
-      expect(component.updateWorkflowStatus).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('ngOnChanges', () => {
-    it('should track fileupload json changes', () => {
-      component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
-      const jsonData = { just: 'first test' };
-      const newJsonData = {
-        jsonData, ...{
-          and: 'second test',
-          without: 'workflow',
-        }
-      };
-
-      component.ngOnChanges({
-        file: new OnChangedValues(jsonData, newJsonData),
-      });
-
-      expect(component.updateWorkflowStatus).not.toHaveBeenCalled();
-    });
-
-    it('should not track fileupload changes if workflow is not available', () => {
-      component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
-      const jsonData = { just: 'first test' };
-      const newJsonData = {
-        jsonData, ...{
-          and: 'second test',
-          without: 'workflows',
-        }
-      };
-
-      component.ngOnChanges({
-        file: new OnChangedValues(jsonData, newJsonData),
-      });
-
-      expect(component.updateWorkflowStatus).not.toHaveBeenCalled();
-    });
-
-    it('should track fileupload changes if workflow is available', fakeAsync(() => {
-      const virus_detection = {
-        data: 'virus_detection_test_data',
-      };
-      const quarantine = {
-        data: 'quarantine_test_data',
-      };
-      filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([
-        {
-          results: {
-            virus_detection,
-            quarantine,
-          },
-          status: 'FINISHED',
-        }
-      ]));
-      component.updateWorkflowStatus = jasmine.createSpy('updateWorkflowStatus');
-
-      const jsonData = { just: 'first test' };
-      const newJsonData = {
-        ...jsonData, ...{
-          and: 'second test',
-          workflows: true,
-        }
-      };
-      component.videoEle = {
-        nativeElement: {
-          load: () => jasmine.createSpy()
-        }
-      };
-      component.ngOnChanges({
-        file: new OnChangedValues(jsonData, newJsonData),
-      });
-
-      flushMicrotasks();
-      expect(component.updateWorkflowStatus).toHaveBeenCalled();
-      return;
-      // can't test the following in development
-      expect(filestackSpy.getWorkflowStatus).toHaveBeenCalledWith(newJsonData.workflows);
-      expect(component['virusDetection']).toEqual(virus_detection.data);
-      expect(component['quarantine']).toEqual(quarantine.data);
-    }));
-  });
-
-  describe('updateWorkflowStatus()', () => {
-    it('should update workflow status', () => {
-      utilsSpy.isEmpty.and.returnValue(true);
-      filestackSpy.getWorkflowStatus.and.returnValue(Promise.resolve([{
-        results: {
-          virus_detection: { data: {} },
-          quarantine: { data: {} },
-        },
-        status: 'finished'
-      }]));
-
-      environment.production = true;
-      component.updateWorkflowStatus();
-      expect(filestackSpy.getWorkflowStatus).toHaveBeenCalled();
-      expect(component.virusDetection).toEqual({});
-      expect(component['quarantine']).toEqual({});
+      expect(listItemEle).toBeTruthy();
     });
   });
 
@@ -236,43 +148,34 @@ describe('FileDisplayComponent', () => {
       component.removeFile.emit = spyOn(component.removeFile, 'emit');
     });
 
-    it('should remove uploaded file', () => {
-      component.fileType = 'not any';
+    it('should download file when index is 0', () => {
       component.actionBtnClick({
-        handle: '1234567abc',
-        url: 'http://dummy.com'
-      }, 999);
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'http://dummy.com',
+        directUrl: 'http://dummy.com/direct',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000
+      } as TusFileResponse, 0);
+
+      expect(utilsSpy.downloadFile).toHaveBeenCalled();
+    });
+
+    it('should remove uploaded file when index is 1', () => {
+      component.actionBtnClick({
+        bucket: 'test-bucket',
+        path: 'test-path',
+        name: 'test-file',
+        url: 'http://dummy.com',
+        extension: 'jpg',
+        type: 'image/jpeg',
+        size: 1000
+      } as TusFileResponse, 1);
 
       expect(component.removeFile.emit).toHaveBeenCalled();
     });
-
-    it('should execute based on index code', fakeAsync(() => {
-      component.fileType = 'any';
-
-      component.actionBtnClick({
-        handle: '1234567abc',
-        url: 'http://dummy.com'
-      }, 0);
-
-      // expect(component.removeFile.emit).toHaveBeenCalled();
-      expect(utilsSpy.downloadFile).toHaveBeenCalled();
-
-      component.actionBtnClick({
-        handle: '1234567abc',
-        url: 'http://dummy.com'
-      }, 1);
-
-      tick();
-      expect(filestackSpy.previewFile).toHaveBeenCalled();
-
-      component.actionBtnClick({
-        handle: '1234567abc',
-        url: 'http://dummy.com'
-      }, 2);
-
-      tick();
-      expect(component.removeFile.emit).toHaveBeenCalled();
-    }));
   });
 });
 

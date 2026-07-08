@@ -1,7 +1,7 @@
 <h3 class="for-accessibility" [id]="'multiple-choice-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="isDisplayOnly">
   <ion-list class="ion-no-padding">
-    <ng-container *ngFor="let choice of question.choices; let i = index">
+    <ng-container *ngFor="let choice of displayChoices; let i = index">
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
@@ -19,7 +19,7 @@
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
-          <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
+          <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
         </ion-item>
       </ng-container>
     </ng-container>
@@ -72,7 +72,7 @@
             *ngIf="control.disabled && choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && checkInnerValue(choice.id)">
             <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
               <ion-icon slot="start" name="information-circle" aria-hidden="true"></ion-icon>
-              <ion-note size="small" [innerHTML]="choice.explanation | detectLanguage"></ion-note>
+              <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
             </ion-item>
           </ng-container>
         </ng-container>

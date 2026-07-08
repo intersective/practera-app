@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators'
 import { Question } from '../types/assessment';
 
 @Component({
+  standalone: false,
   selector: 'app-text',
   templateUrl: 'text.component.html',
   styleUrls: ['text.component.scss'],

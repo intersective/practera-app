@@ -8,9 +8,10 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Subject, Observable } from 'rxjs';
+import { firstValueFrom, Subject, Observable } from 'rxjs';
 
 @Component({
+  standalone: false,
   selector: 'app-experiences',
   templateUrl: './experiences.page.html',
   styleUrls: ['./experiences.page.scss'],
@@ -77,7 +78,25 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   }
 
   async getProgress(projectId: number) {
-    return this.experienceService.getProgresses([projectId]).toPromise();
+    return firstValueFrom(this.experienceService.getProgresses([projectId]));
+  }
+
+  // determine the appropriate column size for desktop layout based on experience count
+  getDesktopColumnSize(experienceCount: number): string {
+    if (experienceCount <= 1) {
+      return '8';
+    }
+
+    if (experienceCount === 2) {
+      return '6';
+    }
+
+    return '4';
+  }
+
+  // display experience tile in compact UI
+  isCompactLayout(experienceCount: number): boolean {
+    return experienceCount <= 2;
   }
 
   get instituteLogo() {

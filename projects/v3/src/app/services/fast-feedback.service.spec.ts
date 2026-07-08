@@ -7,6 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { AlertController } from '@ionic/angular';
 
 // helper to build a valid pulse check API response
 function makePulseCheckResponse(questions: any[] = [], meta: any = null) {
@@ -62,6 +63,10 @@ describe('FastFeedbackService', () => {
           provide: DemoService,
           useValue: jasmine.createSpyObj('DemoService', ['fastFeedback', 'normalResponse']),
         },
+        {
+          provide: AlertController,
+          useValue: jasmine.createSpyObj('AlertController', ['create']),
+        },
       ]
     });
     service = TestBed.inject(FastFeedbackService);
@@ -83,12 +88,10 @@ describe('FastFeedbackService', () => {
   describe('when testing pullFastFeedback()', () => {
     it('should open modal and set lock when pulse check data is valid', () => {
       apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
-      storageSpy.get.and.returnValue(false); // fastFeedbackOpening = false
+      storageSpy.get.and.returnValue(false);
 
       service.pullFastFeedback().subscribe(() => {
-        // should set fastFeedbackOpening = true
         expect(storageSpy.set).toHaveBeenCalledWith('fastFeedbackOpening', true);
-        // should call fastFeedbackModal
         expect(notificationSpy.fastFeedbackModal).toHaveBeenCalledTimes(1);
       });
     });
@@ -100,7 +103,6 @@ describe('FastFeedbackService', () => {
       service.pullFastFeedback().subscribe();
       tick();
 
-      // lock is set to true and never released by the service
       const setCalls = storageSpy.set.calls.allArgs();
       const lockCalls = setCalls.filter(args => args[0] === 'fastFeedbackOpening');
       expect(lockCalls.length).toBe(1);
@@ -109,7 +111,7 @@ describe('FastFeedbackService', () => {
 
     it('should not open modal when fastFeedbackOpening is already true', () => {
       apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
-      storageSpy.get.and.returnValue(true); // lock already held
+      storageSpy.get.and.returnValue(true);
 
       service.pullFastFeedback().subscribe(() => {
         expect(notificationSpy.fastFeedbackModal).not.toHaveBeenCalled();
@@ -149,11 +151,10 @@ describe('FastFeedbackService', () => {
       notificationSpy.fastFeedbackModal.and.returnValue(Promise.reject('modal error'));
 
       service.pullFastFeedback().subscribe();
-      tick(); // resolve rejected promise
+      tick();
 
       const setCalls = storageSpy.set.calls.allArgs();
       const lockCalls = setCalls.filter(args => args[0] === 'fastFeedbackOpening');
-      // first set to true, then released to false on error
       expect(lockCalls).toEqual([
         ['fastFeedbackOpening', true],
         ['fastFeedbackOpening', false],

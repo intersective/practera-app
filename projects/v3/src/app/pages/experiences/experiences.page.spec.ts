@@ -5,6 +5,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { IonicModule, LoadingController } from '@ionic/angular';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
+import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { ExperiencesPage } from './experiences.page';
 import { MockRouter } from '@testingv3/mocked.service';
@@ -24,6 +26,7 @@ describe('ExperiencesPage', () => {
     TestBed.configureTestingModule({
       declarations: [ ExperiencesPage ],
       imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: Router,
@@ -35,11 +38,14 @@ describe('ExperiencesPage', () => {
         },
         {
           provide: ExperienceService,
-          useValue: jasmine.createSpyObj('ExperienceService', [
-            'getPrograms',
-            'switchProgramAndNavigate',
-          ], {
-            'programsWithProgress$': of(),
+          useValue: jasmine.createSpyObj('ExperienceService', {
+            'getPrograms': undefined,
+            'getExperiences': undefined,
+            'switchProgramAndNavigate': Promise.resolve(true),
+            'getProgresses': of([]),
+          }, {
+            'programsWithProgress$': of([]),
+            'experiences$': of(null),
           }),
         },
         {
@@ -58,7 +64,16 @@ describe('ExperiencesPage', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['getConfig']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', {
+            'getConfig': {},
+            'get': null,
+          }),
+        },
+        {
+          provide: UnlockIndicatorService,
+          useValue: jasmine.createSpyObj('UnlockIndicatorService', ['clearAllTasks'], {
+            'unlockedTasks$': of([])
+          })
         },
       ],
     }).compileComponents();
@@ -82,6 +97,27 @@ describe('ExperiencesPage', () => {
         instituteLogo: 'abcdefg'
       });
       expect(component.instituteLogo).toEqual('abcdefg');
+    });
+  });
+
+  describe('layout helpers', () => {
+    it('should use wider desktop column for one experience', () => {
+      expect(component.getDesktopColumnSize(1)).toEqual('8');
+    });
+
+    it('should use half-width desktop columns for two experiences', () => {
+      expect(component.getDesktopColumnSize(2)).toEqual('6');
+    });
+
+    it('should use three-column desktop layout for three or more experiences', () => {
+      expect(component.getDesktopColumnSize(3)).toEqual('4');
+      expect(component.getDesktopColumnSize(10)).toEqual('4');
+    });
+
+    it('should mark compact layout only for one or two experiences', () => {
+      expect(component.isCompactLayout(1)).toBeTrue();
+      expect(component.isCompactLayout(2)).toBeTrue();
+      expect(component.isCompactLayout(3)).toBeFalse();
     });
   });
 

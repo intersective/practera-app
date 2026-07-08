@@ -1,5 +1,5 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthForgotPasswordComponent } from './auth-forgot-password.component';
 import { AuthService } from '@v3/services/auth.service';
@@ -7,7 +7,8 @@ import { Observable, of, pipe, throwError } from 'rxjs';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { TestUtils } from '@testingv3/utils';
 
 describe('AuthForgotPasswordComponent', () => {
@@ -18,12 +19,14 @@ describe('AuthForgotPasswordComponent', () => {
   let notificationSpy: jasmine.SpyObj<NotificationsService>;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule],
       declarations: [AuthForgotPasswordComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
         {
           provide: UtilsService,
           useClass: TestUtils,
@@ -83,11 +86,11 @@ describe('AuthForgotPasswordComponent', () => {
     }));
 
     it('should pop up reset too frequently alert if forgot password failed', fakeAsync(() => {
-      serviceSpy.forgotPassword.and.returnValue(throwError({
+      serviceSpy.forgotPassword.and.returnValue(throwError(() => ({
         data: {
           type: 'reset_too_frequently'
         }
-      }));
+      })));
       component.send();
       tick();
       expect(component.isSending).toBe(false);
@@ -95,7 +98,7 @@ describe('AuthForgotPasswordComponent', () => {
     }));
 
     it('should pop up try again alert if forgot password failed', fakeAsync(() => {
-      serviceSpy.forgotPassword.and.returnValue(throwError({}));
+      serviceSpy.forgotPassword.and.returnValue(throwError(() => ({})));
       component.send();
       tick();
       expect(component.isSending).toBe(false);
@@ -103,4 +106,3 @@ describe('AuthForgotPasswordComponent', () => {
     }));
   });
 });
-
