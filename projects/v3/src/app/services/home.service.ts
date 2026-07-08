@@ -25,6 +25,8 @@ export interface Experience {
   description: string;
   locale: string;
   cardUrl?: string;
+  logoUrl?: string;
+  iconUrl?: string;
 }
 
 export interface UnlockConditionMeta {

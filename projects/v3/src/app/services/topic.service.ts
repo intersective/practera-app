@@ -50,8 +50,8 @@ export class TopicService {
     }
 
     return this.apolloService.graphQLFetch(
-      `query topics($activityId: ID!) {
-        topics(activityId: $activityId) {
+      `query topic($id: ID!) {
+        topic(id: $id) {
           id
           title
           content
@@ -60,15 +60,14 @@ export class TopicService {
           audio { link language status }
         }
       }`,
-      { variables: { activityId: activityId } }
+      { variables: { id: resolvedTopicId } }
     ).pipe(
       map((response: any) => {
-        const topics: Topic[] = response?.data?.topics ?? [];
-        const topic = topics.find(t => t.id === resolvedTopicId) ?? topics[0];
-        if (topic) {
-          this._setTopic(topic);
+        const raw = response?.data?.topic ?? null;
+        if (raw) {
+          this._setTopic(raw);
         }
-        return topic;
+        return raw;
       })
     ).subscribe();
   }

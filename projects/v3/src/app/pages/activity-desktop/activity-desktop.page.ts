@@ -11,7 +11,7 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
-import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
+import { delay, filter, first, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
 import { TopicComponent } from '@v3/app/components/topic/topic.component';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
@@ -35,7 +35,7 @@ export class ActivityDesktopPage {
   btnDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   notInATeamAndForTeamOnly: boolean = false;
   // loading overlay for assessment
-  isLoadingAssessment: boolean = false;
+  isLoadingTask: boolean = false;
 
   longAsmtNavigator: boolean = false; // disable fab navigator on long assessment
 
@@ -347,7 +347,7 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
-    this.isLoadingAssessment = true;
+    this.isLoadingTask = true;
     this.btnDisabled$.next(false);
     try {
       const taskContentElement = this.document.getElementById('task-content');
@@ -356,9 +356,23 @@ export class ActivityDesktopPage {
       }
 
       await this.activityService.goToTask(task);
-      this.isLoadingAssessment = false;
+
+      // For Topic tasks, goToTask calls topic.getTopic() which is fire-and-forget
+      // (returns a Subscription, not a Promise). The await above resolves immediately
+      // while clearTopic() has already set topic$ to null. Keep the overlay until
+      // topic$ emits the new topic so the content panel doesn't flash in half-loaded.
+      if (task.type === 'Topic') {
+        await firstValueFrom(
+          this.topicService.topic$.pipe(
+            filter(t => t != null && t.id === task.id),
+            first(),
+          )
+        );
+      }
+
+      this.isLoadingTask = false;
     } catch (error) {
-      this.isLoadingAssessment = false;
+      this.isLoadingTask = false;
       console.error(error);
     }
   }

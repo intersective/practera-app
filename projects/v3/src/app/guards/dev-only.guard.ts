@@ -11,7 +11,7 @@ export class DevOnlyGuard implements CanLoad {
   ) {}
 
   canLoad(): boolean {
-    const isLive = environment.production;
+    const isLive = environment.production as any;
     if (isLive === true) {
       this.router.navigate(['/']);
       return false;

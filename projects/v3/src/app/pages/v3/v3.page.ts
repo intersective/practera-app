@@ -206,9 +206,26 @@ export class V3Page implements OnInit, OnDestroy {
       this.appPages[2].badges = notifications.filter(noti => noti.type === 'review_submission').length; // reviews tab
     });
 
-    this.homeService.experience$.subscribe(expInfo => {
+    this.homeService.experience$.pipe(
+      takeUntil(this.unsubscribe$),
+    ).subscribe(expInfo => {
       if (expInfo?.locale && (environment.production as any) === true) {
         this.utils.moveToNewLocale(expInfo?.locale);
+      }
+      // Refresh the institution logo whenever experience data loads or changes.
+      // homeService.getExperience() fetches the auth query which includes iconUrl
+      // (mapped to squareLogo in storage via switchProgram). Reading directly from
+      // the experience response here keeps the logo current without requiring a
+      // re-login when branding changes.
+      if (expInfo) {
+        const square = expInfo.iconUrl || null;
+        const full = expInfo.logoUrl || null;
+        this.institutionName = expInfo.name || this.institutionName;
+        if (!this.isMenuOpen) {
+          this.institutionLogo = square || '';
+        } else {
+          this.institutionLogo = full || '/assets/logo.svg';
+        }
       }
     });
 
