@@ -34,10 +34,11 @@ showProjectBrief() → opens ProjectBriefModalComponent
 - `project-brief-modal.component.scss` - Component-specific styles
 - `project-brief-modal.component.spec.ts` - Unit tests
 
-**Input:**
+**Modal property:**
 ```typescript
-@Input() projectBrief: ProjectBrief = {};
+projectBrief: ProjectBrief = {};
 ```
+Ionic sets this public property through `componentProps` when the modal is created.
 
 **Interface:**
 ```typescript
@@ -61,6 +62,10 @@ interface ProjectBrief {
 - Technical Skills (as chips)
 - Professional Skills (as chips)
 - Deliverables
+
+**Color treatment:**
+- Modal section header icons and chips use the primary brand color.
+- Do not use the secondary brand color for Technical Skills accents; customer secondary colors can be too light to remain visible on the light modal background.
 
 **Empty Field Handling:**
 - All sections show "None specified" when the field is empty or undefined
@@ -181,7 +186,7 @@ Button placement - next to experience name:
 - Keyboard navigation with `(keydown.enter)` and `(keydown.space)` handlers
 - Modal has proper semantic structure with `<main>`, `<section>`, and heading hierarchy
 - Close button includes `aria-label="Close project brief"`
-- Ion-chips for industry/skills are visually distinct with color coding
+- Ion-chips for industry/skills use the primary brand color so labels and outlines remain visible when secondary branding is faint
 
 ## Sample Data
 
@@ -219,6 +224,7 @@ After parsing:
 - Template renders title when provided
 - Template shows "None specified" for empty fields
 - Template renders chips for industry and skills
+- Template keeps section accents on the primary brand color
 
 **HomePage tests (additions needed):**
 - Button visible when `projectBrief` is set
