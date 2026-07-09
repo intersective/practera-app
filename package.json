@@ -24,7 +24,6 @@
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
     "postdeploy": "npm run generate-version",
     "test": "ng test v3 --no-watch",
-    "sonar-test": "ng test --no-watch --code-coverage --browsers ChromeHeadless --karmaConfig=src/karma.conf.sonarci.js",
     "lint": "ng lint v3",
     "lint-fix": "ng lint --fix",
     "lintv3": "ng lint v3",
@@ -124,12 +123,16 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "karma-junit-reporter": "~2.0.1",
     "karma-ng-html2js-preprocessor": "^1.0.0",
-    "karma-sonarqube-unit-reporter": "0.0.23",
     "ng-packagr": "20.3.2",
     "serverless": "^3.38.0",
     "serverless-certificate-creator": "^1.6.0",
     "ts-node": "~10.9.0",
     "typescript": "5.9.3"
   },
-  "packageManager": "npm@10.8.2"
+  "packageManager": "npm@10.8.2",
+  "allowScripts": {
+    "esbuild@0.28.0": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.27.7": true
+  }
 }
