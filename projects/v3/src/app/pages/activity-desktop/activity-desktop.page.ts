@@ -130,26 +130,34 @@ export class ActivityDesktopPage {
         filter(() => !this.activityLockShown),
         takeUntil(this.componentCleanupService.cleanup$)
       )
-      .subscribe((res) => (this.currentTask = res));
+      .subscribe((res) => {
+        this.ngZone.run(() => { this.currentTask = res; this.cdr.markForCheck(); });
+      });
 
     this.assessmentService.submission$
       .pipe(
         distinctUntilChanged(),
         takeUntil(this.componentCleanupService.cleanup$)
       )
-      .subscribe((res) => (this.submission = res));
+      .subscribe((res) => {
+        this.ngZone.run(() => { this.submission = res; this.cdr.markForCheck(); });
+      });
 
     this.assessmentService.review$
       .pipe(
         distinctUntilChanged(),
         takeUntil(this.componentCleanupService.cleanup$)
-      ).subscribe((res) => (this.review = res));
+      ).subscribe((res) => {
+        this.ngZone.run(() => { this.review = res; this.cdr.markForCheck(); });
+      });
 
     this.topicService.topic$
       .pipe(
         distinctUntilChanged(),
         takeUntil(this.componentCleanupService.cleanup$)
-      ).subscribe((res) => (this.topic = res));
+      ).subscribe((res) => {
+        this.ngZone.run(() => { this.topic = res; this.cdr.markForCheck(); });
+      });
 
     this.route.paramMap.pipe(
       takeUntil(this.componentCleanupService.cleanup$)
@@ -347,7 +355,7 @@ export class ActivityDesktopPage {
   }
 
   async goToTask(task: Task): Promise<any> {
-    this.isLoadingTask = true;
+    this.ngZone.run(() => { this.isLoadingTask = true; this.cdr.markForCheck(); });
     this.btnDisabled$.next(false);
     try {
       const taskContentElement = this.document.getElementById('task-content');
@@ -370,9 +378,9 @@ export class ActivityDesktopPage {
         );
       }
 
-      this.isLoadingTask = false;
+      this.ngZone.run(() => { this.isLoadingTask = false; this.cdr.markForCheck(); });
     } catch (error) {
-      this.isLoadingTask = false;
+      this.ngZone.run(() => { this.isLoadingTask = false; this.cdr.markForCheck(); });
       console.error(error);
     }
   }

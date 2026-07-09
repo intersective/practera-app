@@ -222,7 +222,7 @@ export class V3Page implements OnInit, OnDestroy {
         const full = expInfo.logoUrl || null;
         this.institutionName = expInfo.name || this.institutionName;
         if (!this.isMenuOpen) {
-          this.institutionLogo = square || '';
+          this.institutionLogo = square || '/assets/practera-logo-only.svg';
         } else {
           this.institutionLogo = full || '/assets/logo.svg';
         }
@@ -315,11 +315,11 @@ export class V3Page implements OnInit, OnDestroy {
 
   getInstitutionLogo(): string {
     if (!this.storageService) {
-      return '/assets/logo.svg'; // Default logo or some fallback
+      return '/assets/logo.svg';
     }
 
     if (this.isMenuOpen !== true) {
-      return this.storageService.getUser().squareLogo || '';
+      return this.storageService.getUser().squareLogo || '/assets/practera-logo-only.svg';
     }
 
     return this.storageService.getUser().institutionLogo || '/assets/logo.svg';
