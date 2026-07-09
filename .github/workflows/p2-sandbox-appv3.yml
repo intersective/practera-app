@@ -17,6 +17,7 @@ on:
   push:
     branches:
       - 'pvt'
+      - 'feature/p2-sandbox-bringup'
 
 
 ################################################
