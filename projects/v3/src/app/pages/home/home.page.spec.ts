@@ -176,6 +176,25 @@ describe('HomePage', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should show a visible Project Hub label when project brief and project hub are available', () => {
+    component.experience = { id: 1, name: 'Test Experience', cardUrl: 'test-card-url' } as any;
+    component.isExpert = false;
+    component.projectBrief = { id: 'brief-1', title: 'Project Brief' };
+    component.showProjectHub = true;
+
+    fixture.detectChanges();
+
+    const buttons = Array.from(
+      fixture.nativeElement.querySelectorAll('ion-button')
+    ) as HTMLElement[];
+    const projectHubButton = buttons.find(button =>
+      button.getAttribute('aria-label') === 'Go to Project Hub'
+    );
+
+    expect(projectHubButton).toBeTruthy();
+    expect(projectHubButton?.textContent).toContain('Go to Project Hub');
+  });
+
   describe('updateDashboard', () => {
     beforeEach(() => {
       sharedService.refreshJWT.and.returnValue(Promise.resolve());
