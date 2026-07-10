@@ -84,6 +84,7 @@ describe('TopicService', () => {
       service.getTopic(1);
       service.topic$.subscribe(res => {
         expect(res.videolink).toEqual('video');
+        expect(res.rawContent).toEqual('content');
       });
     });
     describe('should throw error', () => {
@@ -113,5 +114,46 @@ describe('TopicService', () => {
     requestSpy.post.and.returnValue(of(''));
     service.updateTopicProgress(1, '').subscribe();
     expect(requestSpy.post.calls.count()).toBe(1);
+    expect(requestSpy.post).toHaveBeenCalledWith({
+      endPoint: 'api/v2/motivations/progress/create.json',
+      data: {
+        model: 'topic',
+        model_id: 1,
+        state: '',
+      },
+    });
+  });
+
+  it('when testing updateTopicProgress(), it should post attention metrics when provided', () => {
+    const attention = {
+      version: 1,
+      score: 80,
+      confidence: 'high',
+      activeMs: 10000,
+      visibleMs: 10000,
+      estimatedReadMs: 9000,
+      textWordCount: 30,
+      contentExposureRatio: 1,
+      mediaProgressRatio: 0,
+      mediaPlayedMs: 0,
+      filePreviewCount: 0,
+      fileDownloadCount: 0,
+      quickComplete: false,
+    } as any;
+    requestSpy.post.and.returnValue(of(''));
+
+    service.updateTopicProgress(1, 'completed', attention).subscribe();
+
+    expect(requestSpy.post).toHaveBeenCalledWith({
+      endPoint: 'api/v2/motivations/progress/create.json',
+      data: {
+        model: 'topic',
+        model_id: 1,
+        state: 'completed',
+        meta: {
+          attention,
+        },
+      },
+    });
   });
 });

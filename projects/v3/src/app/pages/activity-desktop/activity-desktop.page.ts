@@ -11,7 +11,7 @@ import { Topic, TopicService } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
 import { delay, filter, tap, distinctUntilChanged, takeUntil, debounceTime } from 'rxjs/operators';
-import { TopicComponent } from '@v3/app/components/topic/topic.component';
+import { TopicComponent, TopicContinueEvent } from '@v3/app/components/topic/topic.component';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
 
 const SAVE_PROGRESS_TIMEOUT = 10000;
@@ -466,7 +466,7 @@ export class ActivityDesktopPage {
     }
   }
 
-  async topicComplete(task: Task) {
+  async topicComplete(task: Task, event?: TopicContinueEvent) {
     this.loading = true;
     this.btnDisabled$.next(true);
     if (task.status === 'done') {
@@ -478,7 +478,7 @@ export class ActivityDesktopPage {
     }
     // mark the topic as complete
     await firstValueFrom(this.topicService
-      .updateTopicProgress(task.id, 'completed'));
+      .updateTopicProgress(task.id, 'completed', event?.attention));
 
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(
