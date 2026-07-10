@@ -99,7 +99,7 @@
     *ngIf="currentTask?.type === 'Topic'"
     [topic]="topic"
     [task]="currentTask"
-    (continue)="topicComplete(currentTask)"
+    (continue)="topicComplete(currentTask, $event)"
     [buttonDisabled$]="btnDisabled$"
     tabindex="0"
     id="task-content-topic"
