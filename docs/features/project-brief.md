@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Project Brief feature displays team project information to users on the home page. When a user's team has a project brief configured, a "Project Brief" button appears next to the experience name. Clicking this button opens a modal that displays structured project details.
+The Project Brief feature displays team project information to users on the home page. When a user's team has a project brief configured, a "Project Brief" button appears next to the experience name. Clicking this button opens a modal that displays structured project details. When the Project Hub feature is enabled, a visible "Go to Project Hub" button opens the external Project Hub application.
 
 ## Data Flow
 
@@ -17,7 +17,7 @@ HomePage.updateDashboard()
     ↓ reads from storage
 this.projectBrief = this.storageService.getUser().projectBrief
     ↓
-Template: *ngIf="projectBrief" shows button
+Template: *ngIf="projectBrief" shows Project Brief button; *ngIf="showProjectHub" shows Project Hub button
     ↓
 showProjectBrief() → opens ProjectBriefModalComponent
 ```
@@ -34,10 +34,11 @@ showProjectBrief() → opens ProjectBriefModalComponent
 - `project-brief-modal.component.scss` - Component-specific styles
 - `project-brief-modal.component.spec.ts` - Unit tests
 
-**Input:**
+**Modal property:**
 ```typescript
-@Input() projectBrief: ProjectBrief = {};
+projectBrief: ProjectBrief = {};
 ```
+Ionic sets this public property through `componentProps` when the modal is created.
 
 **Interface:**
 ```typescript
@@ -61,6 +62,10 @@ interface ProjectBrief {
 - Technical Skills (as chips)
 - Professional Skills (as chips)
 - Deliverables
+
+**Color treatment:**
+- Modal section header icons and chips use the primary brand color.
+- Do not use the secondary brand color for Technical Skills accents; customer secondary colors can be too light to remain visible on the light modal background.
 
 **Empty Field Handling:**
 - All sections show "None specified" when the field is empty or undefined
@@ -124,17 +129,28 @@ Button placement - next to experience name:
 ```html
 <div class="exp-header">
   <h2 class="headline-2" [innerHTML]="experience.name"></h2>
-  <ion-button *ngIf="projectBrief"
-    fill="clear"
-    size="small"
-    class="project-brief-btn"
-    (click)="showProjectBrief()"
-    (keydown.enter)="showProjectBrief()"
-    (keydown.space)="showProjectBrief(); $event.preventDefault()"
-    aria-label="View project brief" i18n-aria-label>
-    <ion-icon name="document-text-outline" slot="start" aria-hidden="true"></ion-icon>
-    <span i18n>Project Brief</span>
-  </ion-button>
+  <div class="button-group-no-gap" *ngIf="!isExpert && (projectBrief || showProjectHub)">
+    <ion-button *ngIf="projectBrief?.id"
+      fill="clear"
+      size="small"
+      class="project-brief-btn"
+      (click)="showProjectBrief()"
+      (keydown.enter)="showProjectBrief()"
+      (keydown.space)="showProjectBrief(); $event.preventDefault()"
+      aria-label="View project brief" i18n-aria-label>
+      <ion-icon name="document-text-outline" slot="start" aria-hidden="true"></ion-icon>
+      <span i18n>Project Brief</span>
+    </ion-button>
+    <ion-button *ngIf="showProjectHub"
+      fill="clear"
+      size="small"
+      class="project-brief-btn"
+      title="Go to Project Hub"
+      aria-label="Go to Project Hub" i18n-aria-label>
+      <ion-icon name="open-outline" slot="start" size="small" aria-hidden="true"></ion-icon>
+      <span i18n>Go to Project Hub</span>
+    </ion-button>
+  </div>
 </div>
 ```
 
@@ -177,11 +193,11 @@ Button placement - next to experience name:
 
 ## Accessibility
 
-- Button includes `aria-label="View project brief"` with i18n support
+- Buttons include descriptive aria labels with i18n support
 - Keyboard navigation with `(keydown.enter)` and `(keydown.space)` handlers
 - Modal has proper semantic structure with `<main>`, `<section>`, and heading hierarchy
 - Close button includes `aria-label="Close project brief"`
-- Ion-chips for industry/skills are visually distinct with color coding
+- Ion-chips for industry/skills use the primary brand color so labels and outlines remain visible when secondary branding is faint
 
 ## Sample Data
 
@@ -219,6 +235,7 @@ After parsing:
 - Template renders title when provided
 - Template shows "None specified" for empty fields
 - Template renders chips for industry and skills
+- Template keeps section accents on the primary brand color
 
 **HomePage tests (additions needed):**
 - Button visible when `projectBrief` is set
