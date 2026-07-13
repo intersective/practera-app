@@ -2490,17 +2490,20 @@ describe('AssessmentComponent', () => {
         ...mockAssessment,
         type: 'team360',
         groups: [
-          { name: 'Self', questions: [{ id: 1 }, { id: 2 }] as any[] },
-          { name: 'Peer 1', questions: [{ id: 3 }, { id: 4 }] as any[] },
-          { name: 'Peer 2', questions: [{ id: 5 }, { id: 6 }] as any[] },
-          { name: 'General', questions: [{ id: 7 }] as any[] },
+          { name: 'General before', questions: [{ id: 1 }] as any[] },
+          { name: 'Self', questions: [{ id: 2 }, { id: 3 }] as any[] },
+          { name: 'Peer 1', questions: [{ id: 4 }, { id: 5 }] as any[] },
+          { name: 'Peer 2', questions: [{ id: 6 }, { id: 7 }] as any[] },
+          { name: 'General after', questions: [{ id: 8 }] as any[] },
         ],
       } as any;
 
       const pages = component['splitGroupsByQuestionCount']();
 
-      expect(pages.length).toBe(4);
-      expect(pages.map(page => page[0].name)).toEqual(['Self', 'Peer 1', 'Peer 2', 'General']);
+      expect(pages.length).toBe(5);
+      expect(pages.map(page => page[0].name)).toEqual([
+        'General before', 'Self', 'Peer 1', 'Peer 2', 'General after',
+      ]);
       expect(pages.every(page => page.length === 1)).toBeTrue();
     });
 
@@ -3166,7 +3169,32 @@ describe('AssessmentComponent', () => {
       });
     });
 
-    describe('semantic member sections and trailing groups', () => {
+    describe('ordered peer and non-peer sections', () => {
+      it('initializes on the leading general page and preserves configured physical-page order', fakeAsync(() => {
+        const general = textGroup(10);
+        const self = textGroup(11);
+        const member = selectorGroup(20);
+        const trailing = textGroup(30);
+        component.task = { assessmentType: 'team360' } as any;
+        component.assessment = {
+          ...mockAssessment,
+          type: 'team360',
+          groups: [general, self, member, trailing],
+        } as any;
+        component.submission = { ...mockSubmission, answers: {} } as any;
+
+        component.ngOnChanges({ assessment: {} as any, submission: {} as any });
+        tick(300);
+
+        expect(component.pagesGroups.map(page => page[0].name)).toEqual([
+          general.name, self.name, member.name, trailing.name,
+        ]);
+        expect(component.pageIndex).toBe(0);
+        expect(component.pagedGroups).toEqual([general]);
+        expect(component.accessiblePageIndexes).toEqual([0, 1, 2, 3]);
+        flush();
+      }));
+
       it('keeps multiple leading non-peer pages accessible before the first peer page', () => {
         component.task = { assessmentType: 'team360' } as any;
         const general = textGroup(10);
@@ -3186,12 +3214,23 @@ describe('AssessmentComponent', () => {
           .toEqual(['non-peer', 'non-peer', 'peer', 'non-peer']);
         expect(component.team360MemberSections[0].pageIndex).toBe(2);
         expect(component.accessiblePageIndexes).toEqual([0, 1, 2, 3]);
+        expect(component.hasPreviousAccessiblePage).toBeFalse();
+        expect(component.hasNextAccessiblePage).toBeTrue();
 
         component.nextPage();
         expect(component.pageIndex).toBe(1);
+        expect(component.pageVisited[1]).toBeTrue();
+        expect(component.hasPreviousAccessiblePage).toBeTrue();
 
         component.nextPage();
         expect(component.pageIndex).toBe(2);
+
+        component.prevPage();
+        expect(component.pageIndex).toBe(1);
+
+        component.prevPage();
+        expect(component.pageIndex).toBe(0);
+        expect(component.hasPreviousAccessiblePage).toBeFalse();
       });
 
       it('keeps non-peer pages accessible between capped peer placeholders', () => {
@@ -3223,10 +3262,25 @@ describe('AssessmentComponent', () => {
           [general], [self], [firstMember], [hiddenMember1], [middleGeneral],
           [hiddenMember2], [trailingGeneral],
         ];
+        component.pageIndex = 2;
+        component.pageVisited = [true, true, true, false, false, false, false];
+        component.questionsForm = new FormGroup({
+          'q-20': new FormControl('member-4'),
+        });
+        spyOn(component, 'scrollActivePageIntoView');
 
         expect(component.team360MemberCount).toBe(1);
         expect(component.team360MemberSections.map(section => section.pageIndex)).toEqual([2]);
         expect(component.accessiblePageIndexes).toEqual([0, 1, 2, 4, 6]);
+
+        component.nextPage();
+        expect(component.pageIndex).toBe(4);
+
+        component.nextPage();
+        expect(component.pageIndex).toBe(6);
+
+        component.prevPage();
+        expect(component.pageIndex).toBe(4);
       });
 
       it('requires the first peer section even when non-peer pages precede it', () => {
@@ -3804,8 +3858,10 @@ describe('AssessmentComponent', () => {
 
       it('requires the first peer group, not completion of every later peer group', () => {
         component.task = { assessmentType: 'team360' } as any;
-        const groups = Array.from({ length: 5 }, (_, i) => selectorGroup(100 + i));
-        // group 0 (key {"userId":100}) excluded; groups 1-4 have unique keys → memberCount = 4
+        const groups = [
+          textGroup(10),
+          ...Array.from({ length: 4 }, (_, i) => selectorGroup(101 + i)),
+        ];
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
         component.questionsForm = new FormGroup({
