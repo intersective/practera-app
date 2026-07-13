@@ -40,10 +40,10 @@ When pagination is enabled (`environment.featureToggles.assessmentPagination = t
 4. Users navigate with Prev/Next buttons; non-Team360 users can also click page indicators
 5. Team360 assessments hide page numbers/dots and use Prev/Next-only pagination
 6. Team360 navigation follows configured group order with one group per physical page
+   - selector-free groups are non-peer pages and remain accessible before, between, or after member-review groups
    - member-review groups contain a team-member selector and drive the member progress counter
-   - selector-free groups after the member-review groups remain accessible
    - unused member placeholder pages remain inaccessible
-7. Form validation tracks every required question, including required questions in trailing selector-free groups
+7. Form validation tracks every required question on accessible pages, including leading and trailing non-peer groups
 8. Submit requires both member-review completion and a valid assessment form
 ```
 
@@ -486,17 +486,20 @@ goToPage(i: number)     // jump to specific page; marks target as visited
 
 For Team360, these methods navigate through `accessiblePageIndexes` rather than assuming every
 integer page between `0` and a maximum is accessible. This allows navigation to skip unused member
-placeholder pages and still reach selector-free groups that follow the member-review section.
+placeholder pages while preserving selector-free groups anywhere in the configured order.
 
 ### Team360 Semantic Completion
 
-Team360 progress is group-based and each configured group has its own physical page:
+Team360 progress is group-based and each configured group has its own physical page. Page meaning
+is derived from its questions rather than its position:
 
-1. the first configured group is the self-assessment page;
-2. each following selector-bearing group is a member-review page;
-3. selector-free groups after the member-review groups are general assessment pages.
+1. a selector-bearing group is a member-review page;
+2. a selector-free group is a non-peer page, including general and self-assessment groups;
+3. physical pages retain their configured order, so any number of non-peer pages can appear before,
+   between, or after member-review pages.
 
-- `team360MemberCount` remains the distinct-member cap derived from selector options.
+- `team360Sections` is the ordered classification of configured groups as peer or non-peer pages.
+- `team360MemberCount` remains the distinct-member cap derived from selector options across all group positions.
 - `team360MemberSections` contains the actual selector-bearing groups, capped by that distinct-member count.
 - `team360RequiredMemberCount` is `1` when at least one member-review section exists: the first
   selector-bearing peer group is the minimum required review.
@@ -505,7 +508,7 @@ Team360 progress is group-based and each configured group has its own physical p
   opening an empty peer page does not count as a completed review.
 - later selector-bearing peer groups remain available and contribute to progress when completed, but
   they do not replace or bypass the required first peer review.
-- trailing groups without a team-member selector never increase the "members reviewed" counter.
+- groups without a team-member selector never increase the "members reviewed" counter.
 
 Submit-button state is calculated as:
 
@@ -516,8 +519,8 @@ disabled = assessment form invalid
 ```
 
 Required completion is checked across all accessible Team360 pages, regardless of which physical
-page is currently displayed. Required trailing questions therefore block submission from every page
-until answered; entirely optional trailing groups add no submission gate.
+page is currently displayed. Required leading or trailing non-peer questions therefore block
+submission from every page until answered; entirely optional non-peer groups add no submission gate.
 
 ### Completion Tracking
 

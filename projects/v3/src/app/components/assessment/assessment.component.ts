@@ -25,6 +25,15 @@ import { ModalController } from '@ionic/angular';
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per paginated view (controls pagination granularity)
 
+type Team360SectionKind = 'peer' | 'non-peer';
+
+interface Team360Section {
+  group: Group;
+  groupIndex: number;
+  pageIndex: number;
+  kind: Team360SectionKind;
+}
+
 /**
  * Assessment Component with optional pagination feature
  *
@@ -192,35 +201,24 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   /**
    * Physical pages that can be reached in the current assessment.
    *
-   * Team360 renders each configured group as its own physical page. Keep the permitted member
-   * groups capped by the distinct-member rule, then append pages belonging to selector-free groups
-   * after the final member group.
+   * Team360 renders each configured group as its own physical page. Selector-free groups remain
+   * accessible wherever they occur, while selector-bearing peer groups are capped by the distinct
+   * member rule.
    */
   get accessiblePageIndexes(): number[] {
     if (!this.isPaginationEnabled) return [0];
     if (this.pageCount === 0) return [];
     if (!this.isTeam360Assessment) return this.pages;
 
-    const accessiblePages = new Set<number>([0]);
-    this.team360MemberSections.forEach(section => {
-      if (section.pageIndex >= 0) accessiblePages.add(section.pageIndex);
-    });
+    const memberPageIndexes = new Set(
+      this.team360MemberSections.map(section => section.pageIndex)
+    );
+    const accessiblePages = this.team360Sections
+      .filter(section => section.kind === 'non-peer' || memberPageIndexes.has(section.pageIndex))
+      .map(section => section.pageIndex)
+      .filter(pageIndex => pageIndex >= 0);
 
-    const groups = this.assessment?.groups ?? [];
-    let lastMemberGroupIndex = -1;
-    groups.forEach((group, groupIndex) => {
-      if (this._hasTeam360Selector(group)) {
-        lastMemberGroupIndex = groupIndex;
-      }
-    });
-
-    for (let groupIndex = lastMemberGroupIndex + 1; groupIndex < groups.length; groupIndex++) {
-      if (this._hasTeam360Selector(groups[groupIndex])) continue;
-      const pageIndex = this._getPageIndexForGroup(groups[groupIndex]);
-      if (pageIndex >= 0) accessiblePages.add(pageIndex);
-    }
-
-    return Array.from(accessiblePages).sort((a, b) => a - b);
+    return Array.from(new Set(accessiblePages)).sort((a, b) => a - b);
   }
 
   get maxAccessiblePageIndex(): number {
@@ -533,7 +531,7 @@ Best regards`;
     // generate physical pages every time assessment changes - only if pagination is enabled
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
-      this.pageIndex = 0;
+      this.pageIndex = this.isTeam360Assessment ? (this.accessiblePageIndexes[0] ?? 0) : 0;
 
       setTimeout(() => {
         this.initializePageCompletion();
@@ -1132,9 +1130,9 @@ Best regards`;
   }
 
   /**
-   * Team360 keeps each configured group on its own physical page so self-assessment, each member
-   * review group, and any following general groups retain their configured order. Other assessment
-   * types are packed into pages containing ≤ pageSize questions; oversized groups are sliced.
+   * Team360 keeps each configured group on its own physical page so non-peer and member-review
+   * groups retain their configured order. Other assessment types are packed into pages containing
+   * ≤ pageSize questions; oversized groups are sliced.
    */
   private splitGroupsByQuestionCount() {
     if (this.isTeam360Assessment) {
@@ -1454,23 +1452,40 @@ Best regards`;
 
   /**
    * returns the number of distinct team members available to review in a team360 assessment.
-   * counts unique teamMembers.key values across selector questions in groups from index 1+
-   * because index 0 is the self-reflection group. This value caps semantic member sections;
-   * submit gating uses team360RequiredMemberCount instead.
+   * counts unique teamMembers.key values across every selector-bearing group, regardless of its
+   * configured position. This value caps semantic member sections; submit gating uses
+   * team360RequiredMemberCount instead.
    */
   get team360MemberCount(): number {
     if (!this.isTeam360Assessment) return 0;
     const groups = this.assessment?.groups ?? [];
     const memberKeys = new Set<string>();
 
-    for (let i = 1; i < groups.length; i++) {
-      const selectorQ = groups[i].questions?.find(q =>
+    groups.forEach(group => {
+      const selectorQuestions = group.questions?.filter(q =>
         q.type === 'team member selector' || q.type === 'multi team member selector'
-      );
-      if (!selectorQ) continue;
-      (selectorQ.teamMembers ?? []).forEach((m: { key: string }) => memberKeys.add(m.key));
-    }
+      ) ?? [];
+      selectorQuestions.forEach(question => {
+        (question.teamMembers ?? []).forEach((member: { key: string }) => memberKeys.add(member.key));
+      });
+    });
+
     return memberKeys.size;
+  }
+
+  /**
+   * Ordered Team360 sections derived from configured groups. Selector presence defines peer pages;
+   * all other groups are non-peer pages, including general and self-assessment groups.
+   */
+  get team360Sections(): Team360Section[] {
+    if (!this.isTeam360Assessment) return [];
+
+    return (this.assessment?.groups ?? []).map((group, groupIndex) => ({
+      group,
+      groupIndex,
+      pageIndex: this._getPageIndexForGroup(group),
+      kind: this._hasTeam360Selector(group) ? 'peer' : 'non-peer',
+    }));
   }
 
   /**
@@ -1479,23 +1494,15 @@ Best regards`;
    * A selector can list every team member, so the distinct identity count is only a cap; it is not
    * the number of rendered review sections. Each section maps to its configured physical page.
    */
-  get team360MemberSections(): Array<{ group: Group; groupIndex: number; pageIndex: number }> {
+  get team360MemberSections(): Team360Section[] {
     if (!this.isTeam360Assessment) return [];
 
-    const groups = this.assessment?.groups ?? [];
     const memberCap = this.team360MemberCount;
     if (memberCap === 0) return [];
 
-    const sections: Array<{ group: Group; groupIndex: number; pageIndex: number }> = [];
-    for (let groupIndex = 1; groupIndex < groups.length && sections.length < memberCap; groupIndex++) {
-      const group = groups[groupIndex];
-      if (!this._isTeam360MemberGroup(group)) continue;
-
-      const pageIndex = this._getPageIndexForGroup(group);
-      sections.push({ group, groupIndex, pageIndex });
-    }
-
-    return sections;
+    return this.team360Sections
+      .filter(section => section.kind === 'peer' && this._isTeam360MemberGroup(section.group))
+      .slice(0, memberCap);
   }
 
   get team360RequiredMemberCount(): number {
