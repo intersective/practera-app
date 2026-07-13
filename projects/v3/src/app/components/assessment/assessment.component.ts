@@ -184,16 +184,52 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return this.isPaginationEnabled && this.pageCount > 1 && !this.isTeam360Assessment;
   }
 
-  // Team360 page 0 is self-reflection. Pages after that correspond to selected team members,
-  // so forward navigation is capped by the selected team member count.
-  get maxAccessiblePageIndex(): number {
-    const lastPageIndex = this.pageCount - 1;
+  /**
+   * Physical pages that can be reached in the current assessment.
+   *
+   * Team360 renders each configured group as its own physical page. Keep the permitted member
+   * groups capped by the distinct-member rule, then append pages belonging to selector-free groups
+   * after the final member group.
+   */
+  get accessiblePageIndexes(): number[] {
+    if (!this.isPaginationEnabled) return [0];
+    if (this.pageCount === 0) return [];
+    if (!this.isTeam360Assessment) return this.pages;
 
-    if (!this.isTeam360Assessment) {
-      return lastPageIndex;
+    const accessiblePages = new Set<number>([0]);
+    this.team360MemberSections.forEach(section => {
+      if (section.pageIndex >= 0) accessiblePages.add(section.pageIndex);
+    });
+
+    const groups = this.assessment?.groups ?? [];
+    let lastMemberGroupIndex = -1;
+    groups.forEach((group, groupIndex) => {
+      if (this._hasTeam360Selector(group)) {
+        lastMemberGroupIndex = groupIndex;
+      }
+    });
+
+    for (let groupIndex = lastMemberGroupIndex + 1; groupIndex < groups.length; groupIndex++) {
+      if (this._hasTeam360Selector(groups[groupIndex])) continue;
+      const pageIndex = this._getPageIndexForGroup(groups[groupIndex]);
+      if (pageIndex >= 0) accessiblePages.add(pageIndex);
     }
 
-    return Math.min(lastPageIndex, this.team360MemberCount);
+    return Array.from(accessiblePages).sort((a, b) => a - b);
+  }
+
+  get maxAccessiblePageIndex(): number {
+    const accessiblePages = this.accessiblePageIndexes;
+    return accessiblePages.length ? accessiblePages[accessiblePages.length - 1] : -1;
+  }
+
+  get hasPreviousAccessiblePage(): boolean {
+    return this.accessiblePageIndexes.indexOf(this.pageIndex) > 0;
+  }
+
+  get hasNextAccessiblePage(): boolean {
+    const currentPosition = this.accessiblePageIndexes.indexOf(this.pageIndex);
+    return currentPosition >= 0 && currentPosition < this.accessiblePageIndexes.length - 1;
   }
 
   // override to use question‑based pages
@@ -211,20 +247,20 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   prevPage() {
     if (!this.isPaginationEnabled) return;
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
-      this.pageVisited[this.pageIndex] = true;
-      this.scrollActivePageIntoView();
-    }
+    const accessiblePages = this.accessiblePageIndexes;
+    const currentPosition = accessiblePages.indexOf(this.pageIndex);
+    if (currentPosition <= 0) return;
+
+    this._navigateToPage(accessiblePages[currentPosition - 1]);
   }
 
   nextPage() {
     if (!this.isPaginationEnabled) return;
-    if (this.pageIndex < this.maxAccessiblePageIndex) {
-      this.pageIndex++;
-      this.pageVisited[this.pageIndex] = true;
-      this.scrollActivePageIntoView();
-    }
+    const accessiblePages = this.accessiblePageIndexes;
+    const currentPosition = accessiblePages.indexOf(this.pageIndex);
+    if (currentPosition < 0 || currentPosition >= accessiblePages.length - 1) return;
+
+    this._navigateToPage(accessiblePages[currentPosition + 1]);
   }
 
   get pages(): number[] {
@@ -234,15 +270,17 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   goToPage(i: number) {
     if (!this.isPaginationEnabled) return;
-    if (i >= 0 && i <= this.maxAccessiblePageIndex) {
-      if (this.pageIndex !== i) {
-        this.pageIndex = i;
-        this.pageVisited[i] = true;
-        this.scrollActivePageIntoView();
-        this.setSubmissionDisabled();
-        this._scrollToTop();
-      }
-    }
+    if (!this.accessiblePageIndexes.includes(i) || this.pageIndex === i) return;
+
+    this._navigateToPage(i, true);
+  }
+
+  private _navigateToPage(pageIndex: number, scrollToTop = false): void {
+    this.pageIndex = pageIndex;
+    this.pageVisited[pageIndex] = true;
+    this.scrollActivePageIntoView();
+    this.setSubmissionDisabled();
+    if (scrollToTop) this._scrollToTop();
   }
 
   private _scrollToTop() {
@@ -483,7 +521,7 @@ Best regards`;
       this._prefillForm();
     }
 
-    // split by question count every time assessment changes - only if pagination is enabled
+    // generate physical pages every time assessment changes - only if pagination is enabled
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
       this.pageIndex = 0;
@@ -1106,10 +1144,15 @@ Best regards`;
   }
 
   /**
-   * Breaks original groups into pages, each containing ≤ pageSize questions.
-   * If a single group has more questions than pageSize, it gets sliced.
+   * Team360 keeps each configured group on its own physical page so self-assessment, each member
+   * review group, and any following general groups retain their configured order. Other assessment
+   * types are packed into pages containing ≤ pageSize questions; oversized groups are sliced.
    */
   private splitGroupsByQuestionCount() {
+    if (this.isTeam360Assessment) {
+      return (this.assessment?.groups ?? []).map(group => [group]);
+    }
+
     const pages = [];
     let currentPage = [];
     let count = 0;
@@ -1183,6 +1226,7 @@ Best regards`;
       this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
     });
 
+    this.setSubmissionDisabled();
     this.cdr.detectChanges();
 
     // Update the scroll position when page completion status changes
@@ -1228,33 +1272,34 @@ Best regards`;
       return true;
     }
 
-    // Check each required question if it has a valid answer
-    return requiredQuestions.every(question => {
-      const control = this.questionsForm?.controls[`q-${question.id}`];
+    return requiredQuestions.every(question => this._hasQuestionAnswer(question));
+  }
 
-      if (!control || control.invalid) {
-        return false;
-      }
+  private _hasQuestionAnswer(question: Question): boolean {
+    const control = this.questionsForm?.controls[`q-${question.id}`];
 
-      const value = control.value;
-      if (Array.isArray(value)) {
-        // multi choice questions
-        return value.length > 0;
-      } else if (typeof value === 'object' && value !== null) {
-        // file type in assessment mode: { name, url, type, ... }
-        if (value.url) { return true; }
-        // review file type: { answer: '', file: { url, ... }, comment: '' }
-        if (value.file && typeof value.file === 'object' && Object.keys(value.file).length > 0) { return true; }
-        // review questions with answer and comment fields
-        if (Array.isArray(value.answer)) {
-          return value.answer.length > 0;
-        }
-        return value.answer !== undefined && value.answer !== null && value.answer !== '';
-      } else {
-        // text / one off questions
-        return value !== undefined && value !== null && value !== '';
+    if (!control || control.invalid) {
+      return false;
+    }
+
+    const value = control.value;
+    if (Array.isArray(value)) {
+      // multi choice questions
+      return value.length > 0;
+    } else if (typeof value === 'object' && value !== null) {
+      // file type in assessment mode: { name, url, type, ... }
+      if (value.url) { return true; }
+      // review file type: { answer: '', file: { url, ... }, comment: '' }
+      if (value.file && typeof value.file === 'object' && Object.keys(value.file).length > 0) { return true; }
+      // review questions with answer and comment fields
+      if (Array.isArray(value.answer)) {
+        return value.answer.length > 0;
       }
-    });
+      return value.answer !== undefined && value.answer !== null && value.answer !== '';
+    } else {
+      // text / one off questions
+      return value !== undefined && value !== null && value !== '';
+    }
   }
 
   /**
@@ -1403,9 +1448,12 @@ Best regards`;
     }
 
     const isFormValid = this.questionsForm?.valid ?? false;
-    const memberCount = this.team360MemberCount;
-    const visitedEnough = memberCount === 0 || this.team360PagesVisited >= memberCount;
-    const shouldDisable = !isFormValid || !visitedEnough;
+    const requiredMemberSectionsComplete = this.team360RequiredMemberSectionsComplete;
+    const team360RequiredPagesComplete = !this.isTeam360Assessment
+      || this.accessiblePageIndexes.every(pageIndex =>
+        this.areAllRequiredQuestionsAnswered(this.getAllQuestionsForPage(pageIndex))
+      );
+    const shouldDisable = !isFormValid || !requiredMemberSectionsComplete || !team360RequiredPagesComplete;
     const isCurrentlyDisabled = this.btnDisabled$.getValue();
 
     // update button state only if it needs to change
@@ -1417,9 +1465,10 @@ Best regards`;
   }
 
   /**
-   * returns the number of distinct team members the user must review in a team360 assessment.
+   * returns the number of distinct team members available to review in a team360 assessment.
    * counts unique teamMembers.key values across selector questions in groups from index 1+
-   * because index 0 is the self-reflection group.
+   * because index 0 is the self-reflection group. This value caps semantic member sections;
+   * submit gating uses team360RequiredMemberCount instead.
    */
   get team360MemberCount(): number {
     if (!this.isTeam360Assessment) return 0;
@@ -1436,16 +1485,89 @@ Best regards`;
     return memberKeys.size;
   }
 
+  /**
+   * Member-review groups that participate in Team360 progress and submit gating.
+   *
+   * A selector can list every team member, so the distinct identity count is only a cap; it is not
+   * the number of rendered review sections. Each section maps to its configured physical page.
+   */
+  get team360MemberSections(): Array<{ group: Group; groupIndex: number; pageIndex: number }> {
+    if (!this.isTeam360Assessment) return [];
+
+    const groups = this.assessment?.groups ?? [];
+    const memberCap = this.team360MemberCount;
+    if (memberCap === 0) return [];
+
+    const sections: Array<{ group: Group; groupIndex: number; pageIndex: number }> = [];
+    for (let groupIndex = 1; groupIndex < groups.length && sections.length < memberCap; groupIndex++) {
+      const group = groups[groupIndex];
+      if (!this._isTeam360MemberGroup(group)) continue;
+
+      const pageIndex = this._getPageIndexForGroup(group);
+      sections.push({ group, groupIndex, pageIndex });
+    }
+
+    return sections;
+  }
+
+  get team360RequiredMemberCount(): number {
+    return Math.min(1, this.team360MemberSections.length);
+  }
+
+  get team360MemberReviewCount(): number {
+    return this.team360MemberSections.length;
+  }
+
+  get team360RequiredMemberSectionsComplete(): boolean {
+    return this.team360MemberSections
+      .slice(0, this.team360RequiredMemberCount)
+      .every(section => this._isTeam360MemberSectionComplete(section));
+  }
+
   get team360PagesVisited(): number {
     if (!this.isTeam360Assessment) return 0;
 
-    let count = 0;
-    for (let page = 1; page <= this.maxAccessiblePageIndex; page++) {
-      if (this.pageVisited[page] && this.pageRequiredCompletion[page]) {
-        count++;
-      }
-    }
-    return count;
+    return this.team360MemberSections.filter(section =>
+      this._isTeam360MemberSectionComplete(section)
+    ).length;
+  }
+
+  private _isTeam360MemberSectionComplete(section: { group: Group; pageIndex: number }): boolean {
+    return section.pageIndex >= 0
+      && this.pageVisited[section.pageIndex]
+      && this._hasAnsweredTeam360Selector(section.group)
+      && this.areAllRequiredQuestionsAnswered(section.group.questions ?? []);
+  }
+
+  private _hasAnsweredTeam360Selector(group: Group): boolean {
+    const selectors = group?.questions?.filter(question =>
+      (question.type === 'team member selector' || question.type === 'multi team member selector')
+      && (question.teamMembers?.length ?? 0) > 0
+    ) ?? [];
+
+    return selectors.length > 0 && selectors.every(question => this._hasQuestionAnswer(question));
+  }
+
+  private _isTeam360MemberGroup(group: Group): boolean {
+    return group?.questions?.some(question =>
+      (question.type === 'team member selector' || question.type === 'multi team member selector')
+      && (question.teamMembers?.length ?? 0) > 0
+    ) ?? false;
+  }
+
+  private _hasTeam360Selector(group: Group): boolean {
+    return group?.questions?.some(question =>
+      question.type === 'team member selector' || question.type === 'multi team member selector'
+    ) ?? false;
+  }
+
+  private _getPageIndexForGroup(group: Group): number {
+    const questionIds = new Set((group?.questions ?? []).map(question => question.id));
+    if (questionIds.size === 0) return -1;
+
+    return this.pagesGroups.findIndex(page => page.some(pageGroup =>
+      pageGroup === group || pageGroup.questions?.some(question => questionIds.has(question.id))
+    ));
   }
 
   /**
