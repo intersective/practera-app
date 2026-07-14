@@ -288,7 +288,7 @@ describe('HomePage', () => {
     it('should set empty default lead image when experience has no card URL', async () => {
       storageService.get.and.returnValue({ name: 'Test Experience' });
       await component.updateDashboard();
-      expect(component.defaultLeadImage).toBe('');
+      expect(component.defaultLeadImage).toBe('assets/default-experience-image.svg');
     });
 
     it('should reset and load bookmarks', async () => {

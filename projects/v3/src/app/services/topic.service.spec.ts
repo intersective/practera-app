@@ -14,16 +14,14 @@ describe('TopicService', () => {
 
   const mockTopicResponse = {
     data: {
-      topics: [
-        {
-          id: 1,
-          title: 'Test Topic',
-          content: '<p>Content</p>',
-          videolink: 'https://youtube.com/watch?v=test',
-          files: [{ name: 'doc.pdf', url: 'https://example.com/doc.pdf' }],
-          audio: { link: 'https://audio.example.com/clip.mp3', language: 'en', status: 'ready' },
-        }
-      ]
+      topic: {
+        id: 1,
+        title: 'Test Topic',
+        content: '<p>Content</p>',
+        videolink: 'https://youtube.com/watch?v=test',
+        files: [{ name: 'doc.pdf', url: 'https://example.com/doc.pdf' }],
+        audio: { link: 'https://audio.example.com/clip.mp3', language: 'en', status: 'ready' },
+      }
     }
   };
 
@@ -55,8 +53,8 @@ describe('TopicService', () => {
       service.getTopic(1);
       expect(apolloSpy.graphQLFetch).toHaveBeenCalledTimes(1);
       const [query, options] = apolloSpy.graphQLFetch.calls.mostRecent().args;
-      expect(query).toContain('topics');
-      expect(options.variables).toEqual({ activityId: 1 });
+      expect(query).toContain('topic');
+      expect(options.variables).toEqual({ id: 1 });
     });
 
     it('normalises the topic and emits via topic$', (done) => {
@@ -87,9 +85,7 @@ describe('TopicService', () => {
     it('does not set audio when audio link is absent', (done) => {
       const noAudioResponse = {
         data: {
-          topics: [
-            { id: 2, title: 'No Audio', content: '', videolink: '', files: [], audio: null }
-          ]
+          topic: { id: 2, title: 'No Audio', content: '', videolink: '', files: [], audio: null }
         }
       };
       apolloSpy.graphQLFetch.and.returnValue(of(noAudioResponse as any));

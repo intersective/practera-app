@@ -897,7 +897,7 @@ describe('AssessmentService', () => {
         { questionId: 1, answer: 'some text' }, // Non-empty text (empty string becomes undefined due to || logic)
         { questionId: 2, answer: '22' }, // String that should be converted to number for oneof
         { questionId: 3, answer: '[31, 32]' }, // Multi-item array as string for multiple
-        { questionId: 11, file: null } // Null file (question 11 is the file type)
+        { questionId: 4, file: null } // Null file (question 4 is the file type)
       ];
 
       service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
@@ -910,8 +910,8 @@ describe('AssessmentService', () => {
         // Multiple question - array string should be parsed to array of numbers
         expect(result.submission.answers[3].answer).toEqual([31, 32]);
 
-        // File question - null file should result in null (question 11 is file type)
-        expect(result.submission.answers[11].answer).toBeNull();
+        // File question - null file should result in null (question 4 is file type)
+        expect(result.submission.answers[4].answer).toBeNull();
 
         done();
       });
@@ -922,7 +922,7 @@ describe('AssessmentService', () => {
       // Using question ID 11 which is the file type question
       mockResponse.data.assessment.submissions[0].answers = [
         {
-          questionId: 11,
+          questionId: 4,
           file: {
             name: 'submission.pdf',
             url: 'http://example.com/submission.pdf',
@@ -932,8 +932,8 @@ describe('AssessmentService', () => {
       ];
 
       service.fetchAssessment(1, 'assessment', 5, 10).subscribe(result => {
-        // File should be normalized properly in submission (question 11 is file type)
-        expect(result.submission.answers[11].answer).toEqual({
+        // File should be normalized properly in submission (question 4 is file type)
+        expect(result.submission.answers[4].answer).toEqual({
           name: 'submission.pdf',
           url: 'http://example.com/submission.pdf',
           type: 'application/pdf'

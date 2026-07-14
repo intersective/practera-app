@@ -701,7 +701,7 @@ describe('ChatRoomComponent', () => {
       };
       modalCtrlSpy.create.and.returnValue(Promise.resolve(mockModal as any));
 
-      await component.openEditMessagePopup(0);
+      await component.openEditMessagePopup(component.messageList[0]);
 
       expect(modalCtrlSpy.create).toHaveBeenCalled();
       expect(mockModal.present).toHaveBeenCalled();

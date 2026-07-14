@@ -82,7 +82,7 @@ describe('TopicMobilePage', () => {
     topic$.next({ id: 12, title: 'Topic A' } as any);
     currentTask$.next({ id: 999, type: 'Topic', status: 'in progress' } as any);
 
-    expect(topicServiceSpy.getTopic).toHaveBeenCalledWith(12);
+    expect(topicServiceSpy.getTopic).toHaveBeenCalledWith(44, 12);
     expect(component.activityId).toBe(44);
     expect(component.topic).toEqual(jasmine.objectContaining({ id: 12, title: 'Topic A' }));
     expect(component.currentTask).toEqual(jasmine.objectContaining({ id: 999 }));
