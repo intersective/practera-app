@@ -46,7 +46,7 @@
         }
 
         <div class="exp-grid" role="list" aria-label="Available experiences" i18n-aria-label
-          [class.exp-grid--center]="experiences.length === 1">
+          [class.exp-grid--center]="isCompactLayout(experiences.length)">
           @for (experience of experiences; track experience) {
             <div class="exp-card-wrap" role="listitem">
               <button

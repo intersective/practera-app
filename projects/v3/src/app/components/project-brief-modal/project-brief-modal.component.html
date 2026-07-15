@@ -59,13 +59,13 @@
 
     <ion-accordion value="technical-skills">
       <ion-item slot="header" color="light">
-        <ion-icon name="code-slash-outline" slot="start" color="secondary" aria-hidden="true"></ion-icon>
+        <ion-icon name="code-slash-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
         <ion-label class="accordion-header" i18n>Technical Skills</ion-label>
       </ion-item>
       <div slot="content" class="accordion-content">
         <div class="chip-container" *ngIf="hasItems(projectBrief?.technicalSkills); else noTechnicalSkills">
           <ion-chip *ngFor="let skill of projectBrief.technicalSkills"
-            color="secondary"
+            color="primary"
             outline="true">
             <ion-label>{{ skill }}</ion-label>
           </ion-chip>
@@ -78,13 +78,13 @@
 
     <ion-accordion value="professional-skills">
       <ion-item slot="header" color="light">
-        <ion-icon name="people-outline" slot="start" color="tertiary" aria-hidden="true"></ion-icon>
+        <ion-icon name="people-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
         <ion-label class="accordion-header" i18n>Professional Skills</ion-label>
       </ion-item>
       <div slot="content" class="accordion-content">
         <div class="chip-container" *ngIf="hasItems(projectBrief?.professionalSkills); else noProfessionalSkills">
           <ion-chip *ngFor="let skill of projectBrief.professionalSkills"
-            color="tertiary"
+            color="primary"
             outline="true">
             <ion-label>{{ skill }}</ion-label>
           </ion-chip>
@@ -97,7 +97,7 @@
 
     <ion-accordion value="deliverables">
       <ion-item slot="header" color="light">
-        <ion-icon name="checkbox-outline" slot="start" color="success" aria-hidden="true"></ion-icon>
+        <ion-icon name="checkbox-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
         <ion-label class="accordion-header" i18n>Deliverables</ion-label>
       </ion-item>
       <div slot="content" class="accordion-content">

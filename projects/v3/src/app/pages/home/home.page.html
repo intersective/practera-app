@@ -64,18 +64,19 @@
                   </ion-button>
                   <ion-button fill="clear"
                     size="small"
+                    class="project-brief-btn"
                     *ngIf="showProjectHub"
                     (click)="openProjectBriefExternal()"
                     (keydown.enter)="openProjectBriefExternal()"
                     (keydown.space)="openProjectBriefExternal(); $event.preventDefault()"
-                    title="Go to project hub"
-                    aria-label="Go to project hub" i18n-aria-label>
+                    title="Go to Project Hub"
+                    aria-label="Go to Project Hub" i18n-aria-label>
                     <ion-icon name="open-outline"
-                    [slot]="projectBrief ? 'icon-only' : 'start'"
-                    size="small"
-                    aria-hidden="true"
+                      slot="start"
+                      size="small"
+                      aria-hidden="true"
                     ></ion-icon>
-                    <span i18n *ngIf="!projectBrief">Project-Hub</span>
+                    <span i18n>Go to Project Hub</span>
                   </ion-button>
                 </div>
               </div>
