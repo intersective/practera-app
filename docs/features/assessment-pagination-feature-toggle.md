@@ -37,13 +37,13 @@ export const environment = {
 
 ### When `assessmentPagination: true` (Default)
 - non-Team360 assessment questions are packed into pages of up to 10 questions
-- Team360 assessments render each configured group on its own physical page, preserving this order: self-assessment, configured member-review groups, then general groups
+- Team360 assessments render each configured group on its own physical page and preserve the configured order; selector-free general or self-assessment groups can appear before, between, or after member-review groups
 - pagination controls (Prev/Next buttons and page indicators) are visible in the bottom action bar
 - Team360 assessments are the exception: they show only Prev/Next buttons, with no page numbers, dots, completion icons, or direct page-indicator navigation
 - Team360 progress is based on selector-bearing member groups with an actual member selection, with each configured member group on its own page
 - the first selector-bearing peer group is mandatory and must be visited with a member selected; later peer groups remain optional workflow pages and cannot satisfy the first-peer requirement
-- Team360 navigation includes self-assessment, permitted member-group pages, and selector-free pages after the member section; unused member placeholder pages remain inaccessible
-- required questions in trailing selector-free groups are checked assessment-wide and block submission from every page, while optional trailing groups add no submission requirement
+- Team360 navigation includes every selector-free page plus permitted member-group pages in configured order; unused member placeholder pages remain inaccessible
+- required questions in leading or trailing selector-free groups are checked assessment-wide and block submission from every page, while optional non-peer groups add no submission requirement
 - page indicator states depend on the current mode:
 
   **edit mode** (`doAssessment = true` or `isPendingReview = true`):

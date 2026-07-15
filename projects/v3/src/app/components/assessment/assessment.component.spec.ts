@@ -3152,10 +3152,17 @@ describe('AssessmentComponent', () => {
         expect(component.team360MemberCount).toBe(0);
       });
 
-      it('group 0 (self) is excluded — selector groups from index 1 are counted', () => {
+      it('counts selector groups after leading non-peer groups', () => {
         component.task = { assessmentType: 'team360' } as any;
         component.assessment = { groups: [textGroup(10), selectorGroup(20), selectorGroup(100)] } as any;
         expect(component.team360MemberCount).toBe(2);
+      });
+
+      it('counts a selector-bearing group at index 0 without relying on a self-page position', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        component.assessment = { groups: [selectorGroup(20), textGroup(10)] } as any;
+
+        expect(component.team360MemberCount).toBe(1);
       });
 
       it('counts multi-member selector groups: distinct member keys, not group count', () => {
@@ -3202,6 +3209,122 @@ describe('AssessmentComponent', () => {
     });
 
     describe('semantic member sections and trailing groups', () => {
+      it('keeps multiple leading non-peer pages accessible before the first peer page', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const general = textGroup(10);
+        const self = textGroup(11);
+        const member = selectorGroup(20);
+        const trailing = textGroup(30);
+        component.assessment = { groups: [general, self, member, trailing] } as any;
+        component.pagesGroups = [[general], [self], [member], [trailing]];
+        component.pageIndex = 0;
+        component.pageVisited = [true, false, false, false];
+        component.questionsForm = new FormGroup({
+          'q-20': new FormControl('member-20'),
+        });
+        spyOn(component, 'scrollActivePageIntoView');
+
+        expect(component.team360Sections.map(section => section.kind))
+          .toEqual(['non-peer', 'non-peer', 'peer', 'non-peer']);
+        expect(component.team360MemberSections[0].pageIndex).toBe(2);
+        expect(component.accessiblePageIndexes).toEqual([0, 1, 2, 3]);
+
+        component.nextPage();
+        expect(component.pageIndex).toBe(1);
+
+        component.nextPage();
+        expect(component.pageIndex).toBe(2);
+      });
+
+      it('keeps non-peer pages accessible between capped peer placeholders', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const sameMember = (id: number) => ({
+          name: `Member Group ${id}`,
+          description: '',
+          questions: [{
+            id,
+            type: 'team member selector',
+            isRequired: false,
+            audience: ['submitter'],
+            teamMembers: [{ key: '{"userId":4}', userName: 'learner 004' }],
+          } as any],
+        });
+        const general = textGroup(10);
+        const self = textGroup(11);
+        const firstMember = sameMember(20);
+        const hiddenMember1 = sameMember(21);
+        const middleGeneral = textGroup(30);
+        const hiddenMember2 = sameMember(22);
+        const trailingGeneral = textGroup(40);
+        component.assessment = {
+          groups: [
+            general, self, firstMember, hiddenMember1, middleGeneral, hiddenMember2, trailingGeneral,
+          ],
+        } as any;
+        component.pagesGroups = [
+          [general], [self], [firstMember], [hiddenMember1], [middleGeneral],
+          [hiddenMember2], [trailingGeneral],
+        ];
+
+        expect(component.team360MemberCount).toBe(1);
+        expect(component.team360MemberSections.map(section => section.pageIndex)).toEqual([2]);
+        expect(component.accessiblePageIndexes).toEqual([0, 1, 2, 4, 6]);
+      });
+
+      it('requires the first peer section even when non-peer pages precede it', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const general = textGroup(10);
+        const self = textGroup(11);
+        const firstMember = selectorGroup(20);
+        const secondMember = selectorGroup(100);
+        const trailing = textGroup(30);
+        component.assessment = {
+          groups: [general, self, firstMember, secondMember, trailing],
+        } as any;
+        component.pagesGroups = [[general], [self], [firstMember], [secondMember], [trailing]];
+        component.pageVisited = [true, true, true, true, true];
+        component.questionsForm = new FormGroup({
+          'q-20': new FormControl(''),
+          'q-100': new FormControl('member-100'),
+        });
+        component.btnDisabled$ = new BehaviorSubject(false);
+
+        expect(component.team360MemberSections[0].pageIndex).toBe(2);
+        expect(component.team360RequiredMemberSectionsComplete).toBeFalse();
+
+        component.setSubmissionDisabled();
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+
+        component.questionsForm.get('q-20').setValue('member-20');
+        component.setSubmissionDisabled();
+
+        expect(component.team360RequiredMemberSectionsComplete).toBeTrue();
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
+      it('checks required leading non-peer pages assessment-wide', () => {
+        component.task = { assessmentType: 'team360' } as any;
+        const requiredGeneral = requiredTextGroup(10);
+        const self = textGroup(11);
+        const member = selectorGroup(20);
+        component.assessment = { groups: [requiredGeneral, self, member] } as any;
+        component.pagesGroups = [[requiredGeneral], [self], [member]];
+        component.pageVisited = [true, true, true];
+        component.questionsForm = new FormGroup({
+          'q-10': new FormControl(''),
+          'q-20': new FormControl('member-20'),
+        });
+        component.btnDisabled$ = new BehaviorSubject(false);
+
+        component.setSubmissionDisabled();
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+
+        component.questionsForm.get('q-10').setValue('general answer');
+        component.setSubmissionDisabled();
+
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
       it('counts configured member groups on their separate physical pages', () => {
         component.task = { assessmentType: 'team360' } as any;
         const self = textGroup(10);
