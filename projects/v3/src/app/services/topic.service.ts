@@ -5,11 +5,13 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
+import { TopicAttentionMetrics } from '@v3/app/models/topic-attention.model';
 
 export interface Topic {
   id: number;
   title: string;
   content: any;
+  rawContent?: string;
   videolink?: string;
   files: Array<any>;
   audio?: {
@@ -76,6 +78,7 @@ export class TopicService {
     const topic: Topic = {
       id: raw.id,
       title: raw.title,
+      rawContent: raw.content || undefined,
       content: raw.content ? this._processContent(raw.content) : '',
       videolink: raw.videolink ?? '',
       files: (raw.files ?? []).map((f: any) => ({ url: f.url, name: f.name })),
@@ -101,20 +104,30 @@ export class TopicService {
     return this.sanitizer.bypassSecurityTrustHtml(processed);
   }
 
-  updateTopicProgress(id: number, state: string): Observable<any> {
+  updateTopicProgress(id: number, state: string, attention?: TopicAttentionMetrics): Observable<any> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
-      console.log('mark topic as ', state);
+      console.log('mark topic as ', state, attention);
       return new Observable(observer => { observer.next({ success: true }); observer.complete(); });
     }
 
+    const variables: { model: string; modelId: number; state: string; meta?: { attention: TopicAttentionMetrics } } = {
+      model: 'topic',
+      modelId: id,
+      state,
+    };
+
+    if (attention) {
+      variables.meta = { attention };
+    }
+
     return this.apolloService.graphQLMutate(
-      `mutation updateProgress($model: String!, $modelId: ID!, $state: String!) {
-        updateProgress(model: $model, modelId: $modelId, state: $state) {
+      `mutation updateProgress($model: String!, $modelId: ID!, $state: String!, $meta: JSON) {
+        updateProgress(model: $model, modelId: $modelId, state: $state, meta: $meta) {
           success
         }
       }`,
-      { model: 'topic', modelId: id, state }
+      variables
     );
   }
 }

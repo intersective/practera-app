@@ -77,6 +77,7 @@ describe('TopicService', () => {
         if (topic) {
           expect(topic.audio?.link).toBe('https://audio.example.com/clip.mp3');
           expect(topic.audio?.language).toBe('en');
+          expect(topic.rawContent).toBe('<p>Content</p>');
           done();
         }
       });
@@ -107,6 +108,30 @@ describe('TopicService', () => {
       const [mutation, variables] = apolloSpy.graphQLMutate.calls.mostRecent().args;
       expect(mutation).toContain('updateProgress');
       expect(variables).toEqual({ model: 'topic', modelId: 1, state: 'completed' });
+    });
+
+    it('includes attention metrics in mutation variables when provided', () => {
+      const attention = {
+        version: 1,
+        score: 80,
+        confidence: 'high',
+        activeMs: 10000,
+        visibleMs: 10000,
+        estimatedReadMs: 9000,
+        textWordCount: 30,
+        contentExposureRatio: 1,
+        mediaProgressRatio: 0,
+        mediaPlayedMs: 0,
+        filePreviewCount: 0,
+        fileDownloadCount: 0,
+        quickComplete: false,
+      } as any;
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { updateProgress: { success: true } } }));
+      service.updateTopicProgress(1, 'completed', attention).subscribe();
+      expect(apolloSpy.graphQLMutate).toHaveBeenCalledTimes(1);
+      const [mutation, variables] = apolloSpy.graphQLMutate.calls.mostRecent().args;
+      expect(mutation).toContain('updateProgress');
+      expect(variables).toEqual({ model: 'topic', modelId: 1, state: 'completed', meta: { attention } });
     });
   });
 

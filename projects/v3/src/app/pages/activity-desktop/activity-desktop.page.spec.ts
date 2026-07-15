@@ -191,8 +191,35 @@ describe('ActivityDesktopPage', () => {
       expect(activitySpy.getActivity).toHaveBeenCalled();
     }));
 
+    it('should pass attention metrics when updating progress', fakeAsync(() => {
+      const attention = {
+        version: 1,
+        score: 80,
+        confidence: 'high',
+        activeMs: 10000,
+        visibleMs: 10000,
+        estimatedReadMs: 9000,
+        textWordCount: 30,
+        contentExposureRatio: 1,
+        mediaProgressRatio: 0,
+        mediaPlayedMs: 0,
+        filePreviewCount: 0,
+        fileDownloadCount: 0,
+        quickComplete: false,
+      } as any;
+      const task = { ...NormalisedTaskFixture, status: 'in progress' };
+      component.topicComplete(task, { topic: { id: task.id } as any, attention });
+      activitySpy.getActivity = jasmine.createSpy().and.callFake((id, anything, currentTask, cb) => {
+        cb();
+      });
+
+      tick();
+
+      expect(topicSpy.updateTopicProgress).toHaveBeenCalledWith(task.id, 'completed', attention);
+    }));
+
     it('should go to next task when task is done', () => {
-      const task = NormalisedTaskFixture;
+      const task = { ...NormalisedTaskFixture };
       task.status = 'done';
       component.topicComplete(task);
       expect(topicSpy.updateTopicProgress).not.toHaveBeenCalled();

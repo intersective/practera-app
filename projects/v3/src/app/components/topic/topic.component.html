@@ -1,6 +1,12 @@
 @if (topic) {
   <div class="ion-padding main-content" style="min-height: 100%;">
     <div class="headline-2 topic-title" aria-live="polite" role="heading" [innerHTML]="sanitizedTitle"></div>
+    @if (task?.status !== 'done') {
+      <div class="topic-time-spent body-3" aria-live="polite">
+        <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+        <span i18n="topic time spent">Time spent: {{ formattedTopicTimeSpent }}</span>
+      </div>
+    }
     @if (topic.videolink && topic.videolink !=='magiclink') {
       <div class="text-center topic-video">
         @if (iframeHtml) {

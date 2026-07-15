@@ -4,6 +4,7 @@ import { ActivityService, Task } from '@v3/app/services/activity.service';
 import { TopicService, Topic } from '@v3/app/services/topic.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { TopicContinueEvent } from '@v3/app/components/topic/topic.component';
 
 @Component({
   standalone: false,
@@ -18,6 +19,8 @@ export class TopicMobilePage implements OnInit {
   topic: Topic;
   activityId: number;
   currentTask: Task;
+  private topicId: number;
+  private selectedTask: Task;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,19 +44,49 @@ export class TopicMobilePage implements OnInit {
         this.utils.setPageTitle(`${res.title} - Practera`);
       }
     });
-    this.activityService.currentTask$.subscribe(res => {
-      this.ngZone.run(() => {
-        this.currentTask = res;
-        this.cdr.markForCheck();
-      });
+    this.activityService.currentTask$.subscribe(task => {
+      this.selectedTask = task;
+      if (this.isCurrentTopicTask(task)) {
+        this.ngZone.run(() => {
+          this.currentTask = task;
+          this.cdr.markForCheck();
+        });
+      }
     });
     this.route.params.subscribe(params => {
       this.activityId = +params.activityId;
-      this.topicService.getTopic(this.activityId, +params.id);
+      this.topicId = +params.id;
+      this.currentTask = this.isCurrentTopicTask(this.selectedTask) ? this.selectedTask : null;
+      this.topicService.getTopic(this.topicId);
+      this.restoreCurrentTaskStatus();
     });
   }
 
-  async continue() {
+  private isCurrentTopicTask(task: Task): boolean {
+    return task?.id === this.topicId && task?.type === 'Topic';
+  }
+
+  // Restore the current task status from the activity service
+  private restoreCurrentTaskStatus() {
+    const activityId = this.activityId;
+    const topicId = this.topicId;
+
+    this.activityService.getActivity(activityId, false, null, (activity) => {
+      // Ignore a late response from a topic route that has since changed.
+      if (this.activityId !== activityId || this.topicId !== topicId) {
+        return;
+      }
+
+      const task = activity?.tasks?.find(candidate =>
+        candidate.id === topicId && candidate.type === 'Topic'
+      );
+      if (task) {
+        this.currentTask = task;
+      }
+    });
+  }
+
+  async continue(event?: TopicContinueEvent) {
     this.btnDisabled$.next(true);
     if (!this.currentTask) {
       this.currentTask = {
@@ -72,7 +105,7 @@ export class TopicMobilePage implements OnInit {
     }
 
     // mark the topic as completer
-    await firstValueFrom(this.topicService.updateTopicProgress(this.topic.id, 'completed'));
+    await firstValueFrom(this.topicService.updateTopicProgress(this.topic.id, 'completed', event?.attention));
     // get the latest activity tasks and navigate to the next task
     return this.activityService.getActivity(this.activityId, true, this.currentTask, () => {
       this.btnDisabled$.next(false);

@@ -66,7 +66,7 @@ describe('TopicMobilePage', () => {
 
     topicServiceSpy.updateTopicProgress.and.returnValue(of(true) as any);
     activityServiceSpy.getActivity.and.callFake((_activityId: number, _refresh: boolean, _task: any, callback: Function) => {
-      callback();
+      callback({ tasks: [] });
       return Promise.resolve(true) as any;
     });
 
@@ -80,13 +80,29 @@ describe('TopicMobilePage', () => {
   it('should initialise topic and current task from streams', () => {
     routeParams$.next({ id: 12, activityId: 44 });
     topic$.next({ id: 12, title: 'Topic A' } as any);
-    currentTask$.next({ id: 999, type: 'Topic', status: 'in progress' } as any);
+    currentTask$.next({ id: 12, type: 'Topic', status: 'in progress' } as any);
 
     expect(topicServiceSpy.getTopic).toHaveBeenCalledWith(44, 12);
     expect(component.activityId).toBe(44);
     expect(component.topic).toEqual(jasmine.objectContaining({ id: 12, title: 'Topic A' }));
-    expect(component.currentTask).toEqual(jasmine.objectContaining({ id: 999 }));
+    expect(component.currentTask).toEqual(jasmine.objectContaining({ id: 12 }));
     expect(utilsSpy.setPageTitle).toHaveBeenCalledWith('Topic A - Practera');
+  });
+
+  it('should restore a completed topic task status after a direct page refresh', () => {
+    activityServiceSpy.getActivity.and.callFake((_activityId: number, _refresh: boolean, _task: any, callback: Function) => {
+      callback({
+        tasks: [
+          { id: 12, type: 'Topic', name: 'Topic A', status: 'done' },
+        ],
+      });
+      return Promise.resolve(true) as any;
+    });
+
+    routeParams$.next({ id: 12, activityId: 44 });
+
+    expect(activityServiceSpy.getActivity).toHaveBeenCalledWith(44, false, null, jasmine.any(Function));
+    expect(component.currentTask).toEqual(jasmine.objectContaining({ id: 12, status: 'done' }));
   });
 
   it('should continue with done task by going directly to next task', async () => {
@@ -107,9 +123,34 @@ describe('TopicMobilePage', () => {
 
     await component.continue();
 
-    expect(topicServiceSpy.updateTopicProgress).toHaveBeenCalledWith(9, 'completed');
+    expect(topicServiceSpy.updateTopicProgress).toHaveBeenCalledWith(9, 'completed', undefined);
     expect(activityServiceSpy.getActivity).toHaveBeenCalled();
     expect(component.btnDisabled$.value).toBeFalse();
+  });
+
+  it('should pass attention metrics when continuing incomplete task', async () => {
+    const attention = {
+      version: 1,
+      score: 80,
+      confidence: 'high',
+      activeMs: 10000,
+      visibleMs: 10000,
+      estimatedReadMs: 9000,
+      textWordCount: 30,
+      contentExposureRatio: 1,
+      mediaProgressRatio: 0,
+      mediaPlayedMs: 0,
+      filePreviewCount: 0,
+      fileDownloadCount: 0,
+      quickComplete: false,
+    } as any;
+    component.topic = { id: 10, title: 'Attention Topic' } as any;
+    component.activityId = 88;
+    component.currentTask = { id: 10, type: 'Topic', status: 'in progress' } as any;
+
+    await component.continue({ topic: component.topic, attention });
+
+    expect(topicServiceSpy.updateTopicProgress).toHaveBeenCalledWith(10, 'completed', attention);
   });
 
   it('should build fallback current task when missing', async () => {
@@ -120,7 +161,7 @@ describe('TopicMobilePage', () => {
     await component.continue();
 
     expect(component.currentTask).toEqual(jasmine.objectContaining({ id: 11, type: 'Topic', name: 'Fallback Topic' }));
-    expect(topicServiceSpy.updateTopicProgress).toHaveBeenCalledWith(11, 'completed');
+    expect(topicServiceSpy.updateTopicProgress).toHaveBeenCalledWith(11, 'completed', undefined);
   });
 
   it('should go back to activity-mobile page', () => {
