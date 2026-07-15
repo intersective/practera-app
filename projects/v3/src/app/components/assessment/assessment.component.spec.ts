@@ -1056,86 +1056,6 @@ describe('AssessmentComponent', () => {
     });
   });
 
-  describe('should get correct assessment answers when', () => {
-    let assessment;
-    let answers;
-    let btnDisabled = false;
-
-    beforeEach(() => {
-      component.assessment = mockAssessment;
-      component.doAssessment = true;
-      component.contextId = 2;
-      component.assessment.isForTeam = true;
-      component.questionsForm = new FormGroup({
-        'q-123': new FormControl('abc'),
-        'q-124': new FormControl(),
-        'q-125': new FormControl()
-      });
-    });
-
-    afterEach(() => {
-      expect(component.btnDisabled$.value).toBe(btnDisabled);
-      expect(notificationSpy.popUp.calls.count()).toBe(0);
-      expect(component.assessment.id).toBe(1);
-      expect(component.contextId).toBe(2);
-      expect(answers).toEqual([
-        {
-          questionId: 123,
-          answer: 'abc'
-        },
-        {
-          questionId: 124,
-          answer: null
-        },
-        {
-          questionId: 125,
-          answer: []
-        }
-      ]);
-    });
-
-    xit('saving in progress', () => {
-      const spy = spyOn(component.save, 'emit');
-      component._submitAnswer({autoSave: true});
-      btnDisabled = true;
-
-      const args = spy.calls.first().args;
-      assessment = args[0].assessment;
-      answers = args[0].answers;
-
-      // expect(component.submitting).toBeFalsy();
-      expect(spy).toHaveBeenCalled();
-      expect(assessment.inProgress).toBe(true);
-      expect(assessment.unlock).toBeFalsy();
-    });
-
-    xit('submitting', () => {
-      const spy = spyOn(component.save, 'emit');
-      // component.save = jasmine.createSpyObj('save', ['emit']);
-      btnDisabled = true;
-      component.isPendingReview = false;
-      component.doAssessment = true;
-      component._submitAnswer({autoSave: true}); // save in progress
-
-      const args = spy.calls.first().args;
-      assessment = args[0].assessment;
-      answers = args[0].answers;
-      expect(component.save.emit).toHaveBeenCalled();
-    });
-  });
-
-  xit('should alert when compulsory question not answered', () => {
-    component.assessment = mockAssessment;
-    component.doAssessment = true;
-    component.questionsForm = new FormGroup({
-      'q-123': new FormControl(),
-      'q-124': new FormControl(),
-      'q-125': new FormControl()
-    });
-    component._submitAnswer({autoSave: false});
-    expect(notificationSpy.alert.calls.count()).toBe(1);
-  });
-
   describe('submitting assessment submit(false)', () => {
     const activityId = 1;
     const emptyAnswers = [];
@@ -1160,34 +1080,7 @@ describe('AssessmentComponent', () => {
       };
     });
 
-    xit('should be called with correct assessment answer/action/activity status', () => {
-      component.save = jasmine.createSpyObj('save', ['emit']);
-      component.questionsForm = new FormGroup({});
-      utils.each = jasmine.createSpy('each');
-      component._submitAnswer({autoSave: false});
-      expect(utils.each).toHaveBeenCalled();
-      expect(component.save.emit).toHaveBeenCalled();
-      /* expect(assessmentSpy.saveAnswers).toHaveBeenCalled();
-      expect(assessmentSpy.saveAnswers).toHaveBeenCalledWith(
-        {
-          id: activityId,
-          contextId: 2
-        },
-        emptyAnswers,
-        action,
-        false // no need pulse check for this test
-      ); */
-    });
-
-    xit(`should check fastfeedback availability as pulseCheck is 'true'`, () => {
-      component.questionsForm = new FormGroup({});
-      component._submitAnswer({autoSave: false});
-      const spy = spyOn(fastFeedbackSpy, 'pullFastFeedback').and.returnValue(of(fastFeedbackSpy.pullFastFeedback()));
-      fixture.detectChanges();
-      expect(fastFeedbackSpy.pullFastFeedback.calls.count()).toEqual(1);
-    });
-
-    xit('should skip fastfeedback if pulsecheck = false', () => {
+    it('should skip fastfeedback if pulsecheck = false', () => {
       component.questionsForm = new FormGroup({});
       component.assessment.pulseCheck = false;
       spyOn(fastFeedbackSpy, 'pullFastFeedback');

@@ -192,35 +192,6 @@ describe('PusherService', async () => {
     });
   });
 
-  xdescribe('unsubscribeChannels()', () => {
-    const channels = {
-      notification: {
-        name: 'TEST_VALUE',
-        subscription: null,
-      },
-      chat: [
-        {
-          name: 'TEST_VALUE',
-          subscription: null,
-        },
-        {
-          name: 'TEST_VALUE',
-          subscription: null,
-        }
-      ]
-    };
-
-    it('should unsubscribe', () => {
-      service['channels'] = channels;
-      service['pusher'] = new PusherLib();
-      service.unsubscribeChannels();
-      expect(service['channels']).toEqual({
-        notification: null,
-        chat: []
-      });
-    });
-  });
-
   describe('subscribeChannel()', () => {
     beforeEach(() => {
       environment.env = 'test';
@@ -359,29 +330,6 @@ describe('PusherService', async () => {
     it('should has been instantiated', () => {
       service['pusher'] = undefined;
       const result = service.isInstantiated();
-      expect(result).toBeFalsy();
-    });
-  });
-
-  xdescribe('isSubscribed()', () => {
-    let channels;
-    const testChannel = null;
-    beforeEach(() => {
-      service['pusher'] = new PusherLib();
-      service['pusher'].subscribe('test');
-
-      // mock successfully subsribed channel
-      channels = service['pusher'].channels;
-      spyOn(testChannel, 'subscribed').and.returnValue(true);
-    });
-
-    it('should subscribe to channel', () => {
-      const result = service.isSubscribed('test');
-      expect(result).toBeTruthy();
-    });
-
-    it('should not subscribe to channel not existence', () => {
-      const result = service.isSubscribed('test-not-availble');
       expect(result).toBeFalsy();
     });
   });

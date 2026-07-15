@@ -176,12 +176,26 @@ describe('HomePage', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show a visible Project Hub label when project brief and project hub are available', () => {
-    component.experience = { id: 1, name: 'Test Experience', cardUrl: 'test-card-url' } as any;
-    component.isExpert = false;
-    component.projectBrief = { id: 'brief-1', title: 'Project Brief' };
-    component.showProjectHub = true;
+  it('should show a visible Project Hub label when project brief and project hub are available', async () => {
+    // Drive state through the component's own updateDashboard() so that
+    // all internal properties are set consistently without triggering NG0100.
+    sharedService.refreshJWT.and.returnValue(Promise.resolve());
+    storageService.getUser.and.returnValue({
+      role: 'participant',
+      apikey: 'test-key',
+      projectId: 1,
+      teamId: 1,
+      projectBrief: { id: 'brief-1', title: 'Project Brief' },
+    });
+    storageService.get.and.callFake((key: string) => {
+      if (key === 'experience') {
+        return { id: 1, name: 'Test Experience', cardUrl: 'test-card-url' };
+      }
+      return null;
+    });
+    storageService.getFeature.and.returnValue(true);
 
+    await component.updateDashboard();
     fixture.detectChanges();
 
     const buttons = Array.from(

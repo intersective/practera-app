@@ -333,21 +333,6 @@ describe('AuthDirectLoginComponent', () => {
         ];
       });
 
-      xit('assessment page (onePageOnly restriction)', () => {
-        utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
-        storageSpy.singlePageAccess = true; // singlePageRestriction
-
-        tmpParams.redirect = 'assessment';
-        tmpParams.sm = undefined;
-        redirect = [
-          'assessment',
-          'assessment',
-          tmpParams.act,
-          tmpParams.ctxt,
-          tmpParams.asmt,
-        ];
-      });
-
       it('assessment page with referrer', () => {
         utils.isMobile = jasmine.createSpy('isMobile').and.returnValues(false);
         storageSpy.singlePageAccess = false;
@@ -394,18 +379,6 @@ describe('AuthDirectLoginComponent', () => {
         tmpParams.redirect = 'topic';
         redirect = [
           'topic-mobile',
-          tmpParams.act,
-          tmpParams.top
-        ];
-      });
-
-      xit('topic page (onePageOnly restriction)', () => {
-        utils.isMobile = jasmine.createSpy().and.returnValue(false);
-        storageSpy.get.and.returnValue(true); // singlePageRestriction
-
-        tmpParams.redirect = 'topic';
-        redirect = [
-          'topic',
           tmpParams.act,
           tmpParams.top
         ];

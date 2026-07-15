@@ -132,7 +132,7 @@ describe('ProjectBriefModalComponent', () => {
         professionalSkills: ['Leadership'],
         deliverables: 'Prototype'
       };
-      fixture.detectChanges();
+      cd.detectChanges();
 
       const accentSelectors = [
         'ion-icon[name="document-text-outline"]',

@@ -80,43 +80,6 @@ describe('AuthLoginComponent', () => {
       expect(component.isLoggingIn).toBe(false);
     });
 
-    xit('should navigate to dashboard if have one program after successfully login', fakeAsync(() => {
-      experienceServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['v3', 'home']));
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.authenticate.and.returnValue(of({} as any));
-      component.login();
-      tick();
-      expect(serviceSpy.authenticate.calls.count()).toBe(1);
-      expect(experienceServiceSpy.switchProgramAndNavigate.calls.count()).toBe(1);
-      expect(routerSpy.navigate.calls.first().args[0]).toEqual(['v3', 'home']);
-    }));
-
-    xit('should pop up password compromised alert if login failed', fakeAsync(() => {
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.authenticate.and.returnValue(throwError({data: {type: 'password_compromised'}}));
-      component.login();
-      tick();
-      expect(serviceSpy.authenticate.calls.count()).toBe(1);
-      expect(component.isLoggingIn).toBe(false);
-      expect(notificationSpy.alert.calls.count()).toBe(1);
-      expect(notificationSpy.alert.calls.first().args[0].message).toContain('insecure passwords');
-    }));
-
-    xit(`should pop up 'incorrect' alert if login failed`, fakeAsync(() => {
-      component.loginForm.setValue({email: 'test@test.com', password: 'abc'});
-      serviceSpy.authenticate.and.returnValue(throwError({}));
-      component.login();
-      tick();
-      expect(serviceSpy.authenticate.calls.count()).toBe(1);
-      expect(component.isLoggingIn).toBe(true);
-      expect(notificationSpy.alert.calls.count()).toBe(1);
-      expect(notificationSpy.alert.calls.first().args[0].message).toContain('password is incorrect');
-
-      const button = notificationSpy.alert.calls.first().args[0].buttons[0];
-      (typeof button === 'string') ? button : button.handler(true);
-
-      expect(component.isLoggingIn).toBe(false);
-    }));
   });
 });
 
