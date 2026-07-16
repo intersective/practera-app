@@ -75,12 +75,6 @@
   --padding-start: 16px;
   --padding-end: 16px;
   min-width: 120px; // Ensure minimum button width
-
-  .action-spinner {
-    width: 18px;
-    height: 18px;
-    margin-inline-end: 8px;
-  }
 }
 
 // mobile responsiveness
@@ -118,7 +112,7 @@
     padding: 3px 0;
   }
 
-  .button-container:not(.is-loading):has(ion-button.button-disabled) {
+  .button-container:has(ion-button.button-disabled) {
     display: none;
   }
 }

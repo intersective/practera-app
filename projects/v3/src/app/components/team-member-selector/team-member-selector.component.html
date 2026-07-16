@@ -3,17 +3,14 @@
 <ng-container *ngIf="isDisplayOnly">
   <ion-list class="no-bg ion-no-padding">
     <ion-radio-group [value]="submission?.answer">
-      <ng-container *ngFor="let teamMember of displayTeamMembers;let i = index">
+      <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
         <ion-item class="item-bottom-border" lines="none">
           <ion-label>
-            <p *ngIf="!isReviewerFeedbackContext && (teamMember.key === submission?.answer || teamMember.key === review?.answer)">
-              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer">
-                <span i18n *ngIf="viewerRole === 'learner'">Your Answer</span>
-                <span i18n *ngIf="viewerRole !== 'learner'">Learner's Answer</span>
-              </ion-chip>
+            <span [innerHTML]="teamMember.userName"></span>
+            <p *ngIf="teamMember.key === submission?.answer || teamMember.key === review?.answer">
+              <ion-chip class="label orange" *ngIf="teamMember.key === submission?.answer" i18n>Learner's Answer</ion-chip>
               <ion-chip class="label yellow black" *ngIf="teamMember.key === review?.answer" i18n>Reviewer's Answer</ion-chip>
             </p>
-            <span class="answer-content" [innerHTML]="teamMember.userName"></span>
           </ion-label>
         </ion-item>
       </ng-container>

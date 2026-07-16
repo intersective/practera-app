@@ -34,47 +34,6 @@ describe('TeamMemberSelectorComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should show only the reviewer-selected member in reviewer feedback', () => {
-    component.question = {
-      teamMembers: [
-        { key: 'member-1', userName: 'Member 1' },
-        { key: 'member-2', userName: 'Member 2' },
-      ],
-    };
-    component.review = { answer: 'member-2' };
-    component.isReviewerFeedbackContext = true;
-
-    expect(component.displayTeamMembers.map(member => member.key)).toEqual(['member-2']);
-
-    component.isReviewerFeedbackContext = false;
-    expect(component.displayTeamMembers.length).toBe(2);
-  });
-
-  it('should render the learner ownership chip before the selected member', () => {
-    component.question = {
-      teamMembers: [
-        { key: 'member-1', userName: 'Member 1' },
-        { key: 'member-2', userName: 'Member 2' },
-      ],
-      audience: ['submitter', 'reviewer'],
-    };
-    component.submissionStatus = 'feedback available';
-    component.reviewStatus = 'done';
-    component.doAssessment = false;
-    component.doReview = false;
-    component.viewerRole = 'learner';
-    component.submission = { answer: 'member-1' };
-    component.review = { answer: 'member-2' };
-
-    fixture.detectChanges();
-
-    const learnerItem = fixture.nativeElement.querySelector('ion-list ion-item');
-    const labelChildren = Array.from(learnerItem.querySelector('ion-label').children);
-    expect(labelChildren.indexOf(learnerItem.querySelector('p')))
-      .toBeLessThan(labelChildren.indexOf(learnerItem.querySelector('.answer-content')));
-    expect(learnerItem.textContent).toContain('Your Answer');
-  });
-
   describe('when testing onInit()', () => {
     it('should get correct data for in progress submission', () => {
       component.question = {

@@ -34,9 +34,6 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
-  // role of the user viewing completed feedback
-  @Input() viewerRole: 'learner' | 'reviewer';
-  @Input() isReviewerFeedbackContext = false;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
   // comment field for reviewer
@@ -260,20 +257,6 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     this._collectSelectedChoiceIds(this.review?.answer, selectedChoiceIds);
 
     return (this.question?.choices || []).filter(choice => selectedChoiceIds.has(choice.id));
-  }
-
-  isReviewerChoiceSelected(choiceId: string | number): boolean {
-    return this._answerIncludesChoice(this.review?.answer, choiceId);
-  }
-
-  isSubmissionChoiceSelected(choiceId: string | number): boolean {
-    return this._answerIncludesChoice(this.submission?.answer, choiceId);
-  }
-
-  private _answerIncludesChoice(answer: any, choiceId: string | number): boolean {
-    const selectedChoiceIds = new Set<string | number>();
-    this._collectSelectedChoiceIds(answer, selectedChoiceIds);
-    return selectedChoiceIds.has(choiceId);
   }
 
   private _collectSelectedChoiceIds(answer: any, selectedChoiceIds: Set<string | number>): void {
