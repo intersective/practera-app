@@ -31,6 +31,8 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   @Input() submissionStatus;
   @Input() doAssessment: Boolean;
   @Input() doReview: Boolean;
+  @Input() viewerRole: 'learner' | 'reviewer';
+  @Input() isReviewerFeedbackContext = false;
   @Input() control: AbstractControl;
 
   // answer field for submitter & reviewer

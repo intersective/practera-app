@@ -1,21 +1,24 @@
 <h3 class="for-accessibility" [id]="'multi-team-member-selector-question-' + question.id">{{question.name}}</h3>
 <ng-container *ngIf="isDisplayOnly">
   <ion-list class="no-bg ion-no-padding">
-    <ng-container *ngFor="let teamMember of question.teamMembers;let i = index">
+    <ng-container *ngFor="let teamMember of displayTeamMembers;let i = index">
       <ion-item class="item-bottom-border" lines="none">
         <ion-label>
-          <span [innerHTML]="teamMember.userName"></span>
-          <ng-container *ngIf="submission?.answer">
+          <ng-container *ngIf="submission?.answer && !isReviewerFeedbackContext">
             <p *ngIf="isSelectedInSubmission(teamMember)">
-              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
+              <ion-chip class="label orange">
+                <span i18n *ngIf="viewerRole === 'learner'">Your Answer</span>
+                <span i18n *ngIf="viewerRole !== 'learner'">Learner's Answer</span>
+              </ion-chip>
             </p>
           </ng-container>
 
-          <ng-container *ngIf="review?.answer">
+          <ng-container *ngIf="review?.answer && !isReviewerFeedbackContext">
             <p *ngIf="isSelectedInReview(teamMember)">
               <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
             </p>
           </ng-container>
+          <span class="answer-content" [innerHTML]="teamMember.userName"></span>
         </ion-label>
       </ion-item>
     </ng-container>
