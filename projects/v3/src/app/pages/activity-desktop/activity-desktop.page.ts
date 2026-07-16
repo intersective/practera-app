@@ -520,6 +520,9 @@ export class ActivityDesktopPage {
   async readFeedback(submissionId, currentTask: Task) {
     try {
       this.loading = true;
+      // Snapshot review rating state before getActivity switches the task context
+      const reviewId = this.review?.id;
+      const hasReviewRating = this.assessmentService.assessment?.hasReviewRating;
       const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
       await firstValueFrom(savedReview.pipe(
         // get the latest activity tasks and navigate to the next task
@@ -527,7 +530,7 @@ export class ActivityDesktopPage {
         tap(() => this.activityService.getActivity(this.activity.id, true, currentTask)),
         delay(400)
       ));
-      await this.reviewRatingPopUp();
+      await this.reviewRatingPopUp(reviewId, hasReviewRating);
       await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
       this.loading = false;
@@ -550,16 +553,18 @@ export class ActivityDesktopPage {
     });
   }
 
-  async reviewRatingPopUp(): Promise<void> {
+  async reviewRatingPopUp(reviewId?: number, hasReviewRating?: boolean): Promise<void> {
     if (this.storageService.getUser().hasReviewRating === false) {
       return;
     }
 
-    // display review rating modal
+    const rId = reviewId ?? this.review?.id;
+    const ratingFlag = hasReviewRating ?? this.assessmentService.assessment?.hasReviewRating;
+
     return await this.notificationsService.popUpReviewRating(
-      this.review.id,
+      rId,
       false,
-      this.assessmentService.assessment?.hasReviewRating
+      ratingFlag
     );
   }
 

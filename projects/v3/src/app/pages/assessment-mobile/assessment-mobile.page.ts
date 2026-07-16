@@ -249,6 +249,9 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
 
   async readFeedback(submissionId: number) {
     try {
+      // Snapshot review rating state before getActivity switches the task context
+      const reviewId = this.review?.id;
+      const hasReviewRating = this.assessment?.hasReviewRating;
       const savedReview = this.assessmentService.saveFeedbackReviewed(submissionId);
       await firstValueFrom(savedReview.pipe(
         // get the latest activity tasks and navigate to the next task
@@ -256,7 +259,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
         tap(() => this.activityService.getActivity(this.activityId, true, this.task)),
         delay(400)
       ));
-      await this.reviewRatingPopUp();
+      await this.reviewRatingPopUp(reviewId, hasReviewRating);
       await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
 
       this.btnDisabled$.next(false);
@@ -270,17 +273,19 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
     return this.activityService.getActivity(this.activityId, true, this.task);
   }
 
-  async reviewRatingPopUp(): Promise<void> {
+  async reviewRatingPopUp(reviewId?: number, hasReviewRating?: boolean): Promise<void> {
     if (this.storageService.getUser().hasReviewRating === false) {
       return;
     }
 
+    const rId = reviewId ?? this.review?.id;
+    const ratingFlag = hasReviewRating ?? this.assessment?.hasReviewRating;
+
     try {
-      // display review rating modal
       return await this.notificationsService.popUpReviewRating(
-        this.review.id,
+        rId,
         false,
-        this.assessment?.hasReviewRating
+        ratingFlag
       );
     } catch (err) {
       const header = $localize`Can not get review rating information`;
