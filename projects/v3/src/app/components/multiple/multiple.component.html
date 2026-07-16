@@ -3,25 +3,20 @@
   <ion-list class="ion-no-padding">
     <ng-container *ngFor="let choice of displayChoices; let i = index">
       <ion-item lines="none"
-        [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && isSubmissionChoiceSelected(choice.id))}">
+        [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3">
-          <ng-container *ngIf="!isReviewerFeedbackContext">
-            <ion-chip class="label orange"
-              *ngIf="isSubmissionChoiceSelected(choice.id)">
-              <span i18n *ngIf="viewerRole === 'learner'">Your Answer</span>
-              <span i18n *ngIf="viewerRole !== 'learner'">Learner's Answer</span>
-            </ion-chip>
-            <ion-chip class="label yellow black"
-              *ngIf="isReviewerChoiceSelected(choice.id)">
-              <span i18n>Reviewer's Answer</span>
-            </ion-chip>
-          </ng-container>
-          <div class="answer-content"
-            [ngClass]="{'explanation': isSubmissionChoiceSelected(choice.id) || isReviewerChoiceSelected(choice.id)}"
-            [innerHTML]="choice.name | detectLanguage"></div>
+          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name | detectLanguage"></div>
+          <ion-chip i18n
+            class="label orange"
+            *ngIf="submission?.answer?.includes(choice.id)"
+          >Learner's Answer</ion-chip>
+          <ion-chip i18n
+            class="label yellow black"
+            *ngIf="review?.answer?.includes(choice.id)"
+          >Reviewer's Answer</ion-chip>
         </ion-label>
       </ion-item>
-      <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && isSubmissionChoiceSelected(choice.id)">
+      <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
           <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
