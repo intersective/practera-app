@@ -300,16 +300,24 @@ All follow similar patterns with dual-purpose display for learner/reviewer conte
 ```html
 <ion-button class="action-button"
   mode="ios"
-  [disabled]="disabled$ | async"
+  [disabled]="loading || (disabled$ | async)"
   [color]="color"
   (click)="onClick($event)"
->{{ text }}</ion-button>
+  [attr.aria-busy]="loading ? 'true' : 'false'">
+  <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+  <span>{{ text }}</span>
+</ion-button>
 ```
 
 **Button States:**
 - **Enabled**: Form is valid and user can submit
-- **Disabled**: Form has validation errors or submission in progress
+- **Disabled**: Form has validation errors or an action is already in progress
+- **Loading**: For assessment/review submit actions, starts before the click event is emitted, keeps the disabled button visible with an inline spinner, and clears when `disabled$` emits `false`
 - **Dynamic Text**: Changes based on context (Submit, Continue, Mark as Read, etc.)
+
+`disabled$` remains the source of truth for whether the action can be triggered. Loading is a distinct, opt-in visual state (`showLoadingOnClick`) so validation-disabled buttons do not incorrectly announce `aria-busy`, and non-submit actions retain their existing behavior.
+
+During manual submission, the parent page owns the terminal `disabled$ = false` transition. Intermediate assessment/review refetches may update displayed data and the last-saved message, but must not re-enable the action while the assessment component's submission guard is active. The parent clears the state only after the final refresh succeeds or the submission fails.
 
 ## Data Flow Diagrams
 
