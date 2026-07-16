@@ -32,6 +32,8 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
+  @Input() viewerRole: 'learner' | 'reviewer';
+  @Input() isReviewerFeedbackContext = false;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
   // answer field for submitter & reviewer

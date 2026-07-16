@@ -42,6 +42,54 @@ describe('OneofComponent', () => {
     expect(component).toBeDefined();
   });
 
+  describe('read-only ownership context', () => {
+    beforeEach(() => {
+      component.question = {
+        id: 1,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+        ],
+        audience: ['submitter', 'reviewer'],
+      };
+      component.submissionStatus = 'feedback available';
+      component.reviewStatus = 'done';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: 1 };
+      component.review = { answer: 2 };
+    });
+
+    it('should use ownership labels for a shared question', () => {
+      component.viewerRole = 'learner';
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Your Answer');
+      expect(fixture.nativeElement.textContent).toContain("Reviewer's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+
+      const learnerItem = fixture.nativeElement.querySelector('ion-list ion-item');
+      const labelChildren = Array.from(learnerItem.querySelector('ion-label').children);
+      expect(labelChildren.indexOf(learnerItem.querySelector('ion-chip')))
+        .toBeLessThan(labelChildren.indexOf(learnerItem.querySelector('.answer-content')));
+    });
+
+    it('should show only the selected value without a label in reviewer feedback', () => {
+      component.question.audience = ['reviewer'];
+      component.submission = {};
+      component.isReviewerFeedbackContext = true;
+
+      fixture.detectChanges();
+
+      const items = fixture.nativeElement.querySelectorAll('ion-list ion-item');
+      expect(items.length).toBe(1);
+      expect(items[0].textContent).toContain('choice2');
+      expect(fixture.nativeElement.querySelectorAll('ion-chip').length).toBe(0);
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
+    });
+  });
+
   describe('when testing onInit()', () => {
     it('should get correct data for in progress submission', () => {
       component.question = {
