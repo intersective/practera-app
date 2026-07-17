@@ -7,12 +7,23 @@
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3">
             <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
-            <ion-chip class="label orange"
-              *ngIf="submission?.answer === choice.id" i18n
-            >Learner's Answer</ion-chip>
-            <ion-chip class="label yellow black"
-              *ngIf="review?.answer === choice.id" i18n
-            >Reviewer's Answer</ion-chip>
+            <ng-container *ngIf="isReviewerOnlyLearnerFeedback; else answerLabels">
+              <ion-chip *ngIf="isReviewChoiceSelected(choice.id); else notSelectedByReviewer"
+                class="label success"
+                i18n>Selected by reviewer</ion-chip>
+              <ng-template #notSelectedByReviewer>
+                <ion-chip class="label orange"
+                  i18n>Not selected by reviewer</ion-chip>
+              </ng-template>
+            </ng-container>
+            <ng-template #answerLabels>
+              <ion-chip class="label orange"
+                *ngIf="submission?.answer === choice.id" i18n
+              >Learner's Answer</ion-chip>
+              <ion-chip class="label yellow black"
+                *ngIf="review?.answer === choice.id" i18n
+              >Reviewer's Answer</ion-chip>
+            </ng-template>
           </ion-label>
         </ion-item>
         <ng-container *ngIf="choice?.explanation && choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id">

@@ -176,6 +176,115 @@ describe('OneofComponent', () => {
     });
   });
 
+  describe('when testing display-only preview mode', () => {
+    it('should show every reviewer-only choice with its reviewer selection state to the learner', () => {
+      component.question = {
+        reviewerOnly: true,
+        canAnswer: false,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: ['reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: 1 };
+      component.review = { answer: 2 };
+
+      fixture.detectChanges();
+
+      const items = fixture.nativeElement.querySelectorAll('ion-list ion-item');
+      const selectedChips = fixture.nativeElement.querySelectorAll('ion-chip.success');
+      const notSelectedChips = fixture.nativeElement.querySelectorAll('ion-chip.orange');
+
+      expect(component.isReviewerOnlyLearnerFeedback).toBeTrue();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2, 3]);
+      expect(items.length).toBe(3);
+      expect(selectedChips.length).toBe(1);
+      expect(selectedChips[0].textContent.trim()).toBe('Selected by reviewer');
+      expect(notSelectedChips.length).toBe(2);
+      expect(Array.from(notSelectedChips).every((chip: Element) => chip.textContent.trim() === 'Not selected by reviewer')).toBeTrue();
+      expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
+    });
+
+    it('should show every reviewer-only choice as not selected when the review answer is empty', () => {
+      component.question = {
+        reviewerOnly: true,
+        canAnswer: false,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' }
+        ],
+        audience: ['reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = {};
+      component.review = {};
+
+      fixture.detectChanges();
+
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2]);
+      expect(fixture.nativeElement.querySelectorAll('ion-chip.success').length).toBe(0);
+      expect(fixture.nativeElement.querySelectorAll('ion-chip.orange').length).toBe(2);
+    });
+
+    it('should preserve selected-only rendering when a reviewer reopens a completed review', () => {
+      component.question = {
+        reviewerOnly: true,
+        canAnswer: true,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: ['reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = {};
+      component.review = { answer: 2 };
+
+      fixture.detectChanges();
+
+      expect(component.isReviewerOnlyLearnerFeedback).toBeFalse();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([2]);
+      expect(fixture.nativeElement.textContent).toContain("Reviewer's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain('Not selected by reviewer');
+    });
+
+    it('should preserve selected-only rendering for shared-audience questions', () => {
+      component.question = {
+        reviewerOnly: false,
+        canAnswer: false,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: ['submitter', 'reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: 1 };
+      component.review = { answer: 2 };
+
+      fixture.detectChanges();
+
+      expect(component.isReviewerOnlyLearnerFeedback).toBeFalse();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2]);
+      expect(fixture.nativeElement.textContent).toContain("Learner's Answer");
+      expect(fixture.nativeElement.textContent).toContain("Reviewer's Answer");
+    });
+  });
+
   describe('triggerSave()', () => {
     beforeEach(() => {
       component.question = { id: 42, audience: [] };

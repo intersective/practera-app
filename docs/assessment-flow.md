@@ -2,7 +2,7 @@
 status: stable
 authority: canonical
 scope: frontend
-last_reviewed: 2026-07-13
+last_reviewed: 2026-07-16
 supersedes: none
 ---
 
@@ -135,6 +135,8 @@ questionsForm: FormGroup = new FormGroup({});
 
 3. **Feedback Available**: Read-only with feedback
    - Display learner answers and reviewer feedback
+   - For reviewer-only `multiple` and `oneof` questions, display every configured choice and label it as either **Selected by reviewer** or **Not selected by reviewer**
+   - Reviewer-only choice feedback is derived only from the review answer and does not display learner-answer labels
    - "Mark as Read" button to acknowledge feedback
    - Navigation to next task after reading
 
