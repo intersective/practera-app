@@ -18,8 +18,13 @@ exports.handler = async (evt) => {
     return request;
   }
 
+  // Angular 19+ application builder already emits under /browser/ — do not rewrite.
+  if (locale === "browser") {
+    return request;
+  }
+
   if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
-    request.uri = "/en-US/index.html";
+    request.uri = "/browser/en-US/index.html";
     console.log("Go to default page and locale.");
     return request;
   }

@@ -60,14 +60,19 @@ resources:
                 return cb(null, request);
               }
 
+              if (locale === "browser") {
+                return cb(null, request);
+              }
+
               if (locale === "" || locale === "index.html" || !locales.includes(locale)) {
-                request.uri = "/en-US/index.html";
+                request.uri = "/browser/en-US/index.html";
                 console.log('Go to default page and locale.');
                 return cb(null, request);
               }
 
               const fileExt = path.extname(lastPartUrl);
-              if (!fileExt) request.uri = `/${locale}/index.html`;
+              if (!fileExt) request.uri = `/browser/${locale}/index.html`;
+              else if (!request.uri.startsWith('/browser/')) request.uri = `/browser${request.uri}`;
 
               console.log(`New Uri: ${request.uri}`);
               return cb(null, request);
