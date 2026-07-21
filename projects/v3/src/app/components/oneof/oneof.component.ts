@@ -209,8 +209,15 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get isReviewerOnlyLearnerFeedback(): boolean {
+    return this.isDisplayOnly
+      && this.question?.reviewerOnly === true
+      && this.question?.canAnswer === false
+      && this.submissionStatus === 'feedback available';
+  }
+
   get displayChoices(): Array<any> {
-    if (!this.isDisplayOnly) {
+    if (!this.isDisplayOnly || this.isReviewerOnlyLearnerFeedback) {
       return this.question?.choices || [];
     }
 
@@ -227,6 +234,10 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     }
 
     return (this.question?.choices || []).filter(choice => selectedIds.has(choice.id));
+  }
+
+  isReviewChoiceSelected(choiceId: string | number): boolean {
+    return this.review?.answer === choiceId;
   }
 
   // innerHTML text toggle

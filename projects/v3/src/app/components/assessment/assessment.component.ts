@@ -716,7 +716,12 @@ Best regards`;
   private _handleReviewData() {
     if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
-      this.btnDisabled$.next(false);
+      // An intermediate status-check fetch republishes the same in-progress review while the
+      // submit request is still running. Keep the action disabled until the parent submission
+      // workflow explicitly reports completion or failure.
+      if (!this.submitting) {
+        this.btnDisabled$.next(false);
+      }
     }
   }
 
@@ -990,6 +995,10 @@ Best regards`;
     }
 
     return 'continue';
+  }
+
+  get showSubmitLoadingOnClick(): boolean {
+    return this._btnAction === 'submit';
   }
 
   // the text of the button
