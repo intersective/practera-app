@@ -5,15 +5,30 @@
     <ion-radio-group [value]="submission?.answer || review?.answer">
       <ng-container *ngFor="let choice of displayChoices">
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
-          <ion-label class="ion-text-wrap body-2 gray-3">
-            <div [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}" [innerHTML]="choice.name | detectLanguage"></div>
+          <ion-label class="ion-text-wrap body-2 gray-3"
+            [class.reviewer-feedback-choice]="isReviewerOnlyLearnerFeedback">
+            <div [class.reviewer-feedback-choice-text]="isReviewerOnlyLearnerFeedback"
+              [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}"
+              [innerHTML]="choice.name | detectLanguage"></div>
             <ng-container *ngIf="isReviewerOnlyLearnerFeedback; else answerLabels">
-              <ion-chip *ngIf="isReviewChoiceSelected(choice.id); else notSelectedByReviewer"
-                class="label success"
-                i18n>Selected by reviewer</ion-chip>
+              <span *ngIf="isReviewChoiceSelected(choice.id); else notSelectedByReviewer"
+                class="reviewer-choice-status reviewer-choice-status-selected">
+                <ion-icon name="checkmark"
+                  aria-hidden="true"></ion-icon>
+                <span class="reviewer-choice-status-text"
+                  aria-hidden="true"
+                  i18n>Selected</span>
+                <span class="for-accessibility"
+                  i18n>Selected by reviewer</span>
+              </span>
               <ng-template #notSelectedByReviewer>
-                <ion-chip class="label orange"
-                  i18n>Not selected by reviewer</ion-chip>
+                <span class="reviewer-choice-status reviewer-choice-status-not-selected">
+                  <span class="reviewer-choice-status-text"
+                    aria-hidden="true"
+                    i18n>Not selected</span>
+                  <span class="for-accessibility"
+                    i18n>Not selected by reviewer</span>
+                </span>
               </ng-template>
             </ng-container>
             <ng-template #answerLabels>

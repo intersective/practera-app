@@ -197,16 +197,20 @@ describe('OneofComponent', () => {
       fixture.detectChanges();
 
       const items = fixture.nativeElement.querySelectorAll('ion-list ion-item');
-      const selectedChips = fixture.nativeElement.querySelectorAll('ion-chip.success');
-      const notSelectedChips = fixture.nativeElement.querySelectorAll('ion-chip.orange');
+      const selectedStatuses = fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected');
+      const notSelectedStatuses = fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected');
 
       expect(component.isReviewerOnlyLearnerFeedback).toBeTrue();
       expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2, 3]);
       expect(items.length).toBe(3);
-      expect(selectedChips.length).toBe(1);
-      expect(selectedChips[0].textContent.trim()).toBe('Selected by reviewer');
-      expect(notSelectedChips.length).toBe(2);
-      expect(Array.from(notSelectedChips).every((chip: Element) => chip.textContent.trim() === 'Not selected by reviewer')).toBeTrue();
+      expect(selectedStatuses.length).toBe(1);
+      expect(selectedStatuses[0].querySelector('ion-icon').getAttribute('name')).toBe('checkmark');
+      expect(selectedStatuses[0].querySelector('.reviewer-choice-status-text').textContent.trim()).toBe('Selected');
+      expect(selectedStatuses[0].textContent).toContain('Selected by reviewer');
+      expect(notSelectedStatuses.length).toBe(2);
+      expect(Array.from(notSelectedStatuses).every((status: Element) => status.querySelector('ion-icon') === null)).toBeTrue();
+      expect(Array.from(notSelectedStatuses).every((status: Element) => status.querySelector('.reviewer-choice-status-text').textContent.trim() === 'Not selected')).toBeTrue();
+      expect(Array.from(notSelectedStatuses).every((status: Element) => status.textContent.includes('Not selected by reviewer'))).toBeTrue();
       expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
       expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
     });
@@ -230,8 +234,8 @@ describe('OneofComponent', () => {
       fixture.detectChanges();
 
       expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2]);
-      expect(fixture.nativeElement.querySelectorAll('ion-chip.success').length).toBe(0);
-      expect(fixture.nativeElement.querySelectorAll('ion-chip.orange').length).toBe(2);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected').length).toBe(0);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected').length).toBe(2);
     });
 
     it('should preserve selected-only rendering when a reviewer reopens a completed review', () => {
