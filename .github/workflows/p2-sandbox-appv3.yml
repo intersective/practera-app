@@ -16,7 +16,7 @@ on:
         default: ''
   push:
     branches:
-      - 'pvt'
+      - login-refactor-to-aws
 
 
 ################################################
@@ -81,11 +81,18 @@ jobs:
         run: |
           P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
           CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
-
+          if [ -z "$P2SANDBOX" ] || [ "$P2SANDBOX" = "null" ]; then
+            echo "ERROR: AWS_ACCOUNT_ID JSON missing .P2SANDBOX" >&2
+            exit 1
+          fi
+          if [ "$P2SANDBOX" = "478532957254" ] || [ "$P2SANDBOX" = "497048163947" ]; then
+            echo "ERROR: P2SANDBOX resolved to forbidden account $P2SANDBOX" >&2
+            exit 1
+          fi
           echo "::add-mask::$P2SANDBOX"
           echo "::add-mask::$CENTRALIZED"
-
           echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
+          # CENTRALIZED retained only for read of shared-DEPLOY-live Filestack/P1 account IDs (serverless IAM ARNs)
           echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
 
 ################################################
@@ -181,6 +188,13 @@ jobs:
           export CUSTOM_PUSHER_USE_TLS=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.useTLS // "true"')
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-sandbox.practera.com
+          # Sandbox tusd (S-16h) — never tusd.practera.com / file.practera.com
+          export CUSTOM_UPLOAD_TUS_ENDPOINT=https://upload.p2-sandbox.practera.com/uploads/
+          export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
+          export CUSTOM_HELPLINE=help@practera.com
+          export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=true
+          export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
+          export CUSTOM_PROJECTHUB_URL=https://projecthub.${{ env.PUBLICZONENAME }}/
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -197,13 +211,13 @@ jobs:
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
-          CUSTOM_GLOBAL_LOGIN_URL: https://app.login-stage.practera.com
+          CUSTOM_GLOBAL_LOGIN_URL: https://login-app.p2-sandbox.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
-          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: true
+          CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
           CUSTOM_PATH_ANY: /appv3/dev/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
-          CUSTOM_LOGIN_API_URL: https://api.login-stage.practera.com
+          CUSTOM_LOGIN_API_URL: https://login-api.p2-sandbox.practera.com
           CUSTOM_NEWRELIC: true
           CUSTOM_PORTAL_ID: 3404872
           CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
