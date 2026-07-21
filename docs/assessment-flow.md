@@ -135,7 +135,7 @@ questionsForm: FormGroup = new FormGroup({});
 
 3. **Feedback Available**: Read-only with feedback
    - Display learner answers and reviewer feedback
-   - For reviewer-only `multiple` and `oneof` questions, display every configured choice and label it as either **Selected by reviewer** or **Not selected by reviewer**
+   - For reviewer-only `multiple` and `oneof` questions, display every configured choice with a green check and **Selected** status or a subdued **Not selected** status
    - Reviewer-only choice feedback is derived only from the review answer and does not display learner-answer labels
    - "Mark as Read" button to acknowledge feedback
    - Navigation to next task after reading
