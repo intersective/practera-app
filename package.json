@@ -88,7 +88,7 @@
     "@angular-eslint/eslint-plugin-template": "20.7.0",
     "@angular-eslint/schematics": "20.7.0",
     "@angular-eslint/template-parser": "20.7.0",
-    "@angular/cli": "20.3.29",
+    "@angular/cli": "21.0.4",
     "@angular/compiler": "20.3.25",
     "@angular/compiler-cli": "20.3.25",
     "@angular/language-service": "20.3.25",
