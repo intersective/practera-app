@@ -443,6 +443,7 @@
       (handleResubmit)="resubmit()"
       [text]="btnText"
       [disabled$]="btnDisabled$"
+      [showLoadingOnClick]="showSubmitLoadingOnClick"
       (handleClick)="continueToNextTask()"
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
