@@ -209,15 +209,14 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
-  get isReviewerOnlyLearnerFeedback(): boolean {
+  get isReviewerOnlyChoiceFeedback(): boolean {
     return this.isDisplayOnly
       && this.question?.reviewerOnly === true
-      && this.question?.canAnswer === false
       && this.submissionStatus === 'feedback available';
   }
 
   get displayChoices(): Array<any> {
-    if (!this.isDisplayOnly || this.isReviewerOnlyLearnerFeedback) {
+    if (!this.isDisplayOnly || this.isReviewerOnlyChoiceFeedback) {
       return this.question?.choices || [];
     }
 
