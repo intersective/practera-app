@@ -202,7 +202,7 @@ describe('MultipleComponent', () => {
       const selectedStatuses = fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected');
       const notSelectedStatuses = fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected');
 
-      expect(component.isReviewerOnlyLearnerFeedback).toBeTrue();
+      expect(component.isReviewerOnlyChoiceFeedback).toBeTrue();
       expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2, 3]);
       expect(items.length).toBe(3);
       expect(selectedStatuses.length).toBe(1);
@@ -240,7 +240,7 @@ describe('MultipleComponent', () => {
       expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected').length).toBe(2);
     });
 
-    it('should preserve selected-only rendering when a reviewer reopens a completed review', () => {
+    it('should show every reviewer-only choice with its selection state in a completed reviewer view', () => {
       component.question = {
         reviewerOnly: true,
         canAnswer: true,
@@ -259,10 +259,12 @@ describe('MultipleComponent', () => {
 
       fixture.detectChanges();
 
-      expect(component.isReviewerOnlyLearnerFeedback).toBeFalse();
-      expect(component.displayChoices.map(choice => choice.id)).toEqual([2]);
-      expect(fixture.nativeElement.textContent).toContain("Reviewer's Answer");
-      expect(fixture.nativeElement.textContent).not.toContain('Not selected by reviewer');
+      expect(component.isReviewerOnlyChoiceFeedback).toBeTrue();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2, 3]);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected').length).toBe(1);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected').length).toBe(2);
+      expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
     });
   });
 
