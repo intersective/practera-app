@@ -149,6 +149,7 @@ questionsForm: FormGroup = new FormGroup({});
 
 2. **Review Complete**: Read-only mode
    - Show completed review
+   - For reviewer-only `multiple` and `oneof` questions, show every configured choice using the same **Selected** and **Not selected** statuses as the learner's published-feedback view
    - No further editing allowed
 
 #### Form Population Logic
