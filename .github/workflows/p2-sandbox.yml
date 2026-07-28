@@ -150,7 +150,7 @@ jobs:
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
-          CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
+          CUSTOM_CHAT_GRAPH_QL:
           # Legacy app-v2 path — not used for login-refactor cut; URLs retargeted so dispatch cannot hit login-stage
           CUSTOM_GLOBAL_LOGIN_URL: https://login-app.p2-sandbox.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK

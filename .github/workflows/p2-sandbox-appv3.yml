@@ -161,14 +161,15 @@ jobs:
           export CUSTOM_PUSHER_PORT=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.port // ""')
           export CUSTOM_PUSHER_USE_TLS=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.useTLS // "true"')
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
-          export CUSTOM_BADGE_PROJECT_URL=https://badge.p2-sandbox.practera.com
+          # CU-W1-09: badge / projecthub stacks deleted
+          export CUSTOM_BADGE_PROJECT_URL=
           # Sandbox tusd (S-16h) — never tusd.practera.com / file.practera.com
           export CUSTOM_UPLOAD_TUS_ENDPOINT=https://upload.p2-sandbox.practera.com/uploads/
           export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
           export CUSTOM_HELPLINE=help@practera.com
           export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=true
           export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
-          export CUSTOM_PROJECTHUB_URL=https://projecthub.${{ env.PUBLICZONENAME }}/
+          export CUSTOM_PROJECTHUB_URL=
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -184,7 +185,7 @@ jobs:
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
-          CUSTOM_CHAT_GRAPH_QL: https://chat-api.${{ env.PUBLICZONENAME }}
+          CUSTOM_CHAT_GRAPH_QL:
           CUSTOM_GLOBAL_LOGIN_URL: https://login-app.p2-sandbox.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
