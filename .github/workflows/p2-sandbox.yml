@@ -98,37 +98,11 @@ jobs:
       - name: Get AWS Organization Number
         id: AWS_ORG
         run: |
-          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
           P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
 
-          echo "::add-mask::$CENTRALIZED"
           echo "::add-mask::$P2SANDBOX"
-
-          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
           echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
-
-################################################
-#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
-################################################
-      - name: Configure AWS Credentials from CENTRALIZED Account
-        uses: ./.github/actions/aws-oidc
-        with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
-          region: ${{ env.REGION }}
-       
-###############################################################
-#  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
-##############################################################
-      - name: Serverless deployment variables created from shared account
-        run: |
-          cat >> .env <<EOF
-          FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID) 
-          P1STACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1PRODID) 
-         
-          EOF
-        env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-          ENV: live # Valid values are sandbox,stage,live only
+          # C-W1-08: no CENTRALIZED OIDC for sandbox (tusd-only)
 
 ################################################
 #  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT

@@ -80,7 +80,6 @@ jobs:
         id: AWS_ORG
         run: |
           P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
-          CENTRALIZED=$(echo $AWS_ACCOUNT_ID | jq -r .CENTRALIZED)
           if [ -z "$P2SANDBOX" ] || [ "$P2SANDBOX" = "null" ]; then
             echo "ERROR: AWS_ACCOUNT_ID JSON missing .P2SANDBOX" >&2
             exit 1
@@ -90,10 +89,8 @@ jobs:
             exit 1
           fi
           echo "::add-mask::$P2SANDBOX"
-          echo "::add-mask::$CENTRALIZED"
           echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
-          # CENTRALIZED retained only for read of shared-DEPLOY-live Filestack/P1 account IDs (serverless IAM ARNs)
-          echo "CENTRALIZED=$CENTRALIZED" >> $GITHUB_OUTPUT
+          # C-W1-08: no CENTRALIZED OIDC — tusd-only sandbox; Filestack/P1 IAM principals removed from serverless-appv3.yml
 
 ################################################
 #  NODE ENV
@@ -132,30 +129,6 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
 
-
-################################################
-#  AWS CLI CONFIGURATION - CENTRALIZED ACCOUNT
-################################################
-      - name: Configure AWS Credentials from P1 Centralized account
-        uses: ./.github/actions/aws-oidc
-        with:
-          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.CENTRALIZED }}:role/github-restricted-role-to-assume
-          region: ${{ env.REGION }}
-
-
-###############################################################
-#  SERVERLESS DEPLOYMENT VARIABLES FROM SHARED ACCOUNT
-##############################################################
-      - name: Serverless deployment variables created from shared account
-        run: |
-          cat >> .env <<EOF
-          FILESTACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .FILESTACKID)
-          P1STACKAWSID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-DEPLOY-$ENV| jq --raw-output '.SecretString' | jq -r .P1PRODID)
-
-          EOF
-        env:  #TODO: Update once manually to new stack accordingly
-          STACK_NAME: shared # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-          ENV: live # Valid values are sandbox,stage,live only
 
 ################################################
 #  AWS CLI CONFIGURATION - DEVOPS P2 P2SANDBOX

@@ -312,6 +312,8 @@ resources:
               ExposedHeaders: [ETag]
 
     ## Specifying the policies to make sure all files inside the Bucket are avaialble to CloudFront
+    # C-W1-08: removed Filestack + P1 cross-account principals (tusd-only sandbox / login-refactor).
+    # Backup IDs: ~/.practera/secret-backups/p2-sandbox-c-w1-08-*/MANIFEST.json
     FileV2S3BucketPolicy:
       Condition: HasFilev2BucketAlreadyExist
       Type: AWS::S3::BucketPolicy
@@ -319,30 +321,16 @@ resources:
         Bucket: '${env:FILESS3BUCKET}'
         PolicyDocument:
           Statement:
-          - Sid: S3-Bucket-Accesible to filestack uploads
-            Action: 
-              - 's3:PutObjectAcl'
-              - 's3:PutObject'
-              - 's3:GetObject'
-            Effect: Allow
-            Resource: 
+          - Sid: AllowSSLRequestsOnly
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
             - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
             - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
-            Principal:
-              AWS: 
-                - 'arn:aws:iam::${env:FILESTACKAWSID}:user/filestack-uploads'
-          - Sid: S3-Bucket-Accesible to main practera account
-            Action: 
-              - 's3:PutObjectAcl'
-              - 's3:PutObject'
-              - 's3:GetObject'
-            Effect: Allow
-            Resource: 
-            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}'
-            - !Sub 'arn:aws:s3:::${FileV2S3Bucket}/*'
-            Principal:
-              AWS: 
-                - 'arn:aws:iam::${env:P1STACKAWSID}:user/practera'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
           
 
   Outputs:
