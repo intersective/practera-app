@@ -33,6 +33,8 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
+  @Input() viewerRole: 'learner' | 'reviewer';
+  @Input() isReviewerFeedbackContext = false;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl<{answer: string[], comment: string}>;
   // answer field for submitter & reviewer
@@ -206,6 +208,15 @@ export class MultiTeamMemberSelectorComponent implements ControlValueAccessor, O
     }
 
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === '')) && (this.submission?.answer || this.review?.answer);
+  }
+
+  get displayTeamMembers(): Array<any> {
+    const teamMembers = this.question?.teamMembers || [];
+    if (!this.isReviewerFeedbackContext) {
+      return teamMembers;
+    }
+
+    return teamMembers.filter(teamMember => this.isSelectedInReview(teamMember));
   }
 
   /**

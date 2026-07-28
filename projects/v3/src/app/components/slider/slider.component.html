@@ -2,8 +2,8 @@
 
 <ng-container *ngIf="isDisplayOnly">
   <div class="likert-slider-container ion-padding display-only">
-    <!-- Show slider when there's a submission answer -->
-    <div *ngIf="hasSubmissionAnswer(); else noSubmissionTemplate">
+    <!-- Reviewer-only questions display the review value; shared questions display the submission value. -->
+    <div *ngIf="hasDisplaySliderAnswer(); else noDisplayAnswerTemplate">
       <ion-range
         [min]="sliderMin"
         [max]="sliderMax"
@@ -12,7 +12,7 @@
         [ticks]="true"
         [pin]="true"
         [pinFormatter]="pinFormatter"
-        [value]="getSubmissionSliderValue()"
+        [value]="getDisplaySliderValue()"
         disabled
         [attr.aria-labelledby]="'slider-question-' + question.id"
         color="medium"
@@ -21,20 +21,26 @@
 
       <!-- Choice labels for display only -->
       <div class="choice-labels display-only" *ngIf="generatedChoices.length">
-        <div *ngFor="let choice of generatedChoices" class="choice-label" [ngClass]="{'selected': submission?.answer === choice.id}">
+        <div *ngFor="let choice of generatedChoices" class="choice-label" [ngClass]="{'selected': getDisplaySliderValue() === choice.id}">
           <span [innerHTML]="choice.name"></span>
         </div>
       </div>
     </div>
 
-    <!-- No submission template -->
-    <ng-template #noSubmissionTemplate>
+    <!-- Empty answer wording follows the audience that was allowed to answer. -->
+    <ng-template #noDisplayAnswerTemplate>
       <div class="no-answer-container">
         <ion-card class="no-answer-card" color="light">
           <ion-card-content class="ion-text-center">
             <ion-icon name="help-circle-outline" color="medium" size="large"></ion-icon>
-            <p class="no-answer-text ion-margin-top" i18n>No answer provided</p>
-            <p class="no-answer-subtext" color="medium" i18n>The learner has not submitted an answer for this question.</p>
+            <ng-container *ngIf="question.reviewerOnly; else noLearnerAnswerTemplate">
+              <p class="no-answer-text ion-margin-top" i18n>No reviewer answer provided</p>
+              <p class="no-answer-subtext" color="medium" i18n>The reviewer has not submitted an answer for this question.</p>
+            </ng-container>
+            <ng-template #noLearnerAnswerTemplate>
+              <p class="no-answer-text ion-margin-top" i18n>No answer provided</p>
+              <p class="no-answer-subtext" color="medium" i18n>The learner has not submitted an answer for this question.</p>
+            </ng-template>
           </ion-card-content>
         </ion-card>
       </div>
@@ -43,20 +49,19 @@
     <!-- Answer indicators section -->
     <div class="answer-indicators">
       <!-- Show answer chips when answers exist -->
-      <div *ngIf="hasSubmissionAnswer() || hasReviewAnswer()">
-        <ion-chip class="label orange spacer-right" *ngIf="hasSubmissionAnswer()" i18n>
-          <ion-icon name="person" slot="start"></ion-icon>
-          Learner's Answer: {{ getChoiceNameById(submission.answer) }}
+      <div *ngIf="!isReviewerFeedbackContext && (hasSubmissionAnswer() || hasReviewAnswer())">
+        <ion-chip class="label orange spacer-right" *ngIf="hasSubmissionAnswer() && !isReviewerFeedbackContext">
+          <span i18n *ngIf="viewerRole === 'learner'">Your Answer: {{ getChoiceNameById(submission.answer) }}</span>
+          <span i18n *ngIf="viewerRole !== 'learner'">Learner's Answer: {{ getChoiceNameById(submission.answer) }}</span>
         </ion-chip>
 
-        <ion-chip class="label yellow black" *ngIf="hasReviewAnswer()" i18n>
-          <ion-icon name="school" slot="start"></ion-icon>
+        <ion-chip class="label yellow black" *ngIf="hasReviewAnswer() && !isReviewerFeedbackContext" i18n>
           Reviewer's Answer: {{ getChoiceNameById(review.answer) }}
         </ion-chip>
       </div>
 
       <!-- Show no answers message when neither exists -->
-      <div *ngIf="!hasAnyAnswer()" class="no-answers-container">
+      <div *ngIf="!hasAnyAnswer() && !question.reviewerOnly" class="no-answers-container">
         <ion-chip class="label tertiary" i18n>
           <ion-icon name="information-circle-outline" slot="start"></ion-icon>
           No answers available yet

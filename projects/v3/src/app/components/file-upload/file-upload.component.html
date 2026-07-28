@@ -1,9 +1,12 @@
 <div
   *ngIf="!doAssessment && (submissionStatus === 'feedback available' || submissionStatus === 'pending review' || (submissionStatus === 'done' && reviewStatus === ''))">
   <ng-container *ngIf="submission?.answer">
-    <ion-item lines="none">
+    <ion-item lines="none" *ngIf="!isReviewerFeedbackContext">
       <ion-label class="white-space-normal body-2 gray-3">
-        <p><ion-chip class="label orange" i18n>Learner's Answer</ion-chip></p>
+        <p><ion-chip class="label orange">
+          <span i18n *ngIf="viewerRole === 'learner'">Your Answer</span>
+          <span i18n *ngIf="viewerRole !== 'learner'">Learner's Answer</span>
+        </ion-chip></p>
       </ion-label>
     </ion-item>
 
@@ -16,9 +19,9 @@
   </ng-container>
 
   <ng-container *ngIf="question.audience.includes('reviewer') && reviewStatus === 'done'">
-    <ion-item lines="none">
+    <ion-item lines="none" *ngIf="!isReviewerFeedbackContext || !review?.answer">
       <ion-label class="white-space-normal body-2 gray-3">
-        <p><ion-chip class="label yellow black" i18n>Reviewer's answer</ion-chip></p>
+        <p *ngIf="!isReviewerFeedbackContext"><ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip></p>
         <p *ngIf="!review?.answer" class="body-2 gray-3 white-space-pre noanswer">
           No answer given to this optional question.
         </p>

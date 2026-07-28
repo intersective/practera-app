@@ -34,6 +34,8 @@ interface Team360Section {
   kind: Team360SectionKind;
 }
 
+type DisplayGroup = Pick<Group, 'name' | 'questions'> & Partial<Group>;
+
 /**
  * Assessment Component with optional pagination feature
  *
@@ -178,7 +180,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   pageIndex = 0;
 
   // each entry is a page: an array of (partial) groups
-  pagesGroups: { name: string; description?: string; questions: Question[] }[][] = [];
+  pagesGroups: DisplayGroup[][] = [];
 
   // Feature toggle for pagination
   get isPaginationEnabled(): boolean {
@@ -238,9 +240,94 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   get pagedGroups() {
     if (!this.isPaginationEnabled) {
       // Return all groups as a single page when pagination is disabled
-      return this.assessment?.groups || [];
+      return this.displayGroups;
     }
     return this.pagesGroups[this.pageIndex] || [];
+  }
+
+  /**
+   * Groups visible to the current viewer.
+   *
+   * Reviewer-only groups are never part of the learner's answering or pending-review views. Once
+   * feedback is published, reviewer-only groups are appended after the learner groups so they can
+   * be presented as a dedicated feedback section. Reviewer views retain configured order.
+   */
+  get displayGroups(): DisplayGroup[] {
+    const groups = this.assessment?.groups ?? [];
+    if (this.action !== 'assessment') {
+      return groups;
+    }
+
+    const learnerGroups = groups.filter(group => !this.isReviewerOnlyGroup(group));
+    if (this.submission?.status !== 'feedback available') {
+      return learnerGroups;
+    }
+
+    const reviewerFeedbackGroups = groups.filter(group => this.isReviewerOnlyGroup(group));
+
+    return [...learnerGroups, ...reviewerFeedbackGroups];
+  }
+
+  isReviewerOnlyGroup(group: DisplayGroup): boolean {
+    return group?.questions?.length > 0 && group.questions.every(question =>
+      question.reviewerOnly === true ||
+      (question.audience?.length === 1 && question.audience.includes('reviewer'))
+    );
+  }
+
+  isReviewerFeedbackGroup(group: DisplayGroup): boolean {
+    return this.action === 'assessment'
+      && this.submission?.status === 'feedback available'
+      && this.isReviewerOnlyGroup(group);
+  }
+
+  /**
+   * Whether answers in this group are already identified as reviewer-authored by their context.
+   *
+   * Learners reach this state after feedback is published. Reviewers reach it when reopening a
+   * completed review. Pending reviews remain outside this context so authoring controls are not
+   * affected, and shared groups retain their answer-ownership labels.
+   */
+  isReviewerOnlyReadOnlyGroup(group: DisplayGroup): boolean {
+    if (!this.isReviewerOnlyGroup(group) || this.doAssessment || this.isPendingReview) {
+      return false;
+    }
+
+    if (this.action === 'assessment') {
+      return this.submission?.status === 'feedback available';
+    }
+
+    return this.action === 'review' && this.review?.status === 'done';
+  }
+
+  isFirstReviewerFeedbackGroup(groupIndex: number, groups: DisplayGroup[]): boolean {
+    return this.isReviewerFeedbackGroup(groups[groupIndex])
+      && (groupIndex === 0 || !this.isReviewerFeedbackGroup(groups[groupIndex - 1]));
+  }
+
+  /**
+   * Show reviewer-only authoring guidance once per contiguous reviewer-only section.
+   *
+   * A reviewer-only group at the start of a paginated page is treated as the start of a section so
+   * the guidance remains available when the preceding group is rendered on another page.
+   */
+  isFirstReviewerOnlyAuthoringGroup(groupIndex: number, groups: DisplayGroup[]): boolean {
+    return this.action === 'review'
+      && this.isPendingReview
+      && this.isReviewerOnlyGroup(groups[groupIndex])
+      && (groupIndex === 0 || !this.isReviewerOnlyGroup(groups[groupIndex - 1]));
+  }
+
+  shouldShowNoAnswer(question: Question): boolean {
+    if (this.doAssessment || question?.type === 'slider') {
+      return false;
+    }
+
+    if (question?.reviewerOnly) {
+      return !this.isPendingReview && this.utils.isEmpty(this.review?.answers?.[question.id]?.answer);
+    }
+
+    return this.utils.isEmpty(this.submission?.answers?.[question.id]?.answer);
   }
 
   prevPage() {
@@ -708,7 +795,12 @@ Best regards`;
   private _handleReviewData() {
     if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
-      this.btnDisabled$.next(false);
+      // An intermediate status-check fetch republishes the same in-progress review while the
+      // submit request is still running. Keep the action disabled until the parent submission
+      // workflow explicitly reports completion or failure.
+      if (!this.submitting) {
+        this.btnDisabled$.next(false);
+      }
     }
   }
 
@@ -989,6 +1081,10 @@ Best regards`;
     return 'continue';
   }
 
+  get showSubmitLoadingOnClick(): boolean {
+    return this._btnAction === 'submit';
+  }
+
   // the text of the button
   get btnText() {
     switch (this._btnAction) {
@@ -1148,14 +1244,14 @@ Best regards`;
    */
   private splitGroupsByQuestionCount() {
     if (this.isTeam360Assessment) {
-      return (this.assessment?.groups ?? []).map(group => [group]);
+      return this.displayGroups.map(group => [group]);
     }
 
     const pages = [];
     let currentPage = [];
     let count = 0;
 
-    for (const group of this.assessment.groups) {
+    for (const group of this.displayGroups) {
       const qCount = group.questions.length;
 
       if (count + qCount <= this.pageSize) {

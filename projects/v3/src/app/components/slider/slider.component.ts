@@ -33,6 +33,8 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
+  @Input() viewerRole: 'learner' | 'reviewer';
+  @Input() isReviewerFeedbackContext = false;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
 
@@ -265,6 +267,16 @@ export class SliderComponent implements AfterViewInit, ControlValueAccessor, OnI
     if (!this.submission?.answer) return this.sliderMin;
 
     return typeof this.submission.answer === 'number' ? this.submission.answer : this.sliderMin;
+  }
+
+  hasDisplaySliderAnswer(): boolean {
+    return this.question?.reviewerOnly ? this.hasReviewAnswer() : this.hasSubmissionAnswer();
+  }
+
+  getDisplaySliderValue(): number {
+    const answer = this.question?.reviewerOnly ? this.review?.answer : this.submission?.answer;
+
+    return typeof answer === 'number' ? answer : this.sliderMin;
   }
 
   // Get slider value for review (Reviewer's answer)
