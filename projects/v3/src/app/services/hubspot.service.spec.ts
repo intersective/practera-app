@@ -73,12 +73,12 @@ describe('HubspotService', () => {
       primary_color: '#2bc1d9',
       secondary_color: '#9fc5e8',
       email_template: 'email_1',
-      card_url: 'https://cdn.filestackcontent.com/uYxes8YBS2elXV0m2yjA',
-      manual_url: 'https://www.filepicker.io/api/file/lNQp4sFcTjGj2ojOm1fR',
-      design_url: 'https://www.filepicker.io/api/file/VuL71nOUSiM9NoNuEIhS',
+      card_url: 'https://files.example.test/uYxes8YBS2elXV0m2yjA',
+      manual_url: 'https://files.example.test/lNQp4sFcTjGj2ojOm1fR',
+      design_url: 'https://files.example.test/VuL71nOUSiM9NoNuEIhS',
       overview_url: 'https://vimeo.com/325554048'
     },
-    lead_image: 'https://cdn.filestackcontent.com/urFIZW6TuC9lujp0N3PD',
+    lead_image: 'https://files.example.test/urFIZW6TuC9lujp0N3PD',
     support_email: 'help@practera.com'
   }
 

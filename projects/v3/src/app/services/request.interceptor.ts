@@ -3,8 +3,7 @@ import { HttpEvent, HttpHeaders, HttpInterceptor, HttpHandler, HttpRequest, Http
 import { Observable } from 'rxjs';
 import { RequestConfig } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { catchError, tap } from 'rxjs/operators';
-import { of, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
@@ -19,21 +18,9 @@ export class RequestInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (
       req.url.includes('ipapi.co') ||
-      req.url.includes('filestackapi.com') ||
-      req.url.includes('filestackcontent') ||
       req.url.includes('api.hsforms.com')
     ) {
-      return next.handle(req).pipe(catchError(error => {
-        if (
-          error.url.includes('filestackapi.com') &&
-          error.status === 200 &&
-          error.statusText === 'OK' &&
-          error.name === 'HttpErrorResponse' &&
-          error?.error?.text === 'success') {
-          return of(error);
-        }
-        return throwError(error);
-      }));
+      return next.handle(req);
     }
     const apikey = this.storage.getUser().apikey;
     const timelineId = this.storage.getUser().timelineId;

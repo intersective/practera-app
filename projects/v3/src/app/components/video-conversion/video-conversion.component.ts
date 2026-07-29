@@ -20,12 +20,12 @@ export class VideoConversionComponent implements OnInit, OnChanges, OnDestroy {
   constructor(private filePreviewService: FilePreviewService) {}
 
   ngOnInit(): void {
-    // no-op: conversion polling removed (filestack deprecated)
+    // no-op: conversion polling removed
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
     if (this.video?.fileObject?.mimetype !== 'video/mp4') {
-      // filestack video conversion no longer available — show download fallback immediately
+      // server-side video conversion no longer available — show download fallback immediately
       this.waitedTooLong = true;
     }
   }

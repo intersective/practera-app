@@ -58,7 +58,7 @@ describe('ChatService', () => {
             {
               uuid: '1',
               name: 'Team 1',
-              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              avatar: 'https://files.example.test/uYQuauwNRdD43PfCQ4iW',
               pusherChannel: 'pusher-channel-name',
               roles: ['participant'],
               isAnnouncement: false,
@@ -72,7 +72,7 @@ describe('ChatService', () => {
             {
               uuid: '2',
               name: 'Team 2',
-              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              avatar: 'https://files.example.test/uYQuauwNRdD43PfCQ4iW',
               pusherChannel: 'pusher-channel-name',
               roles: ['participant'],
               isAnnouncement: false,
@@ -86,7 +86,7 @@ describe('ChatService', () => {
             {
               uuid: '3',
               name: 'Team 3',
-              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              avatar: 'https://files.example.test/uYQuauwNRdD43PfCQ4iW',
               pusherChannel: 'pusher-channel-name',
               roles: ['participant'],
               isAnnouncement: false,
@@ -100,7 +100,7 @@ describe('ChatService', () => {
             {
               uuid: '4',
               name: 'Team 4',
-              avatar: 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW',
+              avatar: 'https://files.example.test/uYQuauwNRdD43PfCQ4iW',
               pusherChannel: 'pusher-channel-name',
               roles: ['participant'],
               isAnnouncement: false,
@@ -171,7 +171,7 @@ describe('ChatService', () => {
                     uuid: 'as108',
                     name: 'user 1',
                     role: 'admin',
-                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                    avatar: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq'
                   }
                 },
                 {
@@ -179,7 +179,7 @@ describe('ChatService', () => {
                   message: 'test admin message 01',
                   file: JSON.stringify({
                     filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
-                    url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+                    url: 'https://files.example.test/hZh76R6TmmKr1qqFAd9C',
                     mimetype: 'image/png'
                   }),
                   created: '2020-01-30 06:18:45',
@@ -188,7 +188,7 @@ describe('ChatService', () => {
                     uuid: 'dvjn867',
                     name: 'user 1',
                     role: 'admin',
-                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                    avatar: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq'
                   }
                 },
                 {
@@ -201,7 +201,7 @@ describe('ChatService', () => {
                     uuid: 'dfbjkf3y',
                     name: 'user 1',
                     role: 'admin',
-                    avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+                    avatar: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq'
                   }
                 }
               ]
@@ -220,7 +220,7 @@ describe('ChatService', () => {
       apolloSpy.graphQLFetch.and.returnValue(of(messageListRequestResponse));
       const fileJson = {
         filename: 'Screen_Shot_2019-09-30_at_6.55.30_AM.png',
-        url: 'https://cdn.filestackcontent.com/hZh76R6TmmKr1qqFAd9C',
+        url: 'https://files.example.test/hZh76R6TmmKr1qqFAd9C',
         mimetype: 'image/png'
       };
       service.getMessageList(chatData).subscribe(
@@ -361,7 +361,7 @@ describe('ChatService', () => {
           path: '/path/to/file',
           bucket: 'file-bucket',
           name: 'unnamed.jpg',
-          url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+          url: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq',
           extension: 'jpg',
           type: 'image/jpeg',
           size: 12345
@@ -376,7 +376,7 @@ describe('ChatService', () => {
             file: JSON.stringify({
               filename: 'unnamed.jpg',
               mimetype: 'image/jpeg',
-              url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+              url: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq',
               status: 'Stored'
             }),
             created: '2020-10-22 12:34:16',
@@ -384,7 +384,7 @@ describe('ChatService', () => {
               uuid: '1',
               name: 'user 1',
               role: 'admin',
-              avatar: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq'
+              avatar: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq'
             }
           }
         }
@@ -392,7 +392,7 @@ describe('ChatService', () => {
       const fileJson = {
         filename: 'unnamed.jpg',
         mimetype: 'image/jpeg',
-        url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+        url: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
       apolloSpy.graphQLMutate.and.returnValue(of(newMessageRes));

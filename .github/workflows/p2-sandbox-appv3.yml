@@ -90,7 +90,7 @@ jobs:
           fi
           echo "::add-mask::$P2SANDBOX"
           echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
-          # C-W1-08: no CENTRALIZED OIDC — tusd-only sandbox; Filestack/P1 IAM principals removed from serverless-appv3.yml
+          # C-W1-08: no CENTRALIZED OIDC — tusd-only sandbox
 
 ################################################
 #  NODE ENV
@@ -147,11 +147,6 @@ jobs:
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
           export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
-          # C-W1-07: Filestack unused locally; sandbox uploads use tusd (CUSTOM_UPLOAD_TUS_ENDPOINT)
-          export CUSTOM_FILESTACK_SIGNATURE=
-          export CUSTOM_FILESTACK_VIRUS_DETECTION=
-          export CUSTOM_FILESTACK_KEY=
-          export CUSTOM_FILESTACK_POLICY=
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
           export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
@@ -163,8 +158,6 @@ jobs:
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           # CU-W1-09: badge / projecthub stacks deleted
           export CUSTOM_BADGE_PROJECT_URL=
-          # Sandbox tusd (S-16h) — never tusd.practera.com / file.practera.com
-          export CUSTOM_UPLOAD_TUS_ENDPOINT=https://upload.p2-sandbox.practera.com/uploads/
           export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
           export CUSTOM_HELPLINE=help@practera.com
           export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=true
@@ -184,6 +177,7 @@ jobs:
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
+          CUSTOM_UPLOAD_TUS_ENDPOINT: https://upload.${{ env.PUBLICZONENAME }}/uploads/
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL:
           CUSTOM_GLOBAL_LOGIN_URL: https://login-app.p2-sandbox.practera.com

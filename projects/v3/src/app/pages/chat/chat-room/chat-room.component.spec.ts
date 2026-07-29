@@ -432,7 +432,7 @@ describe('ChatRoomComponent', () => {
       const file = {
         filename: 'unnamed.jpg',
         mimetype: null,
-        url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+        url: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
       await component.preview(file);
@@ -443,7 +443,7 @@ describe('ChatRoomComponent', () => {
       const file = {
         filename: 'unnamed.jpg',
         mimetype: 'image/jpeg',
-        url: 'https://cdn.filestackcontent.com/X8Cj0Y4QS2AmDUZX6LSq',
+        url: 'https://files.example.test/X8Cj0Y4QS2AmDUZX6LSq',
         status: 'Stored'
       };
       await component.preview(file);

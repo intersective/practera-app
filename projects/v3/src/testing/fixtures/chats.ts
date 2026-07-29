@@ -113,7 +113,7 @@ const mockChatMessages: MessageListResult = {
 
 export { mockChats, mockMembers, mockChatMessages, createMessage, createUser };
 
-const SAMPLE_AVATAR = 'https://cdn.filestackcontent.com/uYQuauwNRdD43PfCQ4iW';
+const SAMPLE_AVATAR = 'https://files.example.test/uYQuauwNRdD43PfCQ4iW';
 const SAMPLE_PUSHER_CHANNEL = 'pusher-channel-name';
 
 const chats = [

@@ -198,18 +198,8 @@ export class ExperienceService {
       }`
     )
     .pipe(map((res: APIResponse<{experiences: Experience[]}>) => {
-      const cdn = 'https://cdn.filestackcontent.com/resize=fit:crop,width:';
-      let imagewidth = 600;
-
       const { experiences } = res?.data || {};
       experiences.forEach((experience, index) => {
-        if (experience.leadImage) {
-          const imageId = experience.leadImage.split('/').pop();
-          if (!this.utils.isMobile()) {
-            imagewidth = 1024;
-          }
-          experiences[index].leadImage = `${cdn}${imagewidth}/${imageId}`;
-        }
         experiences[index].progress = 0;
       });
       return experiences;

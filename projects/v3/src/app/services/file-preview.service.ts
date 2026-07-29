@@ -17,16 +17,7 @@ export class FilePreviewService {
 
   // open a file preview modal for given file object
   async preview(file: { url?: string; handle?: string; name?: string; size?: number; mimetype?: string }): Promise<any> {
-    let fileUrl = file.url;
-    if (fileUrl) {
-      if (fileUrl.indexOf('www.filepicker.io/api/file') !== -1) {
-        fileUrl = fileUrl.replace('www.filepicker.io/api/file', 'cdn.filestackcontent.com/preview');
-      } else if (fileUrl.indexOf('filestackcontent.com') !== -1) {
-        fileUrl = fileUrl.replace('filestackcontent.com', 'filestackcontent.com/preview');
-      }
-    } else if (file.handle) {
-      fileUrl = 'https://cdn.filestackcontent.com/preview/' + file.handle;
-    }
+    const fileUrl = file.url;
 
     if (!fileUrl) {
       return this.notificationsService.alert({
@@ -70,7 +61,7 @@ export class FilePreviewService {
         url,
         file: file || {},
       },
-      cssClass: 'filestack-preview-modal',
+      cssClass: 'file-preview-modal',
     });
     return await modal.present();
   }

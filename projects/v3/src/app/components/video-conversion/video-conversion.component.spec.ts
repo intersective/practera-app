@@ -34,7 +34,7 @@ describe('VideoConversionComponent', () => {
   });
 
   describe('ngOnInit()', () => {
-    it('should be a no-op after filestack removal', () => {
+    it('should be a no-op after conversion removal', () => {
       component.ngOnInit();
       expect(component.waitedTooLong).toBeFalse();
     });

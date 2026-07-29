@@ -376,51 +376,51 @@ describe('TopicComponent', () => {
       expect(utilsSpy.downloadFile).toHaveBeenCalled();
     });
 
-    it('should call previewFile when index 1 and url is filestack with supported type', () => {
+    it('should call previewFile when index 1 and document type is preview-supported', () => {
       spyOn(component, 'previewFile');
-      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'doc.pdf' };
+      const file = { url: 'https://files.example.test/abc123', name: 'doc.pdf' };
       component.actionBtnClick(file, 1);
       expect(component.previewFile).toHaveBeenCalledWith(file);
     });
 
     it('should open video modal when index 1 and file is mp4 video', () => {
       spyOn(component, 'previewVideoFile');
-      const file = { url: 'https://cdn.filestackcontent.com/abc123.mp4', name: 'video.mp4' };
+      const file = { url: 'https://files.example.test/abc123.mp4', name: 'video.mp4' };
       component.actionBtnClick(file, 1);
       expect(component.previewVideoFile).toHaveBeenCalledWith(file);
     });
 
     it('should open video modal when index 1 and file is webm video', () => {
       spyOn(component, 'previewVideoFile');
-      const file = { url: 'https://cdn.filestackcontent.com/abc123.webm', name: 'video.webm' };
+      const file = { url: 'https://files.example.test/abc123.webm', name: 'video.webm' };
       component.actionBtnClick(file, 1);
       expect(component.previewVideoFile).toHaveBeenCalledWith(file);
     });
 
     it('should open video modal when index 1 and file is ogg video', () => {
       spyOn(component, 'previewVideoFile');
-      const file = { url: 'https://cdn.filestackcontent.com/abc123.ogg', name: 'video.ogg' };
+      const file = { url: 'https://files.example.test/abc123.ogg', name: 'video.ogg' };
       component.actionBtnClick(file, 1);
       expect(component.previewVideoFile).toHaveBeenCalledWith(file);
     });
 
-    it('should open new tab when index 1 and url is filestack but file is audio', () => {
+    it('should open new tab when index 1 and file is audio', () => {
       spyOn(window, 'open');
       spyOn(component, 'previewFile');
-      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'recording.mp3' };
+      const file = { url: 'https://files.example.test/abc123', name: 'recording.mp3' };
       component.actionBtnClick(file, 1);
       expect(component.previewFile).not.toHaveBeenCalled();
       expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
     });
 
-    it('should open new tab when index 1 and url is not filestack', () => {
-      spyOn(window, 'open');
+    it('should call previewFile when index 1 and document has supported type', () => {
+      spyOn(component, 'previewFile');
       const file = { url: 'https://example.com/document.pdf', name: 'document.pdf' };
       component.actionBtnClick(file, 1);
-      expect(window.open).toHaveBeenCalledWith(file.url, '_blank');
+      expect(component.previewFile).toHaveBeenCalledWith(file);
     });
 
-    it('should open new tab for non-filestack url even without extension', () => {
+    it('should open new tab for url without preview-supported extension', () => {
       spyOn(window, 'open');
       const file = { url: 'https://storage.example.com/files/12345', name: 'report' };
       component.actionBtnClick(file, 1);
@@ -429,34 +429,34 @@ describe('TopicComponent', () => {
   });
 
   describe('getFileActionIcons', () => {
-    it('should return both download and search icons for filestack url with supported type', () => {
-      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'document.pdf' };
+    it('should return both download and search icons for preview-supported document', () => {
+      const file = { url: 'https://files.example.test/abc123', name: 'document.pdf' };
       const icons = component.getFileActionIcons(file);
       expect(icons).toEqual(['download', 'search']);
     });
 
     it('should return both download and search icons for video files', () => {
-      const file = { url: 'https://cdn.filestackcontent.com/abc123.mp4', name: 'video.mp4' };
+      const file = { url: 'https://files.example.test/abc123.mp4', name: 'video.mp4' };
       const icons = component.getFileActionIcons(file);
       expect(icons).toEqual(['download', 'search']);
     });
 
-    it('should return both download and search icons for non-filestack video', () => {
+    it('should return both download and search icons for non-tusd-host video', () => {
       const file = { url: 'https://example.com/video.mp4', name: 'video.mp4' };
       const icons = component.getFileActionIcons(file);
       expect(icons).toEqual(['download', 'search']);
     });
 
-    it('should return only download icon for filestack url with audio', () => {
-      const file = { url: 'https://cdn.filestackcontent.com/abc123', name: 'audio.mp3' };
+    it('should return only download icon for audio', () => {
+      const file = { url: 'https://files.example.test/abc123', name: 'audio.mp3' };
       const icons = component.getFileActionIcons(file);
       expect(icons).toEqual(['download']);
     });
 
-    it('should return only download icon for non-filestack non-video file', () => {
+    it('should return both download and search icons for preview-supported document on any host', () => {
       const file = { url: 'https://example.com/file.pdf', name: 'document.pdf' };
       const icons = component.getFileActionIcons(file);
-      expect(icons).toEqual(['download']);
+      expect(icons).toEqual(['download', 'search']);
     });
 
     it('should return both download and search icons for webm video', () => {
@@ -474,8 +474,8 @@ describe('TopicComponent', () => {
     it('should return only download icon for unsupported video formats', () => {
       const formats = [
         { url: 'https://example.com/video.mov', name: 'video.mov' },
-        { url: 'https://cdn.filestackcontent.com/abc123', name: 'file_example_AVI_640_800kB.avi' },
-        { url: 'https://cdn.filestackcontent.com/abc123.wmv', name: 'video.wmv' },
+        { url: 'https://files.example.test/abc123', name: 'file_example_AVI_640_800kB.avi' },
+        { url: 'https://files.example.test/abc123.wmv', name: 'video.wmv' },
         { url: 'https://example.com/video.mkv', name: 'video.mkv' },
       ];
       for (const file of formats) {
