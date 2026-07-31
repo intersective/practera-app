@@ -1,7 +1,7 @@
 ################################################
 #  GITHUB ACTION WORKFLOW NAME
 ################################################
-name: Deploy to p2-sandbox environment
+name: Deploy to p2-sandbox-appv3 environment
 
 
 ################################################
@@ -9,16 +9,22 @@ name: Deploy to p2-sandbox environment
 ################################################
 on:
   workflow_dispatch:
+    inputs:
+      INPUT_BRANCH:
+        description: 'Branch or tag to deploy'
+        required: true
+        default: ''
   push:
-    branches: [ 'develop-legacy' ]
-    
+    branches:
+      - login-refactor-to-aws
+
 
 ################################################
 #  GITHUB ACTION JOBS
 ################################################
 jobs:
-  deploy-p2-sandbox:
-    name: deploy-p2-sandbox
+  deploy-p2-sandbox-appv3:
+    name: deploy-p2-sandbox-appv3
     runs-on: ubuntu-latest
     environment: p2-sandbox
     permissions: write-all
@@ -26,13 +32,13 @@ jobs:
 
 
 ################################################
-#  GITHUB ACTIONS GLOBAL ENV VARIABLES  
+#  GITHUB ACTIONS GLOBAL ENV VARIABLES
 ################################################
     env:
       REGION : ap-southeast-2
       ENV : dev # Valid values are dev,test,live only
       STACK_NAME: p2-sandbox # Valid values are au,us,uk,p2,lf,nu,p1-sandbox,p1-stage,p2-sandbox,shared only
-      ROOTSTACK: app-v2
+      ROOTSTACK: app-v3
       CFNS3BucketName: devops-cfn-templates
       PRIVATES3BucketName: devops-shared-private
       PUBLICZONENAME: p2-sandbox.practera.com
@@ -41,31 +47,62 @@ jobs:
       STATUS: DEPLOYED
       REQUESTOR: ${{ github.event.inputs.REQUESTOR }}
       REASON: ${{ github.event.inputs.REASON }}
-      ENDPOINT: app-old.p2-sandbox.practera.com
-      BRANCH_TAG_NAME: develop-legacy
+      ENDPOINT: app.p2-sandbox.practera.com
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
 
-################################################
-#  GITHUB REPO CHECKOUT 
-################################################
     steps:
+
+################################################
+#  Export BRANCH_TAG_NAME
+################################################
+      - name: Get branch for env BRANCH_TAG_NAME
+        run: |
+          if [ -z "$INPUT_BRANCH" ]; then
+            echo "BRANCH_TAG_NAME="$(echo "$GITHUB_REF_NAME") >> $GITHUB_ENV
+          else
+            echo "BRANCH_TAG_NAME="$(echo "$INPUT_BRANCH") >> $GITHUB_ENV
+          fi
+        env:
+          INPUT_BRANCH: ${{ github.event.inputs.INPUT_BRANCH }}
+
+################################################
+#  GITHUB REPO CHECKOUT
+################################################
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          ref: ${{ env.BRANCH_TAG_NAME }}
 
-
+################################################
+#  GET P2 P2SANDBOX AWS ORGANIZATION NUMBER
+################################################
+      - name: Get AWS Organization Number
+        id: AWS_ORG
+        run: |
+          P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
+          if [ -z "$P2SANDBOX" ] || [ "$P2SANDBOX" = "null" ]; then
+            echo "ERROR: AWS_ACCOUNT_ID JSON missing .P2SANDBOX" >&2
+            exit 1
+          fi
+          if [ "$P2SANDBOX" = "478532957254" ] || [ "$P2SANDBOX" = "497048163947" ]; then
+            echo "ERROR: P2SANDBOX resolved to forbidden account $P2SANDBOX" >&2
+            exit 1
+          fi
+          echo "::add-mask::$P2SANDBOX"
+          echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
+          # C-W1-08: no CENTRALIZED OIDC — tusd-only sandbox
 
 ################################################
 #  NODE ENV
-################################################    
+################################################
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18
-      
+          node-version: 22
+
 
 ################################################
-#  NODE MODULES CACHE  
+#  NODE MODULES CACHE
 ################################################
       - name: Cache node modules
         uses: actions/cache@v4
@@ -86,32 +123,21 @@ jobs:
 
 
 ################################################
-#  NODE MODULES INSTALL  
+#  NODE MODULES INSTALL
 ################################################
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run:  npm install
-      
-################################################
-#  GET P2 SANDBOX AWS ORGANIZATION NUMBER
-################################################
-      - name: Get AWS Organization Number
-        id: AWS_ORG
-        run: |
-          P2SANDBOX=$(echo $AWS_ACCOUNT_ID | jq -r .P2SANDBOX)
 
-          echo "::add-mask::$P2SANDBOX"
-          echo "P2SANDBOX=$P2SANDBOX" >> $GITHUB_OUTPUT
-          # C-W1-08: no CENTRALIZED OIDC for sandbox (tusd-only)
 
 ################################################
-#  AWS CLI CONFIGURATION - P2SANDBOX ACCOUNT
+#  AWS CLI CONFIGURATION - DEVOPS P2 P2SANDBOX
 ################################################
-      - name: Configure AWS Credentials from P2SANDBOX Account
+      - name: Configure AWS Credentials from p2 sandbox AU account
         uses: ./.github/actions/aws-oidc
         with:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
-          region: ${{ env.REGION }}     
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  ANGULAR ENVIRONMENT CREATION
@@ -120,16 +146,23 @@ jobs:
         run: |
           printf "Creating required secret variables for angular environment variable creation\n\n"
 
-          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey) 
+          export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key) 
-          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret) 
-          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster) 
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
+          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
           export CUSTOM_PUSHER_HOST=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.host // ""')
           export CUSTOM_PUSHER_PORT=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.port // ""')
           export CUSTOM_PUSHER_USE_TLS=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.useTLS // "true"')
-          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id) 
+          export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
+          # CU-W1-09: badge / projecthub stacks deleted
+          export CUSTOM_BADGE_PROJECT_URL=
+          export CUSTOM_UPLOAD_MAX_FILE_SIZE=2147483648
+          export CUSTOM_HELPLINE=help@practera.com
+          export CUSTOM_ENABLE_ASSESSMENT_PAGINATION=true
+          export CUSTOM_STACK_NAME=${{ env.STACK_NAME }}
+          export CUSTOM_PROJECTHUB_URL=
 
           printf "Angular environment variable creation  complete\n\n"
           printf "Executing env.sh script\n\n"
@@ -137,44 +170,46 @@ jobs:
 
           echo "Extracting chatbotSNStopicARN to send stack update"
           echo "ChatBotSNSTopicARN="$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text) >> $GITHUB_ENV
-          
+
         env:
-          CUSTOM_PATH_IMAGE: /appv2/dev/images/
-          CUSTOM_PATH_VIDEO: /appv2/dev/videos/
+          CUSTOM_PATH_IMAGE: /appv3/dev/images/
+          CUSTOM_PATH_VIDEO: /appv3/dev/videos/
           CUSTOM_GRAPH_QL: https://core-graphql-api.${{ env.PUBLICZONENAME }}
           CUSTOM_API_ENDPOINT: https://admin.${{ env.PUBLICZONENAME }}/
           CUSTOM_S3_BUCKET: files.${{ env.PUBLICZONENAME }}
+          CUSTOM_UPLOAD_TUS_ENDPOINT: https://upload.${{ env.PUBLICZONENAME }}/uploads/
           CUSTOM_ENVIRONMENT: ${{ env.ENV }}
           CUSTOM_CHAT_GRAPH_QL:
-          # Legacy app-v2 path — not used for login-refactor cut; URLs retargeted so dispatch cannot hit login-stage
           CUSTOM_GLOBAL_LOGIN_URL: https://login-app.p2-sandbox.practera.com
           CUSTOM_COUNTRY: AUS #TODO CHECK
           CUSTOMPLAIN_SKIPGLOBALLOGINFLAG: false
-          CUSTOM_PATH_ANY: /appv2/dev/any/
+          CUSTOM_PATH_ANY: /appv3/dev/any/
           CUSTOM_AWS_REGION: ${{ env.REGION }}
           CUSTOM_JS_ENVIRONEMENT: dev #TODO CHECK
           CUSTOM_LOGIN_API_URL: https://login-api.p2-sandbox.practera.com
           CUSTOM_NEWRELIC: true
-          CUSTOM_APPV3_URL: https://appv3.${{ env.PUBLICZONENAME }}
-          CUSTOM_SWITCH_APP3: true
-
+          CUSTOM_PORTAL_ID: 3404872
+          CUSTOM_FORM_ID: 114bee73-67ac-4f23-8285-2b67e0e28df4
+          CUSTOM_LIVE_SERVER_REGION: AU
 
 ###############################################################
 #  BUILD WEB PACKAGES
 ##############################################################
       - name: Build Web Packages
         run: |
-          test -f src/environments/environment.ts && echo "environment here" || cp src/environments/environment.local.ts src/environments/environment.ts
-          node_modules/.bin/ng build --configuration=${{ env.BUILD_CONFIG }}
-          npm run generate-version
+          test -f projects/v3/src/environments/environment.ts && echo "environment here" || cp projects/v3/src/environments/environment.local.ts projects/v3/src/environments/environment.ts
+          node_modules/.bin/ng build request --configuration=${{ env.BUILD_CONFIG }}
+          node_modules/.bin/ng build v3 --configuration=${{ env.BUILD_CONFIG }}
+          npm run generate-version-v3
 
 
 ##########################################################
-#  AWS S3 SYNC - SERVERLESS TEMPLATES 
+#  AWS S3 SYNC - SERVERLESS TEMPLATES
 ##########################################################
       - name: AWS S3 Sync operation
         run: |
-          
+          mv serverless-appv3.yml serverless.yml
+          aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless-appv3-lambda-edge.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
 
@@ -186,25 +221,81 @@ jobs:
           cat >> .env <<EOF
           CDNSharedACMCertificateArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-CDNSharedACMCertificateArn-$ENV\`].Value" --no-paginate --output text)
           ChatBotSNSTopicARN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-ChatBotSNSTopicARN-$ENV\`].Value" --no-paginate --output text)
-          
-          
+
+
           EOF
+
+
+##########################################################
+#  AWS P2SANDBOX ACCOUNT STEPS BELOW US-EAST-1 FOR LAMBDA@EDGE
+##########################################################
+      - name: Configure AWS Credentials from p2 p2sandbox AU account
+        uses: ./.github/actions/aws-oidc
+        with:
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
+          region: us-east-1
+
+##########################################################
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          Nonce=$GITHUB_SHA
+          EOF
+
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: S3 Bucket for lambda@edge
+        run: |
+          if ! aws s3api head-bucket --bucket $STACK_NAME-lambda-edge-$ENV > /dev/null 2>&1; then
+            aws s3api create-bucket --bucket $STACK_NAME-lambda-edge-$ENV --region us-east-1
+          fi
+
+####################################################
+#  S3 for lambda@edge
+####################################################
+      - name: Deploy lambda@edge
+        run: |
+          export $(cat .env | xargs)
+          bash lambda/deploy.sh
+        env:
+          REGION: us-east-1
+
+##########################################################
+#  CLOUDFORMATION EXPORT VARIABLES
+##########################################################
+      - name: Cloudformation Export variables
+        run: |
+          cat >> .env <<EOF
+          HandlerVersionArn=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-HandlerVersion-$ENV\`].Value" --no-paginate --output text)
+          EOF
+
+##########################################################
+#  AWS P2SANDBOX ACCOUNT STEPS BELOW ap-southeast-2
+##########################################################
+      - name: Configure AWS Credentials from p2 p2sandbox AU account
+        uses: ./.github/actions/aws-oidc
+        with:
+          role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
+          region: ${{ env.REGION }}
 
 ###############################################################
 #  SERVERLESS DEPLOYMENT
 ##############################################################
       - name: Serverless deployment
         run: |
-          echo "Serverless Deploying Appv2"
+          echo "Serverless Deploying appv3"
           node_modules/.bin/serverless deploy
           rm serverless.yml .env
         env:
-          APPV2S3BUCKET: app-old.${{ env.PUBLICZONENAME }}
+          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
           FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
           FILESS3BUCKETEXIST: true
-          S3VERSIONING: true 
+          S3VERSIONING: true
           NONCURRENTVERSION_EXPIREINDAYS: 30
-          
+
 
 
 ##########################################################
@@ -212,9 +303,8 @@ jobs:
 ##########################################################
       - name: AWS S3 Sync Operations
         run: |
-          cp -R src/well-known www/.well-known/
-          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2S3Bucket-$ENV\`].Value" --no-paginate --output text)
-          aws s3 sync www/ s3://$APP_V2_S3 --delete
+          APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
+          aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
 
 
 
@@ -223,14 +313,14 @@ jobs:
 ##########################################################
       - name: AWS Cloudfront Cache invalidation
         run: |
-          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV2CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
+          APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
           for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
 
 
 
 # #########################################################
 # # SLACK NOTIFICATION
-# #########################################################  
+# #########################################################
       - name: Slack Notification
         if: always() # Pick up events even if the job fails or is canceled.
         uses: 8398a7/action-slack@v3
@@ -242,7 +332,7 @@ jobs:
           author_name: ${{ env.BRANCH_TAG_NAME }} - ${{ env.ROOTSTACK }} deployed to ${{ env.ENV }} environemnt in ${{ env.STACK_NAME }} AWS account
           mention: 'here'
           if_mention: failure,cancelled
-          job_name: deploy-p2-sandbox # Match the name above.
+          job_name: deploy-p2-sandbox-appv3 # Match the name above.
           fields: repo,commit,eventName,ref,workflow,message,author,job,took
           custom_payload: |
             {
@@ -264,10 +354,10 @@ jobs:
             }
 
 
-          
+
 # ################################################
 # #  STATUS VARIABLE UPDATE
-# ################################################ 
+# ################################################
       - name: Deployment status variable update
         if: ${{ failure() }}
         run: |
@@ -275,7 +365,7 @@ jobs:
 
 # ################################################
 # #  DEVOPS-DEPLOYMENT REPORT
-# ################################################ 
+# ################################################
       - name: DevOps Deployment Reporting
         if: always()
         run: |
