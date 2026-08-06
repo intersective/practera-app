@@ -16,7 +16,7 @@ on:
         default: ''
   push:
     branches:
-      - login-refactor-to-aws
+      - login-refactor
 
 
 ################################################
