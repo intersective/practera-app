@@ -35,3 +35,4 @@ This is practera documentation with more informations.
 - [CORE-7942 Whitespace Fix](./fixes/CORE-7942-whitespace-fix.md)
 - [CORE-8002 Pulse Check Workflow](./fixes/CORE-8002-pulsecheck-workflow.md)
 - [CORE-8166/8167 Pagination Answer Persistence](./fixes/CORE-8166-8167-pagination-answer-persistence.md)
+- [Profile Picture Upload](./fixes/profile-picture-upload.md)
