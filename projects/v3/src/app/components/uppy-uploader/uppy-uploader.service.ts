@@ -19,6 +19,25 @@ export interface UppyUploaderResponse {
   size: number;
 }
 
+export type UppyUploadSource =
+  | 'chat'
+  | 'profile'
+  | 'user-profile'
+  | 'assessment'
+  | 'media-manager'
+  | 'static'
+  | 'any'
+  | 'video'
+  | 'document'
+  | 'image';
+
+export interface TusUploadResponse {
+  path: string;
+  bucket: string;
+  cdnUrl: string;
+  directUrl: string;
+}
+
 export interface UppyFileData {
   source: string;
   id: string;
@@ -50,6 +69,8 @@ export interface UppyFileData {
   bucket: string;
   path: string;
   url: string;
+  cdnUrl: string;
+  directUrl: string;
 }
 
 type FileMetadata = { [key: string]: any };
@@ -138,7 +159,7 @@ export class UppyUploaderService {
    * @param restrictions
    * @returns Uppy<FileMetadata, FileBody>
    */
-  createUppyInstance(source: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image", uploadUrl: string, events?: {
+  createUppyInstance(source: UppyUploadSource, uploadUrl: string, events?: {
     onAfterResponse: (req: any, res: any) => void,
     onUploadSuccess: (file: UppyFile<any, any>, response: any) => void
   }, options?: {
@@ -189,6 +210,25 @@ export class UppyUploaderService {
     this.registerCompressionPreProcessor(uppy);
 
     return uppy;
+  }
+
+  parseTusUploadResponse(body: string): TusUploadResponse {
+    if (!body?.trim()) {
+      throw new Error('Upload server returned an empty response.');
+    }
+
+    let response: Partial<TusUploadResponse>;
+    try {
+      response = JSON.parse(body);
+    } catch {
+      throw new Error('Upload server returned an invalid response.');
+    }
+
+    if (!response.bucket || !response.path || !response.cdnUrl || !response.directUrl) {
+      throw new Error('Upload server response is missing required file metadata.');
+    }
+
+    return response as TusUploadResponse;
   }
 
   private initializeEventHandlers(uppy: Uppy<FileMetadata, FileBody>, onUploadSuccess: (file: UppyFile<any, any>, response: any) => void) {
@@ -304,7 +344,7 @@ export class UppyUploaderService {
    * @param   {string}        source
    * @return  {Promise<HTMLIonModalElement>}
    */
-  async open(source: 'chat' | 'user-profile' | 'assessment' | 'media-manager' | 'static' | 'any' | 'image' | 'video' | null): Promise<HTMLIonModalElement> {
+  async open(source: UppyUploadSource | null): Promise<HTMLIonModalElement> {
     // dynamic import to break circular dependency with UppyUploaderComponent
     const { UppyUploaderComponent } = await import('./uppy-uploader.component');
     const modal = await this.modalController.create({

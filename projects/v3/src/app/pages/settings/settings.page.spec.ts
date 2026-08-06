@@ -57,7 +57,14 @@ describe('SettingsPage', () => {
       }
     } as any));
     authSpy.logout.and.returnValue(Promise.resolve() as any);
-    authSpy.updateUserProfile.and.returnValue(of({}) as any);
+    authSpy.updateUserProfile.and.returnValue(of({
+      data: {
+        updateUserProfile: {
+          success: true,
+          message: 'User profile updated successfully',
+        }
+      }
+    }) as any);
 
     storageSpy.getUser.and.returnValue({
       email: 'user@example.com',
@@ -235,6 +242,8 @@ describe('SettingsPage', () => {
       size: 10,
       bucket: 'bucket',
       path: '/uploads/profile',
+      url: 'https://cdn/profile.png',
+      directUrl: 'https://files/profile.png',
       preview: 'https://cdn/profile.png',
     };
     uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve({
@@ -243,10 +252,54 @@ describe('SettingsPage', () => {
 
     await component.profileImage();
 
-    expect(authSpy.updateUserProfile).toHaveBeenCalled();
-    expect(component.profile.avatar).toBe('https://cdn/profile.png');
-    expect(storageSpy.setUser).toHaveBeenCalledWith({ image: 'https://cdn/profile.png' });
+    expect(authSpy.updateUserProfile).toHaveBeenCalledWith({
+      url: 'https://files/profile.png',
+      name: 'profile.png',
+      extension: 'png',
+      type: 'image/png',
+      size: 10,
+      bucket: 'bucket',
+      path: '/uploads/profile',
+    });
+    expect(component.profile.avatar).toBe('https://files/profile.png');
+    expect(storageSpy.setUser).toHaveBeenCalledWith({
+      avatar: 'https://files/profile.png',
+      image: 'https://files/profile.png',
+    });
     expect(notificationsServiceSpy.alert).toHaveBeenCalled();
+  });
+
+  it('should not update local profile when the backend rejects the file', async () => {
+    const uploaded = {
+      tus: { uploadUrl: 'https://upload' },
+      name: 'profile.png',
+      extension: 'png',
+      type: 'image/png',
+      size: 10,
+      bucket: 'bucket',
+      path: '/uploads/profile',
+      url: 'https://cdn/profile.png',
+      directUrl: 'https://files/profile.png',
+    };
+    uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve({
+      onDidDismiss: () => Promise.resolve({ data: uploaded })
+    } as any));
+    authSpy.updateUserProfile.and.returnValue(of({
+      data: {
+        updateUserProfile: {
+          success: false,
+          message: 'avatar file object incorrect',
+        }
+      }
+    }) as any);
+
+    await component.profileImage();
+
+    expect(component.profile.avatar).not.toBe('https://files/profile.png');
+    expect(storageSpy.setUser).not.toHaveBeenCalled();
+    const alertArgs = notificationsServiceSpy.alert.calls.mostRecent().args[0];
+    expect(alertArgs.subHeader).toBe('avatar file object incorrect');
+    expect(component.imageUpdating).toBeFalse();
   });
 
   it('should show upload error subHeader when server returns message', async () => {

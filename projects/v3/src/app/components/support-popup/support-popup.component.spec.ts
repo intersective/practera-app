@@ -50,6 +50,8 @@ const createMockFile = (overrides: Partial<UppyFileData> = {}): UppyFileData => 
   bucket: 'test-bucket',
   path: 'test-path',
   url: 'http://example.com/test.jpg',
+  cdnUrl: 'http://example.com/test.jpg',
+  directUrl: 'http://example.com/uploads/test-file',
   ...overrides,
 });
 
