@@ -746,6 +746,8 @@ describe('ChatRoomComponent', () => {
         bucket: 'test-bucket',
         path: 'uploads/video.mp4',
         url: 'https://cdn.example.com/video.mp4',
+        cdnUrl: 'https://cdn.example.com/video.mp4',
+        directUrl: 'https://upload.example.com/file-1',
       };
 
       const mockModal = jasmine.createSpyObj('HTMLIonModalElement', ['onDidDismiss']);

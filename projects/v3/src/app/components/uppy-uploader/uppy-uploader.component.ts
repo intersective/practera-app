@@ -1,4 +1,10 @@
-import { UppyFileData, UppyUploaderService, ALLOWED_FILE_TYPES } from './uppy-uploader.service';
+import {
+  UppyFileData,
+  UppyUploaderService,
+  ALLOWED_FILE_TYPES,
+  TusUploadResponse,
+  UppyUploadSource,
+} from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { ChangeDetectorRef, Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
@@ -17,7 +23,7 @@ type FileBody = { [key: string]: any };
   styleUrls: ["./uppy-uploader.component.scss"],
 })
 export class UppyUploaderComponent implements OnInit, OnDestroy {
-  @Input() source!: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image";
+  @Input() source!: UppyUploadSource;
   @Input() tusEndpoint?: string = environment.uppyConfig.tusUrl; // tusUrl
   @Output() uploadComplete = new EventEmitter<any>();
 
@@ -34,11 +40,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   /** true only when this component's own uppy instance is compressing */
   isCompressing = false;
 
-  s3Info: {
-    path: string;
-    bucket: string;
-    url: string;
-  };
+  s3Info: TusUploadResponse;
 
   constructor(
     private notificationsService: NotificationsService,
@@ -83,6 +85,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   loadAllowedFileTypes() {
     switch(this.source) {
       case "profile":
+      case "user-profile":
       case "image":
         return ["image/*"];
 
@@ -108,12 +111,13 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     try {
       // eslint-disable-next-line no-console
       console.log("Uploaded files:", req, res);
-      this.s3Info = JSON.parse(res.getBody());
+      this.s3Info = this.uppyUploaderService.parseTusUploadResponse(res.getBody());
     } catch(error) {
       this.notificationsService.alert({
         header: "Upload Failed",
-        message: "No response from server",
+        message: error.message,
       });
+      throw error;
     }
   }
 
@@ -126,12 +130,18 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   closeModal(file) {
+    if (!this.s3Info) {
+      throw new Error('Upload server response is missing required file metadata.');
+    }
+
     const data: UppyFileData = {
       ...file,
       ...{
-        bucket: this.s3Info?.bucket,
-        path: this.s3Info?.path,
-        url: this.s3Info?.url,
+        bucket: this.s3Info.bucket,
+        path: this.s3Info.path,
+        url: this.s3Info.cdnUrl,
+        cdnUrl: this.s3Info.cdnUrl,
+        directUrl: this.s3Info.directUrl,
       }
     };
     this.modalController.dismiss(data);

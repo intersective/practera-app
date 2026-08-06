@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { NgZone } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UppyUploaderService } from './uppy-uploader.service';
 import { BrowserStorageService } from '../../services/storage.service';
@@ -6,6 +7,7 @@ import { Uppy } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FfmpegService } from '../../services/ffmpeg.service';
 import { Subject } from 'rxjs';
+import { UppyUploaderComponent } from './uppy-uploader.component';
 
 describe('UppyUploaderService', () => {
   let service: UppyUploaderService;
@@ -50,7 +52,12 @@ describe('UppyUploaderService', () => {
       ],
     });
 
-    service = TestBed.inject(UppyUploaderService);
+    service = new UppyUploaderService(
+      modalCtrlSpy,
+      storageSpy,
+      ffmpegServiceSpy,
+      TestBed.inject(NgZone),
+    );
   });
 
   it('should be created', () => {
@@ -190,6 +197,7 @@ describe('UppyUploaderService', () => {
       await service.open('chat');
 
       expect(modalCtrlSpy.create).toHaveBeenCalledWith(jasmine.objectContaining({
+        component: UppyUploaderComponent,
         backdropDismiss: false,
       }));
     });
@@ -257,6 +265,45 @@ describe('UppyUploaderService', () => {
       expect(modalCtrlSpy.create).toHaveBeenCalledWith(jasmine.objectContaining({
         componentProps: { source: 'assessment' },
       }));
+    });
+  });
+
+  describe('parseTusUploadResponse', () => {
+    it('should parse the upload metadata returned by the TUS server', () => {
+      const response = service.parseTusUploadResponse(JSON.stringify({
+        bucket: 'bucket',
+        path: '/uploads/profile.png',
+        cdnUrl: 'https://cdn.example.com/profile.png',
+        directUrl: 'https://files.example.com/profile.png',
+      }));
+
+      expect(response).toEqual({
+        bucket: 'bucket',
+        path: '/uploads/profile.png',
+        cdnUrl: 'https://cdn.example.com/profile.png',
+        directUrl: 'https://files.example.com/profile.png',
+      });
+    });
+
+    it('should reject an empty response body', () => {
+      expect(() => service.parseTusUploadResponse('')).toThrowError(
+        'Upload server returned an empty response.'
+      );
+    });
+
+    it('should reject malformed JSON', () => {
+      expect(() => service.parseTusUploadResponse('{invalid')).toThrowError(
+        'Upload server returned an invalid response.'
+      );
+    });
+
+    it('should reject incomplete upload metadata', () => {
+      expect(() => service.parseTusUploadResponse(JSON.stringify({
+        bucket: 'bucket',
+        path: '/uploads/profile.png',
+      }))).toThrowError(
+        'Upload server response is missing required file metadata.'
+      );
     });
   });
 });
