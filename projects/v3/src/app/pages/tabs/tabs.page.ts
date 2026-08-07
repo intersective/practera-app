@@ -60,9 +60,9 @@ export class TabsPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.utils.setPageTitle('Practera');
-    this.utils.screenStatus$.subscribe((res) => {
+    this.subscriptions.push(this.utils.screenStatus$.subscribe((res) => {
       this.hasLeftSidebar = res.leftSidebarExpanded;
-    });
+    }));
     this.subscriptions.push(this.reviewService.reviews$.subscribe(res => this.reviews = res));
     if (!this.storageService.getUser().chatEnabled) { // keep configuration-based value
       this.showMessages = false;
@@ -105,7 +105,7 @@ export class TabsPage implements OnInit, OnDestroy {
       this.notificationsService.getReminderEvent(event).subscribe();
     }));
 
-    this.notificationsService.notification$.subscribe(notifications => {
+    this.subscriptions.push(this.notificationsService.notification$.subscribe(notifications => {
       // assign notification badge to each tab
       this.badges.event = notifications.filter(noti => noti.type === 'event-reminder').length;
       this.badges.review = notifications.filter(noti => noti.type === 'review_submission').length;
@@ -116,7 +116,7 @@ export class TabsPage implements OnInit, OnDestroy {
         }
       });
       this.badges.chat = chat?.unreadMessages || 0;
-    });
+    }));
   }
 
   ngOnDestroy(): void {

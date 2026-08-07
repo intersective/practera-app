@@ -12,15 +12,15 @@ import { ExperiencesPage } from './experiences.page';
 import { MockRouter } from '@testingv3/mocked.service';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { TestUtils } from '@testingv3/utils';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('ExperiencesPage', () => {
   let component: ExperiencesPage;
   let fixture: ComponentFixture<ExperiencesPage>;
   let storageSpy: BrowserStorageService;
-  let experienceServiceSpy: ExperienceService;
+  let experienceServiceSpy: jasmine.SpyObj<ExperienceService>;
   let loadingCtrlSpy: LoadingController;
-  let notificationsSpy: NotificationsService;
+  let notificationsSpy: jasmine.SpyObj<NotificationsService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -55,7 +55,8 @@ describe('ExperiencesPage', () => {
         {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', {
-            'alert': Promise.resolve(true)
+            'alert': Promise.resolve(true),
+            'refreshNotifications': of([]),
           }),
         },
         {
@@ -126,7 +127,8 @@ describe('ExperiencesPage', () => {
     let dismissLoading: any;
 
     beforeEach(() => {
-      experienceServiceSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.returnValue(Promise.resolve(true));
+      experienceServiceSpy.switchProgramAndNavigate.and.returnValue(Promise.resolve(['v3', 'home']));
+      notificationsSpy.refreshNotifications.and.returnValue(of([]));
 
       presentLoading = jasmine.createSpy('present');
       dismissLoading = jasmine.createSpy('dismiss').and.returnValue(Promise.resolve(true));
@@ -137,6 +139,20 @@ describe('ExperiencesPage', () => {
     });
 
     it('should redirect user', fakeAsync(() => {
+      const operationOrder: string[] = [];
+      experienceServiceSpy.switchProgramAndNavigate.and.callFake(async () => {
+        operationOrder.push('switch');
+        return ['v3', 'home'];
+      });
+      notificationsSpy.refreshNotifications.and.callFake(() => {
+        operationOrder.push('refresh');
+        return of([]);
+      });
+      dismissLoading.and.callFake(() => {
+        operationOrder.push('dismiss');
+        return Promise.resolve(true);
+      });
+
       component.switchProgram({
         testing: true
       } as any);
@@ -145,6 +161,8 @@ describe('ExperiencesPage', () => {
       expect(experienceServiceSpy.switchProgramAndNavigate).toHaveBeenCalledWith({
         testing: true
       });
+      expect(notificationsSpy.refreshNotifications).toHaveBeenCalled();
+      expect(operationOrder).toEqual(['switch', 'refresh', 'dismiss']);
     }));
 
     it('should redirect user with keyboard event', fakeAsync(() => {
@@ -177,7 +195,7 @@ describe('ExperiencesPage', () => {
     }));
 
     it('should throw error with alertCtrl', fakeAsync(() => {
-      experienceServiceSpy.switchProgramAndNavigate = jasmine.createSpy('switchProgramAndNavigate').and.throwError('SAMPLE_ERROR');
+      experienceServiceSpy.switchProgramAndNavigate.and.throwError('SAMPLE_ERROR');
 
       component.switchProgram({
         testing: true
@@ -185,6 +203,22 @@ describe('ExperiencesPage', () => {
 
       flushMicrotasks();
       expect(notificationsSpy.alert).toHaveBeenCalled();
+      expect(notificationsSpy.refreshNotifications).not.toHaveBeenCalled();
+    }));
+
+    it('should navigate with empty state when notification refresh fails', fakeAsync(() => {
+      const consoleErrorSpy = spyOn(console, 'error');
+      notificationsSpy.refreshNotifications.and.returnValue(
+        throwError(() => new Error('Unable to refresh notifications'))
+      );
+
+      component.switchProgram({ testing: true } as any);
+
+      flushMicrotasks();
+      expect(consoleErrorSpy).toHaveBeenCalled();
+      expect(dismissLoading).toHaveBeenCalled();
+      expect(component['router'].navigate).toHaveBeenCalled();
+      expect(notificationsSpy.alert).not.toHaveBeenCalled();
     }));
   });
 });
