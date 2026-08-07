@@ -569,3 +569,20 @@ quill-editor .ql-toolbar.ql-snow {
     margin-right: 8px !important;
   }
 }
+
+// accessWidget is loaded only on non-local hosts. Keep its custom trigger out
+// of the local UI and reserve enough room for the vendor trigger if a remote
+// accessiBe configuration overrides hideTrigger.
+body:not(.accessibility-widget-enabled) app-personalised-header .accessibility-btn {
+  display: none;
+}
+
+body.accessibility-widget-enabled app-chat-room ion-row.action-buttons {
+  padding-inline-end: 64px;
+}
+
+@media (min-width: 768px) {
+  body.accessibility-widget-enabled app-chat-room ion-row.action-buttons {
+    padding-inline-end: 88px;
+  }
+}
