@@ -25,17 +25,6 @@
     </ion-button>
   </ng-template>
 
-  <ion-button class="accessibility-btn"
-    data-acsb-custom-trigger="true"
-    aria-label="Open accessibility options" i18n-aria-label>
-    <ion-icon
-      name="accessibility-outline"
-      color="primary"
-      slot="icon-only"
-      aria-hidden="true"
-    ></ion-icon>
-  </ion-button>
-
   <ion-button *ngIf="!isExpPage"
     (click)="notifications()"
     (keydown.enter)="notifications()"
