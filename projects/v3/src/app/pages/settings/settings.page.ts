@@ -186,8 +186,11 @@ export class SettingsPage implements OnInit, OnDestroy {
       const file = res.data;
       if (file) {
         this.imageUpdating = true;
-        await firstValueFrom(this.authService.updateUserProfile({
-          url: file.tus.uploadUrl,
+        // User-profile CDN URLs are not directly readable in every environment.
+        // Match file-display and prefer the TUS direct URL when it is available.
+        const profileUrl = file.directUrl || file.url;
+        const response = await firstValueFrom(this.authService.updateUserProfile({
+          url: profileUrl,
           name: file.name,
           extension: file.extension,
           type: file.type,
@@ -196,9 +199,16 @@ export class SettingsPage implements OnInit, OnDestroy {
           path: file.path,
         }));
 
-        this.imageUpdating = false;
-        this.profile.avatar = file.preview;
-        this.storage.setUser({ image: file.preview });
+        const result = response?.data?.updateUserProfile;
+        if (result?.success !== true) {
+          throw new Error(result?.message || 'Profile picture could not be updated.');
+        }
+
+        this.profile.avatar = profileUrl;
+        this.storage.setUser({
+          avatar: profileUrl,
+          image: profileUrl,
+        });
 
         return this.notificationsService.alert({
           message: $localize`Profile picture successfully updated!`,
@@ -211,8 +221,6 @@ export class SettingsPage implements OnInit, OnDestroy {
         });
       }
     } catch (error) {
-      this.imageUpdating = false;
-
       // eslint-disable-next-line no-console
       console.error('profile image error', error);
 
@@ -227,10 +235,12 @@ export class SettingsPage implements OnInit, OnDestroy {
       };
 
       // Actual error message from server
-      if (error?.error?.message || error?.error?.msg) {
-        alertOpts.subHeader = error?.error?.message || error?.error?.msg;
+      if (error?.error?.message || error?.error?.msg || error?.message) {
+        alertOpts.subHeader = error?.error?.message || error?.error?.msg || error?.message;
       }
       return this.notificationsService.alert(alertOpts);
+    } finally {
+      this.imageUpdating = false;
     }
   }
 

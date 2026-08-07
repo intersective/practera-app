@@ -142,4 +142,43 @@ describe('UppyUploaderService', () => {
       expect(service.getPatchValue(testId)).toEqual(testValue);
     });
   });
+
+  describe('parseTusUploadResponse', () => {
+    it('should parse the upload metadata returned by the TUS server', () => {
+      const response = service.parseTusUploadResponse(JSON.stringify({
+        bucket: 'bucket',
+        path: '/uploads/profile.png',
+        cdnUrl: 'https://cdn.example.com/profile.png',
+        directUrl: 'https://files.example.com/profile.png',
+      }));
+
+      expect(response).toEqual({
+        bucket: 'bucket',
+        path: '/uploads/profile.png',
+        cdnUrl: 'https://cdn.example.com/profile.png',
+        directUrl: 'https://files.example.com/profile.png',
+      });
+    });
+
+    it('should reject an empty response body', () => {
+      expect(() => service.parseTusUploadResponse('')).toThrowError(
+        'Upload server returned an empty response.'
+      );
+    });
+
+    it('should reject malformed JSON', () => {
+      expect(() => service.parseTusUploadResponse('{invalid')).toThrowError(
+        'Upload server returned an invalid response.'
+      );
+    });
+
+    it('should reject incomplete upload metadata', () => {
+      expect(() => service.parseTusUploadResponse(JSON.stringify({
+        bucket: 'bucket',
+        path: '/uploads/profile.png',
+      }))).toThrowError(
+        'Upload server response is missing required file metadata.'
+      );
+    });
+  });
 });
