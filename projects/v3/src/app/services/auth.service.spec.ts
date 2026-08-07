@@ -74,7 +74,7 @@ describe('AuthService', () => {
         },
         {
           provide: PusherService,
-          useValue: jasmine.createSpyObj('PusherService', ['unsubscribeChannels', 'disconnect'])
+          useValue: jasmine.createSpyObj('PusherService', ['reset'])
         },
         { provide: NotificationsService, useValue: notificationsSpy },
         {
@@ -208,8 +208,7 @@ describe('AuthService', () => {
     it('should navigate to login by default', () => {
       storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({});
-      expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
-      expect(pusherSpy.disconnect.calls.count()).toBe(1);
+      expect(pusherSpy.reset.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/']);
     });
@@ -217,8 +216,7 @@ describe('AuthService', () => {
     it('should pass navigation data', () => {
       storageSpy.getConfig.and.returnValue({ color: '' });
       service.logout({ data: 'data' });
-      expect(pusherSpy.unsubscribeChannels.calls.count()).toBe(1);
-      expect(pusherSpy.disconnect.calls.count()).toBe(1);
+      expect(pusherSpy.reset.calls.count()).toBe(1);
       expect(storageSpy.clear.calls.count()).toBe(1);
       expect(routerSpy.navigate.calls.first().args[0]).toEqual(['/'], { data: 'data' });
     });

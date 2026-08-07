@@ -365,8 +365,7 @@ export class AuthService {
    * @param redirect         Whether redirect the user to login page or not
    */
   logout(navigationParams = {}, redirect: boolean | string[] = true) {
-    this.pusherService.unsubscribeChannels();
-    this.pusherService.disconnect();
+    this.pusherService.reset();
     const config = this.storage.getConfig();
 
     this.unlockIndicatorService.clearAllTasks(); // reset indicators (cache)

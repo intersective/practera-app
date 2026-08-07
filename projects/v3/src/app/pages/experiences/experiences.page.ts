@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
-import { Subject, Observable } from 'rxjs';
+import { firstValueFrom, Observable, Subject } from 'rxjs';
 
 @Component({
   standalone: false,
@@ -108,6 +108,15 @@ export class ExperiencesPage implements OnInit, OnDestroy {
     try {
       this.unlockIndicatorService.clearAllTasks(); // reset indicators
       const route = await this.experienceService.switchProgramAndNavigate(experience);
+
+      try {
+        await firstValueFrom(this.notificationsService.refreshNotifications());
+      } catch (refreshError) {
+        // The experience switch succeeded, so do not restore notifications
+        // from the previous project or block navigation when refreshing fails.
+        console.error('Error refreshing notifications after switching experience', refreshError);
+      }
+
       await loading.dismiss();
       if (environment.demo) {
         destination = ['v3','home'];

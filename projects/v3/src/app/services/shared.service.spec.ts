@@ -59,7 +59,11 @@ describe('SharedService', () => {
         },
         {
           provide: ApolloService,
-          useValue: jasmine.createSpyObj('ApolloService', ['graphQLFetch', 'graphQLWatch']),
+          useValue: jasmine.createSpyObj('ApolloService', [
+            'graphQLFetch',
+            'graphQLWatch',
+            'initiateCoreClient',
+          ]),
         },
         {
           provide: RequestService,
@@ -179,6 +183,25 @@ describe('SharedService', () => {
       expect(httpSpy.get).toHaveBeenCalled();
       expect(utilsSpy.changeThemeColor).toHaveBeenCalled();
       expect(utilsSpy.changeCardBackgroundImage).toHaveBeenCalled();
+    });
+  });
+
+  describe('initWebServices()', () => {
+    it('should initialise Apollo before awaiting Pusher', async () => {
+      const order: string[] = [];
+      const pusherSpy = pusherServiceSpy as jasmine.SpyObj<PusherService>;
+      apolloSpy.initiateCoreClient.and.callFake(() => {
+        order.push('apollo');
+        return null;
+      });
+      pusherSpy.initialise.and.callFake(async () => {
+        order.push('pusher');
+      });
+
+      await service.initWebServices();
+
+      expect(order).toEqual(['apollo', 'pusher']);
+      expect(utilsSpy.checkIsPracteraSupportEmail).toHaveBeenCalled();
     });
   });
 });
