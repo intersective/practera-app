@@ -71,8 +71,6 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // assessment/review action flags
   @Input() doAssessment: boolean;
   @Input() doReview: boolean;
-  @Input() viewerRole: 'learner' | 'reviewer';
-  @Input() isReviewerFeedbackContext = false;
 
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;

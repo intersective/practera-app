@@ -41,52 +41,6 @@ describe('MultiTeamMemberSelectorComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should show only reviewer-selected members in reviewer feedback', () => {
-    const member1 = JSON.stringify({ userId: 1 });
-    const member2 = JSON.stringify({ userId: 2 });
-    component.question = {
-      audience: ['reviewer'],
-      teamMembers: [
-        { key: member1, userName: 'Member 1' },
-        { key: member2, userName: 'Member 2' },
-      ],
-    } as any;
-    component.review = { answer: [member2] };
-    component.isReviewerFeedbackContext = true;
-
-    expect(component.displayTeamMembers.map(member => member.key)).toEqual([member2]);
-
-    component.isReviewerFeedbackContext = false;
-    expect(component.displayTeamMembers.length).toBe(2);
-  });
-
-  it('should render the learner ownership chip before the selected member', () => {
-    const member1 = JSON.stringify({ userId: 1 });
-    const member2 = JSON.stringify({ userId: 2 });
-    component.question = {
-      audience: ['submitter', 'reviewer'],
-      teamMembers: [
-        { key: member1, userName: 'Member 1' },
-        { key: member2, userName: 'Member 2' },
-      ],
-    } as any;
-    component.submissionStatus = 'feedback available';
-    component.reviewStatus = 'done';
-    component.doAssessment = false;
-    component.doReview = false;
-    component.viewerRole = 'learner';
-    component.submission = { answer: [member1] };
-    component.review = { answer: [member2] };
-
-    fixture.detectChanges();
-
-    const learnerItem = fixture.nativeElement.querySelector('ion-list ion-item');
-    const labelChildren = Array.from(learnerItem.querySelector('ion-label').children);
-    expect(labelChildren.indexOf(learnerItem.querySelector('p')))
-      .toBeLessThan(labelChildren.indexOf(learnerItem.querySelector('.answer-content')));
-    expect(learnerItem.textContent).toContain('Your Answer');
-  });
-
   describe('ngOnInit()', () => {
     it('should call _showSavedAnswers()', () => {
       // use "any" to bypass ts restriction on type (not recommended, for acceptable for internal implementation)

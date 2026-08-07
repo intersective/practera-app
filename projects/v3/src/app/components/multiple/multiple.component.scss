@@ -64,3 +64,48 @@ ion-item {
 .feedback-title {
   --min-height: 1em;
 }
+
+ion-label.reviewer-feedback-choice {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.reviewer-feedback-choice-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.reviewer-choice-status {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+}
+
+.reviewer-choice-status-selected {
+  color: var(--ion-color-success-shade);
+  font-weight: 700;
+
+  ion-icon {
+    --ionicon-stroke-width: 48px;
+    font-size: 18px;
+  }
+}
+
+.reviewer-choice-status-not-selected {
+  color: var(--practera-grey-50);
+  font-weight: 400;
+}
+
+@media (max-width: 576px) {
+  ion-label.reviewer-feedback-choice {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
