@@ -138,30 +138,6 @@ ion-footer {
   margin-bottom: 10px;
 }
 
-.reviewer-feedback-section,
-.reviewer-only-guidance {
-  margin: 24px 0 8px;
-  padding: 16px;
-  background: var(--practera-light-grey-50);
-
-  h3,
-  p {
-    margin: 0;
-  }
-
-  p {
-    margin-top: 4px;
-  }
-}
-
-.reviewer-feedback-section {
-  border-left: 4px solid var(--ion-color-success);
-}
-
-.reviewer-only-guidance {
-  border-left: 4px solid var(--practera-dark-blue-100);
-}
-
 // styles use for due dates and pulsing animation
 .due-date {
   margin-bottom: 0;

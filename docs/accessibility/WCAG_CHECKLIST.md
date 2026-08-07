@@ -123,6 +123,8 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **COMPLETED**: Added CSS to prevent focus obscuring (scroll-margin: 4px on focus-visible elements)
 - [x] Sticky headers/footers have proper z-index (ion-header and ion-footer set to z-index: 1000)
 - [x] Modals/overlays configured with backdrop opacity (ion-modal has --backdrop-opacity: 0.4)
+- [x] **COMPLETED**: Reserved production-only inline space in the chat action row so accessWidget's floating trigger cannot obscure Attach or Send
+- [ ] **RETEST ON DEPLOYED HOST**: Verify accessWidget remains available and the chat controls remain unobscured at desktop, tablet, and mobile viewports
 
 #### 2.4.13 Focus Appearance (Minimum) (Level AA) - NEW in 2.2
 - [x] Focus indicators have at least 2px outline (implemented in global.scss)
@@ -394,7 +396,7 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 7. Test with keyboard: Tab to element, tooltip should appear; ESC should dismiss it
 
 #### 5. Focus Not Obscured (WCAG 2.4.11)
-**Fixed in:** `global.scss`
+**Fixed in:** `global.scss`, `styles.scss`, and `index.html`
 
 **Retest Instructions:**
 1. Navigate to any page with sticky header/footer
@@ -404,6 +406,10 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 5. Open DevTools and check computed styles on focused element:
    - `scroll-margin: 4px` should be present
    - `z-index` on headers/footers should be 1000
+6. On a deployed non-local host, verify accessWidget's floating trigger remains visible and opens the widget
+7. Navigate to Messages and select a writable chat room
+8. **VERIFY**: Attach and Send remain visible and clickable at 2048x1048, 1366x768, 1024x768, and 390x844
+9. **VERIFY**: The floating trigger does not obscure the chat action row
 
 #### 6. Text Spacing Support (WCAG 1.4.12)
 **Fixed in:** `global.scss`
@@ -494,4 +500,3 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - Assessment component has loading states with proper ARIA
 - Error messages use role="alert" and aria-live="assertive"
 - Status messages use role="status" and aria-live="polite"
-

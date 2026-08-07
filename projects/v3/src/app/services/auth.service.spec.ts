@@ -45,6 +45,7 @@ describe('AuthService', () => {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
             'graphQLFetch': of(),
+            'graphQLMutate': of(),
             'graphQLWatch': of(),
             'getClient': function () {
               return {
@@ -101,6 +102,27 @@ describe('AuthService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('should execute updateUserProfile as a mutation with the avatar variables', () => {
+    const apolloSpy = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+    const avatar = {
+      bucket: 'profile-images',
+      path: '/users/profile.png',
+      name: 'profile.png',
+      url: 'https://cdn.example.com/users/profile.png',
+      extension: 'png',
+      type: 'image/png',
+      size: 10,
+    };
+
+    service.updateUserProfile(avatar).subscribe();
+
+    expect(apolloSpy.graphQLMutate).toHaveBeenCalledWith(
+      jasmine.stringMatching(/mutation updateUserProfile/),
+      { avatar }
+    );
+    expect(apolloSpy.graphQLFetch).not.toHaveBeenCalled();
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {

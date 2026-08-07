@@ -34,9 +34,6 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
-  // role of the user viewing completed feedback
-  @Input() viewerRole: 'learner' | 'reviewer';
-  @Input() isReviewerFeedbackContext = false;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
   // comment field for reviewer
@@ -250,8 +247,14 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get isReviewerOnlyChoiceFeedback(): boolean {
+    return this.isDisplayOnly
+      && this.question?.reviewerOnly === true
+      && this.submissionStatus === 'feedback available';
+  }
+
   get displayChoices(): Array<any> {
-    if (!this.isDisplayOnly) {
+    if (!this.isDisplayOnly || this.isReviewerOnlyChoiceFeedback) {
       return this.question?.choices || [];
     }
 
@@ -262,17 +265,10 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     return (this.question?.choices || []).filter(choice => selectedChoiceIds.has(choice.id));
   }
 
-  isReviewerChoiceSelected(choiceId: string | number): boolean {
-    return this._answerIncludesChoice(this.review?.answer, choiceId);
-  }
-
-  isSubmissionChoiceSelected(choiceId: string | number): boolean {
-    return this._answerIncludesChoice(this.submission?.answer, choiceId);
-  }
-
-  private _answerIncludesChoice(answer: any, choiceId: string | number): boolean {
+  isReviewChoiceSelected(choiceId: string | number): boolean {
     const selectedChoiceIds = new Set<string | number>();
-    this._collectSelectedChoiceIds(answer, selectedChoiceIds);
+    this._collectSelectedChoiceIds(this.review?.answer, selectedChoiceIds);
+
     return selectedChoiceIds.has(choiceId);
   }
 
