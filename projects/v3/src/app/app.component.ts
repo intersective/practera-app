@@ -242,7 +242,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.versionCheckService.initiateVersionCheck();
       }
       // initialise Pusher when app loading
-      this.sharedService.initWebServices();
+      this.sharedService.initWebServices().catch(err => {
+        console.error('Failed to initialise real-time services on app startup', err);
+      });
     });
   }
 

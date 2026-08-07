@@ -1,9 +1,11 @@
-import { Component, Output, EventEmitter, NgZone, Input } from '@angular/core';
+import { Component, Output, EventEmitter, NgZone, Input, OnDestroy } from '@angular/core';
 import { Router, NavigationExtras } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ChatService, ChatChannel } from '@v3/services/chat.service';
 import { PusherService } from '@v3/services/pusher.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 /**
  * this is an app chat list component
@@ -14,13 +16,14 @@ import { PusherService } from '@v3/services/pusher.service';
   templateUrl: 'chat-list.component.html',
   styleUrls: ['chat-list.component.scss']
 })
-export class ChatListComponent {
+export class ChatListComponent implements OnDestroy {
   @Output() navigate = new EventEmitter();
   @Output() chatListReady = new EventEmitter();
   @Input() currentChat: ChatChannel;
   chatList: ChatChannel[];
   loadingChatList = true;
   isMobile: boolean = false;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     public utils: UtilsService,
@@ -31,12 +34,22 @@ export class ChatListComponent {
     private pusherService: PusherService
   ) {
     this.isMobile = this.utils.isMobile();
-    this.utils.getEvent('chat:new-message').subscribe(event => this._loadChatData());
-    this.utils.getEvent('chat:delete-message').subscribe(event => this._loadChatData());
-    this.utils.getEvent('chat:edit-message').subscribe(event => this._loadChatData());
-    this.utils.getEvent('chat:info-update').subscribe(event => this._loadChatData());
+    this.utils.getEvent('chat:new-message')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this._loadChatData());
+    this.utils.getEvent('chat:delete-message')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this._loadChatData());
+    this.utils.getEvent('chat:edit-message')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this._loadChatData());
+    this.utils.getEvent('chat:info-update')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this._loadChatData());
     if (!this.isMobile) {
-      this.utils.getEvent('chat-badge-update').subscribe(event => {
+      this.utils.getEvent('chat-badge-update')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(event => {
         const chatIndex = this.chatList.findIndex(data => data.uuid === event.channelUuid);
         if (chatIndex > -1) {
           // set time out because when this calling from pusher events it need a time out.
@@ -57,8 +70,15 @@ export class ChatListComponent {
     */
   onEnter() {
     this._initialise();
-    this._checkAndSubscribePusherChannels();
+    this.pusherService.refreshChatChannels().catch(err => {
+      console.error('Failed to refresh chat Pusher channels', err);
+    });
     this._loadChatData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -75,25 +95,12 @@ export class ChatListComponent {
     * @returns nothing
     */
   private _loadChatData(): void {
-    this.chatService.getChatList().subscribe(chats => {
+    this.chatService.getChatList()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(chats => {
       this.chatList = chats;
       this.loadingChatList = false;
       this.chatListReady.emit(this.chatList);
-    });
-  }
-
-  /**
-   * This method pusher service to subscribe to chat pusher channels
-   * - first it call chat service to get pusher channels.
-   * - then it call pusher service 'subscribeChannel' method to subscribe.
-   * - in pusher service it chaeck if we alrady subscribe or not.
-   *   if not it will subscribe to the pusher channel.
-   */
-  private _checkAndSubscribePusherChannels() {
-    this.chatService.getPusherChannels().subscribe(pusherChannels => {
-      pusherChannels.forEach(channel => {
-        this.pusherService.subscribeChannel('chat', channel.pusherChannel);
-      });
     });
   }
 
