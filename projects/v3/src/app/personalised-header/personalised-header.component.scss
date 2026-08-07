@@ -20,6 +20,7 @@ ion-avatar {
       opacity: 0.5;
     }
   }
+  .accessibility-btn,
   .notify-btn {
     height: 34px;
     width: 34px;
@@ -28,7 +29,9 @@ ion-avatar {
     --padding-end: 1px;
     --padding-bottom: 1px;
     --padding-start: 1px;
+  }
 
+  .notify-btn {
     .hint {
       background-color: red;
       position: absolute;
