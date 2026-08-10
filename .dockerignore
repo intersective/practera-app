@@ -1,2 +1,13 @@
 node_modules
 .angular
+dist
+.git
+.github
+.cursor
+e2e
+coverage
+playwright-report
+*.md
+.DS_Store
+.env
+.env.*
