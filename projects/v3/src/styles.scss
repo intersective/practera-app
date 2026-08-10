@@ -570,8 +570,14 @@ quill-editor .ql-toolbar.ql-snow {
   }
 }
 
-// accessWidget is loaded only on non-local hosts. Reserve enough room in the
-// chat composer for its floating trigger without changing unrelated pages.
+// accessWidget is loaded only on non-local hosts. Keep its custom header
+// trigger out of the local UI and hide it if the vendor script fails to load.
+body:not(.accessibility-widget-enabled) app-personalised-header .accessibility-btn {
+  display: none;
+}
+
+// Retain the temporary composer fallback until staging and production confirm
+// that the vendor trigger is hidden by both the portal and code configuration.
 body.accessibility-widget-enabled app-chat-room ion-row.action-buttons {
   padding-inline-end: 64px;
 }
