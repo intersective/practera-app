@@ -39,32 +39,36 @@
             return;
           }
 
-          window.acsbJS.init({
-            statementLink: '',
-            footerHtml: '',
-            hideMobile: false,
-            hideTrigger: false,
-            disableBgProcess: false,
-            language: 'en',
-            position: 'left',
-            leadColor: '#4d4d4d',
-            triggerColor: '#4d4d4d',
-            triggerRadius: '50%',
-            triggerPositionX: 'left',
-            triggerPositionY: 'bottom',
-            triggerIcon: 'people',
-            triggerSize: 'medium',
-            triggerOffsetX: 15,
-            triggerOffsetY: 40,
-            mobile: {
-              triggerSize: 'small',
-              triggerPositionX: 'right',
+          try {
+            window.acsbJS.init({
+              statementLink: '',
+              footerHtml: '',
+              hideMobile: false,
+              hideTrigger: true,
+              disableBgProcess: false,
+              language: 'en',
+              position: 'left',
+              leadColor: '#4d4d4d',
+              triggerColor: '#4d4d4d',
+              triggerRadius: '50%',
+              triggerPositionX: 'left',
               triggerPositionY: 'bottom',
-              triggerOffsetX: 10,
-              triggerOffsetY: 88,
-              triggerRadius: '50%'
-            }
-          });
+              triggerIcon: 'people',
+              triggerSize: 'medium',
+              triggerOffsetX: 15,
+              triggerOffsetY: 40,
+              mobile: {
+                triggerSize: 'small',
+                triggerPositionX: 'right',
+                triggerPositionY: 'bottom',
+                triggerOffsetX: 10,
+                triggerOffsetY: 88,
+                triggerRadius: '50%'
+              }
+            });
+          } catch (error) {
+            document.body.classList.remove(widgetEnabledClass);
+          }
         };
 
         scriptContainer.appendChild(script);
