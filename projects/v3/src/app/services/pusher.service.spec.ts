@@ -498,6 +498,8 @@ describe('PusherService', async () => {
         subscription: notificationSubscription,
       };
       service['retryAttempted'].notification = true;
+      service['pendingRetryTypes'].add('notification');
+      service['retryTimer'] = setTimeout(() => undefined, 1000);
 
       service.reset();
 
@@ -505,6 +507,8 @@ describe('PusherService', async () => {
       expect(pusher.unsubscribe).toHaveBeenCalledWith('notification-channel');
       expect(service['activeScope']).toBeNull();
       expect(service['retryAttempted']).toEqual({ notification: false, chat: false });
+      expect(service['pendingRetryTypes'].size).toBe(0);
+      expect(service['retryTimer']).toBeNull();
       expect(pusher.config.auth.headers.apikey).toBe('');
       expect(pusher.config.auth.headers.timelineid).toBe('');
     });
@@ -558,6 +562,96 @@ describe('PusherService', async () => {
       expect(pusher.disconnect).toHaveBeenCalledTimes(1);
       expect(pusher.connect).toHaveBeenCalledTimes(1);
     }));
+
+    it('should batch notification and chat retries into one reconnect', fakeAsync(() => {
+      const scope = { programId: 1, projectId: 11, timelineId: 1 };
+      const pusher = jasmine.createSpyObj('pusher', ['disconnect', 'connect'], {
+        config: { auth: { headers: {} } },
+        connection: { state: 'connected' },
+      });
+      service['pusher'] = pusher;
+      service['activeScope'] = scope;
+      storageSpy.getUser.and.returnValue({ apikey: 'apikey', ...scope } as any);
+      const notificationRefresh = spyOn<any>(service, 'refreshNotificationChannel')
+        .and.returnValue(Promise.resolve());
+      const chatRefresh = spyOn<any>(service, 'refreshChatChannel')
+        .and.returnValue(Promise.resolve());
+
+      service['scheduleSubscriptionRetry']('notification', scope);
+      service['scheduleSubscriptionRetry']('chat', scope);
+      tick(1000);
+      flushMicrotasks();
+
+      expect(pusher.disconnect).toHaveBeenCalledTimes(1);
+      expect(pusher.connect).toHaveBeenCalledTimes(1);
+      expect(notificationRefresh).toHaveBeenCalledTimes(1);
+      expect(chatRefresh).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should not cancel a pending retry during same-scope discovery', fakeAsync(() => {
+      const scope = { programId: 1, projectId: 11, timelineId: 1 };
+      const pusher = jasmine.createSpyObj('pusher', ['disconnect', 'connect'], {
+        config: { auth: { headers: {} } },
+        connection: { state: 'connected' },
+      });
+      service['pusher'] = pusher;
+      service['activeScope'] = scope;
+      storageSpy.getUser.and.returnValue({ apikey: 'apikey', ...scope } as any);
+      service['channels'].chat = [{
+        name: 'chat-channel',
+        subscription: { subscriptionPending: true } as any,
+      }];
+      apolloSpy.graphQLFetch.and.returnValue(of({
+        data: { channels: [{ pusherChannel: 'chat-channel' }] },
+      } as any));
+
+      service['scheduleSubscriptionRetry']('chat', scope);
+      service.refreshChatChannels();
+      flushMicrotasks();
+
+      expect(service['retryTimer']).not.toBeNull();
+      tick(1000);
+      flushMicrotasks();
+      expect(pusher.disconnect).toHaveBeenCalledTimes(1);
+      expect(pusher.connect).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should disconnect before removing a pending v4 channel', () => {
+      const connection = { state: 'connected' };
+      const subscription: any = {
+        subscriptionPending: true,
+        unbind_all: jasmine.createSpy('unbind_all'),
+      };
+      const pusher = jasmine.createSpyObj('pusher', [
+        'disconnect',
+        'connect',
+        'unsubscribe',
+      ], {
+        config: { auth: { headers: {} } },
+        connection,
+      });
+      pusher.disconnect.and.callFake(() => {
+        connection.state = 'disconnected';
+        subscription.subscriptionPending = false;
+      });
+      service['pusher'] = pusher;
+      service['channels'].notification = {
+        name: 'obsolete-notification-channel',
+        subscription,
+      };
+      service['retryAttempted'].notification = true;
+      service['pendingRetryTypes'].add('notification');
+      service['retryTimer'] = setTimeout(() => undefined, 1000);
+
+      service['reconcileNotificationChannel'](null);
+
+      expect(pusher.disconnect).toHaveBeenCalledBefore(pusher.unsubscribe);
+      expect(pusher.unsubscribe).toHaveBeenCalledWith('obsolete-notification-channel');
+      expect(pusher.connect).toHaveBeenCalled();
+      expect(service['channels'].notification).toBeNull();
+      expect(service['retryAttempted'].notification).toBeFalse();
+      expect(service['retryTimer']).toBeNull();
+    });
 
     it('should discard a queued notification callback from an old scope', () => {
       const callbacks: Record<string, (data: any) => void> = {};

@@ -22,9 +22,9 @@
 - `V3Page` also initializes web services as a fallback for authenticated login paths. App startup covers restored sessions, and direct login waits for initialization before navigating to deep links outside v3.
 - Pusher initialization is single-flight. Concurrent entry points share one operation, and a scope that changes during that operation is reconciled before callers are released.
 - Notification and chat discovery use independent generations. Only the latest response for the active scope may change listeners, preventing both previous-experience and same-experience request races.
-- A valid empty channel response removes that listener type. A discovery failure preserves the last valid same-scope set, while a scope change remains empty because its previous listeners were removed before discovery.
+- A valid empty channel response removes that listener type. Pusher v4 leaves authorization failures in a pending state, so reconciliation disconnects before removing a pending channel; this ensures the channel is removed from Pusher's internal registry and cannot return on a later reconnect. A discovery failure preserves the last valid same-scope set, while a scope change remains empty because its previous listeners were removed before discovery.
 - Pusher authorization headers are synchronized from user storage before channel subscription and connection retries. API-key rotation therefore does not require constructing another Pusher client.
-- Private-channel subscription errors trigger one bounded background retry. Repeated failure is logged and never blocks navigation.
+- Private-channel subscription errors trigger one bounded background retry. Same-scope discovery does not cancel an outstanding retry, and simultaneous notification/chat failures are batched into one socket reconnect. Repeated failure is logged and never blocks navigation.
 - Event callbacks capture their subscription scope and discard events after that scope becomes inactive.
 
 Both notification-refresh entry points use `NotificationsService.refreshNotifications()` so the reset and request ordering remain consistent.
