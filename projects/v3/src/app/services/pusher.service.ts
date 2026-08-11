@@ -34,10 +34,11 @@ export interface DeleteMessageParam {
 }
 
 type PusherChannelType = 'notification' | 'chat';
+type PusherSubscription = Channel & { subscriptionPending?: boolean };
 
 class PusherChannel {
   name: string;
-  subscription?: Channel;
+  subscription?: PusherSubscription;
 }
 
 interface RealtimeScope {
@@ -64,7 +65,9 @@ export class PusherService {
     notification: false,
     chat: false,
   };
-  private retryTimers: Partial<Record<PusherChannelType, ReturnType<typeof setTimeout>>> = {};
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
+  private retryScope: RealtimeScope | null = null;
+  private pendingRetryTypes = new Set<PusherChannelType>();
   private channels: {
     notification: PusherChannel;
     chat: PusherChannel[];
@@ -232,8 +235,8 @@ export class PusherService {
    */
   async getChannels(scope = this.getCurrentScope()): Promise<void> {
     await Promise.all([
-      this.refreshNotificationChannel(scope, true),
-      this.refreshChatChannel(scope, true),
+      this.refreshNotificationChannel(scope),
+      this.refreshChatChannel(scope),
     ]);
   }
 
@@ -243,7 +246,7 @@ export class PusherService {
       await this.initialise();
       return;
     }
-    await this.refreshChatChannel(scope, true);
+    await this.refreshChatChannel(scope);
   }
 
   getNotificationChannel(
@@ -301,13 +304,7 @@ export class PusherService {
     }));
   }
 
-  private async refreshNotificationChannel(
-    scope: RealtimeScope,
-    resetRetry: boolean
-  ): Promise<void> {
-    if (resetRetry) {
-      this.resetRetry('notification');
-    }
+  private async refreshNotificationChannel(scope: RealtimeScope): Promise<void> {
     const generation = ++this.notificationGeneration;
     try {
       await firstValueFrom(this.getNotificationChannel(scope, generation));
@@ -316,10 +313,7 @@ export class PusherService {
     }
   }
 
-  private async refreshChatChannel(scope: RealtimeScope, resetRetry: boolean): Promise<void> {
-    if (resetRetry) {
-      this.resetRetry('chat');
-    }
+  private async refreshChatChannel(scope: RealtimeScope): Promise<void> {
     const generation = ++this.chatGeneration;
     try {
       await firstValueFrom(this.getChatChannels(scope, generation));
@@ -420,20 +414,65 @@ export class PusherService {
     if (this.channels.notification?.name === channelName) {
       return;
     }
+
+    // A changed exact set supersedes any retry for the previous channel.
+    // A failure on the replacement channel starts its own bounded retry.
+    this.resetRetry('notification');
+    const reconnect = this.disconnectForPendingChannelRemoval(
+      this.channels.notification ? [this.channels.notification] : []
+    );
     this.unsubscribeNotificationChannel();
     if (channelName) {
       this.subscribeChannel('notification', channelName);
     }
+    this.reconnectAfterPendingChannelRemoval(reconnect);
   }
 
   private reconcileChatChannels(channelNames: string[]): void {
     const desiredNames = [...new Set(channelNames)];
-    this.channels.chat
-      .filter(channel => !desiredNames.includes(channel.name))
-      .forEach(channel => this.unsubscribeChatChannel(channel));
+    const removedChannels = this.channels.chat
+      .filter(channel => !desiredNames.includes(channel.name));
+    const removesPendingChannel = removedChannels.some(
+      channel => channel.subscription?.subscriptionPending
+    );
+    if (desiredNames.length === 0 || removesPendingChannel) {
+      this.resetRetry('chat');
+    }
+    const reconnect = this.disconnectForPendingChannelRemoval(removedChannels);
+
+    removedChannels.forEach(channel => this.unsubscribeChatChannel(channel));
     this.channels.chat = this.channels.chat.filter(channel => desiredNames.includes(channel.name));
 
     desiredNames.forEach(channelName => this.subscribeChannel('chat', channelName));
+    this.reconnectAfterPendingChannelRemoval(reconnect);
+  }
+
+  /**
+   * The Pusher v4.4 client leaves a channel pending after an authorization
+   * error. Calling unsubscribe in that state only marks it cancelled and keeps
+   * it in Pusher's registry, where a later reconnect can revive it. Disconnect
+   * first so v4 resets the pending flag and unsubscribe removes it exactly.
+   */
+  private disconnectForPendingChannelRemoval(channels: PusherChannel[]): boolean {
+    const hasPendingChannel = channels.some(
+      channel => channel.subscription?.subscriptionPending
+    );
+    const shouldReconnect = !!this.pusher
+      && this.pusher.connection.state !== 'disconnected'
+      && hasPendingChannel;
+
+    if (shouldReconnect) {
+      this.disconnect();
+    }
+    return shouldReconnect;
+  }
+
+  private reconnectAfterPendingChannelRemoval(reconnect: boolean): void {
+    if (!reconnect || !this.pusher || this.pusher.connection.state !== 'disconnected') {
+      return;
+    }
+    this.syncAuthHeaders();
+    this.pusher.connect();
   }
 
   /**
@@ -546,38 +585,58 @@ export class PusherService {
     }
 
     this.retryAttempted[type] = true;
-    this.clearRetryTimer(type);
-    this.retryTimers[type] = setTimeout(async () => {
-      this.retryTimers[type] = undefined;
-      if (!this.isCurrentScope(scope)) {
+    this.pendingRetryTypes.add(type);
+    this.retryScope = { ...scope };
+
+    // Notification and chat authorization commonly fail together. Batch them
+    // into one socket reconnect while retaining independent retry limits.
+    if (this.retryTimer) {
+      return;
+    }
+
+    this.retryTimer = setTimeout(async () => {
+      this.retryTimer = null;
+      const retryScope = this.retryScope;
+      const retryTypes = [...this.pendingRetryTypes];
+      this.retryScope = null;
+      this.pendingRetryTypes.clear();
+
+      if (!retryScope || !this.isCurrentScope(retryScope)) {
         return;
       }
       this.syncAuthHeaders();
       this.disconnect();
       this.pusher?.connect();
-      if (type === 'notification') {
-        await this.refreshNotificationChannel(scope, false);
-      } else {
-        await this.refreshChatChannel(scope, false);
-      }
+      await Promise.all(retryTypes.map(retryType => {
+        return retryType === 'notification'
+          ? this.refreshNotificationChannel(retryScope)
+          : this.refreshChatChannel(retryScope);
+      }));
     }, SUBSCRIPTION_RETRY_DELAY);
   }
 
   private resetRetry(type: PusherChannelType): void {
-    this.clearRetryTimer(type);
     this.retryAttempted[type] = false;
+    this.pendingRetryTypes.delete(type);
+    if (this.pendingRetryTypes.size === 0) {
+      this.clearRetryTimer();
+      this.retryScope = null;
+    }
   }
 
-  private clearRetryTimer(type: PusherChannelType): void {
-    if (this.retryTimers[type]) {
-      clearTimeout(this.retryTimers[type]);
-      this.retryTimers[type] = undefined;
+  private clearRetryTimer(): void {
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
     }
   }
 
   private clearRetryState(): void {
-    this.resetRetry('notification');
-    this.resetRetry('chat');
+    this.clearRetryTimer();
+    this.retryScope = null;
+    this.pendingRetryTypes.clear();
+    this.retryAttempted.notification = false;
+    this.retryAttempted.chat = false;
   }
 
   /**
