@@ -18,7 +18,11 @@ export interface SendMessageParam {
   channelUuid:  string;
   uuid: string;
   message: string;
-  file: string;
+  file: {
+    name: string;
+    type: string;
+    url: string;
+  } | string | null;
   isSender: boolean;
   created: string;
   senderUuid: string;
