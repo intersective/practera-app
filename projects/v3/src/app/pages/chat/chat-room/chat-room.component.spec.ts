@@ -359,6 +359,89 @@ describe('ChatRoomComponent', () => {
         preview: undefined
       });
     });
+
+    it('should broadcast the signed attachment returned by the message API', () => {
+      const uploadedAttachment = {
+        bucket: 'chat',
+        path: '/uploads/image.png',
+        name: 'image.png',
+        url: 'https://file.example.com/files/chat/image.png',
+        extension: 'png',
+        type: 'image/png',
+        size: 1024,
+        preview: 'https://file.example.com/files/chat/image.png',
+      };
+      const signedFile = {
+        name: 'image.png',
+        type: 'image/png',
+        url: 'https://file.example.com/files/chat/image.png?Signature=signed',
+      };
+      const saveMessageRes = {
+        uuid: 'attachment-message-uuid',
+        isSender: true,
+        message: '',
+        file: signedFile,
+        created: '2026-08-12 09:30:00',
+        sentAt: '2026-08-12 09:30:00',
+        senderUuid: 'sender-uuid',
+        senderName: 'Sender',
+        senderRole: 'participant',
+        senderAvatar: null,
+        sender: {
+          uuid: 'sender-uuid',
+          name: 'Sender',
+          role: 'participant',
+          avatar: null,
+        },
+      };
+
+      component.channelUuid = 'channel-uuid';
+      component.chatChannel.pusherChannel = 'private-chat-channel';
+      component.messagePageCursor = 'existing-cursor';
+      component.selectedAttachments = [uploadedAttachment];
+      chatServiceSpy.postNewMessage.and.returnValue(of(saveMessageRes));
+      pusherSpy.triggerSendMessage.calls.reset();
+
+      component.sendMessage();
+
+      expect(pusherSpy.triggerSendMessage).toHaveBeenCalledTimes(1);
+      expect(pusherSpy.triggerSendMessage).toHaveBeenCalledWith(
+        'private-chat-channel',
+        jasmine.objectContaining({
+          uuid: saveMessageRes.uuid,
+          file: signedFile,
+        })
+      );
+      expect(pusherSpy.triggerSendMessage.calls.mostRecent().args[1].file)
+        .not.toBe(uploadedAttachment);
+    });
+  });
+
+  describe('when testing addAttachment()', () => {
+    it('should preview the direct URL while retaining the canonical message URL', () => {
+      const upload = {
+        name: 'cyberpunk.png',
+        url: 'https://cdn.example.com/files/chat/cyberpunk.png',
+        directUrl: 'https://uploads.example.com/chat/cyberpunk.png?token=direct',
+        extension: 'png',
+        type: 'image/png',
+        size: 1024,
+        bucket: 'chat',
+        path: '/uploads/cyberpunk.png',
+        tus: {
+          uploadUrl: 'https://uploads.example.com/tus/cyberpunk.png',
+        },
+      } as any;
+
+      component.addAttachment(upload);
+
+      expect(component.selectedAttachments[0]).toEqual(
+        jasmine.objectContaining({
+          url: upload.url,
+          preview: upload.directUrl,
+        })
+      );
+    });
   });
 
   describe('when testing getAvatarClass()', () => {
