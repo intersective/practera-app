@@ -49,7 +49,11 @@ The message mutation continues to receive the canonical `url`; the direct URL
 must not replace the value persisted with the chat message.
 
 Both the inline composer thumbnail and the preview modal render the temporary
-`preview` URL. The modal download action continues to use the canonical `url`.
+`preview` URL. Before the message is sent, the modal's download actions use that
+same temporary URL because the canonical URL may not yet contain the
+authorization required by the file CDN. Attachments loaded from sent messages
+do not have a temporary preview URL, so their download actions fall back to the
+API-returned canonical `url`.
 
 ## Verification
 
@@ -58,8 +62,8 @@ mocked message API returns a signed URL. It verifies that the Pusher event uses
 the API-returned file and never the uploader object. Separate coverage verifies
 that a selected attachment previews `directUrl` while retaining the canonical
 URL for the outgoing message. The preview modal coverage also verifies that its
-rendered media uses the immediate preview URL and falls back to the canonical
-URL for attachments that have already been sent.
+rendered media and download actions use the immediate preview URL, while both
+fall back to the canonical URL for attachments that have already been sent.
 
 For staging verification, keep two users in the same direct-message channel,
 send an image from one browser, and open it immediately in the receiving
