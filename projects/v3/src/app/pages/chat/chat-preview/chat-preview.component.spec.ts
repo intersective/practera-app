@@ -49,6 +49,29 @@ describe('ChatPreviewComponent', () => {
     expect(component.file.url).toBe(TEST_URL);
   });
 
+  describe('previewUrl', () => {
+    it('should render the immediate preview URL when it is available', () => {
+      const directUrl = 'https://uploads.example.com/chat/image.png?token=direct';
+      component.file = {
+        type: 'image/png',
+        url: 'https://cdn.example.com/chat/image.png',
+        preview: directUrl,
+      };
+
+      fixture.detectChanges();
+
+      const image = fixture.nativeElement.querySelector('img') as HTMLImageElement;
+      expect(component.previewUrl).toBe(directUrl);
+      expect(image.src).toBe(directUrl);
+    });
+
+    it('should fall back to the canonical URL for sent attachments', () => {
+      component.file = { url: TEST_URL };
+
+      expect(component.previewUrl).toBe(TEST_URL);
+    });
+  });
+
   describe('download()', () => {
     it('should open and download from a URL', () => {
       spyOn(window, 'open');
