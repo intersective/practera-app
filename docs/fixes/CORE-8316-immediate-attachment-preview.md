@@ -48,13 +48,18 @@ selected attachment uses this fallback order only for its temporary preview:
 The message mutation continues to receive the canonical `url`; the direct URL
 must not replace the value persisted with the chat message.
 
+Both the inline composer thumbnail and the preview modal render the temporary
+`preview` URL. The modal download action continues to use the canonical `url`.
+
 ## Verification
 
 Automated coverage sends an attachment with an unsigned uploader URL while the
 mocked message API returns a signed URL. It verifies that the Pusher event uses
 the API-returned file and never the uploader object. Separate coverage verifies
 that a selected attachment previews `directUrl` while retaining the canonical
-URL for the outgoing message.
+URL for the outgoing message. The preview modal coverage also verifies that its
+rendered media uses the immediate preview URL and falls back to the canonical
+URL for attachments that have already been sent.
 
 For staging verification, keep two users in the same direct-message channel,
 send an image from one browser, and open it immediately in the receiving
