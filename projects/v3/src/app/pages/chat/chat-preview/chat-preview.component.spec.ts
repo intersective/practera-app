@@ -73,13 +73,23 @@ describe('ChatPreviewComponent', () => {
   });
 
   describe('download()', () => {
-    it('should open and download from a URL', () => {
+    it('should open the immediate preview URL when it is available', () => {
       spyOn(window, 'open');
       component.file = {
-        url: TEST_URL
+        url: TEST_URL,
+        preview: 'https://uploads.example.com/chat/image.png?token=direct',
       };
 
       component.download();
+      expect(window.open).toHaveBeenCalledWith(component.file.preview, '_system');
+    });
+
+    it('should fall back to the canonical URL for sent attachments', () => {
+      spyOn(window, 'open');
+      component.file = { url: TEST_URL };
+
+      component.download();
+
       expect(window.open).toHaveBeenCalledWith(TEST_URL, '_system');
     });
 
@@ -89,12 +99,15 @@ describe('ChatPreviewComponent', () => {
         code: 'Enter',
         preventDefault: jasmine.createSpy('preventDefault'),
       } as any;
-      component.file = { url: TEST_URL };
+      component.file = {
+        url: TEST_URL,
+        preview: 'https://uploads.example.com/chat/image.png?token=direct',
+      };
 
       component.download(keyboardEvent);
 
       expect(keyboardEvent.preventDefault).toHaveBeenCalled();
-      expect(window.open).toHaveBeenCalledWith(TEST_URL, '_system');
+      expect(window.open).toHaveBeenCalledWith(component.file.preview, '_system');
     });
 
     it('should ignore unsupported keyboard key in download', () => {
