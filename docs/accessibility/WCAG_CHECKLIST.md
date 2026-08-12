@@ -123,8 +123,11 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] **COMPLETED**: Added CSS to prevent focus obscuring (scroll-margin: 4px on focus-visible elements)
 - [x] Sticky headers/footers have proper z-index (ion-header and ion-footer set to z-index: 1000)
 - [x] Modals/overlays configured with backdrop opacity (ion-modal has --backdrop-opacity: 0.4)
+- [x] **COMPLETED**: Added a keyboard-accessible custom accessWidget trigger to the personalised header on non-local hosts
 - [x] **COMPLETED**: Reserved production-only inline space in the chat action row so accessWidget's floating trigger cannot obscure Attach or Send
-- [ ] **RETEST ON DEPLOYED HOST**: Verify accessWidget remains available and the chat controls remain unobscured at desktop, tablet, and mobile viewports
+- [ ] **VENDOR CONFIGURATION**: After the custom trigger is deployed and verified, publish **Hide Trigger** for the staging and production licenses in the accessiBe portal
+- [ ] **RETEST ON DEPLOYED HOST**: Verify the custom trigger opens accessWidget and the chat controls remain unobscured at desktop, tablet, and mobile viewports
+- [ ] **FOLLOW-UP AFTER PRODUCTION VERIFICATION**: Remove the 64px/88px composer fallback and restore the mobile trigger offset from 88 to 10
 
 #### 2.4.13 Focus Appearance (Minimum) (Level AA) - NEW in 2.2
 - [x] Focus indicators have at least 2px outline (implemented in global.scss)
@@ -396,7 +399,13 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 7. Test with keyboard: Tab to element, tooltip should appear; ESC should dismiss it
 
 #### 5. Focus Not Obscured (WCAG 2.4.11)
-**Fixed in:** `global.scss`, `styles.scss`, and `index.html`
+**Fixed in:** `global.scss`, `styles.scss`, `personalised-header.component.html`, and `index.html`
+
+**accessWidget integration contract:**
+- `body.accessibility-widget-enabled` exposes the non-local custom trigger and temporary Messages fallback; script or initialization failure must remove the class
+- The header button must retain `data-acsb-custom-trigger="true"` so it opens accessWidget
+- Keep `hideTrigger: true` in code and publish **Hide Trigger** in the accessiBe portal after the header control is deployed and verified
+- Vendor references: [custom trigger setup](https://support.accessibe.com/hc/en-us/articles/25108229942802-How-to-create-a-custom-button-or-link-that-opens-the-accessWidget-interface) and [manual configuration](https://support.accessibe.com/hc/en-us/articles/28533073312274-How-to-customize-the-widget-manually-using-config-json)
 
 **Retest Instructions:**
 1. Navigate to any page with sticky header/footer
@@ -406,10 +415,14 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 5. Open DevTools and check computed styles on focused element:
    - `scroll-margin: 4px` should be present
    - `z-index` on headers/footers should be 1000
-6. On a deployed non-local host, verify accessWidget's floating trigger remains visible and opens the widget
-7. Navigate to Messages and select a writable chat room
-8. **VERIFY**: Attach and Send remain visible and clickable at 2048x1048, 1366x768, 1024x768, and 390x844
-9. **VERIFY**: The floating trigger does not obscure the chat action row
+6. Deploy the application code before publishing **Hide Trigger** in the accessiBe portal so an accessibility entry point remains available throughout rollout
+7. On a deployed non-local host, Tab to the header button labelled "Open accessibility options"
+8. **VERIFY**: Mouse, Enter, and Space open accessWidget; after the portal setting is published, only the header trigger remains
+9. **VERIFY**: The header remains usable with support shown/hidden, notification badges, both avatar variants, and on Experiences pages
+10. Navigate to Messages and select a writable chat room
+11. **VERIFY**: Attach and Send remain visible and clickable at 2048x1048, 1366x768, 1024x768, and 390x844
+12. **VERIFY**: Before fallback cleanup, any vendor-overridden floating trigger does not obscure the chat action row
+13. Block the accessWidget script request and **VERIFY** that the body class and non-functional header trigger are removed
 
 #### 6. Text Spacing Support (WCAG 1.4.12)
 **Fixed in:** `global.scss`
