@@ -29,8 +29,8 @@
 
 <ion-content text-center>
   <div class="wrapper">
-    <ng-container *ngIf="file?.type.includes('image')">
-      <img [src]="file.url" alt="uploaded attachment preview" i18n-alt>
+    <ng-container *ngIf="file?.type?.includes('image')">
+      <img [src]="previewUrl" alt="uploaded attachment preview" i18n-alt>
     </ng-container>
 
     <ng-container *ngIf="isBrowserSupportedVideo()">
@@ -40,7 +40,7 @@
         controlsList="nodownload"
         preload="metadata"
         playsinline
-        [src]="file.url"
+        [src]="previewUrl"
         (error)="handleVideoError($event)"
       >
         <p i18n="video not supported message">

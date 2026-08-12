@@ -16,6 +16,10 @@ export class ChatPreviewComponent {
     public sanitizer: DomSanitizer
   ) {}
 
+  get previewUrl(): string {
+    return this.file?.preview || this.file?.url;
+  }
+
   download(keyboardEvent?: KeyboardEvent) {
     if (keyboardEvent && (keyboardEvent?.code === 'Space' || keyboardEvent?.code === 'Enter')) {
       keyboardEvent.preventDefault();
