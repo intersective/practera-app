@@ -32,6 +32,7 @@ This is practera documentation with more informations.
 - [Slider Rating Implementation](./features/slider-rating-implementation.md)
 
 ### Fixes
+- [CORE-8316 Immediate Message Attachment Preview](./fixes/CORE-8316-immediate-attachment-preview.md)
 - [CORE-7942 Whitespace Fix](./fixes/CORE-7942-whitespace-fix.md)
 - [CORE-8002 Pulse Check Workflow](./fixes/CORE-8002-pulsecheck-workflow.md)
 - [CORE-8166/8167 Pagination Answer Persistence](./fixes/CORE-8166-8167-pagination-answer-persistence.md)
