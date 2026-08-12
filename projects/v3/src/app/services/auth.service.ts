@@ -45,6 +45,12 @@ interface ProfileAvatar {
   size: number;
 }
 
+interface UpdateUserProfileResponse {
+  data?: {
+    updateUserProfile?: Response;
+  };
+}
+
 interface RegisterData {
   password?: string;
   user_id: number;
@@ -669,8 +675,8 @@ export class AuthService {
    *
    * @return  {}          [return description]
    */
-  updateUserProfile(avatar: ProfileAvatar): Observable<Response> {
-    return this.apolloService.graphQLFetch(`
+  updateUserProfile(avatar: ProfileAvatar): Observable<UpdateUserProfileResponse> {
+    return this.apolloService.graphQLMutate(`
       mutation updateUserProfile($avatar: FileInput) {
         updateUserProfile(avatar: $avatar) {
           success
@@ -678,9 +684,7 @@ export class AuthService {
         }
       }
     `, {
-      variables: {
-        avatar
-      }
+      avatar
     });
   }
 }

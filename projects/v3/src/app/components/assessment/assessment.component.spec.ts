@@ -1227,6 +1227,20 @@ describe('AssessmentComponent', () => {
   });
 
   describe('continueToNextTask()', () => {
+    it('should enable loading-on-click only for submit actions', () => {
+      component.doAssessment = true;
+      component.isPendingReview = false;
+      expect(component.showSubmitLoadingOnClick).toBeTrue();
+
+      component.doAssessment = false;
+      component.isPendingReview = true;
+      expect(component.showSubmitLoadingOnClick).toBeTrue();
+
+      component.isPendingReview = false;
+      component.submission = { ...mockSubmission, status: 'done' } as any;
+      expect(component.showSubmitLoadingOnClick).toBeFalse();
+    });
+
     it('should submit assessment', async () => {
       component.doAssessment = true;
       expect(component.btnText).toEqual('submit answers');
@@ -1658,6 +1672,44 @@ describe('AssessmentComponent', () => {
     });
 
     describe('ngOnChanges() submitting flag preservation', () => {
+      it('should keep the review button disabled when an in-progress review is refetched during submit', () => {
+        component.action = 'review';
+        component.assessment = { ...mockAssessment, type: 'moderated' } as any;
+        component.submission = { ...mockSubmission, status: 'pending review' } as any;
+        component.review = { ...mockReview, status: 'in progress' } as any;
+        component['submitting'] = true;
+        component.btnDisabled$.next(true);
+
+        component.ngOnChanges({
+          submission: {
+            previousValue: component.submission,
+            currentValue: component.submission,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+          review: {
+            previousValue: component.review,
+            currentValue: component.review,
+            firstChange: false,
+            isFirstChange: () => false,
+          },
+        } as any);
+
+        expect(component['submitting']).toBeTrue();
+        expect(component.btnDisabled$.getValue()).toBeTrue();
+      });
+
+      it('should enable the review button when an in-progress review loads outside submission', () => {
+        component.isPendingReview = true;
+        component.review = { ...mockReview, status: 'in progress' } as any;
+        component['submitting'] = false;
+        component.btnDisabled$.next(true);
+
+        component['_handleReviewData']();
+
+        expect(component.btnDisabled$.getValue()).toBeFalse();
+      });
+
       it('should preserve submitting=true when same submission is refetched during submit', () => {
         // simulate initial state: user clicked submit
         component.ngOnChanges({

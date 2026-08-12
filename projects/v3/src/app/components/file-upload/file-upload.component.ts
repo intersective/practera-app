@@ -1,4 +1,9 @@
-import { UppyUploaderService, ALLOWED_FILE_TYPES } from './../uppy-uploader/uppy-uploader.service';
+import {
+  UppyUploaderService,
+  ALLOWED_FILE_TYPES,
+  TusUploadResponse,
+  UppyUploadSource,
+} from './../uppy-uploader/uppy-uploader.service';
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
@@ -41,7 +46,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // Uppy UI
   uppyProps = UPPY_PROPS;
 
-  @Input() source!: "chat" | "profile" | "assessment" | "any" | "video" | "document" | "image";
+  @Input() source!: UppyUploadSource;
   @Input() submitActions$: Subject<SubmitActions>;
 
   @Input() videoOnly?: boolean;
@@ -75,12 +80,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   uploadedFile: TusFileResponse;
   fileTypes = '';
-  tusResponse: {
-    path: string;
-    bucket: string;
-    cdnUrl: string;
-    directUrl: string;
-  };
+  tusResponse: TusUploadResponse;
 
   // the value of answer
   innerValue: any;
@@ -137,7 +137,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   onAfterResponse(req: any, res: any): void {
     // eslint-disable-next-line no-console
     console.log('onAfterResponse', req, res);
-    this.tusResponse = JSON.parse(res.getBody());
+    this.tusResponse = this.uppyUploaderService.parseTusUploadResponse(res.getBody());
   }
 
   initializeEventHandlers(uppy) {

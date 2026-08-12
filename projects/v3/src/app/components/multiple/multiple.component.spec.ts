@@ -178,6 +178,94 @@ describe('MultipleComponent', () => {
       expect(fixture.nativeElement.textContent).not.toContain('choice1');
       expect(fixture.nativeElement.textContent).not.toContain('choice3');
     });
+
+    it('should show every reviewer-only choice with its reviewer selection state to the learner', () => {
+      component.question = {
+        reviewerOnly: true,
+        canAnswer: false,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: ['reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: [1, 3] };
+      component.review = { answer: [2] };
+
+      fixture.detectChanges();
+
+      const items = fixture.nativeElement.querySelectorAll('ion-list ion-item');
+      const selectedStatuses = fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected');
+      const notSelectedStatuses = fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected');
+
+      expect(component.isReviewerOnlyChoiceFeedback).toBeTrue();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2, 3]);
+      expect(items.length).toBe(3);
+      expect(selectedStatuses.length).toBe(1);
+      expect(selectedStatuses[0].querySelector('ion-icon').getAttribute('name')).toBe('checkmark');
+      expect(selectedStatuses[0].querySelector('.reviewer-choice-status-text').textContent.trim()).toBe('Selected');
+      expect(selectedStatuses[0].textContent).toContain('Selected by reviewer');
+      expect(notSelectedStatuses.length).toBe(2);
+      expect(Array.from(notSelectedStatuses).every((status: Element) => status.querySelector('ion-icon') === null)).toBeTrue();
+      expect(Array.from(notSelectedStatuses).every((status: Element) => status.querySelector('.reviewer-choice-status-text').textContent.trim() === 'Not selected')).toBeTrue();
+      expect(Array.from(notSelectedStatuses).every((status: Element) => status.textContent.includes('Not selected by reviewer'))).toBeTrue();
+      expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
+    });
+
+    it('should show every reviewer-only choice as not selected when the review answer is empty', () => {
+      component.question = {
+        reviewerOnly: true,
+        canAnswer: false,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' }
+        ],
+        audience: ['reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = {};
+      component.review = { answer: [] };
+
+      fixture.detectChanges();
+
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2]);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected').length).toBe(0);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected').length).toBe(2);
+    });
+
+    it('should show every reviewer-only choice with its selection state in a completed reviewer view', () => {
+      component.question = {
+        reviewerOnly: true,
+        canAnswer: true,
+        choices: [
+          { id: 1, name: 'choice1' },
+          { id: 2, name: 'choice2' },
+          { id: 3, name: 'choice3' }
+        ],
+        audience: ['reviewer']
+      };
+      component.submissionStatus = 'feedback available';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = {};
+      component.review = { answer: [2] };
+
+      fixture.detectChanges();
+
+      expect(component.isReviewerOnlyChoiceFeedback).toBeTrue();
+      expect(component.displayChoices.map(choice => choice.id)).toEqual([1, 2, 3]);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-selected').length).toBe(1);
+      expect(fixture.nativeElement.querySelectorAll('.reviewer-choice-status-not-selected').length).toBe(2);
+      expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
+    });
   });
 
   it('when testing writeValue(), it should pass data correctly', () => {

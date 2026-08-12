@@ -4,16 +4,42 @@
     <ng-container *ngFor="let choice of displayChoices; let i = index">
       <ion-item lines="none"
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
-        <ion-label class="ion-text-wrap body-2 gray-3">
-          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name | detectLanguage"></div>
-          <ion-chip i18n
-            class="label orange"
-            *ngIf="submission?.answer?.includes(choice.id)"
-          >Learner's Answer</ion-chip>
-          <ion-chip i18n
-            class="label yellow black"
-            *ngIf="review?.answer?.includes(choice.id)"
-          >Reviewer's Answer</ion-chip>
+        <ion-label class="ion-text-wrap body-2 gray-3"
+          [class.reviewer-feedback-choice]="isReviewerOnlyChoiceFeedback">
+          <div [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
+            [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}"
+            [innerHTML]="choice.name | detectLanguage"></div>
+          <ng-container *ngIf="isReviewerOnlyChoiceFeedback; else answerLabels">
+            <span *ngIf="isReviewChoiceSelected(choice.id); else notSelectedByReviewer"
+              class="reviewer-choice-status reviewer-choice-status-selected">
+              <ion-icon name="checkmark"
+                aria-hidden="true"></ion-icon>
+              <span class="reviewer-choice-status-text"
+                aria-hidden="true"
+                i18n>Selected</span>
+              <span class="for-accessibility"
+                i18n>Selected by reviewer</span>
+            </span>
+            <ng-template #notSelectedByReviewer>
+              <span class="reviewer-choice-status reviewer-choice-status-not-selected">
+                <span class="reviewer-choice-status-text"
+                  aria-hidden="true"
+                  i18n>Not selected</span>
+                <span class="for-accessibility"
+                  i18n>Not selected by reviewer</span>
+              </span>
+            </ng-template>
+          </ng-container>
+          <ng-template #answerLabels>
+            <ion-chip i18n
+              class="label orange"
+              *ngIf="submission?.answer?.includes(choice.id)"
+            >Learner's Answer</ion-chip>
+            <ion-chip i18n
+              class="label yellow black"
+              *ngIf="review?.answer?.includes(choice.id)"
+            >Reviewer's Answer</ion-chip>
+          </ng-template>
         </ion-label>
       </ion-item>
       <ng-container *ngIf="choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)">

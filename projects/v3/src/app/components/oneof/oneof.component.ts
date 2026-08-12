@@ -210,8 +210,14 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get isReviewerOnlyChoiceFeedback(): boolean {
+    return this.isDisplayOnly
+      && this.question?.reviewerOnly === true
+      && this.submissionStatus === 'feedback available';
+  }
+
   get displayChoices(): Array<any> {
-    if (!this.isDisplayOnly) {
+    if (!this.isDisplayOnly || this.isReviewerOnlyChoiceFeedback) {
       return this.question?.choices || [];
     }
 
@@ -228,6 +234,10 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     }
 
     return (this.question?.choices || []).filter(choice => selectedIds.has(choice.id));
+  }
+
+  isReviewChoiceSelected(choiceId: string | number): boolean {
+    return this.review?.answer === choiceId;
   }
 
   // innerHTML text toggle
