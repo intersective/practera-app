@@ -616,7 +616,7 @@ describe('PusherService', async () => {
       expect(pusher.connect).toHaveBeenCalledTimes(1);
     }));
 
-    it('should disconnect before removing a pending v4 channel', () => {
+    it('should disconnect before removing a pending Pusher channel', () => {
       const connection = { state: 'connected' };
       const subscription: any = {
         subscriptionPending: true,

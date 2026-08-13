@@ -13,6 +13,7 @@
 - A notification refresh failure must not undo a successful experience switch. The new experience opens with an empty notification state rather than exposing notifications from the previous project.
 - Responses from requests started under a previous project are ignored if they arrive after the active project changes.
 - Pusher listeners are also experience-scoped. The application reuses one Pusher client, but disconnects its socket briefly on a scope change so pending private channels can be removed safely before reconnecting with the new channel set.
+- The `login-refactor` baseline uses Pusher 8 with its bundled typings. Its pending-subscription behavior still requires the disconnect-before-removal sequence described below.
 
 ## Refresh entry points
 
@@ -22,7 +23,7 @@
 - `V3Page` also initializes web services as a fallback for authenticated login paths. App startup covers restored sessions, and direct login waits for initialization before navigating to deep links outside v3.
 - Pusher initialization is single-flight. Concurrent entry points share one operation, and a scope that changes during that operation is reconciled before callers are released.
 - Notification and chat discovery use independent generations. Only the latest response for the active scope may change listeners, preventing both previous-experience and same-experience request races.
-- A valid empty channel response removes that listener type. Pusher v4 leaves authorization failures in a pending state, so reconciliation disconnects before removing a pending channel; this ensures the channel is removed from Pusher's internal registry and cannot return on a later reconnect. A discovery failure preserves the last valid same-scope set, while a scope change remains empty because its previous listeners were removed before discovery.
+- A valid empty channel response removes that listener type. Pusher leaves authorization failures in a pending state, so reconciliation disconnects before removing a pending channel; this ensures the channel is removed from Pusher's internal registry and cannot return on a later reconnect. A discovery failure preserves the last valid same-scope set, while a scope change remains empty because its previous listeners were removed before discovery.
 - Pusher authorization headers are synchronized from user storage before channel subscription and connection retries. API-key rotation therefore does not require constructing another Pusher client.
 - Private-channel subscription errors trigger one bounded background retry. Same-scope discovery does not cancel an outstanding retry, and simultaneous notification/chat failures are batched into one socket reconnect. Repeated failure is logged and never blocks navigation.
 - Event callbacks capture their subscription scope and discard events after that scope becomes inactive.
@@ -38,7 +39,6 @@ Both notification-refresh entry points use `NotificationsService.refreshNotifica
 
 ## Deferred improvements
 
-- Upgrade the legacy Pusher client and separate typings in a dedicated compatibility change.
 - Replace the string-keyed application event bus with typed real-time events.
 - Add structured production telemetry for connection state, authorization errors, retries, and notification refresh failures.
 - Revisit persistent capped retry backoff only if production telemetry shows the bounded retry is insufficient.

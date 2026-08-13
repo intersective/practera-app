@@ -506,18 +506,18 @@ export class PusherService {
   }
 
   /**
-   * The Pusher v4.4 client leaves a channel pending after an authorization
+   * The Pusher client leaves a channel pending after an authorization
    * error. Calling unsubscribe in that state only marks it cancelled and keeps
    * it in Pusher's registry, where a later reconnect can revive it. Disconnect
-   * first so v4 resets the pending flag and unsubscribe removes it exactly.
+   * first so the client resets the pending flag and unsubscribe removes it exactly.
    */
   private disconnectForPendingChannelRemoval(channels: PusherChannel[]): boolean {
     const hasPendingChannel = channels.some(
       channel => channel.subscription?.subscriptionPending
     );
-    const shouldReconnect = !!this.pusher
-      && this.pusher.connection.state !== 'disconnected'
-      && hasPendingChannel;
+    const shouldReconnect = hasPendingChannel
+      && !!this.pusher
+      && this.pusher.connection.state !== 'disconnected';
 
     if (shouldReconnect) {
       this.disconnect();
