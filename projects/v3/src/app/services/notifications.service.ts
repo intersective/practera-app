@@ -8,10 +8,10 @@ import { Achievement, AchievementService } from './achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from '../components/review-rating/review-rating.component';
 import { LockTeamAssessmentPopUpComponent } from '../components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component';
-import { firstValueFrom, Observable, of, Subject } from 'rxjs';
+import { defer, firstValueFrom, Observable, of, Subject, throwError } from 'rxjs';
 import { RequestService } from 'request';
 import { BrowserStorageService } from './storage.service';
-import { map, shareReplay } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap } from 'rxjs/operators';
 import { ApolloService } from './apollo.service';
 import { EventService } from './event.service';
 import { NetworkService } from './network.service';
@@ -132,6 +132,7 @@ export class NotificationsService {
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
 
   private notifications: TodoItem[] = [];
+  private notificationsProjectId: number | null = null;
 
   private connection = {
     informed: false,
@@ -191,6 +192,44 @@ export class NotificationsService {
   addNewNotification(newNotification): void {
     this.notifications = this.notifications.concat(newNotification);
     this._notification$.next(this.notifications);
+  }
+
+  /**
+   * Refresh all notifications for the project in the current user context.
+   * Generic todo items must load before chat so the chat notification can be
+   * appended to the freshly loaded list.
+   */
+  refreshNotifications(): Observable<TodoItem[]> {
+    return defer(() => {
+      const projectId = this.storage.getUser()?.projectId ?? null;
+      const projectChanged = projectId !== this.notificationsProjectId;
+
+      if (projectChanged) {
+        this.notificationsProjectId = projectId;
+        this.notifications = [];
+        this._notification$.next([]);
+        this._eventReminder$.next({});
+      }
+
+      return this.getTodoItems().pipe(
+        switchMap(() => this.getChatMessage()),
+        map(() => [...this.notifications]),
+        catchError(err => {
+          // A partially completed first load for a new project must not leave
+          // an ambiguous list. Same-project refresh failures retain the last
+          // valid state, while project switches remain explicitly empty.
+          if (
+            projectChanged
+            && (this.storage.getUser()?.projectId ?? null) === projectId
+          ) {
+            this.notifications = [];
+            this._notification$.next([]);
+            this._eventReminder$.next({});
+          }
+          return throwError(() => err);
+        }),
+      );
+    });
   }
 
   /**
@@ -516,14 +555,20 @@ export class NotificationsService {
   private currentTodoItems: {id: number, identifier: string}[] = [];
 
   getTodoItems(): Observable<any> {
+    const projectId = this.storage.getUser()?.projectId ?? null;
+
     return this.request
       .get(api.get.todoItem, {
         params: {
-          project_id: this.storage.getUser().projectId,
+          project_id: projectId,
         },
       })
       .pipe(
         map((response) => {
+          if ((this.storage.getUser()?.projectId ?? null) !== projectId) {
+            return [];
+          }
+
           if (response.success && response.data) {
             const todoItems: TodoItem[] = response.data;
 
@@ -790,6 +835,8 @@ export class NotificationsService {
   }
 
   getChatMessage() {
+    const projectId = this.storage.getUser()?.projectId ?? null;
+
     return this.apolloService
       .graphQLFetch(
         `query getChannels {
@@ -800,6 +847,10 @@ export class NotificationsService {
       )
       .pipe(
         map((response) => {
+          if ((this.storage.getUser()?.projectId ?? null) !== projectId) {
+            return {};
+          }
+
           if (response.data) {
             const normalized = this._normaliseChatMessage(response.data);
             if (!this.utils.isEmpty(normalized)) {
