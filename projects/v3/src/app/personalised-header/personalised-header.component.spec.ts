@@ -80,9 +80,10 @@ describe('PersonalisedHeaderComponent', () => {
     const accessibilityButton: HTMLElement = fixture.nativeElement.querySelector('.accessibility-btn');
     const notificationButton: HTMLElement = fixture.nativeElement.querySelector('.notify-btn');
     const icon: HTMLElement = accessibilityButton.querySelector('ion-icon');
+    const nativeButton: HTMLButtonElement = accessibilityButton.shadowRoot.querySelector('button');
 
     expect(accessibilityButton).toBeTruthy();
-    expect(accessibilityButton.getAttribute('aria-label')).toBe('Open accessibility options');
+    expect(nativeButton.getAttribute('aria-label')).toBe('Open accessibility options');
     expect(accessibilityButton.getAttribute('data-acsb-custom-trigger')).toBe('true');
     expect(icon.getAttribute('name')).toBe('accessibility-outline');
     expect(accessibilityButton.compareDocumentPosition(notificationButton) & Node.DOCUMENT_POSITION_FOLLOWING)

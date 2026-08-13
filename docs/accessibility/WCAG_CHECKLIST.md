@@ -124,10 +124,10 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 - [x] Sticky headers/footers have proper z-index (ion-header and ion-footer set to z-index: 1000)
 - [x] Modals/overlays configured with backdrop opacity (ion-modal has --backdrop-opacity: 0.4)
 - [x] **COMPLETED**: Added a keyboard-accessible custom accessWidget trigger to the personalised header on non-local hosts
-- [x] **COMPLETED**: Reserved production-only inline space in the chat action row so accessWidget's floating trigger cannot obscure Attach or Send
-- [ ] **VENDOR CONFIGURATION**: After the custom trigger is deployed and verified, publish **Hide Trigger** for the staging and production licenses in the accessiBe portal
-- [ ] **RETEST ON DEPLOYED HOST**: Verify the custom trigger opens accessWidget and the chat controls remain unobscured at desktop, tablet, and mobile viewports
-- [ ] **FOLLOW-UP AFTER PRODUCTION VERIFICATION**: Remove the 64px/88px composer fallback and restore the mobile trigger offset from 88 to 10
+- [x] **STAGING VERIFIED (Aug 2026)**: The header trigger opens accessWidget and the accessiBe floating trigger is hidden after the coordinated staging rollout
+- [x] **FALLBACK CLEANUP**: Removed the temporary 64px/88px Messages composer spacing and restored the mobile vendor trigger offset from 88 to 10
+- [ ] **PRODUCTION ROLLOUT**: Publish **Hide Trigger** for the production license and verify the header trigger before releasing the cleanup
+- [ ] **PRODUCTION RETEST**: Verify the header control and unobscured chat controls at desktop, tablet, and mobile viewports
 
 #### 2.4.13 Focus Appearance (Minimum) (Level AA) - NEW in 2.2
 - [x] Focus indicators have at least 2px outline (implemented in global.scss)
@@ -402,9 +402,10 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 **Fixed in:** `global.scss`, `styles.scss`, `personalised-header.component.html`, and `index.html`
 
 **accessWidget integration contract:**
-- `body.accessibility-widget-enabled` exposes the non-local custom trigger and temporary Messages fallback; script or initialization failure must remove the class
+- `body.accessibility-widget-enabled` exposes the non-local custom trigger; script or initialization failure must remove the class
 - The header button must retain `data-acsb-custom-trigger="true"` so it opens accessWidget
-- Keep `hideTrigger: true` in code and publish **Hide Trigger** in the accessiBe portal after the header control is deployed and verified
+- Keep `hideTrigger: true` in code and publish **Hide Trigger** in each environment's accessiBe portal after the header control is deployed and verified
+- The temporary Messages composer spacing has been removed; the mobile vendor trigger offset is restored to 10 because the header is now the intended entry point
 - Vendor references: [custom trigger setup](https://support.accessibe.com/hc/en-us/articles/25108229942802-How-to-create-a-custom-button-or-link-that-opens-the-accessWidget-interface) and [manual configuration](https://support.accessibe.com/hc/en-us/articles/28533073312274-How-to-customize-the-widget-manually-using-config-json)
 
 **Retest Instructions:**
@@ -421,8 +422,9 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 9. **VERIFY**: The header remains usable with support shown/hidden, notification badges, both avatar variants, and on Experiences pages
 10. Navigate to Messages and select a writable chat room
 11. **VERIFY**: Attach and Send remain visible and clickable at 2048x1048, 1366x768, 1024x768, and 390x844
-12. **VERIFY**: Before fallback cleanup, any vendor-overridden floating trigger does not obscure the chat action row
-13. Block the accessWidget script request and **VERIFY** that the body class and non-functional header trigger are removed
+12. **VERIFY**: The composer has no unused inline-end gap after the temporary fallback removal
+13. **VERIFY**: No accessiBe floating trigger is present after the environment's **Hide Trigger** setting is published
+14. Block the accessWidget script request and **VERIFY** that the body class and non-functional header trigger are removed
 
 #### 6. Text Spacing Support (WCAG 1.4.12)
 **Fixed in:** `global.scss`
