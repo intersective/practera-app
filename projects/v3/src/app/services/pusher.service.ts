@@ -461,9 +461,9 @@ export class PusherService {
     const hasPendingChannel = channels.some(
       channel => channel.subscription?.subscriptionPending
     );
-    const shouldReconnect = !!this.pusher
-      && this.pusher.connection.state !== 'disconnected'
-      && hasPendingChannel;
+    const shouldReconnect = hasPendingChannel
+      && !!this.pusher
+      && this.pusher.connection.state !== 'disconnected';
 
     if (shouldReconnect) {
       this.disconnect();
