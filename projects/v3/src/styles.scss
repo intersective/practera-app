@@ -575,15 +575,3 @@ quill-editor .ql-toolbar.ql-snow {
 body:not(.accessibility-widget-enabled) app-personalised-header .accessibility-btn {
   display: none;
 }
-
-// Retain the temporary composer fallback until staging and production confirm
-// that the vendor trigger is hidden by both the portal and code configuration.
-body.accessibility-widget-enabled app-chat-room ion-row.action-buttons {
-  padding-inline-end: 64px;
-}
-
-@media (min-width: 768px) {
-  body.accessibility-widget-enabled app-chat-room ion-row.action-buttons {
-    padding-inline-end: 88px;
-  }
-}
