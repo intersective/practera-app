@@ -9,6 +9,7 @@ import { EventService } from './event.service';
 import { NotificationsService, TodoItem, api } from './notifications.service';
 import { BrowserStorageService } from './storage.service';
 import { UtilsService } from './utils.service';
+import { firstValueFrom, of, throwError } from 'rxjs';
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
@@ -153,6 +154,112 @@ describe('NotificationsService', () => {
           is_done: true
         }
       });
+    });
+  });
+
+  describe('refreshNotifications', () => {
+    let storageService: jasmine.SpyObj<BrowserStorageService>;
+
+    beforeEach(() => {
+      storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+    });
+
+    it('should clear project-scoped state and load todo items before chat', async () => {
+      const notificationEmissions: TodoItem[][] = [];
+      const reminderEmissions: any[] = [];
+      const callOrder: string[] = [];
+
+      service.notification$.subscribe(items => notificationEmissions.push(items));
+      service.eventReminder$.subscribe(reminder => reminderEmissions.push(reminder));
+      service.addNewNotification({ id: 1, name: 'Old notification' });
+      service['_eventReminder$'].next({ id: 'old-reminder' });
+      service['notificationsProjectId'] = 1;
+      storageService.getUser.and.returnValue({ projectId: 2 } as any);
+
+      spyOn(service, 'getTodoItems').and.callFake(() => {
+        callOrder.push('todo');
+        expect(notificationEmissions[notificationEmissions.length - 1]).toEqual([]);
+        return of([]);
+      });
+      spyOn(service, 'getChatMessage').and.callFake(() => {
+        callOrder.push('chat');
+        return of({});
+      });
+
+      await firstValueFrom(service.refreshNotifications());
+
+      expect(callOrder).toEqual(['todo', 'chat']);
+      expect(notificationEmissions[notificationEmissions.length - 1]).toEqual([]);
+      expect(reminderEmissions[reminderEmissions.length - 1]).toEqual({});
+    });
+
+    it('should return the combined todo and chat notification list', async () => {
+      const todoItem: TodoItem = { id: 2, type: 'review_submission' };
+      const chatItem: TodoItem = { id: 3, type: 'chat' };
+      storageService.getUser.and.returnValue({ projectId: 2 } as any);
+
+      spyOn(service, 'getTodoItems').and.callFake(() => {
+        service['notifications'] = [todoItem];
+        service['_notification$'].next([todoItem]);
+        return of([todoItem]);
+      });
+      spyOn(service, 'getChatMessage').and.callFake(() => {
+        service.addNewNotification(chatItem);
+        return of(chatItem);
+      });
+
+      const result = await firstValueFrom(service.refreshNotifications());
+
+      expect(result).toEqual([todoItem, chatItem]);
+    });
+
+    it('should refresh again when the project has not changed', async () => {
+      storageService.getUser.and.returnValue({ projectId: 4 } as any);
+      const getTodoItemsSpy = spyOn(service, 'getTodoItems').and.returnValue(of([]));
+      const getChatMessageSpy = spyOn(service, 'getChatMessage').and.returnValue(of({}));
+
+      await firstValueFrom(service.refreshNotifications());
+      await firstValueFrom(service.refreshNotifications());
+
+      expect(getTodoItemsSpy).toHaveBeenCalledTimes(2);
+      expect(getChatMessageSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should leave the new project empty when refresh fails', async () => {
+      const notificationEmissions: TodoItem[][] = [];
+      service.notification$.subscribe(items => notificationEmissions.push(items));
+      service.addNewNotification({ id: 1, name: 'Old notification' });
+      service['notificationsProjectId'] = 1;
+      storageService.getUser.and.returnValue({ projectId: 2 } as any);
+      spyOn(service, 'getTodoItems').and.returnValue(
+        throwError(() => new Error('Unable to refresh notifications'))
+      );
+      spyOn(service, 'getChatMessage');
+
+      await expectAsync(firstValueFrom(service.refreshNotifications())).toBeRejected();
+
+      expect(notificationEmissions[notificationEmissions.length - 1]).toEqual([]);
+      expect(service.getChatMessage).not.toHaveBeenCalled();
+    });
+
+    it('should discard a partial todo result when the new project chat refresh fails', async () => {
+      const notificationEmissions: TodoItem[][] = [];
+      const currentTodo: TodoItem = { id: 2, type: 'review_submission' };
+      service.notification$.subscribe(items => notificationEmissions.push(items));
+      service['notificationsProjectId'] = 1;
+      storageService.getUser.and.returnValue({ projectId: 2 } as any);
+      spyOn(service, 'getTodoItems').and.callFake(() => {
+        service['notifications'] = [currentTodo];
+        service['_notification$'].next([currentTodo]);
+        return of([currentTodo]);
+      });
+      spyOn(service, 'getChatMessage').and.returnValue(
+        throwError(() => new Error('Unable to refresh chat notifications'))
+      );
+
+      await expectAsync(firstValueFrom(service.refreshNotifications())).toBeRejected();
+
+      expect(notificationEmissions[notificationEmissions.length - 1]).toEqual([]);
     });
   });
 });
