@@ -118,28 +118,34 @@ describe('ProjectBriefModalComponent', () => {
       expect(chips.length).toBe(4);
     });
 
-    it('should use the primary brand color for section accents', () => {
-      component.projectBrief = {
-        industry: ['Health'],
-        technicalSkills: ['Python'],
-        professionalSkills: ['Leadership'],
-        deliverables: 'Prototype'
-      };
-      fixture.detectChanges();
-
-      const accentSelectors = [
+    it('should use the primary brand color for section header icons', () => {
+      const iconSelectors = [
         'ion-icon[name="document-text-outline"]',
         'ion-icon[name="business-outline"]',
         'ion-icon[name="code-slash-outline"]',
         'ion-icon[name="people-outline"]',
-        'ion-icon[name="checkbox-outline"]',
-        'ion-chip'
+        'ion-icon[name="checkbox-outline"]'
       ];
 
-      accentSelectors.forEach((selector) => {
-        fixture.nativeElement.querySelectorAll(selector).forEach((element: Element) => {
-          expect(element.getAttribute('color')).toBe('primary');
-        });
+      iconSelectors.forEach((selector) => {
+        const icon: Element = fixture.nativeElement.querySelector(selector);
+        expect(icon.getAttribute('color')).toBe('primary');
+      });
+    });
+
+    it('should use the dark color for project brief chips', () => {
+      component.projectBrief = {
+        industry: ['Health'],
+        technicalSkills: ['Python'],
+        professionalSkills: ['Leadership']
+      };
+      fixture.detectChanges();
+
+      const chips: NodeListOf<Element> = fixture.nativeElement.querySelectorAll('ion-chip');
+
+      expect(chips.length).toBe(3);
+      chips.forEach((chip) => {
+        expect(chip.getAttribute('color')).toBe('dark');
       });
     });
   });
