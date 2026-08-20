@@ -296,7 +296,7 @@ export class ExperienceService {
       timelineId: exp?.timelineId,
       activityCardImage: cardBackgroundImage, // default activity image
       activityCompleteMessage: exp?.activityCompleteMessage || null,
-      chatEnabled: exp?.chatEnable || true,
+      chatEnabled: exp?.chatEnable !== false,
       teamId: null,
       hasEvents: false,
       hasReviews: false,
