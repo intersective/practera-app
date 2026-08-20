@@ -121,6 +121,7 @@ const largeCircleDefaultConfig = {
     TrafficLightGroupComponent,
     UppyUploaderComponent,
     FileUploadComponent,
+    H5pPlayerComponent,
     LanguageDetectionPipe,
   ],
   exports: [
@@ -170,6 +171,7 @@ const largeCircleDefaultConfig = {
     TrafficLightGroupComponent,
     UppyUploaderComponent,
     FileUploadComponent,
+    H5pPlayerComponent,
     LanguageDetectionPipe,
   ],
   providers: [UppyUploaderService]
