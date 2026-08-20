@@ -57,6 +57,12 @@ const routes: Routes = [
       {
         path: 'jwt/:jwt',
         component: AuthJwtLoginComponent,
+      },
+      {
+        // Parameterless JWT login: token is read from sessionStorage.
+        // New magic-link redirects navigate here so the JWT never appears in the URL path.
+        path: 'jwt',
+        component: AuthJwtLoginComponent,
       }
     ]
   }
