@@ -269,6 +269,9 @@ export class ExperienceService {
   async switchProgram(authObj): Promise<any> {
     const exp = authObj?.experience;
     this.storage.set('experience', exp);
+    if (exp?.uuid) {
+      this.storage.setTabExperience(exp.uuid);
+    }
     const colors = {
       themeColor: exp?.color,
       primary: exp?.color,
@@ -358,6 +361,7 @@ export class ExperienceService {
     await firstValueFrom(this.authService.authenticate({
       experienceUuid: experience.uuid,
     }));
+    this.storage.setTabExperience(experience.uuid);
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data

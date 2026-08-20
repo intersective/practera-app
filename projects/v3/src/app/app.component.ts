@@ -122,6 +122,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     searchParams = new URLSearchParams(queryString);
 
+    if (searchParams.has('experienceUuid')) {
+      this.storage.setTabExperience(searchParams.get('experienceUuid'));
+    }
+
     if (searchParams.has("token") && !searchParams.has("do")) {
       const queries = this.utils.urlQueryToObject(queryString);
       return this.navigate([

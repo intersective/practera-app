@@ -143,6 +143,7 @@ export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
   private authCache: any;
   private authObservable$: Observable<AuthEndpoint>;
+  private lastKnownApikey: string | null = null;
 
   constructor(
     private demo: DemoService,
@@ -153,11 +154,46 @@ export class AuthService {
     private pusherService: PusherService,
     private apolloService: ApolloService,
     private unlockIndicatorService: UnlockIndicatorService,
-  ) { }
+  ) {
+    this.lastKnownApikey = this.storage.getUser()?.apikey || null;
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => this.handleCrossTabStorage(event));
+    }
+  }
+
+  private handleCrossTabStorage(event: StorageEvent): void {
+    if (event.key !== 'auth_token' && event.key !== 'me') {
+      return;
+    }
+
+    let newApikey: string | null = null;
+    if (event.key === 'auth_token') {
+      newApikey = event.newValue;
+    } else if (event.key === 'me' && event.newValue) {
+      try {
+        newApikey = JSON.parse(event.newValue)?.apikey || null;
+      } catch {
+        return;
+      }
+    }
+
+    if (newApikey && newApikey !== this.lastKnownApikey) {
+      this.lastKnownApikey = newApikey;
+      window.location.reload();
+    }
+  }
 
   private authCacheDuration = environment.authCacheDuration;
 
   authenticate(data?: AuthQuery): Observable<AuthEndpoint> {
+    const authQuery: AuthQuery = { ...(data || {}) };
+    if (!authQuery.experienceUuid) {
+      const tabExperience = this.storage.getTabExperience();
+      if (tabExperience) {
+        authQuery.experienceUuid = tabExperience;
+      }
+    }
+
     const currentTime = new Date().getTime();
     const lastFetchTime: number = +this.storage.get('lastAuthFetchTime');
     const authCache = this.authCache$.getValue() || this.storage.get('authCache');
@@ -166,14 +202,14 @@ export class AuthService {
     // - when forceRefresh is true (bypass cache)
     // - when experienceUuid is not null (required for switch experience)
     // - when authToken available (directLogin)
-    if (data?.forceRefresh) {
-      return this.fetchData(data);
+    if (authQuery?.forceRefresh) {
+      return this.fetchData(authQuery);
     }
 
-    if (!(data?.experienceUuid || data?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
+    if (!(authQuery?.experienceUuid || authQuery?.authToken) && lastFetchTime && (currentTime - lastFetchTime) < this.authCacheDuration && authCache) {
       return of(authCache);
     } else {
-      return this.fetchData(data);
+      return this.fetchData(authQuery);
     }
   }
 
@@ -318,8 +354,12 @@ export class AuthService {
     } = res.data.auth;
 
     this.storage.setUser({ apikey: data.apikey });
+    this.lastKnownApikey = data.apikey;
     this.storage.set('experience', data.experience);
     this.storage.set('isLoggedIn', true);
+    if (data.experience?.uuid) {
+      this.storage.setTabExperience(data.experience.uuid);
+    }
     return data;
   }
 

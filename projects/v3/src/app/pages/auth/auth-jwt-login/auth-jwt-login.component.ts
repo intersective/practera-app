@@ -197,6 +197,9 @@ export class AuthJwtLoginComponent implements OnInit {
           this.storage.setUser({ apikey: data.apikey });
           this.storage.set('experience', data.experience);
           this.storage.set('isLoggedIn', true);
+          if (data.experience?.uuid) {
+            this.storage.setTabExperience(data.experience.uuid);
+          }
 
           // Persist experience branding from GraphQL into config so that
           // the experiences page (and any refresh) has access to logo/color

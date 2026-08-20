@@ -308,4 +308,21 @@ export class BrowserStorageService {
 
     return result;
   }
+
+  private static TAB_EXPERIENCE_KEY = 'tabExperienceUuid';
+
+  /** Per-tab active experience UUID (isolated from other browser tabs). */
+  getTabExperience(): string | null {
+    if (typeof sessionStorage === 'undefined') {
+      return null;
+    }
+    return sessionStorage.getItem(BrowserStorageService.TAB_EXPERIENCE_KEY);
+  }
+
+  setTabExperience(uuid: string): void {
+    if (typeof sessionStorage === 'undefined' || !uuid) {
+      return;
+    }
+    sessionStorage.setItem(BrowserStorageService.TAB_EXPERIENCE_KEY, uuid);
+  }
 }
