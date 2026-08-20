@@ -16,7 +16,7 @@ export class FilePreviewService {
   ) {}
 
   // open a file preview modal for given file object
-  async preview(file: { url?: string; handle?: string; name?: string; size?: number; mimetype?: string }): Promise<any> {
+  async preview(file: { url?: string; handle?: string; name?: string; size?: number; mimetype?: string; type?: string }): Promise<any> {
     const fileUrl = file.url;
 
     if (!fileUrl) {
@@ -26,8 +26,13 @@ export class FilePreviewService {
       });
     }
 
-    // large application file warning using local size info
-    if (file.mimetype?.includes('application/') && file.size) {
+    const mime = file.mimetype || file.type || '';
+    const isOfficeDoc = mime.startsWith('application/vnd.openxmlformats-officedocument.');
+    const isImage = mime.startsWith('image/');
+    const isPdf = mime === 'application/pdf' || fileUrl.toLowerCase().endsWith('.pdf');
+
+    // large application file warning using local size info (skip for inline-previewable types)
+    if (!isImage && !isPdf && !isOfficeDoc && mime.includes('application/') && file.size) {
       const megabyte = file.size / 1000 / 1000;
       if (megabyte > 10) {
         return this.notificationsService.alert({
@@ -54,12 +59,17 @@ export class FilePreviewService {
   }
 
   // open preview modal with given url and optional file reference
-  async openModal(url: string, file?: any): Promise<void> {
+  async openModal(url: string, file?: { url?: string; name?: string; mimetype?: string; type?: string; size?: number }): Promise<void> {
     const modal = await this.modalController.create({
       component: FilePreviewComponent,
       componentProps: {
         url,
-        file: file || {},
+        file: {
+          ...(file || {}),
+          url: file?.url || url,
+          mimetype: file?.mimetype || file?.type,
+          type: file?.type || file?.mimetype,
+        },
       },
       cssClass: 'file-preview-modal',
     });

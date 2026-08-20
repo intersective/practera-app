@@ -60,7 +60,8 @@ export class FileDisplayComponent {
     }
 
     const mime = this.mimeType;
-    const previewable = this.isPreviewableMime(mime, url);
+    const previewable = this.isPreviewableMime(mime, url)
+      || mime.startsWith('application/vnd.openxmlformats-officedocument.');
 
     if (previewable) {
       return this.filePreviewService.openModal(url, {

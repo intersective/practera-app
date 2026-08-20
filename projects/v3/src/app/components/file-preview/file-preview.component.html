@@ -1,6 +1,6 @@
 <ion-header mode="ios" aria-label="file preview">
   <ion-toolbar>
-    @if (file.url) {
+    @if (file.url || url) {
       <ion-icon
         name="download-outline"
         (click)="download()"
@@ -30,6 +30,27 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="light" class="ion-text-center">
-  <iframe [src]="sanitizer.bypassSecurityTrustResourceUrl(url)" width="100%" height="100%"></iframe>
+<ion-content color="light" class="ion-text-center preview-content">
+  @switch (previewMode) {
+    @case ('image') {
+      <img [src]="url" [alt]="file.name || 'File preview'" class="preview-image" />
+    }
+    @case ('pdf') {
+      @if (safePreviewUrl) {
+        <iframe [src]="safePreviewUrl" width="100%" height="100%" title="PDF preview"></iframe>
+      }
+    }
+    @case ('office') {
+      @if (safePreviewUrl) {
+        <iframe [src]="safePreviewUrl" width="100%" height="100%" title="Document preview"></iframe>
+      }
+    }
+    @default {
+      <div class="download-fallback ion-padding">
+        <ion-icon name="document-outline" color="medium" aria-hidden="true"></ion-icon>
+        <p i18n>Download to view this file type.</p>
+        <ion-button (click)="download()" i18n>Download</ion-button>
+      </div>
+    }
+  }
 </ion-content>
