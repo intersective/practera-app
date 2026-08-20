@@ -7,7 +7,8 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { environment } from '@v3/environments/environment';
 import { FileInput, TusFileResponse } from '../types/assessment';
-import { ModalController } from '@ionic/angular';
+import { FilePreviewService } from '@v3/services/file-preview.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {
@@ -19,6 +20,8 @@ describe('FileDisplayComponent', () => {
   let component: FileDisplayComponent;
   let fixture: ComponentFixture<FileDisplayComponent>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
+  let filePreviewSpy: jasmine.SpyObj<FilePreviewService>;
+  let notificationsSpy: jasmine.SpyObj<NotificationsService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -31,11 +34,12 @@ describe('FileDisplayComponent', () => {
           useClass: TestUtils,
         },
         {
-          provide: ModalController,
-          useValue: jasmine.createSpyObj('ModalController', {
-            create: Promise.resolve({ present: jasmine.createSpy('present').and.returnValue(Promise.resolve()) }),
-            dismiss: Promise.resolve()
-          })
+          provide: FilePreviewService,
+          useValue: jasmine.createSpyObj('FilePreviewService', ['openModal']),
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', ['presentToast']),
         },
       ],
     })
@@ -46,28 +50,40 @@ describe('FileDisplayComponent', () => {
     fixture = TestBed.createComponent(FileDisplayComponent);
     component = fixture.debugElement.componentInstance;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    filePreviewSpy = TestBed.inject(FilePreviewService) as jasmine.SpyObj<FilePreviewService>;
+    notificationsSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
+    filePreviewSpy.openModal.and.returnValue(Promise.resolve());
+    notificationsSpy.presentToast.and.returnValue(Promise.resolve(undefined));
   });
 
   it('should create', () => {
     expect(component).toBeDefined();
   });
 
-  it('should preview file with modal', async () => {
-    const modalControllerSpy = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
-    await component.previewFile({
+  it('should open image preview modal via openFilePreview', async () => {
+    component.file = {
       bucket: 'test-bucket',
       path: 'test-path',
       name: 'test-file',
+      filename: 'test-file',
       url: 'DUMMY_URL',
       extension: 'jpg',
       type: 'image/jpeg',
-      size: 1000
-    });
-    expect(modalControllerSpy.create).toHaveBeenCalled();
+      mimetype: 'image/jpeg',
+      size: 1000,
+      directUrl: 'DUMMY_URL',
+      cdnUrl: 'DUMMY_URL',
+    };
+
+    await component.openFilePreview(new Event('click'));
+
+    expect(filePreviewSpy.openModal).toHaveBeenCalledWith('DUMMY_URL', jasmine.objectContaining({
+      name: 'test-file',
+      mimetype: 'image/jpeg',
+    }));
   });
 
-  it('should open application files in new window', async () => {
-    spyOn(window, 'open');
+  it('should open pdf preview modal via openFilePreview', async () => {
     component.file = {
       bucket: 'test-bucket',
       path: 'test-path',
@@ -81,16 +97,13 @@ describe('FileDisplayComponent', () => {
       directUrl: 'DUMMY_URL',
       cdnUrl: 'DUMMY_URL',
     };
-    await component.previewFile({
-      bucket: 'test-bucket',
-      path: 'test-path',
+
+    await component.openFilePreview(new Event('click'));
+
+    expect(filePreviewSpy.openModal).toHaveBeenCalledWith('DUMMY_URL', jasmine.objectContaining({
       name: 'test-file.pdf',
-      url: 'DUMMY_URL',
-      extension: 'pdf',
-      type: 'application/pdf',
-      size: 1000
-    });
-    expect(window.open).toHaveBeenCalledWith('DUMMY_URL', '_system');
+      mimetype: 'application/pdf',
+    }));
   });
 
   describe('UI logic', () => {

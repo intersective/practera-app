@@ -3484,4 +3484,41 @@ describe('AssessmentComponent', () => {
     }));
   });
 
+  describe('pending reviewer display', () => {
+    beforeEach(() => {
+      component.action = 'assessment';
+      mockQuestions.forEach(q => {
+        if (!component.questionsForm.get('q-' + q.id)) {
+          component.questionsForm.addControl('q-' + q.id, new FormControl(null));
+        }
+      });
+    });
+
+    it('should display reviewer name when pendingReviewerName is set', () => {
+      component.assessment = mockAssessment;
+      component.submission = {
+        ...mockSubmission,
+        status: 'pending review',
+        pendingReviewerName: 'Alice',
+      } as any;
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Your submission is being reviewed by Alice');
+    });
+
+    it('should display default waiting message when pendingReviewerName is null', () => {
+      component.assessment = mockAssessment;
+      component.submission = {
+        ...mockSubmission,
+        status: 'submitted',
+        pendingReviewerName: null,
+      } as any;
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Waiting for reviewer assignment.');
+    });
+  });
+
 });

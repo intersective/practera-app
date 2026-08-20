@@ -8,6 +8,7 @@ import { SettingsPage } from './settings.page';
 import { ModalController } from '@ionic/angular';
 import { UppyUploaderService } from '../../components/uppy-uploader/uppy-uploader.service';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
+import { RequestService } from 'request';
 
 describe('SettingsPage', () => {
   let component: SettingsPage;
@@ -18,6 +19,7 @@ describe('SettingsPage', () => {
   let notificationsServiceSpy: jasmine.SpyObj<NotificationsService>;
   let modalControllerSpy: jasmine.SpyObj<ModalController>;
   let uppyUploaderServiceSpy: jasmine.SpyObj<UppyUploaderService>;
+  let requestSpy: jasmine.SpyObj<RequestService>;
   let queryParams$: Subject<any>;
 
   const createComponent = () => {
@@ -39,6 +41,7 @@ describe('SettingsPage', () => {
     notificationsServiceSpy = jasmine.createSpyObj<NotificationsService>('NotificationsService', ['alert', 'modal', 'dismiss']);
     modalControllerSpy = jasmine.createSpyObj<ModalController>('ModalController', ['create', 'dismiss', 'getTop']);
     uppyUploaderServiceSpy = jasmine.createSpyObj<UppyUploaderService>('UppyUploaderService', ['open']);
+    requestSpy = jasmine.createSpyObj<RequestService>('RequestService', ['get']);
 
     authSpy.getMyInfo.and.returnValue(of({
       data: {
@@ -95,6 +98,7 @@ describe('SettingsPage', () => {
       uppyUploaderServiceSpy,
       { markForCheck: jasmine.createSpy('markForCheck') } as any,
       { run: jasmine.createSpy('ngZoneRun').and.callFake((fn: () => any) => fn()) } as any,
+      requestSpy,
       documentMock
     );
   };
@@ -321,5 +325,31 @@ describe('SettingsPage', () => {
 
     expect(nextSpy).toHaveBeenCalled();
     expect(completeSpy).toHaveBeenCalled();
+  });
+
+  describe('isAdminOrCoordinator', () => {
+    it('should return true for admin role', () => {
+      storageSpy.getUser.and.returnValue({ role: 'admin' } as any);
+
+      expect(component.isAdminOrCoordinator).toBeTrue();
+    });
+
+    it('should return true for coordinator role', () => {
+      storageSpy.getUser.and.returnValue({ role: 'coordinator' } as any);
+
+      expect(component.isAdminOrCoordinator).toBeTrue();
+    });
+
+    it('should return true for inst_admin role', () => {
+      storageSpy.getUser.and.returnValue({ role: 'inst_admin' } as any);
+
+      expect(component.isAdminOrCoordinator).toBeTrue();
+    });
+
+    it('should return false for participant role', () => {
+      storageSpy.getUser.and.returnValue({ role: 'participant' } as any);
+
+      expect(component.isAdminOrCoordinator).toBeFalse();
+    });
   });
 });
