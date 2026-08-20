@@ -1,0 +1,30 @@
+@if (hasTeam) {
+  <section class="team-roster" aria-label="My team" i18n-aria-label>
+    <h3 class="headline-4 team-roster-title" i18n>My Team</h3>
+
+    @if (loading) {
+      <ion-item lines="none">
+        <ion-skeleton-text animated style="width: 100%;"></ion-skeleton-text>
+      </ion-item>
+    } @else if (members.length === 0) {
+      <p class="body-3 grey-75 ion-padding-start" i18n>No team members found.</p>
+    } @else {
+      <ion-list lines="full" class="ion-no-margin">
+        @for (member of members; track member.id) {
+          <ion-item class="team-member-item">
+            <ion-avatar slot="start">
+              <img
+                [src]="member.avatar || 'https://my.practera.com/img/user-512.png'"
+                [alt]="member.name"
+              />
+            </ion-avatar>
+            <ion-label>
+              <h4 class="body-2">{{ member.name }}</h4>
+              <ion-badge color="light">{{ roleLabel(member.role) }}</ion-badge>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  </section>
+}

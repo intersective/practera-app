@@ -46,6 +46,7 @@ import { FilePopupComponent } from './file-popup/file-popup.component';
 import { SliderComponent } from './slider/slider.component';
 import { LanguageDetectionPipe } from '../pipes/language.pipe';
 import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
+import { TeamRosterComponent } from './team-roster/team-roster.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -113,6 +114,7 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     BottomActionBarComponent,
     SupportPopupComponent,
+    TeamRosterComponent,
     FallbackImageDirective,
     TrafficLightComponent,
     TrafficLightGroupComponent,
@@ -161,6 +163,7 @@ const largeCircleDefaultConfig = {
     BrandingLogoComponent,
     BottomActionBarComponent,
     SupportPopupComponent,
+    TeamRosterComponent,
     ToggleLabelDirective,
     TrafficLightComponent,
     TrafficLightGroupComponent,
