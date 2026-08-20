@@ -19,6 +19,32 @@
   <p class="body-2 grey-75">{{ savingMessage$ | async }}</p>
 </div>
 
+<ng-container *ngIf="action==='assessment' && (submission?.status === 'submitted' || submission?.status === 'pending review')">
+  <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal"
+    role="region"
+    aria-label="Review status"
+    i18n-aria-label>
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label color="primary" i18n>Review Status</ion-label>
+      </ion-item-divider>
+      <ion-item class="ion-no-padding">
+        <ion-grid class="ion-padding-horizontal">
+          <ion-row size="12" class="ion-justify-content-center ion-align-items-center">
+            <ion-col size="12" class="ion-align-self-center body-2">
+              @if (submission.pendingReviewerName) {
+                <span i18n>Your submission is being reviewed by {{ submission.pendingReviewerName }}</span>
+              } @else {
+                <span i18n>Waiting for reviewer assignment.</span>
+              }
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ng-container>
+
 <ng-container *ngIf="action==='assessment' && submission?.status === 'feedback available'">
   <ion-list class="ion-no-margin ion-no-padding ion-padding-horizontal"
     *ngIf="submission.reviewerName"

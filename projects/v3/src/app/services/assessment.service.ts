@@ -52,7 +52,7 @@ export interface Group {
   questions: Array<Question>;
 }
 
-export type SubmissionStatuses = 'in progress' | 'pending review' | 'published' | 'pending approval' | 'feedback available' | 'done';
+export type SubmissionStatuses = 'in progress' | 'submitted' | 'pending review' | 'published' | 'pending approval' | 'feedback available' | 'done';
 
 export interface Submission {
   id: number;
@@ -65,6 +65,7 @@ export interface Submission {
   completed?: boolean;
   submitterImage: string;
   reviewerName: string | void;
+  pendingReviewerName?: string | null;
 }
 
 export interface Answer {
@@ -147,7 +148,7 @@ export class AssessmentService {
             }
           }
           submissions(contextId:$contextId) {
-            id status completed modified locked
+            id status completed modified locked pendingReviewerName
             submitter {
               name image
               team {
@@ -377,6 +378,7 @@ export class AssessmentService {
       modified: firstSubmission.modified,
       isLocked: firstSubmission.locked,
       completed: firstSubmission.completed,
+      pendingReviewerName: firstSubmission.pendingReviewerName || null,
       reviewerName: firstSubmission.review
         ? this.checkReviewer(firstSubmission.review.reviewer)
         : null,

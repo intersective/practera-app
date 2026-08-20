@@ -1049,6 +1049,9 @@ Best regards`;
     if (this.submission?.status === 'pending review') {
       return $localize`pending review`;
     }
+    if (this.submission?.status === 'submitted') {
+      return $localize`submitted`;
+    }
     if (this.submission?.status === 'feedback available') {
       return $localize`feedback available`;
     }
