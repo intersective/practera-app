@@ -47,6 +47,7 @@ import { SliderComponent } from './slider/slider.component';
 import { LanguageDetectionPipe } from '../pipes/language.pipe';
 import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
 import { TeamRosterComponent } from './team-roster/team-roster.component';
+import { H5pPlayerComponent } from './h5p-player/h5p-player.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',

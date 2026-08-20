@@ -1,0 +1,12 @@
+<div class="h5p-wrapper">
+  @if (isLoading) {
+    <div class="h5p-loading">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading simulation...</p>
+    </div>
+  }
+  @if (error) {
+    <div class="h5p-error">{{ error }}</div>
+  }
+  <div #h5pContainer class="h5p-container" [class.h5p-hidden]="isLoading || error"></div>
+</div>
