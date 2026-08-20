@@ -135,7 +135,7 @@ export class SettingsPage implements OnInit, OnDestroy {
 
   get isAdminOrCoordinator(): boolean {
     const role = this.storage.getUser()?.role;
-    return role === 'admin' || role === 'coordinator';
+    return role === 'admin' || role === 'coordinator' || role === 'inst_admin';
   }
 
   async openAdminConsole(event): Promise<void> {
