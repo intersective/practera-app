@@ -440,7 +440,7 @@ export class ActivityDesktopPage {
     this.btnDisabled$.next(true);
     try {
       await firstValueFrom(this.topicService.updateSimulationProgress(task.id, 'done'));
-      return this.activityService.getActivity(
+      this.activityService.getActivity(
         this.activity.id,
         true,
         task,
