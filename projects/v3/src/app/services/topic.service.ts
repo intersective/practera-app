@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
 import { TopicAttentionMetrics } from '@v3/app/models/topic-attention.model';
+
+export interface H5pContent {
+  contentUrl: string;
+  librariesUrl: string;
+  frameJs: string;
+  frameCss: string;
+}
 
 export interface Topic {
   id: number;
@@ -19,6 +26,7 @@ export interface Topic {
     language?: string;
     status?: string;
   };
+  h5p?: H5pContent;
 }
 
 @Injectable({
@@ -60,6 +68,7 @@ export class TopicService {
           videolink
           files { name url }
           audio { link language status }
+          h5p { contentUrl librariesUrl frameJs frameCss }
         }
       }`,
       { variables: { id: resolvedTopicId } }
@@ -72,6 +81,50 @@ export class TopicService {
         return raw;
       })
     ).subscribe();
+  }
+
+  fetchSimulation(topicId: number): Observable<H5pContent | null> {
+    if (environment.demo) {
+      return of({
+        contentUrl: 'https://example.com/h5p/content/',
+        librariesUrl: 'https://example.com/h5p/libraries/',
+        frameJs: 'https://example.com/h5p/frame.bundle.js',
+        frameCss: 'https://example.com/h5p/frame.css',
+      });
+    }
+
+    return this.apolloService.graphQLFetch(
+      `query simulation($id: ID!) {
+        topic(id: $id) {
+          id
+          h5p { contentUrl librariesUrl frameJs frameCss }
+        }
+      }`,
+      { variables: { id: topicId } }
+    ).pipe(
+      map((response: any) => response?.data?.topic?.h5p ?? null)
+    );
+  }
+
+  updateSimulationProgress(id: number, state: string): Observable<any> {
+    if (environment.demo) {
+      // eslint-disable-next-line no-console
+      console.log('mark simulation as ', state);
+      return new Observable(observer => { observer.next({ success: true }); observer.complete(); });
+    }
+
+    return this.apolloService.graphQLMutate(
+      `mutation updateProgress($model: String!, $modelId: ID!, $state: String!) {
+        updateProgress(model: $model, modelId: $modelId, state: $state) {
+          success
+        }
+      }`,
+      {
+        model: 'simulation',
+        modelId: id,
+        state,
+      }
+    );
   }
 
   private _setTopic(raw: any) {
@@ -87,6 +140,7 @@ export class TopicService {
         language: raw.audio.language ?? null,
         status: raw.audio.status ?? undefined,
       } : undefined,
+      h5p: raw.h5p ?? undefined,
     };
     this._topic$.next(topic);
     return topic;

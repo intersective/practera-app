@@ -141,6 +141,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         return 'lock-closed';
       case 'Topic':
         return 'reader';
+      case 'Simulation':
+        return 'game-controller';
       case 'Assessment':
         return 'eye';
     }

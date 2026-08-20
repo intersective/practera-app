@@ -56,6 +56,7 @@ export class ActivityDesktopPage {
   tooltipVisible: boolean;
   tooltipStyle: { top: string; right: string };
   activityLockShown: boolean = false;
+  private h5pCompletedListener: ((event: Event) => void) | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -112,6 +113,11 @@ export class ActivityDesktopPage {
   }
 
   ionViewDidEnter() {
+    this.h5pCompletedListener = (event: Event) => {
+      void this.onH5pTaskCompleted(event as CustomEvent<{ taskId: number; contextId: number }>);
+    };
+    window.addEventListener('h5pTaskCompleted', this.h5pCompletedListener);
+
     // cleanup previous session
     this.componentCleanupService.triggerCleanup();
 
@@ -266,6 +272,10 @@ export class ActivityDesktopPage {
   }
 
   ionViewWillLeave() {
+    if (this.h5pCompletedListener) {
+      window.removeEventListener('h5pTaskCompleted', this.h5pCompletedListener);
+      this.h5pCompletedListener = null;
+    }
     this.topicService.clearTopic();
   }
 
@@ -378,6 +388,15 @@ export class ActivityDesktopPage {
         );
       }
 
+      if (task.type === 'Simulation' && !task.h5p) {
+        await firstValueFrom(
+          this.activityService.currentTask$.pipe(
+            filter(t => t != null && t.id === task.id && !!t.h5p),
+            first(),
+          )
+        );
+      }
+
       this.ngZone.run(() => { this.isLoadingTask = false; this.cdr.markForCheck(); });
     } catch (error) {
       this.ngZone.run(() => { this.isLoadingTask = false; this.cdr.markForCheck(); });
@@ -409,6 +428,32 @@ export class ActivityDesktopPage {
         this.btnDisabled$.next(false);
       }
     );
+  }
+
+  async onH5pTaskCompleted(event: CustomEvent<{ taskId: number; contextId: number }>): Promise<void> {
+    const task = this.currentTask;
+    if (!task || task.type !== 'Simulation' || task.id !== event.detail?.taskId || task.status === 'done') {
+      return;
+    }
+
+    this.loading = true;
+    this.btnDisabled$.next(true);
+    try {
+      await firstValueFrom(this.topicService.updateSimulationProgress(task.id, 'done'));
+      return this.activityService.getActivity(
+        this.activity.id,
+        true,
+        task,
+        () => {
+          this.loading = false;
+          this.btnDisabled$.next(false);
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    }
   }
 
   /**

@@ -13,6 +13,7 @@ import { AssessmentService } from './assessment.service';
 import { SharedService } from './shared.service';
 import { UnlockIndicatorService } from './unlock-indicator.service';
 import { UnlockConditionMeta } from './home.service';
+import { H5pContent } from './topic.service';
 
 export interface TaskBase {
   id: number;
@@ -63,6 +64,7 @@ export interface Task {
     image: string;
   };
   assessmentType?: string;
+  h5p?: H5pContent;
 }
 
 @Injectable({
@@ -225,6 +227,15 @@ export class ActivityService {
             },
             assessmentType: task.assessmentType
           };
+
+        case 'simulation':
+          return {
+            id: task.id,
+            name: task.name,
+            type: 'Simulation',
+            contextId: task.contextId,
+            status: task.status?.status,
+          };
         default:
           console.warn(`Unsupported model type ${task.type}`);
           return {
@@ -378,6 +389,8 @@ export class ActivityService {
    * - For task.type === 'Topic':
    *   - On mobile: navigates to the mobile topic route and returns the router navigation result.
    *   - On desktop: stores a last-visited URL and triggers loading of the topic via `topic.getTopic`.
+   * - For task.type === 'Simulation':
+   *   - On desktop: fetches H5P content URLs and attaches them to the current task.
    *
    * Notes:
    * - This method produces several side effects (navigation, storage updates, observable updates,
@@ -469,6 +482,19 @@ export class ActivityService {
           task.id
         ].join('/'));
         this.topic.getTopic(activityId, task.id);
+        break;
+
+      case 'Simulation':
+        if (this.utils.isMobile()) {
+          console.warn('Simulation tasks are not yet supported on mobile.');
+          return;
+        }
+        try {
+          const h5p = await firstValueFrom(this.topic.fetchSimulation(task.id));
+          this._currentTask$.next({ ...task, h5p });
+        } catch (error) {
+          throw new Error(error);
+        }
         break;
     }
   }

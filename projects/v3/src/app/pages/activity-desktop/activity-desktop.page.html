@@ -68,6 +68,15 @@
               id="task-content-topic"
             ></app-topic>
           }
+          @if (currentTask?.type === 'Simulation') {
+            <app-h5p-player
+              [h5p]="currentTask.h5p"
+              [taskId]="currentTask.id"
+              [contextId]="currentTask.contextId"
+              tabindex="0"
+              id="task-content-simulation"
+            ></app-h5p-player>
+          }
         }
       </ion-col>
     </ion-row>
