@@ -8,6 +8,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { AlertOptions, ModalController } from '@ionic/angular';
+import { RequestService } from 'request';
 
 import { environment } from '@v3/environments/environment';
 import { first, takeUntil } from 'rxjs/operators';
@@ -57,6 +58,7 @@ export class SettingsPage implements OnInit, OnDestroy {
     private uppyUploaderService: UppyUploaderService,
     private cdr: ChangeDetectorRef,
     private ngZone: NgZone,
+    private request: RequestService,
     @Inject(DOCUMENT) private document: Document,
   ) {
     this.window = this.document.defaultView;
@@ -129,6 +131,31 @@ export class SettingsPage implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
+  }
+
+  get isAdminOrCoordinator(): boolean {
+    const role = this.storage.getUser()?.role;
+    return role === 'admin' || role === 'coordinator';
+  }
+
+  async openAdminConsole(event): Promise<void> {
+    if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    try {
+      const response = await firstValueFrom(this.request.get('api/auth/admin_link.json'));
+      const url = response?.data?.url || response?.data?.link;
+      if (!url) {
+        throw new Error('Admin console link unavailable');
+      }
+      window.open(url, '_blank');
+    } catch {
+      await this.notificationsService.presentToast(
+        $localize`Unable to open Admin Console. Please try again later.`,
+        { color: 'danger' },
+      );
+    }
   }
 
   openLink(event) {

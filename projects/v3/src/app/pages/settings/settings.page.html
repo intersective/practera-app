@@ -84,6 +84,10 @@
 
       <ion-item detail="true" button (click)="openLink($event)" class="body-2 black" (keydown)="openLink($event)" i18n>Terms and conditions</ion-item>
 
+      @if (isAdminOrCoordinator) {
+        <ion-item detail="true" button (click)="openAdminConsole($event)" class="body-2 black" (keydown)="openAdminConsole($event)" i18n>Admin Console</ion-item>
+      }
+
       <div [class]="{'xc': !isMobile }">
         <ion-button i18n
           class="ion-padding-horizontal ion-text-center btn-logout"
