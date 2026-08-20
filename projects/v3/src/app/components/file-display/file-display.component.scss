@@ -41,11 +41,18 @@ ion-icon {
 
 }
 
-.file-name-container {
-  p {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+.file-name-label {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.file-row {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-within {
+    --background: var(--practera-light-grey-50);
   }
 }
 

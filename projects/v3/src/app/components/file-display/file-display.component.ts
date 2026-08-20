@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import { UtilsService } from '@v3/services/utils.service';
 import { FileInput, TusFileResponse } from '../types/assessment';
-import { FilePopupComponent } from '../file-popup/file-popup.component';
-import { ModalController } from '@ionic/angular';
+import { FilePreviewService } from '@v3/services/file-preview.service';
+import { NotificationsService } from '@v3/services/notifications.service';
 
 // backward-compatible file type that includes legacy property names
 interface DisplayableFile extends TusFileResponse {
@@ -36,44 +36,64 @@ export class FileDisplayComponent {
 
   constructor(
     private utils: UtilsService,
-    private modalController: ModalController,
+    private filePreviewService: FilePreviewService,
+    private notifications: NotificationsService,
   ) { }
 
-  async previewFile(file: FileInput, keyboardEvent?: KeyboardEvent) {
-    if (
-      keyboardEvent &&
-      (keyboardEvent?.code === "Space" || keyboardEvent?.code === "Enter")
-    ) {
-      keyboardEvent.preventDefault();
-    } else if (keyboardEvent) {
+  private get mimeType(): string {
+    return this.file?.type || this.file?.mimetype || '';
+  }
+
+  private get fileUrl(): string {
+    return (this.file as TusFileResponse)?.directUrl || this.file?.url || '';
+  }
+
+  async openFilePreview(event?: Event): Promise<void> {
+    if (event instanceof KeyboardEvent && event.code !== 'Space' && event.code !== 'Enter') {
+      return;
+    }
+    event?.stopPropagation?.();
+
+    const url = this.fileUrl;
+    if (!url) {
       return;
     }
 
-    // open file in new tab
-    if (this.file?.type?.includes('application')) {
-      return window.open(file.url, '_system');
+    const mime = this.mimeType;
+    const previewable = this.isPreviewableMime(mime, url);
+
+    if (previewable) {
+      return this.filePreviewService.openModal(url, {
+        url,
+        name: this.file?.name,
+        mimetype: mime,
+        type: mime,
+      });
     }
 
-    const modal = await this.modalController.create({
-      component: FilePopupComponent,
-      componentProps: {
-        file,
-      },
-    });
-    return await modal.present();
+    this.utils.downloadFile(url, this.file?.name);
+    return this.notifications.presentToast(
+      $localize`File downloaded — open with your preferred app`,
+      { color: 'success', duration: 3000 },
+    );
   }
 
+  onActionClick(event: Event, file: TusFileResponse, index: number): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.actionBtnClick(file, index);
+  }
 
   actionBtnClick(
     file: TusFileResponse,
     index: number
   ): void {
     switch (index) {
-      case 0:
-        // fallback for file URL (when value is loaded from API)
+      case 0: {
         const url = (file as TusFileResponse).directUrl || (file as FileInput).url;
         this.utils.downloadFile(url, file.name);
         return;
+      }
       case 1:
         this.removeUploadedFile(file);
         return;
@@ -95,5 +115,15 @@ export class FileDisplayComponent {
       icons.push('trash');
     }
     return icons;
+  }
+
+  private isPreviewableMime(mime: string, url: string): boolean {
+    if (mime.startsWith('image/')) {
+      return true;
+    }
+    if (mime === 'application/pdf' || url.toLowerCase().endsWith('.pdf')) {
+      return true;
+    }
+    return false;
   }
 }

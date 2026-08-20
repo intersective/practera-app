@@ -19,24 +19,66 @@
       @if (isFileComponent) {
         <ng-container *ngTemplateOutlet="fileDetails"></ng-container>
       } @else {
-        <app-list-item
-          [title]="file.name"
-          leadingIcon="document"
+        <ion-item
+          class="file-row"
           [lines]="lines"
-          [endingActionBtnIcons]="endingActionBtnIcons"
-          (actionBtnClick)="actionBtnClick(file, $event)"
-        ></app-list-item>
+          button
+          detail="false"
+          (click)="openFilePreview($event)"
+          (keydown.enter)="openFilePreview($event)"
+          (keydown.space)="openFilePreview($event); $event.preventDefault()"
+          [attr.aria-label]="'Open file ' + file.name"
+          tabindex="0"
+        >
+          <ion-icon name="document" slot="start" aria-hidden="true"></ion-icon>
+          <ion-label class="file-name-label">{{ file.name }}</ion-label>
+          @for (actionBtnIcon of endingActionBtnIcons; track actionBtnIcon; let i = $index) {
+            <ion-button
+              mode="ios"
+              fill="clear"
+              slot="end"
+              (click)="onActionClick($event, file, i)"
+              (keydown.enter)="onActionClick($event, file, i)"
+              (keydown.space)="onActionClick($event, file, i); $event.preventDefault()"
+              [attr.aria-label]="actionBtnIcon === 'download' ? 'Download file' : 'Remove file'"
+              i18n-aria-label
+            >
+              <ion-icon [name]="actionBtnIcon" aria-hidden="true"></ion-icon>
+            </ion-button>
+          }
+        </ion-item>
       }
     }
   }
 }
 
 <ng-template #fileDetails>
-  <app-list-item
-    [title]="file.name || file.filename"
-    leadingIcon="document"
+  <ion-item
+    class="file-row"
     [lines]="lines"
-    [endingActionBtnIcons]="endingActionBtnIcons"
-    (actionBtnClick)="actionBtnClick(file, $event)"
-  ></app-list-item>
+    button
+    detail="false"
+    (click)="openFilePreview($event)"
+    (keydown.enter)="openFilePreview($event)"
+    (keydown.space)="openFilePreview($event); $event.preventDefault()"
+    [attr.aria-label]="'Open file ' + (file.name || file.filename)"
+    tabindex="0"
+  >
+    <ion-icon name="document" slot="start" aria-hidden="true"></ion-icon>
+    <ion-label class="file-name-label">{{ file.name || file.filename }}</ion-label>
+    @for (actionBtnIcon of endingActionBtnIcons; track actionBtnIcon; let i = $index) {
+      <ion-button
+        mode="ios"
+        fill="clear"
+        slot="end"
+        (click)="onActionClick($event, file, i)"
+        (keydown.enter)="onActionClick($event, file, i)"
+        (keydown.space)="onActionClick($event, file, i); $event.preventDefault()"
+        [attr.aria-label]="actionBtnIcon === 'download' ? 'Download file' : 'Remove file'"
+        i18n-aria-label
+      >
+        <ion-icon [name]="actionBtnIcon" aria-hidden="true"></ion-icon>
+      </ion-button>
+    }
+  </ion-item>
 </ng-template>
