@@ -10,7 +10,7 @@
       <p class="body-3 grey-75 ion-padding-start" i18n>No team members found.</p>
     } @else {
       <ion-list lines="full" class="ion-no-margin">
-        @for (member of members; track member.id) {
+        @for (member of members; track member.userId) {
           <ion-item class="team-member-item">
             <ion-avatar slot="start">
               <img

@@ -5,7 +5,7 @@ import { ApolloService } from '@v3/services/apollo.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 export interface TeamMember {
-  id: number;
+  userId: number;
   name: string;
   role: string;
   avatar?: string;
@@ -13,7 +13,7 @@ export interface TeamMember {
 
 interface TeamMembersResponse {
   data: {
-    teamMembers: TeamMember[];
+    myTeamMembers: TeamMember[];
   };
 }
 
@@ -69,9 +69,9 @@ export class TeamRosterComponent implements OnInit, OnDestroy {
   private loadTeamMembers(): void {
     this.loading = true;
     this.apolloService.graphQLFetch(
-      `query teamMembers {
-        teamMembers {
-          id
+      `query myTeamMembers {
+        myTeamMembers {
+          userId
           name
           role
           avatar
@@ -81,7 +81,7 @@ export class TeamRosterComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: TeamMembersResponse) => {
           this.ngZone.run(() => {
-            this.members = response?.data?.teamMembers || [];
+            this.members = response?.data?.myTeamMembers || [];
             this.loading = false;
             this.cdr.markForCheck();
           });
