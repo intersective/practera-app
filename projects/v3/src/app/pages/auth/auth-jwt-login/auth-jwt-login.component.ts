@@ -160,7 +160,24 @@ export class AuthJwtLoginComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    const jwt = this.route.snapshot.paramMap.get('jwt');
+    // Prefer a token handed via sessionStorage (new flow: ?token= was stripped from URL
+    // by app.component.ts before navigation). Fall back to the legacy jwt/:jwt route param
+    // for backward compatibility with old magic links; in that case we immediately clean
+    // the URL so the token is not logged by intermediaries.
+    let jwt: string | null = null;
+    const storedJwt = (() => { try { return sessionStorage.getItem('pending_jwt_token'); } catch { return null; } })();
+    if (storedJwt) {
+      jwt = storedJwt;
+      try { sessionStorage.removeItem('pending_jwt_token'); } catch { /* ignore */ }
+    } else {
+      const paramJwt = this.route.snapshot.paramMap.get('jwt');
+      if (paramJwt) {
+        jwt = paramJwt;
+        // Strip the JWT from browser history — old link still worked, but we clean up.
+        history.replaceState(null, '', window.location.pathname.replace(/\/[^/]+$/, '/jwt'));
+      }
+    }
+
     if (!jwt) {
       return this._error();
     }
