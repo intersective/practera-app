@@ -73,6 +73,7 @@
     "exifr": "^7.1.3",
     "franc-min": "^6.2.0",
     "graphql": "^16.8.1",
+    "h5p-standalone": "^3.8.2",
     "ics": "^3.7.2",
     "ng-circle-progress": "~1.7.1",
     "ng-packagr": "^21.2.3",
