@@ -20,7 +20,7 @@ import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per paginated view (controls pagination granularity)
@@ -156,6 +156,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private assessmentService: AssessmentService,
     private activityService: ActivityService,
     private modalController: ModalController,
+    private alertController: AlertController,
     private cdr: ChangeDetectorRef,
   ) {
     this.resubscribe$.pipe(
@@ -738,13 +739,28 @@ Best regards`;
     return missing;
   }
 
+  /** True when Team 360 nav-only pagination has pages the user has not visited yet. */
+  get hasUnvisitedTeam360Pages(): boolean {
+    if (!this.isPaginationEnabled || this.pageCount <= 1 || !this.isTeam360Assessment) {
+      return false;
+    }
+    return this.pageVisited.some((visited, index) => !visited && index <= this.maxAccessiblePageIndex);
+  }
+
   /**
    * When user click the bottom button
    */
-  continueToNextTask() {
+  async continueToNextTask() {
     switch (this._btnAction) {
       case 'submit': {
-        this._doSubmit();
+        if (this.hasUnvisitedTeam360Pages) {
+          const confirmed = await this._confirmSubmitWithUnvisitedPages();
+          if (!confirmed) {
+            return;
+          }
+        } else {
+          this._doSubmit();
+        }
         return;
       }
       case 'readFeedback':
@@ -763,6 +779,29 @@ Best regards`;
       autoSave: false,
       goBack: false,
     });
+  }
+
+  /** Team 360 only: confirm submit when optional teammate pages were not visited. */
+  private async _confirmSubmitWithUnvisitedPages(): Promise<boolean> {
+    const alert = await this.alertController.create({
+      header: $localize`Submit assessment?`,
+      message: $localize`You haven't reviewed all teammates yet. Submit anyway?`,
+      buttons: [
+        {
+          text: $localize`Cancel`,
+          role: 'cancel',
+        },
+        {
+          text: $localize`Submit`,
+          handler: () => {
+            this._doSubmit();
+          },
+        },
+      ],
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    return role !== 'cancel';
   }
 
   /**

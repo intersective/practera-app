@@ -11,6 +11,7 @@ export class BottomActionBarComponent {
   @Input() showResubmit: boolean = false;
   @Input() text: string;
   @Input() color: string = 'primary';
+  @Input() title?: string;
   @Input() disabled$?: BehaviorSubject<boolean>; // assessment only
   @Output() handleClick = new EventEmitter();
   @Output() handleResubmit = new EventEmitter();

@@ -17,6 +17,7 @@
             mode="ios"
             [disabled]="disabled$ | async"
             [color]="color"
+            [title]="title || null"
             (click)="onClick($event)"
             [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
             type="button"

@@ -446,6 +446,8 @@
       [showResubmit]="action !== 'review' && assessment?.allowResubmit === true && submission?.status !== 'in progress'"
       (handleResubmit)="resubmit()"
       [text]="btnText"
+      [color]="hasUnvisitedTeam360Pages ? 'warning' : 'primary'"
+      [title]="hasUnvisitedTeam360Pages ? 'You have not reviewed all teammates yet' : ''"
       [disabled$]="btnDisabled$"
       (handleClick)="continueToNextTask()"
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
