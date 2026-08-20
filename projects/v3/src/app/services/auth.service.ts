@@ -119,6 +119,7 @@ interface AuthEndpointExperience {
   iconUrl: string;
   reviewRating: boolean;
   truncateDescription: boolean;
+  chatEnable?: boolean;
   team: {
     id: number;
   };
@@ -284,6 +285,7 @@ export class AuthService {
             iconUrl
             reviewRating
             truncateDescription
+            chatEnable
             team {
               id
             }
