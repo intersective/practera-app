@@ -2,124 +2,85 @@
   <ion-toolbar>
     <ion-title class="ion-text-center" i18n>Project Brief</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="close()"
-        aria-label="Close project brief" i18n-aria-label>
-        <ion-icon slot="icon-only"
-          name="close"
-          aria-hidden="true"></ion-icon>
+      <ion-button (click)="close()" aria-label="Close project brief" i18n-aria-label>
+        <ion-icon slot="icon-only" name="close" aria-hidden="true"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  <div class="title-section" *ngIf="hasValue(projectBrief?.title)">
-    <h1 id="project-brief-title" class="headline-3">{{ projectBrief.title }}</h1>
-    <div class="info-badge" *ngIf="hasValue(projectBrief?.projectType)">
-      <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
-      <span>{{ projectBrief.projectType }}</span>
+  @if (presentation.title || presentation.organisationName || presentation.organisationType) {
+    <div class="title-section">
+      @if (presentation.title) {
+        <h1 id="project-brief-title" class="headline-3">{{ presentation.title }}</h1>
+      }
+      @if (presentation.organisationName || presentation.organisationType) {
+        <div class="organisation-metadata">
+          <ion-icon name="business-outline" color="primary" aria-hidden="true"></ion-icon>
+          <div>
+            @if (presentation.organisationName) {
+              <p class="headline-4">{{ presentation.organisationName }}</p>
+            }
+            @if (presentation.organisationType) {
+              <p class="body-2">{{ presentation.organisationType }}</p>
+            }
+          </div>
+        </div>
+      }
     </div>
-  </div>
+  }
 
-  <ion-accordion-group [multiple]="true" [value]="['description', 'deliverables']" class="brief-accordion">
-
-    <ion-accordion value="description">
-      <ion-item slot="header" color="light">
-        <ion-icon name="document-text-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
-        <ion-label class="accordion-header" i18n>Description</ion-label>
-      </ion-item>
-      <div slot="content" class="accordion-content">
-        <p class="section-value" *ngIf="hasValue(projectBrief?.description); else noDescription">
-          {{ projectBrief.description }}
-        </p>
-        <ng-template #noDescription>
-          <p class="body-2 none-specified" i18n>None specified</p>
-        </ng-template>
-      </div>
-    </ion-accordion>
-
-    <ion-accordion value="industry">
-      <ion-item slot="header" color="light">
-        <ion-icon name="business-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
-        <ion-label class="accordion-header" i18n>Industry</ion-label>
-      </ion-item>
-      <div slot="content" class="accordion-content">
-        <div class="chip-container" *ngIf="hasItems(projectBrief?.industry); else noIndustry">
-          <ion-chip *ngFor="let item of projectBrief.industry"
-            color="primary"
-            outline="true">
-            <ion-label>{{ item }}</ion-label>
-          </ion-chip>
+  <ion-accordion-group [multiple]="true" [value]="['project-overview', 'project-outcomes']" class="brief-accordion">
+    @for (section of presentation.sections; track section.id) {
+      <ion-accordion [value]="section.id">
+        <ion-item slot="header" color="light">
+          <ion-icon [name]="section.icon" slot="start" color="primary" aria-hidden="true"></ion-icon>
+          <ion-label class="accordion-header">{{ section.title }}</ion-label>
+        </ion-item>
+        <div slot="content" class="accordion-content">
+          @if (section.kind === 'chips') {
+            @if (hasItems(sectionItems(section))) {
+              <div class="chip-container">
+                @for (item of sectionItems(section); track $index) {
+                  <ion-chip color="primary" outline="true">
+                    <ion-label>{{ item }}</ion-label>
+                  </ion-chip>
+                }
+              </div>
+            } @else {
+              <p class="body-2 none-specified" i18n>None specified</p>
+            }
+          } @else if (section.kind === 'link' && section.href) {
+            <a class="section-value website-link" [href]="section.href" target="_blank" rel="noopener noreferrer">{{ section.value }}</a>
+          } @else if (hasValue(sectionText(section))) {
+            <div class="section-value project-brief-markdown" [innerHTML]="sectionText(section) | projectBriefMarkdown"></div>
+          } @else {
+            <p class="body-2 none-specified" i18n>None specified</p>
+          }
         </div>
-        <ng-template #noIndustry>
-          <p class="body-2 none-specified" i18n>None specified</p>
-        </ng-template>
-      </div>
-    </ion-accordion>
-
-    <ion-accordion value="technical-skills">
-      <ion-item slot="header" color="light">
-        <ion-icon name="code-slash-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
-        <ion-label class="accordion-header" i18n>Technical Skills</ion-label>
-      </ion-item>
-      <div slot="content" class="accordion-content">
-        <div class="chip-container" *ngIf="hasItems(projectBrief?.technicalSkills); else noTechnicalSkills">
-          <ion-chip *ngFor="let skill of projectBrief.technicalSkills"
-            color="primary"
-            outline="true">
-            <ion-label>{{ skill }}</ion-label>
-          </ion-chip>
-        </div>
-        <ng-template #noTechnicalSkills>
-          <p class="body-2 none-specified" i18n>None specified</p>
-        </ng-template>
-      </div>
-    </ion-accordion>
-
-    <ion-accordion value="professional-skills">
-      <ion-item slot="header" color="light">
-        <ion-icon name="people-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
-        <ion-label class="accordion-header" i18n>Professional Skills</ion-label>
-      </ion-item>
-      <div slot="content" class="accordion-content">
-        <div class="chip-container" *ngIf="hasItems(projectBrief?.professionalSkills); else noProfessionalSkills">
-          <ion-chip *ngFor="let skill of projectBrief.professionalSkills"
-            color="primary"
-            outline="true">
-            <ion-label>{{ skill }}</ion-label>
-          </ion-chip>
-        </div>
-        <ng-template #noProfessionalSkills>
-          <p class="body-2 none-specified" i18n>None specified</p>
-        </ng-template>
-      </div>
-    </ion-accordion>
-
-    <ion-accordion value="deliverables">
-      <ion-item slot="header" color="light">
-        <ion-icon name="checkbox-outline" slot="start" color="primary" aria-hidden="true"></ion-icon>
-        <ion-label class="accordion-header" i18n>Deliverables</ion-label>
-      </ion-item>
-      <div slot="content" class="accordion-content">
-        <p class="section-value" *ngIf="hasValue(projectBrief?.deliverables); else noDeliverables">
-          {{ projectBrief.deliverables }}
-        </p>
-        <ng-template #noDeliverables>
-          <p class="body-2 none-specified" i18n>None specified</p>
-        </ng-template>
-      </div>
-    </ion-accordion>
-
+      </ion-accordion>
+    }
   </ion-accordion-group>
 </ion-content>
 
 <ion-footer class="ion-no-border">
   <ion-toolbar>
-    <ion-button expand="block"
-      (click)="close()"
-      (keydown.enter)="close()"
-      (keydown.space)="close(); $event.preventDefault()"
-      class="ion-margin"
-      i18n>Close</ion-button>
+    @if (allowPdfDownload) {
+      <ion-button
+        expand="block"
+        [disabled]="isDownloading"
+        (click)="downloadPdf()"
+        class="ion-margin project-brief-download-button">
+        @if (isDownloading) {
+          <ion-spinner slot="start" name="crescent" aria-hidden="true"></ion-spinner>
+          <span i18n>Preparing PDF...</span>
+        } @else {
+          <ion-icon name="download-outline" slot="start" aria-hidden="true"></ion-icon>
+          <span i18n>Download PDF</span>
+        }
+      </ion-button>
+    }
+    <ion-button expand="block" (click)="close()" (keydown.enter)="close()" (keydown.space)="close(); $event.preventDefault()" class="ion-margin" i18n>Close</ion-button>
   </ion-toolbar>
 </ion-footer>

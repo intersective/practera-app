@@ -2,271 +2,117 @@
 
 ## Overview
 
-The Project Brief feature displays team project information to users on the home page. When a user's team has a project brief configured, a "Project Brief" button appears next to the experience name. Clicking this button opens a modal that displays structured project details. When the Project Hub feature is enabled, a visible "Go to Project Hub" button opens the external Project Hub application.
+Project Brief displays the learner-safe project snapshot returned with a team. Learners open the shared modal from Home and can download the same content as a PDF. Assessment reviewers use the same modal to inspect a submitter's brief, but do not receive a download control.
 
 ## Data Flow
 
-```
+```text
 GraphQL API (teams.projectBrief as stringified JSON)
-    ↓
-SharedService.getTeamInfo()
-    ↓ parseProjectBrief() - safely parses JSON
-BrowserStorageService.setUser({ projectBrief: parsedObject })
-    ↓
-HomePage.updateDashboard()
-    ↓ reads from storage
-this.projectBrief = this.storageService.getUser().projectBrief
-    ↓
-Template: *ngIf="projectBrief" shows Project Brief button; *ngIf="showProjectHub" shows Project Hub button
-    ↓
-showProjectBrief() → opens ProjectBriefModalComponent
+  -> SharedService.getTeamInfo()
+  -> SharedService.parseProjectBrief()
+  -> BrowserStorageService user record
+  -> HomePage.updateDashboard()
+  -> HomePage.showProjectBrief()
+  -> ProjectBriefModalComponent
 ```
 
-## Components
+`SharedService.parseProjectBrief()` safely parses the stringified API value. Falsy, non-string, and malformed values produce no usable brief. Home reads the parsed value from browser storage and only exposes the Project Brief action when a brief is present.
 
-### ProjectBriefModalComponent
+## Centralized Model
 
-**Location:** `projects/v3/src/app/components/project-brief-modal/`
+The canonical App V2 contract and presentation builder live at `projects/v3/src/app/models/project-brief.model.ts`:
 
-**Files:**
-- `project-brief-modal.component.ts` - Component logic
-- `project-brief-modal.component.html` - Template with sections for each field
-- `project-brief-modal.component.scss` - Component-specific styles
-- `project-brief-modal.component.spec.ts` - Unit tests
-
-**Modal property:**
-```typescript
-projectBrief: ProjectBrief = {};
-```
-Ionic sets this public property through `componentProps` when the modal is created.
-
-**Interface:**
 ```typescript
 interface ProjectBrief {
+  schemaVersion?: 2;
   id?: string;
   title?: string;
-  description?: string;
+  description?: string | null;
+  organisationName?: string;
+  organisationType?: string | null;
+  organisationContext?: string | null;
+  problemStatement?: string | null;
+  focusArea?: string | null;
+  scope?: string | null;
+  deliverables?: string | null;
   industry?: string[];
   projectType?: string;
+  timeline?: number | null;
+  location?: string | null;
+  website?: string | null;
   technicalSkills?: string[];
   professionalSkills?: string[];
-  deliverables?: string;
 }
 ```
 
-**Display Sections:**
-- Title (headline)
-- Description
-- Project Type
-- Industry (as chips)
-- Technical Skills (as chips)
-- Professional Skills (as chips)
-- Deliverables
+The app accepts legacy unversioned snapshots and version 2 snapshots with `schemaVersion: 2`. Nullable version 2 text, website, and timeline values normalize to empty presentation values. Empty sections render `None specified` and do not invalidate the remaining brief.
 
-**Color treatment:**
-- Modal section header icons and chips use the primary brand color.
-- Do not use the secondary brand color for Technical Skills accents; customer secondary colors can be too light to remain visible on the light modal background.
+`buildProjectBriefPresentation()` is the sole definition of modal and PDF content order. Consumers must not create or reorder their own section lists. The exact 13-section order is:
 
-**Empty Field Handling:**
-- All sections show "None specified" when the field is empty or undefined
-- Uses `hasValue()` for string fields and `hasItems()` for array fields
+1. Project Overview
+2. Scope of Work
+3. Organisational Context
+4. Problem Statement
+5. Focus Area
+6. Project Outcomes
+7. Industry
+8. Project Type
+9. Duration
+10. Location
+11. Website
+12. Technical Skills
+13. Professional Skills
 
-## Integration Points
+The presentation also provides normalized title, organisation name, organisation type, duration text, chip values, and a safe HTTP(S) website URL.
 
-### SharedService
+## Modal And Entry Points
 
-**Method:** `parseProjectBrief(briefString: string): object | null`
+`ProjectBriefModalComponent` receives the public `projectBrief` and optional `allowPdfDownload` properties through Ionic `componentProps`. `allowPdfDownload` defaults to `false`, so callers must opt in explicitly.
 
-Safely parses the stringified JSON from the API:
-- Returns `null` if input is falsy or not a string
-- Uses try-catch to handle malformed JSON
-- Logs errors to console for debugging
+Home is the only caller that enables export:
 
-**Usage in getTeamInfo():**
 ```typescript
-this.storage.setUser({
-  teamId: teams[0].id,
-  teamName: teams[0].name,
-  projectBrief: this.parseProjectBrief(teams[0].projectBrief),
-  teamUuid: teams[0].uuid
+const modal = await this.modalController.create({
+  component: ProjectBriefModalComponent,
+  componentProps: {
+    projectBrief: this.projectBrief,
+    allowPdfDownload: true,
+  },
+  cssClass,
 });
+await modal.present();
 ```
 
-### HomePage
+Assessment opens the same component with only `projectBrief`; it supplies no download command and retains the default `allowPdfDownload: false`.
 
-**Property:**
-```typescript
-projectBrief: ProjectBrief | null = null;
-```
+The modal renders organisation metadata when supplied, then the centralized accordion sections. Header icons and all chips use Ionic `color="primary"`; chips are outlined. During export, the download control is disabled and displays `Preparing PDF...`. Duplicate selections are ignored while the promise is pending. Both successful and failed downloads keep the modal open. Failures show an extractable localized danger toast through `NotificationsService.presentToast`.
 
-**Loading (in updateDashboard):**
-```typescript
-this.projectBrief = this.storageService.getUser().projectBrief || null;
-```
+## Markdown And Link Security
 
-**Modal Display:**
-```typescript
-async showProjectBrief(): Promise<void> {
-  if (!this.projectBrief) {
-    return;
-  }
+Markdown fields pass through `ProjectBriefMarkdownPipe`. It uses `marked@18.0.10`, removes raw HTML and image tokens, and then applies Angular HTML sanitization. Markdown links are clickable only when `safeHttpUrl()` accepts an absolute `http:` or `https:` URL. Unsafe or relative link destinations remain readable text without a navigation target.
 
-  const modal = await this.modalController.create({
-    component: ProjectBriefModalComponent,
-    componentProps: {
-      projectBrief: this.projectBrief
-    },
-    cssClass: 'project-brief-modal'
-  });
+The PDF service uses the Marked lexer rather than HTML rendering. It writes Markdown headings, paragraphs, ordered list items, and unordered list items as selectable PDF text, and omits raw HTML and image tokens. It does not use jsPDF HTML, canvas, or image APIs.
 
-  await modal.present();
-}
-```
+## PDF Export
 
-### Template (home.page.html)
+`ProjectBriefPdfService` lives at `projects/v3/src/app/services/project-brief-pdf.service.ts`. Its loader token dynamically imports `jspdf@4.2.1` only when a learner selects download; constructing the service or creating the modal does not load jsPDF.
 
-Button placement - next to experience name:
-```html
-<div class="exp-header">
-  <h2 class="headline-2" [innerHTML]="experience.name"></h2>
-  <div class="button-group-no-gap" *ngIf="!isExpert && (projectBrief || showProjectHub)">
-    <ion-button *ngIf="projectBrief?.id"
-      fill="clear"
-      size="small"
-      class="project-brief-btn"
-      (click)="showProjectBrief()"
-      (keydown.enter)="showProjectBrief()"
-      (keydown.space)="showProjectBrief(); $event.preventDefault()"
-      aria-label="View project brief" i18n-aria-label>
-      <ion-icon name="document-text-outline" slot="start" aria-hidden="true"></ion-icon>
-      <span i18n>Project Brief</span>
-    </ion-button>
-    <ion-button *ngIf="showProjectHub"
-      fill="clear"
-      size="small"
-      class="project-brief-btn"
-      title="Go to Project Hub"
-      aria-label="Go to Project Hub" i18n-aria-label>
-      <ion-icon name="open-outline" slot="start" size="small" aria-hidden="true"></ion-icon>
-      <span i18n>Go to Project Hub</span>
-    </ion-button>
-  </div>
-</div>
-```
+The export is an offline A4 PDF with built-in Helvetica fonts, 20 mm margins, `splitTextToSize()` wrapping, page breaks before overflow, and page numbers added after the final page count is known. It uses the `buildProjectBriefPresentation()` order and includes organisation metadata plus `None specified` values where applicable.
 
-## Styling
+The filename is `<safe-lowercase-project-title>-project-brief.pdf`. Empty, punctuation-only, or otherwise unsluggable titles use `project-brief.pdf`.
 
-### Button (home.page.scss)
+Safe absolute HTTP(S) website values become PDF links. Unsafe website values remain readable but non-clickable text. The export includes no remote logos, images, backgrounds, or network fetches.
 
-```scss
-.exp-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-}
-
-.project-brief-btn {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  font-size: 0.875rem;
-  text-transform: none;
-  letter-spacing: normal;
-}
-```
-
-### Modal (styles.scss)
-
-```scss
-.project-brief-modal {
-  --width: 90%;
-  --max-width: 500px;
-  --height: auto;
-  --max-height: 80vh;
-  --border-radius: 12px;
-
-  @media (min-width: 768px) {
-    --width: 500px;
-  }
-}
-```
+Built-in fonts support the intended Latin-script content. Japanese PDF font coverage is deferred; adding it requires an approved embedded-font implementation.
 
 ## Accessibility
 
-- Buttons include descriptive aria labels with i18n support
-- Keyboard navigation with `(keydown.enter)` and `(keydown.space)` handlers
-- Modal has proper semantic structure with `<main>`, `<section>`, and heading hierarchy
-- Close button includes `aria-label="Close project brief"`
-- Ion-chips for industry/skills use the primary brand color so labels and outlines remain visible when secondary branding is faint
+The modal provides a localized `Project Brief` title, a localized close control with `aria-label="Close project brief"`, hidden decorative icons, and Ionic accordion controls for section navigation. The Home Project Brief action and modal close action support click, Enter, and Space. The download button exposes its disabled loading state through the native Ionic button control.
 
-## Sample Data
+## Tests
 
-API returns stringified JSON:
-```json
-"{\"id\":\"fdcdf0d1-2148-4bab-a02a-62a2ae535fbe\",\"title\":\"Project Title\",\"description\":\"Project description text\",\"industry\":[\"Health & Medical Science\",\"Communications, Media, Digital & Creative\"],\"projectType\":\"Growth Strategy\",\"technicalSkills\":[],\"professionalSkills\":[],\"deliverables\":\"Deliverables description\",\"timeline\":12}"
-```
+Focused coverage exists for the centralized model, Markdown pipe, PDF service, Project Brief modal, Home entry point, and Assessment entry point. PDF coverage includes lazy loading, filename sanitization, centralized ordering, empty values, Markdown hierarchy and stripping, wrapping, page breaks, page numbers, safe links, failure cleanup, retry, and asynchronous save normalization. Home verifies `allowPdfDownload: true`; Assessment verifies it remains absent.
 
-After parsing:
-```typescript
-{
-  id: "fdcdf0d1-2148-4bab-a02a-62a2ae535fbe",
-  title: "Project Title",
-  description: "Project description text",
-  industry: ["Health & Medical Science", "Communications, Media, Digital & Creative"],
-  projectType: "Growth Strategy",
-  technicalSkills: [],
-  professionalSkills: [],
-  deliverables: "Deliverables description",
-  timeline: 12
-}
-```
+## Runtime Dependency Risk
 
-**Note:** The `timeline` field is not displayed in the UI as per requirements.
-
-## Testing
-
-### Unit Tests
-
-**ProjectBriefModalComponent tests:**
-- Component creation
-- `close()` method dismisses modal
-- `hasItems()` correctly identifies empty/populated arrays
-- `hasValue()` correctly identifies empty/populated strings
-- Template renders title when provided
-- Template shows "None specified" for empty fields
-- Template renders chips for industry and skills
-- Template keeps section accents on the primary brand color
-
-**HomePage tests (additions needed):**
-- Button visible when `projectBrief` is set
-- Button hidden when `projectBrief` is null
-- `showProjectBrief()` creates and presents modal
-
-**SharedService tests (additions needed):**
-- `parseProjectBrief()` returns parsed object for valid JSON
-- `parseProjectBrief()` returns null for invalid JSON
-- `parseProjectBrief()` returns null for empty string
-- `parseProjectBrief()` returns null for null/undefined input
-
-## Module Registration
-
-The component is registered in `ComponentsModule`:
-
-```typescript
-// Import
-import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
-
-// Declarations
-declarations: [
-  // ...
-  ProjectBriefModalComponent,
-  // ...
-],
-
-// Exports
-exports: [
-  // ...
-  ProjectBriefModalComponent,
-  // ...
-],
-```
+`marked@18.0.10` and `jspdf@4.2.1` are exact locked runtime dependencies. `marked` handles untrusted learner-visible Markdown, so the token-based raw HTML/image exclusion and Angular sanitization boundary must remain intact. jsPDF creates a local browser download and is dynamically imported only from the export action. Do not replace either dependency with one that uploads content, executes shell commands, or fetches remote branding assets.

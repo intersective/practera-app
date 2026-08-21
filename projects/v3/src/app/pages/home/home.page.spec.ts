@@ -196,6 +196,25 @@ describe('HomePage', () => {
     expect(projectHubButton?.textContent).toContain('Go to Project Hub');
   });
 
+  it('opens the project brief with learner PDF visibility enabled', async () => {
+    const projectBrief = { id: 'brief-1', title: 'Project Brief' };
+    const modalController = TestBed.inject(ModalController) as jasmine.SpyObj<ModalController>;
+    const modal = { present: jasmine.createSpy('present') };
+    component.projectBrief = projectBrief;
+    component.isMobile = false;
+    modalController.create.and.returnValue(Promise.resolve(modal as any));
+
+    await component.showProjectBrief();
+
+    expect(modalController.create).toHaveBeenCalledWith(jasmine.objectContaining({
+      componentProps: {
+        projectBrief,
+        allowPdfDownload: true,
+      },
+    }));
+    expect(modal.present).toHaveBeenCalled();
+  });
+
   describe('updateDashboard', () => {
     beforeEach(() => {
       sharedService.refreshJWT.and.returnValue(Promise.resolve());

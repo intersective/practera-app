@@ -1,4 +1,5 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { ProjectBrief } from '../models/project-brief.model';
 
 interface LastVisited {
   [key: string]: string | number | number[];
@@ -57,17 +58,7 @@ export interface User {
   saveAssessmentErrors?: [],
 
   // project brief - parsed json object containing team project details
-  projectBrief?: {
-    id?: string;
-    title?: string;
-    description?: string;
-    industry?: string[];
-    projectType?: string;
-    technicalSkills?: string[];
-    professionalSkills?: string[];
-    deliverables?: string;
-    timeline?: number;
-  };
+  projectBrief?: ProjectBrief;
   teamUuid?: string;
 }
 
