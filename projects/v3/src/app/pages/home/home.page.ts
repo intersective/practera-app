@@ -19,7 +19,8 @@ import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController, ModalController } from '@ionic/angular';
 import { Activity } from '@v3/app/services/activity.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
-import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
+import { ProjectBriefModalComponent } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
+import { ProjectBrief } from '@v3/app/models/project-brief.model';
 
 @Component({
   standalone: false,
@@ -465,7 +466,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     const modal = await this.modalController.create({
       component: ProjectBriefModalComponent,
       componentProps: {
-        projectBrief: this.projectBrief
+        projectBrief: this.projectBrief,
+        allowPdfDownload: true,
       },
       cssClass
     });
