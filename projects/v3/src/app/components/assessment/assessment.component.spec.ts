@@ -282,7 +282,7 @@ describe('AssessmentComponent', () => {
   });
 
   describe('showProjectBrief()', () => {
-    it('should open project brief modal when review has projectBrief', async () => {
+    it('opens the project brief without enabling learner-only PDF download', async () => {
       const mockProjectBrief = {
         id: 'brief-1',
         title: 'Test Brief',
@@ -305,6 +305,8 @@ describe('AssessmentComponent', () => {
         componentProps: { projectBrief: mockProjectBrief },
         cssClass: 'project-brief-modal',
       });
+      const modalOptions = modalSpy.create.calls.mostRecent().args[0];
+      expect(modalOptions.componentProps.allowPdfDownload).toBeUndefined();
       expect(mockModal.present).toHaveBeenCalled();
     });
 
