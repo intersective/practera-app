@@ -37,6 +37,10 @@ export class ActivityDesktopPage {
   // loading overlay for assessment
   isLoadingTask: boolean = false;
 
+  get teamId(): number {
+    return this.storageService.getUser()?.teamId ?? null;
+  }
+
   longAsmtNavigator: boolean = false; // disable fab navigator on long assessment
 
   // grabs from URL parameter

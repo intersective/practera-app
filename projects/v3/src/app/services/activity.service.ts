@@ -65,6 +65,34 @@ export interface Task {
   };
   assessmentType?: string;
   h5p?: H5pContent;
+  todoGroup?: TodoGroupData;
+}
+
+export interface TodoTaskItem {
+  id: number;
+  title: string;
+  description?: string;
+  estimatedHours?: number;
+  dueDate?: string;
+  status: string;
+  assigneeId?: number;
+  completedAt?: string;
+  completedBy?: number;
+  assignmentHistory: { userId: number; action: string; fromUserId?: number; at: string }[];
+  praise: number[];
+  praiseCount: number;
+  isAdminDefined: boolean;
+  createdBy?: number;
+  order?: number;
+}
+
+export interface TodoGroupData {
+  id: number;
+  title: string;
+  description?: string;
+  allowMemberAdditions: boolean;
+  estimatedTotalHours?: number;
+  items: TodoTaskItem[];
 }
 
 @Injectable({
@@ -107,6 +135,14 @@ export class ActivityService {
           id name description isLocked tasks {
             id name type isLocked isTeam deadline contextId assessmentType status {
               status isLocked submitterName submitterImage
+            }
+            todoGroup {
+              id title description allowMemberAdditions estimatedTotalHours
+              items {
+                id title description estimatedHours dueDate status
+                assigneeId completedAt completedBy praiseCount isAdminDefined createdBy order
+                praise assignmentHistory { userId action fromUserId at }
+              }
             }
           }
           unlockConditions {
@@ -234,6 +270,14 @@ export class ActivityService {
             name: task.name,
             type: 'Simulation',
             contextId: task.contextId,
+            status: task.status?.status,
+          };
+        case 'todo':
+          return {
+            id: task.id,
+            name: task.name,
+            type: 'Todo',
+            todoGroup: task.todoGroup ?? null,
             status: task.status?.status,
           };
         default:
@@ -495,6 +539,16 @@ export class ActivityService {
         } catch (error) {
           throw new Error(error);
         }
+        break;
+
+      case 'Todo':
+        // For desktop, the task data (todoGroup) is already embedded in the task object.
+        // The activity-desktop page renders app-todo-task inline.
+        // For mobile, navigate to the dedicated todo-task-mobile route.
+        if (this.utils.isMobile()) {
+          return this.router.navigate(['todo-task-mobile', activityId, task.id]);
+        }
+        // Desktop: todoGroup data already present via GraphQL query — no additional fetch needed.
         break;
     }
   }

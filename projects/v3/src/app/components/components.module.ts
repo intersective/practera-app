@@ -32,6 +32,7 @@ import { TopicComponent } from './topic/topic.component';
 import { ReviewListComponent } from './review-list/review-list.component';
 import { BrandingLogoComponent } from './branding-logo/branding-logo.component';
 import { TodoCardComponent } from './todo-card/todo-card.component';
+import { TodoTaskComponent } from './todo-task/todo-task.component';
 import { BottomActionBarComponent } from './bottom-action-bar/bottom-action-bar.component';
 import { VideoConversionComponent } from './video-conversion/video-conversion.component';
 import { SupportPopupComponent } from './support-popup/support-popup.component';
@@ -111,6 +112,7 @@ const largeCircleDefaultConfig = {
     TeamMemberSelectorComponent,
     TextComponent,
     TodoCardComponent,
+    TodoTaskComponent,
     TopicComponent,
     BrandingLogoComponent,
     BottomActionBarComponent,
@@ -161,6 +163,7 @@ const largeCircleDefaultConfig = {
     TeamMemberSelectorComponent,
     TextComponent,
     TodoCardComponent,
+    TodoTaskComponent,
     TopicComponent,
     BrandingLogoComponent,
     BottomActionBarComponent,

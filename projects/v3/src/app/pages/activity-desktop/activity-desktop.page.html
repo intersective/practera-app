@@ -77,6 +77,13 @@
               id="task-content-simulation"
             ></app-h5p-player>
           }
+          @if (currentTask?.type === 'Todo') {
+            <app-todo-task
+              [todoGroup]="currentTask.todoGroup"
+              [teamId]="teamId"
+              id="task-content-todo"
+            ></app-todo-task>
+          }
         }
       </ion-col>
     </ion-row>
