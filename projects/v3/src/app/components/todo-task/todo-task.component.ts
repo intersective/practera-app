@@ -58,16 +58,20 @@ export class TodoTaskComponent implements OnChanges {
   }
 
   async claimItem(item: TodoTaskItem) {
-    if (!this.teamId || this.actionInProgress[item.id]) return;
+    if (this.actionInProgress[item.id]) return;
+    if (!this.teamId) {
+      alert($localize`:alert|no team assigned:You must be assigned to a team to take on todo items.`);
+      return;
+    }
     this.actionInProgress[item.id] = true;
     try {
       await firstValueFrom(this.apollo.graphQLMutate(
-        `mutation ClaimTodoItem($itemId: Int!, $teamId: Int!) {
-          claimTodoItem(itemId: $itemId, teamId: $teamId) {
+        `mutation ClaimTodoItem($itemId: Int!) {
+          claimTodoItem(itemId: $itemId) {
             id status assigneeId
           }
         }`,
-        { itemId: item.id, teamId: this.teamId }
+        { itemId: item.id }
       ));
       
       item.status = 'in_progress';
@@ -146,17 +150,21 @@ export class TodoTaskComponent implements OnChanges {
 
   async addItem() {
     const title = this.newItemTitle.trim();
-    if (!title || !this.teamId) return;
+    if (!title) return;
+    if (!this.teamId) {
+      alert($localize`:alert|no team assigned:You must be assigned to a team to add todo items.`);
+      return;
+    }
     this.loading = true;
     try {
       const res = await firstValueFrom(this.apollo.graphQLMutate(
-        `mutation AddTodoItem($groupId: Int!, $teamId: Int!, $input: TodoItemMemberInput!) {
-          addTodoItem(groupId: $groupId, teamId: $teamId, input: $input) {
+        `mutation AddTodoItem($groupId: Int!, $input: TodoItemMemberInput!) {
+          addTodoItem(groupId: $groupId, input: $input) {
             id title description estimatedHours dueDate status assigneeId praiseCount
             isAdminDefined createdBy order praise assignmentHistory { userId action fromUserId at }
           }
         }`,
-        { groupId: this.todoGroup.id, teamId: this.teamId, input: { title } }
+        { groupId: this.todoGroup.id, input: { title } }
       ));
       const newItem = res?.data?.addTodoItem;
       if (newItem) {
