@@ -145,6 +145,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
         return 'game-controller';
       case 'Assessment':
         return 'eye';
+      case 'Todo':
+        return 'checkbox-outline';
     }
   }
 

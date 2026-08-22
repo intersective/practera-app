@@ -1,9 +1,12 @@
-<div class="todo-task" *ngIf="todoGroup">
+@if (todoGroup) {
+<div class="todo-task">
 
   <!-- Header + Progress -->
   <div class="todo-task__header">
     <h3 class="todo-task__title">{{ todoGroup.title }}</h3>
-    <p class="todo-task__desc" *ngIf="todoGroup.description">{{ todoGroup.description }}</p>
+    @if (todoGroup.description) {
+      <p class="todo-task__desc">{{ todoGroup.description }}</p>
+    }
 
     <div class="todo-task__progress">
       <span class="todo-task__progress-label">{{ completedItems }} / {{ totalItems }} complete</span>
@@ -15,78 +18,100 @@
 
   <!-- Item List -->
   <ion-list class="todo-task__list">
-    <ion-item *ngFor="let item of todoGroup.items; trackBy: trackItem" class="todo-task__item" [class.todo-task__item--complete]="item.status === 'complete'" [class.todo-task__item--overdue]="isOverdue(item)">
-      <div class="todo-task__item-body">
+    @for (item of todoGroup.items; track item.id) {
+      <ion-item
+        class="todo-task__item"
+        [class.todo-task__item--complete]="item.status === 'complete'"
+        [class.todo-task__item--overdue]="isOverdue(item)"
+      >
+        <div class="todo-task__item-body">
 
-        <div class="todo-task__item-header">
-          <span class="todo-task__item-title">{{ item.title }}</span>
-          <span class="todo-task__status-badge" [class]="'todo-task__status-badge--' + item.status">
-            {{ item.status === 'complete' ? 'Done' : item.assigneeId ? 'In progress' : 'Unassigned' }}
-          </span>
-          <span class="todo-task__overdue-badge" *ngIf="isOverdue(item)">Overdue</span>
+          <div class="todo-task__item-header">
+            <span class="todo-task__item-title">{{ item.title }}</span>
+            <span class="todo-task__status-badge" [class]="'todo-task__status-badge--' + item.status">
+              {{ item.status === 'complete' ? 'Done' : item.assigneeId ? 'In progress' : 'Unassigned' }}
+            </span>
+            @if (isOverdue(item)) {
+              <span class="todo-task__overdue-badge">Overdue</span>
+            }
+          </div>
+
+          @if (item.description) {
+            <p class="todo-task__item-desc">{{ item.description }}</p>
+          }
+
+          <div class="todo-task__item-meta">
+            @if (item.estimatedHours) {
+              <span>{{ item.estimatedHours }}h</span>
+            }
+            @if (item.dueDate) {
+              <span>Due: {{ item.dueDate | date:'mediumDate' }}</span>
+            }
+            @if (item.praiseCount > 0) {
+              <span>⭐ {{ item.praiseCount }}</span>
+            }
+          </div>
+
+          <!-- Actions -->
+          <div class="todo-task__item-actions">
+            @if (canClaim(item)) {
+              <ion-button
+                fill="outline" size="small" color="primary"
+                [disabled]="actionInProgress[item.id]"
+                (click)="claimItem(item)"
+                i18n="button|take on todo item">Take on</ion-button>
+            }
+            @if (canTakeOver(item)) {
+              <ion-button
+                fill="outline" size="small" color="medium"
+                [disabled]="actionInProgress[item.id]"
+                (click)="takeOverItem(item)"
+                i18n="button|take over todo item">Take over</ion-button>
+            }
+            @if (canComplete(item)) {
+              <ion-button
+                fill="solid" size="small" color="success"
+                [disabled]="actionInProgress[item.id]"
+                (click)="completeItem(item)"
+                i18n="button|mark todo item complete">Mark done</ion-button>
+            }
+            @if (canPraise(item)) {
+              <ion-button
+                fill="clear" size="small" color="warning"
+                [disabled]="actionInProgress[item.id]"
+                (click)="praiseItem(item)"
+                i18n="button|praise todo item">⭐ Praise</ion-button>
+            }
+          </div>
+
         </div>
-
-        <p class="todo-task__item-desc" *ngIf="item.description">{{ item.description }}</p>
-
-        <div class="todo-task__item-meta">
-          <span *ngIf="item.estimatedHours">{{ item.estimatedHours }}h</span>
-          <span *ngIf="item.dueDate">Due: {{ item.dueDate | date:'mediumDate' }}</span>
-          <span *ngIf="item.praiseCount > 0">⭐ {{ item.praiseCount }}</span>
-        </div>
-
-        <!-- Actions -->
-        <div class="todo-task__item-actions">
-          <ion-button
-            *ngIf="canClaim(item)"
-            fill="outline" size="small" color="primary"
-            [disabled]="actionInProgress[item.id]"
-            (click)="claimItem(item)"
-            i18n="button|take on todo item">Take on</ion-button>
-
-          <ion-button
-            *ngIf="canTakeOver(item)"
-            fill="outline" size="small" color="medium"
-            [disabled]="actionInProgress[item.id]"
-            (click)="takeOverItem(item)"
-            i18n="button|take over todo item">Take over</ion-button>
-
-          <ion-button
-            *ngIf="canComplete(item)"
-            fill="solid" size="small" color="success"
-            [disabled]="actionInProgress[item.id]"
-            (click)="completeItem(item)"
-            i18n="button|mark todo item complete">Mark done</ion-button>
-
-          <ion-button
-            *ngIf="canPraise(item)"
-            fill="clear" size="small" color="warning"
-            [disabled]="actionInProgress[item.id]"
-            (click)="praiseItem(item)"
-            i18n="button|praise todo item">⭐ Praise</ion-button>
-        </div>
-
-      </div>
-    </ion-item>
+      </ion-item>
+    }
   </ion-list>
 
   <!-- Add item form (member additions) -->
-  <div class="todo-task__add" *ngIf="todoGroup.allowMemberAdditions">
-    <div *ngIf="!addingItem">
-      <ion-button fill="outline" size="small" (click)="addingItem = true" i18n="button|add todo item">
-        + Add item
-      </ion-button>
+  @if (todoGroup.allowMemberAdditions) {
+    <div class="todo-task__add">
+      @if (!addingItem) {
+        <ion-button fill="outline" size="small" (click)="addingItem = true" i18n="button|add todo item">
+          + Add item
+        </ion-button>
+      }
+      @if (addingItem) {
+        <div class="todo-task__add-form">
+          <ion-input
+            [(ngModel)]="newItemTitle"
+            placeholder="What needs to be done?"
+            i18n-placeholder="input placeholder|new todo item title"
+          ></ion-input>
+          <div class="todo-task__add-form-actions">
+            <ion-button size="small" [disabled]="!newItemTitle.trim() || loading" (click)="addItem()" i18n="button|save new todo item">Save</ion-button>
+            <ion-button fill="clear" size="small" (click)="addingItem = false; newItemTitle = ''" i18n="button|cancel add todo item">Cancel</ion-button>
+          </div>
+        </div>
+      }
     </div>
-    <div *ngIf="addingItem" class="todo-task__add-form">
-      <ion-input
-        [(ngModel)]="newItemTitle"
-        placeholder="What needs to be done?"
-        i18n-placeholder="input placeholder|new todo item title"
-      ></ion-input>
-      <div class="todo-task__add-form-actions">
-        <ion-button size="small" [disabled]="!newItemTitle.trim() || loading" (click)="addItem()" i18n="button|save new todo item">Save</ion-button>
-        <ion-button fill="clear" size="small" (click)="addingItem = false; newItemTitle = ''" i18n="button|cancel add todo item">Cancel</ion-button>
-      </div>
-    </div>
-  </div>
+  }
 
 </div>
+}
