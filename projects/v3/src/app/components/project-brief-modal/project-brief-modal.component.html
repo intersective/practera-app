@@ -46,7 +46,7 @@
       <div slot="content" class="accordion-content">
         <div class="chip-container" *ngIf="hasItems(projectBrief?.industry); else noIndustry">
           <ion-chip *ngFor="let item of projectBrief.industry"
-            color="primary"
+            color="dark"
             outline="true">
             <ion-label>{{ item }}</ion-label>
           </ion-chip>
@@ -65,7 +65,7 @@
       <div slot="content" class="accordion-content">
         <div class="chip-container" *ngIf="hasItems(projectBrief?.technicalSkills); else noTechnicalSkills">
           <ion-chip *ngFor="let skill of projectBrief.technicalSkills"
-            color="primary"
+            color="dark"
             outline="true">
             <ion-label>{{ skill }}</ion-label>
           </ion-chip>
@@ -84,7 +84,7 @@
       <div slot="content" class="accordion-content">
         <div class="chip-container" *ngIf="hasItems(projectBrief?.professionalSkills); else noProfessionalSkills">
           <ion-chip *ngFor="let skill of projectBrief.professionalSkills"
-            color="primary"
+            color="dark"
             outline="true">
             <ion-label>{{ skill }}</ion-label>
           </ion-chip>
