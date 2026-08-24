@@ -1,0 +1,46 @@
+# Practera Permission Model Reference
+
+This rule provides context about the Practera platform's new RBAC permission model.
+Relevant when working on features that involve role-based access, content visibility,
+reviewer assignment, or user enrolment.
+
+## How It Works
+
+The permission model lives in `practera-graphql-api/src/auth/permissions.ts`.
+All access control flows through `requirePermission(context, 'permission.name')`.
+
+**Never add inline role checks** — use permission-based guards.
+
+## Permission Catalog
+
+```
+content.view.own           — participant+
+content.view.team          — mentor+
+content.view.all           — coordinator+
+assessment.submit          — participant+
+assessment.review          — mentor+
+assessment.review.assign   — coordinator+
+team.view.members          — participant+
+team.view.all              — coordinator+
+enrolment.manage           — coordinator+
+experience.author          — coordinator+ (create/edit milestones, activities, assessments)
+experience.settings        — coordinator+ (experience config)
+roles.manage               — admin only (NOT coordinator)
+reports.view.team          — mentor+
+reports.view.all           — coordinator+
+```
+
+## Superusers (bypass all checks)
+`sysadmin`, `cs_admin`, `inst_admin`, `system`
+
+## Custom Roles
+Stored in `experience_roles` table. JWT carries `roleId`. Roles with `base_type=admin` pass all checks.
+
+## Content Targeting
+`target_roles` JSONB on assessments/activities/milestones replaces the old integer visibility bitmask.
+
+## Reviewer Eligibility  
+`reviewer_roles` JSONB on assessments enables multi-role reviewer pools.
+
+## Full Docs
+See `practera-graphql-api/.cursor/rules/200-permission-model.mdc`
