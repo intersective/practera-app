@@ -11,7 +11,7 @@ import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers, F
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
 import { ChatInfoComponent } from '../chat-info/chat-info.component';
 import { EditMessagePopupComponent } from '../edit-message-popup/edit-message-popup.component';
-import { Subject, timer } from 'rxjs';
+import { Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { QuillModules } from 'ngx-quill';
 import { UppyFileData, UppyUploaderResponse, UppyUploaderService } from '../../../components/uppy-uploader/uppy-uploader.service';
@@ -147,6 +147,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
   private scrollSubject = new Subject<void>();
+  private typingSubscription: Subscription;
 
   constructor(
     private chatService: ChatService,
@@ -284,6 +285,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    this.typingSubscription?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -315,8 +317,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chatChannel = this.storage.getCurrentChatChannel();
     }
     this.channelUuid = this.chatChannel.uuid;
-    // subscribe to typing event
-    this.utils
+    this.typingSubscription?.unsubscribe();
+    this.typingSubscription = this.utils
       .getEvent("typing-" + this.chatChannel.pusherChannel)
       .pipe(takeUntil(this.destroy$))
       .subscribe((event) => this._showTyping(event));

@@ -1,4 +1,4 @@
-import { takeUntil, mergeMap } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { Component, HostListener, isDevMode, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
@@ -6,7 +6,7 @@ import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';
 import { ChatService } from '@v3/app/services/chat.service';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SettingsPage } from '../settings/settings.page';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { animate, group, query, state, style, transition, trigger } from '@angular/animations';
@@ -14,6 +14,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { environment } from '@v3/environments/environment';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { SharedService } from '@v3/app/services/shared.service';
 
 @Component({
   standalone: false,
@@ -97,6 +98,7 @@ export class V3Page implements OnInit, OnDestroy {
     private readonly notificationsService: NotificationsService,
     private readonly homeService: HomeService,
     private readonly unlockIndicatorService: UnlockIndicatorService,
+    private readonly sharedService: SharedService,
   ) {
   }
 
@@ -181,6 +183,9 @@ export class V3Page implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.institutionLogo = this.getInstitutionLogo();
     this._initMenuItems();
+    this.sharedService.initWebServices().catch(err => {
+      console.error('Failed to initialise real-time services on v3 entry', err);
+    });
 
     this.reviewService.reviews$
     .pipe(
@@ -194,7 +199,9 @@ export class V3Page implements OnInit, OnDestroy {
       }
     });
 
-    this.notificationsService.notification$.subscribe(notifications => {
+    this.notificationsService.notification$
+    .pipe(takeUntil(this.unsubscribe$))
+    .subscribe(notifications => {
       // assign notification badge to each tab
       const chat = (notifications || []).find(noti => {
         if (noti.type === 'chat') {
@@ -264,11 +271,8 @@ export class V3Page implements OnInit, OnDestroy {
     }
     this.isMenuOpen = false;
 
-    // initiate subscription v3 page level (required), so the rest independent listener can pickup the same sharedReplay
-    this.notificationsService.getTodoItems().pipe(
-      mergeMap(_generic => {
-        return this.notificationsService.getChatMessage();
-      }),
+    // Initialize the shared notification stream for a fresh v3 page load.
+    this.notificationsService.refreshNotifications().pipe(
       takeUntil(this.unsubscribe$)
     ).subscribe();
 
