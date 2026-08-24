@@ -157,17 +157,20 @@ resources:
               Override: true
               Preload: true
             ContentSecurityPolicy: 
-              ContentSecurityPolicy: "frame-ancestors 'self' https://*.practera.com;"
+              ContentSecurityPolicy: "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self' https://*.practera.com; script-src 'self' 'unsafe-inline' https://acsbapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.practera.com wss://*.pusher.com https://*.amazonaws.com; img-src 'self' data: blob: https:"
               Override: true
             ContentTypeOptions: 
               Override: true
             ReferrerPolicy: 
               ReferrerPolicy: "strict-origin-when-cross-origin"
               Override: true
-            XSSProtection: 
-              ModeBlock: true
+            FrameOptions:
+              FrameOption: SAMEORIGIN
               Override: true
-              Protection: true
+            XSSProtection: 
+              ModeBlock: false
+              Override: true
+              Protection: false
           CustomHeadersConfig: 
             Items: 
               - 
@@ -178,6 +181,14 @@ resources:
                 Header: "Permissions-Policy"
                 Override: true
                 Value: "accelerometer=(),camera=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),payment=(),usb=()"
+              -
+                Header: "X-Permitted-Cross-Domain-Policies"
+                Override: true
+                Value: "none"
+              -
+                Header: "Cross-Origin-Opener-Policy"
+                Override: true
+                Value: "same-origin-allow-popups"
 
 # Security Header Response CFN END
 

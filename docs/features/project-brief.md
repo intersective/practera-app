@@ -64,8 +64,9 @@ interface ProjectBrief {
 - Deliverables
 
 **Color treatment:**
-- Modal section header icons and chips use the primary brand color.
-- Do not use the secondary brand color for Technical Skills accents; customer secondary colors can be too light to remain visible on the light modal background.
+- Modal section header icons use the primary brand color.
+- Industry, Technical Skills, and Professional Skills chips use Ionic's semantic dark color for their labels and outlines.
+- Chip colors do not use customer primary or secondary branding, because configured brand colors can be too light to remain visible on the modal background.
 
 **Empty Field Handling:**
 - All sections show "None specified" when the field is empty or undefined
@@ -197,7 +198,7 @@ Button placement - next to experience name:
 - Keyboard navigation with `(keydown.enter)` and `(keydown.space)` handlers
 - Modal has proper semantic structure with `<main>`, `<section>`, and heading hierarchy
 - Close button includes `aria-label="Close project brief"`
-- Ion-chips for industry/skills use the primary brand color so labels and outlines remain visible when secondary branding is faint
+- Ion-chips for industry and skills use the semantic dark color so labels and outlines remain readable regardless of customer branding
 
 ## Sample Data
 
@@ -235,7 +236,8 @@ After parsing:
 - Template renders title when provided
 - Template shows "None specified" for empty fields
 - Template renders chips for industry and skills
-- Template keeps section accents on the primary brand color
+- Template keeps section header icons on the primary brand color
+- Template uses the semantic dark color for all Project Brief chips
 
 **HomePage tests (additions needed):**
 - Button visible when `projectBrief` is set

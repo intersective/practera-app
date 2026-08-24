@@ -124,12 +124,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
     if (searchParams.has("token") && !searchParams.has("do")) {
       const queries = this.utils.urlQueryToObject(queryString);
-      return this.navigate([
-        "auth",
-        "jwt",
-        searchParams.get("token"),
-        queries,
-      ]);
+      const token = searchParams.get("token");
+      // Store the JWT in sessionStorage so it never appears in the URL, then
+      // navigate to /auth/jwt without the token in the path. Use replaceState
+      // to strip ?token= from browser history before navigating.
+      try { sessionStorage.setItem('pending_jwt_token', token); } catch { /* private browsing */ }
+      const { token: _t, ...queriesWithoutToken } = queries as any;
+      history.replaceState(null, '', window.location.pathname);
+      return this.navigate(["auth", "jwt", queriesWithoutToken]);
     }
 
     if (searchParams.has("apikey")) {
