@@ -1,0 +1,264 @@
+<ion-header class="ion-no-border header-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      @if (mode !== 'list') {
+        <ion-back-button (click)="goBack()" defaultHref="/v3/events"></ion-back-button>
+      } @else {
+        <ion-back-button defaultHref="/v3/events"></ion-back-button>
+      }
+    </ion-buttons>
+    <ion-title class="headline-4 grey-75">
+      @if (mode === 'create') { Schedule a Meeting }
+      @else if (mode === 'vote') { Vote on Times }
+      @else { Meeting Polls }
+    </ion-title>
+    <ion-buttons slot="end">
+      <app-personalised-header></app-personalised-header>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- ─── LIST VIEW ─────────────────────────────────────────────────────────── -->
+  @if (mode === 'list') {
+    <div class="poll-list-header">
+      <ion-button expand="block" (click)="openCreate()" [disabled]="!teamId">
+        <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        Schedule a Meeting
+      </ion-button>
+    </div>
+
+    @if (loading) {
+      <div class="loading-center">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    }
+
+    @if (!loading && polls.length === 0) {
+      <ion-text color="medium">
+        <p class="ion-text-center ion-padding-top">No meeting polls yet. Schedule one to find a time that works for your team.</p>
+      </ion-text>
+    }
+
+    @for (poll of polls; track poll.id) {
+      <ion-card class="poll-card">
+        <ion-card-header>
+          <div class="poll-card-title-row">
+            <ion-card-title>{{ poll.title }}</ion-card-title>
+            <ion-badge [color]="statusBadge(poll.status)">{{ poll.status }}</ion-badge>
+          </div>
+          @if (poll.teamName) {
+            <ion-card-subtitle>{{ poll.teamName }}</ion-card-subtitle>
+          }
+        </ion-card-header>
+        <ion-card-content>
+          @if (poll.description) {
+            <p class="poll-description">{{ poll.description }}</p>
+          }
+          <div class="poll-meta">
+            <span><ion-icon name="time-outline"></ion-icon> {{ poll.durationMinutes }} min</span>
+            @if (poll.location) {
+              <span><ion-icon name="location-outline"></ion-icon> {{ poll.location }}</span>
+            }
+            <span><ion-icon name="calendar-number-outline"></ion-icon> {{ poll.slots.length }} time slot{{ poll.slots.length !== 1 ? 's' : '' }}</span>
+          </div>
+
+          @if (poll.status === 'scheduled' && poll.eventId) {
+            <ion-note color="success">
+              <ion-icon name="checkmark-circle-outline"></ion-icon>
+              Meeting scheduled!
+            </ion-note>
+          }
+
+          <div class="poll-actions">
+            @if (poll.status === 'open') {
+              <ion-button fill="outline" size="small" (click)="openVote(poll)">
+                <ion-icon name="thumbs-up-outline" slot="start"></ion-icon>
+                Vote
+              </ion-button>
+              <ion-button fill="outline" size="small" color="danger" (click)="confirmCancel(poll)">
+                Cancel Poll
+              </ion-button>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  }
+
+  <!-- ─── CREATE VIEW ───────────────────────────────────────────────────────── -->
+  @if (mode === 'create') {
+    <form (ngSubmit)="submitCreate()">
+      <ion-list>
+        <ion-item>
+          <ion-label position="stacked">Meeting Title *</ion-label>
+          <ion-input
+            [(ngModel)]="createTitle"
+            name="title"
+            placeholder="e.g. Sprint Planning"
+            required
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Description</ion-label>
+          <ion-textarea
+            [(ngModel)]="createDescription"
+            name="description"
+            placeholder="What will you discuss?"
+            rows="3"
+          ></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Duration (minutes)</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="createDuration"
+            name="duration"
+            min="15"
+            max="480"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Location / Link</ion-label>
+          <ion-input
+            [(ngModel)]="createLocation"
+            name="location"
+            placeholder="Room 3 or Zoom link"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Voting Deadline (optional)</ion-label>
+          <ion-datetime-button datetime="deadlinePicker"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime
+                id="deadlinePicker"
+                [(ngModel)]="createDeadline"
+                name="deadline"
+                presentation="date-time"
+                [min]="today"
+              ></ion-datetime>
+            </ng-template>
+          </ion-modal>
+        </ion-item>
+      </ion-list>
+
+      <div class="slot-section">
+        <h3>Proposed Times (min 2, max 6)</h3>
+
+        @for (slot of createSlots; track $index) {
+          <ion-card class="slot-draft-card">
+            <ion-card-content>
+              <ion-item>
+                <ion-label position="stacked">Start</ion-label>
+                <ion-input
+                  type="datetime-local"
+                  [(ngModel)]="slot.slotStart"
+                  [name]="'slotStart' + $index"
+                ></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="stacked">End</ion-label>
+                <ion-input
+                  type="datetime-local"
+                  [(ngModel)]="slot.slotEnd"
+                  [name]="'slotEnd' + $index"
+                ></ion-input>
+              </ion-item>
+              @if (createSlots.length > 2) {
+                <ion-button fill="clear" size="small" color="danger" (click)="removeSlot($index)">
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  Remove
+                </ion-button>
+              }
+            </ion-card-content>
+          </ion-card>
+        }
+
+        @if (createSlots.length < 6) {
+          <ion-button fill="outline" size="small" expand="block" (click)="addSlot()">
+            <ion-icon name="add-outline" slot="start"></ion-icon>
+            Add Another Time Slot
+          </ion-button>
+        }
+      </div>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        class="ion-margin-top"
+        [disabled]="creating"
+      >
+        @if (creating) { <ion-spinner name="crescent" slot="start"></ion-spinner> }
+        Create Poll &amp; Notify Team
+      </ion-button>
+    </form>
+  }
+
+  <!-- ─── VOTE VIEW ─────────────────────────────────────────────────────────── -->
+  @if (mode === 'vote' && votingPoll) {
+    <p class="vote-instruction">
+      Mark each time slot with your availability. Your team will see the results in real time.
+    </p>
+
+    @for (slot of votingPoll.slots; track slot.id) {
+      <ion-card class="slot-vote-card">
+        <ion-card-header>
+          <ion-card-title class="slot-time">{{ slotLabel(slot) }}</ion-card-title>
+          <div class="slot-vote-counts">
+            <ion-badge color="success">{{ slot.availableCount }} available</ion-badge>
+            <ion-badge color="warning">{{ slot.maybeCount }} maybe</ion-badge>
+            <ion-badge color="danger">{{ slot.unavailableCount }} unavailable</ion-badge>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="vote-buttons">
+            <ion-button
+              [fill]="getVote(slot.id) === 'available' ? 'solid' : 'outline'"
+              color="success"
+              size="small"
+              (click)="setVote(slot.id, 'available')"
+            >
+              <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+              Available
+            </ion-button>
+            <ion-button
+              [fill]="getVote(slot.id) === 'maybe' ? 'solid' : 'outline'"
+              color="warning"
+              size="small"
+              (click)="setVote(slot.id, 'maybe')"
+            >
+              <ion-icon name="help-outline" slot="start"></ion-icon>
+              Maybe
+            </ion-button>
+            <ion-button
+              [fill]="getVote(slot.id) === 'unavailable' ? 'solid' : 'outline'"
+              color="danger"
+              size="small"
+              (click)="setVote(slot.id, 'unavailable')"
+            >
+              <ion-icon name="close-outline" slot="start"></ion-icon>
+              Unavailable
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <ion-button
+      expand="block"
+      class="ion-margin-top"
+      (click)="submitVotes()"
+      [disabled]="voting"
+    >
+      @if (voting) { <ion-spinner name="crescent" slot="start"></ion-spinner> }
+      Save My Availability
+    </ion-button>
+  }
+
+</ion-content>

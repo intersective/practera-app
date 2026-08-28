@@ -1,0 +1,99 @@
+.poll-list-header {
+  margin-bottom: 1rem;
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.poll-card {
+  margin: 0 0 1rem 0;
+  border-radius: 12px;
+
+  .poll-card-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+
+    ion-card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+
+  .poll-description {
+    color: var(--ion-color-medium);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .poll-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+    margin-bottom: 0.75rem;
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+
+  .poll-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
+
+.slot-section {
+  margin-top: 1.5rem;
+
+  h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+    margin-bottom: 0.75rem;
+  }
+}
+
+.slot-draft-card {
+  margin: 0 0 0.75rem 0;
+  border-radius: 10px;
+}
+
+.vote-instruction {
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.slot-vote-card {
+  margin: 0 0 1rem 0;
+  border-radius: 12px;
+
+  .slot-time {
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+
+  .slot-vote-counts {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.4rem;
+  }
+
+  .vote-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+}
