@@ -63,6 +63,14 @@ const routes: Routes = [
         loadChildren: () => import('../badges-certificates/badges-certificates.module').then(m => m.BadgesCertificatesPageModule)
       },
       {
+        path: 'meeting-poll',
+        loadChildren: () => import('../meeting-poll/meeting-poll.module').then(m => m.MeetingPollModule)
+      },
+      {
+        path: 'contribution-rating',
+        loadChildren: () => import('../contribution-rating/contribution-rating.module').then(m => m.ContributionRatingModule)
+      },
+      {
         path: '',
         redirectTo: '/v3/home',
         pathMatch: 'full'

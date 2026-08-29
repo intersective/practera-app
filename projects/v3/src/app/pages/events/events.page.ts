@@ -2,7 +2,9 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
+import { BrowserStorageService } from '@v3/services/storage.service';
 import { Event } from '@v3/services/event.service';
+import { ContributionService } from '@v3/services/contribution.service';
 
 
 @Component({
@@ -34,10 +36,15 @@ export class EventsPage implements OnInit {
   // assessment component
   @ViewChild('assessment') assessment;
 
+  teamId: number | null = null;
+  pendingRatingCount = 0;
+
   constructor(
     @Inject(DOCUMENT) private readonly document: Document,
     private route: ActivatedRoute,
     private utils: UtilsService,
+    private storage: BrowserStorageService,
+    private contributionService: ContributionService,
   ) { }
 
   get isMobile(): boolean {
@@ -46,6 +53,8 @@ export class EventsPage implements OnInit {
 
   ngOnInit() {
     this.utils.setPageTitle('Events - Practera');
+    this.teamId = this.storage.get('teamId') ?? null;
+    this.checkPendingRatings();
     // get activity and event id from route
     this.activityId = +this.route.snapshot.paramMap.get('activity_id');
     this.eventId = +this.route.snapshot.paramMap.get('event_id');
@@ -71,6 +80,16 @@ export class EventsPage implements OnInit {
     if (eventDetailElement) {
       eventDetailElement.focus();
     }
+  }
+
+  private checkPendingRatings() {
+    if (!this.teamId) return;
+    this.contributionService.ensureContributionTodos().subscribe();
+    this.contributionService.getPendingRatings().subscribe({
+      next: pending => {
+        this.pendingRatingCount = pending.filter(p => p.targets.some(t => !t.alreadyRated)).length;
+      },
+    });
   }
 
   checkin(params: { assessmentId: number; contextId: number }) {

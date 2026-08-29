@@ -1,0 +1,132 @@
+<app-personalised-header></app-personalised-header>
+
+<ion-content>
+  <!-- Loading state -->
+  @if (loading) {
+    <div class="flex items-center justify-center pt-20">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+    </div>
+  }
+
+  <!-- All done -->
+  @if (!loading && allDone) {
+    <div class="flex flex-col items-center justify-center pt-16 px-6 text-center gap-5">
+      <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+        <ion-icon name="checkmark-circle" color="success" style="font-size: 2.5rem;"></ion-icon>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-900">All caught up!</h2>
+      <p class="text-sm text-gray-500">You have no pending meeting ratings.</p>
+      <ion-button expand="block" (click)="done()" class="w-full max-w-xs">Back to Events</ion-button>
+    </div>
+  }
+
+  <!-- Rating form -->
+  @if (!loading && !allDone && current) {
+    <div class="max-w-lg mx-auto px-4 pt-6 pb-20">
+
+      <!-- Progress indicator -->
+      @if (totalPending > 1) {
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-xs text-gray-500">Meeting {{ currentIndex + 1 }} of {{ totalPending }}</span>
+          <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+            <div
+              class="h-1.5 rounded-full bg-[color:var(--ion-color-primary)] transition-all"
+              [style.width.%]="((currentIndex + 1) / totalPending) * 100"
+            ></div>
+          </div>
+        </div>
+      }
+
+      <!-- Event header -->
+      <div class="bg-gray-50 rounded-xl p-4 mb-6">
+        <div class="flex items-center gap-2 mb-1">
+          <ion-icon name="people-outline" class="text-gray-500 shrink-0"></ion-icon>
+          <span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Team Meeting</span>
+        </div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">{{ current.eventTitle }}</h2>
+        <p class="text-xs text-gray-500">{{ formatDate(current.eventDate) }}</p>
+      </div>
+
+      <!-- Instructions -->
+      <p class="text-sm text-gray-600 mb-5">
+        Rate each team member's contribution to this meeting, or mark them as "Not Present" if they didn't attend.
+      </p>
+
+      <!-- Member ratings -->
+      <div class="space-y-4">
+        @for (member of ratings; track member.userId) {
+          <div class="bg-white rounded-xl border border-gray-200 p-4">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-[color:var(--ion-color-primary-tint)] flex items-center justify-center shrink-0">
+                  <span class="text-sm font-semibold text-[color:var(--ion-color-primary)]">
+                    {{ member.name[0]?.toUpperCase() }}
+                  </span>
+                </div>
+                <span class="text-sm font-medium text-gray-900">{{ member.name }}</span>
+              </div>
+              <!-- NP toggle -->
+              <button
+                type="button"
+                (click)="toggleNotPresent(member.userId)"
+                [class]="member.notPresent
+                  ? 'text-xs px-2.5 py-1 rounded-full font-medium bg-red-100 text-red-700'
+                  : 'text-xs px-2.5 py-1 rounded-full font-medium bg-gray-100 text-gray-600'"
+              >
+                Not Present
+              </button>
+            </div>
+
+            <!-- Star rating -->
+            @if (!member.notPresent) {
+              <div class="flex items-center gap-1.5">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <button
+                    type="button"
+                    (click)="setScore(member.userId, star)"
+                    class="flex flex-col items-center gap-0.5 p-1.5 rounded-lg transition-colors"
+                    [class.bg-yellow-50]="member.score !== null && star <= member.score"
+                  >
+                    <ion-icon
+                      [name]="member.score !== null && star <= member.score ? 'star' : 'star-outline'"
+                      [class]="member.score !== null && star <= member.score ? 'text-yellow-400' : 'text-gray-300'"
+                      style="font-size: 1.5rem;"
+                    ></ion-icon>
+                    <span class="text-[10px] text-gray-400 leading-none">{{ star }}</span>
+                  </button>
+                }
+                @if (member.score) {
+                  <span class="text-xs text-gray-500 ml-1">{{ scoreLabel(member.score) }}</span>
+                }
+              </div>
+            } @else {
+              <p class="text-xs text-red-500 italic">Marked as not present</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Actions -->
+      <div class="mt-6 flex flex-col gap-2">
+        <ion-button
+          expand="block"
+          [disabled]="submitting || !isValid()"
+          (click)="submit()"
+        >
+          @if (submitting) {
+            <ion-spinner name="crescent" slot="start"></ion-spinner>
+          }
+          @if (currentIndex < totalPending - 1) {
+            Submit &amp; Next
+          } @else {
+            Submit Ratings
+          }
+        </ion-button>
+        <ion-button expand="block" fill="outline" color="medium" (click)="skipCurrent()">
+          Skip for Now
+        </ion-button>
+      </div>
+
+    </div>
+  }
+</ion-content>

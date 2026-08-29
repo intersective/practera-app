@@ -3,6 +3,16 @@
   <ion-toolbar>
     <ion-title class="headline-4 grey-75" i18n>Events</ion-title>
     <ion-buttons slot="end">
+      @if (teamId) {
+        <ion-button
+          fill="clear"
+          [routerLink]="['/v3/meeting-poll']"
+          [queryParams]="{ teamId: teamId }"
+          aria-label="Schedule team meeting"
+        >
+          <ion-icon name="calendar-number-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      }
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
@@ -11,6 +21,20 @@
 <ion-content [ngClass]="{
   'scrollable-desktop': !isMobile
 }">
+  <!-- Post-meeting rating prompt -->
+  @if (pendingRatingCount > 0) {
+    <div class="px-4 pt-3">
+      <a [routerLink]="['/v3/contribution-rating']"
+         class="flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl p-3.5 no-underline">
+        <ion-icon name="star-half-outline" class="text-amber-500 text-xl shrink-0"></ion-icon>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-amber-900 m-0">Rate your team meeting{{ pendingRatingCount > 1 ? 's' : '' }}</p>
+          <p class="text-xs text-amber-700 m-0">{{ pendingRatingCount }} meeting{{ pendingRatingCount > 1 ? 's' : '' }} waiting for contribution ratings</p>
+        </div>
+        <ion-icon name="chevron-forward-outline" class="text-amber-400 shrink-0"></ion-icon>
+      </a>
+    </div>
+  }
   @if (!isMobile) {
     <ion-grid class="ion-no-padding">
       <ion-row>

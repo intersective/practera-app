@@ -1,0 +1,49 @@
+<ion-content class="ion-padding">
+  <div class="flex flex-col items-center justify-center min-h-full gap-6 text-center">
+
+    @if (state === 'loading') {
+      <ion-spinner name="crescent" color="primary" style="width: 3rem; height: 3rem;"></ion-spinner>
+      <p class="text-sm text-gray-500">Checking you in…</p>
+    }
+
+    @if (state === 'success') {
+      <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+        <ion-icon name="checkmark-circle" color="success" style="font-size: 3.5rem;"></ion-icon>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-1">You're checked in!</h2>
+        <p class="text-sm text-gray-500">Your attendance has been recorded.</p>
+      </div>
+      <ion-button expand="block" class="w-full max-w-xs" (click)="goToEvents()">
+        View Events
+      </ion-button>
+    }
+
+    @if (state === 'error') {
+      <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center">
+        <ion-icon name="close-circle" color="danger" style="font-size: 3.5rem;"></ion-icon>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-1">Check-in failed</h2>
+        <p class="text-sm text-gray-500 max-w-xs">{{ errorMessage }}</p>
+      </div>
+      <ion-button expand="block" fill="outline" class="w-full max-w-xs" (click)="goToEvents()">
+        Go to Events
+      </ion-button>
+    }
+
+    @if (state === 'no-token') {
+      <div class="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center">
+        <ion-icon name="qr-code-outline" color="warning" style="font-size: 3.5rem;"></ion-icon>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-1">Invalid check-in link</h2>
+        <p class="text-sm text-gray-500">Scan the QR code displayed at your session to check in.</p>
+      </div>
+      <ion-button expand="block" fill="outline" class="w-full max-w-xs" (click)="goToEvents()">
+        Go to Events
+      </ion-button>
+    }
+
+  </div>
+</ion-content>

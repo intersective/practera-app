@@ -34,6 +34,11 @@ const routes: Routes = [
     canLoad: [DevOnlyGuard],
   },
   {
+    path: 'checkin',
+    loadChildren: () => import('./pages/checkin/checkin.module').then(m => m.CheckinModule),
+    canLoad: [AuthGuard],
+  },
+  {
     path: '',
     redirectTo: '/auth/login',
     pathMatch: 'full'

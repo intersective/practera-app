@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 import { EventsPageRoutingModule } from './events-routing.module';
 
@@ -17,6 +18,7 @@ import { EventListModule } from './event-list/event-list.module';
     PersonalisedHeaderModule,
     EventListModule,
     EventDetailModule,
+    RouterModule,
   ],
   declarations: [EventsPage, EventsRoutingComponent]
 })
