@@ -529,7 +529,7 @@ describe('AssessmentComponent', () => {
               {
                 id: 3,
                 name: 'Multi Team Member Selector',
-                type: 'multi team member selector',
+                type: 'multi_team_member_selector',
                 isRequired: true,
                 audience: ['submitter']
               }
@@ -757,7 +757,7 @@ describe('AssessmentComponent', () => {
               {
                 id: 2,
                 name: 'Multi Team Member Selector',
-                type: 'multi team member selector',
+                type: 'multi_team_member_selector',
                 isRequired: false,
                 audience: ['reviewer']
               }
@@ -2283,8 +2283,8 @@ describe('AssessmentComponent', () => {
           { id: 2, name: 'oneof q', description: '', canAnswer: true, canComment: true, type: 'oneof', isRequired: true, audience: ['reviewer'] },
           { id: 3, name: 'multiple q', description: '', canAnswer: true, canComment: true, type: 'multiple', isRequired: true, audience: ['reviewer'] },
           { id: 4, name: 'file q', description: '', canAnswer: true, canComment: true, type: 'file', isRequired: true, audience: ['reviewer'] },
-          { id: 5, name: 'team-member q', description: '', canAnswer: true, canComment: true, type: 'team member selector', isRequired: true, audience: ['reviewer'] },
-          { id: 6, name: 'multi-team q', description: '', canAnswer: true, canComment: true, type: 'multi team member selector', isRequired: true, audience: ['reviewer'] },
+          { id: 5, name: 'team-member q', description: '', canAnswer: true, canComment: true, type: 'team_member_selector', isRequired: true, audience: ['reviewer'] },
+          { id: 6, name: 'multi-team q', description: '', canAnswer: true, canComment: true, type: 'multi_team_member_selector', isRequired: true, audience: ['reviewer'] },
         ],
       }],
     };
@@ -2568,7 +2568,7 @@ describe('AssessmentComponent', () => {
             description: '',
             questions: [{
               id: 2,
-              type: 'team member selector',
+              type: 'team_member_selector',
               teamMembers: [
                 { key: '{"userId":1}', userName: 'Member 1' },
                 { key: '{"userId":2}', userName: 'Member 2' },
@@ -2591,7 +2591,7 @@ describe('AssessmentComponent', () => {
           {
             name: 'Empty team member selection',
             description: '',
-            questions: [{ id: 2, type: 'team member selector', teamMembers: [] }],
+            questions: [{ id: 2, type: 'team_member_selector', teamMembers: [] }],
           },
         ],
       } as any;
@@ -2612,7 +2612,7 @@ describe('AssessmentComponent', () => {
             description: '',
             questions: [{
               id: 2,
-              type: 'team member selector',
+              type: 'team_member_selector',
               teamMembers: [
                 { key: '{"userId":1}' },
                 { key: '{"userId":2}' },
@@ -2715,7 +2715,7 @@ describe('AssessmentComponent', () => {
             description: '',
             questions: [{
               id: 2,
-              type: 'team member selector',
+              type: 'team_member_selector',
               teamMembers: [{ key: '{"userId":1}' }],
             }],
           },
@@ -2791,7 +2791,7 @@ describe('AssessmentComponent', () => {
             description: '',
             questions: [{
               id: 2,
-              type: 'team member selector',
+              type: 'team_member_selector',
               teamMembers: [{ key: '{"userId":1}' }],
             }],
           },
@@ -2934,7 +2934,7 @@ describe('AssessmentComponent', () => {
       description: '',
       questions: [{
         id,
-        type: 'team member selector',
+        type: 'team_member_selector',
         isRequired: false,
         audience: ['submitter'],
         teamMembers: [{ key: `{"userId":${id}}`, userName: `User ${id}` }],
@@ -2947,7 +2947,7 @@ describe('AssessmentComponent', () => {
       description: '',
       questions: [{
         id,
-        type: 'multi team member selector',
+        type: 'multi_team_member_selector',
         isRequired: false,
         audience: ['submitter'],
         teamMembers: [
@@ -3015,7 +3015,7 @@ describe('AssessmentComponent', () => {
           description: '',
           questions: [{
             id,
-            type: 'team member selector',
+            type: 'team_member_selector',
             isRequired: false,
             audience: ['submitter'],
             teamMembers: [{ key: '{"userId":4}', userName: 'learner 004' }],
@@ -3124,7 +3124,7 @@ describe('AssessmentComponent', () => {
           description: '',
           questions: [{
             id,
-            type: 'team member selector',
+            type: 'team_member_selector',
             isRequired: false,
             audience: ['submitter'],
             teamMembers: [{ key: '{"userId":4}', userName: 'learner 004' }],
@@ -3158,7 +3158,7 @@ describe('AssessmentComponent', () => {
           description: '',
           questions: [{
             id,
-            type: 'team member selector',
+            type: 'team_member_selector',
             isRequired: false,
             audience: ['submitter'],
             teamMembers: allMemberKeys,
@@ -3291,7 +3291,7 @@ describe('AssessmentComponent', () => {
           description: '',
           questions: [{
             id,
-            type: 'team member selector',
+            type: 'team_member_selector',
             isRequired: false,
             audience: ['submitter'],
             teamMembers: [{ key: '{"userId":4}', userName: 'learner 004' }],
@@ -3329,7 +3329,7 @@ describe('AssessmentComponent', () => {
           description: '',
           questions: [{
             id,
-            type: 'team member selector',
+            type: 'team_member_selector',
             isRequired: false,
             audience: ['submitter'],
             teamMembers: allMemberKeys,

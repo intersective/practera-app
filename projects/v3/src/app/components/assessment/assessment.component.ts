@@ -586,7 +586,7 @@ Best regards`;
 
         if (this.action === 'review') {
           // use array initial value for checkbox-based question types
-          const arrayTypes = ['multiple', 'multi team member selector'];
+          const arrayTypes = ['multiple', 'multi_team_member_selector'];
           quesCtrl = {
             comment: '',
             answer: arrayTypes.includes(question.type) ? [] : '',
@@ -595,7 +595,7 @@ Best regards`;
         } else {
           // for assessment mode, multi-team-member-selector uses a plain array
           // (not an object) because onChange/isSelected/triggerSave treat innerValue as an array
-          if (question.type === 'multi team member selector') {
+          if (question.type === 'multi_team_member_selector') {
             quesCtrl = [];
           }
         }
@@ -884,8 +884,8 @@ Best regards`;
             break;
           case 'text':
           case 'file': // answer is for text/oneof/multiple/slider only, file is always ''
-          case 'team member selector':
-          case 'multi team member selector':
+          case 'team_member_selector':
+          case 'multi_team_member_selector':
             answer = '';
             break;
           case 'slider':
@@ -1470,7 +1470,7 @@ Best regards`;
 
     for (let i = 1; i < groups.length; i++) {
       const selectorQ = groups[i].questions?.find(q =>
-        q.type === 'team member selector' || q.type === 'multi team member selector'
+        q.type === 'team_member_selector' || q.type === 'multi_team_member_selector'
       );
       if (!selectorQ) continue;
       (selectorQ.teamMembers ?? []).forEach((m: { key: string }) => memberKeys.add(m.key));

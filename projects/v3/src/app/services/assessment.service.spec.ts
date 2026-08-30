@@ -149,7 +149,7 @@ describe('AssessmentService', () => {
                     id: 12,
                     name: 'test name 12',
                     description: 'des 12',
-                    type: 'team member selector',
+                    type: 'team_member_selector',
                     isRequired: true,
                     hasComment: true,
                     audience: ['submitter', 'reviewer'],
@@ -588,7 +588,7 @@ describe('AssessmentService', () => {
       service.questions = {
         1: { type: 'oneof', choices: [] },
         2: { type: 'multiple', choices: [] },
-        3: { type: 'multi team member selector', choices: [] }
+        3: { type: 'multi_team_member_selector', choices: [] }
       };
     });
 

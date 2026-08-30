@@ -409,7 +409,7 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-file-upload>
 
-              <app-team-member-selector *ngSwitchCase="'team member selector'"
+              <app-team-member-selector *ngSwitchCase="'team_member_selector'"
                 #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"
@@ -424,7 +424,7 @@
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-team-member-selector>
 
-              <app-multi-team-member-selector *ngSwitchCase="'multi team member selector'"
+              <app-multi-team-member-selector *ngSwitchCase="'multi_team_member_selector'"
                 #questionField
                 [question]="question"
                 [doAssessment]="doAssessment"

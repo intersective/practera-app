@@ -19,7 +19,7 @@ export interface Topic {
   title: string;
   content: any;
   rawContent?: string;
-  videolink?: string;
+  videoLink?: string;
   files: Array<any>;
   audio?: {
     link: string;
@@ -65,7 +65,7 @@ export class TopicService {
           id
           title
           content
-          videolink
+          videoLink
           files { name url }
           audio { link language status }
           h5p { contentUrl librariesUrl frameJs frameCss }
@@ -133,7 +133,7 @@ export class TopicService {
       title: raw.title,
       rawContent: raw.content || undefined,
       content: raw.content ? this._processContent(raw.content) : '',
-      videolink: raw.videolink ?? '',
+      videoLink: raw.videoLink ?? '',
       files: (raw.files ?? []).map((f: any) => ({ url: f.url, name: f.name })),
       audio: raw.audio?.link ? {
         link: raw.audio.link,

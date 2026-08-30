@@ -283,7 +283,7 @@ describe('TopicComponent', () => {
       });
 
       component.topic = {
-        videolink: 'test.com/vimeo',
+        videoLink: 'test.com/vimeo',
       } as any;
       component.ngOnChanges({
         topic: {
@@ -322,7 +322,7 @@ describe('TopicComponent', () => {
       });
 
       component.topic = {
-        videolink: 'test.com',
+        videoLink: 'test.com',
       } as any;
       component.ngOnChanges({
         topic: {

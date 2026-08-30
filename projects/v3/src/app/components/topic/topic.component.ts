@@ -159,13 +159,13 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
       this.startAttentionTracking(this.topic);
       this.startTopicTimeTracking(this.getCurrentTopicTimerId(this.topic));
 
-      if (this.topic.videolink) {
+      if (this.topic.videoLink) {
         // this may set iframeHtml for youtube/vimeo embeds
         this._setVideoUrlElelemts();
 
         // for native videos (non-embeds), set source and mark for init
         if (!this.iframeHtml) {
-          this.videoSrc = this.topic.videolink;
+          this.videoSrc = this.topic.videoLink;
           this.videoNeedsInit = true;
         } else {
           this.videoSrc = null;
@@ -276,11 +276,11 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
   }
 
   private _setVideoUrlElelemts() {
-    if (this.topic.videolink.includes('vimeo') ||
-      this.topic.videolink.includes('youtube') ||
-      this.topic.videolink.includes('youtu.be')) {
+    if (this.topic.videoLink.includes('vimeo') ||
+      this.topic.videoLink.includes('youtube') ||
+      this.topic.videoLink.includes('youtu.be')) {
       this.iframeHtml =
-        this.embedService.embed(this.topic.videolink, {
+        this.embedService.embed(this.topic.videoLink, {
           attr: {
             class: !this.utils.isMobile()
               ? "topic-video desktop-view"
@@ -541,7 +541,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
       filePreviewCount: this.attentionFilePreviewCount,
       fileDownloadCount: this.attentionFileDownloadCount,
       fileCount: this.topic?.files?.length || 0,
-      hasMedia: !!(this.topic?.videolink || this.topic?.audio),
+      hasMedia: !!(this.topic?.videoLink || this.topic?.audio),
     });
   }
 

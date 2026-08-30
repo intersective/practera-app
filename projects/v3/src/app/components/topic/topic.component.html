@@ -7,7 +7,7 @@
         <span i18n="topic time spent">Time spent: {{ formattedTopicTimeSpent }}</span>
       </div>
     }
-    @if (topic.videolink && topic.videolink !=='magiclink') {
+    @if (topic.videoLink && topic.videoLink !=='magiclink') {
       <div class="text-center topic-video">
         @if (iframeHtml) {
           <div class="video-embed" [innerHTML]="iframeHtml"></div>

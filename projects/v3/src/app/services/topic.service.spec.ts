@@ -18,7 +18,7 @@ describe('TopicService', () => {
         id: 1,
         title: 'Test Topic',
         content: '<p>Content</p>',
-        videolink: 'https://youtube.com/watch?v=test',
+        videoLink: 'https://youtube.com/watch?v=test',
         files: [{ name: 'doc.pdf', url: 'https://example.com/doc.pdf' }],
         audio: { link: 'https://audio.example.com/clip.mp3', language: 'en', status: 'ready' },
       }
@@ -86,7 +86,7 @@ describe('TopicService', () => {
     it('does not set audio when audio link is absent', (done) => {
       const noAudioResponse = {
         data: {
-          topic: { id: 2, title: 'No Audio', content: '', videolink: '', files: [], audio: null }
+          topic: { id: 2, title: 'No Audio', content: '', videoLink: '', files: [], audio: null }
         }
       };
       apolloSpy.graphQLFetch.and.returnValue(of(noAudioResponse as any));

@@ -403,8 +403,8 @@ export class ChatService {
     }
 
     return this.apolloService.graphQLMutate(
-      `mutation createChatLogs($channelUuid: String!, $message: String, $fileObj: FileInput) {
-        createChatLog(channelUuid: $channelUuid, message: $message, fileObj: $fileObj) {
+      `mutation createChatLogs($input: CreateChatLogInput!) {
+        createChatLog(input: $input) {
           uuid
           isSender
           message
@@ -424,9 +424,11 @@ export class ChatService {
         }
       }`,
       {
-        channelUuid: data.channelUuid,
-        message: data.message,
-        fileObj: data.file
+        input: {
+          channelUuid: data.channelUuid,
+          message: data.message,
+          fileObj: data.file,
+        },
       }
     ).pipe(
       map(response => {

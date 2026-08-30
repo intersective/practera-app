@@ -337,8 +337,8 @@ export class AssessmentService {
             question.fileType = eachQuestion.fileType;
             break;
 
-          case "team member selector":
-          case "multi team member selector":
+          case "team_member_selector":
+          case "multi_team_member_selector":
             question.teamMembers = [];
             eachQuestion.teamMembers.forEach((eachTeamMember) => {
               question.teamMembers.push({
@@ -563,7 +563,7 @@ export class AssessmentService {
           answer = answer.map((value: string) => +(value || NaN));
           break;
 
-        case "multi team member selector":
+        case "multi_team_member_selector":
           if (this.utils.isEmpty(answer)) {
             answer = [];
           }
@@ -675,22 +675,20 @@ export class AssessmentService {
     answer?: string,
     file?: FileInput,
   ) {
-    const paramsFormat =
-      "$reviewId: Int!, $submissionId: Int! $questionId: Int!, $answer: Any!, $file: FileInput, $comment: String!";
-    const params =
-      "reviewId:$reviewId, submissionId:$submissionId, questionId:$questionId, answer:$answer, file:$file, comment:$comment";
     const variables = {
-      reviewId,
-      submissionId,
-      questionId,
-      answer,
-      file,
-      comment,
+      input: {
+        reviewId,
+        submissionId,
+        questionId,
+        answer,
+        file,
+        comment,
+      },
     };
     return this.apolloService
       .continuousGraphQLMutate(
-        `mutation saveReviewAnswer(${paramsFormat}) {
-          saveReviewAnswer(${params}) {
+        `mutation saveReviewAnswer($input: SaveReviewAnswerInput!) {
+          saveReviewAnswer(input: $input) {
             success
             message
           }
@@ -718,20 +716,18 @@ export class AssessmentService {
     contextId: number,
     answers: Answer[]
   ) {
-    const paramsFormat =
-      "$submissionId: Int!, $assessmentId: Int!, $contextId: Int!, $answers: [AssessmentSubmissionAnswerInput]";
-    const params =
-      "submissionId:$submissionId, assessmentId:$assessmentId, contextId:$contextId, answers:$answers";
     const variables = {
-      submissionId,
-      assessmentId,
-      contextId,
-      answers,
+      input: {
+        submissionId,
+        assessmentId,
+        contextId,
+        answers,
+      },
     };
     return this.apolloService
       .graphQLMutate(
-        `mutation submitAssessment(${paramsFormat}) {
-          submitAssessment(${params})
+        `mutation submitAssessment($input: SubmitAssessmentInput!) {
+          submitAssessment(input: $input)
         }`,
         variables
       )
