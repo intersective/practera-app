@@ -17,6 +17,7 @@ export interface H5pContent {
 export interface Topic {
   id: number;
   title: string;
+  summary?: string;
   content: any;
   rawContent?: string;
   videoLink?: string;
@@ -64,6 +65,7 @@ export class TopicService {
         topic(id: $id) {
           id
           title
+          summary
           content
           videoLink
           files { name url }

@@ -7,6 +7,9 @@
         <span i18n="topic time spent">Time spent: {{ formattedTopicTimeSpent }}</span>
       </div>
     }
+    @if (sanitizedSummary) {
+      <div class="topic-summary body-2" [innerHTML]="sanitizedSummary"></div>
+    }
     @if (topic.videoLink && topic.videoLink !=='magiclink') {
       <div class="text-center topic-video">
         @if (iframeHtml) {

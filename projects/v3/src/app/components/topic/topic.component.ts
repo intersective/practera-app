@@ -55,6 +55,7 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
 
   iframeHtml: SafeHtml;
   sanitizedTitle: SafeHtml;
+  sanitizedSummary: SafeHtml;
   videoSrc: string;
   formattedTopicTimeSpent = '0:00';
 
@@ -180,6 +181,11 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
 
     if (changes.topic?.currentValue?.title) {
       this.sanitizedTitle = this.sanitizer.bypassSecurityTrustHtml(changes.topic?.currentValue?.title);
+    }
+    if (changes.topic?.currentValue?.summary !== undefined) {
+      this.sanitizedSummary = changes.topic.currentValue.summary
+        ? this.sanitizer.bypassSecurityTrustHtml(changes.topic.currentValue.summary)
+        : null;
     }
   }
 
