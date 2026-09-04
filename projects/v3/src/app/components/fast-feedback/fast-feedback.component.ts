@@ -39,8 +39,7 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
   totalPages = 0;
   showPagination = true;
 
-  // hover tracking for choice descriptions
-  hoveredChoice: string | null = null;
+  expandedChoiceKey: string | null = null;
   pulseCheckType: 'onTrack' | 'skills' | 'both' | 'unknown' = 'unknown';
 
   @Input() questions = [];
@@ -147,26 +146,14 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
     }
   }
 
-  onChoiceHover(questionId: number, choiceId: number) {
-    if (!this.isMobile) {
-      this.hoveredChoice = `${questionId}-${choiceId}`;
-    }
-  }
-
-  onChoiceLeave() {
-    if (!this.isMobile) {
-      this.hoveredChoice = null;
-    }
-  }
-
-  isChoiceDescriptionVisible(questionId: number, choiceId: number): boolean {
+  toggleChoiceDescription(event: Event, questionId: number, choiceId: number): void {
+    event.stopPropagation();
     const key = `${questionId}-${choiceId}`;
+    this.expandedChoiceKey = this.expandedChoiceKey === key ? null : key;
+  }
 
-    if (this.isMobile) {
-      return this.fastFeedbackForm.get(questionId.toString())?.value === choiceId;
-    } else {
-      return this.hoveredChoice === key;
-    }
+  isChoiceDescriptionExpanded(questionId: number, choiceId: number): boolean {
+    return this.expandedChoiceKey === `${questionId}-${choiceId}`;
   }
 
   isCurrentPageValid(): boolean {

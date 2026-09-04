@@ -383,6 +383,22 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 4. Test with screen reader: Each button should announce its purpose and completion status
 5. Click each pagination button to verify it navigates correctly
 
+#### Fast-Feedback Answer Details (WCAG 2.1.1, 2.5.8)
+**Fixed in:** `fast-feedback.component.ts`, `fast-feedback.component.html`, and `fast-feedback.component.scss`
+
+**Retest Instructions:**
+1. Trigger a fast-feedback modal whose answers include descriptions
+2. Move the pointer across every answer without activating its information button
+3. **VERIFY**: Descriptions remain collapsed and answer rows do not jump as the pointer moves
+4. Activate an answer's information button with a mouse or touch input
+5. **VERIFY**: Only that answer's description opens; activating another information button closes the first description
+6. Activate the open answer's information button again
+7. **VERIFY**: The description closes without changing the selected radio answer or submitting the form
+8. Navigate to each information button with the keyboard and activate it with `Enter` and `Space`
+9. **VERIFY**: The button has a minimum 44 by 44 CSS pixel target and visible keyboard focus
+10. Test with a screen reader: The button should announce "Show details for [answer]" or "Hide details for [answer]" and its expanded or collapsed state
+11. Repeat on a mobile viewport and verify answer selection does not automatically open a description
+
 #### 4. Tooltip Directive WCAG 1.4.13 Compliance
 **Fixed in:** `tooltip.directive.ts` and `tooltip.module.ts`
 
