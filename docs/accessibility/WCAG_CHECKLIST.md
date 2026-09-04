@@ -404,6 +404,19 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 10. Test with a screen reader: The button should announce "Show details for [answer]" or "Hide details for [answer]" and its expanded or collapsed state
 11. Repeat on a mobile viewport and verify answer selection does not automatically open a description
 
+#### Assessment Pagination Scroll Position (WCAG 2.4.3)
+**Fixed in:** `assessment.component.ts`
+
+**Retest Instructions:**
+1. Open a paginated assessment in the learner desktop activity page
+2. Scroll the right-hand assessment pane to the bottom, then activate Next, Previous, and a numbered page button
+3. **VERIFY**: Each valid page change immediately starts at the top of the right-hand assessment pane without moving the left-hand activity pane
+4. Open a paginated assessment in the desktop review page and repeat steps 2-3
+5. Open a paginated assessment in a mobile layout and repeat the page changes
+6. **VERIFY**: Mobile page changes reset the surrounding assessment content to the top
+7. **VERIFY**: Activating a disabled boundary control or the current page does not change the scroll position
+8. Repeat with a Team360 assessment and verify that accessible-page restrictions and submission state are unchanged
+
 #### 4. Tooltip Directive WCAG 1.4.13 Compliance
 **Fixed in:** `tooltip.directive.ts` and `tooltip.module.ts`
 
