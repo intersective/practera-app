@@ -286,6 +286,83 @@ describe('FastFeedbackComponent', () => {
     });
   });
 
+  describe('pagination scroll position', () => {
+    let scrollToTopSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
+      (component as any).content = { scrollToTop: scrollToTopSpy };
+      component.totalPages = 3;
+    });
+
+    it('scrolls to the top after moving to the next page', () => {
+      component.currentPage = 0;
+
+      component.nextPage();
+
+      expect(component.currentPage).toBe(1);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    });
+
+    it('scrolls to the top after moving to the previous page', () => {
+      component.currentPage = 2;
+
+      component.previousPage();
+
+      expect(component.currentPage).toBe(1);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    });
+
+    it('scrolls to the top after moving to a numbered page', () => {
+      component.currentPage = 0;
+
+      component.goToPage(2);
+
+      expect(component.currentPage).toBe(2);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    });
+
+    it('scrolls to the top when submission returns to the first incomplete page', async () => {
+      component.questions = Array.from({ length: 4 }, (_, index) => ({ id: index + 1 }));
+      component.fastFeedbackForm = new FormGroup({
+        1: new FormControl(null, Validators.required),
+        2: new FormControl(20, Validators.required),
+        3: new FormControl(30, Validators.required),
+        4: new FormControl(40, Validators.required)
+      });
+      component.currentPage = 1;
+      component.totalPages = 2;
+
+      await component.submit();
+
+      expect(component.currentPage).toBe(0);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+      expect(fastfeedbackSpy.submit).not.toHaveBeenCalled();
+    });
+
+    it('keeps the current scroll position when the requested page does not change', () => {
+      component.currentPage = 1;
+
+      component.goToPage(1);
+      component.goToPage(-1);
+      component.goToPage(3);
+
+      expect(component.currentPage).toBe(1);
+      expect(scrollToTopSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not scroll beyond the pagination boundaries', () => {
+      component.currentPage = 0;
+      component.previousPage();
+
+      component.currentPage = 2;
+      component.nextPage();
+
+      expect(component.currentPage).toBe(2);
+      expect(scrollToTopSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('when testing submit()', () => {
     beforeEach(() => {
       component.fastFeedbackForm = new FormGroup({

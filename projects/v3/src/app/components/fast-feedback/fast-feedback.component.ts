@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
-import { ModalController, NavParams } from '@ionic/angular';
+import { Component, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { IonContent, ModalController, NavParams } from '@ionic/angular';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
@@ -27,6 +27,8 @@ export interface Meta {
   styleUrls: ["./fast-feedback.component.scss"],
 })
 export class FastFeedbackComponent implements OnInit, OnDestroy {
+  @ViewChild(IonContent) private content?: IonContent;
+
   fastFeedbackForm: FormGroup;
   loading = false;
   submissionCompleted: boolean;
@@ -129,20 +131,17 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
   }
 
   nextPage() {
-    if (this.currentPage < this.totalPages - 1) {
-      this.currentPage++;
-    }
+    this.goToPage(this.currentPage + 1);
   }
 
   previousPage() {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-    }
+    this.goToPage(this.currentPage - 1);
   }
 
   goToPage(index: number) {
-    if (index >= 0 && index < this.totalPages) {
+    if (index >= 0 && index < this.totalPages && index !== this.currentPage) {
       this.currentPage = index;
+      void this.content?.scrollToTop(0);
     }
   }
 
