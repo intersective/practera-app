@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -13,6 +13,24 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { RequestService } from 'request';
 import { DemoService } from '@v3/app/services/demo.service';
+
+@Directive({
+  standalone: false,
+  // eslint-disable-next-line @angular-eslint/directive-selector
+  selector: 'ion-radio-group[formControlName]',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => RadioGroupValueAccessorStub),
+      multi: true
+    }
+  ]
+})
+class RadioGroupValueAccessorStub implements ControlValueAccessor {
+  writeValue(): void {}
+  registerOnChange(): void {}
+  registerOnTouched(): void {}
+}
 
 class Page {
   get questions() {
@@ -42,7 +60,7 @@ describe('FastFeedbackComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, ReactiveFormsModule],
-      declarations: [FastFeedbackComponent],
+      declarations: [FastFeedbackComponent, RadioGroupValueAccessorStub],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
@@ -137,6 +155,135 @@ describe('FastFeedbackComponent', () => {
     const storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     component.ngOnDestroy();
     expect(storageSpy.set).toHaveBeenCalledWith('fastFeedbackOpening', false);
+  });
+
+  describe('choice description details', () => {
+    const questionId = 20;
+    const firstChoiceId = 201;
+    const secondChoiceId = 202;
+    const choiceWithoutDescriptionId = 203;
+
+    const descriptionId = (choiceId: number) =>
+      `fast-feedback-choice-description-${questionId}-${choiceId}`;
+
+    const getDescription = (choiceId: number): HTMLElement | null =>
+      fixture.nativeElement.querySelector(`#${descriptionId(choiceId)}`);
+
+    const getToggle = (choiceId: number): HTMLElement | null =>
+      fixture.nativeElement.querySelector(`[aria-controls="${descriptionId(choiceId)}"]`);
+
+    beforeEach(() => {
+      component.isMobile = false;
+      component.questions = [
+        {
+          id: questionId,
+          name: 'Innovation',
+          description: 'Choose the level that best describes you.',
+          isRequired: true,
+          choices: [
+            {
+              id: firstChoiceId,
+              name: 'Extremely Skilled',
+              description: 'I can apply this skill independently.'
+            },
+            {
+              id: secondChoiceId,
+              name: 'Very Skilled',
+              description: 'I can apply this skill with occasional support.'
+            },
+            {
+              id: choiceWithoutDescriptionId,
+              name: 'Not Yet Skilled',
+              description: ''
+            }
+          ]
+        }
+      ];
+      fixture.detectChanges();
+    });
+
+    it('keeps descriptions rendered but collapsed until explicitly opened', () => {
+      const description = getDescription(firstChoiceId);
+      const toggle = getToggle(firstChoiceId);
+
+      expect(description).withContext('description panel should have a stable DOM id').not.toBeNull();
+      expect(description?.hidden).toBeTrue();
+      expect(toggle).withContext('answers with descriptions should have a details button').not.toBeNull();
+      expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+      expect(toggle?.getAttribute('aria-label')).toBe('Show details for Extremely Skilled');
+    });
+
+    it('does not open a description when the pointer crosses an answer', () => {
+      const firstChoiceItem = fixture.nativeElement.querySelector('ion-item.choice-item');
+
+      firstChoiceItem.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+    });
+
+    it('opens and closes a description from its details button', () => {
+      const toggle = getToggle(firstChoiceId);
+
+      toggle?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeFalse();
+      expect(toggle?.getAttribute('aria-expanded')).toBe('true');
+      expect(toggle?.getAttribute('aria-label')).toBe('Hide details for Extremely Skilled');
+
+      toggle?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+      expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('keeps only one choice description open at a time', () => {
+      getToggle(firstChoiceId)?.click();
+      getToggle(secondChoiceId)?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+      expect(getDescription(secondChoiceId)?.hidden).toBeFalse();
+    });
+
+    it('shows details buttons only for answers with descriptions', () => {
+      const toggles = fixture.nativeElement.querySelectorAll('ion-button.description-toggle-btn');
+
+      expect(toggles.length).toBe(2);
+      expect(getToggle(choiceWithoutDescriptionId)).toBeNull();
+      expect(getDescription(choiceWithoutDescriptionId)).toBeNull();
+    });
+
+    it('does not select an answer or bubble the click when details are toggled', () => {
+      const firstChoiceItem = fixture.nativeElement.querySelector('ion-item.choice-item');
+      const toggle = getToggle(firstChoiceId);
+      const itemClickSpy = jasmine.createSpy('itemClick');
+      const submitSpy = spyOn(component, 'submit');
+      firstChoiceItem.addEventListener('click', itemClickSpy);
+
+      expect(toggle).withContext('the details button must exist before its click can be isolated').not.toBeNull();
+      toggle?.click();
+      fixture.detectChanges();
+
+      expect(component.fastFeedbackForm.get(questionId.toString())?.value).toBeNull();
+      expect(itemClickSpy).not.toHaveBeenCalled();
+      expect(submitSpy).not.toHaveBeenCalled();
+    });
+
+    it('uses the explicit details button on mobile instead of answer selection', () => {
+      component.isMobile = true;
+      component.fastFeedbackForm.get(questionId.toString())?.setValue(firstChoiceId);
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+
+      getToggle(firstChoiceId)?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeFalse();
+    });
   });
 
   describe('when testing submit()', () => {
