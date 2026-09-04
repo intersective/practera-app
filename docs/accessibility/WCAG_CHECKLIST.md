@@ -377,7 +377,7 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 6. Test with screen reader: Focus should return to previous element after ESC
 
 #### 3. Fast-Feedback Pagination Buttons (WCAG 2.4.4)
-**Fixed in:** `fast-feedback.component.html`
+**Fixed in:** `fast-feedback.component.html` and `fast-feedback.component.ts`
 
 **Retest Instructions:**
 1. Trigger fast-feedback modal with multiple pages of questions
@@ -385,6 +385,8 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 3. **VERIFY**: Each pagination button has aria-label like "Go to page 1", "Go to page 2, completed"
 4. Test with screen reader: Each button should announce its purpose and completion status
 5. Click each pagination button to verify it navigates correctly
+6. Scroll to the bottom of a question page, then use Next, Previous, and a numbered page button
+7. **VERIFY**: Each newly displayed page starts at the top of the modal content without an animated scroll
 
 #### Fast-Feedback Answer Details (WCAG 2.1.1, 2.5.8)
 **Fixed in:** `fast-feedback.component.ts`, `fast-feedback.component.html`, and `fast-feedback.component.scss`
