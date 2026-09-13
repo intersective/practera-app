@@ -11,7 +11,7 @@ type Channel = ReturnType<PusherInstance['channel']>;
 import { ApolloService } from './apollo.service';
 
 const api = {
-  pusherAuth: '/pusher_auth',
+  pusherAuth: 'pusher_auth',
 };
 
 

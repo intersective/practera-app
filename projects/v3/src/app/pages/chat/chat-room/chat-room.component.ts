@@ -6,6 +6,7 @@ import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { TaxonomyService } from '@v3/services/taxonomy.service';
 import { PusherService, SendMessageParam } from '@v3/services/pusher.service';
 import { ChatService, ChatChannel, Message, MessageListResult, ChannelMembers, FileResponse } from '@v3/services/chat.service';
 import { ChatPreviewComponent } from '../chat-preview/chat-preview.component';
@@ -74,6 +75,13 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   activeThread: Message | null = null;
   /** Experience ID from user profile — passed to thread panel for AI invite picker */
   readonly experienceId: number | null = this.storage.getUser()?.experienceId ?? null;
+
+  /** Controls collapsible Quill formatting toolbar in the compose footer */
+  showToolbar = false;
+
+  /** Emoji picker state: holds the message UUID/ID of the message with the picker open, or null */
+  showEmojiPicker: string | null = null;
+  commonEmojis = ['👍', '👎', '😀', '❤️', '🎉', '👀', '🚀', '😮'];
 
   // display "someone is typing" when received a typing event
   typingSubject: Subject<string> = new Subject<string>();
@@ -158,6 +166,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private storage: BrowserStorageService,
     public utils: UtilsService,
+    public taxonomyService: TaxonomyService,
     private pusherService: PusherService,
     private modalController: ModalController,
     private ngZone: NgZone,
@@ -300,6 +309,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.messagePageCursor = "";
     this.messagePageSize = 20;
     this.sendingMessage = false;
+    this.activeThread = null;
+    this.selectedAttachments = [];
   }
 
   private _isValidPusherEvent(pusherData) {
@@ -333,6 +344,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   getMessageFromEvent(data): Message {
     return {
       uuid: data.uuid,
+      chatLogId: data.chatLogId,
       sender: data.sender,
       senderName: data.senderName,
       senderRole: data.senderRole,
@@ -345,6 +357,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       file: data.file,
       channelUuid: data.channelUuid,
       sentAt: data.sentAt,
+      reactions: data.reactions ?? [],
     };
   }
 
@@ -533,6 +546,82 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.activeThread = null;
   }
 
+  /** Check if a message is from the AI (no uuid) */
+  isAiMessage(msg: Message): boolean {
+    return !msg.uuid;
+  }
+
+  /** Generate a stable message key for trackBy */
+  trackMessage(_index: number, msg: Message): string {
+    return msg.uuid || `id:${msg.chatLogId}` || `c:${msg.created}:${(msg.message ?? '').slice(0, 20)}`;
+  }
+
+  /** Check if this message is a continuation (same sender, < 5 min) */
+  isContinuation(msg: Message, index: number): boolean {
+    if (index === 0) return false;
+    const prev = this.messageList[index - 1];
+    if (!prev) return false;
+    const prevKey = prev.isSender ? '__me__' : (prev.senderUuid ?? prev.message?.slice(0, 10));
+    const nextKey = msg.isSender ? '__me__' : (msg.senderUuid ?? msg.message?.slice(0, 10));
+    if (prevKey !== nextKey) return false;
+    if (!prev.created || !msg.created) return false;
+    const diff = (new Date(msg.created).getTime() - new Date(prev.created).getTime()) / 1000;
+    return diff < 300;
+  }
+
+  /** Toggle emoji picker for a message */
+  toggleEmojiPicker(msg: Message): void {
+    const key = msg.uuid || `id:${msg.chatLogId}`;
+    this.showEmojiPicker = this.showEmojiPicker === key ? null : key;
+  }
+
+  /** Add a reaction to a message */
+  addReaction(msg: Message, emoji: string): void {
+    this.showEmojiPicker = null;
+    const params: any = { emoji };
+    if (msg.uuid) params.chatLogUuid = msg.uuid;
+    else if (msg.chatLogId) params.chatLogId = msg.chatLogId;
+    else return;
+    this.chatService.addReaction(params).pipe(takeUntil(this.destroy$)).subscribe(
+      (res) => {
+        const updated = res?.data?.addReaction;
+        if (updated) {
+          this.ngZone.run(() => {
+            const target = this.messageList.find(m =>
+              (msg.uuid && m.uuid === msg.uuid) || (!msg.uuid && m.chatLogId === updated.chatLogId)
+            );
+            if (target) target.reactions = updated.reactions;
+            this.cdr.markForCheck();
+          });
+        }
+      },
+      (err) => console.error('addReaction error:', err)
+    );
+  }
+
+  /** Remove a reaction from a message */
+  removeReaction(msg: Message, emoji: string): void {
+    const params: any = { emoji };
+    if (msg.uuid) params.chatLogUuid = msg.uuid;
+    else if (msg.chatLogId) params.chatLogId = msg.chatLogId;
+    else return;
+    this.chatService.removeReaction(params).pipe(takeUntil(this.destroy$)).subscribe(
+      (res) => {
+        const updated = res?.data?.removeReaction;
+        if (updated) {
+          this.ngZone.run(() => {
+            const target = this.messageList.find(m =>
+              (msg.uuid && m.uuid === msg.uuid) || (!msg.uuid && m.chatLogId === updated.chatLogId)
+            );
+            if (target) target.reactions = updated.reactions;
+            this.cdr.markForCheck();
+          });
+        }
+      },
+      (err) => console.error('removeReaction error:', err)
+    );
+  }
+
   /** Update reply count on root message when a reply is added via the thread panel */
   onReplyCountChanged(event: { rootUuid: string; count: number }): void {
     this.ngZone.run(() => {
@@ -659,6 +748,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   updateListData(response) {
     this.messageList.push({
       uuid: response.uuid,
+      chatLogId: response.chatLogId,
       sender: response.sender,
       isSender: response.isSender,
       message: response.message,
@@ -666,6 +756,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       created: response.created,
       scheduled: response.scheduled,
       sentAt: response.sentAt,
+      reactions: response.reactions ?? [],
 
       // TBC
       preview: this.attachmentPreview(response.file),
@@ -744,6 +835,25 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           console.error(err);
         }
       );
+  }
+
+  /**
+   * Resolve a role slug to a display label.
+   * Checks taxonomy first (institution-configured labels), falls back to
+   * the platform defaults in getUserRolesForUI(). System roles
+   * (cs_admin, inst_admin) are never shown by name.
+   */
+  getRoleLabel(role?: string): string {
+    if (!role) return '';
+    // System roles that should never be shown literally
+    if (role === 'cs_admin') return 'Practera Support';
+    if (role === 'inst_admin') return this.utils.getUserRolesForUI('admin');
+    // Check taxonomy for institution-level term override
+    const taxKey = 'role.' + role;
+    const taxLabel = this.taxonomyService.t(taxKey);
+    if (taxLabel !== taxKey) return taxLabel;
+    // Fall back to platform defaults
+    return this.utils.getUserRolesForUI(role) ?? role;
   }
 
   getMessageDate(date) {

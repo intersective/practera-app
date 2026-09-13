@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, NgZone, Input, OnInit } from '@angular
 import { Router, ActivatedRoute } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
+import { TaxonomyService } from '@v3/services/taxonomy.service';
 import { ChatService, ChatChannel, ChannelMembers } from '@v3/services/chat.service';
 import { ModalController } from '@ionic/angular';
 
@@ -28,9 +29,20 @@ export class ChatInfoComponent implements OnInit {
     private route: ActivatedRoute,
     public storage: BrowserStorageService,
     public utils: UtilsService,
+    public taxonomyService: TaxonomyService,
     public modalController: ModalController
   ) {
     this.isMobile = this.utils.isMobile();
+  }
+
+  getRoleLabel(role?: string): string {
+    if (!role) return '';
+    if (role === 'cs_admin') return 'Practera Support';
+    if (role === 'inst_admin') return this.utils.getUserRolesForUI('admin');
+    const taxKey = 'role.' + role;
+    const taxLabel = this.taxonomyService.t(taxKey);
+    if (taxLabel !== taxKey) return taxLabel;
+    return this.utils.getUserRolesForUI(role) ?? role;
   }
 
   ngOnInit() {

@@ -4,86 +4,273 @@
   height: 100%;
 }
 
-.root-message-wrapper {
-  background: var(--ion-color-light-shade, #f0f0f0);
-  padding: 8px 0 0;
-  border-bottom: 1px solid var(--ion-color-light-tint, #e0e0e0);
+/* ── Thread messages container ── */
+.thread-messages {
+  padding: 0 4px;
 }
 
-.reply-count-bar {
-  padding: 4px 16px 8px;
+/* ── Slack-style message row ── */
+.message-row {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: 4px;
-  opacity: 0.7;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.12s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+    .hover-toolbar { opacity: 1; pointer-events: auto; }
+  }
+
+  &.message-grouped {
+    padding-top: 1px;
+    padding-bottom: 1px;
+  }
 }
 
-.small-avatar {
-  width: 28px;
-  height: 28px;
-  min-width: 28px;
+.avatar-col {
+  flex: 0 0 32px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 2px;
+
+  .ai-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    ion-icon { font-size: 16px; color: #fff; }
+  }
+
+  .hover-time {
+    font-size: 9px;
+    color: var(--ion-color-medium);
+    line-height: 20px;
+    display: none;
+  }
 }
 
-.sender-name {
-  font-weight: 600;
-  color: var(--ion-color-dark-shade);
-  margin-bottom: 2px;
+.message-row.message-grouped:hover .avatar-col .hover-time {
+  display: block;
 }
 
-.reply-bubble {
-  padding: 6px 10px;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e0e0e0;
-  margin-bottom: 2px;
-  display: inline-block;
-  max-width: 100%;
+.content-col {
+  flex: 1;
+  min-width: 0;
+}
 
-  &.own-bubble {
-    background: #008296;
-    border-color: #008296;
+.msg-header {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 1px;
+
+  .sender-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ion-text-color);
+    &.ai-name { color: #7c3aed; }
+  }
+
+  .ai-badge {
+    font-size: 9px;
+    font-weight: 600;
+    background: #7c3aed;
     color: #fff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
 
-    quill-view-html {
-      color: #fff;
+  .msg-time {
+    font-size: 10px;
+    color: var(--ion-color-medium);
+  }
+}
+
+.msg-body {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ion-text-color);
+  word-break: break-word;
+  overflow-wrap: break-word;
+
+  &.prose {
+    :host ::ng-deep {
+      h1, h2, h3, h4 { margin: 0.4em 0 0.2em; font-size: inherit; font-weight: 700; }
+      p { margin: 0 0 0.25em; }
+      ul, ol { margin: 0.2em 0; padding-left: 1.4em; }
+      code { background: rgba(0,0,0,0.06); padding: 1px 3px; border-radius: 3px; font-size: 0.9em; }
+      pre { background: rgba(0,0,0,0.04); padding: 6px; border-radius: 4px; overflow-x: auto; margin: 0.2em 0; }
+      pre code { background: none; padding: 0; }
+      blockquote { border-left: 3px solid var(--ion-color-medium); padding-left: 8px; margin: 0.2em 0; color: var(--ion-color-medium); }
     }
   }
 }
 
 .file-link {
-  display: block;
-  margin-top: 4px;
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--ion-color-primary);
   text-decoration: underline;
-  color: inherit;
+  cursor: pointer;
 }
 
-.time-label {
-  margin-top: 2px;
+/* ── Reply divider ── */
+.reply-divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
   font-size: 11px;
-  opacity: 0.6;
-}
+  color: var(--ion-color-medium);
 
-.empty-state {
-  padding: 32px 16px;
-
-  .empty-icon {
-    font-size: 2.5rem;
-    margin-bottom: 8px;
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--ion-color-light-shade, #e0e0e0);
   }
 }
 
-.replies-list {
-  padding-top: 8px;
+/* ── Reaction pills ── */
+.reaction-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 3px;
 }
 
-ion-footer ion-grid {
-  padding: 8px 12px;
+.reaction-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--ion-color-light);
+  background: var(--ion-color-light);
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+
+  &:hover { border-color: var(--ion-color-medium); }
+  &.reacted {
+    border-color: var(--ion-color-primary);
+    background: rgba(0, 130, 150, 0.08);
+  }
+
+  .count { font-size: 10px; font-weight: 600; color: var(--ion-color-medium); }
+}
+
+/* ── Hover toolbar ── */
+.hover-toolbar {
+  position: absolute;
+  top: -6px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  padding: 2px 3px;
+  background: #fff;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 5px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s;
+  z-index: 10;
+}
+
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--ion-color-medium);
+  transition: background 0.12s, color 0.12s;
+
+  &:hover {
+    background: var(--ion-color-light);
+    color: var(--ion-color-dark);
+  }
+  &.btn-danger:hover {
+    background: rgba(255, 0, 0, 0.08);
+    color: var(--ion-color-danger);
+  }
+
+  ion-icon { font-size: 14px; }
+}
+
+/* ── Emoji picker ── */
+.emoji-picker {
+  position: absolute;
+  top: -6px;
+  right: 80px;
+  display: flex;
+  gap: 2px;
+  padding: 3px 5px;
+  background: #fff;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+}
+
+.emoji-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.12s;
+  &:hover { background: var(--ion-color-light); }
+}
+
+/* ── Loading / empty states ── */
+.loading-state {
+  text-align: center;
+  padding: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  .empty-icon { font-size: 2rem; margin-bottom: 8px; }
+}
+
+/* ── Compose bar ── */
+.compose-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 6px 8px;
   background: #fff;
   border-top: 1px solid var(--ion-color-light-shade);
+
+  .message-text-editor {
+    flex: 1;
+    :host ::ng-deep .ql-toolbar.ql-snow { display: none; }
+    :host ::ng-deep .ql-container.ql-snow { border: 1px solid var(--ion-color-light-shade); border-radius: 8px; }
+    :host ::ng-deep .ql-editor { padding: 6px 10px; min-height: 36px; max-height: 120px; overflow-y: auto; font-size: 13px; }
+  }
 }
 
-// ─── AI invite picker ─────────────────────────────────────────────────────────
-
+/* ── AI invite picker ── */
 .ai-picker-overlay {
   position: fixed;
   inset: 0;
@@ -127,12 +314,6 @@ ion-footer ion-grid {
   color: var(--ion-color-dark);
   transition: background 0.15s;
 
-  &:hover {
-    background: var(--ion-color-light);
-  }
-
-  ion-icon {
-    font-size: 16px;
-    flex-shrink: 0;
-  }
+  &:hover { background: var(--ion-color-light); }
+  ion-icon { font-size: 16px; flex-shrink: 0; }
 }

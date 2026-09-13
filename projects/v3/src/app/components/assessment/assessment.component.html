@@ -177,10 +177,9 @@
         role="alert"
         aria-live="assertive">
         <ion-item lines="none">
-          <ion-avatar slot="start">
-            <img [src]="submission.submitterImage ? submission.submitterImage : 'https://my.practera.com/img/user-512.png'"
-              [attr.alt]="'Avatar of ' + submission.submitterName">
-          </ion-avatar>
+          <div slot="start">
+            <app-avatar [name]="submission.submitterName || 'User'" [avatarUrl]="submission.submitterImage" size="sm"></app-avatar>
+          </div>
 
           <ion-label>
             <p class="subtitle-1"

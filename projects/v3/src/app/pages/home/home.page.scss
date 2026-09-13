@@ -1,128 +1,254 @@
-.milestone-name {
-  &.locked {
-    cursor: pointer;
-    &:hover {
-      opacity: 0.5;
+// ── Two-column layout (desktop) / single-column (mobile) ───────────────────
+
+.home-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-left {
+  width: 100%;
+}
+
+.home-right {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .home-layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .home-left {
+    width: 38%;
+    max-width: 420px;
+    min-width: 300px;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+    max-height: 100vh;
+    overflow-y: auto;
+    border-right: 1px solid var(--practera-grey-25);
+  }
+
+  .home-right {
+    flex: 1;
+  }
+}
+
+// ── Hero Card ──────────────────────────────────────────────────────────────
+
+.hero-card {
+  position: relative;
+  width: 100%;
+  min-height: 180px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+}
+
+.hero-overlay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 180px;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+}
+
+.hero-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  --progress-background: rgba(255,255,255,0.3);
+  --background: rgba(255,255,255,0.9);
+}
+
+.hero-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hero-stat-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 0.82rem;
+    opacity: 0.9;
+  }
+}
+
+.hero-title {
+  margin: 0;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+// ── Brief sections (left column) ───────────────────────────────────────────
+
+.brief-section {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--practera-grey-25);
+}
+
+// ── Inline Project Brief details ───────────────────────────────────────────
+
+.brief-details {
+  &__title {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ion-color-dark);
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--ion-color-primary-tint);
+    color: var(--ion-color-primary);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+
+    ion-icon { font-size: 0.8rem; }
+  }
+
+  &__section {
+    margin-bottom: 10px;
+  }
+
+  &__label {
+    margin: 0 0 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--ion-color-medium);
+  }
+
+  &__text {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--ion-color-dark);
+    white-space: pre-line;
+  }
+
+  &__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+
+    ion-chip {
+      height: 26px;
+      font-size: 0.75rem;
+      margin: 0;
     }
   }
 }
 
+// ── Home right (tabs + panel) ──────────────────────────────────────────────
+
+.home-segment {
+  --background: var(--ion-color-light);
+  padding: 10px 10px 0;
+  border-radius: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--practera-grey-25);
+
+  ion-segment-button {
+    min-width: 0;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 0.8rem;
+
+    ion-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+// segment keyboard focus
 ion-segment-button.ion-focused {
   border: 1px solid var(--ion-color-primary);
+  border-radius: 8px;
 }
-img {
-  width: 100%;
-}
-ion-segment {
-  --background: var(--ion-color-light);
-  padding: 10px;
-  z-index: 1;
-}
+
+// ── Milestone names ────────────────────────────────────────────────────────
+
 .milestone-name {
   --color: var(--ion-color-primary);
   --background: var(--ion-color-primary-tint);
-}
-.large-icon {
-  font-size: 80px;
-}
-.no-achievement {
-  padding: 30px 15%;
-}
+  border-radius: 8px;
+  margin: 12px 8px 0;
+  overflow: hidden;
 
-.activity-col {
-  border-left: 1px solid var(--practera-grey-25);
-  padding: 0 18px;
+  &.locked {
+    cursor: pointer;
+    opacity: 0.75;
 
-  ion-segment {
-    border-radius: 0;
-  }
-
-  &.mobile {
-    border-left: none;
-    padding: 0;
-  }
-}
-
-ion-content.scrollable-desktop {
-  > main, ion-grid,
-  ion-row,
-  ion-col {
-    overflow: hidden;
-    height: 100%;
-
-    ion-row {
-      height: 100%;
-
-      ion-col {
-        overflow-y: auto;
-        height: 100%;
-      }
+    &:hover {
+      opacity: 0.55;
     }
   }
 }
 
-.exp-content {
-  padding: 0 18px;
-}
-
-.exp-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-
-  h2 {
-    margin: 0;
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-}
-
-.project-brief-btn {
-  --padding-start: 8px;
-  --padding-end: 8px;
-  font-size: 0.875rem;
-  text-transform: none;
-  letter-spacing: normal;
-
-  ion-icon {
-    font-size: 1rem;
-    margin-right: 4px;
-  }
-}
-
-.button-group-no-gap {
-  display: flex;
-  gap: 0;
-  align-items: center;
-  flex-basis: 100%;
-
-  ion-button {
-    margin: 0;
-  }
-}
-
-.total-points {
-  ion-label {
-    margin: 17px 0px;
-  }
-}
-
-.focusable:focus {
-  outline: 2px solid var(--ion-color-primary);
-  outline-offset: -2px;
-}
+// ── Activity list search ───────────────────────────────────────────────────
 
 .activity-search-container {
-  padding: 8px 0;
-  margin-bottom: 8px;
+  padding: 10px 8px 6px;
 
   ion-searchbar {
     --background: var(--ion-color-light);
-    --border-radius: 8px;
-    --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --border-radius: 10px;
+    --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
     padding: 0;
 
     &::part(clear-button) {
@@ -140,10 +266,106 @@ ion-content.scrollable-desktop {
   }
 }
 
+// ── List item focus ring ───────────────────────────────────────────────────
 
+.focusable:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: -2px;
+}
+
+// ── Empty states ───────────────────────────────────────────────────────────
+
+.empty-state {
+  padding: 48px 20%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  p, ion-text {
+    text-align: center;
+  }
+}
+
+.empty-state-icon {
+  font-size: 64px;
+}
+
+// legacy selector for badges empty state (no-achievement kept for compatibility)
+.no-achievement {
+  padding: 30px 15%;
+}
+
+// ── My Tasks panel ─────────────────────────────────────────────────────────
+
+.tasks-panel {
+  padding: 8px 0;
+}
+
+// ── My Team panel ──────────────────────────────────────────────────────────
+
+.team-panel {
+  padding: 8px 0;
+}
+
+.team-name-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 10px;
+  color: var(--ion-color-primary);
+
+  ion-icon {
+    font-size: 1.1rem;
+  }
+
+  .headline-4 {
+    margin: 0;
+    font-weight: 700;
+  }
+}
+
+// ── Badges header button ────────────────────────────────────────────────────
+
+.badges-header-btn {
+  position: relative;
+
+  .badges-count {
+    position: absolute;
+    top: 4px;
+    right: 2px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 0.65rem;
+    padding: 0 4px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// ── Badges modal ────────────────────────────────────────────────────────────
+
+.badges-modal {
+  --height: 70%;
+  --border-radius: 16px 16px 0 0;
+  align-items: flex-end;
+}
+
+// ── Total points row ───────────────────────────────────────────────────────
+
+.total-points {
+  ion-label {
+    margin: 17px 0;
+  }
+}
+
+// ── Pulse checks / On Track ────────────────────────────────────────────────
 
 .ontrack-header {
   margin-bottom: 16px;
+  padding: 16px 16px 0;
 }
 
 .ontrack-title-section {
@@ -151,13 +373,18 @@ ion-content.scrollable-desktop {
   align-items: center;
   gap: 12px;
   margin-bottom: 8px;
-  padding: 0 4px;
 }
 
 .ontrack-title {
   margin: 0;
   color: var(--ion-color-primary);
   font-weight: 600;
+  flex: 0 1 auto;
+
+  ion-icon {
+    cursor: pointer;
+    &:hover { opacity: 0.5; }
+  }
 }
 
 .ontrack-help-icon {
@@ -172,17 +399,14 @@ ion-content.scrollable-desktop {
   }
 }
 
-.ontrack-subtitle {
-  span {
-    color: var(--ion-color-medium);
-    font-size: 0.875rem;
-    line-height: 1.4;
-  }
+.ontrack-subtitle span {
+  color: var(--ion-color-medium);
+  font-size: 0.875rem;
+  line-height: 1.4;
 }
 
-
-
 .ontrack-content-container {
+  margin: 0 8px;
   border-radius: 16px;
   padding: 24px 20px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -197,7 +421,6 @@ ion-content.scrollable-desktop {
 .traffic-light-enhanced {
   width: 100%;
 
-  // Override the traffic light group component styles for better spacing
   ::ng-deep .traffic-light-group {
     gap: 16px;
     flex-wrap: wrap;
@@ -238,91 +461,16 @@ ion-content.scrollable-desktop {
   }
 }
 
-// Mobile optimization
-@media (max-width: 768px) {
-  .ontrack-content-container {
-    padding: 16px 12px;
-  }
-
-  .traffic-light-enhanced {
-    ::ng-deep .traffic-light-group {
-      gap: 12px;
-
-      .traffic-light-labels {
-        margin: 2px 4px;
-        min-height: 36px;
-
-        ion-label {
-          font-size: 0.8rem;
-        }
-      }
-
-      .traffic-light-dot {
-        width: 20px;
-        height: 20px;
-      }
-    }
-  }
-}
-
 .traffic-light-container {
   width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.ontrack-title {
-  flex: 0 1 auto;
-  margin-top: 10px;
-  align-items: center;
+// ── Skill Strength cards ───────────────────────────────────────────────────
 
-  ion-icon {
-    cursor: pointer;
-
-    &:hover {
-      opacity: 0.5;
-    }
-  }
-}
-
-.skill-strength-widget {
-  padding: 8px;
-  margin-top: 8px;
-  border-radius: 4px;
-  background: #f4f4f4;
-  font-size: 0.9rem;
-}
-
-.skill-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.skill-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-}
-
-.skill-item {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-}
-
-.skill-level ion-icon {
-  font-size: 0.7rem;
-  color: #ccc;
-}
-
-.skill-level ion-icon.filled {
-  color: green;
-}
-
-.ontrack-section, .skill-strength-section {
+.ontrack-section,
+.skill-strength-section {
   margin-top: 20px;
   width: 100%;
 }
@@ -332,7 +480,7 @@ ion-content.scrollable-desktop {
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
-  padding: 0 4px;
+  padding: 0 12px;
 
   h4 {
     margin: 10px 0 0 0;
@@ -342,10 +490,7 @@ ion-content.scrollable-desktop {
   ion-icon {
     cursor: pointer;
     opacity: 0.7;
-
-    &:hover {
-      opacity: 1;
-    }
+    &:hover { opacity: 1; }
   }
 }
 
@@ -356,14 +501,14 @@ ion-content.scrollable-desktop {
 .skill-card {
   margin: 0;
   height: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
   }
 }
 
@@ -398,6 +543,7 @@ ion-content.scrollable-desktop {
   font-weight: 600;
   line-height: 1.2;
   color: var(--ion-color-dark);
+
   &.no-change-padding {
     padding-bottom: 1.5em;
   }
@@ -481,5 +627,59 @@ ion-content.scrollable-desktop {
   &:active,
   &.activated {
     background-color: var(--ion-color-light-tint);
+  }
+}
+
+// ── Responsive tweaks ──────────────────────────────────────────────────────
+
+@media (min-width: 768px) {
+  .hero-card {
+    min-height: 200px;
+  }
+
+  .hero-title {
+    font-size: 1.4rem;
+  }
+
+  .hero-body {
+    padding: 16px 20px 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 1.55rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .home-segment ion-segment-button {
+    font-size: 0.72rem;
+    --padding-start: 4px;
+    --padding-end: 4px;
+  }
+
+  .ontrack-content-container {
+    padding: 16px 12px;
+  }
+
+  .traffic-light-enhanced {
+    ::ng-deep .traffic-light-group {
+      gap: 12px;
+
+      .traffic-light-labels {
+        margin: 2px 4px;
+        min-height: 36px;
+
+        ion-label {
+          font-size: 0.8rem;
+        }
+      }
+
+      .traffic-light-dot {
+        width: 20px;
+        height: 20px;
+      }
+    }
   }
 }

@@ -221,7 +221,7 @@ export class ExperienceService {
       return of(this.demo.projectsProgress);
     }
     return this.apolloService.graphQLFetch(
-      `query getProjectList($ids: [Int]!) {
+      `query getProjectList($ids: [Int!]!) {
         projects(ids: $ids) {
           id
           progress

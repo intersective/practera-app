@@ -14,32 +14,32 @@
 
       @if (!isMobile) {
         <div class="avatar-and-profile">
-          <ion-avatar class="avatar" slot="start">
+          <div class="avatar">
             @if (!imageUpdating) {
-              <img [src]="profile?.avatar" alt="user profile" i18n-alt [appFallbackImage]="'assets/loading.gif'">
+              <app-avatar [name]="profile?.name || 'Me'" [avatarUrl]="profile?.avatar" size="lg"></app-avatar>
             }
             @if (imageUpdating) {
               <p class="loading-icon">
                 <ion-spinner name="bubbles"></ion-spinner>
               </p>
             }
-          </ion-avatar>
+          </div>
           <ion-label>
             <ion-button (click)="profileImage()">Upload</ion-button>
           </ion-label>
         </div>
       } @else {
         <ion-item>
-          <ion-avatar class="avatar" slot="start">
+          <div class="avatar" slot="start">
             @if (!imageUpdating) {
-              <img [src]="profile?.avatar || '/assets/loading.gif'" alt="user profile">
+              <app-avatar [name]="profile?.name || 'Me'" [avatarUrl]="profile?.avatar" size="lg"></app-avatar>
             }
             @if (imageUpdating) {
               <p class="loading-icon">
                 <ion-spinner name="bubbles"></ion-spinner>
               </p>
             }
-          </ion-avatar>
+          </div>
           <ion-label>
             <ion-button (click)="profileImage()">Upload</ion-button>
           </ion-label>

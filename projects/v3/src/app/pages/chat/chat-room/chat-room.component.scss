@@ -1,5 +1,5 @@
 
-$message-body-size: 60%;
+$message-body-size: 80%;
 
 .not-started-empty-status {
   position: absolute;
@@ -32,275 +32,275 @@ $message-body-size: 60%;
 
 .chat-list {
   background-color: transparent !important;
-  ion-item {
-    ion-avatar {
-      width: 32px;
-      height: 32px;
-      margin: 0 12px 2px 0 !important;
-      margin-left: -8px !important;
-      &.no-time {
-        margin-top: 8% !important;
-      }
-      &.no-time-team {
-        margin-top: -8% !important;
-      }
+  padding: 0 8px;
+
+  /* ── Slack-style message row ── */
+  .message-row {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background 0.12s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.03);
+      .hover-toolbar { opacity: 1; pointer-events: auto; }
     }
 
-    ion-label {
-      .time {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 8px;
-      }
-      // message container wraps action buttons + message body
-      .message-container {
-        .action-container {
-          display: none;
-
-          ion-button {
-            --color: var(--ion-color-medium);
-
-            ion-icon {
-              color: var(--ion-color-medium);
-              font-size: 18px;
-            }
-
-            &:hover {
-              &.delete-btn {
-                --color: var(--ion-color-danger);
-                ion-icon { color: var(--ion-color-danger); }
-              }
-
-              &:not(.delete-btn) {
-                --color: var(--ion-color-primary);
-                ion-icon { color: var(--ion-color-primary); }
-              }
-            }
-          }
-        }
-      }
-      .message-body {
-        padding: 8px 16px;
-        min-width: 48px;
-        max-width: $message-body-size;
-        border-radius: 25px;
-        width: fit-content;
-
-        &.image {
-          line-height: 0;
-          cursor: pointer;
-
-          .message-text {
-            margin-bottom: 10px;
-          }
-
-          img {
-            border-radius: 25px;
-          }
-        }
-
-        // consistent colour to make attachment standout
-        .general-attachment {
-          background: white;
-          --background: white;
-          cursor: pointer;
-
-          .message-text {
-            margin-bottom: 10px;
-          }
-
-          ion-icon, ion-note, ion-label {
-            color: var(--ion-text-color) !important;
-          }
-        }
-
-        p {
-          &.seen-text {
-            &:nth-child(1) {
-              padding: 0 !important;
-              font-weight: 500;
-            }
-          }
-
-          margin: 0;
-          text-align: left;
-          user-select: all !important;
-          white-space: pre-wrap !important;
-        }
-
-        &.video-attachment-container {
-          min-height: 125px;
-          line-height: 0;
-          padding: 0;
-          display: flex;
-          justify-content: center;
-          flex-direction: column;
-          flex-wrap: wrap;
-          align-items: stretch;
-          position:relative;
-          cursor: pointer;
-          padding: 16px;
-          word-break: break-word;
-          overflow-wrap: break-word;
-          white-space: normal;
-
-          .message-text {
-            margin-bottom: 10px;
-          }
-
-          app-video-conversion {
-            display: flex;
-            align-items: center;
-          }
-
-          [id^="inner-box"] {
-            border-radius: inherit;
-            min-width: inherit;
-            padding: 0;
-            width: 100%;
-
-            & p {
-              color: white;
-              margin-top: 1em;
-              text-align: center;
-              ion-icon {
-                font-size: 5em !important;
-              }
-            }
-          }
-
-          .video {
-            padding: inherit;
-            min-width: 100%;
-            max-width: inherit;
-            min-height: 100%;
-            max-height: inherit;
-            border-radius: inherit;
-          }
-
-          &:hover {
-            cursor: pointer;
-          }
-        }
-      }
-
-      .seen-text {
-        padding-bottom: 8px;
-      }
-
-      &.received-messages {
-        text-align: left;
-
-        .message-body {
-          background-color: white;
-
-          &.video-attachment-container {
-            .label {
-              color: var(--ion-color-primary);
-            }
-            [id^="inner-box"] {
-              p {
-                color: var(--ion-color-primary);
-              }
-            }
-          }
-
-        }
-
-        .time {
-          margin-left: -14% !important;
-          width: -webkit-fill-available !important;
-        }
-
-        &.no-avatar {
-          margin-left: 12%;
-        }
-      }
-
-      &.send-messages {
-        --color: var(--ion-color-primary-contrast) !important;
-        text-align: right;
-        margin-right: 0;
-
-        .time.caption {
-          color: initial;
-        }
-
-        .message-container {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          flex-direction: row;
-
-          // reveal action buttons on hover
-          &:hover {
-            .action-container {
-              display: flex;
-              align-items: center;
-              margin-right: 4px;
-            }
-          }
-        }
-
-        .message-body {
-          background-color: var(--ion-color-primary);
-
-          &.video-attachment-container {
-            .label {
-              color: var(--ion-color-primary-contrast) !important;
-            }
-            [id^="inner-box"] {
-              p {
-                color: var(--ion-color-primary-contrast) !important;
-              }
-            }
-          }
-
-          // consistent colour to make attachment standout
-          .general-attachment {
-            background: transparent;
-            --background: transparent;
-            cursor: pointer;
-            ion-icon, ion-note, ion-label {
-              color: var(--ion-color-primary-contrast) !important;
-            }
-          }
-
-          float: right;
-        }
-      }
+    &.message-grouped {
+      padding-top: 1px;
+      padding-bottom: 1px;
     }
   }
 
-  &.desktop-view {
-    ion-item {
-      ion-avatar {
-        margin-left: 0 !important;
-        margin-top: 3% !important;
-        &.no-time {
-          margin-top: 0 !important;
-        }
-        &.no-time-team {
-          margin-top: -3% !important;
-        }
-        &.with-time-team {
-          margin-top: 0 !important;
-        }
-      }
-      ion-label {
-        .time {
-          margin-left: 2.5% !important;
-        }
-        &.received-messages {
-          .time {
-            margin-left: 0 !important;
-          }
-          &.no-avatar {
-            margin-left: 44px !important;
-          }
-        }
+  .avatar-col {
+    flex: 0 0 36px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 2px;
+
+    .ai-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      ion-icon { font-size: 18px; color: #fff; }
+    }
+
+    .hover-time {
+      font-size: 10px;
+      color: var(--ion-color-medium);
+      line-height: 20px;
+      display: none;
+    }
+  }
+
+  .message-row.message-grouped:hover .avatar-col .hover-time {
+    display: block;
+  }
+
+  .content-col {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .msg-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 2px;
+
+    .sender-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ion-text-color);
+      &.ai-name { color: #7c3aed; }
+    }
+
+    .ai-badge {
+      font-size: 10px;
+      font-weight: 600;
+      background: #7c3aed;
+      color: #fff;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .role-badge {
+      font-size: 10px;
+      font-weight: 500;
+      background: var(--ion-color-light);
+      color: var(--ion-color-medium);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  .msg-body {
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ion-text-color);
+    word-break: break-word;
+    overflow-wrap: break-word;
+
+    &.prose {
+      :host ::ng-deep {
+        h1, h2, h3, h4 { margin: 0.5em 0 0.25em; font-size: inherit; font-weight: 700; }
+        p { margin: 0 0 0.3em; }
+        ul, ol { margin: 0.25em 0; padding-left: 1.5em; }
+        code { background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 3px; font-size: 0.9em; }
+        pre { background: rgba(0,0,0,0.04); padding: 8px; border-radius: 4px; overflow-x: auto; margin: 0.25em 0; }
+        pre code { background: none; padding: 0; }
+        blockquote { border-left: 3px solid var(--ion-color-medium); padding-left: 8px; margin: 0.25em 0; color: var(--ion-color-medium); }
       }
     }
+
+    /* Keep quill HTML rendered for user messages */
+    :host ::ng-deep .ql-editor { padding: 0; }
+    :host ::ng-deep .ql-container { border: none !important; }
+  }
+
+  .file-attach {
+    margin-top: 4px;
+    cursor: pointer;
+    :host ::ng-deep img { max-width: 300px; border-radius: 6px; }
+  }
+
+  .file-link {
+    display: inline-block;
+    margin-top: 4px;
+    color: var(--ion-color-primary);
+    cursor: pointer;
+    &:hover { text-decoration: underline; }
+  }
+
+  /* ── Reaction pills ── */
+  .reaction-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .reaction-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    border: 1px solid var(--ion-color-light);
+    background: var(--ion-color-light);
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+
+    &:hover { border-color: var(--ion-color-medium); }
+    &.reacted {
+      border-color: var(--ion-color-primary);
+      background: rgba(0, 130, 150, 0.08);
+    }
+
+    .count { font-size: 11px; font-weight: 600; color: var(--ion-color-medium); }
+  }
+
+  /* ── Thread button ── */
+  .thread-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: var(--ion-color-primary);
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+    margin-top: 2px;
+
+    &:hover, &:focus-visible {
+      opacity: 1;
+      background: rgba(0, 130, 150, 0.08);
+    }
+
+    ion-icon { font-size: 13px; }
+
+    .reply-count { font-weight: 600; color: var(--ion-color-primary); }
+    .reply-label { color: var(--ion-color-medium); }
+  }
+
+  .thread-btn:has(.reply-count) {
+    opacity: 1;
+    background: rgba(0, 130, 150, 0.06);
+    border: 1px solid rgba(0, 130, 150, 0.15);
+  }
+
+  .message-row:hover .thread-btn { opacity: 0.6; }
+  .message-row:hover .thread-btn:hover { opacity: 1; }
+
+  /* ── Hover toolbar ── */
+  .hover-toolbar {
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    display: flex;
+    gap: 2px;
+    padding: 2px 4px;
+    background: #fff;
+    border: 1px solid var(--ion-color-light);
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s;
+    z-index: 10;
+  }
+
+  .toolbar-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--ion-color-medium);
+    transition: background 0.12s, color 0.12s;
+
+    &:hover {
+      background: var(--ion-color-light);
+      color: var(--ion-color-dark);
+    }
+    &.btn-danger:hover {
+      background: rgba(255, 0, 0, 0.08);
+      color: var(--ion-color-danger);
+    }
+
+    ion-icon { font-size: 15px; }
+  }
+
+  /* ── Emoji picker ── */
+  .emoji-picker {
+    position: absolute;
+    top: -8px;
+    right: 120px;
+    display: flex;
+    gap: 2px;
+    padding: 4px 6px;
+    background: #fff;
+    border: 1px solid var(--ion-color-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    z-index: 20;
+  }
+
+  .emoji-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.12s;
+    &:hover { background: var(--ion-color-light); }
   }
 }
 
@@ -314,14 +314,18 @@ $message-body-size: 60%;
   text-align: left !important;
 }
 .ion-content-absolute-with-footer {
-  height: calc(100% - 230px);
+  height: calc(100% - 108px);
 
   &.announcement {
     height: calc(100% - 60px);
   }
 
   &.attach-preview {
-    height: calc(100% - 329px);
+    height: calc(100% - 200px);
+  }
+
+  &.toolbar-visible {
+    height: calc(100% - 150px);
   }
 }
 
@@ -334,25 +338,29 @@ $message-body-size: 60%;
   }
 
   &.ion-footer-absolute {
-    height: 169px;
+    height: auto;
+    min-height: 56px;
     position: absolute;
     bottom: 0;
     z-index: 30;
 
     ion-grid {
       padding: 0;
-      min-height: 96px;
-      max-height: 169px;
+      min-height: 56px;
 
       ion-row {
-        min-height: 80px;
-        max-height: 121px;
+        min-height: 48px;
 
         ion-col {
-          min-height: 80px;
-          max-height: 121px;
+          min-height: 48px;
         }
       }
+    }
+  }
+
+  &.show-toolbar {
+    .message-text-editor .ql-toolbar.ql-snow {
+      display: block !important;
     }
   }
 
@@ -389,7 +397,12 @@ $message-body-size: 60%;
 
         .message-text-editor {
           width: 100%;
-          .ql-toolbar.ql-snow, .ql-container.ql-snow {
+          .ql-toolbar.ql-snow {
+            border: none !important;
+            display: none; // hidden by default — toggle with showToolbar
+            border-bottom: 1px solid var(--ion-color-light, #f4f5f8) !important;
+          }
+          .ql-container.ql-snow {
             border: none !important;
           }
         }
@@ -582,52 +595,18 @@ ion-fab.scroll-to-bottom {
   }
 }
 
-// Thread reply indicator
-.thread-reply-indicator {
-  margin-top: 2px;
-  padding: 0 4px;
-}
+// Thread overlay — translucent backdrop (mobile only), panel on the right
+.thread-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 199;
+  background: transparent;
 
-.thread-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 12px;
-  color: var(--ion-color-primary);
-  font-size: 11px;
-  opacity: 0;
-  transition: opacity 0.15s;
-
-  ion-icon {
-    font-size: 13px;
-  }
-
-  .reply-count {
-    font-weight: 600;
-    color: var(--ion-color-primary);
-  }
-
-  .reply-thread-label {
-    color: var(--ion-color-medium);
+  @media (max-width: 640px) {
+    background: rgba(0, 0, 0, 0.3);
   }
 }
 
-ion-item:hover .thread-btn,
-ion-item:focus-within .thread-btn {
-  opacity: 1;
-}
-
-// Always show when there are replies
-.thread-btn:has(.reply-count) {
-  opacity: 1;
-  background: rgba(0, 130, 150, 0.08);
-}
-
-// Thread overlay panel — slides in on the right (desktop) or over full (mobile)
 .thread-overlay {
   position: absolute;
   top: 0;

@@ -17,11 +17,9 @@
         class="focusable"
         role="button"
         tabindex="0">
-        <ion-avatar slot="start" text-center
-          class="access-avatar"
-          aria-hidden="true">
-          <img [src]="chat.avatar" alt="chat room avatar">
-        </ion-avatar>
+        <div slot="start" class="access-avatar" aria-hidden="true">
+          <app-avatar [name]="chat.name || 'Chat'" [avatarUrl]="chat.avatar" size="sm"></app-avatar>
+        </div>
         <ion-label class="chat-item-label" [attr.aria-describedby]="'chatroom-name-' + i">
           <div class="chat-name-container caption" [attr.id]="'chatroom-name-' + i"
             [attr.aria-label]="'chatroom: ' + chat.name">

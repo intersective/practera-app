@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewChecked, ElementRef, ChangeDetectorRef, NgZone, isDevMode } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { TrafficLightGroupComponent } from '@v3/app/components/traffic-light-group/traffic-light-group.component';
 import {
@@ -15,10 +16,26 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
-import { AlertController, ModalController } from '@ionic/angular';
-import { Activity } from '@v3/app/services/activity.service';
+import { AlertController, ModalController, IonModal } from '@ionic/angular';
+import { Activity, TodoGroupData } from '@v3/app/services/activity.service';
+import { ApolloService } from '@v3/app/services/apollo.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
+
+/**
+ * Gradient palette matching the admin design view (ActivityImageCard.tsx).
+ * Each pair is [fromHex, toHex] — applied as a 135deg linear gradient.
+ */
+const ACTIVITY_GRADIENT_COLORS: [string, string][] = [
+  ['#14b8a6', '#0f766e'], // teal
+  ['#3b82f6', '#1d4ed8'], // blue
+  ['#8b5cf6', '#6d28d9'], // violet
+  ['#f43f5e', '#be123c'], // rose
+  ['#f59e0b', '#b45309'], // amber
+  ['#10b981', '#047857'], // emerald
+  ['#06b6d4', '#0e7490'], // cyan
+  ['#6366f1', '#4338ca'], // indigo
+];
 
 @Component({
   standalone: false,
@@ -47,6 +64,13 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   getEarnedPoints: number = 0;
   hasUnlockedTasks: Object = {};
 
+  // hero section
+  heroStyle: SafeStyle;
+
+  // my tasks tab — team-assigned todo items (from teamTodoItems GraphQL query)
+  teamTodoGroup: TodoGroupData | null = null;
+  teamTodoLoading = false;
+
   // default card image (gracefully show broken url)
   defaultLeadImage: string = "";
 
@@ -62,13 +86,16 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   private lastDashboardRefreshMs = 0;
   private static DASHBOARD_REFRESH_DEBOUNCE_MS = 10_000;
 
-  @ViewChild('activityCol') activityCol: { el: HTMLIonColElement };
+  @ViewChild('activityCol') activityCol: ElementRef;
   @ViewChild('activities', { static: false }) activities!: ElementRef;
+  @ViewChild(IonModal) badgesModal?: IonModal;
   pulseCheckSkills: PulseCheckSkill[] = [];
 
   // project brief data from team storage
   projectBrief: ProjectBrief | null = null;
   showProjectHub = false;
+  teamId: number | null = null;
+  teamName: string | null = null;
 
   // activity search/filter
   activitySearchText = '';
@@ -92,6 +119,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     private alertController: AlertController,
     private modalController: ModalController,
     private pulsecheckService: PulsecheckService,
+    private sanitizer: DomSanitizer,
+    private apolloService: ApolloService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -248,6 +277,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     this.experience = this.storageService.get("experience");
     this.showProjectHub = this.storageService.getFeature('showProjectHub');
+    this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
@@ -266,8 +296,33 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.experience = this.storageService.get("experience");
     const user = this.storageService.getUser();
 
-    // load project brief from user storage
+    // load project brief from user storage (initial read from cache)
     this.projectBrief = user.projectBrief || null;
+    this.teamId = user.teamId || null;
+    this.teamName = user.teamName || null;
+
+    // load team todo items for My Tasks tab
+    if (this.teamId) {
+      this.loadTeamTodoItems(this.teamId);
+    }
+
+    // re-fetch team info from API to ensure project brief, teamName, and teamId are fresh
+    this.sharedService.getTeamInfo().pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+      catchError(err => { console.error('Team info refresh failed:', err); return of(null); })
+    ).subscribe(() => {
+      this.ngZone.run(() => {
+        const freshUser = this.storageService.getUser();
+        this.projectBrief = freshUser.projectBrief || null;
+        this.teamId = freshUser.teamId || null;
+        this.teamName = freshUser.teamName || null;
+        if (this.teamId && !this.teamTodoGroup) {
+          this.loadTeamTodoItems(this.teamId);
+        }
+        this.cdr.markForCheck();
+      });
+    });
 
     this.getIsPointsConfigured = this.achievementService.getIsPointsConfigured();
     this.getEarnedPoints = this.achievementService.getEarnedPoints();
@@ -286,6 +341,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     this.utils.setPageTitle(this.experience?.name || 'Practera');
     this.defaultLeadImage = this.experience.cardUrl || 'assets/default-experience-image.svg';
+    this.heroStyle = this._computeHeroStyle();
 
     // reset & load bookmarks
     this.bookmarkedActivities = {};
@@ -374,7 +430,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
    */
   async gotoActivity({ activity, milestone }, keyboardEvent?: Event) {
     // UI: clear lastVisited indicator (italic + grayed background)
-    this.activityCol.el.querySelectorAll('.lastVisited').forEach((ele) => {
+    this.activityCol?.nativeElement?.querySelectorAll('.lastVisited').forEach((ele: Element) => {
       ele.classList.remove('lastVisited');
     });
 
@@ -508,6 +564,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return;
     }
     this.notification.achievementPopUp("", achievement);
+  }
+
+  /** Dismiss the inline badges modal. */
+  closeBadgesModal(): void {
+    this.badgesModal?.dismiss();
   }
 
   scrollToElement(id: number): void {
@@ -675,6 +736,99 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     return this.filteredMilestones.reduce((total, milestone) => {
       return total + (milestone.activities?.length || 0);
     }, 0);
+  }
+
+  /**
+   * Fetch team-assigned todo items via the teamTodoItems GraphQL query.
+   * Populates teamTodoGroup for the app-todo-task component.
+   */
+  private loadTeamTodoItems(teamId: number): void {
+    this.teamTodoLoading = true;
+    this.apolloService.graphQLFetch(
+      `query teamTodoItems($teamId: Int!) {
+        teamTodoItems(teamId: $teamId) {
+          group {
+            id title description allowMemberAdditions estimatedTotalHours
+          }
+          items {
+            id title description estimatedHours dueDate status
+            assigneeId assigneeName completedAt completedBy completedByName
+            praiseCount isOverdue isAdminDefined createdBy order praise
+            assignmentHistory { userId action fromUserId at }
+          }
+        }
+      }`,
+      { variables: { teamId } }
+    ).pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+      catchError((error) => {
+        console.error('Error loading team todo items:', error);
+        return of({ data: { teamTodoItems: null } });
+      })
+    ).subscribe((res: any) => {
+      this.ngZone.run(() => {
+        const result = res?.data?.teamTodoItems;
+        if (result?.group) {
+          this.teamTodoGroup = {
+            id: Number(result.group.id) || 0,
+            title: result.group.title || 'Team Tasks',
+            description: result.group.description,
+            allowMemberAdditions: result.group.allowMemberAdditions ?? false,
+            estimatedTotalHours: result.group.estimatedTotalHours,
+            items: (result.items || []).map((item: any) => ({
+              ...item,
+              id: Number(item.id),
+              praise: item.praise || [],
+              assignmentHistory: item.assignmentHistory || [],
+            })),
+          };
+        } else {
+          this.teamTodoGroup = null;
+        }
+        this.teamTodoLoading = false;
+        this.cdr.markForCheck();
+      });
+    });
+  }
+
+  /**
+   * Returns an SVG data URL with a deterministic gradient for activities without lead images.
+   * Uses the same 8-color palette as the admin design view (ActivityImageCard).
+   */
+  getActivityGradient(activityId: number): string {
+    const idx = activityId % ACTIVITY_GRADIENT_COLORS.length;
+    const [from, to] = ACTIVITY_GRADIENT_COLORS[idx];
+    return `data:image/svg+xml,${encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">` +
+      `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +
+      `<stop offset="0%" stop-color="${from}"/>` +
+      `<stop offset="100%" stop-color="${to}"/>` +
+      `</linearGradient></defs>` +
+      `<rect width="80" height="80" fill="url(#g)"/>` +
+      `</svg>`
+    )}`;
+  }
+
+  /**
+   * Computes the SafeStyle for the hero card background.
+   * Priority: leadImage → bannerUrl → cardUrl → brand gradient fallback.
+   */
+  private _computeHeroStyle(): SafeStyle {
+    const exp = this.experience as any;
+    // Try image URLs in priority order
+    const imageUrl = exp?.leadImage || exp?.bannerUrl || exp?.cardUrl;
+    if (imageUrl && !imageUrl.endsWith('default-experience-image.svg')) {
+      return this.sanitizer.bypassSecurityTrustStyle(
+        `background-image: url('${imageUrl}')`
+      );
+    }
+    // Gradient fallback using experience brand colors or Practera defaults
+    const primary = exp?.color || '#2bbfd4';
+    const secondary = exp?.secondaryColor || '#0cd1e8';
+    return this.sanitizer.bypassSecurityTrustStyle(
+      `background-image: linear-gradient(135deg, ${primary} 0%, ${secondary} 60%, #2bbfd4 100%)`
+    );
   }
 }
 

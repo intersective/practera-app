@@ -33,6 +33,8 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
   showAiPicker = false;
   availableExperts: Array<{ id: number; name: string; description: string | null }> = [];
   invitingExpert = false;
+  showEmojiPicker: string | null = null;
+  commonEmojis = ['👍', '👎', '😀', '❤️', '🎉', '👀', '🚀', '😮'];
 
   private destroy$ = new Subject<void>();
   private pollInterval: ReturnType<typeof setInterval>;
@@ -73,8 +75,8 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
       this.chatService.getThreadReplies(this.rootMessage.uuid, 50).subscribe({
         next: (result) => {
           this.ngZone.run(() => {
-            const existingUuids = new Set(this.replies.map(r => r.uuid));
-            const newReplies = result.replies.filter(r => !existingUuids.has(r.uuid));
+            const existingKeys = new Set(this.replies.map(r => this.msgKey(r)));
+            const newReplies = result.replies.filter(r => !existingKeys.has(this.msgKey(r)));
             if (newReplies.length > 0) {
               this.replies = [...this.replies, ...newReplies];
               this.replyCountChanged.emit({
@@ -186,5 +188,84 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     if (diff < 86400) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+
+  /** Stable key for dedup + trackBy */
+  msgKey(msg: Message): string {
+    return msg.uuid || `id:${msg.chatLogId}` || `c:${msg.created}:${(msg.message ?? '').slice(0, 20)}`;
+  }
+
+  trackReply(_index: number, msg: Message): string {
+    return this.msgKey(msg);
+  }
+
+  isAiMessage(msg: Message): boolean {
+    return !msg.uuid;
+  }
+
+  isContinuation(msg: Message, index: number): boolean {
+    const list = [this.rootMessage, ...this.replies];
+    const realIndex = index + 1; // offset by root message
+    if (realIndex === 0) return false;
+    const prev = list[realIndex - 1];
+    if (!prev) return false;
+    const prevKey = prev.isSender ? '__me__' : (prev.senderUuid ?? prev.message?.slice(0, 10));
+    const nextKey = msg.isSender ? '__me__' : (msg.senderUuid ?? msg.message?.slice(0, 10));
+    if (prevKey !== nextKey) return false;
+    if (!prev.created || !msg.created) return false;
+    const diff = (new Date(msg.created).getTime() - new Date(prev.created).getTime()) / 1000;
+    return diff < 300;
+  }
+
+  toggleEmojiPicker(msg: Message): void {
+    const key = msg.uuid || `id:${msg.chatLogId}`;
+    this.showEmojiPicker = this.showEmojiPicker === key ? null : key;
+  }
+
+  addReaction(msg: Message, emoji: string): void {
+    this.showEmojiPicker = null;
+    const params: any = { emoji };
+    if (msg.uuid) params.chatLogUuid = msg.uuid;
+    else if (msg.chatLogId) params.chatLogId = msg.chatLogId;
+    else return;
+    this.chatService.addReaction(params).pipe(takeUntil(this.destroy$)).subscribe(
+      (res) => {
+        const updated = res?.data?.addReaction;
+        if (updated) {
+          this.ngZone.run(() => {
+            const all = [this.rootMessage, ...this.replies];
+            const target = all.find(m =>
+              (msg.uuid && m.uuid === msg.uuid) || (!msg.uuid && m.chatLogId === updated.chatLogId)
+            );
+            if (target) target.reactions = updated.reactions;
+            this.cdr.markForCheck();
+          });
+        }
+      },
+      (err) => console.error('addReaction error:', err)
+    );
+  }
+
+  removeReaction(msg: Message, emoji: string): void {
+    const params: any = { emoji };
+    if (msg.uuid) params.chatLogUuid = msg.uuid;
+    else if (msg.chatLogId) params.chatLogId = msg.chatLogId;
+    else return;
+    this.chatService.removeReaction(params).pipe(takeUntil(this.destroy$)).subscribe(
+      (res) => {
+        const updated = res?.data?.removeReaction;
+        if (updated) {
+          this.ngZone.run(() => {
+            const all = [this.rootMessage, ...this.replies];
+            const target = all.find(m =>
+              (msg.uuid && m.uuid === msg.uuid) || (!msg.uuid && m.chatLogId === updated.chatLogId)
+            );
+            if (target) target.reactions = updated.reactions;
+            this.cdr.markForCheck();
+          });
+        }
+      },
+      (err) => console.error('removeReaction error:', err)
+    );
   }
 }

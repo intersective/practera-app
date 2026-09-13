@@ -58,19 +58,8 @@
     }"
     [attr.aria-busy]="isLoadingSetting"
     >
-    @if (user?.image) {
-      <ion-avatar class="ion-margin-horizontal"
-        aria-hidden="true">
-        <img [src]="user?.image" alt="user profile avatar" i18n-alt>
-      </ion-avatar>
-    }
-
-    @if (!user?.image) {
-      <ion-icon
-        aria-hidden="true"
-        slot="icon-only"
-        name="person-circle"
-      ></ion-icon>
-    }
+    <div class="ion-margin-horizontal" aria-hidden="true">
+      <app-avatar [name]="user?.name || user?.firstName || 'Me'" [avatarUrl]="user?.image" size="sm"></app-avatar>
+    </div>
   </ion-button>
 </div>

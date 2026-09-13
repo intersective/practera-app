@@ -68,6 +68,7 @@ export interface FileResponse {
 
 export interface Message {
   uuid: string;
+  chatLogId?: number;
   sender: User;
   isSender: boolean;
   message: string;
@@ -79,6 +80,13 @@ export interface Message {
   replyCount?: number;
   latestReplyAt?: string | null;
   threadRootUuid?: string | null;
+  // Reactions
+  reactions?: Array<{
+    emoji: string;
+    count: number;
+    reacted: boolean;
+    users: Array<{ id: string; name: string }>;
+  }>;
 
   // TBC
   preview?: string;
@@ -214,16 +222,23 @@ export class ChatService {
     }
 
     return this.apolloService.graphQLFetch(
-      `query getChannellogs($uuid:String!, $cursor:String!, $size:Int!) {
+      `query getChannellogs($uuid:ID!, $cursor:String!, $size:Int!) {
         channel(uuid:$uuid){
           chatLogsConnection(cursor:$cursor, size:$size){
             cursor
             chatLogs {
               uuid
+              chatLogId
               isSender
               message
               replyCount
               latestReplyAt
+              reactions {
+                emoji
+                count
+                reacted
+                users { id name }
+              }
               file {
                 name
                 type
@@ -285,6 +300,7 @@ export class ChatService {
         fileObject,
 
         uuid: message.uuid,
+        chatLogId: message.chatLogId ?? undefined,
         sender: message.sender,
         isSender: message.isSender,
         message: message.message,
@@ -294,6 +310,7 @@ export class ChatService {
         sentAt: message.sentAt,
         replyCount: message.replyCount ?? 0,
         latestReplyAt: message.latestReplyAt ?? null,
+        reactions: message.reactions ?? [],
 
         senderUuid: message.sender.uuid,
         senderName: message.sender.name,
@@ -318,7 +335,7 @@ export class ChatService {
     }
 
     return this.apolloService.graphQLFetch(
-      `query getChannelmembers($uuid:String!) {
+      `query getChannelmembers($uuid:ID!) {
         channel(uuid:$uuid){
           members{
             uuid
@@ -415,10 +432,17 @@ export class ChatService {
       `mutation createChatLogs($input: CreateChatLogInput!) {
         createChatLog(input: $input) {
           uuid
+          chatLogId
           isSender
           message
           replyCount
           latestReplyAt
+          reactions {
+            emoji
+            count
+            reacted
+            users { id name }
+          }
           file {
             name
             type
@@ -462,20 +486,34 @@ export class ChatService {
           cursor
           rootMessage {
             uuid
+            chatLogId
             message
             isSender
             created
             replyCount
             latestReplyAt
+            reactions {
+              emoji
+              count
+              reacted
+              users { id name }
+            }
             sender { uuid name role avatar }
             file { name type url }
           }
           replies {
             uuid
+            chatLogId
             message
             isSender
             created
             sentAt
+            reactions {
+              emoji
+              count
+              reacted
+              users { id name }
+            }
             sender { uuid name role avatar }
             file { name type url }
           }
@@ -488,6 +526,7 @@ export class ChatService {
         if (!conn) return { rootMessage: null, replies: [], cursor: null };
         const normaliseMsg = (r: any): Message => ({
           uuid: r.uuid,
+          chatLogId: r.chatLogId ?? undefined,
           sender: r.sender,
           isSender: r.isSender,
           message: r.message,
@@ -497,6 +536,7 @@ export class ChatService {
           sentAt: r.sentAt ?? r.created,
           replyCount: r.replyCount ?? 0,
           latestReplyAt: r.latestReplyAt ?? null,
+          reactions: r.reactions ?? [],
           senderUuid: r.sender?.uuid,
           senderName: r.sender?.name,
           senderRole: r.sender?.role,
@@ -534,6 +574,7 @@ export class ChatService {
 
     return {
       uuid: result.uuid,
+      chatLogId: result.chatLogId ?? undefined,
       sender: result.sender,
       isSender: result.isSender,
       message: result.message,
@@ -543,6 +584,7 @@ export class ChatService {
       sentAt: result.sentAt,
       replyCount: result.replyCount ?? 0,
       latestReplyAt: result.latestReplyAt ?? null,
+      reactions: result.reactions ?? [],
 
       // TBC
       senderUuid: result.sender.uuid,
@@ -625,6 +667,50 @@ export class ChatService {
       { threadRootUuid, expertId }
     ).pipe(
       map(response => response?.data?.inviteAiToThread ?? false)
+    );
+  }
+
+  /**
+   * @name addReaction
+   * @description Add an emoji reaction to a chat message.
+   */
+  addReaction(params: { chatLogUuid?: string; chatLogId?: number; emoji: string }): Observable<any> {
+    return this.apolloService.graphQLMutate(
+      `mutation addReaction($chatLogUuid: String, $chatLogId: Int, $emoji: String!) {
+        addReaction(chatLogUuid: $chatLogUuid, chatLogId: $chatLogId, emoji: $emoji) {
+          uuid
+          chatLogId
+          reactions {
+            emoji
+            count
+            reacted
+            users { id name }
+          }
+        }
+      }`,
+      params
+    );
+  }
+
+  /**
+   * @name removeReaction
+   * @description Remove an emoji reaction from a chat message.
+   */
+  removeReaction(params: { chatLogUuid?: string; chatLogId?: number; emoji: string }): Observable<any> {
+    return this.apolloService.graphQLMutate(
+      `mutation removeReaction($chatLogUuid: String, $chatLogId: Int, $emoji: String!) {
+        removeReaction(chatLogUuid: $chatLogUuid, chatLogId: $chatLogId, emoji: $emoji) {
+          uuid
+          chatLogId
+          reactions {
+            emoji
+            count
+            reacted
+            users { id name }
+          }
+        }
+      }`,
+      params
     );
   }
 }

@@ -83,8 +83,8 @@ export class ChatListComponent {
         this.chatList = chats;
         this.loadingChatList = false;
         this.cdr.markForCheck();
+        this.chatListReady.emit(this.chatList);
       });
-      this.chatListReady.emit(this.chatList);
     });
   }
 

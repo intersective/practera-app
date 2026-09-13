@@ -12,12 +12,9 @@
       <ion-list lines="full" class="ion-no-margin">
         @for (member of members; track member.userId) {
           <ion-item class="team-member-item">
-            <ion-avatar slot="start">
-              <img
-                [src]="member.avatar || 'https://my.practera.com/img/user-512.png'"
-                [alt]="member.name"
-              />
-            </ion-avatar>
+            <div slot="start">
+              <app-avatar [name]="member.name || 'User'" [avatarUrl]="member.avatar" size="sm"></app-avatar>
+            </div>
             <ion-label>
               <h4 class="body-2">{{ member.name }}</h4>
               <ion-badge color="light">{{ roleLabel(member.role) }}</ion-badge>

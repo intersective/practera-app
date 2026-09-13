@@ -1,4 +1,5 @@
 import { TrafficLightComponent } from './traffic-light/traffic-light.component';
+import { AvatarComponent } from './avatar/avatar.component';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
@@ -46,6 +47,7 @@ import { UppyUploaderService } from './uppy-uploader/uppy-uploader.service';
 import { FilePopupComponent } from './file-popup/file-popup.component';
 import { SliderComponent } from './slider/slider.component';
 import { LanguageDetectionPipe } from '../pipes/language.pipe';
+import { MarkdownPipe } from '../pipes/markdown.pipe';
 import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
 import { TeamRosterComponent } from './team-roster/team-roster.component';
 import { H5pPlayerComponent } from './h5p-player/h5p-player.component';
@@ -81,6 +83,7 @@ const largeCircleDefaultConfig = {
   // Remove when @uppy/angular releases Angular 21 support.
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
+    AvatarComponent,
     AchievementPopUpComponent,
     BadgeDetailModalComponent,
     ActivityCompletePopUpComponent,
@@ -125,8 +128,10 @@ const largeCircleDefaultConfig = {
     FileUploadComponent,
     H5pPlayerComponent,
     LanguageDetectionPipe,
+    MarkdownPipe,
   ],
   exports: [
+    AvatarComponent,
     AchievementPopUpComponent,
     BadgeDetailModalComponent,
     ActivityCompletePopUpComponent,
@@ -176,6 +181,7 @@ const largeCircleDefaultConfig = {
     FileUploadComponent,
     H5pPlayerComponent,
     LanguageDetectionPipe,
+    MarkdownPipe,
   ],
   providers: [UppyUploaderService]
 })

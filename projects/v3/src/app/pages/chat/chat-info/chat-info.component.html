@@ -27,14 +27,6 @@
   <div class="who-in-chat-container channel-name">
     <span class="subtitle-1 black" [innerHTML]="selectedChat.name"></span>
   </div>
-  <div class="who-in-chat-container">
-    <ion-label class="subtitle-1 gray-2" i18n>Who is in this chat</ion-label>
-    <div class="chat-role-container">
-      @for (role of selectedChat.roles; track role) {
-        <p class="chat-role body-2">{{ utils.getUserRolesForUI(role) }}</p>
-      }
-    </div>
-  </div>
   <div class="member-container">
     <p class="subtitle-1 gray-2" i18n>{{ memberList.length }} Members</p>
     @if (loadingMembers) {
@@ -48,13 +40,13 @@
           @for (member of memberList; track member) {
             @if (member) {
               <ion-item>
-                <ion-avatar slot="start">
-                  <img [src]="member.avatar" [attr.alt]="member.name + ' avatar'">
-                </ion-avatar>
+                <div slot="start">
+                  <app-avatar [name]="member.name || 'User'" [avatarUrl]="member.avatar" size="sm"></app-avatar>
+                </div>
                 <ion-label>
                   <p class="subtitle-1 black" [innerHTML]="member.name"></p>
-                  @if (member.role !== 'participant') {
-                    <p class="caption gray-2">{{ utils.getUserRolesForUI(member.role) }}</p>
+                  @if (member.role !== 'participant' && member.role !== 'cs_admin' && member.role !== 'inst_admin') {
+                    <p class="caption gray-2">{{ getRoleLabel(member.role) }}</p>
                   }
                 </ion-label>
               </ion-item>

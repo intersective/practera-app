@@ -27,7 +27,7 @@ export class SettingsPage implements OnInit, OnDestroy {
   profile = {
     contactNumber: '',
     email: '',
-    avatar: '',
+    avatar: null as string | null,
     name: ''
   };
   hasMultipleStacks = false;
@@ -84,7 +84,7 @@ export class SettingsPage implements OnInit, OnDestroy {
       this.ngZone.run(() => {
         this.profile.email = email;
         this.profile.contactNumber = contactNumber;
-        this.profile.avatar = avatar ? avatar : 'https://my.practera.com/img/user-512.png';
+        this.profile.avatar = avatar || null;
         this.profile.name = name;
         this.currentProgramName = programName;
         this.returnLtiUrl = LtiReturnUrl;

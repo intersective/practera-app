@@ -15,179 +15,257 @@
     <ion-title class="ion-no-padding headline-4 grey-75"
     i18n>Home</ion-title>
     <ion-buttons slot="end">
+      <!-- Badges ribbon icon — opens inline badges modal -->
+      <ion-button
+        id="open-badges-modal"
+        class="badges-header-btn"
+        aria-label="View badges and points" i18n-aria-label>
+        <ion-icon name="ribbon-outline" color="primary" aria-hidden="true"></ion-icon>
+        @if (achievements?.length > 0) {
+          <ion-badge class="badges-count" color="primary" aria-hidden="true">
+            {{ achievements.length }}
+          </ion-badge>
+        }
+      </ion-button>
       <app-personalised-header></app-personalised-header>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngClass]="{'scrollable-desktop': !isMobile}">
+<!-- ── BADGES MODAL ─────────────────────────────────────────────────── -->
+<ion-modal trigger="open-badges-modal" class="badges-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title i18n>{ getIsPointsConfigured, select, true {Badges &amp; Points} false {Badges} }</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeBadgesModal()" aria-label="Close badges" i18n-aria-label>
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ion-content>
   <main aria-labelledby="homecontent">
     <h1 id="homecontent"
       class="for-accessibility"
     i18n>Home content</h1>
-    <ion-grid style="padding: inherit;">
-      <ion-row>
-        <ion-col size="12"
-          size-sm="4"
-          class="ion-no-padding">
-          <h2 class="for-accessibility"
-          i18n>Experience Details</h2>
-          @if (experience) {
-            <img [src]="experience.leadImage"
-              [alt]="experience.name || 'Experience lead image'"
-              [appFallbackImage]="'assets/default-experience-image.svg'" />
-            @if (experienceProgress >= 0) {
-              <ion-progress-bar
-                color="primary"
-                [value]="experienceProgress / 100"
-              aria-hidden="true"></ion-progress-bar>
-            }
-            <div class="exp-content">
-              <h2 class="headline-2"
-              [innerHTML]="experience.name"></h2>
-              <div class="exp-header">
-                <h2 class="headline-2"
-                  [innerHTML]="experience.name"></h2>
-                @if (!isExpert && (projectBrief || showProjectHub)) {
-                  <div class="button-group-no-gap">
-                    @if (projectBrief?.id) {
-                      <ion-button fill="clear"
-                        size="small"
-                        class="project-brief-btn"
-                        (click)="showProjectBrief()"
-                        (keydown.enter)="showProjectBrief()"
-                        (keydown.space)="showProjectBrief(); $event.preventDefault()"
-                        aria-label="View project brief" i18n-aria-label>
-                        <ion-icon name="document-text-outline"
-                          slot="start"
-                          aria-hidden="true"></ion-icon>
-                        <span i18n>Project Brief</span>
-                      </ion-button>
-                    }
-                    @if (showProjectHub) {
-                      <ion-button fill="clear"
-                        size="small"
-                        class="project-brief-btn"
-                        (click)="openProjectBriefExternal()"
-                        (keydown.enter)="openProjectBriefExternal()"
-                        (keydown.space)="openProjectBriefExternal(); $event.preventDefault()"
-                        title="Go to Project Hub"
-                        aria-label="Go to Project Hub" i18n-aria-label>
-                        <ion-icon name="open-outline"
-                          slot="start"
-                          size="small"
-                          aria-hidden="true"
-                        ></ion-icon>
-                        <span i18n>Go to Project Hub</span>
-                      </ion-button>
-                    }
-                  </div>
-                }
-              </div>
-              <ion-text class="subtitle-3"
-                color="grey-75">
-                @if ((activityCount$ | async); as count) {
-                  <ng-container
-                  i18n>{{ count }} Activities</ng-container>
-                } @else {
-                  <ion-skeleton-text animated
-                    style="width: 50px; display: inline;"
-                    role="status"
-                  aria-label="Loading" i18n-aria-label></ion-skeleton-text>
-                }
-                <span style="margin: 0 10px">|</span>
-                @if (experienceProgress >= 0) {
-                  <ng-container
-                  i18n>{{ experienceProgress }}% Progress</ng-container>
-                } @else {
-                  <ion-skeleton-text animated
-                    style="width: 50px; display: inline;"
-                    role="status"
-                  aria-label="Loading" i18n-aria-label></ion-skeleton-text>
-                }
-              </ion-text>
-              @if (experience?.description) {
-                <ng-container #experienceDescription
-                  >
-                  @if (!isMobile && experience.description) {
-                    <p
-                      class="body-2"
-                    [innerHTML]="experience.description"></p>
-                  }
-                  @if (isMobile && experience.description) {
-                    <app-description
-                    [content]="experience.description"></app-description>
-                  }
-                </ng-container>
+
+    <div class="home-layout">
+
+      <!-- ── LEFT COLUMN: Hero + Project Brief ──────────────────────── -->
+      <div class="home-left">
+        @if (experience) {
+          <!-- Hero card -->
+          <div class="hero-card"
+            [style]="heroStyle"
+            role="banner"
+            [attr.aria-label]="experience.name">
+            <div class="hero-overlay">
+              @if (experienceProgress >= 0) {
+                <ion-progress-bar
+                  class="hero-progress-bar"
+                  color="light"
+                  [value]="experienceProgress / 100"
+                aria-hidden="true"></ion-progress-bar>
               }
+              <div class="hero-body">
+                <div class="hero-stat-chips">
+                  @if ((activityCount$ | async); as count) {
+                    <span class="hero-chip">
+                      <ion-icon name="layers-outline" aria-hidden="true"></ion-icon>
+                      {{ count }}<ng-container i18n> Activities</ng-container>
+                    </span>
+                  }
+                  @if (experienceProgress >= 0) {
+                    <span class="hero-chip">
+                      <ion-icon name="trending-up-outline" aria-hidden="true"></ion-icon>
+                      {{ experienceProgress }}%<ng-container i18n> Progress</ng-container>
+                    </span>
+                  }
+                </div>
+                <h2 class="hero-title"
+                [innerHTML]="experience.name"></h2>
+              </div>
             </div>
-            <app-team-roster></app-team-roster>
-          }
-        </ion-col>
+          </div>
 
-        <ion-col size="12"
-          size-sm="8"
-          #activityCol
-          id="activity-col"
-          class="activity-col"
-          [ngClass]="{'mobile': isMobile}">
-          <h2 class="for-accessibility"
-          i18n>Activities</h2>
-          <ion-segment (ionChange)="switchContent($event)"
-            [value]="display"
-            role="tablist"
-            aria-label="Content navigation tabs" i18n-aria-label>
-            <ion-segment-button value="activities"
+          <!-- Experience description -->
+          @if (experience?.description) {
+            <div class="brief-section">
+              <app-description [content]="experience.description"></app-description>
+            </div>
+          }
+        }
+
+        <!-- Project Brief inline details -->
+        @if (projectBrief) {
+          <div class="brief-section brief-details" role="region" aria-label="Project Brief" i18n-aria-label>
+            @if (projectBrief.title) {
+              <h3 class="brief-details__title">{{ projectBrief.title }}</h3>
+            }
+            @if (projectBrief.projectType) {
+              <span class="brief-details__badge">
+                <ion-icon name="briefcase-outline" aria-hidden="true"></ion-icon>
+                {{ projectBrief.projectType }}
+              </span>
+            }
+            @if (projectBrief.description) {
+              <div class="brief-details__section">
+                <h4 class="brief-details__label" i18n>Description</h4>
+                <p class="brief-details__text">{{ projectBrief.description }}</p>
+              </div>
+            }
+            @if (projectBrief.industry?.length) {
+              <div class="brief-details__section">
+                <h4 class="brief-details__label" i18n>Industry</h4>
+                <div class="brief-details__chips">
+                  @for (item of projectBrief.industry; track item) {
+                    <ion-chip color="primary" outline="true">
+                      <ion-label>{{ item }}</ion-label>
+                    </ion-chip>
+                  }
+                </div>
+              </div>
+            }
+            @if (projectBrief.technicalSkills?.length) {
+              <div class="brief-details__section">
+                <h4 class="brief-details__label" i18n>Technical Skills</h4>
+                <div class="brief-details__chips">
+                  @for (skill of projectBrief.technicalSkills; track skill) {
+                    <ion-chip color="tertiary" outline="true">
+                      <ion-label>{{ skill }}</ion-label>
+                    </ion-chip>
+                  }
+                </div>
+              </div>
+            }
+            @if (projectBrief.professionalSkills?.length) {
+              <div class="brief-details__section">
+                <h4 class="brief-details__label" i18n>Professional Skills</h4>
+                <div class="brief-details__chips">
+                  @for (skill of projectBrief.professionalSkills; track skill) {
+                    <ion-chip color="secondary" outline="true">
+                      <ion-label>{{ skill }}</ion-label>
+                    </ion-chip>
+                  }
+                </div>
+              </div>
+            }
+            @if (projectBrief.deliverables) {
+              <div class="brief-details__section">
+                <h4 class="brief-details__label" i18n>Deliverables</h4>
+                <p class="brief-details__text">{{ projectBrief.deliverables }}</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Project Hub link -->
+        @if (showProjectHub) {
+          <div class="brief-section">
+            <ion-button
+              expand="block"
+              fill="outline"
+              size="small"
+              (click)="openProjectBriefExternal()"
+              aria-label="Go to Project Hub" i18n-aria-label>
+              <ion-icon name="open-outline" slot="start" aria-hidden="true"></ion-icon>
+              <span i18n>Open Project Hub</span>
+            </ion-button>
+          </div>
+        }
+      </div>
+
+      <!-- ── RIGHT COLUMN: Tabs ─────────────────────────────────────── -->
+      <div class="home-right"
+        #activityCol
+        id="activity-col">
+        <h2 class="for-accessibility"
+        i18n>Activities</h2>
+
+        <ion-segment
+          (ionChange)="switchContent($event)"
+          [value]="display"
+          role="tablist"
+          aria-label="Content navigation tabs" i18n-aria-label
+          class="home-segment">
+          <ion-segment-button value="activities"
+            mode="ios"
+            role="tab"
+            [attr.aria-selected]="display === 'activities'"
+            [attr.aria-controls]="'activities-panel'">
+            <ion-label i18n>Activities</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="tasks"
+            mode="ios"
+            role="tab"
+            [attr.aria-selected]="display === 'tasks'"
+            [attr.aria-controls]="'tasks-panel'">
+            <ion-label i18n>My Tasks</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="team"
+            mode="ios"
+            role="tab"
+            [attr.aria-selected]="display === 'team'"
+            [attr.aria-controls]="'team-panel'">
+            <ion-label i18n>My Team</ion-label>
+          </ion-segment-button>
+          @if (pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam) {
+            <ion-segment-button value="pulse-checks"
               mode="ios"
               role="tab"
-              [attr.aria-selected]="display === 'activities'"
-              [attr.aria-controls]="'activities-panel'">
-              <ion-label i18n>Activities</ion-label>
+              [attr.aria-selected]="display === 'pulse-checks'"
+              [attr.aria-controls]="'pulse-checks-panel'">
+              <ion-label i18n>Surveys</ion-label>
             </ion-segment-button>
-            <ion-segment-button value="badges"
-              mode="ios"
-              role="tab"
-              [attr.aria-selected]="display === 'badges'"
-              [attr.aria-controls]="'badges-panel'">
-              <ion-label i18n>{ getIsPointsConfigured, select, true {Badges & Points} false {Badges} }</ion-label>
-            </ion-segment-button>
-            @if (pulseCheckIndicatorEnabled === true && !isExpertWithoutTeam) {
-              <ion-segment-button value="pulse-checks"
-                mode="ios"
-                role="tab"
-                [attr.aria-selected]="display === 'pulse-checks'"
-                [attr.aria-controls]="'pulse-checks-panel'">
-                <ion-label i18n>Skill & Progress Surveys</ion-label>
-              </ion-segment-button>
-            }
-          </ion-segment>
-
-          @switch (display) {
-            @case ('activities') {
-              <div role="tabpanel" id="activities-panel" [attr.aria-labelledby]="'activities-tab'">
-                <ng-container *ngTemplateOutlet="activityList"></ng-container>
-              </div>
-            }
-            @case ('badges') {
-              <div role="tabpanel" id="badges-panel" [attr.aria-labelledby]="'badges-tab'">
-                <ng-container *ngTemplateOutlet="badgePoints"></ng-container>
-              </div>
-            }
-            @case ('pulse-checks') {
-              <div role="tabpanel" id="pulse-checks-panel" [attr.aria-labelledby]="'pulse-checks-tab'">
-                <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
-              </div>
-            }
           }
-        </ion-col>
+        </ion-segment>
 
-      </ion-row>
-    </ion-grid>
+        @switch (display) {
+          @case ('activities') {
+            <div role="tabpanel"
+              id="activities-panel"
+              [attr.aria-labelledby]="'activities-tab'">
+              <ng-container *ngTemplateOutlet="activityList"></ng-container>
+            </div>
+          }
+          @case ('tasks') {
+            <div role="tabpanel"
+              id="tasks-panel"
+              [attr.aria-labelledby]="'tasks-tab'">
+              <ng-container *ngTemplateOutlet="myTasks"></ng-container>
+            </div>
+          }
+          @case ('team') {
+            <div role="tabpanel"
+              id="team-panel"
+              [attr.aria-labelledby]="'team-tab'">
+              <ng-container *ngTemplateOutlet="myTeam"></ng-container>
+            </div>
+          }
+          @case ('pulse-checks') {
+            <div role="tabpanel"
+              id="pulse-checks-panel"
+              [attr.aria-labelledby]="'pulse-checks-tab'">
+              <ng-container *ngTemplateOutlet="pulseChecks"></ng-container>
+            </div>
+          }
+        }
+      </div>
 
+    </div>
   </main>
 </ion-content>
 
 
+<!-- ── ACTIVITIES TAB ─────────────────────────────────────────────────── -->
 <ng-template #activityList>
   <h3 class="for-accessibility"
   i18n>Activity list</h3>
@@ -253,7 +331,7 @@
             <app-list-item [id]="'act-' + activity?.id"
               [title]="activity.name"
               [leadImage]="activity.leadImage"
-              [fallbackLeadImage]="defaultLeadImage"
+              [fallbackLeadImage]="getActivityGradient(activity.id)"
               [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
               (click)="gotoActivity({activity, milestone})"
               (keydown.enter)="gotoActivity({activity, milestone}, $event)"
@@ -336,17 +414,67 @@
   }
 </ng-template>
 
+
+<!-- ── MY TASKS TAB ──────────────────────────────────────────────────── -->
+<ng-template #myTasks>
+  <h3 class="for-accessibility"
+  i18n>My Tasks</h3>
+  <div class="tasks-panel" role="region" aria-label="My tasks" i18n-aria-label>
+    @if (teamTodoLoading) {
+      <div class="ion-text-center ion-padding">
+        <ion-spinner name="crescent" color="primary"></ion-spinner>
+        <p class="body-2" color="medium" i18n>Loading team tasks…</p>
+      </div>
+    } @else if (teamTodoGroup) {
+      <app-todo-task
+        [todoGroup]="teamTodoGroup"
+        [teamId]="teamId">
+      </app-todo-task>
+    } @else {
+      <div class="empty-state ion-text-center">
+        <ion-icon class="empty-state-icon"
+          name="checkmark-done-outline"
+          color="primary"
+        aria-hidden="true"></ion-icon>
+        <p class="body-1"
+        i18n>No team tasks assigned yet.</p>
+        <ion-text class="subtitle-2"
+          color="grey-75"
+        i18n>Tasks will appear here when your team has a todo list.</ion-text>
+      </div>
+    }
+  </div>
+</ng-template>
+
+
+<!-- ── MY TEAM TAB ───────────────────────────────────────────────────── -->
+<ng-template #myTeam>
+  <h3 class="for-accessibility"
+  i18n>My Team</h3>
+  <div class="team-panel" role="region" aria-label="My team" i18n-aria-label>
+    @if (teamName) {
+      <div class="team-name-heading">
+        <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
+        <span class="headline-4">{{ teamName }}</span>
+      </div>
+    }
+    <app-team-roster></app-team-roster>
+  </div>
+</ng-template>
+
+
+<!-- ── BADGES TAB ────────────────────────────────────────────────────── -->
 <ng-template #badgePoints>
   <h3 class="for-accessibility"
   i18n>Badges awarded</h3>
   @if (achievements.length === 0) {
     <div
-      class="ion-text-center no-achievement"
+      class="ion-text-center empty-state"
       role="status"
       aria-live="polite">
       <h4 class="for-accessibility"
       id="nobadges-heading" i18n>No badges status</h4>
-      <ion-icon class="large-icon"
+      <ion-icon class="empty-state-icon"
         color="primary"
         name="ribbon-outline"
         aria-hidden="true"
@@ -393,6 +521,7 @@
 </ng-template>
 
 
+<!-- ── PULSE CHECKS / SURVEYS TAB ────────────────────────────────────── -->
 <ng-template #pulseChecks>
   <h3 class="for-accessibility"
   i18n>Pulse checks and skills</h3>
@@ -445,8 +574,7 @@
           @for (skill of pulseCheckSkills; track skill) {
             <ion-col size="12"
               size-md="6"
-              size-lg="4"
-              >
+              size-lg="4">
               <ion-card class="skill-card">
                 <ion-card-content class="skill-card-content">
                   <div class="skill-header">
@@ -479,8 +607,7 @@
                           [class.half-filled]="index === Math.floor(skill.value) && skill.value % 1 > 0"
                           [attr.aria-label]="getSkillDotAriaLabel(index + 1, skill.value)">
                           @if (index === Math.floor(skill.value) && skill.value % 1 > 0) {
-                            <div class="dot-fill"
-                            ></div>
+                            <div class="dot-fill"></div>
                           }
                         </div>
                       }
@@ -499,4 +626,3 @@
     </div>
   }
 </ng-template>
-

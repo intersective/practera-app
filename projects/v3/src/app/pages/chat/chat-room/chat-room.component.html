@@ -26,7 +26,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0}" color="light" [scrollEvents]="true">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0, 'toolbar-visible': showToolbar}" color="light" [scrollEvents]="true">
 
   @if (loadingChatMessages) {
     <div class="ion-text-center" aria-label="loading message">
@@ -46,116 +46,131 @@
   }
 
   <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !isMobile}">
-    @for (message of messageList; track message) {
-      <ion-item color="light">
-        @if (isLastMessage(message)) {
-          <ion-avatar [ngClass]="getAvatarClass(message)" slot="start">
-            <img [src]="message.senderAvatar" [attr.alt]="message.senderName ? message.senderName + ' avatar' : 'User avatar'">
-          </ion-avatar>
-        }
-        <ion-label [ngClass]="getClassForMessageBubble(message)" text-wrap>
-          @if (checkToShowMessageTime(message)) {
-            <div class="time caption">
-              <p>{{ getMessageDate(message.sentAt) }}</p>
+    @for (message of messageList; track trackMessage($index, message); let i = $index) {
+      <div class="message-row" [class.message-grouped]="isContinuation(message, i)">
+        <!-- Avatar column -->
+        <div class="avatar-col">
+          @if (!isContinuation(message, i)) {
+            @if (isAiMessage(message)) {
+              <div class="ai-avatar">
+                <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+              </div>
+            } @else {
+              <app-avatar [name]="message.senderName || 'User'" [avatarUrl]="message.senderAvatar" size="sm"></app-avatar>
+            }
+          } @else {
+            <span class="hover-time">{{ getMessageDate(message.sentAt) }}</span>
+          }
+        </div>
+
+        <!-- Content column -->
+        <div class="content-col">
+          @if (!isContinuation(message, i)) {
+            <div class="msg-header">
+              <span class="sender-name" [class.ai-name]="isAiMessage(message)">
+                {{ isAiMessage(message) ? (message.senderName || 'AI Assistant') : (message.isSender ? 'You' : message.senderName) }}
+              </span>
+              @if (isAiMessage(message)) {
+                <span class="ai-badge">AI</span>
+              }
+              @if (getRoleLabel(message.senderRole) && message.senderRole !== 'participant' && !isAiMessage(message)) {
+                <span class="role-badge">{{ getRoleLabel(message.senderRole) }}</span>
+              }
+              <span class="msg-time">{{ getMessageDate(message.sentAt) }}</span>
             </div>
           }
-          <div class="message-body"
-            [ngClass]="getClassForMessageBody(message.file)"
-            aria-describedby="message-content">
-            @if (!message.isSender) {
-              <p class="seen-text subtitle-1 black">{{ message.senderName }}</p>
-              <p class="seen-text caption gray-2">{{ utils.getUserRolesForUI(message.senderRole) }}</p>
-            }
+
+          <!-- Message body -->
+          @if (isAiMessage(message)) {
+            <div class="msg-body prose" [innerHTML]="message.message | markdown"></div>
+          } @else {
             @if (message.message || !message.file) {
-              <quill-view-html [id]="'message-content-' + message.uuid"
-                [content]="getProcessedMessageContent(message?.message)"
-                [sanitize]="true"
-                tabindex="0"
-              ></quill-view-html>
+              <div class="msg-body"
+                [innerHTML]="getProcessedMessageContent(message?.message)">
+              </div>
             }
-            @if (message?.file?.type) {
-              @if (message?.file?.type?.includes('video')) {
-                @if (message?.file?.type === 'video/mp4') {
-                  <div [id]="'message-content-file-' + message.uuid" class="label"
-                    (click)="preview(message.file)"
-                    (keydown)="preview(message.file, $event)"
-                    tabindex="0"
-                    role="button">
-                    <p class="label" [innerHTML]="message.file.name"></p>
-                    <div [attr.id]="'inner-box-' + message.uuid">
-                      <p>
-                        <ion-icon name="play-circle" aria-hidden="true"></ion-icon>
-                      </p>
-                    </div>
-                  </div>
-                } @else {
-                  <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
-                }
-              }
-              @if (message?.file?.type?.includes('image')) {
-                <div [innerHTML]="message.preview"
-                  (click)="preview(message.file)"
-                  (keydown)="preview(message.file, $event)"
-                  tabindex="0"
-                  role="button"
-                  [attr.aria-label]="'Preview image: ' + (message.file?.name || 'image')"
-                ></div>
-              }
-              @if ((message.file && !message.file.type) || (message.file && (
-                !message.file.type.includes('image') && !message.file.type.includes('video')))) {
-                <ion-item class="general-attachment"
-                  (click)="download(message.file)">
-                  <ng-container>
-                    <ion-ripple-effect></ion-ripple-effect>
-                    <ion-icon name="document-outline"
-                    slot="start"></ion-icon>
-                    <ion-label>
-                      {{ message.file.name }}
-                    </ion-label>
-                    @if (getTypeByMime(message.file.type)) {
-                      <ion-note>
-                        {{ getTypeByMime(message.file.type) }}
-                      </ion-note>
-                    }
-                  </ng-container>
-                </ion-item>
+          }
+
+          <!-- File attachment -->
+          @if (message?.file?.type) {
+            @if (message?.file?.type?.includes('image')) {
+              <div class="file-attach" [innerHTML]="message.preview"
+                (click)="preview(message.file)"
+                (keydown)="preview(message.file, $event)"
+                tabindex="0" role="button"
+                [attr.aria-label]="'Preview image: ' + (message.file?.name || 'image')"></div>
+            }
+            @if (message?.file?.type?.includes('video')) {
+              @if (message?.file?.type === 'video/mp4') {
+                <div class="file-attach" (click)="preview(message.file)" tabindex="0" role="button">
+                  <ion-icon name="play-circle" aria-hidden="true"></ion-icon> {{ message.file.name }}
+                </div>
+              } @else {
+                <app-video-conversion [video]="message" (preview)="preview($event)"></app-video-conversion>
               }
             }
-          </div>
-          @if (message.isSender) {
-            <div class="action-container">
-              <ion-button class="delete-btn" fill="clear" size="small"
-                title="Delete Message"
-                aria-label="Delete message"
-                (click)="deleteMessage(message.uuid)">
-                <ion-icon slot="icon-only" name="trash-outline" aria-hidden="true"></ion-icon>
-              </ion-button>
-              @if (hasEditableText(message)) {
-                <ion-button class="edit-btn" fill="clear" size="small"
-                  title="Edit Message"
-                  aria-label="Edit message"
-                  (click)="openEditMessagePopup(message)">
-                  <ion-icon slot="icon-only" name="pencil-outline" aria-hidden="true"></ion-icon>
-                </ion-button>
+            @if ((message.file && !message.file.type) || (message.file && !message.file.type.includes('image') && !message.file.type.includes('video'))) {
+              <a class="file-link" (click)="download(message.file)">📎 {{ message.file.name }}</a>
+            }
+          }
+
+          <!-- Reaction pills -->
+          @if (message.reactions?.length) {
+            <div class="reaction-pills">
+              @for (r of message.reactions; track r.emoji) {
+                <button class="reaction-pill" [class.reacted]="r.reacted"
+                  [title]="r.users?.length ? (r.users | slice:0:5 | json) : ''"
+                  (click)="r.reacted ? removeReaction(message, r.emoji) : addReaction(message, r.emoji)">
+                  {{ r.emoji }} <span class="count">{{ r.count }}</span>
+                </button>
               }
             </div>
           }
+
           <!-- Thread reply indicator -->
           @if (message.uuid) {
-            <div class="thread-reply-indicator">
-              <button class="thread-btn" (click)="openThread(message)" type="button"
-                [attr.aria-label]="(message.replyCount ?? 0) > 0 ? (message.replyCount + ' replies') : 'Reply in thread'">
-                <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
-                @if ((message.replyCount ?? 0) > 0) {
-                  <span class="reply-count caption">{{ message.replyCount }} {{ message.replyCount === 1 ? 'reply' : 'replies' }}</span>
-                } @else {
-                  <span class="reply-thread-label caption">Reply in thread</span>
-                }
-              </button>
-            </div>
+            <button class="thread-btn" (click)="openThread(message)" type="button">
+              <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+              @if ((message.replyCount ?? 0) > 0) {
+                <span class="reply-count">{{ message.replyCount }} {{ message.replyCount === 1 ? 'reply' : 'replies' }}</span>
+              } @else {
+                <span class="reply-label">Reply in thread</span>
+              }
+            </button>
           }
-        </ion-label>
-      </ion-item>
+        </div>
+
+        <!-- Hover toolbar -->
+        <div class="hover-toolbar">
+          <button class="toolbar-btn" (click)="toggleEmojiPicker(message)" title="Add reaction">
+            <ion-icon name="happy-outline" aria-hidden="true"></ion-icon>
+          </button>
+          @if (message.uuid) {
+            <button class="toolbar-btn" (click)="openThread(message)" title="Reply in thread">
+              <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+          @if (message.isSender && hasEditableText(message)) {
+            <button class="toolbar-btn" (click)="openEditMessagePopup(message)" title="Edit">
+              <ion-icon name="pencil-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+          @if (message.isSender) {
+            <button class="toolbar-btn btn-danger" (click)="deleteMessage(message.uuid)" title="Delete">
+              <ion-icon name="trash-outline" aria-hidden="true"></ion-icon>
+            </button>
+          }
+        </div>
+
+        <!-- Emoji picker popover -->
+        @if (showEmojiPicker === (message.uuid || 'id:' + message.chatLogId)) {
+          <div class="emoji-picker">
+            @for (emoji of commonEmojis; track emoji) {
+              <button class="emoji-btn" (click)="addReaction(message, emoji)">{{ emoji }}</button>
+            }
+          </div>
+        }
+      </div>
     }
 
     @if (sendingMessage) {
@@ -179,7 +194,7 @@
 
 @if (!chatChannel.readonly && !chatChannel.isAnnouncement) {
   <ion-footer class="footer"
-    [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile)}"
+    [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile), 'show-toolbar': showToolbar}"
     >
     @if (whoIsTyping) {
       <div
@@ -291,12 +306,22 @@
       }
       <!-- Action button section -->
       <ion-row nowrap class="ion-no-padding ion-align-items-center ion-justify-content-between action-buttons">
+        <!-- Format toggle -->
+        <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
+          <ion-button (click)="showToolbar = !showToolbar" fill="clear" class="ion-no-padding"
+            [color]="showToolbar ? 'primary' : 'medium'"
+            aria-label="Toggle formatting toolbar">
+            <ion-icon name="text-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+          </ion-button>
+        </ion-col>
+        <!-- Attach file -->
         <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
           <ion-button [disabled]="selectedAttachments.length > 0" (click)="attachmentSelectPopover($event)" fill="clear" class="ion-no-padding"
             [attr.aria-label]="'Attach file'" i18n-aria-label>
             <ion-icon name="attach" slot="icon-only" aria-hidden="true"></ion-icon>
           </ion-button>
         </ion-col>
+        <!-- Send -->
         <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
           <ion-button (click)="sendMessage()"
             aria-label="send message"
@@ -314,15 +339,17 @@
 
 <!-- Thread panel — slides in over the chat when a message is clicked for threading -->
 @if (activeThread) {
-  <div class="thread-overlay">
-    <app-thread-panel
-      [rootMessage]="activeThread"
-      [channelUuid]="chatChannel.uuid"
-      [channelName]="chatChannel.name"
-      [channelReadonly]="chatChannel.readonly"
-      [experienceId]="experienceId"
-      (closed)="closeThread()"
-      (replyCountChanged)="onReplyCountChanged($event)"
-    ></app-thread-panel>
+  <div class="thread-overlay-backdrop" (click)="closeThread()" aria-label="Close thread" role="button" tabindex="-1">
+    <div class="thread-overlay" (click)="$event.stopPropagation()">
+      <app-thread-panel
+        [rootMessage]="activeThread"
+        [channelUuid]="chatChannel.uuid"
+        [channelName]="chatChannel.name"
+        [channelReadonly]="chatChannel.readonly"
+        [experienceId]="experienceId"
+        (closed)="closeThread()"
+        (replyCountChanged)="onReplyCountChanged($event)"
+      ></app-thread-panel>
+    </div>
   </div>
 }
