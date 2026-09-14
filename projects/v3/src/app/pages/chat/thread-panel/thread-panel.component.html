@@ -1,19 +1,16 @@
-<ion-header mode="ios">
-  <ion-toolbar class="thread-toolbar">
-    <ion-title slot="start" class="thread-title">
-      <span i18n>Thread</span>
-    </ion-title>
-    <ion-buttons slot="end">
-      @if (availableExperts.length > 0 && !channelReadonly) {
-        <ion-button id="ai-invite-trigger" fill="clear" size="small" (click)="toggleAiPicker()" [disabled]="invitingExpert" aria-label="Invite AI expert">
-          <ion-icon name="sparkles-outline" slot="icon-only" color="secondary"></ion-icon>
-        </ion-button>
-      }
-      <ion-button fill="clear" size="small" (click)="close()" aria-label="Close thread panel">
-        <ion-icon name="close" slot="icon-only" color="medium"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
+<div class="thread-header">
+  <span class="thread-title" i18n>Thread</span>
+  <div class="thread-header-actions">
+    @if (availableExperts.length > 0 && !channelReadonly) {
+      <button class="header-btn" id="ai-invite-trigger" (click)="toggleAiPicker()" [disabled]="invitingExpert" aria-label="Invite AI expert">
+        <ion-icon name="sparkles-outline" color="secondary" aria-hidden="true"></ion-icon>
+      </button>
+    }
+    <button class="header-btn" (click)="close()" aria-label="Close thread panel">
+      <ion-icon name="close" color="medium" aria-hidden="true"></ion-icon>
+    </button>
+  </div>
+</div>
 
   @if (showAiPicker && availableExperts.length > 0) {
     <div class="ai-picker-overlay" (click)="showAiPicker = false">
@@ -28,9 +25,8 @@
       </div>
     </div>
   }
-</ion-header>
 
-<ion-content color="light" [scrollEvents]="true">
+<ion-content [scrollEvents]="true">
   <div class="thread-messages">
 
     <!-- Root message (OP) — scrolls with replies -->

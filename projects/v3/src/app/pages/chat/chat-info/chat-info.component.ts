@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, NgZone, Input, OnInit } from '@angular/core';
+import { Component, Output, EventEmitter, NgZone, Input, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
@@ -30,7 +30,9 @@ export class ChatInfoComponent implements OnInit {
     public storage: BrowserStorageService,
     public utils: UtilsService,
     public taxonomyService: TaxonomyService,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
   ) {
     this.isMobile = this.utils.isMobile();
   }
@@ -63,14 +65,19 @@ export class ChatInfoComponent implements OnInit {
     this.loadingMembers = true;
     this.chatService.getChatMembers(this.selectedChat.uuid).subscribe(
       (response) => {
-        this.loadingMembers = false;
-        if (response.length === 0) {
-          return;
-        }
-        this.memberList = response;
+        this.ngZone.run(() => {
+          this.loadingMembers = false;
+          if (response.length > 0) {
+            this.memberList = response;
+          }
+          this.cdr.markForCheck();
+        });
       },
       error => {
-        this.loadingMembers = false;
+        this.ngZone.run(() => {
+          this.loadingMembers = false;
+          this.cdr.markForCheck();
+        });
       }
     );
   }

@@ -19,5 +19,8 @@ ion-grid {
 }
 
 ion-col#chatroom {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }

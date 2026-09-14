@@ -2,30 +2,48 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
-/* ── Slack-style thread header ── */
-.thread-toolbar {
-  --min-height: 36px;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  --padding-start: 12px;
-  --padding-end: 4px;
+/* ── Plain-div thread header ── */
+.thread-header {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 12px;
+  background: #fff;
   border-bottom: 1px solid var(--ion-color-light-shade, #e0e0e0);
-
-  ion-button {
-    --padding-start: 4px;
-    --padding-end: 4px;
-    height: 28px;
-    margin: 0;
-  }
+  flex-shrink: 0;
 }
 
 .thread-title {
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14px;
+  flex: 1;
+}
+
+.thread-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   padding: 0;
-  margin: 0;
+
+  &:hover { background: var(--ion-color-light, #f4f5f8); }
+  &:disabled { opacity: 0.4; cursor: default; }
+
+  ion-icon { font-size: 18px; }
 }
 
 /* ── Thread messages container ── */
@@ -323,25 +341,28 @@
   }
 }
 
-/* ── Quill overrides for thread compose (must use :host ::ng-deep at top level) ── */
-:host ::ng-deep {
-  .thread-compose-box {
-    .ql-toolbar.ql-snow { display: none !important; }
-    .ql-container.ql-snow { border: none !important; }
-    .ql-editor {
-      padding: 8px 12px;
-      min-height: 32px;
-      max-height: 120px;
-      overflow-y: auto;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-    .ql-editor.ql-blank::before {
-      font-style: normal;
-      color: var(--ion-color-medium);
-      left: 12px;
-    }
-  }
+/* ── Quill overrides for thread compose ── */
+:host ::ng-deep .thread-compose-box .ql-toolbar.ql-snow {
+  display: none !important;
+}
+
+:host ::ng-deep .thread-compose-box .ql-container.ql-snow {
+  border: none !important;
+}
+
+:host ::ng-deep .thread-compose-box .ql-editor {
+  padding: 8px 12px;
+  min-height: 32px;
+  max-height: 120px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+:host ::ng-deep .thread-compose-box .ql-editor.ql-blank::before {
+  font-style: normal;
+  color: var(--ion-color-medium);
+  left: 12px;
 }
 
 /* ── AI invite picker ── */

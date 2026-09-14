@@ -1,38 +1,40 @@
 
-$message-body-size: 80%;
-
-/* ── Slack-style compact header ── */
-.compact-toolbar {
-  --min-height: 36px;
-  --padding-top: 0;
-  --padding-bottom: 0;
-  --padding-start: 8px;
-  --padding-end: 4px;
-  border-bottom: 1px solid var(--ion-color-light-shade, #e0e0e0);
-
-  ion-button {
-    --padding-start: 4px;
-    --padding-end: 4px;
-    height: 30px;
-    margin: 0;
-  }
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
-.chat-header-title {
+$message-body-size: 80%;
+
+/* ── Plain-div chat header (no Ionic toolbar overhead) ── */
+.chat-header {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 8px;
+  background: #fff;
+  border-bottom: 1px solid var(--ion-color-light-shade, #e0e0e0);
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.header-title {
+  flex: 1;
   display: flex;
   align-items: baseline;
   gap: 6px;
-  font-size: 13px;
-  padding: 0;
-  margin: 0;
+  min-width: 0;
+  padding: 0 4px;
 
   .channel-name {
     font-weight: 700;
-    font-size: 13px;
+    font-size: 14px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 70%;
+    min-width: 0;
   }
 
   .member-count {
@@ -41,6 +43,24 @@ $message-body-size: 80%;
     color: var(--ion-color-medium);
     white-space: nowrap;
   }
+}
+
+.header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+
+  &:hover { background: var(--ion-color-light, #f4f5f8); }
+
+  ion-icon { font-size: 18px; }
 }
 
 .not-started-empty-status {
@@ -73,7 +93,7 @@ $message-body-size: 80%;
 }
 
 .chat-list {
-  background-color: transparent !important;
+  background-color: #fff !important;
   padding: 0 8px;
 
   /* ── Slack-style message row ── */
@@ -425,20 +445,17 @@ $message-body-size: 80%;
   50% { transform: translateY(-4px); opacity: 1; }
 }
 
-/* ── Content height accounting for header + footer ── */
+/* ── Content fills remaining space ── */
+ion-content {
+  flex: 1;
+  min-height: 0;
+}
+
 .ion-content-absolute-with-footer {
-  height: calc(100% - 88px);
+  /* desktop: ion-content gets the rest of the space via flex */
 
   &.announcement {
-    height: calc(100% - 48px);
-  }
-
-  &.attach-preview {
-    height: calc(100% - 192px);
-  }
-
-  &.toolbar-visible {
-    height: calc(100% - 128px);
+    /* no footer for announcements — ion-content fills the remaining space */
   }
 }
 
@@ -446,16 +463,21 @@ $message-body-size: 80%;
    Slack-style compose footer
    ═══════════════════════════════════════════════ */
 .footer {
-  padding: 0 8px 6px;
+  padding: 6px 8px;
   position: relative;
-  background: var(--ion-background-color, #fff);
+  background: #fff;
+  flex-shrink: 0;
+  z-index: 10;
+  border-top: 1px solid var(--ion-color-light-shade, #e0e0e0);
 
-  &.ion-footer-absolute {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 30;
+  // When thread panel is open, shrink so we don't overlap it
+  &.thread-open {
+    @media (min-width: 641px) {
+      margin-right: 340px;
+    }
+    @media (max-width: 640px) {
+      display: none; // thread takes full width on mobile — hide main compose
+    }
   }
 }
 
@@ -628,45 +650,41 @@ ion-toolbar {
   --min-height: 36px;
 }
 
-/* ── Quill overrides for compose box (must use :host ::ng-deep at top level) ── */
-:host ::ng-deep {
-  .compose-box {
-    .ql-toolbar.ql-snow {
-      display: none !important;
-    }
+/* ── Quill overrides for compose box ── */
+:host ::ng-deep .compose-box .ql-toolbar.ql-snow {
+  display: none !important;
+}
 
-    .ql-container.ql-snow {
-      border: none !important;
-    }
+:host ::ng-deep .compose-box .ql-container.ql-snow {
+  border: none !important;
+}
 
-    .ql-editor {
-      padding: 8px 12px;
-      min-height: 36px;
-      max-height: 160px;
-      overflow-y: auto;
-      font-size: 13px;
-      line-height: 1.4;
-    }
+:host ::ng-deep .compose-box .ql-editor {
+  padding: 8px 12px;
+  min-height: 36px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.4;
+}
 
-    .ql-editor.ql-blank::before {
-      font-style: normal;
-      color: var(--ion-color-medium);
-      left: 12px;
-    }
+:host ::ng-deep .compose-box .ql-editor.ql-blank::before {
+  font-style: normal;
+  color: var(--ion-color-medium);
+  left: 12px;
+}
 
-    &.toolbar-open .ql-toolbar.ql-snow {
-      display: flex !important;
-      border: none !important;
-      border-bottom: 1px solid var(--ion-color-light, #f4f5f8) !important;
-      background: var(--ion-color-light, #f4f5f8);
-      padding: 4px 8px;
+:host ::ng-deep .compose-box.toolbar-open .ql-toolbar.ql-snow {
+  display: flex !important;
+  border: none !important;
+  border-bottom: 1px solid var(--ion-color-light, #f4f5f8) !important;
+  background: var(--ion-color-light, #f4f5f8);
+  padding: 4px 8px;
+}
 
-      button {
-        width: 28px;
-        height: 28px;
-      }
-    }
-  }
+:host ::ng-deep .compose-box.toolbar-open .ql-toolbar.ql-snow button {
+  width: 28px;
+  height: 28px;
 }
 
 ion-button.ion-focused {

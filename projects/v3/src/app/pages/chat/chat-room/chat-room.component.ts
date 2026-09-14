@@ -860,7 +860,12 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    const messageIds = this.messageList.map((m) => m.uuid);
+    const messageIds = this.messageList
+      .filter((m) => !m.isSender && m.uuid)
+      .map((m) => m.uuid);
+    if (messageIds.length === 0) {
+      return;
+    }
     this.chatService
       .markMessagesAsSeen(messageIds)
       .pipe(takeUntil(this.destroy$))
@@ -1093,6 +1098,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
                   }
                   this.messageList.push(msg);
                 });
+                // Clear AI typing indicator when new messages arrive via poll
+                if (this.aiIsTyping) {
+                  clearTimeout(this.aiTypingTimeout);
+                  this.aiIsTyping = false;
+                }
                 if (this.scrollPosition === ScrollPosition.Bottom) {
                   this._scrollToBottom();
                 } else {

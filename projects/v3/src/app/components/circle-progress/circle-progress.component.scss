@@ -1,5 +1,15 @@
 .skeleton{
     display: inline-flex;
+    &.small {
+      width: 30px;
+      height: 30px;
+
+      .progress-circle {
+        width: 30px;
+        height: 30px;
+      }
+    }
+
     .progress-circle {
       margin: 0;
       border-radius: 50%;

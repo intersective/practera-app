@@ -100,18 +100,21 @@ export class CircleProgressComponent implements OnChanges, OnInit {
 
   ngOnInit() {
     this.isMobile = this.utils.isMobile();
-    if (this.data) {
+    if (this.loading) {
+      this.config = this.type === 'large' ? this.largePlaceholderCircle : this.smallPlaceholderCircle;
+    } else if (this.data && Object.keys(this.data).length > 0) {
       this.config = this.setCircleProgress(this.data);
     } else if (this.type === 'large') {
       this.config = this.largePlaceholderCircle;
     } else {
-      // by default, show small circle
       this.config = this.smallPlaceholderCircle;
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.data) {
+    if (changes.loading?.currentValue) {
+      this.config = this.type === 'large' ? this.largePlaceholderCircle : this.smallPlaceholderCircle;
+    } else if (changes.data) {
       this.config = this.setCircleProgress(changes.data.currentValue);
     }
   }

@@ -338,7 +338,7 @@
               (keydown.space)="gotoActivity({activity, milestone}, $event); $event.preventDefault()"
               [endingIcon]="endingIcon(activity)"
               [endingIconColor]="endingIconColor(activity)"
-              [endingProgress]="activityProgresses[activity.id]"
+              [endingProgress]="activityProgresses[activity.id] !== undefined ? activityProgresses[activity.id] : -1"
               [redDot]="hasUnlockedTasks[activity.id] || false"
               [lastVisited]="lastVisitedActivityId === activity.id"
               [bookmarked]="bookmarkedActivities[activity.id]"

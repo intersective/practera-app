@@ -39,11 +39,7 @@ describe('CircleProgressComponent', () => {
     it('should initiate config object', () => {
       component.data = {};
       component.ngOnInit();
-      expect(component.config).toEqual({
-        ...component.smallPlaceholderCircle,
-        ...component.smallCircleWithData,
-        ...component.data
-      });
+      expect(component.config).toEqual(component.smallPlaceholderCircle);
     });
 
     it('should initiate with large settings', () => {
@@ -51,11 +47,7 @@ describe('CircleProgressComponent', () => {
       component.type = 'large';
       component.ngOnInit();
 
-      expect(component.config).toEqual({
-        ...component.largePlaceholderCircle,
-        ...component.largeCircleWithData,
-        ...component.data
-      });
+      expect(component.config).toEqual(component.largePlaceholderCircle);
     });
 
     it('should initiate with large settings', () => {
@@ -92,6 +84,17 @@ describe('CircleProgressComponent', () => {
         ...component.smallCircleWithData,
         ...DUMMY_CIRCLE,
       });
+    });
+
+    it('should use placeholder config while loading', () => {
+      component.loading = true;
+      component.ngOnChanges({
+        loading: {
+          currentValue: true,
+        },
+      } as any);
+
+      expect(component.config).toEqual(component.smallPlaceholderCircle);
     });
   });
 

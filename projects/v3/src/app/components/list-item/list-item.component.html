@@ -121,13 +121,18 @@
         role="img"
       ></ion-icon>
     }
-    @if ((endingProgress && endingProgress !== 1) && !endingIcon) {
+    @if (endingProgress === -1 && !endingIcon) {
+      <div slot="end" style="width: 2em;" role="status" aria-label="Loading progress" i18n-aria-label>
+        <app-circle-progress [loading]="true" aria-hidden="true"></app-circle-progress>
+      </div>
+    }
+    @if (endingProgress > 0 && endingProgress < 1 && !endingIcon) {
       <div
         slot="end" style="width: 2em;"
         role="status"
         [attr.aria-label]="'Progress ' + (endingProgress * 100) + ' percent'" i18n-aria-label>
         <app-circle-progress
-          [data]='{ percent: endingProgress * 100 }'
+          [data]="endingProgressData"
           aria-hidden="true"
         ></app-circle-progress>
       </div>

@@ -34,7 +34,20 @@ export class ListItemComponent {
   @Input() endingTextColor?: string;
   @Input() endingIcon: string;
   @Input() endingIconColor: string;
-  @Input() endingProgress: number = undefined;
+  private _endingProgress: number = undefined;
+  endingProgressData: { percent: number } | undefined;
+
+  @Input()
+  set endingProgress(value: number) {
+    this._endingProgress = value;
+    this.endingProgressData = value > 0 && value < 1
+      ? { percent: value * 100 }
+      : undefined;
+  }
+
+  get endingProgress(): number {
+    return this._endingProgress;
+  }
   // whether hightlight the background or not
   @Input() active: boolean;
   @Input() isEventItem: boolean;

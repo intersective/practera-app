@@ -11,6 +11,7 @@ import { ListItemComponent } from './list-item.component';
     [title]="title"
     [isEventItem]="isEventItem"
     [loading]="loading"
+    [endingProgress]="endingProgress"
     [eventDayCount]="null"
     titleColor="sample-100"
   ></app-list-item>`
@@ -19,6 +20,7 @@ class TestHostComponent {
   title = 'Test Title';
   isEventItem = true;
   loading = false;
+  endingProgress = 0.5;
 }
 
 describe('ListItemComponent', () => {
@@ -66,5 +68,14 @@ describe('ListItemComponent', () => {
     expect(listItemComponent.statusDescriptions('chevron-forward')).toEqual(null);
     expect(listItemComponent.statusDescriptions('checkmark-circle')).toEqual('completed');
     expect(listItemComponent.statusDescriptions('non-existing-icon')).toEqual(null);
+  });
+
+  it('should keep progress configuration stable across change detection', () => {
+    const progressData = listItemComponent.endingProgressData;
+
+    fixture.detectChanges();
+
+    expect(listItemComponent.endingProgressData).toBe(progressData);
+    expect(progressData).toEqual({ percent: 50 });
   });
 });

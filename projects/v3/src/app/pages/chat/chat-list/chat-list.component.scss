@@ -1,51 +1,86 @@
+/* ═══════════════════════════════════════════════
+   Chat channel list — tight, Slack/admin style
+   ═══════════════════════════════════════════════ */
+
 .ion-toolbar-absolute {
   text-align: center;
 }
+
 ion-avatar {
   text-align: center;
   background-color: var(--ion-color-primary);
 }
 
+/* ── Last-message preview: single truncated line ── */
 .last-message {
-  max-height: 36px;
+  max-height: 18px;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  display: -moz-box;
-  line-clamp: 2;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  white-space: nowrap;
   color: var(--ion-color-medium);
-  font-size: 13px;
+  font-size: 11px;
+  line-height: 16px;
+  margin-top: 1px !important;
+  margin-bottom: 0 !important;
 }
 
+/* ── Channel items ── */
 app-clickable-item {
   display: block;
   transition: background 0.1s;
 
-  /* Hover state */
+  // Override Ionic ion-item defaults for a compact feel
+  ion-item {
+    --min-height: 40px;
+    --padding-start: 10px;
+    --padding-end: 6px;
+    --inner-padding-start: 0;
+    --inner-padding-end: 0;
+    --inner-border-width: 0;
+    --background: transparent;
+    --background-hover: transparent;
+    --background-activated: transparent;
+    --background-focused: transparent;
+    border-radius: 6px;
+    margin: 0 4px;
+  }
+
   &:hover {
-    background: var(--ion-color-light, #f4f5f8);
+    ion-item {
+      --background: var(--ion-color-light, #f4f5f8);
+    }
     cursor: pointer;
   }
 
-  /* Active/selected state is driven by the [active] input which adds a class — 
-     also target the Ionic item highlight */
-  &.active-item,
-  &[active="true"] {
-    background: rgba(var(--ion-color-primary-rgb, 0, 130, 150), 0.08);
+  &.active-item ion-item,
+  &[active="true"] ion-item {
+    --background: rgba(var(--ion-color-primary-rgb, 0, 130, 150), 0.08);
   }
 
   .bold {
-    font-weight: bold;
+    font-weight: 600;
   }
 
   .item-inner {
     border: none !important;
   }
 
+  /* Slot=start avatar wrapper — tighter gap */
+  .access-avatar {
+    margin-right: 8px;
+    margin-inline-end: 8px;
+  }
+
   ion-label {
-    margin: 8px 0 8px 0 !important;
+    margin: 4px 0 !important;
+
+    /* "No messages." fallback */
+    .gray-2,
+    .body-2:not(.last-message) {
+      font-size: 11px;
+      color: var(--ion-color-medium);
+      margin: 1px 0 0 0 !important;
+    }
 
     .chat-name-container {
       display: flex !important;
@@ -59,51 +94,70 @@ app-clickable-item {
         text-overflow: ellipsis;
         white-space: nowrap;
         flex: 1 1 auto;
-        min-width: 0; // critical for flex truncation
+        min-width: 0;
         margin-right: 4px;
+        font-size: 13px;
+        line-height: 18px;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
       }
 
+      // Role badge (e.g., "Mentor")
       span {
         flex: 0 0 auto;
         border: 1px solid var(--ion-color-primary);
-        padding: 1px 5px 0 5px;
-        border-radius: 10px;
+        padding: 0 4px;
+        border-radius: 8px;
         vertical-align: baseline;
         text-align: center;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
         color: var(--ion-color-primary);
-        font-size: 11px;
-        max-width: 80px;
+        font-size: 10px;
+        line-height: 16px;
+        max-width: 64px;
       }
     }
   }
 
+  /* ── Right side: timestamp + badge ── */
   .time-container {
-    width: 22% !important;
-    display: grid;
-    justify-items: end;
+    width: auto !important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
     margin-left: 4px !important;
+    flex-shrink: 0;
+
+    .caption {
+      font-size: 10px;
+      line-height: 14px;
+      white-space: nowrap;
+    }
 
     ion-badge {
-      margin-top: 2px;
-      max-width: 43px !important;
-      max-height: 20px;
-      min-width: 20px;
-      min-height: 20px;
-      border-radius: 8px !important;
+      max-width: 36px;
+      max-height: 18px;
+      min-width: 18px;
+      min-height: 18px;
+      border-radius: 9px !important;
       width: fit-content;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 18px;
+      padding: 0 5px;
+      --background: var(--ion-color-primary);
+      --color: #fff;
     }
   }
 }
 
+/* ── Desktop tweaks ── */
 .desktop-view {
   .time-container {
-    width: auto !important;
-    height: 100%;
-    padding-bottom: 8px;
-    padding-top: 8px;
+    padding: 0;
   }
   app-clickable-item {
     ion-label {
@@ -116,11 +170,13 @@ app-clickable-item {
   }
 }
 
+/* ── Accessibility focus ── */
 .focusable:focus {
   outline: 2px solid var(--ion-color-primary);
   outline-offset: -2px;
 }
 
+/* ── Indicator row (announcement icon + badge) ── */
 .indicator-container {
   display: flex;
   align-items: center;
@@ -131,11 +187,11 @@ app-clickable-item {
     cursor: default !important;
     font-size: 11px;
     margin: 0;
-    margin-right: 9px;
+    margin-right: 4px;
     --padding-start: 0;
     --padding-end: 0;
     &.info {
-      font-size: 14px;
+      font-size: 13px;
     }
     &::part(native) {
       cursor: default !important;

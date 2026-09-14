@@ -62,7 +62,7 @@ describe('ExperienceService', () => {
         },
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['getConfig', 'getMyInfo']),
+          useValue: jasmine.createSpyObj('AuthService', ['getConfig', 'getMyInfo', 'authenticate', 'clearCache']),
         },
       ],
     });
@@ -76,6 +76,7 @@ describe('ExperienceService', () => {
     sharedSpy.onPageLoad.and.returnValue(Promise.resolve());
     sharedSpy.initWebServices.and.returnValue(Promise.resolve());
     authSpy.getMyInfo.and.returnValue(of({ data: { user: {} } }) as any);
+    authSpy.clearCache.and.returnValue(Promise.resolve());
     homeSpy.clearExperience.and.returnValue(undefined);
   });
 
@@ -119,6 +120,39 @@ describe('ExperienceService', () => {
 
     it('should default chatEnabled to true when chatEnable is undefined', async () => {
       await expectChatEnabledFor(undefined, true);
+    });
+  });
+
+  describe('switchProgramAndNavigate()', () => {
+    it('stores the selected experience API key before loading experience data', async () => {
+      const callOrder: string[] = [];
+      const experience = {
+        id: 1,
+        uuid: 'exp-uuid',
+        name: 'Test Experience',
+      };
+      authSpy.authenticate.and.callFake(() => {
+        callOrder.push('authenticate');
+        return of({
+          data: {
+            auth: {
+              apikey: 'scoped-api-key',
+              experience,
+            },
+          },
+        } as any);
+      });
+      sharedSpy.getTeamInfo.and.callFake(() => {
+        callOrder.push('getTeamInfo');
+        return of({});
+      });
+
+      await service.switchProgramAndNavigate(experience as any);
+
+      expect(authSpy.authenticate).toHaveBeenCalledWith({ experienceUuid: experience.uuid });
+      expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: 'scoped-api-key' });
+      expect(callOrder).toEqual(['authenticate', 'getTeamInfo']);
+      expect(authSpy.clearCache).toHaveBeenCalled();
     });
   });
 });

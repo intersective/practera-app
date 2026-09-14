@@ -1,30 +1,21 @@
-<ion-header mode="ios" aria-label="chat room">
-  <ion-toolbar class="compact-toolbar" [ngClass]="{'ion-toolbar-absolute': !isMobile}">
-    @if (isMobile) {
-      <ion-button fill="clear" (click)="back()" slot="start" aria-label="Go back">
-        <ion-icon name="arrow-back" color="primary" slot="icon-only" aria-hidden="true"></ion-icon>
-      </ion-button>
-    }
-    <ion-title
-      class="chat-header-title"
-      aria-live="polite"
-      [attr.aria-label]="chatChannel.name + ', ' + memberList.length + ' members'">
-      <span class="channel-name" [innerHTML]="chatChannel.name"></span>
-      <span class="member-count">· {{ memberList.length }} members</span>
-    </ion-title>
-    <ion-button slot="end" fill="clear" size="small"
-      (click)="openChatInfo()"
-      aria-label="chatroom info">
-      <ion-icon color="primary"
-        slot="icon-only"
-        name="information-circle"
-        aria-hidden="true"
-      ></ion-icon>
-    </ion-button>
-  </ion-toolbar>
-</ion-header>
+<div class="chat-header">
+  @if (isMobile) {
+    <button class="header-btn" (click)="back()" aria-label="Go back">
+      <ion-icon name="arrow-back" color="primary" aria-hidden="true"></ion-icon>
+    </button>
+  }
+  <div class="header-title"
+    aria-live="polite"
+    [attr.aria-label]="chatChannel.name + ', ' + memberList.length + ' members'">
+    <span class="channel-name" [innerHTML]="chatChannel.name"></span>
+    <span class="member-count">{{ memberList.length }} members</span>
+  </div>
+  <button class="header-btn" (click)="openChatInfo()" aria-label="chatroom info">
+    <ion-icon name="information-circle-outline" color="medium" aria-hidden="true"></ion-icon>
+  </button>
+</div>
 
-<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement}" color="light" [scrollEvents]="true">
+<ion-content [ngClass]="{'announcement': chatChannel.isAnnouncement}" [scrollEvents]="true">
 
   @if (loadingChatMessages) {
     <div class="ion-text-center" aria-label="loading message">
@@ -43,7 +34,7 @@
     </div>
   }
 
-  <ion-list lines="none" color="light" class="chat-list" [ngClass]="{'desktop-view': !isMobile}">
+  <ion-list lines="none" class="chat-list" [ngClass]="{'desktop-view': !isMobile}">
     @for (message of messageList; track trackMessage($index, message); let i = $index) {
       <div class="message-row" [class.message-grouped]="isContinuation(message, i)">
         <!-- Avatar column -->
@@ -174,7 +165,7 @@
     }
 
     @if (sendingMessage) {
-      <ion-item color="light">
+      <ion-item>
         <div class="message-sending-loading">
           <ion-spinner name="bubbles"></ion-spinner>
         </div>
@@ -193,9 +184,7 @@
 </ion-content>
 
 @if (!chatChannel.readonly && !chatChannel.isAnnouncement) {
-  <ion-footer class="footer"
-    [ngClass]="{'ion-footer-absolute': !isMobile}"
-    >
+  <div class="footer" [class.thread-open]="activeThread">
     @if (whoIsTyping || aiIsTyping) {
       <div class="typing-indicators">
         @if (whoIsTyping) {
@@ -303,7 +292,7 @@
         </ion-button>
       </div>
     </div>
-  </ion-footer>
+  </div>
 }
 
 <!-- Thread panel — slides in over the chat when a message is clicked for threading -->

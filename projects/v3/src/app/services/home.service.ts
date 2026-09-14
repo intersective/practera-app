@@ -62,6 +62,7 @@ export interface Milestone {
 }
 
 export interface ProjectProgress {
+  id: number;
   progress: number;
   milestones: {
     id: number;
@@ -268,6 +269,7 @@ export class HomeService {
       .graphQLFetch(
         `query {
         project {
+          id
           progress
           milestones {
             id

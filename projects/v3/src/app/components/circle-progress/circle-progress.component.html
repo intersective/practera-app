@@ -24,14 +24,16 @@
   ></circle-progress>
 }
 @if (loading) {
-  <div class="skeleton">
-    <ion-skeleton-text animated class="progress-circle" [ngClass]="{'desktop' : !isMobile}"></ion-skeleton-text>
-    <div class="progress-content" [ngClass]="{'desktop' : !isMobile}">
-      <div class="labels">
-        <p><ion-skeleton-text animated></ion-skeleton-text></p>
-        <p><ion-skeleton-text animated></ion-skeleton-text></p>
+  <div class="skeleton" [class.small]="type !== 'large'">
+    <ion-skeleton-text animated class="progress-circle" [ngClass]="{'desktop' : !isMobile && type === 'large'}"></ion-skeleton-text>
+    @if (type === 'large') {
+      <div class="progress-content" [ngClass]="{'desktop' : !isMobile}">
+        <div class="labels">
+          <p><ion-skeleton-text animated></ion-skeleton-text></p>
+          <p><ion-skeleton-text animated></ion-skeleton-text></p>
+        </div>
       </div>
-    </div>
+    }
   </div>
 }
 

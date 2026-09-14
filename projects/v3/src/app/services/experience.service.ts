@@ -268,6 +268,9 @@ export class ExperienceService {
    */
   async switchProgram(authObj): Promise<any> {
     const exp = authObj?.experience;
+    if (authObj?.apikey) {
+      this.storage.setUser({ apikey: authObj.apikey });
+    }
     this.storage.set('experience', exp);
     if (exp?.uuid) {
       this.storage.setTabExperience(exp.uuid);
@@ -357,11 +360,15 @@ export class ExperienceService {
       return ['experiences'];
     }
 
-    await this.switchProgram({ experience });
-    await firstValueFrom(this.authService.authenticate({
+    const authResponse = await firstValueFrom(this.authService.authenticate({
       experienceUuid: experience.uuid,
     }));
-    this.storage.setTabExperience(experience.uuid);
+    const scopedAuth = authResponse?.data?.auth;
+    await this.switchProgram({
+      experience: scopedAuth?.experience || experience,
+      apikey: scopedAuth?.apikey,
+    });
+    this.storage.setTabExperience((scopedAuth?.experience || experience).uuid);
 
     // await this.pusherService.initialise({ unsubscribe: true });
     // clear the cached data

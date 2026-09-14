@@ -39,11 +39,6 @@
             <span>{{ getChatDate(chat.lastMessageCreated) }}</span>
           </div>
           <div class="indicator-container">
-            @if (chat.isAnnouncement) {
-              <ion-button aria-label="Announcement channel indicator" class="info" fill="clear" size="small" title="This channel is for institution announcements. Only admins and coordinator can send messages on it." i18n-title>
-                <ion-icon color="grey-50" name="information-circle" slot="icon-only" aria-hidden="true"></ion-icon>
-              </ion-button>
-            }
             @if (chat.unreadMessageCount > 0) {
               <ion-badge class="caption" [attr.aria-label]="chat.unreadMessageCount + ' unread messages'">{{ chat.unreadMessageCount }}</ion-badge>
             }

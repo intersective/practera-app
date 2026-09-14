@@ -83,6 +83,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
                 rootUuid: this.rootMessage.uuid,
                 count: result.rootMessage?.replyCount ?? this.replies.length,
               });
+              this._markThreadAsSeen();
               this.cdr.markForCheck();
             }
           });
@@ -107,6 +108,7 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
           this.cursor = result.cursor;
           this.hasMore = !!result.cursor;
           this.loadingReplies = false;
+          this._markThreadAsSeen();
           this.cdr.markForCheck();
         });
       },
@@ -150,6 +152,26 @@ export class ThreadPanelComponent implements OnInit, OnDestroy {
         });
       },
     });
+  }
+
+  /** Mark all thread replies (+ root message) as seen */
+  private _markThreadAsSeen(): void {
+    const allMessages = [this.rootMessage, ...this.replies];
+    const uuids = allMessages
+      .filter((m) => !m.isSender && m.uuid)
+      .map((m) => m.uuid);
+    if (uuids.length === 0) return;
+    this.chatService.markMessagesAsSeen(uuids)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.utils.broadcastEvent('chat-badge-update', {
+            channelUuid: this.channelUuid,
+            readcount: uuids.length,
+          });
+        },
+        error: () => { /* non-fatal */ },
+      });
   }
 
   close(): void {

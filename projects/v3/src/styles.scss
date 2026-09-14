@@ -512,7 +512,10 @@ quill-editor .ql-toolbar.ql-snow {
 }
 
 .uppy-uploader-modal {
-  --height: 500px;
+  --height: 420px;
+  --width: 480px;
+  --max-width: 95vw;
+  --border-radius: 12px;
 }
 
 // project brief modal

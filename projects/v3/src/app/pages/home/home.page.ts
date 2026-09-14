@@ -16,7 +16,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
-import { AlertController, ModalController, IonModal } from '@ionic/angular';
+import { AlertController, ModalController, IonModal, ViewWillEnter } from '@ionic/angular';
 import { Activity, TodoGroupData } from '@v3/app/services/activity.service';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
@@ -87,7 +87,7 @@ const ACTIVITY_GRADIENT_COLORS: [string, string][] = MILESTONE_COLOR_FAMILIES.fl
   templateUrl: "./home.page.html",
   styleUrls: ["./home.page.scss"],
 })
-export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
+export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEnter {
   display = 'activities';
 
   activityCount$: Observable<number>;
@@ -102,7 +102,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
   isExpert: boolean;
   isExpertWithoutTeam: boolean;
   pulseCheckIndicatorEnabled: boolean;
-  activityProgresses = {};
+  activityProgresses: { [id: number]: number } = {};
+  progressLoaded = false;
 
   getIsPointsConfigured: boolean = false;
   getEarnedPoints: number = 0;
@@ -128,6 +129,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   /** Timestamp of last full dashboard refresh, used to debounce NavigationEnd refreshes. */
   private lastDashboardRefreshMs = 0;
+  private hasEntered = false;
+  private progressProjectId: number | null = null;
   private static DASHBOARD_REFRESH_DEBOUNCE_MS = 10_000;
 
   @ViewChild('activityCol') activityCol: ElementRef;
@@ -245,6 +248,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         this.experienceProgress = res;
       });
 
+    this.loadCachedActivityProgress();
+
     this.homeService.projectProgress$
       .pipe(
         filter((progress) => progress !== null),
@@ -255,10 +260,24 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
         })
       )
       .subscribe((progress) => {
-        progress?.milestones?.forEach((m) => {
+        const currentProjectId = this.storageService.getUser().projectId;
+        if (!progress || +progress.id !== +currentProjectId) {
+          return;
+        }
+        const updated: { [id: number]: number } = {};
+        progress.milestones?.forEach((m) => {
           m.activities?.forEach(
-            (a) => (this.activityProgresses[a.id] = a.progress)
+            (a) => (updated[a.id] = a.progress)
           );
+        });
+        this.ngZone.run(() => {
+          this.activityProgresses = updated;
+          this.progressLoaded = true;
+          const cacheKey = this.getActivityProgressCacheKey();
+          if (cacheKey) {
+            this.storageService.set(cacheKey, updated);
+          }
+          this.cdr.markForCheck();
         });
       });
 
@@ -305,6 +324,36 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.updateDashboard();
   }
 
+  ionViewWillEnter(): void {
+    // Ionic fires this every time the page becomes active (including when
+    // returning from the experience selector where the component was cached).
+    // Always refresh data — the debounce in NavigationEnd only protects
+    // against rapid tab switches within the v3 shell.
+    if (this.hasEntered) {
+      this.updateDashboard();
+      return;
+    }
+    this.hasEntered = true;
+  }
+
+  private getActivityProgressCacheKey(): string | null {
+    const projectId = this.storageService.getUser().projectId;
+    return projectId ? `activityProgresses:${projectId}` : null;
+  }
+
+  private loadCachedActivityProgress(): void {
+    const projectId = this.storageService.getUser().projectId || null;
+    if (projectId === this.progressProjectId) {
+      return;
+    }
+
+    this.progressProjectId = projectId;
+    const cacheKey = this.getActivityProgressCacheKey();
+    const cached = cacheKey ? this.storageService.get(cacheKey) : null;
+    this.activityProgresses = cached && typeof cached === 'object' ? cached : {};
+    this.progressLoaded = !!cached;
+  }
+
   ngOnDestroy(): void {
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
@@ -322,6 +371,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     this.experience = this.storageService.get("experience");
     this.showProjectHub = this.storageService.getFeature('showProjectHub');
     this.pulseCheckIndicatorEnabled = this.storageService.getFeature('pulseCheckIndicator');
+    this.loadCachedActivityProgress();
     this.homeService.getMilestones({ forceRefresh: true });
     this.achievementService.getAchievements();
     this.homeService.getProjectProgress();
@@ -441,10 +491,15 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       return "lock-closed";
     }
     const progress = this.activityProgresses[activity.id];
-    if (!progress) {
+    if (progress === undefined || progress === null) {
+      // Progress not loaded yet — return null so the list-item shows
+      // a skeleton circle (via endingProgress === -1) instead of a chevron
+      return null;
+    }
+    if (progress === 0) {
       return "chevron-forward";
     }
-    if (progress === 1) {
+    if (progress >= 1) {
       return "checkmark-circle";
     }
     return null;
@@ -452,10 +507,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   endingIconColor(activity) {
     const progress = this.activityProgresses[activity.id];
-    if (!progress || activity.isLocked) {
+    if (activity.isLocked || progress === undefined || progress === null || progress === 0) {
       return "medium";
     }
-    if (progress === 1) {
+    if (progress >= 1) {
       return "success";
     }
     return null;
