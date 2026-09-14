@@ -1,5 +1,9 @@
 <div *ngIf="topic" class="ion-padding main-content" style="min-height: 100%;">
   <div class="headline-2 topic-title" aria-live="polite" role="heading" [innerHTML]="sanitizedTitle"></div>
+  <div *ngIf="task?.status !== 'done'" class="topic-time-spent body-3" aria-live="polite">
+    <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+    <span i18n="topic time spent">Time spent: {{ formattedTopicTimeSpent }}</span>
+  </div>
   <div *ngIf="topic.videolink && topic.videolink !=='magiclink'" class="text-center topic-video">
     <div *ngIf="iframeHtml" class="video-embed" [innerHTML]="iframeHtml"></div>
     <video

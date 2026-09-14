@@ -7,11 +7,13 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { ApiResponse } from '@v3/app/models/api.model';
+import { TopicAttentionMetrics } from '@v3/app/models/topic-attention.model';
 
 export interface Topic {
   id: number;
   title: string;
   content: any;
+  rawContent?: string;
   videolink?: string;
   files: Array<any>;
   audio?: {
@@ -139,6 +141,7 @@ export class TopicService {
     // if API return empty string ("") to content, utils.has (lodash) take it as a value and this if statement works and set json to content
     // to privent that we checking topic content is not equels to empty string.
     if (this.utils.has(thisTopic.Story, 'content') && !this.utils.isEmpty(thisTopic.Story.content)) {
+      topic.rawContent = thisTopic.Story.content;
       thisTopic.Story.content = thisTopic.Story.content.replace(/text-align: center;/gi, 'text-align: center; text-align: -webkit-center;');
       thisTopic.Story.content = thisTopic.Story.content.replace(/(<iframe)/g, '<div class="video-embed"><iframe').replace(/(<\/iframe>)/g, '</iframe></div>');
       thisTopic.Story.content = thisTopic.Story.content.replace(/(<video)/g, '<video  class="video-embed"');
@@ -163,17 +166,30 @@ export class TopicService {
     return topic;
   }
 
-  updateTopicProgress(id, state): Observable<ApiResponse<any>> {
+  updateTopicProgress(id, state, attention?: TopicAttentionMetrics): Observable<ApiResponse<any>> {
     if (environment.demo) {
       // eslint-disable-next-line no-console
-      console.log('mark topic as ', state);
+      console.log('mark topic as ', state, attention);
       return this.demo.normalResponse('observable') as Observable<any>;
     }
-    const postData = {
+    const postData: {
+      model: string;
+      model_id: number;
+      state: string;
+      meta?: {
+        attention: TopicAttentionMetrics;
+      };
+    } = {
       model: 'topic',
       model_id: +id,
       state: state
     };
+
+    if (attention) {
+      postData.meta = {
+        attention,
+      };
+    }
 
     return this.request.post({
       endPoint: api.post.updateProgress,

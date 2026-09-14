@@ -1,6 +1,18 @@
 .topic-title {
   margin-bottom: 19px;
 }
+.topic-time-spent {
+  align-items: center;
+  color: var(--practera-grey-75);
+  display: flex;
+  gap: 6px;
+  margin: -8px 0 18px;
+
+  ion-icon {
+    color: var(--ion-color-primary);
+    font-size: 18px;
+  }
+}
 .topic-video {
   margin-bottom: 20px;
 }
