@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExperienceService, ProgramObj } from '@v3/services/experience.service';
+import { ExperienceService, Experience, ProgramObj } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { LoadingController } from '@ionic/angular';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -9,6 +9,16 @@ import { environment } from '@v3/environments/environment';
 import { filter, takeUntil } from 'rxjs/operators';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { Subject, Observable } from 'rxjs';
+
+/** Darken a 6-digit hex color by reducing each channel by `amount` (0–255). */
+function darkenHex(hex: string, amount = 40): string {
+  const clean = hex.replace('#', '');
+  if (clean.length !== 6) return hex;
+  const r = Math.max(0, parseInt(clean.slice(0, 2), 16) - amount);
+  const g = Math.max(0, parseInt(clean.slice(2, 4), 16) - amount);
+  const b = Math.max(0, parseInt(clean.slice(4, 6), 16) - amount);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
 
 @Component({
   standalone: false,
@@ -24,6 +34,8 @@ export class ExperiencesPage implements OnInit, OnDestroy {
   } = {};
   isMobile: boolean = false;
   unsubscribe$: Subject<void> = new Subject<void>();
+  /** Tracks experiences whose lead image failed to load (keyed by experience.uuid). */
+  imgErrors = new Set<string>();
 
   constructor(
     private router: Router,
@@ -91,6 +103,22 @@ export class ExperiencesPage implements OnInit, OnDestroy {
 
   get instituteLogo() {
     return this.storage.getConfig().logo || this.storage.getUser()?.institutionLogo;
+  }
+
+  /** Called when an experience lead image fails to load. */
+  onImgError(uuid: string): void {
+    this.imgErrors.add(uuid);
+  }
+
+  /**
+   * CSS gradient for a card's background, derived from the experience's own brand colors.
+   * Used as the card background so it shows instantly (no image round-trip) and acts
+   * as the fallback when the lead image URL fails to load.
+   */
+  cardBackground(experience: Experience): string {
+    const primary   = experience.color         || '#008296'; // Ocean brand default
+    const secondary = experience.secondaryColor || darkenHex(primary, 40);
+    return `linear-gradient(135deg, ${primary}, ${secondary})`;
   }
 
   async switchProgram(experience: ProgramObj, keyEvent?: KeyboardEvent) {

@@ -55,13 +55,10 @@
               role="button"
               class="menu-link">
               <div class="badge-wrapper icon-container">
-                <ion-icon slot="start" name="settings" aria-hidden="true"></ion-icon>
+                <ion-icon slot="start" name="settings-outline" aria-hidden="true"></ion-icon>
               </div>
 
               <ion-label class="body-2 black">{{i18nText.setting}}</ion-label>
-              @if (wait) {
-                <ion-spinner slot="end" role="status" [attr.aria-label]="'Loading'"></ion-spinner>
-              }
             </a>
           </ion-item>
         </ion-menu-toggle>
@@ -78,7 +75,7 @@
             [attr.aria-label]="i18nText.myExperience"
             class="menu-link">
             <div class="badge-wrapper icon-container">
-              <ion-icon slot="start" name="grid" aria-hidden="true"></ion-icon>
+              <ion-icon slot="start" name="grid-outline" aria-hidden="true"></ion-icon>
             </div>
 
             <ion-label class="body-2 black">{{i18nText.myExperience}}</ion-label>

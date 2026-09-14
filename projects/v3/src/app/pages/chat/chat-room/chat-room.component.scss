@@ -1,6 +1,48 @@
 
 $message-body-size: 80%;
 
+/* ── Slack-style compact header ── */
+.compact-toolbar {
+  --min-height: 36px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 8px;
+  --padding-end: 4px;
+  border-bottom: 1px solid var(--ion-color-light-shade, #e0e0e0);
+
+  ion-button {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    height: 30px;
+    margin: 0;
+  }
+}
+
+.chat-header-title {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+
+  .channel-name {
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+  }
+
+  .member-count {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--ion-color-medium);
+    white-space: nowrap;
+  }
+}
+
 .not-started-empty-status {
   position: absolute;
   top: 50%;
@@ -39,7 +81,7 @@ $message-body-size: 80%;
     position: relative;
     display: flex;
     gap: 8px;
-    padding: 6px 12px;
+    padding: 4px 12px;
     border-radius: 6px;
     transition: background 0.12s;
 
@@ -137,7 +179,8 @@ $message-body-size: 80%;
     &.prose {
       :host ::ng-deep {
         h1, h2, h3, h4 { margin: 0.5em 0 0.25em; font-size: inherit; font-weight: 700; }
-        p { margin: 0 0 0.3em; }
+        p { margin: 0 0 0.4em; }
+        p:last-child { margin-bottom: 0; }
         ul, ol { margin: 0.25em 0; padding-left: 1.5em; }
         code { background: rgba(0,0,0,0.06); padding: 1px 4px; border-radius: 3px; font-size: 0.9em; }
         pre { background: rgba(0,0,0,0.04); padding: 8px; border-radius: 4px; overflow-x: auto; margin: 0.25em 0; }
@@ -165,12 +208,20 @@ $message-body-size: 80%;
     &:hover { text-decoration: underline; }
   }
 
+  /* ── Message footer: reactions + thread in one row ── */
+  .msg-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 3px;
+  }
+
   /* ── Reaction pills ── */
   .reaction-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
-    margin-top: 4px;
   }
 
   .reaction-pill {
@@ -208,7 +259,6 @@ $message-body-size: 80%;
     font-size: 11px;
     opacity: 0;
     transition: opacity 0.15s, background 0.15s;
-    margin-top: 2px;
 
     &:hover, &:focus-visible {
       opacity: 1;
@@ -309,251 +359,314 @@ $message-body-size: 80%;
   text-align: right !important;
 }
 
-.message-typing {
-  width: 100% !important;
-  text-align: left !important;
+/* ── Typing indicators (user + AI) ── */
+.typing-indicators {
+  position: absolute;
+  z-index: 9999;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  padding: 2px 12px 4px;
+  pointer-events: none;
+
+  .typing-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ion-color-medium);
+    height: 20px;
+
+    .typing-spinner {
+      --color: var(--ion-color-medium);
+      width: 16px;
+      height: 16px;
+    }
+
+    .typing-text { font-style: italic; }
+
+    &.ai-typing {
+      color: #7c3aed;
+      .ai-sparkle {
+        font-size: 14px;
+        color: #7c3aed;
+        animation: ai-sparkle-pulse 1.5s ease-in-out infinite;
+      }
+    }
+  }
+
+  .ai-dots {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    margin-left: 2px;
+
+    span {
+      display: block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #7c3aed;
+      animation: ai-dot-bounce 1.4s ease-in-out infinite;
+
+      &:nth-child(2) { animation-delay: 0.2s; }
+      &:nth-child(3) { animation-delay: 0.4s; }
+    }
+  }
 }
+
+@keyframes ai-sparkle-pulse {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  50% { opacity: 0.7; transform: scale(1.25) rotate(15deg); }
+}
+
+@keyframes ai-dot-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* ── Content height accounting for header + footer ── */
 .ion-content-absolute-with-footer {
-  height: calc(100% - 108px);
+  height: calc(100% - 88px);
 
   &.announcement {
-    height: calc(100% - 60px);
+    height: calc(100% - 48px);
   }
 
   &.attach-preview {
-    height: calc(100% - 200px);
+    height: calc(100% - 192px);
   }
 
   &.toolbar-visible {
-    height: calc(100% - 150px);
+    height: calc(100% - 128px);
   }
 }
 
+/* ═══════════════════════════════════════════════
+   Slack-style compose footer
+   ═══════════════════════════════════════════════ */
 .footer {
-  min-height: 48px;
-  padding: 0;
+  padding: 0 8px 6px;
+  position: relative;
+  background: var(--ion-background-color, #fff);
 
-  ion-grid {
+  &.ion-footer-absolute {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+  }
+}
+
+/* ── Compose box: single bordered container like Slack ── */
+.compose-box {
+  border: 1px solid var(--ion-color-light-shade, #d0d0d0);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:focus-within {
+    border-color: var(--ion-color-medium, #92949c);
+  }
+
+  /* Formatting toolbar: gray strip at top (hidden by default, toggled by Aa) */
+  .compose-toolbar {
+    display: none;
+    border-bottom: 1px solid var(--ion-color-light, #f4f5f8);
+    background: var(--ion-color-light, #f4f5f8);
     padding: 0;
   }
 
-  &.ion-footer-absolute {
-    height: auto;
-    min-height: 56px;
-    position: absolute;
-    bottom: 0;
-    z-index: 30;
+  &.toolbar-open .compose-toolbar {
+    display: block;
+  }
 
-    ion-grid {
-      padding: 0;
-      min-height: 56px;
-
-      ion-row {
-        min-height: 48px;
-
-        ion-col {
-          min-height: 48px;
-        }
-      }
+  /* Text area */
+  .compose-editor {
+    .message-text-editor {
+      width: 100%;
     }
   }
 
-  &.show-toolbar {
-    .message-text-editor .ql-toolbar.ql-snow {
-      display: block !important;
+  /* Attachment previews inside the box */
+  .compose-attachments {
+    padding: 4px 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    .image {
+      position: relative;
+      height: 80px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+
+      img { border-radius: 4px; max-height: 80px; }
+
+      &:hover {
+        opacity: 0.8;
+        .remove-attach { display: block; }
+      }
+
+      &.mobile .remove-attach { display: block; }
+    }
+
+    .video {
+      position: relative;
+      height: 60px;
+      padding: 12px;
+      background: var(--practera-light-grey-50, #fafafa);
+      border: 1px solid var(--practera-light-grey-75, #e8e8e8);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .play-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid var(--practera-light-grey-100, #ddd);
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      &:hover {
+        opacity: 0.8;
+        .remove-attach { display: block; }
+      }
+
+      &.mobile .remove-attach { display: block; }
+    }
+
+    .file-preview {
+      position: relative;
+
+      .general-attachment {
+        --min-height: 60px;
+        max-width: 260px;
+        min-width: 200px;
+        --background: var(--practera-light-grey-50, #fafafa);
+        --border-color: var(--practera-light-grey-75, #e8e8e8);
+        --border-radius: 4px;
+
+        ion-label {
+          max-width: 180px;
+          .mimetype { color: var(--practera-grey-75, #888); }
+        }
+      }
+
+      &:hover .remove-attach { display: block; }
+      &.mobile .remove-attach { display: block; }
+    }
+
+    .remove-attach {
+      cursor: pointer;
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--practera-ocean-100, var(--ion-color-danger));
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      color: #fff;
+      display: none;
+      font-size: 12px;
+      text-align: center;
+      line-height: 18px;
     }
   }
 
-  &.attach-preview {
-    min-height: 269px !important;
-    ion-grid {
-      max-height: 269px;
+  /* Action bar: bottom of compose box — icon row */
+  .compose-actions {
+    display: flex;
+    align-items: center;
+    padding: 2px 4px;
+    gap: 0;
+    border-top: none;
+
+    .left-actions {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
     }
-  }
 
-  &.focus {
-    min-height: 96px;
-    ion-grid {
-      padding: 0;
-      min-height: 96px;
+    .action-btn {
+      --padding-start: 6px;
+      --padding-end: 6px;
+      height: 30px;
+      min-width: 30px;
+      margin: 0;
+      --color: var(--ion-color-medium);
+
+      ion-icon { font-size: 18px; }
+
+      &.active {
+        --color: var(--ion-color-primary);
+      }
     }
-  }
 
-  ion-grid {
-    background-color: white;
-    min-height: 48px;
-    ion-row {
-      min-height: 48px;
-      &.action-buttons {
-        min-height: 48px;
-        max-height: 66px;
-        ion-col {
-          min-height: 48px;
-          max-height: 66px;
-        }
-      }
-      ion-col {
-        min-height: 48px;
+    .send-btn {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      margin-right: 2px;
 
-        .message-text-editor {
-          width: 100%;
-          .ql-toolbar.ql-snow {
-            border: none !important;
-            display: none; // hidden by default — toggle with showToolbar
-            border-bottom: 1px solid var(--ion-color-light, #f4f5f8) !important;
-          }
-          .ql-container.ql-snow {
-            border: none !important;
-          }
-        }
+      ion-icon { color: var(--ion-color-primary); font-size: 18px; }
 
-        ion-button {
-          padding-top: 6px;
-          min-height: 24px;
-          max-height: 100px;
-          height: auto;
-          ion-icon {
-            font-size: 24px;
-          }
-        }
-      }
-      &.attach-preview {
-        min-height: 100px;
-        max-height: 100px;
-        ion-col {
-          .image {
-            min-height: 100px;
-            max-height: 100px;
-            padding: 10px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-
-            img {
-              border-radius: 4px;
-            }
-
-            &:hover {
-              opacity: 0.7;
-            }
-
-            &.mobile, &:hover {
-              .remove-attach {
-                display: block;
-                text-align: center;
-                right: 0;
-                top: -1em;
-              }
-            }
-          }
-
-          .video {
-            height: 80px;
-            margin: 10px;
-            padding: 20px;
-            background: var(--practera-light-grey-50);
-            border: 1px solid;
-            border-color: var(--practera-light-grey-75);
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            .play-icon {
-              width: 40px;
-              height: 40px;
-              margin: auto;
-              border-radius: 50%;
-              border: 1px solid;
-              border-color: var(--practera-light-grey-100);
-              background: white;
-              ion-icon {
-                padding: 11px;
-              }
-            }
-            &:hover {
-              opacity: 0.7;
-              .remove-attach {
-                display: block;
-                text-align: center;
-                right: 0;
-              }
-            }
-            &.mobile {
-              .overlay {
-                display: none;
-              }
-              .remove-attach {
-                display: block;
-                text-align: center;
-                right: 0;
-              }
-            }
-          }
-          .file-preview {
-            height: fit-content;
-            width: fit-content;
-            margin: 10px;
-            .general-attachment {
-              --min-height: 80px;
-              max-width: 300px;
-              min-width: 300px;
-              --background: var(--practera-light-grey-50);
-              --border-color: var(--practera-light-grey-75);
-              --border-radius: 4px;
-              ion-label {
-                max-width: 210px;
-                .mimetype {
-                  color: var(--practera-grey-75);
-                }
-              }
-            }
-            .overlay {
-              left: 10px;
-              width: 300px;
-              border-radius: 4px;
-              z-index: 2;
-            }
-            .remove-attach {
-              left: 300px;
-              z-index: 2;
-            }
-            &:hover {
-              .remove-attach {
-                display: block;
-              }
-              .overlay {
-                display: block;
-                background: rgba(0, 0, 0, .6);
-              }
-            }
-            &.mobile {
-              .overlay {
-                display: none;
-              }
-              .remove-attach {
-                display: block;
-              }
-            }
-          }
-          .remove-attach {
-            cursor: pointer;
-            position: absolute;
-            top: 0px;
-            background: var(--practera-ocean-100);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            color: white;
-            display: none;
-          }
-        }
-      }
+      &[disabled] ion-icon { color: var(--ion-color-medium); opacity: 0.4; }
     }
   }
 }
 
 ion-toolbar {
-  --min-height: 60px;
+  --min-height: 36px;
+}
+
+/* ── Quill overrides for compose box (must use :host ::ng-deep at top level) ── */
+:host ::ng-deep {
+  .compose-box {
+    .ql-toolbar.ql-snow {
+      display: none !important;
+    }
+
+    .ql-container.ql-snow {
+      border: none !important;
+    }
+
+    .ql-editor {
+      padding: 8px 12px;
+      min-height: 36px;
+      max-height: 160px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .ql-editor.ql-blank::before {
+      font-style: normal;
+      color: var(--ion-color-medium);
+      left: 12px;
+    }
+
+    &.toolbar-open .ql-toolbar.ql-snow {
+      display: flex !important;
+      border: none !important;
+      border-bottom: 1px solid var(--ion-color-light, #f4f5f8) !important;
+      background: var(--ion-color-light, #f4f5f8);
+      padding: 4px 8px;
+
+      button {
+        width: 28px;
+        height: 28px;
+      }
+    }
+  }
 }
 
 ion-button.ion-focused {
@@ -571,7 +684,7 @@ ion-fab.scroll-to-bottom {
     word-break: break-all;
   }
 
-   a:hover {
+  a:hover {
     color: var(--ion-color-primary);
   }
 }

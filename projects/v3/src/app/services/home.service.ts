@@ -244,7 +244,9 @@ export class HomeService {
 
     milestones?.forEach((milestone) => {
       milestone.activities?.forEach((activity) => {
-        activities[activity.id] = activity;
+        // Store milestoneId alongside each activity so components can use it
+        // for deterministic, milestone-grouped color gradients.
+        activities[activity.id] = { ...activity, milestoneId: milestone.id };
       });
     });
 

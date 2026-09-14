@@ -1,4 +1,7 @@
 <div class="buttons" role="navigation" aria-label="User navigation" i18n-aria-label>
+  @if (isLoadingSetting) {
+    <div class="global-progress-bar" role="progressbar" aria-label="Loading"></div>
+  }
   @if (!isMobile) {
     @if (isShowSupportBtn) {
       <ion-button
@@ -53,8 +56,7 @@
     (keydown.enter)="settings()"
     (keydown.space)="settings(); $event.preventDefault()"
     [ngClass]="{
-      'no-hover-effect': user?.image,
-      'loading-overlay': isLoadingSetting === true
+      'no-hover-effect': user?.image
     }"
     [attr.aria-busy]="isLoadingSetting"
     >

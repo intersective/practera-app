@@ -55,11 +55,29 @@
                 (click)="switchProgram(experience)"
                 (keydown)="switchProgram(experience, $event)">
 
-                <div class="exp-card-image-wrap">
-                  <img
-                    class="exp-card-image"
-                    [src]="experience.leadImage ? experience.leadImage : '../../../assets/default-experience-image.svg'"
-                    [attr.alt]="experience.name">
+                <div class="exp-card-image-wrap"
+                  [style.background]="cardBackground(experience)">
+                  @if (experience.leadImage && !imgErrors.has(experience.uuid)) {
+                    <img
+                      class="exp-card-image"
+                      [src]="experience.leadImage"
+                      [attr.alt]="experience.name"
+                      (error)="onImgError(experience.uuid)">
+                  }
+                  @if (!experience.leadImage || imgErrors.has(experience.uuid)) {
+                    <div class="exp-card-brand-overlay">
+                      @if (experience.iconUrl) {
+                        <img class="exp-card-brand-icon"
+                          [src]="experience.iconUrl"
+                          [alt]="experience.name">
+                      }
+                      @if (!experience.iconUrl && experience.logoUrl) {
+                        <img class="exp-card-brand-icon exp-card-brand-icon--wide"
+                          [src]="experience.logoUrl"
+                          [alt]="experience.name">
+                      }
+                    </div>
+                  }
                   @if (progresses[experience.projectId] != null) {
                     <div class="exp-card-progress-badge">
                       <svg viewBox="0 0 32 32" aria-hidden="true">

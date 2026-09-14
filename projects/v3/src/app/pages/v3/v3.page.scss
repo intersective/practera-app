@@ -20,13 +20,18 @@ ion-menu.collapsed {
 
     .hint {
       position: absolute;
-      right: -1.5px;
-      top: 10px;
+      // Top-right corner of the icon circle — not mid-height
+      right: -5px;
+      top: -5px;
       border-radius: 100%;
-      /* overflow: visible; */
-      font-size: 0.7em;
+      font-size: 0.65em;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 3px;
       display: flex;
       align-items: center;
+      justify-content: center;
+      line-height: 1;
 
       .icon-inner {
         height: 36px;
@@ -106,12 +111,6 @@ ion-menu.collapsed {
 }
 
 ion-menu {
-  .hint {
-    font-size: 10px;
-    background-color: red;
-    border-radius: 8px;
-    padding: 2px 5px;
-  }
   border-right: 1px solid;
   border-right-color: var(--practera-grey-25);
 
@@ -127,15 +126,16 @@ ion-menu {
 
     .hint {
       position: absolute;
-      right: -8px;
-      top: -8px;
-      /* overflow: visible; */
+      right: -6px;
+      top: -6px;
       display: flex;
       align-items: center;
       justify-content: center;
       min-width: 18px;
       height: 18px;
       padding: 0 4px;
+      font-size: 10px;
+      line-height: 1;
 
       .icon-inner {
         height: 36px;

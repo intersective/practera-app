@@ -23,19 +23,63 @@ import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 import { ProjectBriefModalComponent, ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 
 /**
- * Gradient palette matching the admin design view (ActivityImageCard.tsx).
- * Each pair is [fromHex, toHex] — applied as a 135deg linear gradient.
+ * Brand-derived activity gradient palette.
+ *
+ * Six hue families, each anchored to a Practera brand color:
+ *   0 – Teal      (Arctic #2BC1D9 / Ocean #008296)
+ *   1 – Violet    (#6A3DE0)
+ *   2 – Navy/Blue (#123B79)
+ *   3 – Amber     (#FFBE15)
+ *   4 – Indigo    (split-complement of Ocean, bridges Navy-Violet)
+ *   5 – Orange    (#FD8339)
+ *
+ * Each family has 3 shade variants so activities within the same milestone
+ * share a hue but step through lighter→darker variants, giving a visible
+ * progression while staying visually cohesive.
+ *
+ * Usage: milestoneId % 6 → family, activityId % 3 → shade within family.
  */
-const ACTIVITY_GRADIENT_COLORS: [string, string][] = [
-  ['#14b8a6', '#0f766e'], // teal
-  ['#3b82f6', '#1d4ed8'], // blue
-  ['#8b5cf6', '#6d28d9'], // violet
-  ['#f43f5e', '#be123c'], // rose
-  ['#f59e0b', '#b45309'], // amber
-  ['#10b981', '#047857'], // emerald
-  ['#06b6d4', '#0e7490'], // cyan
-  ['#6366f1', '#4338ca'], // indigo
+const MILESTONE_COLOR_FAMILIES: [string, string][][] = [
+  // 0 — Teal  (Arctic → Ocean brand pair)
+  [
+    ['#2BC1D9', '#008296'], // A: arctic → ocean
+    ['#4DD9EC', '#0097AD'], // B: lighter cyan → mid teal
+    ['#14A8BE', '#005F6E'], // C: mid → deep teal
+  ],
+  // 1 — Violet  (brand violet family)
+  [
+    ['#8B5CF6', '#6A3DE0'], // A: light → brand violet
+    ['#A78BFA', '#7C4DEE'], // B: lavender → mid
+    ['#6A3DE0', '#4C20C8'], // C: brand → deep
+  ],
+  // 2 — Navy/Blue  (brand dark-blue family)
+  [
+    ['#3B82F6', '#1D4ED8'], // A: bright → royal blue
+    ['#2563B0', '#123B79'], // B: royal → brand navy
+    ['#60A5FA', '#1D4ED8'], // C: sky → deep
+  ],
+  // 3 — Amber/Yellow  (brand yellow family)
+  [
+    ['#FFBE15', '#D97706'], // A: brand yellow → amber
+    ['#F59E0B', '#B45309'], // B: amber → brown-amber
+    ['#FCD34D', '#D97706'], // C: light → amber
+  ],
+  // 4 — Indigo  (split-complement of Ocean, bridging Navy & Violet)
+  [
+    ['#6366F1', '#4338CA'], // A: indigo → deep indigo
+    ['#818CF8', '#6366F1'], // B: light indigo → indigo
+    ['#4F46E5', '#3730A3'], // C: mid → very deep
+  ],
+  // 5 — Orange/Coral  (brand orange family, warm complement)
+  [
+    ['#FD8339', '#C2530D'], // A: brand orange → dark
+    ['#FB923C', '#EA580C'], // B: light coral → deep
+    ['#F97316', '#C2410C'], // C: mid → darker
+  ],
 ];
+
+/** @deprecated use MILESTONE_COLOR_FAMILIES with milestoneId for brand-consistent coloring */
+const ACTIVITY_GRADIENT_COLORS: [string, string][] = MILESTONE_COLOR_FAMILIES.flat();
 
 @Component({
   standalone: false,
@@ -794,11 +838,23 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
   /**
    * Returns an SVG data URL with a deterministic gradient for activities without lead images.
-   * Uses the same 8-color palette as the admin design view (ActivityImageCard).
+   *
+   * When `milestoneId` is supplied:
+   *   - `milestoneId % 6` selects the hue family (brand-color-anchored)
+   *   - `activityId % 3` selects the shade variant within that family
+   *
+   * Activities in the same milestone share a hue; different shades give visual
+   * progression without losing cohesion.
    */
-  getActivityGradient(activityId: number): string {
-    const idx = activityId % ACTIVITY_GRADIENT_COLORS.length;
-    const [from, to] = ACTIVITY_GRADIENT_COLORS[idx];
+  getActivityGradient(activityId: number, milestoneId?: number): string {
+    let from: string;
+    let to: string;
+    if (milestoneId != null) {
+      const family = MILESTONE_COLOR_FAMILIES[milestoneId % MILESTONE_COLOR_FAMILIES.length];
+      [from, to] = family[activityId % family.length];
+    } else {
+      [from, to] = ACTIVITY_GRADIENT_COLORS[activityId % ACTIVITY_GRADIENT_COLORS.length];
+    }
     return `data:image/svg+xml,${encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">` +
       `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">` +

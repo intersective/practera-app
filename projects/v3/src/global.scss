@@ -1,3 +1,9 @@
+// PFAS — Sass module imports (must come before @import rules)
+@use "./theme/variables.scss";
+@use "./theme/typography.scss";
+@use "./theme/colors.scss";
+@use "./theme/dark.scss";
+
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
 
@@ -12,12 +18,6 @@
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 @import "@ionic/angular/css/display.css";
-
-// PFAS
-@import "./theme/variables.scss";
-@import "./theme/typography.scss";
-@import "./theme/colors.scss";
-@import "./theme/dark.scss";
 
 // custom video player styles
 @import "plyr/dist/plyr.css";

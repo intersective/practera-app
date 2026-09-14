@@ -408,7 +408,7 @@ export class ChatService {
     }
 
     return this.apolloService.graphQLMutate(
-      `mutation markAsSeen($uuids: [String]!) {
+      `mutation markAsSeen($uuids: [String!]!) {
         readChatLogs(uuids: $uuids) {
           success
         }

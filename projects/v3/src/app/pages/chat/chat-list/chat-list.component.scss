@@ -7,64 +7,76 @@ ion-avatar {
 }
 
 .last-message {
-  max-height: 40px;
+  max-height: 36px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   display: -moz-box;
   line-clamp: 2;
-  -webkit-line-clamp: 2; /* number of lines to show */
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  color: var(--ion-color-medium);
+  font-size: 13px;
 }
 
-clickable-item {
+app-clickable-item {
+  display: block;
+  transition: background 0.1s;
+
+  /* Hover state */
+  &:hover {
+    background: var(--ion-color-light, #f4f5f8);
+    cursor: pointer;
+  }
+
+  /* Active/selected state is driven by the [active] input which adds a class — 
+     also target the Ionic item highlight */
+  &.active-item,
+  &[active="true"] {
+    background: rgba(var(--ion-color-primary-rgb, 0, 130, 150), 0.08);
+  }
+
   .bold {
     font-weight: bold;
   }
+
   .item-inner {
     border: none !important;
   }
 
   ion-label {
-    margin: 10px 0 10px 0 !important;
+    margin: 8px 0 8px 0 !important;
 
     .chat-name-container {
-      display: inline-flex !important;
-      flex-wrap: wrap;
-      text-overflow: inherit;
-      overflow: inherit;
+      display: flex !important;
+      align-items: center;
+      flex-wrap: nowrap;
+      overflow: hidden;
       width: 100% !important;
 
+      .chat-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1 1 auto;
+        min-width: 0; // critical for flex truncation
+        margin-right: 4px;
+      }
+
       span {
+        flex: 0 0 auto;
         border: 1px solid var(--ion-color-primary);
         padding: 1px 5px 0 5px;
         border-radius: 10px;
         vertical-align: baseline;
         text-align: center;
         white-space: nowrap;
-        max-width: 70% !important;
-        text-overflow: inherit;
-        overflow: inherit;
+        text-overflow: ellipsis;
+        overflow: hidden;
         color: var(--ion-color-primary);
+        font-size: 11px;
+        max-width: 80px;
       }
-
-      .chat-name {
-        text-overflow: inherit;
-        overflow: inherit;
-        max-width: 90%;
-        width: fit-content;
-        margin-right: 3px;
-
-        &.team-channel {
-          margin-right: 3px;
-          max-width: -webkit-fill-available !important;
-          width: auto !important;
-          .chat-name-container {
-            display: block !important;
-          }
-        }
-      }
-
     }
   }
 
@@ -85,14 +97,15 @@ clickable-item {
     }
   }
 }
+
 .desktop-view {
   .time-container {
     width: auto !important;
     height: 100%;
-    padding-bottom: 10px;
-    padding-top: 10px;
+    padding-bottom: 8px;
+    padding-top: 8px;
   }
-  clickable-item {
+  app-clickable-item {
     ion-label {
       .chat-name-container {
         span {

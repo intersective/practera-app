@@ -67,7 +67,6 @@
     "graphql": "^16.8.1",
     "h5p-standalone": "^3.8.2",
     "ics": "^3.7.2",
-    "marked": "^18.0.13",
     "ng-circle-progress": "~1.7.1",
     "ngx-quill": "^30.1.2",
     "plyr": "^3.6.12",

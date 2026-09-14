@@ -10,6 +10,40 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { takeUntil } from 'rxjs/operators';
 
+/**
+ * Brand-derived gradient palette — 6 hue families × 3 shades.
+ * milestoneId % 6 → family; activityId % 3 → shade within family.
+ * Mirrors MILESTONE_COLOR_FAMILIES in home.page.ts.
+ */
+const MILESTONE_COLOR_FAMILIES: [string, string][][] = [
+  // 0 — Teal (Arctic/Ocean)
+  [['#2BC1D9', '#008296'], ['#4DD9EC', '#0097AD'], ['#14A8BE', '#005F6E']],
+  // 1 — Violet
+  [['#8B5CF6', '#6A3DE0'], ['#A78BFA', '#7C4DEE'], ['#6A3DE0', '#4C20C8']],
+  // 2 — Navy/Blue
+  [['#3B82F6', '#1D4ED8'], ['#2563B0', '#123B79'], ['#60A5FA', '#1D4ED8']],
+  // 3 — Amber/Yellow
+  [['#FFBE15', '#D97706'], ['#F59E0B', '#B45309'], ['#FCD34D', '#D97706']],
+  // 4 — Indigo
+  [['#6366F1', '#4338CA'], ['#818CF8', '#6366F1'], ['#4F46E5', '#3730A3']],
+  // 5 — Orange/Coral
+  [['#FD8339', '#C2530D'], ['#FB923C', '#EA580C'], ['#F97316', '#C2410C']],
+];
+
+function activityGradient(activityId: number, milestoneId?: number): string {
+  let from: string;
+  let to: string;
+  if (milestoneId != null) {
+    const family = MILESTONE_COLOR_FAMILIES[milestoneId % MILESTONE_COLOR_FAMILIES.length];
+    [from, to] = family[activityId % family.length];
+  } else {
+    // Fallback: flatten all families and index by activityId
+    const all = MILESTONE_COLOR_FAMILIES.flat();
+    [from, to] = all[activityId % all.length];
+  }
+  return `linear-gradient(135deg, ${from}, ${to})`;
+}
+
 @Component({
   standalone: false,
   selector: 'app-activity',
@@ -22,6 +56,8 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
   @Input() submission: Submission;
   @Output() navigate = new EventEmitter();
   leadImage: string = null;
+  /** CSS gradient string used as fallback when leadImage URL fails to load. */
+  leadImageFallback: string | null = null;
   newTasks: { [key: number]: any } = {};
 
   // when user isn't in a team & all tasks are found to be team tasks, emit this event
@@ -70,9 +106,17 @@ export class ActivityComponent implements OnInit, OnChanges, OnDestroy {
       if (this.utils.isEqual(changes.activity.currentValue, changes.activity.previousValue)) {
         return;
       }
+
       const activities = this.storageService.get('activities');
+      const currentActivity = activities ? (activities[this.activity.id] ?? null) : null;
+
+      // Pre-compute the gradient fallback using milestone-grouped brand colors
+      if (this.activity?.id) {
+        const milestoneId: number | undefined = currentActivity?.milestoneId;
+        this.leadImageFallback = activityGradient(this.activity.id, milestoneId);
+      }
+
       if (activities) {
-        const currentActivity = (activities || {})[this.activity.id];
 
         // // if activity is locked, show popup and block access
         // if (currentActivity.isLocked === true && this.popupBlocked === false) {

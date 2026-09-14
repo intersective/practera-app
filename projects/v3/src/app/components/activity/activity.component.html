@@ -1,6 +1,7 @@
 @if (activity) {
   <div class="ion-padding activity-backdrop"
     [appBackgroundImage]="leadImage"
+    [appBackgroundImageFallback]="leadImageFallback"
     aria-live="polite"
     aria-labelledby="activity-name">
     @if (activity.name) {

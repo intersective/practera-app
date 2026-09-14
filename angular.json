@@ -219,7 +219,7 @@
             "proxyConfig": "proxy.conf.json",
             "allowedHosts": [".practera.local", "localhost"],
             "prebundle": {
-              "exclude": ["@ionic/angular", "@ionic/core", "@ionic/core/loader", "@stencil/core"]
+              "exclude": ["@ionic/angular", "@ionic/core", "@ionic/core/loader", "@stencil/core", "ngx-quill", "quill", "quill-magic-url", "@uppy/angular", "@uppy/core", "@uppy/dashboard", "@uppy/tus"]
             }
           }
         },

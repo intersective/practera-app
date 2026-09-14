@@ -63,7 +63,6 @@ import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.servic
 })
 export class V3Page implements OnInit, OnDestroy {
   isMenuOpen = false; // collapsible submenu
-  wait: boolean = false; // loading flag
   reviews: Review[];
   appPages: any[];
   showMessages: boolean = false;
@@ -135,7 +134,7 @@ export class V3Page implements OnInit, OnDestroy {
       {
         title: $localize`Home`,
         url: '/v3/home',
-        icon: 'home',
+        icon: 'home-outline',
         code: 'Home',
         badges: 0,
         hasNotification: false,
@@ -143,28 +142,28 @@ export class V3Page implements OnInit, OnDestroy {
       {
         title: $localize`Events`,
         url: '/v3/events',
-        icon: 'today',
+        icon: 'calendar-outline',
         code: 'Events',
         badges: 0,
       },
       {
         title: $localize`Reviews`,
         url: '/v3/review-desktop',
-        icon: 'eye',
+        icon: 'eye-outline',
         code: 'Reviews',
         badges: 0,
       },
       {
         title: $localize`Messages`,
         url: '/v3/messages',
-        icon: 'mail',
+        icon: 'mail-outline',
         code: 'Messages',
         badges: 0,
       },
       {
         title: $localize`Due Status`,
         url: '/v3/due-dates',
-        icon: 'alarm',
+        icon: 'alarm-outline',
         code: 'DueDates',
         badges: 0,
       }
@@ -289,7 +288,6 @@ export class V3Page implements OnInit, OnDestroy {
       return;
     }
 
-    this.wait = true;
     const modal = await this.modalController.create({
       component: SettingsPage,
       componentProps: {
@@ -300,7 +298,6 @@ export class V3Page implements OnInit, OnDestroy {
       cssClass: 'right-affixed'
     });
     await modal.present();
-    this.wait = false;
     return;
   }
 

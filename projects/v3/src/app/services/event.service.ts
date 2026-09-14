@@ -93,7 +93,7 @@ export class EventService {
     }
 
     return this.apolloService.graphQLFetch(
-      `query events($types: [EventType], $activityId: Int) {
+      `query events($types: [EventType!], $activityId: Int) {
         events(types: $types, activityId: $activityId) {
           id
           name

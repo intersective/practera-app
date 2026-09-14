@@ -86,6 +86,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   // display "someone is typing" when received a typing event
   typingSubject: Subject<string> = new Subject<string>();
   whoIsTyping: string = "";
+  /** AI typing indicator — true while waiting for an AI response */
+  aiIsTyping = false;
+  private aiTypingTimeout: any;
   videoHandles = [];
 
   selectedAttachments: selectedAttachment[] = [];
@@ -160,6 +163,8 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private destroy$ = new Subject<void>();
   private scrollSubject = new Subject<void>();
+  /** Polling interval for new messages — fallback when Pusher events are missed */
+  private pollInterval: ReturnType<typeof setInterval> | null = null;
 
   constructor(
     private chatService: ChatService,
@@ -208,6 +213,11 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           if (!this.utils.isEmpty(receivedMessage)) {
+            // Clear AI typing indicator when a new message arrives
+            if (this.isAiMessage(receivedMessage)) {
+              clearTimeout(this.aiTypingTimeout);
+              this.aiIsTyping = false;
+            }
             this.ngZone.run(() => {
               this.messageList.push(receivedMessage);
               if (this.scrollPosition === ScrollPosition.Bottom) {
@@ -294,12 +304,15 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
       this._loadMembers();
       this._scrollToBottom();
       this.whoIsTyping = "";
+      this._startMessagePoll();
     });
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    clearTimeout(this.aiTypingTimeout);
+    this._stopMessagePoll();
   }
 
   private _initialise() {
@@ -311,6 +324,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.sendingMessage = false;
     this.activeThread = null;
     this.selectedAttachments = [];
+    this.aiIsTyping = false;
+    clearTimeout(this.aiTypingTimeout);
+    this._stopMessagePoll();
   }
 
   private _isValidPusherEvent(pusherData) {
@@ -320,7 +336,9 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.isMobile && this.router.url !== "/v3/messages/chat-room") {
       return false;
     }
-    if (pusherData.channelUuid !== this.channelUuid) {
+    // Server-side pushes (e.g. AI chat replies) may omit channelUuid —
+    // they arrive on the correct Pusher channel subscription so accept them.
+    if (pusherData.channelUuid && pusherData.channelUuid !== this.channelUuid) {
       return false;
     }
     return true;
@@ -339,24 +357,28 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   /**
-   * @description listen to pusher event for new message
+   * @description listen to pusher event for new message.
+   * Normalises both client-triggered payloads (which include senderName, uuid,
+   * channelUuid, etc.) and server-pushed AI payloads (which include expertName,
+   * chatLogId, senderType='ai_expert' but omit uuid/senderUuid).
    */
   getMessageFromEvent(data): Message {
+    const isAi = data.senderType === 'ai_expert';
     return {
-      uuid: data.uuid,
+      uuid: data.uuid || null,
       chatLogId: data.chatLogId,
       sender: data.sender,
-      senderName: data.senderName,
-      senderRole: data.senderRole,
-      senderAvatar: data.senderAvatar,
-      senderUuid: data.senderUuid,
+      senderName: data.senderName || data.expertName || (isAi ? 'AI Assistant' : 'User'),
+      senderRole: data.senderRole || (isAi ? 'ai' : ''),
+      senderAvatar: data.senderAvatar || '',
+      senderUuid: data.senderUuid || '',
       scheduled: data.scheduled,
       isSender: false,
       message: data.message,
-      created: data.created,
+      created: data.created || new Date().toISOString(),
       file: data.file,
-      channelUuid: data.channelUuid,
-      sentAt: data.sentAt,
+      channelUuid: data.channelUuid || this.channelUuid,
+      sentAt: data.sentAt || data.created || new Date().toISOString(),
       reactions: data.reactions ?? [],
     };
   }
@@ -551,6 +573,27 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     return !msg.uuid;
   }
 
+  /** Returns true if the current channel has any AI-generated messages */
+  private hasAiInChannel(): boolean {
+    return this.messageList.some(m => this.isAiMessage(m));
+  }
+
+  /** Start the AI typing indicator and auto-clear after 30s */
+  private _startAiTyping(): void {
+    if (!this.hasAiInChannel()) return;
+    this.ngZone.run(() => {
+      this.aiIsTyping = true;
+      this.cdr.markForCheck();
+    });
+    clearTimeout(this.aiTypingTimeout);
+    this.aiTypingTimeout = setTimeout(() => {
+      this.ngZone.run(() => {
+        this.aiIsTyping = false;
+        this.cdr.markForCheck();
+      });
+    }, 30000);
+  }
+
   /** Generate a stable message key for trackBy */
   trackMessage(_index: number, msg: Message): string {
     return msg.uuid || `id:${msg.chatLogId}` || `c:${msg.created}:${(msg.message ?? '').slice(0, 20)}`;
@@ -721,6 +764,7 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
     this.utils.broadcastEvent("chat:info-update", true);
     this._scrollToBottom();
     this._afterSendMessage();
+    this._startAiTyping();
   }
 
   // trigger pusher event with file response
@@ -1013,6 +1057,61 @@ export class ChatRoomComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   typing() {
     this.pusherService.triggerTyping(this.chatChannel.pusherChannel);
+  }
+
+  /**
+   * Start a lightweight poll that checks for new messages every 5s.
+   * This is a fallback for when Pusher/Soketi events are missed
+   * (e.g. AI replies, server-pushed messages, connection drops).
+   */
+  private _startMessagePoll(): void {
+    this._stopMessagePoll();
+    this.pollInterval = setInterval(() => {
+      if (!this.channelUuid || this.loadingChatMessages) return;
+      this.chatService
+        .getMessageList({
+          channelUuid: this.channelUuid,
+          cursor: '',
+          size: 10,
+        })
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (result: MessageListResult) => {
+            if (!result?.messages?.length) return;
+            const existingKeys = new Set(
+              this.messageList.map(m => m.uuid || `id:${m.chatLogId}`)
+            );
+            const newMessages = result.messages.filter(m => {
+              const key = m.uuid || `id:${m.chatLogId}`;
+              return key && !existingKeys.has(key);
+            });
+            if (newMessages.length > 0) {
+              this.ngZone.run(() => {
+                newMessages.forEach(msg => {
+                  if (msg.file) {
+                    msg.preview = this.attachmentPreview(msg.file);
+                  }
+                  this.messageList.push(msg);
+                });
+                if (this.scrollPosition === ScrollPosition.Bottom) {
+                  this._scrollToBottom();
+                } else {
+                  this.hasUnreadMessages = true;
+                }
+                this.cdr.markForCheck();
+              });
+            }
+          },
+          error: () => { /* ignore poll errors */ },
+        });
+    }, 5000);
+  }
+
+  private _stopMessagePoll(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+      this.pollInterval = null;
+    }
   }
 
   private _showTyping(event) {

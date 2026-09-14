@@ -331,7 +331,7 @@
             <app-list-item [id]="'act-' + activity?.id"
               [title]="activity.name"
               [leadImage]="activity.leadImage"
-              [fallbackLeadImage]="getActivityGradient(activity.id)"
+              [fallbackLeadImage]="getActivityGradient(activity.id, milestone.id)"
               [lines]="i < milestone.activities.length - 1 ? 'full' : 'none'"
               (click)="gotoActivity({activity, milestone})"
               (keydown.enter)="gotoActivity({activity, milestone}, $event)"

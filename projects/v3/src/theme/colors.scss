@@ -1,3 +1,5 @@
+@use "sass:map";
+
 /**
 This scss file generate css classes for the font colors and background colors.
 And setting practera branding colors as ionic theme colors.
@@ -55,13 +57,13 @@ $colors: (
 );
 
 @mixin get-font-color-style($class-name) {
-  $value: map-get($colors, $class-name);
+  $value: map.get($colors, $class-name);
 
   color: $value !important;
 }
 
 @mixin get-bg-color-style($class-name) {
-  $value: map-get($colors, $class-name);
+  $value: map.get($colors, $class-name);
 
   background-color: $value !important;
   --background: $value !important;

@@ -10,14 +10,34 @@ ion-avatar {
   justify-content: center;
   align-items: center;
   padding: 11px;
+
+  .global-progress-bar {
+    position: fixed;
+    top: 44px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 9999;
+    overflow: hidden;
+    background: var(--ion-color-light-shade, #d7d8da);
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 40%;
+      background: var(--ion-color-primary);
+      border-radius: 1px;
+      animation: progress-slide 1.2s ease-in-out infinite;
+    }
+  }
+
   .avatar-btn {
     height: 100%;
     &.no-hover-effect {
       --background-hover: none;
-    }
-    &.loading-overlay {
-      pointer-events: none;
-      opacity: 0.5;
     }
   }
   .notify-btn {
@@ -56,5 +76,14 @@ ion-avatar {
       --padding-start: 0 !important;
       --padding-end: 0 !important;
     }
+  }
+}
+
+@keyframes progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
   }
 }

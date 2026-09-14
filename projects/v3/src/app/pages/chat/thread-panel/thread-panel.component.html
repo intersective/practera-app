@@ -1,22 +1,16 @@
 <ion-header mode="ios">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="close()" aria-label="Close thread">
-        <ion-icon name="arrow-back" color="primary" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title class="ion-text-center">
+  <ion-toolbar class="thread-toolbar">
+    <ion-title slot="start" class="thread-title">
       <span i18n>Thread</span>
-      <div class="subtitle-2 caption gray-1">{{ channelName }}</div>
     </ion-title>
     <ion-buttons slot="end">
       @if (availableExperts.length > 0 && !channelReadonly) {
-        <ion-button id="ai-invite-trigger" fill="clear" (click)="toggleAiPicker()" [disabled]="invitingExpert" aria-label="Invite AI expert">
+        <ion-button id="ai-invite-trigger" fill="clear" size="small" (click)="toggleAiPicker()" [disabled]="invitingExpert" aria-label="Invite AI expert">
           <ion-icon name="sparkles-outline" slot="icon-only" color="secondary"></ion-icon>
         </ion-button>
       }
-      <ion-button fill="clear" (click)="close()" aria-label="Close thread panel">
-        <ion-icon name="close-outline" color="medium" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" size="small" (click)="close()" aria-label="Close thread panel">
+        <ion-icon name="close" slot="icon-only" color="medium"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -183,8 +177,8 @@
 </ion-content>
 
 @if (!channelReadonly) {
-  <ion-footer>
-    <div class="compose-bar">
+  <ion-footer class="thread-footer">
+    <div class="thread-compose-box">
       <quill-editor
         aria-label="Reply in thread"
         [modules]="editorModules"
@@ -195,19 +189,22 @@
         [(ngModel)]="replyText"
         i18n-placeholder
       ></quill-editor>
-      <ion-button
-        fill="clear"
-        size="small"
-        (click)="sendReply()"
-        [disabled]="!replyText || utils.isQuillContentEmpty(replyText) || sendingReply"
-        aria-label="Send reply"
-      >
-        @if (sendingReply) {
-          <ion-spinner name="dots" slot="icon-only"></ion-spinner>
-        } @else {
-          <ion-icon name="send-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-        }
-      </ion-button>
+      <div class="thread-compose-actions">
+        <ion-button
+          fill="clear"
+          size="small"
+          class="thread-send-btn"
+          (click)="sendReply()"
+          [disabled]="!replyText || utils.isQuillContentEmpty(replyText) || sendingReply"
+          aria-label="Send reply"
+        >
+          @if (sendingReply) {
+            <ion-spinner name="dots" slot="icon-only"></ion-spinner>
+          } @else {
+            <ion-icon name="send" slot="icon-only" aria-hidden="true"></ion-icon>
+          }
+        </ion-button>
+      </div>
     </div>
   </ion-footer>
 }

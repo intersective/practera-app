@@ -4,6 +4,30 @@
   height: 100%;
 }
 
+/* ── Slack-style thread header ── */
+.thread-toolbar {
+  --min-height: 36px;
+  --padding-top: 0;
+  --padding-bottom: 0;
+  --padding-start: 12px;
+  --padding-end: 4px;
+  border-bottom: 1px solid var(--ion-color-light-shade, #e0e0e0);
+
+  ion-button {
+    --padding-start: 4px;
+    --padding-end: 4px;
+    height: 28px;
+    margin: 0;
+  }
+}
+
+.thread-title {
+  font-weight: 700;
+  font-size: 13px;
+  padding: 0;
+  margin: 0;
+}
+
 /* ── Thread messages container ── */
 .thread-messages {
   padding: 0 4px;
@@ -103,7 +127,8 @@
   &.prose {
     :host ::ng-deep {
       h1, h2, h3, h4 { margin: 0.4em 0 0.2em; font-size: inherit; font-weight: 700; }
-      p { margin: 0 0 0.25em; }
+      p { margin: 0 0 0.35em; }
+      p:last-child { margin-bottom: 0; }
       ul, ol { margin: 0.2em 0; padding-left: 1.4em; }
       code { background: rgba(0,0,0,0.06); padding: 1px 3px; border-radius: 3px; font-size: 0.9em; }
       pre { background: rgba(0,0,0,0.04); padding: 6px; border-radius: 4px; overflow-x: auto; margin: 0.2em 0; }
@@ -253,20 +278,69 @@
   .empty-icon { font-size: 2rem; margin-bottom: 8px; }
 }
 
-/* ── Compose bar ── */
-.compose-bar {
-  display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  padding: 6px 8px;
+/* ── Slack-style thread compose box ── */
+.thread-footer {
+  padding: 0 8px 6px;
+  background: var(--ion-background-color, #fff);
+}
+
+.thread-compose-box {
+  border: 1px solid var(--ion-color-light-shade, #d0d0d0);
+  border-radius: 8px;
   background: #fff;
-  border-top: 1px solid var(--ion-color-light-shade);
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:focus-within {
+    border-color: var(--ion-color-medium, #92949c);
+  }
 
   .message-text-editor {
-    flex: 1;
-    :host ::ng-deep .ql-toolbar.ql-snow { display: none; }
-    :host ::ng-deep .ql-container.ql-snow { border: 1px solid var(--ion-color-light-shade); border-radius: 8px; }
-    :host ::ng-deep .ql-editor { padding: 6px 10px; min-height: 36px; max-height: 120px; overflow-y: auto; font-size: 13px; }
+    width: 100%;
+  }
+
+  .thread-compose-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 2px 4px;
+
+    .thread-send-btn {
+      --padding-start: 8px;
+      --padding-end: 8px;
+      height: 28px;
+      margin: 0;
+
+      ion-icon {
+        font-size: 16px;
+        color: var(--ion-color-primary);
+      }
+
+      &[disabled] ion-icon {
+        color: var(--ion-color-medium);
+        opacity: 0.4;
+      }
+    }
+  }
+}
+
+/* ── Quill overrides for thread compose (must use :host ::ng-deep at top level) ── */
+:host ::ng-deep {
+  .thread-compose-box {
+    .ql-toolbar.ql-snow { display: none !important; }
+    .ql-container.ql-snow { border: none !important; }
+    .ql-editor {
+      padding: 8px 12px;
+      min-height: 32px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .ql-editor.ql-blank::before {
+      font-style: normal;
+      color: var(--ion-color-medium);
+      left: 12px;
+    }
   }
 }
 

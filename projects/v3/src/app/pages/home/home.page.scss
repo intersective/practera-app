@@ -15,25 +15,38 @@
 }
 
 @media (min-width: 768px) {
+  // Disable ion-content's own scroll on desktop — columns handle their own
+  ion-content {
+    --overflow: hidden;
+  }
+
+  main {
+    height: 100%;
+  }
+
   .home-layout {
     flex-direction: row;
-    align-items: flex-start;
+    align-items: stretch;
+    height: 100%;
+    overflow: hidden;
   }
 
   .home-left {
     width: 38%;
     max-width: 420px;
     min-width: 300px;
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    max-height: 100vh;
+    height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     border-right: 1px solid var(--practera-grey-25);
+    // no longer needs sticky — it is its own scroll container
   }
 
   .home-right {
     flex: 1;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 
@@ -48,27 +61,30 @@
   background-repeat: no-repeat;
   overflow: hidden;
 
-  &::before {
+  // Gradient overlay always rendered on top of whatever background is set
+  &::after {
     content: '';
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.25) 50%,
+      rgba(0, 0, 0, 0.72) 100%
+    );
     pointer-events: none;
+    z-index: 1;
   }
 }
 
 .hero-overlay {
+  // Layout only — gradient is handled by hero-card::after above
   position: relative;
+  z-index: 2; // above the ::after gradient
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   min-height: 180px;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.15) 40%,
-    rgba(0, 0, 0, 0.65) 100%
-  );
 }
 
 .hero-progress-bar {
@@ -634,6 +650,20 @@ ion-segment-button.ion-focused {
 
 @media (min-width: 768px) {
   .hero-card {
+    min-height: 200px;
+
+    &::after {
+      // slightly stronger gradient on larger screens
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.3) 55%,
+        rgba(0, 0, 0, 0.75) 100%
+      );
+    }
+  }
+
+  .hero-overlay {
     min-height: 200px;
   }
 

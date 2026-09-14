@@ -1,3 +1,5 @@
+@use "sass:map";
+
 /**
 This scss file generate css classes for the font styles like font size, font family etc.
 font style css class exmple
@@ -86,11 +88,11 @@ $font-styles: (
 );
 
 @mixin get-font-style($class-name) {
-  $value: map-get($font-styles, $class-name);
+  $value: map.get($font-styles, $class-name);
 
-  font-size: map-get($value, font-size) !important;
-  line-height: map-get($value, line-height) !important;
-  font-weight: map-get($value, font-weight) !important;
+  font-size: map.get($value, font-size) !important;
+  line-height: map.get($value, line-height) !important;
+  font-weight: map.get($value, font-weight) !important;
 }
 
 @each $class-name, $value in $font-styles {

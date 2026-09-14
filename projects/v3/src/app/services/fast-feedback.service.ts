@@ -197,7 +197,7 @@ export class FastFeedbackService {
     const submittedId = pulseCheckId || this.currentPulseCheckId; // fallback to temporary ID if not provided
 
     return this.apolloService.graphQLMutate(
-      `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answers: [PulseCheckAnswerInput]) {
+      `mutation submitPulseCheck($teamId: Int, $targetUserId: Int, $contextId: Int, $answers: [PulseCheckAnswerInput!]) {
         submitPulseCheck(teamId: $teamId, targetUserId: $targetUserId, contextId: $contextId, answers: $answers)
       }`,
       {

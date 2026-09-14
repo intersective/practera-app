@@ -1,18 +1,16 @@
 <ion-header mode="ios" aria-label="chat room">
-  <ion-toolbar [ngClass]="{'ion-toolbar-absolute': !isMobile}">
+  <ion-toolbar class="compact-toolbar" [ngClass]="{'ion-toolbar-absolute': !isMobile}">
     @if (isMobile) {
       <ion-button fill="clear" (click)="back()" slot="start" aria-label="Go back">
         <ion-icon name="arrow-back" color="primary" slot="icon-only" aria-hidden="true"></ion-icon>
       </ion-button>
     }
-    <ion-title class="ion-text-center"
-      [ngClass]="{ 'subtitle-2': !isMobile }"
+    <ion-title
+      class="chat-header-title"
       aria-live="polite"
-      [attr.aria-label]="memberList.length + ' members'">
-      <span [innerHTML]="chatChannel.name"></span>
-      <div class="ion-text-center sub-title caption gray-1 saving-msg" i18n>
-        {{ memberList.length }} members
-      </div>
+      [attr.aria-label]="chatChannel.name + ', ' + memberList.length + ' members'">
+      <span class="channel-name" [innerHTML]="chatChannel.name"></span>
+      <span class="member-count">· {{ memberList.length }} members</span>
     </ion-title>
     <ion-button slot="end" fill="clear" size="small"
       (click)="openChatInfo()"
@@ -26,7 +24,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement, 'attach-preview': selectedAttachments.length > 0, 'toolbar-visible': showToolbar}" color="light" [scrollEvents]="true">
+<ion-content [ngClass]="{'ion-content-absolute-with-footer': !isMobile, 'announcement': chatChannel.isAnnouncement}" color="light" [scrollEvents]="true">
 
   @if (loadingChatMessages) {
     <div class="ion-text-center" aria-label="loading message">
@@ -114,29 +112,31 @@
             }
           }
 
-          <!-- Reaction pills -->
-          @if (message.reactions?.length) {
-            <div class="reaction-pills">
-              @for (r of message.reactions; track r.emoji) {
-                <button class="reaction-pill" [class.reacted]="r.reacted"
-                  [title]="r.users?.length ? (r.users | slice:0:5 | json) : ''"
-                  (click)="r.reacted ? removeReaction(message, r.emoji) : addReaction(message, r.emoji)">
-                  {{ r.emoji }} <span class="count">{{ r.count }}</span>
+          <!-- Message footer: reactions + thread on one row -->
+          @if (message.reactions?.length || message.uuid) {
+            <div class="msg-footer">
+              @if (message.reactions?.length) {
+                <div class="reaction-pills">
+                  @for (r of message.reactions; track r.emoji) {
+                    <button class="reaction-pill" [class.reacted]="r.reacted"
+                      [title]="r.users?.length ? (r.users | slice:0:5 | json) : ''"
+                      (click)="r.reacted ? removeReaction(message, r.emoji) : addReaction(message, r.emoji)">
+                      {{ r.emoji }} <span class="count">{{ r.count }}</span>
+                    </button>
+                  }
+                </div>
+              }
+              @if (message.uuid) {
+                <button class="thread-btn" (click)="openThread(message)" type="button">
+                  <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
+                  @if ((message.replyCount ?? 0) > 0) {
+                    <span class="reply-count">{{ message.replyCount }} {{ message.replyCount === 1 ? 'reply' : 'replies' }}</span>
+                  } @else {
+                    <span class="reply-label">Reply in thread</span>
+                  }
                 </button>
               }
             </div>
-          }
-
-          <!-- Thread reply indicator -->
-          @if (message.uuid) {
-            <button class="thread-btn" (click)="openThread(message)" type="button">
-              <ion-icon name="chatbubble-outline" aria-hidden="true"></ion-icon>
-              @if ((message.replyCount ?? 0) > 0) {
-                <span class="reply-count">{{ message.replyCount }} {{ message.replyCount === 1 ? 'reply' : 'replies' }}</span>
-              } @else {
-                <span class="reply-label">Reply in thread</span>
-              }
-            </button>
           }
         </div>
 
@@ -194,146 +194,115 @@
 
 @if (!chatChannel.readonly && !chatChannel.isAnnouncement) {
   <ion-footer class="footer"
-    [ngClass]="{'ion-footer-absolute': !isMobile, 'attach-preview': (selectedAttachments.length > 0 && !isMobile), 'show-toolbar': showToolbar}"
+    [ngClass]="{'ion-footer-absolute': !isMobile}"
     >
-    @if (whoIsTyping) {
-      <div
-        style="position: absolute; z-index: 9999; top: -2em; margin: 0 1em; width: 100%;"
-        >
-        <ion-label class="received-messages no-avatar" color="medium">
-          <p class="message-typing">
-            <i>{{ whoIsTyping }}</i>
-            <ion-spinner name="dots" class="vertical-middle"></ion-spinner>
-          </p>
-        </ion-label>
+    @if (whoIsTyping || aiIsTyping) {
+      <div class="typing-indicators">
+        @if (whoIsTyping) {
+          <div class="typing-row">
+            <ion-spinner name="dots" class="typing-spinner"></ion-spinner>
+            <span class="typing-text"><i>{{ whoIsTyping }}</i></span>
+          </div>
+        }
+        @if (aiIsTyping) {
+          <div class="typing-row ai-typing">
+            <ion-icon name="sparkles" class="ai-sparkle" aria-hidden="true"></ion-icon>
+            <span class="typing-text"><i>AI is thinking</i></span>
+            <span class="ai-dots"><span></span><span></span><span></span></span>
+          </div>
+        }
       </div>
     }
-    <ion-grid class="white-bg">
-      <ion-row nowrap class="ion-no-padding">
-        <ion-col [size]="12" class="ion-align-self-center ion-no-padding">
-          <quill-editor aria-label="chat message input"
-            customToolbarPosition="top"
-            [modules]="editorModules"
-            [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
-            [trimOnValidation]="true"
-            [required]="true"
-            class="message-text-editor"
-            placeholder="Enter your message"
-            [(ngModel)]="typingMessage"
-            (ngModelChange)="typing()"
-            i18n-placeholder
-          ></quill-editor>
-        </ion-col>
-      </ion-row>
-      <!-- Attachment Preview section -->
+
+    <div class="compose-box" [class.toolbar-open]="showToolbar">
+      <!-- Editor (quill toolbar is inside here when toggled) -->
+      <div class="compose-editor">
+        <quill-editor aria-label="chat message input"
+          customToolbarPosition="top"
+          [modules]="editorModules"
+          [classes]="isMobile ? 'editor-class' : 'editor-class desktop'"
+          [trimOnValidation]="true"
+          [required]="true"
+          class="message-text-editor"
+          [placeholder]="'Message ' + (chatChannel.name || '')"
+          [(ngModel)]="typingMessage"
+          (ngModelChange)="typing()"
+        ></quill-editor>
+      </div>
+
+      <!-- Attachment previews inside the box -->
       @if (selectedAttachments?.length > 0) {
-        <ion-row nowrap class="ion-no-padding ion-align-items-left ion-justify-content-start attach-preview">
+        <div class="compose-attachments">
           @for (attachment of selectedAttachments; track attachment; let i = $index) {
-            <!-- Image preview -->
             @if (attachment?.type?.includes('image')) {
-              <ion-col size="4" size-lg="2" class="ion-no-padding">
-                <div class="image" [ngClass]="{'mobile': isMobile}">
-                  <img [src]="attachment?.preview"
-                    [alt]="attachment?.name || 'Attachment preview'"
-                    (click)="preview(attachment)"
-                    tabindex="0"
-                    role="button"
-                    [attr.aria-label]="'Preview ' + (attachment?.name || 'attachment')"
-                    (keydown.enter)="preview(attachment)"
-                    (keydown.space)="preview(attachment); $event.preventDefault()">
-                  <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
-                    role="button"
-                    tabindex="0"
-                    [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
-                    (keydown.enter)="removeSelectAttachment(attachment, i)"
-                    (keydown.space)="removeSelectAttachment(attachment, i); $event.preventDefault()">
-                    <ion-icon name="close" aria-hidden="true"></ion-icon>
-                  </span>
-                </div>
-              </ion-col>
+              <div class="image" [ngClass]="{'mobile': isMobile}">
+                <img [src]="attachment?.preview"
+                  [alt]="attachment?.name || 'Attachment preview'"
+                  (click)="preview(attachment)"
+                  tabindex="0" role="button">
+                <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
+                  role="button" tabindex="0"
+                  [attr.aria-label]="'Remove ' + (attachment?.name || 'attachment')">
+                  <ion-icon name="close" aria-hidden="true"></ion-icon>
+                </span>
+              </div>
             }
-            <!-- video preview -->
             @if (attachment.type && attachment.type.includes('video')) {
-              <ion-col size="4" size-lg="2" class="ion-no-padding">
-                <div class="video" [ngClass]="{'mobile': isMobile}">
-                  <div class="play-icon" (click)="preview(attachment)"
-                    role="button"
-                    tabindex="0"
-                    [attr.aria-label]="'Preview ' + (attachment?.name || 'attachment')"
-                    (keydown.enter)="preview(attachment)"
-                    (keydown.space)="preview(attachment); $event.preventDefault()">
-                    <ion-icon name="play" color="ocean" aria-hidden="true"></ion-icon>
-                  </div>
-                  <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
-                    role="button"
-                    tabindex="0"
-                    [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
-                    (keydown.enter)="removeSelectAttachment(attachment, i)"
-                    (keydown.space)="removeSelectAttachment(attachment, i); $event.preventDefault()">
-                    <ion-icon name="close" aria-hidden="true"></ion-icon>
-                  </span>
+              <div class="video" [ngClass]="{'mobile': isMobile}">
+                <div class="play-icon" (click)="preview(attachment)" role="button" tabindex="0">
+                  <ion-icon name="play" color="ocean" aria-hidden="true"></ion-icon>
                 </div>
-              </ion-col>
+                <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
+                  role="button" tabindex="0">
+                  <ion-icon name="close" aria-hidden="true"></ion-icon>
+                </span>
+              </div>
             }
-            <!-- File preview -->
-            @if (!attachment.type || !attachment.type.includes('image') && !attachment.type.includes('video')) {
-              <ion-col size="10" size-lg="6" class="ion-no-padding ion-text-center">
-                <div class="file-preview" [ngClass]="{'mobile': isMobile}">
-                  <ion-item lines="none" class="general-attachment" (click)="preview(attachment)">
-                    <ion-ripple-effect></ion-ripple-effect>
-                    <ion-icon name="document" slot="start"></ion-icon>
-                    <ion-label color="black">
-                      <p [innerHTML]="attachment.name"></p>
-                      @if (getTypeByMime(attachment.type)) {
-                        <p class="mimetype">{{ getTypeByMime(attachment.type) }}</p>
-                      }
-                    </ion-label>
-                  </ion-item>
-                  <div class="overlay" (click)="preview(attachment)"></div>
-                  <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
-                    role="button"
-                    tabindex="0"
-                    [attr.aria-label]="'Remove attachment ' + (attachment?.name || '')"
-                    (keydown.enter)="removeSelectAttachment(attachment, i)"
-                    (keydown.space)="removeSelectAttachment(attachment, i); $event.preventDefault()">
-                    <ion-icon name="close" aria-hidden="true"></ion-icon>
-                  </span>
-                </div>
-              </ion-col>
+            @if (!attachment.type || (!attachment.type.includes('image') && !attachment.type.includes('video'))) {
+              <div class="file-preview" [ngClass]="{'mobile': isMobile}">
+                <ion-item lines="none" class="general-attachment" (click)="preview(attachment)">
+                  <ion-ripple-effect></ion-ripple-effect>
+                  <ion-icon name="document" slot="start"></ion-icon>
+                  <ion-label color="black">
+                    <p [innerHTML]="attachment.name"></p>
+                    @if (getTypeByMime(attachment.type)) {
+                      <p class="mimetype">{{ getTypeByMime(attachment.type) }}</p>
+                    }
+                  </ion-label>
+                </ion-item>
+                <span class="remove-attach" (click)="removeSelectAttachment(attachment, i)"
+                  role="button" tabindex="0">
+                  <ion-icon name="close" aria-hidden="true"></ion-icon>
+                </span>
+              </div>
             }
           }
-        </ion-row>
+        </div>
       }
-      <!-- Action button section -->
-      <ion-row nowrap class="ion-no-padding ion-align-items-center ion-justify-content-between action-buttons">
-        <!-- Format toggle -->
-        <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
-          <ion-button (click)="showToolbar = !showToolbar" fill="clear" class="ion-no-padding"
-            [color]="showToolbar ? 'primary' : 'medium'"
+
+      <!-- Action row: bottom of compose box -->
+      <div class="compose-actions">
+        <div class="left-actions">
+          <ion-button (click)="showToolbar = !showToolbar" fill="clear" class="action-btn"
+            [class.active]="showToolbar"
             aria-label="Toggle formatting toolbar">
             <ion-icon name="text-outline" slot="icon-only" aria-hidden="true"></ion-icon>
           </ion-button>
-        </ion-col>
-        <!-- Attach file -->
-        <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
-          <ion-button [disabled]="selectedAttachments.length > 0" (click)="attachmentSelectPopover($event)" fill="clear" class="ion-no-padding"
-            [attr.aria-label]="'Attach file'" i18n-aria-label>
+          <ion-button [disabled]="selectedAttachments.length > 0" (click)="attachmentSelectPopover($event)" fill="clear" class="action-btn"
+            aria-label="Attach file">
             <ion-icon name="attach" slot="icon-only" aria-hidden="true"></ion-icon>
           </ion-button>
-        </ion-col>
-        <!-- Send -->
-        <ion-col size="2" size-lg="1" class="ion-no-padding ion-text-center">
-          <ion-button (click)="sendMessage()"
-            aria-label="send message"
-            type="submit"
-            fill="clear"
-            class="ion-no-padding"
-            [disabled]="(!typingMessage || utils.isQuillContentEmpty(this.typingMessage)) && selectedAttachments.length === 0">
-            <ion-icon name="send-outline" slot="icon-only" aria-hidden="true"></ion-icon>
-          </ion-button>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
+        </div>
+        <ion-button (click)="sendMessage()"
+          aria-label="send message"
+          type="submit"
+          fill="clear"
+          class="action-btn send-btn"
+          [disabled]="(!typingMessage || utils.isQuillContentEmpty(this.typingMessage)) && selectedAttachments.length === 0">
+          <ion-icon name="send" slot="icon-only" aria-hidden="true"></ion-icon>
+        </ion-button>
+      </div>
+    </div>
   </ion-footer>
 }
 
