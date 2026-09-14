@@ -316,8 +316,6 @@ export class ExperienceService {
     // eslint-disable-next-line rxjs/no-ignored-observable
     this.homeService.clearExperience();
 
-    // initialise Pusher
-    this.sharedService.initWebServices();
     try {
       const teamInfo = await firstValueFrom(this.sharedService.getTeamInfo());
       const me = await firstValueFrom(this.authService.getMyInfo());
@@ -365,11 +363,26 @@ export class ExperienceService {
     }
 
     await this.switchProgram({ experience });
-    await firstValueFrom(this.authService.authenticate({
+    const authResponse = await firstValueFrom(this.authService.authenticate({
       experienceUuid: experience.uuid,
     }));
 
-    // await this.pusherService.initialise({ unsubscribe: true });
+    const apikey = authResponse?.data?.auth?.apikey;
+    if (apikey) {
+      this.storage.setUser({ apikey });
+    }
+
+    // Reconcile experience-scoped Pusher listeners only after the new auth
+    // context is available. PusherService reuses the application connection,
+    // removes the previous channels, and refreshes channel authorization.
+    try {
+      await this.sharedService.initWebServices();
+    } catch (err) {
+      // Pusher availability must not block an otherwise successful experience
+      // switch. The old listeners have already been removed before reconnecting.
+      console.error('Failed to refresh experience-scoped web services', err);
+    }
+
     // clear the cached data
     await this.authService.clearCache();
 

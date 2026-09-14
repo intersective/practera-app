@@ -45,10 +45,10 @@ describe('AppComponent', () => {
         },
         {
           provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', [
-            'onPageLoad',
-            'initWebServices',
-          ]),
+          useValue: jasmine.createSpyObj('SharedService', {
+            onPageLoad: undefined,
+            initWebServices: Promise.resolve(),
+          }),
         },
         {
           provide: BrowserStorageService,
