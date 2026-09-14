@@ -1,0 +1,22 @@
+<div class="scorm-player-container">
+  <div *ngIf="isLoading" class="scorm-loading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading simulation...</p>
+  </div>
+  <div *ngIf="error" class="scorm-error">
+    <p>{{ error }}</p>
+  </div>
+  <iframe
+    #scormFrame
+    *ngIf="!error"
+    class="scorm-frame"
+    [class.hidden]="isLoading"
+    title="SCORM Content"
+    allow="fullscreen"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+  ></iframe>
+  <div *ngIf="isComplete" class="scorm-complete-badge">
+    <ion-icon name="checkmark-circle"></ion-icon>
+    <span>Completed</span>
+  </div>
+</div>

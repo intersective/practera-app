@@ -51,6 +51,7 @@ import { MarkdownPipe } from '../pipes/markdown.pipe';
 import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
 import { TeamRosterComponent } from './team-roster/team-roster.component';
 import { H5pPlayerComponent } from './h5p-player/h5p-player.component';
+import { ScormPlayerComponent } from './scorm-player/scorm-player.component';
 
 const largeCircleDefaultConfig = {
   backgroundColor: 'var(--ion-color-light)',
@@ -127,6 +128,7 @@ const largeCircleDefaultConfig = {
     UppyUploaderComponent,
     FileUploadComponent,
     H5pPlayerComponent,
+    ScormPlayerComponent,
     LanguageDetectionPipe,
     MarkdownPipe,
   ],
@@ -180,6 +182,7 @@ const largeCircleDefaultConfig = {
     UppyUploaderComponent,
     FileUploadComponent,
     H5pPlayerComponent,
+    ScormPlayerComponent,
     LanguageDetectionPipe,
     MarkdownPipe,
   ],

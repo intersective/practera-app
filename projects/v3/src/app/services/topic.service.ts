@@ -160,6 +160,30 @@ export class TopicService {
     return this.sanitizer.bypassSecurityTrustHtml(processed);
   }
 
+  storeXapiStatements(statements: any[], opts: {
+    assessmentId?: number;
+    activitySource?: string;
+    registration?: string;
+  }): Observable<void> {
+    if (environment.demo) {
+      // eslint-disable-next-line no-console
+      console.log('storeXapiStatements (demo)', statements);
+      return new Observable(observer => { observer.next(undefined); observer.complete(); });
+    }
+
+    return this.apolloService.graphQLMutate(
+      `mutation StoreXapiStatements($statements: [JSON!]!, $assessmentId: Int, $activitySource: String, $registration: String) {
+        storeXapiStatements(statements: $statements, assessmentId: $assessmentId, activitySource: $activitySource, registration: $registration)
+      }`,
+      {
+        statements,
+        assessmentId: opts.assessmentId,
+        activitySource: opts.activitySource,
+        registration: opts.registration,
+      },
+    ).pipe(map(() => undefined));
+  }
+
   updateTopicProgress(id: number, state: string, attention?: TopicAttentionMetrics): Observable<any> {
     if (environment.demo) {
       // eslint-disable-next-line no-console

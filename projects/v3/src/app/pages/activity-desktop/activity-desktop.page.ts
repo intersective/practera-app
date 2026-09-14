@@ -61,6 +61,8 @@ export class ActivityDesktopPage {
   tooltipStyle: { top: string; right: string };
   activityLockShown: boolean = false;
   private h5pCompletedListener: ((event: Event) => void) | null = null;
+  private scormCompletedListener: ((event: Event) => void) | null = null;
+  private xapiMessageListener: ((event: MessageEvent) => void) | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -121,6 +123,16 @@ export class ActivityDesktopPage {
       void this.onH5pTaskCompleted(event as CustomEvent<{ taskId: number; contextId: number }>);
     };
     window.addEventListener('h5pTaskCompleted', this.h5pCompletedListener);
+
+    this.scormCompletedListener = (event: Event) => {
+      void this.onScormTaskCompleted(event as CustomEvent<{ taskId: number; contextId: number; score: number | null }>);
+    };
+    window.addEventListener('scormTaskCompleted', this.scormCompletedListener);
+
+    this.xapiMessageListener = (event: MessageEvent) => {
+      void this.onXapiStatements(event);
+    };
+    window.addEventListener('message', this.xapiMessageListener);
 
     // cleanup previous session
     this.componentCleanupService.triggerCleanup();
@@ -279,6 +291,14 @@ export class ActivityDesktopPage {
     if (this.h5pCompletedListener) {
       window.removeEventListener('h5pTaskCompleted', this.h5pCompletedListener);
       this.h5pCompletedListener = null;
+    }
+    if (this.scormCompletedListener) {
+      window.removeEventListener('scormTaskCompleted', this.scormCompletedListener);
+      this.scormCompletedListener = null;
+    }
+    if (this.xapiMessageListener) {
+      window.removeEventListener('message', this.xapiMessageListener);
+      this.xapiMessageListener = null;
     }
     this.topicService.clearTopic();
   }
@@ -457,6 +477,51 @@ export class ActivityDesktopPage {
       console.error(error);
       this.loading = false;
       this.btnDisabled$.next(false);
+    }
+  }
+
+  async onScormTaskCompleted(event: CustomEvent<{ taskId: number; contextId: number; score: number | null }>): Promise<void> {
+    const task = this.currentTask;
+    if (!task || task.type !== 'Simulation' || task.id !== event.detail?.taskId || task.status === 'done') {
+      return;
+    }
+
+    this.loading = true;
+    this.btnDisabled$.next(true);
+    try {
+      await firstValueFrom(this.topicService.updateSimulationProgress(task.id, 'done'));
+      this.activityService.getActivity(
+        this.activity.id,
+        true,
+        task,
+        () => {
+          this.loading = false;
+          this.btnDisabled$.next(false);
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      this.loading = false;
+      this.btnDisabled$.next(false);
+    }
+  }
+
+  async onXapiStatements(event: MessageEvent): Promise<void> {
+    try {
+      const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+      const type: string = data?.type;
+      if (type !== 'scormXapiStatements' && type !== 'h5pXapiStatements') return;
+      if (!Array.isArray(data.statements) || data.statements.length === 0) return;
+
+      await firstValueFrom(
+        this.topicService.storeXapiStatements(data.statements, {
+          assessmentId: data.assessmentId,
+          activitySource: data.activitySource,
+        })
+      );
+    } catch (error) {
+      // Non-fatal — LRS storage failure should not break the learner experience
+      console.error('xAPI statement storage failed:', error);
     }
   }
 

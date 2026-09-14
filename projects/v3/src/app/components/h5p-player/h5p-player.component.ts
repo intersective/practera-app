@@ -26,6 +26,7 @@ export class H5pPlayerComponent implements AfterViewInit, OnDestroy {
   @Input() h5p: H5pContent;
   @Input() taskId: number;
   @Input() contextId: number;
+  @Input() assessmentId: number | undefined;
 
   @ViewChild('h5pContainer') containerRef: ElementRef<HTMLDivElement>;
 
@@ -85,13 +86,25 @@ export class H5pPlayerComponent implements AfterViewInit, OnDestroy {
   private handleXapi(event: MessageEvent): void {
     try {
       const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-      const verbId = data?.verb?.id;
+      if (!data?.verb?.id) return;
+      const verbId: string = data.verb.id;
+
+      // Forward all statements for LRS storage
+      window.postMessage({
+        type: 'h5pXapiStatements',
+        statements: [data],
+        taskId: this.taskId,
+        assessmentId: this.assessmentId ?? undefined,
+        activitySource: 'h5p',
+      }, '*');
+
+      // Fire completion event for UI updates
       if (
         verbId === 'http://adlnet.gov/expapi/verbs/completed' ||
         verbId === 'http://adlnet.gov/expapi/verbs/answered'
       ) {
         window.dispatchEvent(new CustomEvent('h5pTaskCompleted', {
-          detail: { taskId: this.taskId, contextId: this.contextId },
+          detail: { taskId: this.taskId, contextId: this.contextId, score: data.result?.score?.raw ?? null },
         }));
       }
     } catch {
