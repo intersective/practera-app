@@ -89,6 +89,14 @@ export interface TodoItem {
   created?: string;
 }
 
+export interface SystemNotice {
+  id: number;
+  type: string;
+  title?: string;
+  message?: string;
+  isSeen: boolean;
+  created?: string;
+}
 
 @Injectable({
   providedIn: "root",
@@ -96,6 +104,10 @@ export interface TodoItem {
 export class NotificationsService {
   private _notification$ = new Subject<TodoItem[]>();
   notification$ = this._notification$.pipe(shareReplay(1));
+
+  private _systemNotices$ = new Subject<SystemNotice[]>();
+  systemNotices$ = this._systemNotices$.pipe(shareReplay(1));
+  private systemNotices: SystemNotice[] = [];
 
   private _eventReminder$ = new Subject<any>();
   eventReminder$ = this._eventReminder$.pipe(shareReplay(1));
@@ -154,7 +166,8 @@ export class NotificationsService {
   }
 
   get notificationsCount(): number {
-    return this.notifications?.length || 0;
+    const unseen = this.systemNotices.filter(n => !n.isSeen).length;
+    return (this.notifications?.length || 0) + unseen;
   }
 
   addNewNotification(newNotification): void {
@@ -482,6 +495,7 @@ export class NotificationsService {
   }
 
   getTodoItems(): Observable<any> {
+    this.getSystemNotices().subscribe();
     return this.apolloService.graphQLFetch(
       `query project {
         project {
@@ -509,6 +523,47 @@ export class NotificationsService {
         }
       })
     );
+  }
+
+  getSystemNotices(): Observable<SystemNotice[]> {
+    return this.apolloService.graphQLFetch(
+      `query myNotificationLogs {
+        myNotificationLogs {
+          logs {
+            id
+            type
+            title
+            message
+            isSeen
+            created
+          }
+        }
+      }`
+    ).pipe(
+      map((response) => {
+        const logs = (response?.data?.myNotificationLogs?.logs ?? []) as SystemNotice[];
+        this.systemNotices = logs;
+        this._systemNotices$.next(this.systemNotices);
+        this._notification$.next(this.notifications);
+        return logs;
+      })
+    );
+  }
+
+  markSystemNoticesSeen(ids: number[]): Observable<any> {
+    if (!ids.length) {
+      return of(null);
+    }
+    return this.apolloService.graphQLMutate(
+      `mutation markNotificationLogsSeen($ids: [Int!]!) {
+        markNotificationLogsSeen(ids: $ids) { success message }
+      }`,
+      { ids }
+    ).pipe(map(() => {
+      this.systemNotices = this.systemNotices.map(n => ids.includes(n.id) ? { ...n, isSeen: true } : n);
+      this._systemNotices$.next(this.systemNotices);
+      this._notification$.next(this.notifications);
+    }));
   }
 
   private _fromGqlTodoItem(item: any): TodoItem {

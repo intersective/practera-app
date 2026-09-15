@@ -29,6 +29,7 @@ export class NotificationsPage implements OnInit, OnDestroy {
   @Input() mode?: string; // optional value: "modal"
   loadingTodoItems: boolean;
   todoItems: TodoItem[] = [];
+  systemNotices = [];
   eventReminders = [];
   subscriptions: Subscription[] = [];
   window; // document view
@@ -68,6 +69,13 @@ export class NotificationsPage implements OnInit, OnDestroy {
     this.subscriptions.push(this.notificationsService.notification$.subscribe(items => {
       this.ngZone.run(() => {
         this.todoItems = items;
+        this.cdr.markForCheck();
+      });
+    }));
+
+    this.subscriptions.push(this.notificationsService.systemNotices$.subscribe(notices => {
+      this.ngZone.run(() => {
+        this.systemNotices = notices;
         this.cdr.markForCheck();
       });
     }));
@@ -164,6 +172,10 @@ export class NotificationsPage implements OnInit, OnDestroy {
     if (hasModal) {
       this.dismiss(); // dismiss modal
     }
+  }
+
+  clickSystemNotice(notice: { id: number }): void {
+    this.notificationsService.markSystemNoticesSeen([notice.id]).subscribe();
   }
 
   async goToAssessment(activityId, contextId, assessmentId): Promise<void> {

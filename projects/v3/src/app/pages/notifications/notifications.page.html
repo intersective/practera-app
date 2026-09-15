@@ -37,7 +37,19 @@
                   (clickAction)="clickTodoItem($event)"
                 ></app-todo-card>
               }
-            } @else {
+            }
+            @if (systemNotices.length) {
+              <h2 class="headline-5 margin-left-right" i18n>System notices</h2>
+              @for (notice of systemNotices; track notice.id) {
+                <ion-item button (click)="clickSystemNotice(notice)">
+                  <ion-label>
+                    <h2>{{ notice.title || notice.type }}</h2>
+                    <p>{{ notice.message }}</p>
+                  </ion-label>
+                </ion-item>
+              }
+            }
+            @if (notices.length === 0 && !systemNotices.length) {
               <div class="margin-left-right ion-padding-bottom">
                 <ng-container *ngTemplateOutlet="noItemsTpl"></ng-container>
               </div>
@@ -72,8 +84,21 @@
               </div>
             }
           } @else {
-            @if (!eventReminders.length) {
+            @if (!eventReminders.length && !systemNotices.length) {
               <app-todo-card [todoItem]="{}"></app-todo-card>
+            }
+          }
+          @if (systemNotices.length) {
+            <ion-item-divider>
+              <ion-label i18n>System notices</ion-label>
+            </ion-item-divider>
+            @for (notice of systemNotices; track notice.id) {
+              <ion-item button (click)="clickSystemNotice(notice)" [class.seen]="notice.isSeen">
+                <ion-label>
+                  <h2>{{ notice.title || notice.type }}</h2>
+                  <p>{{ notice.message }}</p>
+                </ion-label>
+              </ion-item>
             }
           }
         }

@@ -35,9 +35,11 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.subscriptions.push(this.notificationsService.notification$.subscribe(notifications => {
-      const notiCount = notifications.length;
-      this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
+    this.subscriptions.push(this.notificationsService.notification$.subscribe(() => {
+      this.syncNotiCount();
+    }));
+    this.subscriptions.push(this.notificationsService.systemNotices$.subscribe(() => {
+      this.syncNotiCount();
     }));
     this.subscriptions.push(this.utilService.getEvent('support-email-checked').subscribe(event => {
       // hide support button on mobile. because we need space in heder for other things. but we still have the settings page
@@ -52,6 +54,11 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
         sub.unsubscribe();
       }
     });
+  }
+
+  private syncNotiCount(): void {
+    const count = this.notificationsService.notificationsCount;
+    this.notiCount = count < 100 ? count : 99;
   }
 
   get isMobile(): boolean {
