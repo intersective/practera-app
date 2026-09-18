@@ -377,7 +377,7 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 6. Test with screen reader: Focus should return to previous element after ESC
 
 #### 3. Fast-Feedback Pagination Buttons (WCAG 2.4.4)
-**Fixed in:** `fast-feedback.component.html`
+**Fixed in:** `fast-feedback.component.html` and `fast-feedback.component.ts`
 
 **Retest Instructions:**
 1. Trigger fast-feedback modal with multiple pages of questions
@@ -385,6 +385,37 @@ This checklist verifies compliance with WCAG 2.2 Level AA standards for the V3 I
 3. **VERIFY**: Each pagination button has aria-label like "Go to page 1", "Go to page 2, completed"
 4. Test with screen reader: Each button should announce its purpose and completion status
 5. Click each pagination button to verify it navigates correctly
+6. Scroll to the bottom of a question page, then use Next, Previous, and a numbered page button
+7. **VERIFY**: Each newly displayed page starts at the top of the modal content without an animated scroll
+
+#### Fast-Feedback Answer Details (WCAG 2.1.1, 2.5.8)
+**Fixed in:** `fast-feedback.component.ts`, `fast-feedback.component.html`, and `fast-feedback.component.scss`
+
+**Retest Instructions:**
+1. Trigger a fast-feedback modal whose answers include descriptions
+2. Move the pointer across every answer without activating its information button
+3. **VERIFY**: Descriptions remain collapsed and answer rows do not jump as the pointer moves
+4. Activate an answer's information button with a mouse or touch input
+5. **VERIFY**: Only that answer's description opens; activating another information button closes the first description
+6. Activate the open answer's information button again
+7. **VERIFY**: The description closes without changing the selected radio answer or submitting the form
+8. Navigate to each information button with the keyboard and activate it with `Enter` and `Space`
+9. **VERIFY**: The button has a minimum 44 by 44 CSS pixel target and visible keyboard focus
+10. Test with a screen reader: The button should announce "Show details for [answer]" or "Hide details for [answer]" and its expanded or collapsed state
+11. Repeat on a mobile viewport and verify answer selection does not automatically open a description
+
+#### Assessment Pagination Scroll Position (WCAG 2.4.3)
+**Fixed in:** `assessment.component.ts`
+
+**Retest Instructions:**
+1. Open a paginated assessment in the learner desktop activity page
+2. Scroll the right-hand assessment pane to the bottom, then activate Next, Previous, and a numbered page button
+3. **VERIFY**: Each valid page change immediately starts at the top of the right-hand assessment pane without moving the left-hand activity pane
+4. Open a paginated assessment in the desktop review page and repeat steps 2-3
+5. Open a paginated assessment in a mobile layout and repeat the page changes
+6. **VERIFY**: Mobile page changes reset the surrounding assessment content to the top
+7. **VERIFY**: Activating a disabled boundary control or the current page does not change the scroll position
+8. Repeat with a Team360 assessment and verify that accessible-page restrictions and submission state are unchanged
 
 #### 4. Tooltip Directive WCAG 1.4.13 Compliance
 **Fixed in:** `tooltip.directive.ts` and `tooltip.module.ts`
