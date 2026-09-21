@@ -583,33 +583,60 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     if (guidelines.length === 0) {
       return;
-    } else if (guidelines.length >= 1) {
-      message += `Please follow the steps below to unlock this ${type}:`;
-
-      guidelines.forEach((guideline, index) => {
-        if (guideline.meta) {
-          const { activityId, assessmentId, topicId, contextId } = guideline.meta;
-
-          const action = this.utils.ucfirst(guideline.action);
-          const isMobile = this.utils.isMobile();
-          if (topicId) {
-            routes.push({
-              path: isMobile
-                ? `/v3/topic-mobile/${activityId}/${topicId}`
-                : `/v3/activity-desktop/${activityId}/${topicId}`,
-              label: `<i><b>${action}</b></i> ${guideline.name}`,
-            });
-          } else if (assessmentId) {
-            routes.push({
-              path: isMobile
-                ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
-                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
-              label: `<i><b>${action}</b></i> ${guideline.name}`,
-            });
-          }
-        }
-      });
     }
+
+    const canDisplayAllGuidelines = guidelines.every((guideline) => {
+      if (!guideline.meta) {
+        return false;
+      }
+
+      if (guideline.action === 'complete') {
+        return !!guideline.meta.activityId && !!guideline.meta.topicId;
+      }
+
+      if (guideline.action === 'submit') {
+        return !!guideline.meta.contextId &&
+          !!guideline.meta.activityId &&
+          !!guideline.meta.assessmentId;
+      }
+
+      return false;
+    });
+
+    if (!canDisplayAllGuidelines) {
+      await this.notification.popUp(
+        'shortMessage',
+        {
+          logo: 'lock-open',
+          message: `You have not yet met the requirements to unlock this ${type}. Review the related tasks and assessment requirements for more details.`,
+        },
+      );
+      return;
+    }
+
+    message += `Please follow the steps below to unlock this ${type}:`;
+
+    guidelines.forEach((guideline) => {
+      const { activityId, assessmentId, topicId, contextId } = guideline.meta;
+
+      const action = this.utils.ucfirst(guideline.action);
+      const isMobile = this.utils.isMobile();
+      if (topicId) {
+        routes.push({
+          path: isMobile
+            ? `/v3/topic-mobile/${activityId}/${topicId}`
+            : `/v3/activity-desktop/${activityId}/${topicId}`,
+          label: `<i><b>${action}</b></i> ${guideline.name}`,
+        });
+      } else if (assessmentId) {
+        routes.push({
+          path: isMobile
+            ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
+            : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
+          label: `<i><b>${action}</b></i> ${guideline.name}`,
+        });
+      }
+    });
 
     await this.notification.popUp(
       "guidelines",
