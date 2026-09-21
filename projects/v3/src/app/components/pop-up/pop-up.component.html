@@ -33,7 +33,7 @@
           text-left>
           <p id="popup-message"
             [innerHTML]="data.message"></p>
-          <ng-container *ngIf="data.routes">
+          <ng-container *ngIf="data.routes?.length">
             <ol>
               <li *ngFor="let route of data.routes">
                 <div (click)="goTo(route.path)"
