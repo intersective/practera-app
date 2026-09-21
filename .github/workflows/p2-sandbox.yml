@@ -249,9 +249,13 @@ jobs:
 ####################################################
       - name: S3 Bucket for lambda@edge
         run: |
-          if ! aws s3api head-bucket --bucket $STACK_NAME-lambda-edge-$ENV > /dev/null 2>&1; then
-            aws s3api create-bucket --bucket $STACK_NAME-lambda-edge-$ENV --region us-east-1
+          BUCKET="${STACK_NAME}-lambda-edge-${ENV}"
+          if ! aws s3api head-bucket --bucket "$BUCKET" > /dev/null 2>&1; then
+            aws s3api create-bucket --bucket "$BUCKET" --region us-east-1
           fi
+          # TLS Deny (SOL-13). Live policy is empty; this is the whole document.
+          export BUCKET
+          python3 -c 'import json, os, subprocess; b=os.environ["BUCKET"]; p={"Version":"2012-10-17","Statement":[{"Sid":"DenyInsecureTransport","Effect":"Deny","Principal":"*","Action":"s3:*","Resource":["arn:aws:s3:::"+b,"arn:aws:s3:::"+b+"/*"],"Condition":{"Bool":{"aws:SecureTransport":"false"}}}]}; subprocess.check_call(["aws","s3api","put-bucket-policy","--bucket",b,"--policy",json.dumps(p),"--region","us-east-1"])'
 
 ####################################################
 #  S3 for lambda@edge
