@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule } from '@ionic/angular';
+import { AlertController, IonicModule, ModalController } from '@ionic/angular';
 import { AchievementService } from '@v3/app/services/achievement.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
@@ -11,6 +11,8 @@ import { SharedService } from '@v3/app/services/shared.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { HomePage } from './home.page';
 import { of } from 'rxjs';
@@ -27,21 +29,22 @@ describe('HomePage', () => {
   let storageService: jasmine.SpyObj<BrowserStorageService>;
   let fastFeedbackService: jasmine.SpyObj<FastFeedbackService>;
   let utilsService: jasmine.SpyObj<UtilsService>;
+  let notificationsService: jasmine.SpyObj<NotificationsService>;
 
   beforeEach(waitForAsync(() => {
-    const homeServiceSpy = jasmine.createSpyObj('HomeService', [
-      'getExperience',
-      'getMilestones',
-      'getProjectProgress',
-      'getPulseCheckStatuses',
-      'getPulseCheckSkills',
-    ], {
-      'experience$': of(),
-      'experienceProgress$': of(),
-      'activityCount$': of(),
-      'milestonesWithProgress$': of(),
-      'milestones$': of(),
-      'projectProgress$': of(),
+    const homeServiceSpy = jasmine.createSpyObj('HomeService', {
+      'getExperience': undefined,
+      'getMilestones': undefined,
+      'getProjectProgress': undefined,
+      'getPulseCheckStatuses': of({ data: { pulseCheckStatus: {} } }),
+      'getPulseCheckSkills': of({ data: { pulseCheckSkills: [] } }),
+    }, {
+      'experience$': of({ id: 1, name: 'Test Experience', cardUrl: 'test-card-url' }),
+      'experienceProgress$': of(0),
+      'activityCount$': of(0),
+      'milestonesWithProgress$': of([]),
+      'milestones$': of([]),
+      'projectProgress$': of(0),
     });
 
     const achievementServiceSpy = jasmine.createSpyObj('AchievementService', [
@@ -52,19 +55,40 @@ describe('HomePage', () => {
       'achievements$': of(),
     });
 
-    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT']);
+    const sharedServiceSpy = jasmine.createSpyObj('SharedService', ['refreshJWT'], {
+      'team$': of(null),
+    });
     const storageServiceSpy = jasmine.createSpyObj('BrowserStorageService', [
       'get',
       'lastVisited',
       'getUser',
       'getFeature',
     ]);
-    const fastFeedbackServiceSpy = jasmine.createSpyObj('FastFeedbackService', ['pullFastFeedback']);
-    const utilsServiceSpy = jasmine.createSpyObj('UtilsService', ['setPageTitle', 'isMobile']);
+    storageServiceSpy.getUser.and.returnValue({
+      role: 'participant',
+      apikey: 'test-key',
+      projectId: 1,
+      teamId: 1,
+    });
+    storageServiceSpy.get.and.callFake((key: string) => {
+      if (key === 'experience') {
+        return { id: 1, name: 'Test Experience', cardUrl: 'test-card-url' };
+      }
+      return null;
+    });
+    storageServiceSpy.getFeature.and.returnValue(false);
+    const fastFeedbackServiceSpy = jasmine.createSpyObj('FastFeedbackService', {
+      'pullFastFeedback': of(null),
+    });
+    const utilsServiceSpy = jasmine.createSpyObj('UtilsService', ['setPageTitle', 'isMobile', 'ucfirst']);
+    utilsServiceSpy.ucfirst.and.callFake((value: string) =>
+      value ? value.charAt(0).toUpperCase() + value.slice(1) : value
+    );
 
     TestBed.configureTestingModule({
       declarations: [ HomePage ],
       imports: [IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
           provide: ActivatedRoute,
@@ -112,6 +136,26 @@ describe('HomePage', () => {
             'unlockedTasks$': of([])
           })
         },
+        {
+          provide: AlertController,
+          useValue: jasmine.createSpyObj('AlertController', ['create'])
+        },
+        {
+          provide: PulsecheckService,
+          useValue: jasmine.createSpyObj('PulsecheckService', ['getPulsecheckStatuses'])
+        },
+        {
+          provide: NotificationsService,
+          useValue: jasmine.createSpyObj('NotificationsService', [
+            'alert',
+            'popUp',
+            'getTodoItems',
+          ])
+        },
+        {
+          provide: ModalController,
+          useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss'])
+        },
       ]
     }).compileComponents();
 
@@ -124,6 +168,7 @@ describe('HomePage', () => {
     storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     fastFeedbackService = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     utilsService = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    notificationsService = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
 
     fixture.detectChanges();
   }));
@@ -168,6 +213,94 @@ describe('HomePage', () => {
       },
     }));
     expect(modal.present).toHaveBeenCalled();
+  });
+
+  describe('showGuideline', () => {
+    it('preserves linked guidance when every condition is supported', async () => {
+      utilsService.isMobile.and.returnValue(false);
+      const activity = {
+        unlockConditions: [
+          {
+            action: 'complete',
+            name: 'Introduction',
+            meta: { activityId: 20, topicId: 21 },
+          },
+          {
+            action: 'submit',
+            name: 'Project Plan',
+            meta: { contextId: 10, activityId: 20, assessmentId: 30 },
+          },
+        ],
+      };
+
+      await component.showGuideline(activity as any, 'activity');
+
+      expect(notificationsService.popUp).toHaveBeenCalledOnceWith(
+        'guidelines',
+        {
+          logo: 'lock-open',
+          message: 'Please follow the steps below to unlock this activity:',
+          routes: [
+            {
+              path: '/v3/activity-desktop/20/21',
+              label: '<i><b>Complete</b></i> Introduction',
+            },
+            {
+              path: '/v3/activity-desktop/10/20/30',
+              label: '<i><b>Submit</b></i> Project Plan',
+            },
+          ],
+        },
+      );
+    });
+
+    it('shows a generic message instead of partial links when any condition is unsupported', async () => {
+      const activity = {
+        unlockConditions: [
+          {
+            action: 'submit',
+            name: 'Project Plan',
+            meta: { contextId: 10, activityId: 20, assessmentId: 30 },
+          },
+          {
+            action: 'other',
+            name: '',
+          },
+        ],
+      };
+
+      await component.showGuideline(activity as any, 'activity');
+
+      expect(notificationsService.popUp).toHaveBeenCalledOnceWith(
+        'shortMessage',
+        {
+          logo: 'lock-open',
+          message: 'You have not yet met the requirements to unlock this activity. Review the related tasks and assessment requirements for more details.',
+        },
+      );
+    });
+
+    it('shows the generic message when a supported action lacks navigation metadata', async () => {
+      const milestone = {
+        unlockConditions: [
+          {
+            action: 'complete',
+            name: 'Introduction',
+            meta: { activityId: 20 },
+          },
+        ],
+      };
+
+      await component.showGuideline(milestone as any);
+
+      expect(notificationsService.popUp).toHaveBeenCalledOnceWith(
+        'shortMessage',
+        {
+          logo: 'lock-open',
+          message: 'You have not yet met the requirements to unlock this milestone. Review the related tasks and assessment requirements for more details.',
+        },
+      );
+    });
   });
 
   describe('updateDashboard', () => {
