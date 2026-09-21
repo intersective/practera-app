@@ -568,37 +568,60 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
 
     if (guidelines.length === 0) {
       return;
-    } else if (guidelines.length >= 1) {
-      message += `Please follow the steps below to unlock this ${type}:`;
-
-      guidelines.forEach((guideline, index) => {
-        if (guideline.meta) {
-          const { activityId, assessmentId, topicId, contextId } = guideline.meta;
-
-          const action = this.utils.ucfirst(guideline.action);
-          const isMobile = this.utils.isMobile();
-          if (topicId) {
-            // check if required IDs are available for topic route
-            const isLinkAvailable = activityId && topicId;
-            routes.push({
-              path: isLinkAvailable ? (isMobile
-                ? `/topic-mobile/${activityId}/${topicId}`
-                : `/v3/activity-desktop/${activityId}/${topicId}`) : null,
-              label: `<i><b>${action}</b></i> ${guideline.name}${!isLinkAvailable ? ' (unavailable)' : ''}`,
-            });
-          } else if (assessmentId) {
-            // check if required IDs are available for assessment route
-            const isLinkAvailable = activityId && contextId && assessmentId;
-            routes.push({
-              path: isLinkAvailable ? (isMobile
-                ? `/assessment-mobile/assessment/${activityId}/${contextId}/${assessmentId}`
-                : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`) : null,
-              label: `<i><b>${action}</b></i> ${guideline.name}${!isLinkAvailable ? ' (unavailable)' : ''}`,
-            });
-          }
-        }
-      });
     }
+
+    const canDisplayAllGuidelines = guidelines.every((guideline) => {
+      if (!guideline.meta) {
+        return false;
+      }
+
+      if (guideline.action === 'complete') {
+        return !!guideline.meta.activityId && !!guideline.meta.topicId;
+      }
+
+      if (guideline.action === 'submit') {
+        return !!guideline.meta.contextId &&
+          !!guideline.meta.activityId &&
+          !!guideline.meta.assessmentId;
+      }
+
+      return false;
+    });
+
+    if (!canDisplayAllGuidelines) {
+      await this.notification.popUp(
+        'shortMessage',
+        {
+          logo: 'lock-open',
+          message: `You have not yet met the requirements to unlock this ${type}. Review the related tasks and assessment requirements for more details.`,
+        },
+      );
+      return;
+    }
+
+    message += `Please follow the steps below to unlock this ${type}:`;
+
+    guidelines.forEach((guideline) => {
+      const { activityId, assessmentId, topicId, contextId } = guideline.meta;
+
+      const action = this.utils.ucfirst(guideline.action);
+      const isMobile = this.utils.isMobile();
+      if (topicId) {
+        routes.push({
+          path: isMobile
+            ? `/topic-mobile/${activityId}/${topicId}`
+            : `/v3/activity-desktop/${activityId}/${topicId}`,
+          label: `<i><b>${action}</b></i> ${guideline.name}`,
+        });
+      } else if (assessmentId) {
+        routes.push({
+          path: isMobile
+            ? `/assessment-mobile/assessment/${activityId}/${contextId}/${assessmentId}`
+            : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
+          label: `<i><b>${action}</b></i> ${guideline.name}`,
+        });
+      }
+    });
 
     await this.notification.popUp(
       "guidelines",
