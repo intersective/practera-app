@@ -31,6 +31,7 @@ describe('HomePage', () => {
   let storageService: jasmine.SpyObj<BrowserStorageService>;
   let fastFeedbackService: jasmine.SpyObj<FastFeedbackService>;
   let utilsService: jasmine.SpyObj<UtilsService>;
+  let notificationsService: jasmine.SpyObj<NotificationsService>;
 
   beforeEach(waitForAsync(() => {
     const homeServiceSpy = jasmine.createSpyObj('HomeService', {
@@ -82,7 +83,10 @@ describe('HomePage', () => {
     const fastFeedbackServiceSpy = jasmine.createSpyObj('FastFeedbackService', {
       'pullFastFeedback': of(null),
     });
-    const utilsServiceSpy = jasmine.createSpyObj('UtilsService', ['setPageTitle', 'isMobile']);
+    const utilsServiceSpy = jasmine.createSpyObj('UtilsService', ['setPageTitle', 'isMobile', 'ucfirst']);
+    utilsServiceSpy.ucfirst.and.callFake((value: string) =>
+      value ? value.charAt(0).toUpperCase() + value.slice(1) : value
+    );
 
     TestBed.configureTestingModule({
       declarations: [ HomePage ],
@@ -169,6 +173,7 @@ describe('HomePage', () => {
     storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     fastFeedbackService = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
     utilsService = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    notificationsService = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
 
     fixture.detectChanges();
   }));
@@ -194,6 +199,94 @@ describe('HomePage', () => {
 
     expect(projectHubButton).toBeTruthy();
     expect(projectHubButton?.textContent).toContain('Go to Project Hub');
+  });
+
+  describe('showGuideline', () => {
+    it('preserves linked guidance when every condition is supported', async () => {
+      utilsService.isMobile.and.returnValue(false);
+      const activity = {
+        unlockConditions: [
+          {
+            action: 'complete',
+            name: 'Introduction',
+            meta: { activityId: 20, topicId: 21 },
+          },
+          {
+            action: 'submit',
+            name: 'Project Plan',
+            meta: { contextId: 10, activityId: 20, assessmentId: 30 },
+          },
+        ],
+      };
+
+      await component.showGuideline(activity as any, 'activity');
+
+      expect(notificationsService.popUp).toHaveBeenCalledOnceWith(
+        'guidelines',
+        {
+          logo: 'lock-open',
+          message: 'Please follow the steps below to unlock this activity:',
+          routes: [
+            {
+              path: '/v3/activity-desktop/20/21',
+              label: '<i><b>Complete</b></i> Introduction',
+            },
+            {
+              path: '/v3/activity-desktop/10/20/30',
+              label: '<i><b>Submit</b></i> Project Plan',
+            },
+          ],
+        },
+      );
+    });
+
+    it('shows a generic message instead of partial links when any condition is unsupported', async () => {
+      const activity = {
+        unlockConditions: [
+          {
+            action: 'submit',
+            name: 'Project Plan',
+            meta: { contextId: 10, activityId: 20, assessmentId: 30 },
+          },
+          {
+            action: 'other',
+            name: '',
+          },
+        ],
+      };
+
+      await component.showGuideline(activity as any, 'activity');
+
+      expect(notificationsService.popUp).toHaveBeenCalledOnceWith(
+        'shortMessage',
+        {
+          logo: 'lock-open',
+          message: 'You have not yet met the requirements to unlock this activity. Review the related tasks and assessment requirements for more details.',
+        },
+      );
+    });
+
+    it('shows the generic message when a supported action lacks navigation metadata', async () => {
+      const milestone = {
+        unlockConditions: [
+          {
+            action: 'complete',
+            name: 'Introduction',
+            meta: { activityId: 20 },
+          },
+        ],
+      };
+
+      await component.showGuideline(milestone as any);
+
+      expect(notificationsService.popUp).toHaveBeenCalledOnceWith(
+        'shortMessage',
+        {
+          logo: 'lock-open',
+          message: 'You have not yet met the requirements to unlock this milestone. Review the related tasks and assessment requirements for more details.',
+        },
+      );
+    });
   });
 
   describe('updateDashboard', () => {
