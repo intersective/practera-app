@@ -167,6 +167,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private activityService: ActivityService,
     private modalController: ModalController,
     private cdr: ChangeDetectorRef,
+    private hostElement: ElementRef<HTMLElement>,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -271,32 +272,30 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.isPaginationEnabled) return;
     if (!this.accessiblePageIndexes.includes(i) || this.pageIndex === i) return;
 
-    this._navigateToPage(i, true);
+    this._navigateToPage(i);
   }
 
-  private _navigateToPage(pageIndex: number, scrollToTop = false): void {
+  private _navigateToPage(pageIndex: number): void {
     this.pageIndex = pageIndex;
     this.pageVisited[pageIndex] = true;
     this.scrollActivePageIntoView();
     this.setSubmissionDisabled();
-    if (scrollToTop) this._scrollToTop();
+    this._scrollToTop();
   }
 
-  private _scrollToTop() {
+  private _scrollToTop(): void {
     setTimeout(() => {
-      // 1. Try standard ion-content on mobile
-      const content = document.querySelector('ion-router-outlet .ion-page:not(.ion-page-hidden) ion-content') || document.querySelector('ion-content');
-      if (content && typeof (content as any).scrollToTop === 'function') {
-        (content as any).scrollToTop(0);
+      const desktopScrollContainer = this.hostElement.nativeElement.closest('ion-col');
+      if (desktopScrollContainer) {
+        desktopScrollContainer.scrollTop = 0;
         return;
       }
 
-      // 2. Scroll the main content into view (handles desktop ion-col scroll containers)
-      const mainContent = document.querySelector('app-assessment .main-content') || document.querySelector('app-assessment');
-      if (mainContent) {
-        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      const mobileScrollContainer = this.hostElement.nativeElement.closest('ion-content') as HTMLElement & {
+        scrollToTop?: (duration?: number) => Promise<void>;
+      };
+      if (typeof mobileScrollContainer?.scrollToTop === 'function') {
+        void mobileScrollContainer.scrollToTop(0);
       }
     }, 10);
   }

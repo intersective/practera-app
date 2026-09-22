@@ -2880,6 +2880,21 @@ describe('AssessmentComponent', () => {
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
     });
 
+    it('prevPage should reset the nearest desktop or review scroll container', fakeAsync(() => {
+      const scrollContainer = document.createElement('ion-col');
+      let scrollTop = 162;
+      Object.defineProperty(scrollContainer, 'scrollTop', {
+        get: () => scrollTop,
+        set: value => scrollTop = value,
+      });
+      scrollContainer.appendChild(fixture.nativeElement);
+
+      component.prevPage();
+      tick(10);
+
+      expect(scrollContainer.scrollTop).toBe(0);
+    }));
+
     it('prevPage should mark the destination page as visited', () => {
       component.prevPage();
       expect(component.pageVisited[0]).toBeTrue();
@@ -2897,6 +2912,21 @@ describe('AssessmentComponent', () => {
       expect(component.pageIndex).toBe(2);
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
     });
+
+    it('nextPage should reset the nearest desktop or review scroll container', fakeAsync(() => {
+      const scrollContainer = document.createElement('ion-col');
+      let scrollTop = 162;
+      Object.defineProperty(scrollContainer, 'scrollTop', {
+        get: () => scrollTop,
+        set: value => scrollTop = value,
+      });
+      scrollContainer.appendChild(fixture.nativeElement);
+
+      component.nextPage();
+      tick(10);
+
+      expect(scrollContainer.scrollTop).toBe(0);
+    }));
 
     it('nextPage should mark the destination page as visited', () => {
       component.nextPage();
@@ -2966,6 +2996,20 @@ describe('AssessmentComponent', () => {
       expect(component.pageIndex).toBe(2);
       expect(component.scrollActivePageIntoView).toHaveBeenCalled();
     });
+
+    it('should reset the nearest mobile ion-content after numbered navigation', fakeAsync(() => {
+      const scrollContainer = document.createElement('ion-content') as HTMLElement & {
+        scrollToTop: (duration?: number) => Promise<void>;
+      };
+      const scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
+      scrollContainer.scrollToTop = scrollToTopSpy;
+      scrollContainer.appendChild(fixture.nativeElement);
+
+      component.goToPage(2);
+      tick(10);
+
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    }));
 
     it('should mark the target page as visited', () => {
       component.goToPage(2);
