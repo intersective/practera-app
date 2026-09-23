@@ -19,7 +19,8 @@ import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
-import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
+import { ProjectBriefModalComponent } from '../project-brief-modal/project-brief-modal.component';
+import { ProjectBrief } from '../../models/project-brief.model';
 import { ModalController } from '@ionic/angular';
 
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
