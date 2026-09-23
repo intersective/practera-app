@@ -110,13 +110,13 @@ describe('ProjectBriefPdfService', () => {
     expect(output).toContain('Social enterprise');
     expect(output.filter(text => text === 'None specified').length).toBeGreaterThan(1);
     expect(output.filter(text => [
-      'Project Overview',
+      'Overview',
       'Scope of Work',
       'Organisational Context',
       'Problem Statement',
       'Focus Area',
       'Project Outcomes',
-      'Industry',
+      'Sector',
       'Project Type',
       'Duration',
       'Location',
@@ -124,13 +124,13 @@ describe('ProjectBriefPdfService', () => {
       'Technical Skills',
       'Professional Skills',
     ].includes(text))).toEqual([
-      'Project Overview',
+      'Overview',
       'Scope of Work',
       'Organisational Context',
       'Problem Statement',
       'Focus Area',
       'Project Outcomes',
-      'Industry',
+      'Sector',
       'Project Type',
       'Duration',
       'Location',
