@@ -54,13 +54,13 @@ The app accepts legacy unversioned snapshots and version 2 snapshots with `schem
 
 `buildProjectBriefPresentation()` is the sole definition of modal and PDF content order. Consumers must not create or reorder their own section lists. The exact 13-section order is:
 
-1. Project Overview
+1. Overview
 2. Scope of Work
 3. Organisational Context
 4. Problem Statement
 5. Focus Area
 6. Project Outcomes
-7. Industry
+7. Sector
 8. Project Type
 9. Duration
 10. Location
@@ -90,7 +90,7 @@ await modal.present();
 
 Assessment opens the same component with only `projectBrief`; it supplies no download command and retains the default `allowPdfDownload: false`.
 
-The modal renders organisation metadata when supplied, then the centralized accordion sections. Header icons use Ionic `color="primary"`; chips use `color="dark"` and are outlined. During export, the download control is disabled and displays `Preparing PDF...`. Duplicate selections are ignored while the promise is pending. Both successful and failed downloads keep the modal open. Failures show an extractable localized danger toast through `NotificationsService.presentToast`.
+The modal renders organisation metadata when supplied, then the centralized accordion sections. Header icons use Ionic `color="primary"`. Sector, Technical Skills, and Professional Skills chips use Ionic `color="dark"` with `outline="true"` for readable labels and outlines regardless of customer branding. During export, the download control is disabled and displays `Preparing PDF...`. Duplicate selections are ignored while the promise is pending. Both successful and failed downloads keep the modal open. Failures show an extractable localized danger toast through `NotificationsService.presentToast`.
 
 ## Markdown And Link Security
 
