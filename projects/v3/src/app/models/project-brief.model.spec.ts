@@ -22,13 +22,13 @@ describe('buildProjectBriefPresentation', () => {
 
     expect(presentation.title).toBe('Legacy project');
     expect(presentation.sections.map(section => section.title)).toEqual([
-      'Project Overview',
+      'Overview',
       'Scope of Work',
       'Organisational Context',
       'Problem Statement',
       'Focus Area',
       'Project Outcomes',
-      'Industry',
+      'Sector',
       'Project Type',
       'Duration',
       'Location',
