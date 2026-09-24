@@ -1,5 +1,140 @@
 # Topic Component - Video Playback Issues
 
+## Topic Attention Metrics
+
+### Purpose
+
+Topic tasks now send a non-blocking attention snapshot when an incomplete topic is marked complete. The metric is intended to help understand whether learners likely engaged with the topic content; it is not proof of reading or comprehension.
+
+The learner experience is unchanged in v1:
+
+- The "Mark as complete and continue" action is not blocked or delayed.
+- Already completed topics continue without posting another progress update or attention payload.
+- No raw topic text, pointer paths, keystrokes, or personal content is sent.
+
+### Payload
+
+`TopicComponent` emits a `TopicContinueEvent` with `{ topic, attention }`. Desktop and mobile pages pass `attention` into `TopicService.updateTopicProgress(id, 'completed', attention)`, which posts:
+
+```json
+{
+  "model": "topic",
+  "model_id": 123,
+  "state": "completed",
+  "meta": {
+    "attention": {
+      "version": 1,
+      "score": 80,
+      "confidence": "high",
+      "activeMs": 10000,
+      "visibleMs": 10000,
+      "estimatedReadMs": 9000,
+      "textWordCount": 30,
+      "contentExposureRatio": 1,
+      "mediaProgressRatio": 0,
+      "mediaPlayedMs": 0,
+      "filePreviewCount": 0,
+      "fileDownloadCount": 0,
+      "quickComplete": false
+    }
+  }
+}
+```
+
+Backend requirement: `api/v2/motivations/progress/create.json` must accept and persist optional `meta.attention` without changing existing topic progress semantics.
+
+### Signals And Scoring
+
+The tracker uses native browser APIs and existing component interactions:
+
+- Foreground visible time, paused while the document is hidden.
+- Quick-complete flag when foreground time is under 5 seconds.
+- Word count from the raw topic HTML retained during topic normalisation.
+- Maximum rendered content exposure for `app-description`.
+- Native audio/video and Plyr media progress/play time where available.
+- Attachment preview/download counts from existing file actions.
+
+Applicable signal weights are redistributed when a topic lacks that signal:
+
+- Text exposure: `0.35`
+- Reading-time ratio: `0.25`
+- Media progress: `0.25`
+- File interaction: `0.15`
+
+`score` is `0-100`. `confidence` is `high` at `>= 75`, `medium` at `>= 40`, otherwise `low`. A quick-complete session forces `confidence` to `low` unless the score is already `>= 75`.
+
+### Limitations
+
+- Attention confidence is an engagement heuristic, not a comprehension measure.
+- Embedded media providers may expose progress through Plyr inconsistently.
+- File interaction counts indicate opening/downloading, not whether the file was read.
+- v1 does not revive the old `stopped` progress state or add completion gating.
+
+## Local Topic Time Spent Indicator
+
+### Purpose
+
+Incomplete topic tasks show a small "Time spent" indicator below the topic title. This is a local learner-facing timer and is separate from the backend attention metric.
+
+### Storage And Lifecycle
+
+- Each topic uses localStorage key `topicTimeSpent:<topicId>`.
+- In activity navigation, the selected `Task.id` is the authoritative topic id for this key. This avoids continuing the previous topic timer while the next topic content is still loading asynchronously.
+- The timer starts when `TopicComponent` receives a topic.
+- The timer is persisted and stopped when the component changes topic, is destroyed, or leaves the page.
+- Returning to the same topic resumes from the persisted value.
+- Marking an incomplete topic complete removes the stored timer for that topic.
+- Already completed topics do not show the indicator and do not clear any timer through the continue-only path.
+- A direct mobile topic load refreshes the parent activity and matches its task by topic id, so a completed topic keeps its completed state after a browser refresh.
+
+### Format
+
+The visible timer uses `m:ss` until it reaches one hour, then `h:mm:ss`.
+
+## Topic Attention And Completion Flow
+
+The topic interaction is measurement-only in v1. The learner can complete the topic immediately; tracking does not block, delay, or require additional interaction.
+
+```text
+Topic loads
+  -> start attention tracking for the current topic session
+  -> start or resume the local topic time-spent timer
+
+Learner interacts with the topic
+  -> accumulate foreground-visible time
+  -> record maximum content exposure
+  -> record media play time and furthest media progress
+  -> record file preview and download actions
+
+Learner selects the completion action
+  -> build the aggregate attention snapshot
+  -> emit { topic, attention } from TopicComponent
+  -> remove the local timer for an incomplete topic
+
+Desktop or mobile page receives the event
+  -> if the task is already done, navigate to the next task without posting progress
+  -> otherwise post completed topic progress with optional meta.attention
+  -> refresh activity state and continue to the next task
+```
+
+The UI uses the task status to choose the completion state:
+
+- Incomplete topic: show `Time spent: m:ss` and `Mark as complete and continue`.
+- Completed topic: hide the time indicator and show `Continue`.
+- Completed topic continuation: skip `updateTopicProgress()` so attention is not submitted repeatedly.
+
+### Measurement Boundaries
+
+The local time-spent timer and backend attention metrics have different purposes and lifecycles:
+
+- `topicTimeSpent:<topicId>` is a learner-facing localStorage value that accumulates across visits to the same topic. It is persisted when the topic is left, the component is destroyed, or the selected topic changes, and is removed when an incomplete topic is completed.
+- The `attention` snapshot is created for the current TopicComponent session when the completion action is selected. It is sent only with the first completion request for an incomplete task.
+- The accumulated local timer is currently not included in `meta.attention` and does not contribute to the attention score.
+- `activeMs` and `visibleMs` currently represent the same foreground-visible session time. Hidden browser tabs pause this attention measurement; the local timer is stopped by page/component lifecycle events.
+- The tracker records aggregate interaction signals only. It does not send raw topic HTML, pointer paths, keystrokes, or personal content.
+
+On a direct mobile topic refresh, the page reloads the parent activity and matches the task by the route topic ID before rendering the completion state. This ensures a previously completed topic remains completed after refresh.
+
 ## Issue: YouTube Video Overlay Not Loading on Subsequent Visits
 
 ### Problem Description
