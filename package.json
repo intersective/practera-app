@@ -74,6 +74,8 @@
     "franc-min": "^6.2.0",
     "graphql": "^16.8.1",
     "ics": "^3.7.2",
+    "jspdf": "4.2.1",
+    "marked": "18.0.10",
     "ng-circle-progress": "~1.7.1",
     "ng-packagr": "^21.2.3",
     "ngx-quill": "^30.1.2",

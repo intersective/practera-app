@@ -11,7 +11,7 @@ import { environment } from '@v3/environments/environment';
 import { FastFeedbackService } from './fast-feedback.service';
 import { FileInput, FileResponse } from '../components/types/assessment';
 import { Choice, Question } from '@v3/components/types/assessment';
-import { ProjectBrief } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
+import { ProjectBrief } from '@v3/app/models/project-brief.model';
 
 export interface DueAssessment {
   id: number;

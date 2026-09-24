@@ -1,21 +1,33 @@
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular';
-import { ProjectBriefModalComponent, ProjectBrief } from './project-brief-modal.component';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { IonicModule, ModalController } from '@ionic/angular';
+import { ProjectBriefModalComponent } from './project-brief-modal.component';
+import { ProjectBrief } from '../../models/project-brief.model';
+import { ProjectBriefMarkdownPipe } from '../../pipes/project-brief-markdown.pipe';
+import { NotificationsService } from '../../services/notifications.service';
+import { ProjectBriefPdfService } from '../../services/project-brief-pdf.service';
 
 describe('ProjectBriefModalComponent', () => {
   let component: ProjectBriefModalComponent;
   let fixture: ComponentFixture<ProjectBriefModalComponent>;
   let modalControllerSpy: jasmine.SpyObj<ModalController>;
+  let notificationsSpy: jasmine.SpyObj<NotificationsService>;
+  let projectBriefPdfServiceSpy: jasmine.SpyObj<ProjectBriefPdfService>;
 
   beforeEach(waitForAsync(() => {
     modalControllerSpy = jasmine.createSpyObj('ModalController', ['dismiss']);
+    notificationsSpy = jasmine.createSpyObj('NotificationsService', ['presentToast']);
+    projectBriefPdfServiceSpy = jasmine.createSpyObj('ProjectBriefPdfService', ['download']);
+    projectBriefPdfServiceSpy.download.and.resolveTo();
 
     TestBed.configureTestingModule({
-      declarations: [ProjectBriefModalComponent],
+      declarations: [ProjectBriefModalComponent, ProjectBriefMarkdownPipe],
+      imports: [IonicModule.forRoot()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
-        { provide: ModalController, useValue: modalControllerSpy }
+        { provide: ModalController, useValue: modalControllerSpy },
+        { provide: NotificationsService, useValue: notificationsSpy },
+        { provide: ProjectBriefPdfService, useValue: projectBriefPdfServiceSpy },
       ]
     }).compileComponents();
 
@@ -32,6 +44,48 @@ describe('ProjectBriefModalComponent', () => {
     it('should dismiss the modal', () => {
       component.close();
       expect(modalControllerSpy.dismiss).toHaveBeenCalled();
+    });
+  });
+
+  describe('downloadPdf()', () => {
+    it('shows loading, ignores duplicate selections, and restores the button after success without closing', async () => {
+      let resolveDownload: () => void = () => undefined;
+      projectBriefPdfServiceSpy.download.and.returnValue(new Promise<void>(resolve => {
+        resolveDownload = resolve;
+      }));
+      component.allowPdfDownload = true;
+      component.projectBrief = { title: 'Download me' };
+      fixture.detectChanges();
+
+      const firstDownload = component.downloadPdf();
+      component.downloadPdf();
+      fixture.detectChanges();
+
+      expect(component.isDownloading).toBe(true);
+      expect(projectBriefPdfServiceSpy.download).toHaveBeenCalledTimes(1);
+      expect(fixture.nativeElement.querySelector('.project-brief-download-button').disabled).toBe(true);
+
+      resolveDownload();
+      await firstDownload;
+      fixture.detectChanges();
+
+      expect(component.isDownloading).toBe(false);
+      expect(modalControllerSpy.dismiss).not.toHaveBeenCalled();
+    });
+
+    it('keeps the modal open, restores the button, and shows a localized danger toast when export fails', async () => {
+      projectBriefPdfServiceSpy.download.and.rejectWith(new Error('PDF unavailable'));
+      component.allowPdfDownload = true;
+      component.projectBrief = { title: 'Download me' };
+
+      await component.downloadPdf();
+
+      expect(component.isDownloading).toBe(false);
+      expect(notificationsSpy.presentToast).toHaveBeenCalledWith(jasmine.any(String), {
+        color: 'danger',
+        icon: 'close-circle',
+      });
+      expect(modalControllerSpy.dismiss).not.toHaveBeenCalled();
     });
   });
 
@@ -82,16 +136,51 @@ describe('ProjectBriefModalComponent', () => {
       cd = fixture.debugElement.injector.get(ChangeDetectorRef);
     });
 
-    it('should display project brief title when provided', () => {
+    it('renders the full ordered version 2 brief with organisation details and learner download shell', () => {
       const testBrief: ProjectBrief = {
         title: 'Test Project Title',
-        description: 'Test description'
+        description: 'Project **overview**',
+        organisationName: 'Example organisation',
+        organisationType: 'Social enterprise',
+        organisationContext: 'Regional context',
+        problemStatement: 'A clear problem',
+        focusArea: 'A clear focus',
+        scope: 'Defined scope',
+        deliverables: 'A delivery roadmap',
+        industry: ['Health'],
+        projectType: 'Research',
+        timeline: 12,
+        location: 'Kuala Lumpur',
+        website: 'https://example.com/project',
+        technicalSkills: ['TypeScript'],
+        professionalSkills: ['Communication'],
       };
       component.projectBrief = testBrief;
+      component.allowPdfDownload = true;
       cd.detectChanges();
 
       const titleElement = fixture.nativeElement.querySelector('#project-brief-title');
       expect(titleElement.textContent).toContain('Test Project Title');
+      expect(fixture.nativeElement.textContent).toContain('Example organisation');
+      expect(fixture.nativeElement.textContent).toContain('Social enterprise');
+      expect(Array.from(fixture.nativeElement.querySelectorAll('.accordion-header'))
+        .map((element: Element) => element.textContent?.trim())).toEqual([
+        'Project Overview',
+        'Scope of Work',
+        'Organisational Context',
+        'Problem Statement',
+        'Focus Area',
+        'Project Outcomes',
+        'Industry',
+        'Project Type',
+        'Duration',
+        'Location',
+        'Website',
+        'Technical Skills',
+        'Professional Skills',
+      ]);
+      expect(fixture.nativeElement.querySelector('a[href="https://example.com/project"]')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('.project-brief-download-button')).toBeTruthy();
     });
 
     it('should display "none specified" for empty fields', () => {
@@ -99,7 +188,7 @@ describe('ProjectBriefModalComponent', () => {
       cd.detectChanges();
 
       const noneSpecifiedElements = fixture.nativeElement.querySelectorAll('.none-specified');
-      expect(noneSpecifiedElements.length).toBeGreaterThan(0);
+      expect(noneSpecifiedElements.length).toBe(13);
     });
 
     it('should display industry chips when provided', () => {
@@ -111,6 +200,17 @@ describe('ProjectBriefModalComponent', () => {
 
       const chips = fixture.nativeElement.querySelectorAll('ion-chip');
       expect(chips.length).toBe(2);
+    });
+
+    it('renders duplicate chip labels without dropping learner data', () => {
+      const warnSpy = spyOn(console, 'warn').and.callThrough();
+      component.projectBrief = {
+        industry: ['Health', 'Health'],
+      };
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelectorAll('ion-chip').length).toBe(2);
+      expect(warnSpy).not.toHaveBeenCalledWith(jasmine.stringMatching('NG0955'));
     });
 
     it('should display skills chips when provided', () => {
@@ -126,16 +226,9 @@ describe('ProjectBriefModalComponent', () => {
     });
 
     it('should use the primary brand color for section header icons', () => {
-      const iconSelectors = [
-        'ion-icon[name="document-text-outline"]',
-        'ion-icon[name="business-outline"]',
-        'ion-icon[name="code-slash-outline"]',
-        'ion-icon[name="people-outline"]',
-        'ion-icon[name="checkbox-outline"]'
-      ];
-
-      iconSelectors.forEach((selector) => {
-        const icon: Element = fixture.nativeElement.querySelector(selector);
+      const icons: NodeListOf<Element> = fixture.nativeElement.querySelectorAll('.brief-accordion ion-item[slot="header"] ion-icon');
+      expect(icons.length).toBe(13);
+      icons.forEach((icon) => {
         expect(icon.getAttribute('color')).toBe('primary');
       });
     });
@@ -153,6 +246,7 @@ describe('ProjectBriefModalComponent', () => {
       expect(chips.length).toBe(3);
       chips.forEach((chip) => {
         expect(chip.getAttribute('color')).toBe('dark');
+        expect(chip.getAttribute('outline')).toBe('true');
       });
     });
   });

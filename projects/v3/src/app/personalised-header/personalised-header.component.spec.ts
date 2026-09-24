@@ -75,4 +75,23 @@ describe('PersonalisedHeaderComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should expose the accessWidget custom trigger before notifications', () => {
+    const accessibilityButton: HTMLElement = fixture.nativeElement.querySelector('.accessibility-btn');
+
+    expect(accessibilityButton).withContext('accessWidget must have a visible header trigger').toBeTruthy();
+    if (!accessibilityButton) {
+      return;
+    }
+
+    const notificationButton: HTMLElement = fixture.nativeElement.querySelector('.notify-btn');
+    const icon: HTMLElement = accessibilityButton.querySelector('ion-icon');
+    const nativeButton: HTMLButtonElement = accessibilityButton.shadowRoot.querySelector('button');
+
+    expect(nativeButton.getAttribute('aria-label')).toBe('Open accessibility options');
+    expect(accessibilityButton.getAttribute('data-acsb-custom-trigger')).toBe('true');
+    expect(icon.getAttribute('name')).toBe('accessibility-outline');
+    expect(accessibilityButton.compareDocumentPosition(notificationButton) & Node.DOCUMENT_POSITION_FOLLOWING)
+      .toBeTruthy();
+  });
 });

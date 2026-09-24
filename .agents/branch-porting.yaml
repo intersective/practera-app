@@ -1,0 +1,20 @@
+version: 2
+profiles:
+  login-refactor:
+    remote: "origin"
+    source_branch: "origin/prerelease"
+    target_base: "origin/login-refactor"
+    destination:
+      replace_suffixes:
+        - "-prerelease"
+        - "-trunk"
+      append_suffix: "-login-refactor"
+      prefix: ""
+    pull_request:
+      base: "login-refactor"
+      template: ".github/pull_request_template.md"
+    verification:
+      commands:
+        - ["npm", "test"]
+        - ["npm", "run", "lintv3"]
+        - ["npm", "run", "buildv3"]
