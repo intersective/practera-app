@@ -54,23 +54,6 @@ const initialisingPusher = {
 }); */
 
 describe('PusherService', async () => {
-  const PUSHER_APIURL = 'APIURL';
-  const PUSHERKEY = 'pusherKey';
-  const APIURL = 'api/v2/message/notify/channels.json';
-  const libConfig = {
-    cluster: 'mt1',
-    forceTLS: true,
-    authEndpoint: `${'apiurl'}${APIURL}`,
-    auth: {
-      headers: {
-        'Authorization': `pusherKey=${PUSHERKEY}`,
-        'appkey': environment.appkey,
-        'apikey': 'apikey',
-        'timelineid': 1
-      },
-    },
-  };
-
   let service: PusherService;
   let utilSpy: UtilsService;
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
@@ -80,7 +63,6 @@ describe('PusherService', async () => {
 
   beforeEach(() => {
     // spyOn(Window, 'Pusher');
-    // pusherLibSpy = new PusherLib(this.pusherKey, libConfig);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -113,12 +95,6 @@ describe('PusherService', async () => {
             }
           })
         },
-        /* {
-          provide: PusherConfig,
-          useValue: {
-            pusherKey: PUSHERKEY
-          }
-        }, */
         {
           provide: ApolloService,
           useValue: jasmine.createSpyObj('ApolloService', {
@@ -159,7 +135,6 @@ describe('PusherService', async () => {
     loading: false,
     networkStatus: 7,
     partial: false,
-    dataState: 'complete',
   };
 
   describe('getChannels()', async () => {
@@ -286,7 +261,6 @@ describe('PusherService', async () => {
       service['channels'].chat = existingChannels;
       service['activeScope'] = { programId: null, projectId: null, timelineId: 1 };
       service['pusher'] = jasmine.createSpyObj('pusher', [], {
-        config: { auth: { headers: {} } },
         connection: { state: 'connected' },
       });
       apolloSpy.graphQLFetch.and.returnValue(
@@ -395,7 +369,6 @@ describe('PusherService', async () => {
         'unsubscribe',
       ], {
         connection,
-        config: { auth: { headers: {} } },
       });
       oldPusher.disconnect.and.callFake(() => connection.state = 'disconnected');
       service['pusher'] = oldPusher;
@@ -418,18 +391,15 @@ describe('PusherService', async () => {
       expect(oldPusher.connect).toHaveBeenCalled();
       expect(service['initialisePusher']).not.toHaveBeenCalled();
       expect(service['pusher']).toBe(oldPusher);
-      expect(oldPusher.config.auth.headers.apikey).toBe('new-key');
-      expect(oldPusher.config.auth.headers.timelineid).toBe(2);
     }));
 
-    it('should update credentials without replacing the same-scope connection', fakeAsync(() => {
+    it('should reuse the same-scope connection after credentials rotate', fakeAsync(() => {
       const currentPusher = jasmine.createSpyObj('currentPusher', [
         'disconnect',
         'connect',
         'allChannels',
       ], {
         connection: { state: 'connected' },
-        config: { auth: { headers: {} } },
       });
       service['pusher'] = currentPusher;
       service['activeScope'] = { programId: null, projectId: null, timelineId: 1 };
@@ -447,7 +417,6 @@ describe('PusherService', async () => {
       expect(service.unsubscribeChannels).not.toHaveBeenCalled();
       expect(currentPusher.disconnect).not.toHaveBeenCalled();
       expect(service['initialisePusher']).not.toHaveBeenCalled();
-      expect(currentPusher.config.auth.headers.apikey).toBe('rotated-key');
     }));
 
     it('should share one in-flight initialisation between concurrent callers', fakeAsync(() => {
@@ -485,10 +454,9 @@ describe('PusherService', async () => {
       expect(service['channels']).toEqual({ notification: null, chat: [] });
     });
 
-    it('should reset scope, retry state, auth headers, and the connection on logout', () => {
+    it('should reset scope, retry state, and the connection on logout', () => {
       const notificationSubscription = jasmine.createSpyObj('notificationSubscription', ['unbind_all']);
       const pusher = jasmine.createSpyObj('pusher', ['disconnect', 'unsubscribe'], {
-        config: { auth: { headers: { apikey: 'old-key', timelineid: 1 } } },
         connection: { state: 'connected' },
       });
       service['pusher'] = pusher;
@@ -509,8 +477,6 @@ describe('PusherService', async () => {
       expect(service['retryAttempted']).toEqual({ notification: false, chat: false });
       expect(service['pendingRetryTypes'].size).toBe(0);
       expect(service['retryTimer']).toBeNull();
-      expect(pusher.config.auth.headers.apikey).toBe('');
-      expect(pusher.config.auth.headers.timelineid).toBe('');
     });
 
     it('should prevent an in-flight initialisation from restarting after reset', fakeAsync(() => {
@@ -522,7 +488,6 @@ describe('PusherService', async () => {
         'connect',
         'unsubscribe',
       ], {
-        config: { auth: { headers: {} } },
         connection: { state: 'connected' },
       });
       const initialisePusherSpy = spyOn<any>(service, 'initialisePusher').and.returnValue(pusher);
@@ -542,7 +507,6 @@ describe('PusherService', async () => {
     it('should retry a failed channel type only once', fakeAsync(() => {
       const scope = { programId: 1, projectId: 11, timelineId: 1 };
       const pusher = jasmine.createSpyObj('pusher', ['disconnect', 'connect'], {
-        config: { auth: { headers: {} } },
         connection: { state: 'connected' },
       });
       service['pusher'] = pusher;
@@ -566,7 +530,6 @@ describe('PusherService', async () => {
     it('should batch notification and chat retries into one reconnect', fakeAsync(() => {
       const scope = { programId: 1, projectId: 11, timelineId: 1 };
       const pusher = jasmine.createSpyObj('pusher', ['disconnect', 'connect'], {
-        config: { auth: { headers: {} } },
         connection: { state: 'connected' },
       });
       service['pusher'] = pusher;
@@ -591,7 +554,6 @@ describe('PusherService', async () => {
     it('should not cancel a pending retry during same-scope discovery', fakeAsync(() => {
       const scope = { programId: 1, projectId: 11, timelineId: 1 };
       const pusher = jasmine.createSpyObj('pusher', ['disconnect', 'connect'], {
-        config: { auth: { headers: {} } },
         connection: { state: 'connected' },
       });
       service['pusher'] = pusher;
@@ -627,7 +589,6 @@ describe('PusherService', async () => {
         'connect',
         'unsubscribe',
       ], {
-        config: { auth: { headers: {} } },
         connection,
       });
       pusher.disconnect.and.callFake(() => {
@@ -665,7 +626,6 @@ describe('PusherService', async () => {
         unbind_all: jasmine.createSpy('unbind_all'),
       };
       const pusher = jasmine.createSpyObj('pusher', ['subscribe', 'unsubscribe'], {
-        config: { auth: { headers: {} } },
         connection: { state: 'connected' },
       });
       pusher.subscribe.and.returnValue(subscription);
@@ -688,6 +648,37 @@ describe('PusherService', async () => {
   });
 
   describe('initialisePusher()', () => {
+    it('uses Pusher 8 channel authorization with current credentials on each request', () => {
+      service['activeScope'] = { programId: null, projectId: null, timelineId: 1 };
+      const options = (service as any).createPusherOptions();
+      const authorization = options.channelAuthorization;
+
+      expect(authorization.endpoint).toBe(new URL('/pusher_auth', environment.graphQL).href);
+      expect(authorization.transport).toBe('ajax');
+      expect(authorization.headersProvider()).toEqual({
+        Authorization: 'pusherKey=' + environment.pusherKey,
+        appkey: environment.appkey,
+        apikey: 'apikey',
+        timelineid: '1',
+      });
+
+      storageSpy.getUser.and.returnValue({ apikey: 'rotated-key', timelineId: 2 } as any);
+      expect(authorization.headersProvider()).toEqual({
+        Authorization: 'pusherKey=' + environment.pusherKey,
+        appkey: environment.appkey,
+        apikey: 'rotated-key',
+        timelineid: '2',
+      });
+
+      service.reset();
+      expect(authorization.headersProvider()).toEqual({
+        Authorization: 'pusherKey=' + environment.pusherKey,
+        appkey: environment.appkey,
+        apikey: '',
+        timelineid: '',
+      });
+    });
+
     it('should skip initiation if storage is empty apikey or timelineid', () => {
       service['pusher'] = undefined;
 

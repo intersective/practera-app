@@ -159,7 +159,6 @@ export class PusherService {
       return;
     }
 
-    this.syncAuthHeaders();
     if (this.pusher.connection.state === 'disconnected') {
       this.pusher.connect();
     }
@@ -226,6 +225,50 @@ export class PusherService {
     return parsed;
   }
 
+  private createPusherOptions(): Options {
+    const useTLS = this.resolveUseTLS();
+    // cluster is required by the pusher-js Options type but is conditionally set below;
+    // using a type assertion here so we can assign it (or wsHost) in the branch below.
+    const config = {
+      forceTLS: useTLS,
+      channelAuthorization: {
+        endpoint: new URL(api.pusherAuth, this.apiurl).href,
+        transport: 'ajax',
+        headersProvider: () => {
+          // Pusher 8 captures authorization options when the client is created.
+          // Read storage per request so a reused client sees rotated credentials.
+          const { apikey, timelineId } = this.storage.getUser();
+          return {
+            'Authorization': 'pusherKey=' + this.pusherKey,
+            'appkey': environment.appkey,
+            'apikey': this.activeScope ? (apikey ?? '') : '',
+            'timelineid': this.activeScope ? String(timelineId ?? '') : '',
+          };
+        },
+      },
+    } as Options;
+
+    // If a custom host (e.g. self-hosted Soketi) is configured, use that;
+    // otherwise fall back to Pusher Cloud's cluster-based routing.
+    const host = this.normaliseTemplateValue((environment as any).pusherHost);
+    if (host) {
+      config.wsHost = host;
+      const port = this.resolvePusherPort(useTLS);
+      if (port) {
+        config.wsPort = port;
+        config.wssPort = port;
+      }
+      config.enabledTransports = ['ws', 'wss'];
+      config.disabledTransports = ['xhr_streaming', 'xhr_polling', 'sockjs'];
+      // pusher-js 8.x requires cluster to be set even when using a custom wsHost;
+      // use a placeholder so the SDK constructor does not throw.
+      config.cluster = 'local';
+    } else if (environment.pusherCluster) {
+      config.cluster = environment.pusherCluster;
+    }
+    return config;
+  }
+
   private initialisePusher(): PusherInstance {
     const { apikey, timelineId } = this.storage.getUser();
     if (!apikey || !timelineId) {
@@ -233,43 +276,9 @@ export class PusherService {
     }
 
     try {
-      const useTLS = this.resolveUseTLS();
-      // cluster is required by the pusher-js Options type but is conditionally set below;
-      // using a type assertion here so we can assign it (or wsHost) in the branch below.
-      const config = {
-        forceTLS: useTLS,
-        authEndpoint: this.apiurl + api.pusherAuth,
-        auth: {
-          headers: {
-            'Authorization': 'pusherKey=' + this.pusherKey,
-            'appkey': environment.appkey,
-            'apikey': apikey,
-            'timelineid': timelineId,
-          },
-        },
-      } as Options;
-
-      // If a custom host (e.g. self-hosted Soketi) is configured, use that;
-      // otherwise fall back to Pusher Cloud's cluster-based routing.
-      const host = this.normaliseTemplateValue((environment as any).pusherHost);
-      if (host) {
-        config.wsHost = host;
-        const port = this.resolvePusherPort(useTLS);
-        if (port) {
-          config.wsPort = port;
-          config.wssPort = port;
-        }
-        config.enabledTransports = ['ws', 'wss'];
-        config.disabledTransports = ['xhr_streaming', 'xhr_polling', 'sockjs'];
-        // pusher-js 8.x requires cluster to be set even when using a custom wsHost;
-        // use a placeholder so the SDK constructor does not throw.
-        config.cluster = 'local';
-      } else if (environment.pusherCluster) {
-        config.cluster = environment.pusherCluster;
-      }
+      const config = this.createPusherOptions();
       const newPusherInstance = new Pusher(this.pusherKey, config);
       newPusherInstance.connection
-        .bind('connecting', () => this.syncAuthHeaders())
         .bind('state_change', state => {
           // eslint-disable-next-line no-console
           console.log('pusher:state_change', state);
@@ -401,7 +410,6 @@ export class PusherService {
     this.disconnect();
     this.unsubscribeChannels();
     this.activeScope = null;
-    this.clearAuthHeaders();
   }
 
   private unsubscribeNotificationChannel(): void {
@@ -447,29 +455,6 @@ export class PusherService {
   private invalidateChannelRefreshes(): void {
     this.notificationGeneration++;
     this.chatGeneration++;
-  }
-
-  private syncAuthHeaders(): void {
-    if (!this.pusher) {
-      return;
-    }
-    const { apikey, timelineId } = this.storage.getUser();
-    this.pusher.config.auth = this.pusher.config.auth || {};
-    this.pusher.config.auth.headers = {
-      ...(this.pusher.config.auth.headers || {}),
-      'Authorization': 'pusherKey=' + this.pusherKey,
-      'appkey': environment.appkey,
-      'apikey': apikey,
-      'timelineid': timelineId,
-    };
-  }
-
-  private clearAuthHeaders(): void {
-    if (!this.pusher?.config?.auth?.headers) {
-      return;
-    }
-    this.pusher.config.auth.headers.apikey = '';
-    this.pusher.config.auth.headers.timelineid = '';
   }
 
   private reconcileNotificationChannel(channelName: string | null): void {
@@ -533,7 +518,6 @@ export class PusherService {
     if (!reconnect || !this.pusher || this.pusher.connection.state !== 'disconnected') {
       return;
     }
-    this.syncAuthHeaders();
     this.pusher.connect();
   }
 
@@ -562,7 +546,6 @@ export class PusherService {
       return;
     }
 
-    this.syncAuthHeaders();
     const channel: PusherChannel = {
       name: channelName,
       subscription: this.pusher.subscribe(channelName),
@@ -666,7 +649,6 @@ export class PusherService {
       if (!retryScope || !this.isCurrentScope(retryScope)) {
         return;
       }
-      this.syncAuthHeaders();
       this.disconnect();
       this.pusher?.connect();
       await Promise.all(retryTypes.map(retryType => {
