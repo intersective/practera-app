@@ -65,6 +65,15 @@ export interface Task {
   };
   assessmentType?: string;
   h5p?: H5pContent;
+  scorm?: {
+    contentUrl: string;
+    launch: string;
+    version: 'scorm12' | 'scorm2004';
+    masteryScore?: number;
+    allowResume: boolean;
+    assessmentId?: number;
+    activityId?: string;
+  };
   todoGroup?: TodoGroupData;
 }
 

@@ -412,10 +412,10 @@ export class ActivityDesktopPage {
         );
       }
 
-      if (task.type === 'Simulation' && !task.h5p) {
+      if (task.type === 'Simulation' && !task.h5p && !task.scorm) {
         await firstValueFrom(
           this.activityService.currentTask$.pipe(
-            filter(t => t != null && t.id === task.id && !!t.h5p),
+            filter(t => t != null && t.id === task.id && (!!t.h5p || !!t.scorm)),
             first(),
           )
         );
