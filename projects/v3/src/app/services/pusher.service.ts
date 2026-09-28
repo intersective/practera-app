@@ -259,7 +259,7 @@ export class PusherService {
           config.wsPort = port;
           config.wssPort = port;
         }
-        config.enabledTransports = ['ws', 'wss'];
+        config.enabledTransports = ['ws'];
         config.disabledTransports = ['xhr_streaming', 'xhr_polling', 'sockjs'];
         // pusher-js 8.x requires cluster to be set even when using a custom wsHost;
         // use a placeholder so the SDK constructor does not throw.
@@ -454,9 +454,10 @@ export class PusherService {
       return;
     }
     const { apikey, timelineId } = this.storage.getUser();
-    this.pusher.config.auth = this.pusher.config.auth || {};
-    this.pusher.config.auth.headers = {
-      ...(this.pusher.config.auth.headers || {}),
+    const cfg = this.pusher.config as Options & { auth?: { headers?: Record<string, string> } };
+    cfg.auth = cfg.auth || {};
+    cfg.auth.headers = {
+      ...(cfg.auth.headers || {}),
       'Authorization': 'pusherKey=' + this.pusherKey,
       'appkey': environment.appkey,
       'apikey': apikey,
@@ -465,11 +466,12 @@ export class PusherService {
   }
 
   private clearAuthHeaders(): void {
-    if (!this.pusher?.config?.auth?.headers) {
+    const cfg = this.pusher?.config as (Options & { auth?: { headers?: Record<string, string> } }) | undefined;
+    if (!cfg?.auth?.headers) {
       return;
     }
-    this.pusher.config.auth.headers.apikey = '';
-    this.pusher.config.auth.headers.timelineid = '';
+    cfg.auth.headers.apikey = '';
+    cfg.auth.headers.timelineid = '';
   }
 
   private reconcileNotificationChannel(channelName: string | null): void {
