@@ -572,3 +572,9 @@ quill-editor .ql-toolbar.ql-snow {
     margin-right: 8px !important;
   }
 }
+
+// accessWidget is loaded only on non-local hosts. Keep its custom header
+// trigger out of the local UI and hide it if the vendor script fails to load.
+body:not(.accessibility-widget-enabled) app-personalised-header .accessibility-btn {
+  display: none;
+}

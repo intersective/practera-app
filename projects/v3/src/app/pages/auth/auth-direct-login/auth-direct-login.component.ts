@@ -211,10 +211,10 @@ export class AuthDirectLoginComponent implements OnInit {
     }
   }
 
-  private _saveOrRedirect(route: Array<String | number | object>, options?: {
+  private async _saveOrRedirect(route: Array<String | number | object>, options?: {
     save?: boolean;
     experience?: any;
-  }): void | Promise<boolean> {
+  }): Promise<boolean | void> {
     const currentLocation = window.location.href;
     const locale = options?.experience?.locale;
     if (currentLocation.indexOf('localhost') === -1 && locale && currentLocation.indexOf(locale) === -1) {
@@ -237,7 +237,11 @@ export class AuthDirectLoginComponent implements OnInit {
     * When user use deep link to login to app. user not going through switcher service.
     * So pusher initialise not calling after user login using using deep link.
     */
-    this.sharedService.initWebServices();
+    try {
+      await this.sharedService.initWebServices();
+    } catch (err) {
+      console.error('Failed to initialise real-time services for direct login', err);
+    }
     return this.navigate(route);
   }
 

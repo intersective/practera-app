@@ -19,11 +19,23 @@ import { Task } from '@v3/app/services/activity.service';
 import { ActivityService } from '@v3/app/services/activity.service';
 import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
-import { ProjectBriefModalComponent, ProjectBrief } from '../project-brief-modal/project-brief-modal.component';
+import { ProjectBriefModalComponent } from '../project-brief-modal/project-brief-modal.component';
+import { ProjectBrief } from '../../models/project-brief.model';
 import { AlertController, ModalController } from '@ionic/angular';
 
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per paginated view (controls pagination granularity)
+
+type Team360SectionKind = 'peer' | 'non-peer';
+
+interface Team360Section {
+  group: Group;
+  groupIndex: number;
+  pageIndex: number;
+  kind: Team360SectionKind;
+}
+
+type DisplayGroup = Pick<Group, 'name' | 'questions'> & Partial<Group>;
 
 /**
  * Assessment Component with optional pagination feature
@@ -158,6 +170,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     private modalController: ModalController,
     private alertController: AlertController,
     private cdr: ChangeDetectorRef,
+    private hostElement: ElementRef<HTMLElement>,
   ) {
     this.resubscribe$.pipe(
       takeUntil(this.unsubscribe$),
@@ -170,7 +183,7 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   pageIndex = 0;
 
   // each entry is a page: an array of (partial) groups
-  pagesGroups: { name: string; description?: string; questions: Question[] }[][] = [];
+  pagesGroups: DisplayGroup[][] = [];
 
   // Feature toggle for pagination
   get isPaginationEnabled(): boolean {
@@ -185,16 +198,41 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
     return this.isPaginationEnabled && this.pageCount > 1 && !this.isTeam360Assessment;
   }
 
-  // Team360 page 0 is self-reflection. Pages after that correspond to selected team members,
-  // so forward navigation is capped by the selected team member count.
+  /**
+   * Physical pages that can be reached in the current assessment.
+   *
+   * Team360 renders each configured group as its own physical page. Selector-free groups remain
+   * accessible wherever they occur, while selector-bearing peer groups are capped by the distinct
+   * member rule.
+   */
+  get accessiblePageIndexes(): number[] {
+    if (!this.isPaginationEnabled) return [0];
+    if (this.pageCount === 0) return [];
+    if (!this.isTeam360Assessment) return this.pages;
+
+    const memberPageIndexes = new Set(
+      this.team360MemberSections.map(section => section.pageIndex)
+    );
+    const accessiblePages = this.team360Sections
+      .filter(section => section.kind === 'non-peer' || memberPageIndexes.has(section.pageIndex))
+      .map(section => section.pageIndex)
+      .filter(pageIndex => pageIndex >= 0);
+
+    return Array.from(new Set(accessiblePages)).sort((a, b) => a - b);
+  }
+
   get maxAccessiblePageIndex(): number {
-    const lastPageIndex = this.pageCount - 1;
+    const accessiblePages = this.accessiblePageIndexes;
+    return accessiblePages.length ? accessiblePages[accessiblePages.length - 1] : -1;
+  }
 
-    if (!this.isTeam360Assessment) {
-      return lastPageIndex;
-    }
+  get hasPreviousAccessiblePage(): boolean {
+    return this.accessiblePageIndexes.indexOf(this.pageIndex) > 0;
+  }
 
-    return Math.min(lastPageIndex, this.team360MemberCount);
+  get hasNextAccessiblePage(): boolean {
+    const currentPosition = this.accessiblePageIndexes.indexOf(this.pageIndex);
+    return currentPosition >= 0 && currentPosition < this.accessiblePageIndexes.length - 1;
   }
 
   // override to use question‑based pages
@@ -205,27 +243,112 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
   get pagedGroups() {
     if (!this.isPaginationEnabled) {
       // Return all groups as a single page when pagination is disabled
-      return this.assessment?.groups || [];
+      return this.displayGroups;
     }
     return this.pagesGroups[this.pageIndex] || [];
   }
 
+  /**
+   * Groups visible to the current viewer.
+   *
+   * Reviewer-only groups are never part of the learner's answering or pending-review views. Once
+   * feedback is published, reviewer-only groups are appended after the learner groups so they can
+   * be presented as a dedicated feedback section. Reviewer views retain configured order.
+   */
+  get displayGroups(): DisplayGroup[] {
+    const groups = this.assessment?.groups ?? [];
+    if (this.action !== 'assessment') {
+      return groups;
+    }
+
+    const learnerGroups = groups.filter(group => !this.isReviewerOnlyGroup(group));
+    if (this.submission?.status !== 'feedback available') {
+      return learnerGroups;
+    }
+
+    const reviewerFeedbackGroups = groups.filter(group => this.isReviewerOnlyGroup(group));
+
+    return [...learnerGroups, ...reviewerFeedbackGroups];
+  }
+
+  isReviewerOnlyGroup(group: DisplayGroup): boolean {
+    return group?.questions?.length > 0 && group.questions.every(question =>
+      question.reviewerOnly === true ||
+      (question.audience?.length === 1 && question.audience.includes('reviewer'))
+    );
+  }
+
+  isReviewerFeedbackGroup(group: DisplayGroup): boolean {
+    return this.action === 'assessment'
+      && this.submission?.status === 'feedback available'
+      && this.isReviewerOnlyGroup(group);
+  }
+
+  /**
+   * Whether answers in this group are already identified as reviewer-authored by their context.
+   *
+   * Learners reach this state after feedback is published. Reviewers reach it when reopening a
+   * completed review. Pending reviews remain outside this context so authoring controls are not
+   * affected, and shared groups retain their answer-ownership labels.
+   */
+  isReviewerOnlyReadOnlyGroup(group: DisplayGroup): boolean {
+    if (!this.isReviewerOnlyGroup(group) || this.doAssessment || this.isPendingReview) {
+      return false;
+    }
+
+    if (this.action === 'assessment') {
+      return this.submission?.status === 'feedback available';
+    }
+
+    return this.action === 'review' && this.review?.status === 'done';
+  }
+
+  isFirstReviewerFeedbackGroup(groupIndex: number, groups: DisplayGroup[]): boolean {
+    return this.isReviewerFeedbackGroup(groups[groupIndex])
+      && (groupIndex === 0 || !this.isReviewerFeedbackGroup(groups[groupIndex - 1]));
+  }
+
+  /**
+   * Show reviewer-only authoring guidance once per contiguous reviewer-only section.
+   *
+   * A reviewer-only group at the start of a paginated page is treated as the start of a section so
+   * the guidance remains available when the preceding group is rendered on another page.
+   */
+  isFirstReviewerOnlyAuthoringGroup(groupIndex: number, groups: DisplayGroup[]): boolean {
+    return this.action === 'review'
+      && this.isPendingReview
+      && this.isReviewerOnlyGroup(groups[groupIndex])
+      && (groupIndex === 0 || !this.isReviewerOnlyGroup(groups[groupIndex - 1]));
+  }
+
+  shouldShowNoAnswer(question: Question): boolean {
+    if (this.doAssessment || question?.type === 'slider') {
+      return false;
+    }
+
+    if (question?.reviewerOnly) {
+      return !this.isPendingReview && this.utils.isEmpty(this.review?.answers?.[question.id]?.answer);
+    }
+
+    return this.utils.isEmpty(this.submission?.answers?.[question.id]?.answer);
+  }
+
   prevPage() {
     if (!this.isPaginationEnabled) return;
-    if (this.pageIndex > 0) {
-      this.pageIndex--;
-      this.pageVisited[this.pageIndex] = true;
-      this.scrollActivePageIntoView();
-    }
+    const accessiblePages = this.accessiblePageIndexes;
+    const currentPosition = accessiblePages.indexOf(this.pageIndex);
+    if (currentPosition <= 0) return;
+
+    this._navigateToPage(accessiblePages[currentPosition - 1]);
   }
 
   nextPage() {
     if (!this.isPaginationEnabled) return;
-    if (this.pageIndex < this.maxAccessiblePageIndex) {
-      this.pageIndex++;
-      this.pageVisited[this.pageIndex] = true;
-      this.scrollActivePageIntoView();
-    }
+    const accessiblePages = this.accessiblePageIndexes;
+    const currentPosition = accessiblePages.indexOf(this.pageIndex);
+    if (currentPosition < 0 || currentPosition >= accessiblePages.length - 1) return;
+
+    this._navigateToPage(accessiblePages[currentPosition + 1]);
   }
 
   get pages(): number[] {
@@ -235,32 +358,32 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
 
   goToPage(i: number) {
     if (!this.isPaginationEnabled) return;
-    if (i >= 0 && i <= this.maxAccessiblePageIndex) {
-      if (this.pageIndex !== i) {
-        this.pageIndex = i;
-        this.pageVisited[i] = true;
-        this.scrollActivePageIntoView();
-        this.setSubmissionDisabled();
-        this._scrollToTop();
-      }
-    }
+    if (!this.accessiblePageIndexes.includes(i) || this.pageIndex === i) return;
+
+    this._navigateToPage(i);
   }
 
-  private _scrollToTop() {
+  private _navigateToPage(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.pageVisited[pageIndex] = true;
+    this.scrollActivePageIntoView();
+    this.setSubmissionDisabled();
+    this._scrollToTop();
+  }
+
+  private _scrollToTop(): void {
     setTimeout(() => {
-      // 1. Try standard ion-content on mobile
-      const content = document.querySelector('ion-router-outlet .ion-page:not(.ion-page-hidden) ion-content') || document.querySelector('ion-content');
-      if (content && typeof (content as any).scrollToTop === 'function') {
-        (content as any).scrollToTop(0);
+      const desktopScrollContainer = this.hostElement.nativeElement.closest('ion-col');
+      if (desktopScrollContainer) {
+        desktopScrollContainer.scrollTop = 0;
         return;
       }
 
-      // 2. Scroll the main content into view (handles desktop ion-col scroll containers)
-      const mainContent = document.querySelector('app-assessment .main-content') || document.querySelector('app-assessment');
-      if (mainContent) {
-        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      const mobileScrollContainer = this.hostElement.nativeElement.closest('ion-content') as HTMLElement & {
+        scrollToTop?: (duration?: number) => Promise<void>;
+      };
+      if (typeof mobileScrollContainer?.scrollToTop === 'function') {
+        void mobileScrollContainer.scrollToTop(0);
       }
     }, 10);
   }
@@ -484,10 +607,10 @@ Best regards`;
       this._prefillForm();
     }
 
-    // split by question count every time assessment changes - only if pagination is enabled
+    // generate physical pages every time assessment changes - only if pagination is enabled
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
-      this.pageIndex = 0;
+      this.pageIndex = this.isTeam360Assessment ? (this.accessiblePageIndexes[0] ?? 0) : 0;
 
       setTimeout(() => {
         this.initializePageCompletion();
@@ -673,7 +796,12 @@ Best regards`;
   private _handleReviewData() {
     if (this.isPendingReview && this.review?.status === 'in progress') {
       this.savingMessage$.next($localize`Last saved ${this.utils.timeFormatter(this.review.modified)}`);
-      this.btnDisabled$.next(false);
+      // An intermediate status-check fetch republishes the same in-progress review while the
+      // submit request is still running. Keep the action disabled until the parent submission
+      // workflow explicitly reports completion or failure.
+      if (!this.submitting) {
+        this.btnDisabled$.next(false);
+      }
     }
   }
 
@@ -992,6 +1120,10 @@ Best regards`;
     return 'continue';
   }
 
+  get showSubmitLoadingOnClick(): boolean {
+    return this._btnAction === 'submit';
+  }
+
   // the text of the button
   get btnText() {
     switch (this._btnAction) {
@@ -1148,15 +1280,20 @@ Best regards`;
   }
 
   /**
-   * Breaks original groups into pages, each containing ≤ pageSize questions.
-   * If a single group has more questions than pageSize, it gets sliced.
+   * Team360 keeps each configured group on its own physical page so non-peer and member-review
+   * groups retain their configured order. Other assessment types are packed into pages containing
+   * ≤ pageSize questions; oversized groups are sliced.
    */
   private splitGroupsByQuestionCount() {
+    if (this.isTeam360Assessment) {
+      return this.displayGroups.map(group => [group]);
+    }
+
     const pages = [];
     let currentPage = [];
     let count = 0;
 
-    for (const group of this.assessment.groups) {
+    for (const group of this.displayGroups) {
       const qCount = group.questions.length;
 
       if (count + qCount <= this.pageSize) {
@@ -1225,6 +1362,7 @@ Best regards`;
       this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
     });
 
+    this.setSubmissionDisabled();
     this.cdr.detectChanges();
 
     // Update the scroll position when page completion status changes
@@ -1270,33 +1408,34 @@ Best regards`;
       return true;
     }
 
-    // Check each required question if it has a valid answer
-    return requiredQuestions.every(question => {
-      const control = this.questionsForm?.controls[`q-${question.id}`];
+    return requiredQuestions.every(question => this._hasQuestionAnswer(question));
+  }
 
-      if (!control || control.invalid) {
-        return false;
-      }
+  private _hasQuestionAnswer(question: Question): boolean {
+    const control = this.questionsForm?.controls[`q-${question.id}`];
 
-      const value = control.value;
-      if (Array.isArray(value)) {
-        // multi choice questions
-        return value.length > 0;
-      } else if (typeof value === 'object' && value !== null) {
-        // file type in assessment mode: { name, url, type, ... }
-        if (value.url) { return true; }
-        // review file type: { answer: '', file: { url, ... }, comment: '' }
-        if (value.file && typeof value.file === 'object' && Object.keys(value.file).length > 0) { return true; }
-        // review questions with answer and comment fields
-        if (Array.isArray(value.answer)) {
-          return value.answer.length > 0;
-        }
-        return value.answer !== undefined && value.answer !== null && value.answer !== '';
-      } else {
-        // text / one off questions
-        return value !== undefined && value !== null && value !== '';
+    if (!control || control.invalid) {
+      return false;
+    }
+
+    const value = control.value;
+    if (Array.isArray(value)) {
+      // multi choice questions
+      return value.length > 0;
+    } else if (typeof value === 'object' && value !== null) {
+      // file type in assessment mode: { name, url, type, ... }
+      if (value.url) { return true; }
+      // review file type: { answer: '', file: { url, ... }, comment: '' }
+      if (value.file && typeof value.file === 'object' && Object.keys(value.file).length > 0) { return true; }
+      // review questions with answer and comment fields
+      if (Array.isArray(value.answer)) {
+        return value.answer.length > 0;
       }
-    });
+      return value.answer !== undefined && value.answer !== null && value.answer !== '';
+    } else {
+      // text / one off questions
+      return value !== undefined && value !== null && value !== '';
+    }
   }
 
   /**
@@ -1445,9 +1584,12 @@ Best regards`;
     }
 
     const isFormValid = this.questionsForm?.valid ?? false;
-    const memberCount = this.team360MemberCount;
-    const visitedEnough = memberCount === 0 || this.team360PagesVisited >= memberCount;
-    const shouldDisable = !isFormValid || !visitedEnough;
+    const requiredMemberSectionsComplete = this.team360RequiredMemberSectionsComplete;
+    const team360RequiredPagesComplete = !this.isTeam360Assessment
+      || this.accessiblePageIndexes.every(pageIndex =>
+        this.areAllRequiredQuestionsAnswered(this.getAllQuestionsForPage(pageIndex))
+      );
+    const shouldDisable = !isFormValid || !requiredMemberSectionsComplete || !team360RequiredPagesComplete;
     const isCurrentlyDisabled = this.btnDisabled$.getValue();
 
     // update button state only if it needs to change
@@ -1459,35 +1601,121 @@ Best regards`;
   }
 
   /**
-   * returns the number of distinct team members the user must review in a team360 assessment.
-   * counts unique teamMembers.key values across selector questions in groups from index 1+
-   * because index 0 is the self-reflection group.
+   * returns the number of distinct team members available to review in a team360 assessment.
+   * counts unique teamMembers.key values across every selector-bearing group, regardless of its
+   * configured position. This value caps semantic member sections; submit gating uses
+   * team360RequiredMemberCount instead.
    */
   get team360MemberCount(): number {
     if (!this.isTeam360Assessment) return 0;
     const groups = this.assessment?.groups ?? [];
     const memberKeys = new Set<string>();
 
-    for (let i = 1; i < groups.length; i++) {
-      const selectorQ = groups[i].questions?.find(q =>
-        q.type === 'team_member_selector' || q.type === 'multi_team_member_selector'
-      );
-      if (!selectorQ) continue;
-      (selectorQ.teamMembers ?? []).forEach((m: { key: string }) => memberKeys.add(m.key));
-    }
+    groups.forEach(group => {
+      const selectorQuestions = group.questions?.filter(q => this._isTeam360SelectorQuestion(q)) ?? [];
+      selectorQuestions.forEach(question => {
+        (question.teamMembers ?? []).forEach((member: { key: string }) => memberKeys.add(member.key));
+      });
+    });
+
     return memberKeys.size;
+  }
+
+  /**
+   * Ordered Team360 sections derived from configured groups. Selector presence defines peer pages;
+   * all other groups are non-peer pages, including general and self-assessment groups.
+   */
+  get team360Sections(): Team360Section[] {
+    if (!this.isTeam360Assessment) return [];
+
+    return (this.assessment?.groups ?? []).map((group, groupIndex) => ({
+      group,
+      groupIndex,
+      pageIndex: this._getPageIndexForGroup(group),
+      kind: this._hasTeam360Selector(group) ? 'peer' : 'non-peer',
+    }));
+  }
+
+  /**
+   * Member-review groups that participate in Team360 progress and submit gating.
+   *
+   * A selector can list every team member, so the distinct identity count is only a cap; it is not
+   * the number of rendered review sections. Each section maps to its configured physical page.
+   */
+  get team360MemberSections(): Team360Section[] {
+    if (!this.isTeam360Assessment) return [];
+
+    const memberCap = this.team360MemberCount;
+    if (memberCap === 0) return [];
+
+    return this.team360Sections
+      .filter(section => section.kind === 'peer' && this._isTeam360MemberGroup(section.group))
+      .slice(0, memberCap);
+  }
+
+  get team360RequiredMemberCount(): number {
+    return Math.min(1, this.team360MemberSections.length);
+  }
+
+  get team360MemberReviewCount(): number {
+    return this.team360MemberSections.length;
+  }
+
+  get team360RequiredMemberSectionsComplete(): boolean {
+    return this.team360MemberSections
+      .slice(0, this.team360RequiredMemberCount)
+      .every(section => this._isTeam360MemberSectionComplete(section));
   }
 
   get team360PagesVisited(): number {
     if (!this.isTeam360Assessment) return 0;
 
-    let count = 0;
-    for (let page = 1; page <= this.maxAccessiblePageIndex; page++) {
-      if (this.pageVisited[page] && this.pageRequiredCompletion[page]) {
-        count++;
-      }
-    }
-    return count;
+    return this.team360MemberSections.filter(section =>
+      this._isTeam360MemberSectionComplete(section)
+    ).length;
+  }
+
+  private _isTeam360MemberSectionComplete(section: { group: Group; pageIndex: number }): boolean {
+    return section.pageIndex >= 0
+      && this.pageVisited[section.pageIndex]
+      && this._hasAnsweredTeam360Selector(section.group)
+      && this.areAllRequiredQuestionsAnswered(section.group.questions ?? []);
+  }
+
+  private _isTeam360SelectorQuestion(question: { type?: string }): boolean {
+    return question?.type === 'team_member_selector'
+      || question?.type === 'multi_team_member_selector'
+      || question?.type === 'team member selector'
+      || question?.type === 'multi team member selector';
+  }
+
+  private _hasAnsweredTeam360Selector(group: Group): boolean {
+    const selectors = group?.questions?.filter(question =>
+      this._isTeam360SelectorQuestion(question)
+      && (question.teamMembers?.length ?? 0) > 0
+    ) ?? [];
+
+    return selectors.length > 0 && selectors.every(question => this._hasQuestionAnswer(question));
+  }
+
+  private _isTeam360MemberGroup(group: Group): boolean {
+    return group?.questions?.some(question =>
+      this._isTeam360SelectorQuestion(question)
+      && (question.teamMembers?.length ?? 0) > 0
+    ) ?? false;
+  }
+
+  private _hasTeam360Selector(group: Group): boolean {
+    return group?.questions?.some(question => this._isTeam360SelectorQuestion(question)) ?? false;
+  }
+
+  private _getPageIndexForGroup(group: Group): number {
+    const questionIds = new Set((group?.questions ?? []).map(question => question.id));
+    if (questionIds.size === 0) return -1;
+
+    return this.pagesGroups.findIndex(page => page.some(pageGroup =>
+      pageGroup === group || pageGroup.questions?.some(question => questionIds.has(question.id))
+    ));
   }
 
   /**

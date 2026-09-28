@@ -49,6 +49,7 @@ import { SliderComponent } from './slider/slider.component';
 import { LanguageDetectionPipe } from '../pipes/language.pipe';
 import { MarkdownPipe } from '../pipes/markdown.pipe';
 import { ProjectBriefModalComponent } from './project-brief-modal/project-brief-modal.component';
+import { ProjectBriefMarkdownPipe } from '../pipes/project-brief-markdown.pipe';
 import { TeamRosterComponent } from './team-roster/team-roster.component';
 import { H5pPlayerComponent } from './h5p-player/h5p-player.component';
 import { ScormPlayerComponent } from './scorm-player/scorm-player.component';
@@ -110,6 +111,7 @@ const largeCircleDefaultConfig = {
     OneofComponent,
     PopUpComponent,
     ProjectBriefModalComponent,
+    ProjectBriefMarkdownPipe,
     ReviewListComponent,
     ReviewRatingComponent,
     SliderComponent,
@@ -164,6 +166,7 @@ const largeCircleDefaultConfig = {
     OneofComponent,
     PopUpComponent,
     ProjectBriefModalComponent,
+    ProjectBriefMarkdownPipe,
     ReviewListComponent,
     ReviewRatingComponent,
     SliderComponent,

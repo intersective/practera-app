@@ -41,7 +41,10 @@ describe('AuthDirectLoginComponent', () => {
         },
         {
           provide: SharedService,
-          useValue: jasmine.createSpyObj('SharedService', ['onPageLoad', 'initWebServices']),
+          useValue: jasmine.createSpyObj('SharedService', {
+            onPageLoad: undefined,
+            initWebServices: Promise.resolve(),
+          }),
         },
         {
           provide: AuthService,
@@ -476,4 +479,3 @@ describe('AuthDirectLoginComponent', () => {
     });
   });
 });
-

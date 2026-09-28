@@ -9,7 +9,11 @@ describe('FileUploadComponent', () => {
   let uppyUploaderService: jasmine.SpyObj<UppyUploaderService>;
 
   beforeEach(() => {
-    uppyUploaderService = jasmine.createSpyObj<UppyUploaderService>('UppyUploaderService', ['createUppyInstance']);
+    uppyUploaderService = jasmine.createSpyObj<UppyUploaderService>('UppyUploaderService', [
+      'createUppyInstance',
+      'parseTusUploadResponse',
+    ]);
+    uppyUploaderService.parseTusUploadResponse.and.callFake((body) => JSON.parse(body));
     component = new FileUploadComponent(uppyUploaderService);
     component.control = new FormControl('');
     component.submitActions$ = new Subject();
@@ -59,6 +63,7 @@ describe('FileUploadComponent', () => {
 
     component.onAfterResponse({}, response);
 
+    expect(uppyUploaderService.parseTusUploadResponse).toHaveBeenCalledWith(response.getBody());
     expect(component.tusResponse).toEqual({ path: '/uploads/a', bucket: 'b', cdnUrl: 'c', directUrl: 'd' });
   });
 

@@ -42,7 +42,15 @@ describe('ExperienceService', () => {
         },
         {
           provide: BrowserStorageService,
-          useValue: jasmine.createSpyObj('BrowserStorageService', ['get', 'set', 'getUser', 'getConfig', 'setUser', 'setTabExperience']),
+          useValue: jasmine.createSpyObj('BrowserStorageService', [
+            'get',
+            'set',
+            'setUser',
+            'remove',
+            'getUser',
+            'getConfig',
+            'setTabExperience',
+          ]),
         },
         {
           provide: RequestService,
@@ -153,6 +161,70 @@ describe('ExperienceService', () => {
       expect(storageSpy.setUser.calls.first().args[0]).toEqual({ apikey: 'scoped-api-key' });
       expect(callOrder).toEqual(['authenticate', 'getTeamInfo']);
       expect(authSpy.clearCache).toHaveBeenCalled();
+    });
+
+    it('should initialise Pusher only after the selected experience is authenticated', async () => {
+      const callOrder: string[] = [];
+      const sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+      const authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+      const storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+      const experience = {
+        id: 2,
+        uuid: 'experience-2',
+        projectId: 22,
+        timelineId: 222,
+        featureToggle: {},
+      };
+
+      storageService.get.and.returnValue(null);
+      authService.authenticate.and.callFake(() => {
+        callOrder.push('authenticate');
+        return of({
+          data: {
+            auth: {
+              apikey: 'new-api-key',
+            },
+          },
+        } as any);
+      });
+      sharedService.initWebServices.and.callFake(async () => {
+        callOrder.push('pusher');
+      });
+
+      await service.switchProgramAndNavigate(experience as any);
+
+      expect(callOrder).toEqual(['authenticate', 'pusher']);
+      expect(storageService.setUser).toHaveBeenCalledWith({ apikey: 'new-api-key' });
+      expect(sharedService.initWebServices).toHaveBeenCalledTimes(1);
+    });
+
+    it('should continue the experience switch when Pusher refresh fails', async () => {
+      const sharedService = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
+      const authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+      const storageService = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
+      const consoleError = spyOn(console, 'error');
+      const experience = {
+        id: 2,
+        uuid: 'experience-2',
+        projectId: 22,
+        timelineId: 222,
+        featureToggle: {},
+      };
+
+      storageService.get.and.returnValue(null);
+      authService.authenticate.and.returnValue(of({
+        data: { auth: { apikey: 'new-api-key' } },
+      } as any));
+      sharedService.initWebServices.and.rejectWith(new Error('Pusher unavailable'));
+
+      const route = await service.switchProgramAndNavigate(experience as any);
+
+      expect(route).toEqual(['v3', 'home']);
+      expect(authService.clearCache).toHaveBeenCalled();
+      expect(consoleError).toHaveBeenCalledWith(
+        'Failed to refresh experience-scoped web services',
+        jasmine.any(Error)
+      );
     });
   });
 });

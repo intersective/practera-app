@@ -3,20 +3,26 @@
 @if (isDisplayOnly) {
   <ion-list class="no-bg ion-no-padding">
     <ion-radio-group [value]="submission?.answer">
-      @for (teamMember of question.teamMembers; track teamMember; let i = $index) {
+      @for (teamMember of displayTeamMembers; track teamMember; let i = $index) {
         <ion-item class="item-bottom-border" lines="none">
           <ion-label>
-            <span [innerHTML]="teamMember.userName"></span>
-            @if (teamMember.key === submission?.answer || teamMember.key === review?.answer) {
+            @if (!isReviewerFeedbackContext && (teamMember.key === submission?.answer || teamMember.key === review?.answer)) {
               <p>
                 @if (teamMember.key === submission?.answer) {
-                  <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
+                  <ion-chip class="label orange">
+                    @if (viewerRole === 'learner') {
+                      <span i18n>Your Answer</span>
+                    } @else {
+                      <span i18n>Learner's Answer</span>
+                    }
+                  </ion-chip>
                 }
                 @if (teamMember.key === review?.answer) {
                   <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
                 }
               </p>
             }
+            <span class="answer-content" [innerHTML]="teamMember.userName"></span>
           </ion-label>
         </ion-item>
       }

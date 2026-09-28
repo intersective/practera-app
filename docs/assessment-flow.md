@@ -2,7 +2,7 @@
 status: stable
 authority: canonical
 scope: frontend
-last_reviewed: 2026-05-01
+last_reviewed: 2026-07-16
 supersedes: none
 ---
 
@@ -33,14 +33,18 @@ When pagination is enabled (`environment.featureToggles.assessmentPagination = t
 
 ```
 1. Assessment loads → splitGroupsByQuestionCount()
-2. Groups divided into pages (≤10 questions per page)
+2. Physical pages generated
+   - Team360: one configured group per physical page
+   - other assessment types: groups packed into pages of ≤10 questions
 3. Non-Team360 page indicators show completion status
 4. Users navigate with Prev/Next buttons; non-Team360 users can also click page indicators
 5. Team360 assessments hide page numbers/dots and use Prev/Next-only pagination
-6. Team360 Next navigation stops after self-reflection plus the selected team-member count
-   - Team360 page 0 is self-reflection; each following accessible page maps to one team-member group
-7. Form validation tracks completion per page
-8. Submit button integrates with pagination controls
+6. Team360 navigation follows configured group order with one group per physical page
+   - selector-free groups are non-peer pages and remain accessible before, between, or after member-review groups
+   - member-review groups contain a team-member selector and drive the member progress counter
+   - unused member placeholder pages remain inaccessible
+7. Form validation tracks every required question on accessible pages, including leading and trailing non-peer groups
+8. Submit requires both member-review completion and a valid assessment form
 ```
 
 ## Core Components
@@ -131,6 +135,8 @@ questionsForm: FormGroup = new FormGroup({});
 
 3. **Feedback Available**: Read-only with feedback
    - Display learner answers and reviewer feedback
+   - For reviewer-only `multiple` and `oneof` questions, display every configured choice with a green check and **Selected** status or a subdued **Not selected** status
+   - Reviewer-only choice feedback is derived only from the review answer and does not display learner-answer labels
    - "Mark as Read" button to acknowledge feedback
    - Navigation to next task after reading
 
@@ -143,6 +149,7 @@ questionsForm: FormGroup = new FormGroup({});
 
 2. **Review Complete**: Read-only mode
    - Show completed review
+   - For reviewer-only `multiple` and `oneof` questions, show every configured choice using the same **Selected** and **Not selected** statuses as the learner's published-feedback view
    - No further editing allowed
 
 #### Form Population Logic
@@ -296,16 +303,24 @@ All follow similar patterns with dual-purpose display for learner/reviewer conte
 ```html
 <ion-button class="action-button"
   mode="ios"
-  [disabled]="disabled$ | async"
+  [disabled]="loading || (disabled$ | async)"
   [color]="color"
   (click)="onClick($event)"
->{{ text }}</ion-button>
+  [attr.aria-busy]="loading ? 'true' : 'false'">
+  <ion-spinner *ngIf="loading" name="crescent"></ion-spinner>
+  <span>{{ text }}</span>
+</ion-button>
 ```
 
 **Button States:**
 - **Enabled**: Form is valid and user can submit
-- **Disabled**: Form has validation errors or submission in progress
+- **Disabled**: Form has validation errors or an action is already in progress
+- **Loading**: For assessment/review submit actions, starts before the click event is emitted, keeps the disabled button visible with an inline spinner, and clears when `disabled$` emits `false`
 - **Dynamic Text**: Changes based on context (Submit, Continue, Mark as Read, etc.)
+
+`disabled$` remains the source of truth for whether the action can be triggered. Loading is a distinct, opt-in visual state (`showLoadingOnClick`) so validation-disabled buttons do not incorrectly announce `aria-busy`, and non-submit actions retain their existing behavior.
+
+During manual submission, the parent page owns the terminal `disabled$ = false` transition. Intermediate assessment/review refetches may update displayed data and the last-saved message, but must not re-enable the action while the assessment component's submission guard is active. The parent clears the state only after the final refresh succeeds or the submission fails.
 
 ## Data Flow Diagrams
 
@@ -466,10 +481,10 @@ readonly manyPages = 10;               // minimum pages to show scrollable pagin
 ### Page Generation Logic
 ```typescript
 splitGroupsByQuestionCount() {
-  // Divides assessment groups into pages
+  // Team360: returns one page per configured group, preserving group order
+  // Other assessment types:
   // - Multiple small groups can fit on one page if total questions ≤ pageSize
   // - Large groups with >pageSize questions are split across multiple pages
-  // - Preserves group structure where possible
 }
 ```
 
@@ -479,6 +494,44 @@ prevPage()              // go to previous page; marks destination as visited
 nextPage()              // go to next page; marks destination as visited
 goToPage(i: number)     // jump to specific page; marks target as visited
 ```
+
+For Team360, these methods navigate through `accessiblePageIndexes` rather than assuming every
+integer page between `0` and a maximum is accessible. This allows navigation to skip unused member
+placeholder pages while preserving selector-free groups anywhere in the configured order.
+
+### Team360 Semantic Completion
+
+Team360 progress is group-based and each configured group has its own physical page. Page meaning
+is derived from its questions rather than its position:
+
+1. a selector-bearing group is a member-review page;
+2. a selector-free group is a non-peer page, including general and self-assessment groups;
+3. physical pages retain their configured order, so any number of non-peer pages can appear before,
+   between, or after member-review pages.
+
+- `team360Sections` is the ordered classification of configured groups as peer or non-peer pages.
+- `team360MemberCount` remains the distinct-member cap derived from selector options across all group positions.
+- `team360MemberSections` contains the actual selector-bearing groups, capped by that distinct-member count.
+- `team360RequiredMemberCount` is `1` when at least one member-review section exists: the first
+  selector-bearing peer group is the minimum required review.
+- `team360MemberReviewCount` is the total number of accessible member-review sections shown in progress.
+- `team360PagesVisited` counts member sections that were visited and have an actual member selection;
+  opening an empty peer page does not count as a completed review.
+- later selector-bearing peer groups remain available and contribute to progress when completed, but
+  they do not replace or bypass the required first peer review.
+- groups without a team-member selector never increase the "members reviewed" counter.
+
+Submit-button state is calculated as:
+
+```text
+disabled = assessment form invalid
+        OR first peer review incomplete
+        OR any accessible Team360 page has an unanswered required question
+```
+
+Required completion is checked across all accessible Team360 pages, regardless of which physical
+page is currently displayed. Required leading or trailing non-peer questions therefore block
+submission from every page until answered; entirely optional non-peer groups add no submission gate.
 
 ### Completion Tracking
 
@@ -542,6 +595,7 @@ initializePageCompletion() {
     this.pageRequiredCompletion[index] = this.areAllRequiredQuestionsAnswered(pageQuestions);
   });
 
+  this.setSubmissionDisabled();
   this.cdr.detectChanges();
   setTimeout(() => this.scrollActivePageIntoView(), 100);
 }

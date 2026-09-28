@@ -12,16 +12,28 @@
           <ng-content></ng-content>
         }
         <div class="button-container"
+          [class.is-loading]="loading"
           [ngClass]="{'with-custom-content': hasCustomContent}">
           <ion-button class="action-button"
             mode="ios"
-            [disabled]="disabled$ | async"
+            [disabled]="loading || (disabled$ | async)"
             [color]="color"
             [title]="title || null"
             (click)="onClick($event)"
-            [attr.aria-busy]="(disabled$ | async) ? 'true' : 'false'"
+            [attr.aria-busy]="loading ? 'true' : 'false'"
             type="button"
-          >{{ text }}</ion-button>
+          >
+            @if (loading) {
+              <ion-spinner
+                class="action-spinner"
+                name="crescent"
+                role="status"
+                aria-live="polite"
+                aria-label="Submitting"
+                i18n-aria-label></ion-spinner>
+            }
+            <span>{{ text }}</span>
+          </ion-button>
           @if (showResubmit === true) {
             <ion-button class="action-button"
               [disabled]="disabled$ | async"

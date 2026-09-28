@@ -1,7 +1,7 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, flush, flushMicrotasks } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
@@ -13,6 +13,24 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { HomeService } from '@v3/app/services/home.service';
 import { RequestService } from 'request';
 import { DemoService } from '@v3/app/services/demo.service';
+
+@Directive({
+  standalone: false,
+  // eslint-disable-next-line @angular-eslint/directive-selector
+  selector: 'ion-radio-group[formControlName]',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => RadioGroupValueAccessorStub),
+      multi: true
+    }
+  ]
+})
+class RadioGroupValueAccessorStub implements ControlValueAccessor {
+  writeValue(): void {}
+  registerOnChange(): void {}
+  registerOnTouched(): void {}
+}
 
 class Page {
   get questions() {
@@ -42,7 +60,7 @@ describe('FastFeedbackComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [FormsModule, ReactiveFormsModule],
-      declarations: [FastFeedbackComponent],
+      declarations: [FastFeedbackComponent, RadioGroupValueAccessorStub],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       providers: [
         {
@@ -137,6 +155,212 @@ describe('FastFeedbackComponent', () => {
     const storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     component.ngOnDestroy();
     expect(storageSpy.set).toHaveBeenCalledWith('fastFeedbackOpening', false);
+  });
+
+  describe('choice description details', () => {
+    const questionId = 20;
+    const firstChoiceId = 201;
+    const secondChoiceId = 202;
+    const choiceWithoutDescriptionId = 203;
+
+    const descriptionId = (choiceId: number) =>
+      `fast-feedback-choice-description-${questionId}-${choiceId}`;
+
+    const getDescription = (choiceId: number): HTMLElement | null =>
+      fixture.nativeElement.querySelector(`#${descriptionId(choiceId)}`);
+
+    const getToggle = (choiceId: number): HTMLElement | null =>
+      fixture.nativeElement.querySelector(`[aria-controls="${descriptionId(choiceId)}"]`);
+
+    beforeEach(() => {
+      component.isMobile = false;
+      component.questions = [
+        {
+          id: questionId,
+          name: 'Innovation',
+          description: 'Choose the level that best describes you.',
+          isRequired: true,
+          choices: [
+            {
+              id: firstChoiceId,
+              name: 'Extremely Skilled',
+              description: 'I can apply this skill independently.'
+            },
+            {
+              id: secondChoiceId,
+              name: 'Very Skilled',
+              description: 'I can apply this skill with occasional support.'
+            },
+            {
+              id: choiceWithoutDescriptionId,
+              name: 'Not Yet Skilled',
+              description: ''
+            }
+          ]
+        }
+      ];
+      fixture.detectChanges();
+    });
+
+    it('keeps descriptions rendered but collapsed until explicitly opened', () => {
+      const description = getDescription(firstChoiceId);
+      const toggle = getToggle(firstChoiceId);
+
+      expect(description).withContext('description panel should have a stable DOM id').not.toBeNull();
+      expect(description?.hidden).toBeTrue();
+      expect(toggle).withContext('answers with descriptions should have a details button').not.toBeNull();
+      expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+      expect(toggle?.getAttribute('aria-label')).toBe('Show details for Extremely Skilled');
+    });
+
+    it('does not open a description when the pointer crosses an answer', () => {
+      const firstChoiceItem = fixture.nativeElement.querySelector('ion-item.choice-item');
+
+      firstChoiceItem.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+    });
+
+    it('opens and closes a description from its details button', () => {
+      const toggle = getToggle(firstChoiceId);
+
+      toggle?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeFalse();
+      expect(toggle?.getAttribute('aria-expanded')).toBe('true');
+      expect(toggle?.getAttribute('aria-label')).toBe('Hide details for Extremely Skilled');
+
+      toggle?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+      expect(toggle?.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('keeps only one choice description open at a time', () => {
+      getToggle(firstChoiceId)?.click();
+      getToggle(secondChoiceId)?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+      expect(getDescription(secondChoiceId)?.hidden).toBeFalse();
+    });
+
+    it('shows details buttons only for answers with descriptions', () => {
+      const toggles = fixture.nativeElement.querySelectorAll('ion-button.description-toggle-btn');
+
+      expect(toggles.length).toBe(2);
+      expect(getToggle(choiceWithoutDescriptionId)).toBeNull();
+      expect(getDescription(choiceWithoutDescriptionId)).toBeNull();
+    });
+
+    it('does not select an answer or bubble the click when details are toggled', () => {
+      const firstChoiceItem = fixture.nativeElement.querySelector('ion-item.choice-item');
+      const toggle = getToggle(firstChoiceId);
+      const itemClickSpy = jasmine.createSpy('itemClick');
+      const submitSpy = spyOn(component, 'submit');
+      firstChoiceItem.addEventListener('click', itemClickSpy);
+
+      expect(toggle).withContext('the details button must exist before its click can be isolated').not.toBeNull();
+      toggle?.click();
+      fixture.detectChanges();
+
+      expect(component.fastFeedbackForm.get(questionId.toString())?.value).toBeNull();
+      expect(itemClickSpy).not.toHaveBeenCalled();
+      expect(submitSpy).not.toHaveBeenCalled();
+    });
+
+    it('uses the explicit details button on mobile instead of answer selection', () => {
+      component.isMobile = true;
+      component.fastFeedbackForm.get(questionId.toString())?.setValue(firstChoiceId);
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeTrue();
+
+      getToggle(firstChoiceId)?.click();
+      fixture.detectChanges();
+
+      expect(getDescription(firstChoiceId)?.hidden).toBeFalse();
+    });
+  });
+
+  describe('pagination scroll position', () => {
+    let scrollToTopSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
+      (component as any).content = { scrollToTop: scrollToTopSpy };
+      component.totalPages = 3;
+    });
+
+    it('scrolls to the top after moving to the next page', () => {
+      component.currentPage = 0;
+
+      component.nextPage();
+
+      expect(component.currentPage).toBe(1);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    });
+
+    it('scrolls to the top after moving to the previous page', () => {
+      component.currentPage = 2;
+
+      component.previousPage();
+
+      expect(component.currentPage).toBe(1);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    });
+
+    it('scrolls to the top after moving to a numbered page', () => {
+      component.currentPage = 0;
+
+      component.goToPage(2);
+
+      expect(component.currentPage).toBe(2);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+    });
+
+    it('scrolls to the top when submission returns to the first incomplete page', async () => {
+      component.questions = Array.from({ length: 4 }, (_, index) => ({ id: index + 1 }));
+      component.fastFeedbackForm = new FormGroup({
+        1: new FormControl(null, Validators.required),
+        2: new FormControl(20, Validators.required),
+        3: new FormControl(30, Validators.required),
+        4: new FormControl(40, Validators.required)
+      });
+      component.currentPage = 1;
+      component.totalPages = 2;
+
+      await component.submit();
+
+      expect(component.currentPage).toBe(0);
+      expect(scrollToTopSpy).toHaveBeenCalledOnceWith(0);
+      expect(fastfeedbackSpy.submit).not.toHaveBeenCalled();
+    });
+
+    it('keeps the current scroll position when the requested page does not change', () => {
+      component.currentPage = 1;
+
+      component.goToPage(1);
+      component.goToPage(-1);
+      component.goToPage(3);
+
+      expect(component.currentPage).toBe(1);
+      expect(scrollToTopSpy).not.toHaveBeenCalled();
+    });
+
+    it('does not scroll beyond the pagination boundaries', () => {
+      component.currentPage = 0;
+      component.previousPage();
+
+      component.currentPage = 2;
+      component.nextPage();
+
+      expect(component.currentPage).toBe(2);
+      expect(scrollToTopSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('when testing submit()', () => {

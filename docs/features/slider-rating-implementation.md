@@ -261,6 +261,7 @@ pinFormatter = (value: number): string => {
     margin-top: 16px;
 
     .label {
+      // Uses the shared ion-chip.label sizing and typography.
       &.orange { /* Learner answer styling */ }
       &.yellow { /* Expert answer styling */ }
     }

@@ -198,6 +198,26 @@
       i18n-aria-label
       novalidate>
       <ng-container *ngFor="let group of pagedGroups; let groupIndex = index">
+        <div class="reviewer-feedback-section"
+          *ngIf="isFirstReviewerFeedbackGroup(groupIndex, pagedGroups)"
+          role="region"
+          aria-labelledby="reviewer-feedback-heading">
+          <h3 id="reviewer-feedback-heading"
+            i18n>Reviewer Feedback</h3>
+          <p class="body-2 gray-2"
+            i18n>These criteria were completed by your reviewer.</p>
+        </div>
+
+        <div class="reviewer-only-guidance"
+          *ngIf="isFirstReviewerOnlyAuthoringGroup(groupIndex, pagedGroups)"
+          role="note"
+          [attr.aria-labelledby]="'reviewer-only-guidance-heading-' + pageIndex + '-' + groupIndex">
+          <h3 [id]="'reviewer-only-guidance-heading-' + pageIndex + '-' + groupIndex"
+            i18n>Reviewer-only questions</h3>
+          <p class="body-2 gray-2"
+            i18n>Complete these questions as part of your review. Your answers will be shared with the learner after you submit the review.</p>
+        </div>
+
         <div [ngClass]="{'ion-padding': isSinglePage, 'ion-padding-top': !isSinglePage}"
           role="group"
           [attr.aria-labelledby]="'group-heading-' + groupIndex">
@@ -297,23 +317,18 @@
                   i18n-aria-label></ion-icon>
               </div>
 
-              <ng-container *ngIf="question.type !== 'slider'">
-                <ion-item *ngIf="!doAssessment && (
-                  (!question.reviewerOnly && utils.isEmpty(submission?.answers[question.id]?.answer)) ||
-                  (question.reviewerOnly && !review?.answers[question.id] && !isPendingReview)
-                )"
-                  class="no-answers item-bottom-border"
-                  lines="none"
-                  role="note">
-                  <ion-icon slot="start"
-                    color="orange"
-                    name="information-circle-outline"
-                    class="ion-margin-end"
-                    aria-hidden="true"></ion-icon>
-                  <ion-label size="small"
-                    i18n>No answer for this question.</ion-label>
-                </ion-item>
-              </ng-container>
+              <ion-item *ngIf="shouldShowNoAnswer(question)"
+                class="no-answers item-bottom-border"
+                lines="none"
+                role="note">
+                <ion-icon slot="start"
+                  color="orange"
+                  name="information-circle-outline"
+                  class="ion-margin-end"
+                  aria-hidden="true"></ion-icon>
+                <ion-label size="small"
+                  i18n>No answer for this question.</ion-label>
+              </ion-item>
 
               <!-- switch contains only *ngSwitchCase / *ngSwitchDefault children -->
               <ng-container [ngSwitch]="question.type">
@@ -328,6 +343,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-text>
@@ -343,6 +360,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-slider>
@@ -358,6 +377,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-oneof>
@@ -373,6 +394,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multiple>
@@ -389,6 +412,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [videoOnly]="true"
                 [submitActions$]="submitActions"></app-file-upload>
@@ -405,6 +430,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-file-upload>
 
@@ -419,6 +446,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-team-member-selector>
@@ -434,6 +463,8 @@
                 [review]="review?.answers[question.id] || {}"
                 [reviewStatus]="review ? review.status : ''"
                 [submissionStatus]="submission ? submission.status : ''"
+                [viewerRole]="action === 'assessment' ? 'learner' : 'reviewer'"
+                [isReviewerFeedbackContext]="isReviewerOnlyReadOnlyGroup(group)"
                 [formControlName]="'q-' + question.id"
                 [control]="questionsForm?.controls['q-' + question.id]"
                 [submitActions$]="submitActions"></app-multi-team-member-selector>
@@ -474,12 +505,13 @@
       [color]="hasUnvisitedTeam360Pages ? 'warning' : 'primary'"
       [title]="hasUnvisitedTeam360Pages ? 'You have not reviewed all teammates yet' : ''"
       [disabled$]="btnDisabled$"
+      [showLoadingOnClick]="showSubmitLoadingOnClick"
       (handleClick)="continueToNextTask()"
       [hasCustomContent]="isPaginationEnabled && pageCount > 1">
 
       <!-- team 360 progress: show how many members have been reviewed -->
-      <div class="team360-progress" *ngIf="team360MemberCount > 0 && doAssessment">
-        <span i18n>{{ team360PagesVisited }} of {{ team360MemberCount }} member{{ team360MemberCount > 1 ? 's' : '' }} reviewed</span>
+      <div class="team360-progress" *ngIf="team360MemberReviewCount > 0 && doAssessment">
+        <span i18n>{{ team360PagesVisited }} of {{ team360MemberReviewCount }} member{{ team360MemberReviewCount > 1 ? 's' : '' }} reviewed</span>
       </div>
 
       <!-- PAGINATION MOVED BACK INTO BOTTOM BAR -->
@@ -490,7 +522,7 @@
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
-          [disabled]="pageIndex === 0">
+          [disabled]="!hasPreviousAccessiblePage">
           <ion-icon name="chevron-back-outline"></ion-icon>
           <span>Prev</span>
         </ion-button>
@@ -526,7 +558,7 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= maxAccessiblePageIndex">
+          [disabled]="!hasNextAccessiblePage">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>
@@ -548,7 +580,7 @@
         <ion-button fill="clear"
           class="nav-button prev-button"
           (click)="prevPage()"
-          [disabled]="pageIndex === 0">
+          [disabled]="!hasPreviousAccessiblePage">
           <ion-icon name="chevron-back-outline"></ion-icon>
           <span>Prev</span>
         </ion-button>
@@ -584,7 +616,7 @@
         <ion-button fill="clear"
           class="nav-button next-button"
           (click)="nextPage()"
-          [disabled]="pageIndex >= maxAccessiblePageIndex">
+          [disabled]="!hasNextAccessiblePage">
           <span>Next</span>
           <ion-icon name="chevron-forward-outline"></ion-icon>
         </ion-button>

@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    @if (file?.url) {
+    @if (previewUrl) {
       <ion-icon
         name="download"
         (click)="download()"
@@ -32,7 +32,7 @@
 <ion-content text-center>
   <div class="wrapper">
     @if (file?.type?.includes('image')) {
-      <img [src]="file.url" alt="uploaded attachment preview" i18n-alt>
+      <img [src]="previewUrl" alt="uploaded attachment preview" i18n-alt>
     }
 
     @if (isBrowserSupportedVideo()) {
@@ -42,12 +42,12 @@
         controlsList="nodownload"
         preload="metadata"
         playsinline
-        [src]="file.url"
+        [src]="previewUrl"
         (error)="handleVideoError($event)"
         >
         <p i18n="video not supported message">
           Your browser doesn't support HTML5 video.
-          <a [href]="file.url" class="contrast">Download the video</a> instead.
+          <a [href]="previewUrl" class="contrast">Download the video</a> instead.
         </p>
       </video>
     }
@@ -58,7 +58,7 @@
         <p class="body-2" i18n="unsupported video format message">
           This video format is not supported for preview.
           <br>
-          <a [href]="file.url" target="_blank" rel="noopener">Download to view</a>
+          <a [href]="previewUrl" target="_blank" rel="noopener">Download to view</a>
         </p>
         </div>
       }

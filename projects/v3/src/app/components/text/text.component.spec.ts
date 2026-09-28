@@ -49,6 +49,50 @@ describe('TextComponent', () => {
     expect(component).toBeDefined();
   });
 
+  describe('read-only ownership context', () => {
+    beforeEach(() => {
+      component.question = {
+        id: 1,
+        name: 'Question',
+        type: 'text',
+        description: '',
+        isRequired: false,
+        canAnswer: true,
+        canComment: false,
+        audience: ['submitter', 'reviewer'],
+      } as any;
+      component.submissionStatus = 'feedback available';
+      component.reviewStatus = 'done';
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submission = { answer: 'learner response' };
+      component.review = { answer: 'reviewer response' };
+    });
+
+    it('should use ownership labels for shared feedback', () => {
+      component.viewerRole = 'learner';
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Your Answer');
+      expect(fixture.nativeElement.textContent).toContain("Reviewer's Answer");
+      expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+    });
+
+    it('should show reviewer-only text without an ownership label', () => {
+      component.question.audience = ['reviewer'];
+      component.question.reviewerOnly = true;
+      component.submission = {};
+      component.isReviewerFeedbackContext = true;
+
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('reviewer response');
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
+      expect(fixture.nativeElement.querySelectorAll('ion-chip').length).toBe(0);
+    });
+  });
+
   describe('when testing onInit()', () => {
     const dummyQuestion = {
       id: 1,
@@ -576,4 +620,3 @@ describe('TextComponent', () => {
   });
 
 });
-

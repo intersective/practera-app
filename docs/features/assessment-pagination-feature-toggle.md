@@ -2,7 +2,7 @@
 status: stable
 authority: canonical
 scope: frontend
-last_reviewed: 2026-05-05
+last_reviewed: 2026-07-13
 supersedes: none
 ---
 
@@ -36,11 +36,14 @@ export const environment = {
 ## Behavior
 
 ### When `assessmentPagination: true` (Default)
-- assessment questions are split across multiple pages (10 questions per page)
+- non-Team360 assessment questions are packed into pages of up to 10 questions
+- Team360 assessments render each configured group on its own physical page and preserve the configured order; selector-free general or self-assessment groups can appear before, between, or after member-review groups
 - pagination controls (Prev/Next buttons and page indicators) are visible in the bottom action bar
 - Team360 assessments are the exception: they show only Prev/Next buttons, with no page numbers, dots, completion icons, or direct page-indicator navigation
-- Team360 forward navigation is capped at one self-reflection page plus the number of selected team members
-- Team360 assumes page 0 is self-reflection and each following accessible page maps to one team-member group
+- Team360 progress is based on selector-bearing member groups with an actual member selection, with each configured member group on its own page
+- the first selector-bearing peer group is mandatory and must be visited with a member selected; later peer groups remain optional workflow pages and cannot satisfy the first-peer requirement
+- Team360 navigation includes every selector-free page plus permitted member-group pages in configured order; unused member placeholder pages remain inaccessible
+- required questions in leading or trailing selector-free groups are checked assessment-wide and block submission from every page, while optional non-peer groups add no submission requirement
 - page indicator states depend on the current mode:
 
   **edit mode** (`doAssessment = true` or `isPendingReview = true`):
@@ -70,10 +73,11 @@ the feature toggle affects:
 
 1. **template rendering** — pagination UI is conditionally rendered based on `isPaginationEnabled`
    - `showPageIndicators` keeps numbered page indicators available for non-Team360 assessments only
-2. **question display** — questions are either paginated or shown all at once via `pagedGroups` getter
-3. **navigation methods** — `prevPage()`, `nextPage()`, `goToPage()` are no-ops when pagination is disabled; each marks the destination page in `pageVisited[]`
+2. **question display** — questions are either paginated or shown all at once via `pagedGroups`; Team360 uses one configured group per page while other types use question-count packing
+3. **navigation methods** — `prevPage()`, `nextPage()`, `goToPage()` are no-ops when pagination is disabled; each marks the destination page in `pageVisited[]`; Team360 uses `accessiblePageIndexes` so navigation can skip hidden placeholder pages
 4. **page completion** — `pageRequiredCompletion[]` tracks whether all required questions on each page are answered; indicators are gated on `pageVisited[]` so unvisited pages always show neutral
-5. **submit guard** — `continueToNextTask()` checks `pageVisited[]` before submitting; shows a confirmation alert when any page is unvisited
+5. **Team360 member completion** — selector-bearing groups are mapped to their configured physical pages and count only after the page is visited and a member is selected
+6. **submit state** — Team360 submission requires the first member-review section to be complete, the overall assessment form to be valid, and every required question on accessible Team360 pages to be answered
 
 ## Usage Examples
 

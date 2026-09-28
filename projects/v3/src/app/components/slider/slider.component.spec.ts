@@ -341,6 +341,69 @@ describe('SliderComponent', () => {
     });
   });
 
+  describe('reviewer-only display', () => {
+    beforeEach(() => {
+      component.question = {
+        ...component.question,
+        audience: ['reviewer'],
+        reviewerOnly: true,
+      };
+      component.doAssessment = false;
+      component.doReview = false;
+      component.submissionStatus = 'feedback available';
+      component.submission = {};
+      component.viewerRole = 'learner';
+      component.isReviewerFeedbackContext = true;
+    });
+
+    it('should use the reviewer answer as the displayed slider value', () => {
+      component.review = { answer: 3 };
+
+      fixture.detectChanges();
+
+      expect(component.hasDisplaySliderAnswer()).toBeTrue();
+      expect(component.getDisplaySliderValue()).toBe(3);
+      expect(fixture.nativeElement.querySelector('ion-range.display-only-slider')).toBeTruthy();
+      expect(fixture.nativeElement.textContent).not.toContain("Reviewer's Answer");
+      expect(fixture.nativeElement.querySelectorAll('ion-chip').length).toBe(0);
+      expect(fixture.nativeElement.textContent).not.toContain('The learner has not submitted an answer');
+    });
+
+    it('should use reviewer-specific wording when no review answer exists', () => {
+      component.review = { answer: null };
+
+      fixture.detectChanges();
+
+      expect(component.hasDisplaySliderAnswer()).toBeFalse();
+      expect(fixture.nativeElement.textContent).toContain('No reviewer answer provided');
+      expect(fixture.nativeElement.textContent).toContain('The reviewer has not submitted an answer');
+      expect(fixture.nativeElement.textContent).not.toContain('The learner has not submitted an answer');
+      expect(fixture.nativeElement.textContent).not.toContain('No answers available yet');
+    });
+  });
+
+  it('should use ownership labels for a shared slider in learner view', () => {
+    component.question = {
+      ...component.question,
+      audience: ['submitter', 'reviewer'],
+      reviewerOnly: false,
+    };
+    component.doAssessment = false;
+    component.doReview = false;
+    component.submissionStatus = 'feedback available';
+    component.reviewStatus = 'done';
+    component.viewerRole = 'learner';
+    component.submission = { answer: 2 };
+    component.review = { answer: 4 };
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain('Your Answer: 2');
+    expect(fixture.nativeElement.textContent).toContain("Reviewer's Answer: 4");
+    expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
+    expect(fixture.nativeElement.querySelectorAll('.answer-indicators ion-icon').length).toBe(0);
+  });
+
   describe('onLabelClick guard', () => {
     it('should not call onChange when control is disabled', () => {
       component.ngOnInit();

@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA, EventEmitter } from '@angular/core';
-import { waitForAsync, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChatListComponent } from './chat-list.component';
 import { ChatChannel, ChatService } from '@v3/services/chat.service';
@@ -14,19 +14,6 @@ import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { TestUtils } from '@testingv3/utils';
 import { mockChats } from '@testingv3/fixtures';
 
-const mockPusherChannels = {
-  data: {
-    channels: [
-      {
-        pusherChannel: 'sdb746-93r7dc-5f44eb4f'
-      },
-      {
-        pusherChannel: 'kb5gt-9nfbj-5f45eb4g'
-      }
-    ]
-  }
-};
-
 describe('ChatListComponent', () => {
   let component: ChatListComponent;
   let fixture: ComponentFixture<ChatListComponent>;
@@ -35,8 +22,6 @@ describe('ChatListComponent', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let pusherSpy: jasmine.SpyObj<PusherService>;
   let routerSpy: jasmine.SpyObj<Router>;
-  let routeStub: Partial<ActivatedRoute>;
-  let fastFeedbackSpy: jasmine.SpyObj<FastFeedbackService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -52,7 +37,6 @@ describe('ChatListComponent', () => {
           provide: ChatService,
           useValue: jasmine.createSpyObj('ChatService', {
             'getChatList': of(mockChats.data.channels),
-            'getPusherChannels': of(true),
           })
         },
         {
@@ -61,7 +45,9 @@ describe('ChatListComponent', () => {
         },
         {
           provide: PusherService,
-          useValue: jasmine.createSpyObj('PusherService', ['subscribeChannel'])
+          useValue: jasmine.createSpyObj('PusherService', {
+            refreshChatChannels: Promise.resolve(),
+          })
         },
         {
           provide: Router,
@@ -91,13 +77,11 @@ describe('ChatListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ChatListComponent);
     component = fixture.componentInstance;
-    routeStub = TestBed.inject(ActivatedRoute);
     routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     chatSeviceSpy = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     utils = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     pusherSpy = TestBed.inject(PusherService) as jasmine.SpyObj<PusherService>;
-    fastFeedbackSpy = TestBed.inject(FastFeedbackService) as jasmine.SpyObj<FastFeedbackService>;
   });
 
   it('should create', () => {
@@ -114,18 +98,23 @@ describe('ChatListComponent', () => {
       utils.broadcastEvent('chat:info-update', {});
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
     });
+
+    it('should stop handling chat events after destruction', () => {
+      component.ngOnDestroy();
+
+      utils.broadcastEvent('chat:new-message', {});
+
+      expect(chatSeviceSpy.getChatList).not.toHaveBeenCalled();
+    });
   });
 
   describe('when testing onEnter()', () => {
-    it('should get correct chat list and pusher channels', () => {
+    it('should get the chat list and request exact Pusher reconciliation', () => {
       chatSeviceSpy.getChatList.and.returnValue(of(mockChats.data.channels));
-      chatSeviceSpy.getPusherChannels.and.returnValue(of(mockPusherChannels.data.channels));
       component.onEnter();
       expect(component.chatList).toBeDefined();
       expect(chatSeviceSpy.getChatList.calls.count()).toBe(1);
-      expect(chatSeviceSpy.getPusherChannels.calls.count()).toBe(1);
-      expect(pusherSpy.subscribeChannel).toHaveBeenCalledWith('chat', 'sdb746-93r7dc-5f44eb4f');
-      expect(pusherSpy.subscribeChannel).toHaveBeenCalledWith('chat', 'kb5gt-9nfbj-5f45eb4g');
+      expect(pusherSpy.refreshChatChannels).toHaveBeenCalled();
     });
   });
 

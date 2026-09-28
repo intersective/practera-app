@@ -224,9 +224,9 @@ export class SharedService {
    * Initialise web services like Pusher/ apollo if there stack info in storage
    */
   async initWebServices(): Promise<void> {
-    await this.pusherService.initialise();
     this.apolloService.initiateCoreClient();
     this.utils.checkIsPracteraSupportEmail();
+    await this.pusherService.initialise();
   }
 
   /**

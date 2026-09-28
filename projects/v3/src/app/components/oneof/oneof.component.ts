@@ -32,6 +32,8 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
   @Input() doAssessment: Boolean;
   // this is for doing review or not
   @Input() doReview: Boolean;
+  @Input() viewerRole: 'learner' | 'reviewer';
+  @Input() isReviewerFeedbackContext = false;
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
   // answer field for submitter & reviewer
@@ -210,8 +212,14 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     return !this.doAssessment && !this.doReview && (this.submissionStatus === 'feedback available' || this.submissionStatus === 'pending review' || (this.submissionStatus === 'done' && this.reviewStatus === ''));
   }
 
+  get isReviewerOnlyChoiceFeedback(): boolean {
+    return this.isDisplayOnly
+      && this.question?.reviewerOnly === true
+      && this.submissionStatus === 'feedback available';
+  }
+
   get displayChoices(): Array<any> {
-    if (!this.isDisplayOnly) {
+    if (!this.isDisplayOnly || this.isReviewerOnlyChoiceFeedback) {
       return this.question?.choices || [];
     }
 
@@ -228,6 +236,10 @@ export class OneofComponent implements AfterViewInit, ControlValueAccessor, OnIn
     }
 
     return (this.question?.choices || []).filter(choice => selectedIds.has(choice.id));
+  }
+
+  isReviewChoiceSelected(choiceId: string | number): boolean {
+    return this.review?.answer === choiceId;
   }
 
   // innerHTML text toggle

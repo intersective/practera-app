@@ -3,22 +3,36 @@
   <ion-list class="ion-no-padding">
     @for (choice of displayChoices; track choice; let i = $index) {
       <ion-item lines="none"
-        [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id))}">
-        <ion-label class="ion-text-wrap body-2 gray-3">
-          <div [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}" [innerHTML]="choice.name | detectLanguage"></div>
-          @if (submission?.answer?.includes(choice.id)) {
-            <ion-chip i18n
-              class="label orange"
-            >Learner's Answer</ion-chip>
-          }
-          @if (review?.answer?.includes(choice.id)) {
-            <ion-chip i18n
-              class="label yellow black"
-            >Reviewer's Answer</ion-chip>
+        [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && isSubmissionChoiceSelected(choice.id))}">
+        <ion-label class="ion-text-wrap body-2 gray-3"
+          [class.reviewer-feedback-choice]="isReviewerOnlyChoiceFeedback">
+          <div [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
+            [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}"
+            [innerHTML]="choice.name | detectLanguage"></div>
+          @if (isReviewerOnlyChoiceFeedback) {
+            @if (isReviewChoiceSelected(choice.id)) {
+              <span class="reviewer-choice-status reviewer-choice-status-selected">
+                <ion-icon name="checkmark" aria-hidden="true"></ion-icon>
+                <span class="reviewer-choice-status-text" aria-hidden="true" i18n>Selected</span>
+                <span class="for-accessibility" i18n>Selected by reviewer</span>
+              </span>
+            } @else {
+              <span class="reviewer-choice-status reviewer-choice-status-not-selected">
+                <span class="reviewer-choice-status-text" aria-hidden="true" i18n>Not selected</span>
+                <span class="for-accessibility" i18n>Not selected by reviewer</span>
+              </span>
+            }
+          } @else {
+            @if (submission?.answer?.includes(choice.id)) {
+              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
+            }
+            @if (review?.answer?.includes(choice.id)) {
+              <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
+            }
           }
         </ion-label>
       </ion-item>
-      @if (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && submission?.answer?.includes(choice.id)) {
+      @if (choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && isSubmissionChoiceSelected(choice.id)) {
         <ion-item lines="none" class="item-bottom-border explanation-label ion-no-padding ion-no-margin">
           <ion-icon slot="start" name="information-circle"></ion-icon>
           <ion-note size="small"><span [innerHTML]="choice.explanation | detectLanguage"></span></ion-note>
