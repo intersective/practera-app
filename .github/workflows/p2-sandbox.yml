@@ -17,8 +17,6 @@ on:
   push:
     branches:
       - login-refactor
-      # TEMPORARY isolated App Soketi WSS cutover. Remove before merge.
-      - fix/login-refactor-soketi
 
 concurrency:
   group: p2-sandbox-appv3
@@ -154,7 +152,7 @@ jobs:
 
           export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          # TEMPORARY Sandbox Soketi cutover. Rollback: PusherSecret and empty host.
+          # Sandbox Soketi. Rollback: PusherSecret and empty host.
           PUSHER_SECRET_ID="$STACK_NAME-SoketiSecret-$ENV"
           export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $PUSHER_SECRET_ID| jq --raw-output '.SecretString' | jq -r .app_id)
           export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $PUSHER_SECRET_ID| jq --raw-output '.SecretString' | jq -r .key)
