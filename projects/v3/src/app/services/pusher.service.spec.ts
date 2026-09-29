@@ -159,7 +159,6 @@ describe('PusherService', async () => {
     loading: false,
     networkStatus: 7,
     partial: false,
-    dataState: 'complete',
   };
 
   describe('getChannels()', async () => {
@@ -418,8 +417,8 @@ describe('PusherService', async () => {
       expect(oldPusher.connect).toHaveBeenCalled();
       expect(service['initialisePusher']).not.toHaveBeenCalled();
       expect(service['pusher']).toBe(oldPusher);
-      expect(oldPusher.config.auth.headers.apikey).toBe('new-key');
-      expect(oldPusher.config.auth.headers.timelineid).toBe(2);
+      expect(service['authHeaders'].apikey).toBe('new-key');
+      expect(service['authHeaders'].timelineid).toBe('2');
     }));
 
     it('should update credentials without replacing the same-scope connection', fakeAsync(() => {
@@ -447,7 +446,7 @@ describe('PusherService', async () => {
       expect(service.unsubscribeChannels).not.toHaveBeenCalled();
       expect(currentPusher.disconnect).not.toHaveBeenCalled();
       expect(service['initialisePusher']).not.toHaveBeenCalled();
-      expect(currentPusher.config.auth.headers.apikey).toBe('rotated-key');
+      expect(service['authHeaders'].apikey).toBe('rotated-key');
     }));
 
     it('should share one in-flight initialisation between concurrent callers', fakeAsync(() => {
@@ -492,6 +491,10 @@ describe('PusherService', async () => {
         connection: { state: 'connected' },
       });
       service['pusher'] = pusher;
+      service['authHeaders'] = {
+        apikey: 'old-key',
+        timelineid: '1',
+      };
       service['activeScope'] = { programId: 1, projectId: 11, timelineId: 1 };
       service['channels'].notification = {
         name: 'notification-channel',
@@ -509,8 +512,8 @@ describe('PusherService', async () => {
       expect(service['retryAttempted']).toEqual({ notification: false, chat: false });
       expect(service['pendingRetryTypes'].size).toBe(0);
       expect(service['retryTimer']).toBeNull();
-      expect(pusher.config.auth.headers.apikey).toBe('');
-      expect(pusher.config.auth.headers.timelineid).toBe('');
+      expect(service['authHeaders'].apikey).toBe('');
+      expect(service['authHeaders'].timelineid).toBe('');
     });
 
     it('should prevent an in-flight initialisation from restarting after reset', fakeAsync(() => {

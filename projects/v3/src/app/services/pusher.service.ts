@@ -80,6 +80,13 @@ export class PusherService {
     notification: null,
     chat: []
   };
+  /**
+   * Shared with the Pusher client at construction. pusher-js 8 stores this
+   * object by reference inside the channel authorizer and reads it on each
+   * auth request. `Config` no longer has `auth`, so later credential changes
+   * must mutate these fields in place.
+   */
+  private authHeaders: Record<string, string> = {};
 
   constructor(
     private utils: UtilsService,
@@ -236,16 +243,12 @@ export class PusherService {
       const useTLS = this.resolveUseTLS();
       // cluster is required by the pusher-js Options type but is conditionally set below;
       // using a type assertion here so we can assign it (or wsHost) in the branch below.
+      this.writeAuthHeaders(apikey, String(timelineId));
       const config = {
         forceTLS: useTLS,
         authEndpoint: this.apiurl + api.pusherAuth,
         auth: {
-          headers: {
-            'Authorization': 'pusherKey=' + this.pusherKey,
-            'appkey': environment.appkey,
-            'apikey': apikey,
-            'timelineid': timelineId,
-          },
+          headers: this.authHeaders,
         },
       } as Options;
 
@@ -449,27 +452,24 @@ export class PusherService {
     this.chatGeneration++;
   }
 
+  private writeAuthHeaders(apikey: string, timelineId: string): void {
+    this.authHeaders['Authorization'] = 'pusherKey=' + this.pusherKey;
+    this.authHeaders['appkey'] = environment.appkey;
+    this.authHeaders['apikey'] = apikey;
+    this.authHeaders['timelineid'] = timelineId;
+  }
+
   private syncAuthHeaders(): void {
     if (!this.pusher) {
       return;
     }
     const { apikey, timelineId } = this.storage.getUser();
-    this.pusher.config.auth = this.pusher.config.auth || {};
-    this.pusher.config.auth.headers = {
-      ...(this.pusher.config.auth.headers || {}),
-      'Authorization': 'pusherKey=' + this.pusherKey,
-      'appkey': environment.appkey,
-      'apikey': apikey,
-      'timelineid': timelineId,
-    };
+    this.writeAuthHeaders(apikey ?? '', timelineId == null ? '' : String(timelineId));
   }
 
   private clearAuthHeaders(): void {
-    if (!this.pusher?.config?.auth?.headers) {
-      return;
-    }
-    this.pusher.config.auth.headers.apikey = '';
-    this.pusher.config.auth.headers.timelineid = '';
+    this.authHeaders['apikey'] = '';
+    this.authHeaders['timelineid'] = '';
   }
 
   private reconcileNotificationChannel(channelName: string | null): void {
