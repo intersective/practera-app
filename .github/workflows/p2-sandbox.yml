@@ -18,6 +18,10 @@ on:
     branches:
       - login-refactor
 
+concurrency:
+  group: p2-sandbox-appv3
+  cancel-in-progress: false
+
 
 ################################################
 #  GITHUB ACTION JOBS
@@ -148,13 +152,15 @@ jobs:
 
           export CUSTOM_APPKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-AppKeySecret-$ENV| jq --raw-output '.SecretString' | jq -r .appkey)
           export CUSTOM_STACK_UUID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-LoginCoreSecrets-$ENV| jq --raw-output '.SecretString' | jq -r .APP_STACK_UUID)
-          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
-          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .key)
-          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .secret)
-          export CUSTOM_PUSHER_CLUSTER=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r .cluster)
-          export CUSTOM_PUSHER_HOST=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.host // ""')
-          export CUSTOM_PUSHER_PORT=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.port // ""')
-          export CUSTOM_PUSHER_USE_TLS=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-PusherSecret-$ENV| jq --raw-output '.SecretString' | jq -r '.useTLS // "true"')
+          # Sandbox Soketi. Rollback: PusherSecret and empty host.
+          PUSHER_SECRET_ID="$STACK_NAME-SoketiSecret-$ENV"
+          export CUSTOM_PUSHER_APPID=$(aws secretsmanager get-secret-value --secret-id $PUSHER_SECRET_ID| jq --raw-output '.SecretString' | jq -r .app_id)
+          export CUSTOM_PUSHERKEY=$(aws secretsmanager get-secret-value --secret-id $PUSHER_SECRET_ID| jq --raw-output '.SecretString' | jq -r .key)
+          export CUSTOM_PUSHER_SECRET=$(aws secretsmanager get-secret-value --secret-id $PUSHER_SECRET_ID| jq --raw-output '.SecretString' | jq -r .secret)
+          export CUSTOM_PUSHER_CLUSTER=""
+          export CUSTOM_PUSHER_HOST="socket.p2-sandbox.practera.com"
+          export CUSTOM_PUSHER_PORT="443"
+          export CUSTOM_PUSHER_USE_TLS="true"
           export CUSTOM_INTERCOM=$(aws secretsmanager get-secret-value --secret-id $STACK_NAME-IntercomSecret-$ENV| jq --raw-output '.SecretString' | jq -r .app_id)
           # CU-W1-09: badge / projecthub stacks deleted
           export CUSTOM_BADGE_PROJECT_URL=
