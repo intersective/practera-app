@@ -7,18 +7,18 @@
     margin-bottom: 12px;
   }
 
-  .info-badge {
+  .organisation-metadata {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 12px;
-    background: var(--ion-color-primary-tint);
-    border-radius: 16px;
-    font-size: 0.875rem;
-    color: var(--ion-color-primary-shade);
+    color: var(--ion-color-dark);
 
     ion-icon {
       font-size: 1rem;
+    }
+
+    p {
+      margin: 0;
     }
   }
 }
@@ -60,6 +60,16 @@
   margin: 0;
 }
 
+.website-link {
+  display: inline-block;
+}
+
+.project-brief-markdown {
+  :last-child {
+    margin-bottom: 0;
+  }
+}
+
 .chip-container {
   display: flex;
   flex-wrap: wrap;
@@ -73,6 +83,10 @@
 .none-specified {
   color: var(--ion-color-medium);
   font-style: italic;
+}
+
+.project-brief-download-button ion-spinner {
+  margin-right: 8px;
 }
 
 ion-header ion-toolbar {

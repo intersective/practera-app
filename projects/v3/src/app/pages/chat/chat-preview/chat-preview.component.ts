@@ -27,7 +27,7 @@ export class ChatPreviewComponent {
       return;
     }
 
-    return window.open(this.file.url, '_system');
+    return window.open(this.previewUrl, '_system');
   }
 
   close(keyboardEvent?: KeyboardEvent) {

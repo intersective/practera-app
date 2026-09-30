@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { BrowserStorageService, BROWSER_STORAGE } from './storage.service';
+import { BrowserStorageService, BROWSER_STORAGE, User } from './storage.service';
 
 describe('StorageService', () => {
   let service: BrowserStorageService;
@@ -72,6 +72,31 @@ describe('StorageService', () => {
       service.getUser();
       expect(storageSpy.getItem).toHaveBeenCalledWith('me');
     });
+  });
+
+  it('accepts a version 2 project brief on the persisted user contract', () => {
+    const user: User = {
+      projectBrief: {
+        schemaVersion: 2,
+        title: 'Project Brief',
+        organisationName: 'Example organisation',
+        organisationType: 'Social enterprise',
+        organisationContext: 'Regional context',
+        problemStatement: 'A clear problem',
+        focusArea: 'A clear focus',
+        scope: 'Defined scope',
+        deliverables: 'A delivery roadmap',
+        industry: ['Health'],
+        projectType: 'Research',
+        timeline: 12,
+        location: 'Kuala Lumpur',
+        website: 'https://example.com/project',
+        technicalSkills: ['TypeScript'],
+        professionalSkills: ['Communication'],
+      },
+    };
+
+    expect(user.projectBrief?.organisationName).toBe('Example organisation');
   });
 
   describe('setUser()', () => {

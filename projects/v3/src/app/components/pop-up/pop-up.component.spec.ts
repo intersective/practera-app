@@ -49,5 +49,18 @@ describe('PopUpComponent', () => {
     component.confirmed();
     expect(modalCtrlSpy.dismiss.calls.count()).toBe(2);
   });
-});
 
+  it('does not render an empty guideline list', () => {
+    component.type = 'guidelines';
+    component.data = {
+      email: '',
+      logo: 'lock-open',
+      message: 'Unlock requirements are unavailable.',
+      routes: [],
+    };
+
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('ol')).toBeNull();
+  });
+});

@@ -1,6 +1,6 @@
 <ion-header mode="ios">
   <ion-toolbar>
-    <ion-icon *ngIf="file?.url"
+    <ion-icon *ngIf="previewUrl"
       name="download"
       (click)="download()"
       (keydown)="download($event)"
@@ -45,7 +45,7 @@
       >
         <p i18n="video not supported message">
           Your browser doesn't support HTML5 video.
-          <a [href]="file.url" class="contrast">Download the video</a> instead.
+          <a [href]="previewUrl" class="contrast">Download the video</a> instead.
         </p>
       </video>
     </ng-container>
@@ -56,7 +56,7 @@
         <p class="body-2" i18n="unsupported video format message">
           This video format is not supported for preview.
           <br>
-          <a [href]="file.url" target="_blank" rel="noopener">Download to view</a>
+          <a [href]="previewUrl" target="_blank" rel="noopener">Download to view</a>
         </p>
       </div>
     </ng-container>

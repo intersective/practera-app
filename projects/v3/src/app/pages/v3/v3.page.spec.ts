@@ -17,6 +17,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeService } from '@v3/app/services/home.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
+import { SharedService } from '@v3/app/services/shared.service';
 
 describe('V3Page', () => {
   let component: V3Page;
@@ -27,6 +28,7 @@ describe('V3Page', () => {
   let storageSpy: jasmine.SpyObj<BrowserStorageService>;
   let chatSpy: jasmine.SpyObj<ChatService>;
   let utilsSpy: jasmine.SpyObj<UtilsService>;
+  let sharedSpy: jasmine.SpyObj<SharedService>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -84,8 +86,7 @@ describe('V3Page', () => {
         {
           provide: NotificationsService,
           useValue: jasmine.createSpyObj('NotificationsService', {
-            'getTodoItems': of(),
-            'getChatMessage': of(),
+            'refreshNotifications': of(),
           }, {
             'notification$': of(),
           }),
@@ -94,6 +95,12 @@ describe('V3Page', () => {
           provide: UnlockIndicatorService,
           useValue: jasmine.createSpyObj('UnlockIndicatorService', [], {
             'unlockedTasks$': of([]),
+          }),
+        },
+        {
+          provide: SharedService,
+          useValue: jasmine.createSpyObj('SharedService', {
+            initWebServices: Promise.resolve(),
           }),
         },
       ]
@@ -107,6 +114,7 @@ describe('V3Page', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     chatSpy = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
     utilsSpy = TestBed.inject(UtilsService) as jasmine.SpyObj<UtilsService>;
+    sharedSpy = TestBed.inject(SharedService) as jasmine.SpyObj<SharedService>;
 
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -120,7 +128,7 @@ describe('V3Page', () => {
     // Prepare data and spies
     const getReviewsSpy = reviewSpy.getReviews;
     utilsSpy.moveToNewLocale.and.stub();
-    const getTodoItemsSpy = notificationsSpy.getTodoItems.and.returnValue(of());
+    const refreshNotificationsSpy = notificationsSpy.refreshNotifications.and.returnValue(of());
     const getChatListSpy = chatSpy.getChatList.and.returnValue(of([]));
     storageSpy.getUser.and.returnValue({
       role: 'participant',
@@ -133,7 +141,8 @@ describe('V3Page', () => {
     // Check if the required methods are called
     // Note: getExperience is only called on NavigationEnd events to /v3/home, not during ngOnInit
     expect(getReviewsSpy).toHaveBeenCalled();
-    expect(getTodoItemsSpy).toHaveBeenCalled();
+    expect(refreshNotificationsSpy).toHaveBeenCalled();
+    expect(sharedSpy.initWebServices).toHaveBeenCalled();
     expect(getChatListSpy).toHaveBeenCalled();
 
     // Check if component properties are set correctly

@@ -66,11 +66,7 @@
           <ion-item class="item-bottom-border choice-item"
             *ngFor="let choice of question.choices"
             lines="none"
-            [ngClass]="{'mobile-choice': isMobile}"
-            (mouseenter)="onChoiceHover(question.id, choice.id)"
-            (mouseleave)="onChoiceLeave()"
-            (focus)="onChoiceHover(question.id, choice.id)"
-            (blur)="onChoiceLeave()">
+            [ngClass]="{'mobile-choice': isMobile}">
             <ion-radio [value]="choice.id"
               [attr.aria-label]="choice.name"
               labelPlacement="end"
@@ -79,10 +75,28 @@
               <div class="choice-title-container">
                 <span [innerHTML]="choice.name"></span>
               </div>
-              <p *ngIf="choice.description && isChoiceDescriptionVisible(question.id, choice.id)"
-                class="choice-description body-3 ion-margin-top animate-fade-in"
+              <p *ngIf="choice.description"
+                [id]="'fast-feedback-choice-description-' + question.id + '-' + choice.id"
+                [hidden]="!isChoiceDescriptionExpanded(question.id, choice.id)"
+                class="choice-description body-3 ion-margin-top"
                 [innerHTML]="choice.description"></p>
             </ion-radio>
+            <ion-button *ngIf="choice.description"
+              type="button"
+              slot="end"
+              fill="clear"
+              size="small"
+              class="description-toggle-btn"
+              (click)="toggleChoiceDescription($event, question.id, choice.id)"
+              [attr.aria-expanded]="isChoiceDescriptionExpanded(question.id, choice.id)"
+              [attr.aria-controls]="'fast-feedback-choice-description-' + question.id + '-' + choice.id"
+              [attr.aria-label]="(isChoiceDescriptionExpanded(question.id, choice.id) ? 'Hide details for ' : 'Show details for ') + choice.name"
+              i18n-aria-label>
+              <ion-icon
+                [name]="isChoiceDescriptionExpanded(question.id, choice.id) ? 'chevron-up' : 'information-circle-outline'"
+                slot="icon-only"
+                aria-hidden="true"></ion-icon>
+            </ion-button>
           </ion-item>
         </ion-radio-group>
         </fieldset>

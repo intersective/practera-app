@@ -1,19 +1,13 @@
 import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-
-/**
- * interface for project brief data structure
- */
-export interface ProjectBrief {
-  id?: string;
-  title?: string;
-  description?: string;
-  industry?: string[];
-  projectType?: string;
-  technicalSkills?: string[];
-  professionalSkills?: string[];
-  deliverables?: string;
-}
+import {
+  buildProjectBriefPresentation,
+  ProjectBrief,
+  ProjectBriefPresentation,
+  ProjectBriefPresentationSection,
+} from '../../models/project-brief.model';
+import { NotificationsService } from '../../services/notifications.service';
+import { ProjectBriefPdfService } from '../../services/project-brief-pdf.service';
 
 /**
  * modal component to display project brief details
@@ -28,9 +22,13 @@ export interface ProjectBrief {
 })
 export class ProjectBriefModalComponent {
   projectBrief: ProjectBrief = {};
+  allowPdfDownload = false;
+  isDownloading = false;
 
   constructor(
-    private modalController: ModalController
+    private modalController: ModalController,
+    private readonly notificationsService: NotificationsService,
+    private readonly projectBriefPdfService: ProjectBriefPdfService,
   ) {}
 
   /**
@@ -38,6 +36,27 @@ export class ProjectBriefModalComponent {
    */
   close(): void {
     this.modalController.dismiss();
+  }
+
+  async downloadPdf(): Promise<void> {
+    if (!this.allowPdfDownload || this.isDownloading) {
+      return;
+    }
+
+    this.isDownloading = true;
+    try {
+      await this.projectBriefPdfService.download(this.projectBrief);
+    } catch {
+      await this.notificationsService.presentToast(
+        $localize`:@@projectBriefPdfDownloadFailed:Unable to download the project brief. Please try again.`,
+        {
+          color: 'danger',
+          icon: 'close-circle',
+        }
+      );
+    } finally {
+      this.isDownloading = false;
+    }
   }
 
   /**
@@ -52,5 +71,17 @@ export class ProjectBriefModalComponent {
    */
   hasValue(val: string | undefined): boolean {
     return typeof val === 'string' && val.trim().length > 0;
+  }
+
+  sectionItems(section: ProjectBriefPresentationSection): string[] {
+    return Array.isArray(section.value) ? section.value : [];
+  }
+
+  sectionText(section: ProjectBriefPresentationSection): string {
+    return typeof section.value === 'string' ? section.value : '';
+  }
+
+  get presentation(): ProjectBriefPresentation {
+    return buildProjectBriefPresentation(this.projectBrief);
   }
 }
