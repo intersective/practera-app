@@ -159,7 +159,6 @@ describe('PusherService', async () => {
     loading: false,
     networkStatus: 7,
     partial: false,
-    dataState: 'complete',
   };
 
   describe('getChannels()', async () => {

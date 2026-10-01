@@ -7,8 +7,9 @@ import {
 } from './uppy-uploader.service';
 import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
-import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
+import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Uppy, UppyFile } from '@uppy/core';
+import Dashboard from '@uppy/dashboard';
 import { ModalController } from '@ionic/angular';
 import { BrowserStorageService } from '../../services/storage.service';
 
@@ -21,7 +22,8 @@ type FileBody = { [key: string]: any };
   templateUrl: "./uppy-uploader.component.html",
   styleUrls: ["./uppy-uploader.component.scss"],
 })
-export class UppyUploaderComponent implements OnInit, OnDestroy {
+export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
+  @ViewChild('dashboard', { static: true }) private dashboard: ElementRef<HTMLDivElement>;
   @Input() source!: UppyUploadSource;
   @Input() tusEndpoint?: string = environment.uppyConfig.tusUrl; // tusUrl
   @Output() uploadComplete = new EventEmitter<any>();
@@ -40,9 +42,11 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
     private storageService: BrowserStorageService,
     private uppyUploaderService: UppyUploaderService,
   ) {
-    this.uppyProps = this.uppyUploaderService.uppyProps;
-    this.uppyProps.height = '500px';
-    this.uppyProps.note = "Upload a file here";
+    this.uppyProps = {
+      ...this.uppyUploaderService.uppyProps,
+      height: '500px',
+      note: "Upload a file here",
+    };
   }
 
   ngOnInit() {
@@ -59,6 +63,14 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
       onUploadSuccess: this.onUploadSuccess.bind(this),
     }, {
       allowedFileTypes: this.loadAllowedFileTypes(),
+    });
+  }
+
+  ngAfterViewInit() {
+    this.uppy.use(Dashboard, {
+      ...this.uppyProps,
+      inline: true,
+      target: this.dashboard.nativeElement,
     });
   }
 
@@ -106,14 +118,7 @@ export class UppyUploaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.uppy) {
-      // eslint-disable-next-line no-console
-      this.uppy.off("upload-success", (res) => console.info(res));
-
-      // eslint-disable-next-line no-console
-      this.uppy.off("complete", (res) => console.info(res));
-      this.uppy.resetProgress();
-    }
+    this.uppy?.destroy();
   }
 
   closeModal(file) {
