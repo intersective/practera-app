@@ -73,10 +73,8 @@ const largeCircleDefaultConfig = {
     ToggleLabelDirective,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
-  // @uppy/angular v1.1.0 was compiled for Angular <=20 and is incompatible with Angular 21's
-  // IVY standalone detection. CUSTOM_ELEMENTS_SCHEMA allows <uppy-dashboard> and
-  // <uppy-dashboard-modal> to render as custom elements via Uppy's own JavaScript.
-  // Remove when @uppy/angular releases Angular 21 support.
+  // FileUploadComponent still uses a legacy Uppy element. The uploader popup
+  // mounts Dashboard directly rather than relying on this schema to render it.
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AchievementPopUpComponent,

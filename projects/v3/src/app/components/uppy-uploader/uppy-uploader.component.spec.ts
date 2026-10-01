@@ -1,3 +1,6 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Uppy } from '@uppy/core';
 import { ModalController } from '@ionic/angular';
 import { NotificationsService } from '../../services/notifications.service';
 import { BrowserStorageService } from '../../services/storage.service';
@@ -74,5 +77,63 @@ describe('UppyUploaderComponent', () => {
       header: 'Upload Failed',
       message: 'Upload server returned an empty response.',
     });
+  });
+});
+
+
+describe('UppyUploaderComponent dashboard rendering', () => {
+  let fixture: ComponentFixture<UppyUploaderComponent>;
+  let uppy: Uppy<any, any>;
+
+  beforeEach(async () => {
+    uppy = new Uppy({
+      autoProceed: false,
+      restrictions: { allowedFileTypes: ['image/*'] },
+    });
+    const uploader = jasmine.createSpyObj<UppyUploaderService>(
+      'UppyUploaderService', ['createUppyInstance'], { uppyProps: { ...new UppyUploaderService(null!, null!).uppyProps } }
+    );
+    uploader.createUppyInstance.and.returnValue(uppy);
+
+    TestBed.configureTestingModule({
+      declarations: [UppyUploaderComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    });
+    TestBed.overrideProvider(UppyUploaderService, { useValue: uploader });
+    TestBed.overrideProvider(NotificationsService, {
+      useValue: jasmine.createSpyObj('NotificationsService', ['alert']),
+    });
+    TestBed.overrideProvider(BrowserStorageService, {
+      useValue: jasmine.createSpyObj('BrowserStorageService', ['clearByName']),
+    });
+    await TestBed.compileComponents();
+    fixture = TestBed.createComponent(UppyUploaderComponent);
+    fixture.componentInstance.source = 'user-profile';
+    fixture.componentInstance.tusEndpoint = 'https://upload.example.test/uploads/';
+    fixture.detectChanges();
+    await fixture.whenStable();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+    uppy.destroy();
+  });
+
+  it('renders a usable file picker inside the upload popup', () => {
+    const picker = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+
+    expect(fixture.nativeElement.querySelector('.uppy-Dashboard-browse')).not.toBeNull();
+    expect(picker).not.toBeNull();
+    expect(picker?.accept).toBe('image/*');
+  });
+
+  it('releases selected files and the dashboard when the popup is destroyed', () => {
+    uppy.addFile({ name: 'profile.png', type: 'image/png', data: new Blob(['image'], { type: 'image/png' }) });
+    expect(uppy.getFiles().length).toBe(1);
+
+    fixture.destroy();
+
+    expect(uppy.getFiles().length).toBe(0);
+    expect(uppy.getPlugin('Dashboard')).toBeUndefined();
   });
 });
