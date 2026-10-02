@@ -217,6 +217,14 @@ ion-footer {
   z-index: 2;
 }
 
+.retry-save {
+  display: inline-flex;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+}
+
 // start --- highlight unanswered compulsory questions
 .blink > * {
   animation: blink-animation 1s steps(5, start) infinite;

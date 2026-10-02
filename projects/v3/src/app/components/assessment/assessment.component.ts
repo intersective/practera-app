@@ -7,7 +7,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { SharedService } from '@v3/services/shared.service';
 import { BehaviorSubject, debounceTime, Observable, of, Subject, Subscription, timer } from 'rxjs';
-import { concatMap, take, delay, filter, takeUntil, tap } from 'rxjs/operators';
+import { concatMap, take, delay, filter, takeUntil, tap, startWith } from 'rxjs/operators';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { TextComponent } from '../text/text.component';
 import { OneofComponent } from '../oneof/oneof.component';
@@ -410,8 +410,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
         if (request?.questionSave) {
           const currentValues = this.autosaving();
           this.autosaving.set({ ...currentValues, [request.questionSave.questionId]: true });
-          this.saved[request.questionSave.questionId] = false;
-          this.failed[request.questionSave.questionId] = false;
+          this.saved.update(values => ({ ...values, [request.questionSave.questionId]: false }));
+          this.failed.update(values => ({ ...values, [request.questionSave.questionId]: false }));
           return this.saveQuestionAnswer(request.questionSave);
         }
         return of(request);
@@ -434,12 +434,12 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       // save/submission error handling http 500
       error: async (error: any) => {
         if (error.message.includes('Autosave')) {
+          // Restore the save stream before showing an actionable retry control.
+          this.resubscribe$.next();
           await this.notifications.assessmentSubmittedToast({
             isFail: true,
             label: $localize`Auto save failed. Please try again.`,
           });
-          // Resubscribe for autosave failures
-          this.resubscribe$.next();
         } else {
           await this.notifications.assessmentSubmittedToast({ isFail: true });
           // @link https://github.com/intersective/core-graphql-api/commit/92e636be64a3697bebda91d6f66eea487d8fb2a9#diff-4f45773ff5b570b41418d857c86f5b1e48b8e7ed744d92ebef4b96102de912e3R17-R22
@@ -583,10 +583,23 @@ Best regards`;
       return;
     }
 
+    // A final status check refreshes this same draft before a submission attempt.
+    // Keep local edits until the server reports completion or switches context.
+    const preserveDraft = this.action === 'assessment' && this.doAssessment
+      && this.submission?.status === 'in progress' && !this.submission.isLocked
+      && (!changes.assessment || changes.assessment.previousValue?.id === this.assessment.id)
+      && (!changes.submission || changes.submission.previousValue?.id === this.submission.id);
+    const dirtyAnswers = preserveDraft
+      ? Object.entries(this.questionsForm?.controls ?? {}).filter(([, control]) => control.dirty)
+        .map(([name, control]) => [name, control.value] as const)
+      : [];
+    const previousPage = this.pageIndex;
     this._initialise();
     if (changes.assessment || changes.submission || changes.review) {
-      this.pageRequiredCompletion = [];
-      this.pageVisited = [];
+      if (!preserveDraft) {
+        this.pageRequiredCompletion = [];
+        this.pageVisited = [];
+      }
 
       this._handleSubmissionData();
 
@@ -604,12 +617,21 @@ Best regards`;
       this._populateQuestionsForm();
       this._handleReviewData();
       this._prefillForm();
+      if (preserveDraft && this.doAssessment) {
+        dirtyAnswers.forEach(([name, value]) => {
+          const control = this.questionsForm?.get(name);
+          control?.setValue(value, { emitEvent: false });
+          control?.markAsDirty();
+        });
+        this.setSubmissionDisabled();
+      }
     }
 
     // generate physical pages every time assessment changes - only if pagination is enabled
     if (this.isPaginationEnabled) {
       this.pagesGroups = this.splitGroupsByQuestionCount();
-      this.pageIndex = this.isTeam360Assessment ? (this.accessiblePageIndexes[0] ?? 0) : 0;
+      this.pageIndex = preserveDraft && this.accessiblePageIndexes.includes(previousPage)
+        ? previousPage : (this.isTeam360Assessment ? (this.accessiblePageIndexes[0] ?? 0) : 0);
 
       setTimeout(() => {
         this.initializePageCompletion();
@@ -735,15 +757,17 @@ Best regards`;
     }
 
     // delay the subscription to avoid race conditions during initialization
-    setTimeout(() => {
+    timer(300).pipe(takeUntil(this.unsubscribe$)).subscribe(() => {
       this.questionsForm.valueChanges.pipe(
-        takeUntil(this.unsubscribe$),
+        // Include edits made while initialization was waiting to subscribe.
+        startWith(this.questionsForm.value),
         debounceTime(300),
+        takeUntil(this.unsubscribe$),
       ).subscribe(() => {
         this.initializePageCompletion();
         this.setSubmissionDisabled();
       });
-    }, 300);
+    });
   }
 
   /**

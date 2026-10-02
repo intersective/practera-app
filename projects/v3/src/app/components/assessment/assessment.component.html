@@ -279,17 +279,16 @@
                   i18n-aria-label
                   role="img"></ion-icon>
 
-                <ion-icon name="reload-circle-outline"
-                  class="tick-icon"
-                  *ngIf="failed()[question.id]"
-                  (click)="retrySave(question)"
-                  (keydown.enter)="retrySave(question)"
-                  (keydown.space)="retrySave(question); $event.preventDefault()"
-                  [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
-                  tabindex="0"
-                  role="button"
-                  [attr.aria-label]="'Retry save'"
-                  i18n-aria-label></ion-icon>
+                @if (failed()[question.id]) {
+                  <button type="button"
+                    class="tick-icon retry-save"
+                    (click)="retrySave(question)"
+                    [@tickAnimation]="failed()[question.id] ? 'visible' : 'hidden'"
+                    aria-label="Retry save"
+                    i18n-aria-label>
+                    <ion-icon name="reload-circle-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                }
               </div>
 
               <ion-item *ngIf="shouldShowNoAnswer(question)"

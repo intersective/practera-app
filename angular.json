@@ -91,6 +91,56 @@
             "namedChunks": true
           },
           "configurations": {
+            "e2e": {
+              "localize": [
+                "en-US"
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5.5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.e2e.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
+            "e2e-sandbox": {
+              "localize": [
+                "en-US"
+              ],
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "5.5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "projects/v3/src/environments/environment.ts",
+                  "with": "projects/v3/src/environments/environment.e2e-sandbox.ts"
+                }
+              ],
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
+            },
             "ms": {
               "localize": ["ms"]
             },
@@ -198,6 +248,12 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
+            "e2e": {
+              "buildTarget": "v3:build:e2e"
+            },
+            "e2e-sandbox": {
+              "buildTarget": "v3:build:e2e-sandbox"
+            },
             "ms": {
               "buildTarget": "v3:build:development,ms"
             },

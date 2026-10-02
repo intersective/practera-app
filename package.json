@@ -37,7 +37,21 @@
     "i18n": "ng extract-i18n v3 --output-path locales/",
     "serve:es": "ng serve --configuration=development --localize=es --port=4201",
     "serve:ja": "ng serve --configuration=development --localize=ja --port=4202",
-    "serve:ms": "ng serve --configuration=development --localize=ms --port=4203"
+    "serve:ms": "ng serve --configuration=development --localize=ms --port=4203",
+    "test:doctor": "node e2e/support/launcher.mjs doctor",
+    "test:install": "node e2e/support/launcher.mjs install",
+    "test:browsers": "node e2e/support/launcher.mjs browsers",
+    "test:unit": "node e2e/support/launcher.mjs unit",
+    "test:lint": "node e2e/support/launcher.mjs lint",
+    "test:build": "node e2e/support/launcher.mjs build",
+    "test:serve": "node e2e/support/launcher.mjs serve",
+    "test:e2e": "node e2e/support/launcher.mjs mocked",
+    "test:e2e:repeat": "node e2e/support/launcher.mjs repeat",
+    "test:e2e:headed": "node e2e/support/launcher.mjs headed",
+    "test:e2e:report": "node e2e/support/launcher.mjs report",
+    "test:e2e:typecheck": "node e2e/support/launcher.mjs typecheck",
+    "test:sandbox": "node e2e/support/launcher.mjs sandbox",
+    "test:privacy": "node e2e/support/launcher.mjs privacy"
   },
   "dependencies": {
     "@angular-devkit/architect": "~0.2102.0",
@@ -116,9 +130,14 @@
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "serverless": "npm:osls@^3.63.2",
     "serverless-certificate-creator": "^1.6.0",
-    "typedoc": "^0.27.9"
+    "typedoc": "^0.27.9",
+    "@playwright/test": "1.63.0"
   },
   "overrides": {
     "tar": "^7.5.13"
+  },
+  "engines": {
+    "node": "22.23.2",
+    "npm": "11.6.2"
   }
 }

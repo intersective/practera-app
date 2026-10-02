@@ -237,7 +237,7 @@ export class MultipleComponent implements AfterViewInit, ControlValueAccessor, O
     if (!choiceId) {
       return;
     }
-    if (this.utils.indexOf(this.innerValue, choiceId) > -1) {
+    if (this.utils.indexOf(this.innerValue ?? [], choiceId) > -1) {
       return true;
     }
   }

@@ -4,8 +4,9 @@
 
 ## Requirements
 
-- Ionic v7
-- Angular v17
+- Node 22.23.2 and npm 11.6.2
+- Ionic v8
+- Angular v21
 
 ## Development Notes
 
@@ -62,19 +63,16 @@ Run `npm start` to serve app on localhost
 
 ## Automation Test
 
-### NPM commands
+The current branch uses Karma/Jasmine for unit tests and Playwright for browser regression tests. The old Protractor commands are retired.
 
-1. `npm run e2e` test all features for desktop & Android & Iphone
-1. `npm run e2e-dev` used for devs to develop tests
-1. `npm run e2e-sandbox` used to run automation test on sandbox
+See [App testing](docs/testing/README.md) for the pinned toolchain, clean installation, browser setup, critical journeys, sandbox smoke, and verification results.
 
-### Development
-
-- Copy & paste `e2e/config/index.default.ts` and change the name to `index.ts` and fill in correct accounts
-- Copy & paste `e2e/protractor-dev.default.conf.js` and change the name to `protractor-dev.conf.js`
-- Change the feature file path in `e2e/protractor-dev.conf.js` to the feature that you are developing
-- If you need to develop automation test for mobile, uncomment the `chromeOptions->mobileEmulation` part inside `e2e/protractor-dev.conf.js`
-- run `npm run e2e-dev` to see the result
+```sh
+npm run test:doctor
+npm run test:unit
+npm run test:e2e
+npm run test:e2e:repeat
+```
 
 ## External link format
 

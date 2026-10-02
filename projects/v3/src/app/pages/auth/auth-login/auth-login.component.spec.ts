@@ -32,7 +32,7 @@ describe('AuthLoginComponent', () => {
         },
         {
           provide: AuthService,
-          useValue: jasmine.createSpyObj('AuthService', ['login'])
+          useValue: jasmine.createSpyObj('AuthService', ['deprecatingLogin'])
         },
         {
           provide: NotificationsService,
@@ -48,7 +48,7 @@ describe('AuthLoginComponent', () => {
         },
         {
           provide: ExperienceService,
-          useValue: jasmine.createSpyObj('ExperienceService', ['switchProgramAndNavigate'])
+          useValue: jasmine.createSpyObj('ExperienceService', ['switchProgram'])
         }
       ],
     }).compileComponents();
@@ -81,5 +81,16 @@ describe('AuthLoginComponent', () => {
     });
 
   });
+  it('authenticates valid credentials and opens home after the program loads', async () => {
+    serviceSpy.deprecatingLogin.and.returnValue(of({ experience: { id: 1 } }));
+    experienceServiceSpy.switchProgram.and.returnValue(Promise.resolve());
+    component.loginForm.setValue({ email: 'learner@example.invalid', password: 'test-password' });
+    component.login();
+    await Promise.resolve();
+    expect(serviceSpy.deprecatingLogin).toHaveBeenCalledWith({ email: 'learner@example.invalid', password: 'test-password' });
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['v3', 'home']);
+    expect(component.isLoggingIn).toBeFalse();
+  });
+
 });
 
