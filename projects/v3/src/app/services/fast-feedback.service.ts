@@ -123,7 +123,7 @@ export class FastFeedbackService {
           const { questions, meta } = res.data.pulseCheck ?? {};
           if (
             (this.utils.isEmpty(questions) || this.utils.isEmpty(meta)) &&
-            options.skipChecking === false // if skipChecking is true, force open the modal
+            !options.skipChecking // only an explicit true forces the modal open
           ) {
             return of(res);
           }
@@ -155,7 +155,14 @@ export class FastFeedbackService {
             this.notificationsService.fastFeedbackModal(
               {
                 questions,
-                meta,
+                // GraphQL uses camelCase; the modal's existing Meta input uses snake_case.
+                meta: meta && {
+                  context_id: meta.contextId,
+                  team_id: meta.teamId,
+                  target_user_id: meta.targetUserId,
+                  team_name: meta.teamName,
+                  assessment_name: meta.assessmentName,
+                },
                 pulseCheckId,
               },
               {

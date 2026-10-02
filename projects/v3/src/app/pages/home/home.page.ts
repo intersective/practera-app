@@ -624,14 +624,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
       if (topicId) {
         routes.push({
           path: isMobile
-            ? `/v3/topic-mobile/${activityId}/${topicId}`
+            ? `/topic-mobile/${activityId}/${topicId}`
             : `/v3/activity-desktop/${activityId}/${topicId}`,
           label: `<i><b>${action}</b></i> ${guideline.name}`,
         });
       } else if (assessmentId) {
         routes.push({
           path: isMobile
-            ? `/v3/assessment-mobile/${contextId}/${activityId}/${assessmentId}`
+            ? `/assessment-mobile/assessment/${activityId}/${contextId}/${assessmentId}`
             : `/v3/activity-desktop/${contextId}/${activityId}/${assessmentId}`,
           label: `<i><b>${action}</b></i> ${guideline.name}`,
         });
@@ -706,4 +706,3 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked {
     }, 0);
   }
 }
-

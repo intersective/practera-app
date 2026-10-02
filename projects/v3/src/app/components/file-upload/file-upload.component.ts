@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
-import { DashboardOptions } from '@uppy/dashboard';
+import Dashboard, { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -44,7 +44,16 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   uppy: Uppy<FileMetadata, FileBody>;
 
   // Uppy UI
-  uppyProps = UPPY_PROPS;
+  uppyProps = { ...UPPY_PROPS };
+
+  @ViewChild('dashboard') set dashboard(element: ElementRef<HTMLDivElement> | undefined) {
+    if (!this.uppy) return;
+    const plugin = this.uppy.getPlugin('Dashboard');
+    if (plugin) this.uppy.removePlugin(plugin);
+    if (element) {
+      this.uppy.use(Dashboard, { ...this.uppyProps, target: element.nativeElement });
+    }
+  }
 
   @Input() source!: UppyUploadSource;
   @Input() submitActions$: Subject<SubmitActions>;
@@ -95,7 +104,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnDestroy(): void {
-    this.uppy.destroy();
+    this.uppy?.destroy();
   }
 
   ngOnInit() {
@@ -105,13 +114,17 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   // size notice based on fileType
+  get effectiveFileType(): string {
+    return this.videoOnly ? 'video' : (this.question.fileType || 'any');
+  }
+
   noteMessage(): string {
     const size = environment.uppyConfig.restrictions.maxFileSize;
-    if (this.question.fileType === 'video') {
+    if (this.effectiveFileType === 'video') {
       return `Videos only, up to ${size} MB`;
     }
 
-    if (this.question.fileType === 'image') {
+    if (this.effectiveFileType === 'image') {
       return `Images only, up to ${size} MB`;
     }
 
@@ -121,9 +134,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   private initiateUppy() {
     // set allowed file types
     let allowedFileTypes = ALLOWED_FILE_TYPES;
-    if (this.question.fileType === 'video') {
+    if (this.effectiveFileType === 'video') {
       allowedFileTypes = ['video/*'];
-    } else if (this.question.fileType === 'image') {
+    } else if (this.effectiveFileType === 'image') {
       allowedFileTypes = ['image/*'];
     }
 

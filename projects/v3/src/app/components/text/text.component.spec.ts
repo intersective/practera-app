@@ -1,14 +1,22 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TextComponent } from './text.component';
 import { FormControl, FormsModule } from '@angular/forms';
 import { IonicModule, IonTextarea } from '@ionic/angular';
 import { Subject, of } from 'rxjs';
+import { TestScheduler } from 'rxjs/testing';
 import { DebugElement } from '@angular/core';
 import { LanguageDetectionPipe } from '@v3/app/pipes/language.pipe';
 import { UtilsService } from '@v3/services/utils.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TestUtils } from '@testingv3/utils';
+
+function withScheduler(test: (scheduler: TestScheduler) => void) {
+  return () => {
+    const scheduler = new TestScheduler((actual, expected) => expect(actual).toEqual(expected));
+    scheduler.run(() => test(scheduler));
+  };
+}
 
 describe('TextComponent', () => {
   let component: TextComponent;
@@ -288,7 +296,7 @@ describe('TextComponent', () => {
   });
 
   describe('when testing ngAfterViewInit()', () => {
-    it('should set up auto-save subscription when answerRef is available', fakeAsync(() => {
+    it('should set up auto-save subscription when answerRef is available', withScheduler((scheduler) => {
       // create a mock input event with a proper target value
       const mockInputEvent = { target: { value: 'test' } };
 
@@ -296,9 +304,40 @@ describe('TextComponent', () => {
       spyOn(component, 'triggerSave');
 
       component.ngAfterViewInit();
-      tick(900);
+      scheduler.flush();
 
       expect(component.subcriptions.length).toBeGreaterThan(0);
+    }));
+
+    it('autosaves reviewer comments when there is no editable answer field', withScheduler((scheduler) => {
+      const input$ = new Subject<any>();
+      component.answerRef = null;
+      component.commentRef = { ionInput: input$ } as any;
+      component.doReview = true;
+      component.reviewId = 1001; component.submissionId = 901;
+      component.question = { id: 101 } as any;
+      component.comment = 'Specific reviewer feedback' as any;
+      component.onChange('comment');
+      const save = jasmine.createSpy('save');
+      component.submitActions$.subscribe(save);
+      component.ngAfterViewInit();
+      input$.next({ target: { value: 'Specific reviewer feedback' } });
+      scheduler.flush();
+      expect(save).toHaveBeenCalledWith({ autoSave: true, goBack: false,
+        reviewSave: { reviewId: 1001, submissionId: 901, questionId: 101,
+          answer: '', comment: 'Specific reviewer feedback' } });
+    }));
+
+    it('cancels pending comment autosave when the question is destroyed', withScheduler((scheduler) => {
+      const input$ = new Subject<any>();
+      component.answerRef = null;
+      component.commentRef = { ionInput: input$ } as any;
+      const save = spyOn(component, 'triggerSave');
+      component.ngAfterViewInit();
+      input$.next({ target: { value: 'Unsaved comment' } });
+      component.ngOnDestroy();
+      scheduler.flush();
+      expect(save).not.toHaveBeenCalled();
     }));
 
     it('should not set up subscription when answerRef is not available', () => {

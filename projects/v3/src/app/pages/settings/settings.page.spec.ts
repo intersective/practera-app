@@ -271,6 +271,27 @@ describe('SettingsPage', () => {
     expect(notificationsServiceSpy.alert).toHaveBeenCalled();
   });
 
+  it('notifies Angular of pending and completed asynchronous profile updates', async () => {
+    const update$ = new Subject<any>();
+    const uploaded = { name: 'profile.png', directUrl: 'https://files/profile.png' };
+    uppyUploaderServiceSpy.open.and.returnValue(Promise.resolve({
+      onDidDismiss: () => Promise.resolve({ data: uploaded })
+    } as any));
+    authSpy.updateUserProfile.and.returnValue(update$ as any);
+    const renderedStates: Array<{ pending: boolean; avatar: string }> = [];
+    (component as any).cdr.markForCheck.and.callFake(() => {
+      renderedStates.push({ pending: component.imageUpdating, avatar: component.profile.avatar });
+    });
+    const updating = component.profileImage();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(renderedStates.some(state => state.pending)).toBeTrue();
+    update$.next({ data: { updateUserProfile: { success: true } } });
+    update$.complete();
+    await updating;
+    expect(renderedStates).toContain({ pending: false, avatar: uploaded.directUrl });
+  });
+
   it('should not update local profile when the backend rejects the file', async () => {
     const uploaded = {
       tus: { uploadUrl: 'https://upload' },

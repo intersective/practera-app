@@ -15,7 +15,7 @@
         </ion-item>
       }
       <app-file-display [file]="submission.answer"
-        [fileType]="question.fileType || 'any'"
+        [fileType]="effectiveFileType"
         [isFileComponent]="true"
         [lines]="(doReview && question?.canAnswer) ? 'none': 'full'"
         [deletable]="false"
@@ -39,7 +39,7 @@
       @if (review?.answer) {
         <app-file-display
           [file]="review?.answer"
-          [fileType]="question.fileType || 'any'"
+          [fileType]="effectiveFileType"
           [isFileComponent]="true"
           [deletable]="false"
         ></app-file-display>
@@ -63,8 +63,7 @@
   <div class="ion-padding">
     @if (!uploadedFile && !submission?.answer) {
       <div class="uppy-container">
-        <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
-        </uppy-dashboard>
+        <div #dashboard></div>
       </div>
     }
     @for (error of errors; track error) {
@@ -74,7 +73,7 @@
     }
     <app-file-display
       [file]="uploadedFile || submission?.answer"
-      [fileType]="question.fileType || 'any'"
+      [fileType]="effectiveFileType"
       [isFileComponent]="true"
       [disabled]="control.disabled"
       (removeFile)="removeSubmitFile($event)"
@@ -86,8 +85,7 @@
   @if (question.canAnswer) {
     @if (!uploadedFile && !review?.answer) {
       <div class="uppy-container ion-padding" >
-        <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
-        </uppy-dashboard>
+        <div #dashboard></div>
       </div>
     }
     @if (uploadedFile || review.answer) {
@@ -99,7 +97,7 @@
       @if (uploadedFile || review?.answer) {
         <app-file-display
           [file]="uploadedFile || review?.answer"
-          [fileType]="question.fileType || 'any'"
+          [fileType]="effectiveFileType"
           [isFileComponent]="true"
           (removeFile)="removeSubmitFile($event)"
         ></app-file-display>

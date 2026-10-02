@@ -70,9 +70,11 @@ describe('OneofComponent', () => {
       expect(fixture.nativeElement.textContent).not.toContain("Learner's Answer");
 
       const learnerItem = fixture.nativeElement.querySelector('ion-list ion-item');
-      const labelChildren = Array.from(learnerItem.querySelector('ion-label').children);
-      expect(labelChildren.indexOf(learnerItem.querySelector('ion-chip')))
-        .toBeLessThan(labelChildren.indexOf(learnerItem.querySelector('.answer-content')));
+      const ownership = learnerItem.querySelector('ion-chip');
+      const answer = learnerItem.querySelector('.answer-content');
+      expect(ownership).toBeTruthy();
+      expect(answer).toBeTruthy();
+      expect(ownership.compareDocumentPosition(answer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     });
 
     it('should show only the selected value without a label in reviewer feedback', () => {

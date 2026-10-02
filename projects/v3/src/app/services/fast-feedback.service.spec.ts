@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { FastFeedbackService } from './fast-feedback.service';
 import { of } from 'rxjs';
 import { TestUtils } from '@testingv3/utils';
@@ -96,18 +96,18 @@ describe('FastFeedbackService', () => {
       });
     });
 
-    it('should NOT release the lock after modal is opened (fire-and-forget)', fakeAsync(() => {
+    it('should NOT release the lock after modal is opened (fire-and-forget)', async () => {
       apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
       storageSpy.get.and.returnValue(false);
 
       service.pullFastFeedback().subscribe();
-      tick();
+      await Promise.resolve();
 
       const setCalls = storageSpy.set.calls.allArgs();
       const lockCalls = setCalls.filter(args => args[0] === 'fastFeedbackOpening');
       expect(lockCalls.length).toBe(1);
       expect(lockCalls[0]).toEqual(['fastFeedbackOpening', true]);
-    }));
+    });
 
     it('should not open modal when fastFeedbackOpening is already true', () => {
       apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
@@ -145,13 +145,31 @@ describe('FastFeedbackService', () => {
       });
     });
 
-    it('should release lock on modal open error', fakeAsync(() => {
+    it('skips missing metadata when the caller supplies only modalOnly', () => {
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, null)));
+      storageSpy.get.and.returnValue(false);
+      service.pullFastFeedback({ modalOnly: true }).subscribe();
+      expect(notificationSpy.fastFeedbackModal).not.toHaveBeenCalled();
+      expect(storageSpy.set).not.toHaveBeenCalledWith('fastFeedbackOpening', true);
+    });
+
+    it('maps GraphQL target metadata to the feedback component contract', () => {
+      const meta = { ...VALID_META, targetUserId: 300, assessmentName: 'Reflection' };
+      apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, meta)));
+      storageSpy.get.and.returnValue(false);
+      service.pullFastFeedback({ modalOnly: true }).subscribe();
+      const props = notificationSpy.fastFeedbackModal.calls.mostRecent().args[0];
+      expect(props.meta).toEqual({ context_id: 200, team_id: 100, target_user_id: 300,
+        team_name: 'Team A', assessment_name: 'Reflection' });
+    });
+
+    it('should release lock on modal open error', async () => {
       apolloSpy.graphQLFetch.and.returnValue(of(makePulseCheckResponse(VALID_QUESTIONS, VALID_META)));
       storageSpy.get.and.returnValue(false);
       notificationSpy.fastFeedbackModal.and.returnValue(Promise.reject('modal error'));
 
       service.pullFastFeedback().subscribe();
-      tick();
+      await Promise.resolve();
 
       const setCalls = storageSpy.set.calls.allArgs();
       const lockCalls = setCalls.filter(args => args[0] === 'fastFeedbackOpening');
@@ -159,7 +177,7 @@ describe('FastFeedbackService', () => {
         ['fastFeedbackOpening', true],
         ['fastFeedbackOpening', false],
       ]);
-    }));
+    });
   });
 
   describe('when testing submit()', () => {

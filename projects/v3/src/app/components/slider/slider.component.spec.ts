@@ -359,6 +359,7 @@ describe('SliderComponent', () => {
     it('should use the reviewer answer as the displayed slider value', () => {
       component.review = { answer: 3 };
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(component.hasDisplaySliderAnswer()).toBeTrue();
@@ -372,6 +373,7 @@ describe('SliderComponent', () => {
     it('should use reviewer-specific wording when no review answer exists', () => {
       component.review = { answer: null };
 
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(component.hasDisplaySliderAnswer()).toBeFalse();
@@ -396,6 +398,7 @@ describe('SliderComponent', () => {
     component.submission = { answer: 2 };
     component.review = { answer: 4 };
 
+    fixture.changeDetectorRef.markForCheck();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Your Answer: 2');

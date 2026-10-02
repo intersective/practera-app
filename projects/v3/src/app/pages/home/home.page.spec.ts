@@ -256,6 +256,18 @@ describe('HomePage', () => {
       );
     });
 
+    it('links mobile prerequisites to the registered top-level task routes', async () => {
+      utilsService.isMobile.and.returnValue(true);
+      await component.showGuideline({ unlockConditions: [
+        { action: 'complete', name: 'Introduction', meta: { activityId: 20, topicId: 21 } },
+        { action: 'submit', name: 'Project Plan', meta: { contextId: 10, activityId: 20, assessmentId: 30 } },
+      ] } as any, 'activity');
+      const props = notificationsService.popUp.calls.mostRecent().args[1] as any;
+      expect(props.routes.map(route => route.path)).toEqual([
+        '/topic-mobile/20/21', '/assessment-mobile/assessment/20/10/30',
+      ]);
+    });
+
     it('shows a generic message instead of partial links when any condition is unsupported', async () => {
       const activity = {
         unlockConditions: [

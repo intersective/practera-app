@@ -193,7 +193,10 @@ export class SettingsPage implements OnInit, OnDestroy {
 
       const file = res.data;
       if (file) {
-        this.imageUpdating = true;
+        this.ngZone.run(() => {
+          this.imageUpdating = true;
+          this.cdr.markForCheck();
+        });
         // User-profile CDN URLs are not directly readable in every environment.
         // Match file-display and prefer the TUS direct URL when it is available.
         const profileUrl = file.directUrl || file.url;
@@ -212,10 +215,13 @@ export class SettingsPage implements OnInit, OnDestroy {
           throw new Error(result?.message || 'Profile picture could not be updated.');
         }
 
-        this.profile.avatar = profileUrl;
-        this.storage.setUser({
-          avatar: profileUrl,
-          image: profileUrl,
+        this.ngZone.run(() => {
+          this.profile.avatar = profileUrl;
+          this.storage.setUser({
+            avatar: profileUrl,
+            image: profileUrl,
+          });
+          this.cdr.markForCheck();
         });
 
         return this.notificationsService.alert({
@@ -248,7 +254,10 @@ export class SettingsPage implements OnInit, OnDestroy {
       }
       return this.notificationsService.alert(alertOpts);
     } finally {
-      this.imageUpdating = false;
+      this.ngZone.run(() => {
+        this.imageUpdating = false;
+        this.cdr.markForCheck();
+      });
     }
   }
 

@@ -42,6 +42,7 @@ Safer alternative: use the reviewed lockfile, explicit pinned browser installati
 | `npm run test:e2e -- --project=desktop-chromium` | One browser project |
 | `npm run test:e2e:headed` | Headed browser debugging |
 | `npm run test:e2e:repeat` | Five full consecutive runs, zero retries |
+| `npm run test:e2e:repeat -- --workers=3` | Five complete runs with concurrent isolated contexts |
 | `npm run test:e2e:report` | Open the latest mocked HTML report |
 | `npm run test:sandbox` | Explicit real-backend smoke suite |
 | `npm run test:privacy` | Synthetic live-failure diagnostic privacy check, without credentials |
@@ -57,9 +58,29 @@ Projects are desktop Chromium (1280 x 800), Pixel 7 Chromium, and iPhone 13 WebK
 
 `e2e/support/mock-api.ts` installs interception before navigation. Each test receives fresh browser storage and an isolated backend state. The fixture projects requested GraphQL fields from actual service queries, checks identifiers, records operations, saves drafts, and changes submission status. Root fields without handlers and unexpected external requests fail the test. WebSockets and external fonts are intercepted; no live API is required.
 
-Fixtures contain two programs, one activity/topic, and an ordinary 11-question assessment. Choice IDs must be globally unique, matching real backend data. Extend fixture responses to the actual operation/variables and response shape when services change; never respond with blanket empty success data.
+Fixtures contain two programs, one activity/topic, and an ordinary 11-question assessment. [Advanced coverage](advanced-coverage.md) adds real Uppy popup and inline dashboards, isolated TUS upload state, all supported question controls, moderated learner/reviewer views, four-page published feedback, Team360 peer sections, locked-content guidance and post-assessment feedback availability. Choice IDs must be globally unique, matching real backend data. Extend fixture responses to the actual operation/variables and response shape when services change; never respond with blanket empty success data.
 
 Authentication tests cover the outgoing global-login boundary and actual returned-token processing. They do not prepopulate `isLoggedIn` or claim coverage of the external login UI. Assessment tests interact with real controls, verify pagination and restored drafts, inspect submitted answers, and exercise retry paths. Prefer roles/labels; do not use forced clicks or fixed waits.
+
+## Advanced scenario maintenance
+
+`e2e/support/advanced-fixtures.ts` defines question groups, audience, assessment states, two team members, lock-condition metadata and feedback questions. Set `api.options` before navigation to select a scenario. Drafts, files, uploads and reviewer answers belong to that test's `MockState` and survive reload only within its context.
+
+Moderated fixtures must use assessment type `moderated` to exercise reviewer authoring. Published feedback appends reviewer-only groups after learner groups. Ordinary groups larger than ten questions are split into separate pages; remaining group slices are not merged with the next group. Team360 keeps each configured group as its own physical page and skips excess peer groups while retaining self-reflection groups.
+
+Mock TUS enforces the synthetic API key, stack and source headers, declared upload length and offset. A completed PATCH returns the app's existing JSON metadata contract. Canonical CDN and direct-file URLs have separate assertions. These tests run the installed Uppy plugins and actual Angular templates; do not replace dashboards with stub widgets.
+
+WebKit hides Blob bytes in network events. The mocked harness observes the original XMLHttpRequest body and calls native send unchanged, allowing the same byte-length checks. See [the observer rationale](advanced-coverage.md). Sandbox execution has no such observer.
+
+Target examples:
+
+```bash
+npm run test:e2e -- --project=desktop-chromium e2e/mocked/uploads.spec.ts
+npm run test:e2e -- e2e/mocked/assessment-roles.spec.ts e2e/mocked/team360.spec.ts
+npm run test:e2e -- e2e/mocked/locks.spec.ts e2e/mocked/post-assessment-feedback.spec.ts
+```
+
+Use `E2E_RUN=descriptive-name` to retain distinct JSON results and failed-test artifacts under output/. Browser retries remain disabled. Ionic file inputs include a folder chooser; select the ordinary input with `:not([webkitdirectory])`. Some Ionic controls receive pointer events on their host; click that existing host and verify the accessible selected state rather than forcing clicks.
 
 ## Sandbox smoke
 
@@ -86,4 +107,4 @@ Use a dedicated account with stable enrolled data. Invalid/expired tokens or una
 - `output/test-results/`: mocked failure screenshots/traces, grouped by run.
 - [Verification results](verification.md): checked outcomes and baseline blockers.
 
-Sandbox execution is pending at the user's request. The milestone requires a reproducible clean setup, successful development build/server, relevant unit regressions, five complete retry-free browser runs, and successful sandbox smoke. Keep unrelated baseline failures visible. Do not claim completion of live acceptance when credentials are absent. Future work includes CI, physical devices, external login UI and broader learner features.
+Sandbox execution is pending at the user's request. The milestone requires a reproducible clean setup, successful development build/server, relevant unit regressions, five complete retry-free browser runs, and successful sandbox smoke. Keep unrelated baseline failures visible. Do not claim completion of live acceptance when credentials are absent. Future work includes CI, physical devices, external login UI and broader learner features. Upload tests use synthetic local files and an intercepted TUS endpoint; they do not upload to a real backend.

@@ -1,3 +1,6 @@
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Uppy } from '@uppy/core';
 import { FormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { UppyUploaderService } from '../uppy-uploader/uppy-uploader.service';
@@ -42,6 +45,17 @@ describe('FileUploadComponent', () => {
     component.question.fileType = 'video';
 
     expect(component.noteMessage()).toContain('Videos only');
+  });
+
+  it('restricts a legacy video question even when only videoOnly is provided', () => {
+    const uppy = new Uppy();
+    uppyUploaderService.createUppyInstance.and.returnValue(uppy);
+    component.source = 'assessment'; component.videoOnly = true;
+    component.question.fileType = null;
+    component.ngOnInit();
+    expect(uppyUploaderService.createUppyInstance.calls.mostRecent().args[3].allowedFileTypes).toEqual(['video/*']);
+    expect(component.noteMessage()).toContain('Videos only');
+    uppy.destroy();
   });
 
   it('should return image note message for image fileType', () => {
@@ -535,5 +549,51 @@ describe('FileUploadComponent', () => {
       expect(component.uploadedFile).toBeDefined();
       expect(component.uploadedFile.cdnUrl).toBe('https://cdn/rev-file.pdf');
     });
+  });
+});
+
+describe('FileUploadComponent dashboard rendering', () => {
+  let fixture: ComponentFixture<FileUploadComponent>;
+  let uppy: Uppy<any, any>;
+
+  beforeEach(async () => {
+    uppy = new Uppy({ restrictions: { allowedFileTypes: ['image/*'] } });
+    const uploader = jasmine.createSpyObj('UppyUploaderService', ['createUppyInstance']);
+    uploader.createUppyInstance.and.returnValue(uppy);
+    TestBed.configureTestingModule({
+      declarations: [FileUploadComponent], schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      providers: [{ provide: UppyUploaderService, useValue: uploader }],
+    });
+    await TestBed.compileComponents();
+    fixture = TestBed.createComponent(FileUploadComponent);
+    const component = fixture.componentInstance;
+    component.source = 'assessment'; component.doAssessment = true;
+    component.submissionStatus = 'in progress'; component.submission = {};
+    component.question = { id: 11, name: 'Evidence', fileType: 'image', audience: ['submitter'] } as any;
+    component.control = new FormControl(null);
+    component.submitActions$ = new Subject();
+    fixture.detectChanges();
+    await fixture.whenStable();
+  });
+
+  afterEach(() => fixture.destroy());
+
+  it('renders an actual file picker inside an assessment question', () => {
+    const picker = fixture.nativeElement.querySelector('input[type=file]') as HTMLInputElement;
+    expect(fixture.nativeElement.querySelector('.uppy-Dashboard-browse')).not.toBeNull();
+    expect(picker?.accept).toBe('image/*');
+  });
+
+  it('unmounts the dashboard for a saved file and remounts it when that file is removed', () => {
+    fixture.componentInstance.uploadedFile = { url: 'https://files.example.test/evidence.png' } as any;
+    fixture.changeDetectorRef.markForCheck();
+    fixture.detectChanges();
+    expect(uppy.getPlugin('Dashboard')).toBeUndefined();
+    fixture.componentInstance.removeSubmitFile();
+    fixture.changeDetectorRef.markForCheck();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.uppy-Dashboard-browse')).not.toBeNull();
+    fixture.destroy();
+    expect(uppy.getPlugin('Dashboard')).toBeUndefined();
   });
 });

@@ -18,6 +18,7 @@ import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { ModalController } from '@ionic/angular';
+import { environment } from '@v3/environments/environment';
 
 /**
  * mock value accessor directive to satisfy formControlName bindings
@@ -2374,6 +2375,7 @@ describe('AssessmentComponent', () => {
     });
 
     it('should render one dedicated reviewer feedback heading', () => {
+      component.pagesGroups = [component.displayGroups];
       fixture.detectChanges();
 
       const sections = fixture.nativeElement.querySelectorAll('.reviewer-feedback-section');
@@ -2509,6 +2511,7 @@ describe('AssessmentComponent', () => {
       component.doAssessment = false;
       component.isPendingReview = true;
 
+      component.pagesGroups = [component.displayGroups];
       fixture.detectChanges();
 
       const guidance = fixture.nativeElement.querySelectorAll('.reviewer-only-guidance');
@@ -2801,8 +2804,15 @@ describe('AssessmentComponent', () => {
 
   describe('isPaginationEnabled', () => {
     it('should return the value from environment feature toggles', () => {
-      // The test environment has assessmentPagination: false in environment.featureToggles
-      expect(component.isPaginationEnabled).toBeFalse();
+      const original = environment.featureToggles.assessmentPagination;
+      try {
+        environment.featureToggles.assessmentPagination = false;
+        expect(component.isPaginationEnabled).toBeFalse();
+        environment.featureToggles.assessmentPagination = true;
+        expect(component.isPaginationEnabled).toBeTrue();
+      } finally {
+        environment.featureToggles.assessmentPagination = original;
+      }
     });
   });
 
@@ -3106,7 +3116,7 @@ describe('AssessmentComponent', () => {
         scrollToTop: (duration?: number) => Promise<void>;
       };
       const scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
-      scrollContainer.scrollToTop = scrollToTopSpy;
+      Object.defineProperty(scrollContainer, 'scrollToTop', { value: scrollToTopSpy, configurable: true });
       scrollContainer.appendChild(fixture.nativeElement);
 
       component.goToPage(2);
@@ -4052,8 +4062,8 @@ describe('AssessmentComponent', () => {
 
       it('requires the first peer group, not completion of every later peer group', () => {
         component.task = { assessmentType: 'team360' } as any;
-        const groups = Array.from({ length: 5 }, (_, i) => selectorGroup(100 + i));
-        // group 0 (key {"userId":100}) excluded; groups 1-4 have unique keys → memberCount = 4
+        const groups = [textGroup(100), ...Array.from({ length: 4 }, (_, i) => selectorGroup(101 + i))];
+        // A general page precedes the first peer section; later peer sections are optional.
         component.assessment = { groups } as any;
         component.pagesGroups = groups.map(g => [g]);
         component.questionsForm = new FormGroup({

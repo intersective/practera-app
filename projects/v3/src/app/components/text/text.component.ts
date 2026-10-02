@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, Input, forwardRef, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormControl, AbstractControl, ControlValueAccessor } from '@angular/forms';
 import { IonTextarea } from '@ionic/angular';
 import { Subject, Subscription } from 'rxjs';
@@ -38,7 +38,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   // answer field for submitter & reviewer
   @ViewChild('answerEle') answerRef: IonTextarea;
   // comment field for reviewer
-  @ViewChild('commentEle') commentRef: ElementRef;
+  @ViewChild('commentEle') commentRef: IonTextarea;
 
   innerValue: any;
   answer: FormControl;
@@ -85,8 +85,9 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   }
 
   ngAfterViewInit() {
-    if (this.answerRef?.ionInput) {
-      this.subcriptions.push(this.answerRef.ionInput.pipe(
+    for (const field of [this.answerRef, this.commentRef]) {
+      if (!field?.ionInput) continue;
+      this.subcriptions.push(field.ionInput.pipe(
         map(e => (e.target as HTMLInputElement).value),
         filter(text => text.length >= 0),
         debounceTime(800),

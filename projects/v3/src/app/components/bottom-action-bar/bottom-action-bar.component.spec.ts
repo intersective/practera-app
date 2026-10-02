@@ -102,6 +102,7 @@ describe('BottomActionBarComponent', () => {
       const clickEvent = new MouseEvent('click');
       component.onClick(clickEvent);
       component.onClick(clickEvent);
+      fixture.changeDetectorRef.markForCheck();
       fixture.detectChanges();
 
       expect(component.loading).toBeTrue();

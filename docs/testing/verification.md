@@ -2,6 +2,8 @@
 
 Checked 2026-10-02 on `chaw-login-refactor-e2e`. This document separates new-suite evidence from full baseline and live acceptance.
 
+The foundation results below describe the first implementation. The advanced extension has its own results at the end of this document; its current full unit baseline supersedes the older counts.
+
 ## Established evidence
 
 - npm 11.6.2 clean lockfile installation passed with development dependencies.
@@ -115,9 +117,44 @@ No deferred minor findings remain after the task-selector issue was regraded.
 | Relevant unit regressions | output/evidence/final-critical-unit.log |
 | Full unit result | output/evidence/final-unit.log |
 | Lint blocker | output/evidence/final-lint.log |
-| Five-run browser sequence | output/evidence/reliability.log |
-| Per-run results | output/evidence/e2e-1.json through e2e-5.json |
+| Foundation five-run browser sequence | output/evidence/foundation/reliability.log |
+| Foundation per-run results | output/evidence/foundation/e2e-1.json through e2e-5.json |
 | Negative fixture proof | output/evidence/negative-fixture.log |
 | Privacy probe | output/evidence/final-privacy.log and output/test-results/privacy/ |
 | Machine-readable final summary | output/evidence/final-summary.json |
 | Latest browser HTML report | output/playwright-report/index.html |
+
+## Advanced extension: 2026-10-02
+
+The requested extension adds 24 scenarios to the original 11. The complete suite now has 35 scenarios on each of desktop Chromium, Android-profile Chromium and iPhone-profile WebKit (105 executions per run). The [advanced coverage matrix](advanced-coverage.md) records the exact states and defects. No dependency versions changed, no live files were uploaded, and sandbox smoke remains pending by request.
+
+Verified local checks:
+
+- Direct dependency versions still match the lockfile; Node 22.23.2 and local npm 11.6.2 remain pinned.
+- Request library and V3 development build pass. Every browser invocation starts and stops its own frontend server.
+- Browser and Jasmine TypeScript checks pass.
+- Focused Settings, FastFeedback, FileUpload, Multiple, Text and Home suites: 192 passed. Assessment, Oneof, Slider, both team selectors and BottomActionBar: 426 passed. All 618 focused cases also pass in the final full run, which exercises globally registered Ionic elements.
+- Final full baseline: 1604 tests, 1588 passed, 16 failed. Nine new unit regressions were added. The original assessment/choice/slider/selector/action-bar failure names are now resolved by the documented product fixes and corrected fixtures. No new full-suite failure names appeared.
+- Remaining full-suite failures: five ProjectBriefModal cases, one Topic external-link case, one ChatPreview URL case, eight Hubspot mapping cases, and one ProjectBriefPdfService case. Their exact names are in output/evidence/advanced/unit-failures.json; all were already recorded above. EventService's unchanged cases passed in this run; their historical inconsistency remains unclaimed.
+- Lint still exits nonzero because the existing @typescript-eslint/utils peer is absent. No extra package or exclusion was added.
+- Negative feedback proof: temporarily replacing available feedback questions with an empty list made the positive modal assertion fail (zero modals instead of one). The fixture was restored in a finally block before subsequent validation.
+- The initial three-profile diagnostic run failed 9/105, reproducing comment autosave, mobile links, hidden-button selector and WebKit Blob-observation issues. The focused WebKit follow-up passed 4/4 after correction. This diagnostic run is separate from final reliability evidence.
+- A subsequent diagnostic run passed 104/105. The remaining desktop test had assumed a selected review survives reload; it now reselects the review through the actual list before checking persisted comments. The five-run sequence was restarted from the final code. See output/evidence/advanced/reload-diagnostic.log and reload-diagnostic.json.
+
+Five complete consecutive runs passed with three isolated workers and zero retries: 105/105 per run, 525/525 total, zero skips and zero flaky results. JSON evidence confirms 35 scenarios per browser and exactly one successful attempt for every test. Application and browser-test source hashes stayed unchanged throughout the counted sequence. The final port-binding check confirms port 4300 is released. The default configuration remains one worker; the tested repetition command is `npm run test:e2e:repeat -- --workers=3`.
+
+One fresh final reviewer examined the extension and found no important issues. Subsequent minimal comment/mobile-route/single-choice fixes and stale unit fixture repairs were checked with their failing regressions, the full unit run and browser checks. Sandbox and physical-device acceptance remain separate gates.
+
+| Advanced evidence | Location |
+| --- | --- |
+| Request and V3 development build | output/evidence/advanced/final-build.log |
+| First focused unit selection | output/evidence/advanced/final-focused-unit.log |
+| Additional assessment unit selection | output/evidence/advanced/assessment-baseline-green.log |
+| Final full unit baseline | output/evidence/advanced/final-full-unit-v2.log |
+| Exact remaining unit failures | output/evidence/advanced/unit-failures.json |
+| Lint dependency blocker | output/evidence/advanced/final-lint.log |
+| Negative feedback proof | output/evidence/advanced/negative-feedback.log |
+| Browser reliability sequence | output/evidence/advanced/reliability.log |
+| Current per-run browser results | output/evidence/e2e-1.json through e2e-5.json |
+| Final summary and source stability | output/evidence/advanced/final-summary.json and verified-source-hashes.json |
+| Final server cleanup | output/evidence/advanced/final-port.log |

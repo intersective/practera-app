@@ -7,7 +7,21 @@
         <ion-item [ngClass]="{'item-bottom-border': !(choice?.explanation?.changingThisBreaksApplicationSecurity && submission?.answer === choice.id)}" lines="none">
           <ion-label class="ion-text-wrap body-2 gray-3"
             [class.reviewer-feedback-choice]="isReviewerOnlyChoiceFeedback">
-            <div [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
+            @if (!isReviewerFeedbackContext && !isReviewerOnlyChoiceFeedback) {
+              @if (submission?.answer === choice.id) {
+                <ion-chip class="label orange">
+                  @if (viewerRole === 'learner') {
+                    <span i18n>Your Answer</span>
+                  } @else {
+                    <span i18n>Learner's Answer</span>
+                  }
+                </ion-chip>
+              }
+              @if (review?.answer === choice.id) {
+                <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
+              }
+            }
+            <div class="answer-content" [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
               [ngClass]="{'explanation': submission?.answer === choice.id || review?.answer === choice.id}"
               [innerHTML]="choice.name | detectLanguage"></div>
             @if (isReviewerOnlyChoiceFeedback) {
@@ -22,13 +36,6 @@
                   <span class="reviewer-choice-status-text" aria-hidden="true" i18n>Not selected</span>
                   <span class="for-accessibility" i18n>Not selected by reviewer</span>
                 </span>
-              }
-            } @else {
-              @if (submission?.answer === choice.id) {
-                <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
-              }
-              @if (review?.answer === choice.id) {
-                <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
               }
             }
           </ion-label>
