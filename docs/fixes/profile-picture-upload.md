@@ -2,7 +2,7 @@
 status: stable
 authority: reference
 scope: v3
-last_reviewed: 2026-08-06
+last_reviewed: 2026-10-02
 supersedes: none
 ---
 
@@ -18,7 +18,7 @@ The settings page also ignored the mutation result. A response such as `{ succes
 
 ## Upload response contract
 
-The final TUS `PATCH` response must have a JSON body containing non-empty values for:
+A completed TUS `PATCH` response, or `POST` for a zero-byte file, has a JSON body containing non-empty values for:
 
 ```json
 {
@@ -29,9 +29,11 @@ The final TUS `PATCH` response must have a JSON body containing non-empty values
 }
 ```
 
+Completed-upload `HEAD` responses return that same JSON in the CORS-exposed `Upload-Result` header. The completion-metadata server change must be deployed before this resume-recovery path is available. Incomplete `HEAD` and intermediate `PATCH` responses need no completion metadata. The app leaves non-success HTTP responses to tus-js-client so authentication and source errors retain their HTTP status.
+
 `UppyUploaderService.parseTusUploadResponse()` is the shared validator used by the modal uploader and assessment file uploader. Empty, malformed, or incomplete response bodies stop the upload flow with a specific user-visible error.
 
-The modal normalizes the response to `UppyFileData` and preserves both `cdnUrl` and `directUrl`. Assessment answers persist the canonical CDN URL but prefer `directUrl || url` for immediate display. Profile avatars follow the same display preference and persist `directUrl` when it is available because the `user-profile` CDN URL may not be directly readable; they fall back to the canonical `url`. Consumers must never use `file.tus.uploadUrl` as stored file metadata.
+The modal normalizes the response to `UppyFileData` and preserves both `cdnUrl` and `directUrl`. Profile avatars persist and display the canonical `cdnUrl` (or the normalized `url` alias). The sandbox CDN supports anonymous avatar image requests; the TUS `directUrl` requires authentication headers that an ordinary `<img>` cannot supply. Deployments with a private CDN need a suitable signed image URL from the backend. Consumers must never use `file.tus.uploadUrl` as stored file metadata.
 
 ## Profile update behavior
 
@@ -40,17 +42,19 @@ The modal normalizes the response to `UppyFileData` and preserves both `cdnUrl` 
 - `bucket`
 - `path`
 - `name`
-- `url` (`directUrl` when available, otherwise the CDN URL)
+- `url` (the canonical CDN URL)
 - `extension`
 - `type`
 - `size`
 
 The page updates its avatar and browser storage only when `data.updateUserProfile.success` is exactly `true`. A missing result or `success: false` displays the returned message and leaves the previous avatar unchanged. The upload spinner is cleared for success, cancellation, and error paths.
 
-The `user-profile` upload source is image-only.
+The `user-profile` upload source is image-only. Server upload categories match the TUS allowlist: `chat`, `assessment`, `user-profile`, `media-manager`, `static`, and `project-hub`. Support attachments use `static`; chat attachments use `chat` with separate optional image/video picker restrictions.
+
+Both modal and assessment/review uploaders mount `@uppy/dashboard` directly. Assessment/review targets are conditional: the picker is removed after completion, restored after deleting an answer, and destroyed with its component.
 
 ## Verification and rollout
 
-Automated coverage verifies TUS response validation, assessment uploader integration, image-only profile restrictions, direct-URL preference, successful profile payloads, and rejected mutations.
+Automated coverage verifies TUS response validation, assessment uploader integration, image-only profile restrictions, canonical profile URL selection, successful profile payloads, and rejected mutations.
 
 After deployment, verify one successful PNG/JPEG upload and one rejected/invalid upload in staging. Monitor upload endpoint errors and `updateUserProfile` failures separately. Logs should include the request/correlation identifier, upload source, HTTP status, and a stable error category such as `empty_upload_response`, `invalid_upload_metadata`, or `profile_update_rejected`; they must not include file bytes, API keys, or full signed URLs.

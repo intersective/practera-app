@@ -4,13 +4,13 @@ import {
   TusUploadResponse,
   UppyUploadSource,
 } from './../uppy-uploader/uppy-uploader.service';
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
-import { DashboardOptions } from '@uppy/dashboard';
+import Dashboard, { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -44,7 +44,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   uppy: Uppy<FileMetadata, FileBody>;
 
   // Uppy UI
-  uppyProps = UPPY_PROPS;
+  uppyProps = { ...UPPY_PROPS };
 
   @Input() source!: UppyUploadSource;
   @Input() submitActions$: Subject<SubmitActions>;
@@ -80,6 +80,21 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
+  // The dashboard target appears and disappears with the answer's @if block.
+  @ViewChild('dashboard')
+  set dashboard(target: ElementRef<HTMLDivElement> | undefined) {
+    const dashboard = this.uppy?.getPlugin('Dashboard');
+    if (dashboard) {
+      this.uppy.removePlugin(dashboard);
+    }
+    if (target) {
+      this.uppy.use(Dashboard, {
+        ...this.uppyProps,
+        target: target.nativeElement,
+      });
+    }
+  }
+
   uploadedFile: TusFileResponse;
   fileTypes = '';
   tusResponse: TusUploadResponse;
@@ -92,6 +107,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   constructor(
     private uppyUploaderService: UppyUploaderService,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnDestroy(): void {
@@ -177,27 +194,30 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     status: number;
     uploadURL: string;
   }): void {
-    // reset errors
-    this.errors = [];
-    const fileInput: TusFileResponse = {
-      name: data.name,
-      type: data.type,
-      size: data.size,
-      extension: data.extension,
-      bucket: this.tusResponse.bucket,
-      path: this.tusResponse.path,
-      url: this.tusResponse.cdnUrl,
-      directUrl: this.tusResponse.directUrl,
-      cdnUrl: this.tusResponse.cdnUrl,
-    };
+    this.ngZone.run(() => {
+      // reset errors
+      this.errors = [];
+      const fileInput: TusFileResponse = {
+        name: data.name,
+        type: data.type,
+        size: data.size,
+        extension: data.extension,
+        bucket: this.tusResponse.bucket,
+        path: this.tusResponse.path,
+        url: this.tusResponse.cdnUrl,
+        directUrl: this.tusResponse.directUrl,
+        cdnUrl: this.tusResponse.cdnUrl,
+      };
 
-    this.uploadedFile = fileInput;
-    const type = this.doReview ? 'answer' : undefined;
-    this.onChange('', type);
+      this.uploadedFile = fileInput;
+      const type = this.doReview ? 'answer' : undefined;
+      this.onChange('', type);
 
-    if (response?.status !== 200) {
-      this.errors.push('File upload failed, please try again later.');
-    }
+      if (response?.status !== 200) {
+        this.errors.push('File upload failed, please try again later.');
+      }
+      this.cdr.markForCheck();
+    });
   }
 
   triggerSave() {

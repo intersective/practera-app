@@ -25,6 +25,7 @@ type FileBody = { [key: string]: any };
 export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('dashboard', { static: true }) private dashboard: ElementRef<HTMLDivElement>;
   @Input() source!: UppyUploadSource;
+  @Input() allowedFileTypes?: string[];
   @Input() tusEndpoint?: string = environment.uppyConfig.tusUrl; // tusUrl
   @Output() uploadComplete = new EventEmitter<any>();
 
@@ -79,20 +80,10 @@ export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   loadAllowedFileTypes() {
-    switch(this.source) {
-      case "profile":
-      case "user-profile":
-      case "image":
-        return ["image/*"];
-
-      case "video":
-        return ["video/*"];
-
-      case "chat":
-      case "any":
-      default:
-        return ALLOWED_FILE_TYPES;
+    if (this.source === 'user-profile') {
+      return ['image/*'];
     }
+    return this.allowedFileTypes || ALLOWED_FILE_TYPES;
   }
 
   clearUploadedCache(name: string) {
@@ -105,8 +96,6 @@ export class UppyUploaderComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onAfterResponse(req, res) {
     try {
-      // eslint-disable-next-line no-console
-      console.log("Uploaded files:", req, res);
       this.s3Info = this.uppyUploaderService.parseTusUploadResponse(res.getBody());
     } catch(error) {
       this.notificationsService.alert({

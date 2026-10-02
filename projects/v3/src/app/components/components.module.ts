@@ -73,8 +73,6 @@ const largeCircleDefaultConfig = {
     ToggleLabelDirective,
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
-  // FileUploadComponent still uses a legacy Uppy element. The uploader popup
-  // mounts Dashboard directly rather than relying on this schema to render it.
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
     AchievementPopUpComponent,

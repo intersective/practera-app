@@ -38,6 +38,13 @@ describe('UppyUploaderComponent', () => {
     expect(component.loadAllowedFileTypes()).toEqual(['image/*']);
   });
 
+  it('keeps chat photo restrictions separate from the upload category', () => {
+    component.source = 'chat';
+    (component as any).allowedFileTypes = ['image/*'];
+
+    expect(component.loadAllowedFileTypes()).toEqual(['image/*']);
+  });
+
   it('returns the canonical CDN URL from the TUS response', () => {
     const tusResponse: TusUploadResponse = {
       bucket: 'profile-images',

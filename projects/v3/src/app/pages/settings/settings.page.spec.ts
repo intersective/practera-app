@@ -235,7 +235,7 @@ describe('SettingsPage', () => {
     expect(authSpy.updateUserProfile).not.toHaveBeenCalled();
   });
 
-  it('should update profile image and notify on success', async () => {
+  it('persists and displays the canonical image URL instead of the authenticated upload URL', async () => {
     const uploaded = {
       tus: { uploadUrl: 'https://upload' },
       name: 'profile.png',
@@ -255,7 +255,7 @@ describe('SettingsPage', () => {
     await component.profileImage();
 
     expect(authSpy.updateUserProfile).toHaveBeenCalledWith({
-      url: 'https://files/profile.png',
+      url: 'https://cdn/profile.png',
       name: 'profile.png',
       extension: 'png',
       type: 'image/png',
@@ -263,10 +263,10 @@ describe('SettingsPage', () => {
       bucket: 'bucket',
       path: '/uploads/profile',
     });
-    expect(component.profile.avatar).toBe('https://files/profile.png');
+    expect(component.profile.avatar).toBe('https://cdn/profile.png');
     expect(storageSpy.setUser).toHaveBeenCalledWith({
-      avatar: 'https://files/profile.png',
-      image: 'https://files/profile.png',
+      avatar: 'https://cdn/profile.png',
+      image: 'https://cdn/profile.png',
     });
     expect(notificationsServiceSpy.alert).toHaveBeenCalled();
   });

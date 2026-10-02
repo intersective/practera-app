@@ -227,7 +227,7 @@ describe('SupportPopupComponent', () => {
       component.uploadFile();
       flushMicrotasks();
 
-      expect(uppyUploaderSpy.open).toHaveBeenCalledWith('any');
+      expect(uppyUploaderSpy.open).toHaveBeenCalledWith('static');
       expect(component.selectedFile).toEqual(mockFile as any);
     }));
 
@@ -239,7 +239,7 @@ describe('SupportPopupComponent', () => {
       component.uploadFile();
       flushMicrotasks();
 
-      expect(uppyUploaderSpy.open).toHaveBeenCalledWith('any');
+      expect(uppyUploaderSpy.open).toHaveBeenCalledWith('static');
       expect(component.selectedFile).toBeUndefined();
     }));
 
