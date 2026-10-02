@@ -60,6 +60,8 @@ Projects are desktop Chromium (1280 x 800), Pixel 7 Chromium, and iPhone 13 WebK
 
 Fixtures contain two programs, one activity/topic, and an ordinary 11-question assessment. [Advanced coverage](advanced-coverage.md) adds real Uppy popup and inline dashboards, isolated TUS upload state, all supported question controls, moderated learner/reviewer views, four-page published feedback, Team360 peer sections, locked-content guidance and post-assessment feedback availability. Choice IDs must be globally unique, matching real backend data. Extend fixture responses to the actual operation/variables and response shape when services change; never respond with blanket empty success data.
 
+[Moderated review coverage](moderation-coverage.md) adds independent learner submission, expert assignment/authoring/submission, published-feedback notification and learner acknowledgment phases. Its 22-question fixture uses separate authenticated identities and lifecycle states. Run `npm run test:e2e -- --workers=3 e2e/mocked/moderation.spec.ts` to exercise that extension across all three profiles.
+
 Authentication tests cover the outgoing global-login boundary and actual returned-token processing. They do not prepopulate `isLoggedIn` or claim coverage of the external login UI. Assessment tests interact with real controls, verify pagination and restored drafts, inspect submitted answers, and exercise retry paths. Prefer roles/labels; do not use forced clicks or fixed waits.
 
 ## Advanced scenario maintenance

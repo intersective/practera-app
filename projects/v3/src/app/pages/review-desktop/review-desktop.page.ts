@@ -137,7 +137,11 @@ export class ReviewDesktopPage implements OnInit {
         ));
         this.reviewService.getReviews();
 
-        await firstValueFrom(this.notificationsService.getTodoItems()); // update notifications list
+        try {
+          await firstValueFrom(this.notificationsService.getTodoItems());
+        } catch (err) {
+          console.error('Review submitted; notification refresh failed:', err);
+        }
 
         // fail gracefully: Review submission API may sometimes fail silently
         if (res?.data?.submitReview === false) {

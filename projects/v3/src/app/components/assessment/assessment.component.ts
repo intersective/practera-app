@@ -403,7 +403,10 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
       filter(() => !this._preventSubmission()), // skip when false
       concatMap(request => {
         if (request?.reviewSave) {
-          this.saved[request.reviewSave.questionId] = true;
+          const id = request.reviewSave.questionId;
+          this.autosaving.update(values => ({ ...values, [id]: true }));
+          this.saved.update(values => ({ ...values, [id]: false }));
+          this.failed.update(values => ({ ...values, [id]: false }));
           return this.saveReviewAnswer(request.reviewSave);
         }
 
@@ -565,17 +568,24 @@ Best regards`;
     const answer = this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
     const comment = (!this.utils.isEmpty(questionInput.comment)) ? questionInput.comment : '';
 
-    const savedValues = this.saved();
-    this.saved.set({ ...savedValues, [questionInput.questionId]: true });
-
     return this.assessmentService.saveReviewAnswer(
       questionInput.reviewId,
       questionInput.submissionId,
       questionInput.questionId,
       comment,
       answer,
-      questionInput.file,
-    );
+      this._reviewFileInput(questionInput.file),
+    ).pipe(tap({
+      next: () => {
+        this.autosaving.update(values => ({ ...values, [questionInput.questionId]: false }));
+        this.saved.update(values => ({ ...values, [questionInput.questionId]: true }));
+      },
+      error: () => {
+        this.autosaving.update(values => ({ ...values, [questionInput.questionId]: false }));
+        this.saved.update(values => ({ ...values, [questionInput.questionId]: false }));
+        this.failed.update(values => ({ ...values, [questionInput.questionId]: true }));
+      },
+    }));
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -585,8 +595,11 @@ Best regards`;
 
     // A final status check refreshes this same draft before a submission attempt.
     // Keep local edits until the server reports completion or switches context.
-    const preserveDraft = this.action === 'assessment' && this.doAssessment
-      && this.submission?.status === 'in progress' && !this.submission.isLocked
+    const editableDraft = (this.action === 'assessment' && this.doAssessment && this.submission?.status === 'in progress')
+      || (this.action === 'review' && this.isPendingReview && this.submission?.status === 'pending review'
+        && this.review?.status === 'in progress'
+        && (!changes.review || changes.review.previousValue?.id === this.review.id));
+    const preserveDraft = editableDraft && !this.submission.isLocked
       && (!changes.assessment || changes.assessment.previousValue?.id === this.assessment.id)
       && (!changes.submission || changes.submission.previousValue?.id === this.submission.id);
     const dirtyAnswers = preserveDraft
@@ -617,7 +630,7 @@ Best regards`;
       this._populateQuestionsForm();
       this._handleReviewData();
       this._prefillForm();
-      if (preserveDraft && this.doAssessment) {
+      if (preserveDraft && (this.doAssessment || this.isPendingReview)) {
         dirtyAnswers.forEach(([name, value]) => {
           const control = this.questionsForm?.get(name);
           control?.setValue(value, { emitEvent: false });
@@ -673,7 +686,9 @@ Best regards`;
     if (value === null) return { required: true };
 
     if (typeof value === 'object' && value !== null) {
-      if ((!value.answer || value.answer.length === 0) && (!value.file || (Object.keys(value.file).length === 0))) {
+      const hasAnswer = value.answer !== null && value.answer !== undefined && value.answer !== ''
+        && (!Array.isArray(value.answer) || value.answer.length > 0);
+      if (!hasAnswer && (!value.file || (Object.keys(value.file).length === 0))) {
         return { required: true };
       }
     } else if (typeof value === 'string') {
@@ -968,11 +983,11 @@ Best regards`;
         questionId = +key.replace('q-', '');
         const save: { questionId: number; answer: any; comment: any; file?: any } = {
           questionId,
-          answer: this._getAnswerValueForQuestion(questionId, answer.answer),
+          answer: answer.file?.url ? null : this._getAnswerValueForQuestion(questionId, answer.answer),
           comment: answer?.comment,
         };
         if (answer.file) {
-          save.file = answer.file;
+          save.file = this._reviewFileInput(answer.file);
         }
 
         answers.push(save);
@@ -982,8 +997,15 @@ Best regards`;
     return answers;
   }
 
+  private _reviewFileInput(file?: FileInput): FileInput {
+    if (!file) return file;
+    const input = { ...file } as FileInput & { __typename?: string };
+    delete input.__typename;
+    return input;
+  }
+
   private _getAnswerValueForQuestion(questionId: number, value: any): any {
-    if (value || (Array.isArray(value) && value.length === 0)) {
+    if (value || value === 0 || (Array.isArray(value) && value.length === 0)) {
       return value;
     }
 

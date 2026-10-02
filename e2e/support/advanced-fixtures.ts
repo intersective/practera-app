@@ -1,5 +1,5 @@
 export interface AdvancedOptions {
-  scenario: 'standard' | 'types' | 'roles' | 'role-pages' | 'team360';
+  scenario: 'standard' | 'types' | 'roles' | 'role-pages' | 'team360' | 'moderation';
   role: 'participant' | 'mentor';
   team: boolean;
   locked: boolean;

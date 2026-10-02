@@ -2667,6 +2667,20 @@ describe('AssessmentComponent', () => {
         expect(control.valid).toBeTrue();
       });
 
+      it('accepts a required reviewer slider value of zero while rejecting an unanswered slider', () => {
+        component.assessment = {
+          ...reviewAssessment,
+          groups: [{ name: 'Expert criteria', questions: [{ id: 7, name: 'Confidence', type: 'slider',
+            isRequired: true, canAnswer: true, canComment: false, audience: ['reviewer'], min: 0, max: 5 }] }],
+        } as Assessment;
+        component.ngOnChanges({ assessment: {} as any });
+        const control = component.questionsForm.controls['q-7'];
+        control.setValue({ answer: '', comment: '', file: null });
+        expect(control.valid).toBeFalse();
+        control.setValue({ answer: 0, comment: '', file: null });
+        expect(control.valid).toBeTrue();
+      });
+
       it('should use _answerRequiredValidatorForReviewer for team-member-selector type in review mode', () => {
         component.ngOnChanges({ assessment: {} as any });
         const control = component.questionsForm.controls['q-5'];
@@ -2678,6 +2692,96 @@ describe('AssessmentComponent', () => {
         control.setValue({ answer: 'member1', comment: '' });
         expect(control.valid).toBeTrue();
       });
+    });
+  });
+
+  describe('review autosave completion state', () => {
+    it('keeps a zero slider value in review autosave and final submission payloads', () => {
+      component.assessment = { ...mockAssessment, groups: [{ name: 'Expert criteria',
+        questions: [{ id: 204, type: 'slider', audience: ['reviewer'], canAnswer: true, isRequired: true }] }] } as Assessment;
+      component.isPendingReview = true;
+      component.review = { id: 1001, status: 'in progress', answers: {}, modified: '' };
+      component.questionsForm = new FormGroup({ 'q-204': new FormControl({ answer: 0, comment: '' }) });
+      (assessmentSpy as any).saveReviewAnswer = jasmine.createSpy().and.returnValue(of({ data: { saveReviewAnswer: { success: true } } }));
+      component.saveReviewAnswer({ reviewId: 1001, submissionId: 901, questionId: 204, answer: 0 as any, comment: '' }).subscribe();
+      expect((assessmentSpy as any).saveReviewAnswer).toHaveBeenCalledWith(1001, 901, 204, '', 0, undefined);
+      expect(component.filledAnswers()).toEqual([{ questionId: 204, answer: 0, comment: '' }]);
+    });
+    it('preserves unsaved expert answers and comments during the final status-check refresh', () => {
+      component.action = 'review';
+      component.assessment = { ...mockAssessment, type: 'moderated', groups: [{ name: 'Expert criteria',
+        questions: [{ id: 201, name: 'Recommendation', type: 'text', audience: ['reviewer'], canAnswer: true, isRequired: true }] }] } as Assessment;
+      component.submission = { ...mockSubmission, id: 901, status: 'pending review', isLocked: false };
+      component.review = { id: 1001, status: 'in progress', modified: '', answers: { 201: { answer: 'Saved recommendation', comment: '' } } };
+      component.ngOnChanges({ assessment: {} as any });
+      const value = { answer: 'Unsaved recommendation', comment: 'Unsaved comment', file: null };
+      component.questionsForm.get('q-201').setValue(value);
+      component.questionsForm.get('q-201').markAsDirty();
+      const previousAssessment = component.assessment;
+      const previousSubmission = component.submission;
+      const previousReview = component.review;
+      component.assessment = { ...component.assessment };
+      component.submission = { ...component.submission };
+      component.review = { ...component.review };
+      component.ngOnChanges({ assessment: { previousValue: previousAssessment } as any,
+        submission: { previousValue: previousSubmission } as any, review: { previousValue: previousReview } as any });
+      expect(component.questionsForm.get('q-201').value).toEqual(value);
+      expect(component.questionsForm.get('q-201').dirty).toBeTrue();
+    });
+    it('submits restored review files as file inputs rather than embedding metadata in the answer', () => {
+      const file = { name: 'review.pdf', url: 'https://example.invalid/review.pdf', type: 'application/pdf' };
+      component.assessment = mockAssessment;
+      component.isPendingReview = true;
+      component.review = { id: 1001, status: 'in progress', answers: {}, modified: '' };
+      const responseFile = { ...file, __typename: 'AssessmentReviewAnswerFile' };
+      component.questionsForm = new FormGroup({ 'q-207': new FormControl({ answer: responseFile, file: responseFile, comment: '' }) });
+      expect(component.filledAnswers()).toEqual([{ questionId: 207, answer: null, file, comment: '' }]);
+    });
+    it('does not carry dirty feedback into a different assigned review', () => {
+      component.action = 'review';
+      component.assessment = { ...mockAssessment, type: 'moderated', groups: [{ name: 'Expert criteria',
+        questions: [{ id: 201, name: 'Recommendation', type: 'text', audience: ['reviewer'], canAnswer: true }] }] } as Assessment;
+      component.submission = { ...mockSubmission, id: 901, status: 'pending review', isLocked: false };
+      component.review = { id: 1001, status: 'in progress', modified: '', answers: { 201: { answer: 'First review', comment: '' } } };
+      component.ngOnChanges({ assessment: {} as any });
+      component.questionsForm.get('q-201').setValue({ answer: 'Dirty first review', comment: 'Private first comment' });
+      component.questionsForm.get('q-201').markAsDirty();
+      const previousReview = component.review;
+      component.review = { ...component.review, id: 1002, answers: { 201: { answer: 'Second review', comment: '' } } };
+      component.ngOnChanges({ review: { previousValue: previousReview } as any });
+      expect(component.questionsForm.get('q-201').value.answer).toBe('Second review');
+      expect(component.questionsForm.get('q-201').value.comment).toBe('');
+      expect(component.questionsForm.get('q-201').dirty).toBeFalse();
+    });
+    it('shows pending save until the review draft request succeeds', () => {
+      const response = new Subject<any>();
+      (assessmentSpy as any).saveReviewAnswer = jasmine.createSpy().and.returnValue(response);
+      component.subscribeSaveSubmission();
+      component.submitActions.next({ autoSave: true, goBack: false, reviewSave: { reviewId: 1001, submissionId: 901, questionId: 201,
+        answer: 'Pending recommendation', comment: '' } });
+      expect(component.autosaving()[201]).toBeTrue();
+      expect(component.saved()[201]).toBeFalse();
+      response.next({ data: { saveReviewAnswer: { success: true } } });
+      response.complete();
+      expect(component.autosaving()[201]).toBeFalse();
+      expect(component.saved()[201]).toBeTrue();
+    });
+
+    it('exposes a retry after review autosave fails and clears it after successful retry', () => {
+      const response = new Subject<any>();
+      (assessmentSpy as any).saveReviewAnswer = jasmine.createSpy().and.returnValue(response);
+      component.subscribeSaveSubmission();
+      const request = { autoSave: true, goBack: false, reviewSave: { reviewId: 1001, submissionId: 901, questionId: 201,
+        answer: 'Keep this recommendation', comment: '' } };
+      component.submitActions.next(request);
+      response.error(new Error('Autosave: Invalid API data'));
+      expect(component.autosaving()[201]).toBeFalse();
+      expect(component.saved()[201]).toBeFalse();
+      expect(component.failed()[201]).toBeTrue();
+      (assessmentSpy as any).saveReviewAnswer.and.returnValue(of({ data: { saveReviewAnswer: { success: true } } }));
+      component.submitActions.next(request);
+      expect(component.failed()[201]).toBeFalse();
+      expect(component.saved()[201]).toBeTrue();
     });
   });
 

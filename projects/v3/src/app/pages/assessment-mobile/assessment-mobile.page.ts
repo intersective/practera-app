@@ -133,6 +133,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
       id: this.assessment.id,
       type: 'Assessment',
       name: this.assessment.name,
+      contextId: this.contextId,
       status: ''
     };
   }
@@ -223,6 +224,14 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
           this.contextId,
           this.submissionId
         ).toPromise();
+
+        if (this.action === 'review') {
+          try {
+            await firstValueFrom(this.notificationsService.getTodoItems());
+          } catch (err) {
+            console.error('Review submitted; notification refresh failed:', err);
+          }
+        }
 
         if (this.action === 'assessment') {
           // get the latest activity tasks and refresh the assessment submission data

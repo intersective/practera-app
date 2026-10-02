@@ -386,7 +386,7 @@ export class AssessmentService {
     firstSubmission.answers.forEach((eachAnswer) => {
       eachAnswer.answer = this._normaliseAnswer(
         eachAnswer.questionId,
-        eachAnswer.answer || eachAnswer.file
+        eachAnswer.answer === '' ? eachAnswer.file : eachAnswer.answer ?? eachAnswer.file
       );
       submission.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
@@ -441,11 +441,12 @@ export class AssessmentService {
     firstSubmissionReview.answers.forEach((eachAnswer) => {
       eachAnswer.answer = this._normaliseAnswer(
         eachAnswer.questionId,
-        eachAnswer.answer || eachAnswer.file, // we do this because answer could be a file
+        eachAnswer.answer === '' ? eachAnswer.file : eachAnswer.answer ?? eachAnswer.file,
       );
       review.answers[eachAnswer.questionId] = {
         answer: eachAnswer.answer,
         comment: eachAnswer.comment,
+        ...(eachAnswer.file ? { file: eachAnswer.file } : {}),
       };
     });
     return review;
@@ -892,7 +893,12 @@ export class AssessmentService {
     }
     return this.NotificationsService.markTodoItemAsDone({
       identifier: "AssessmentSubmission-" + submissionId,
-    });
+    }).pipe(map(response => {
+      if (response?.data?.updateTodoItem?.success !== true) {
+        throw new Error('Feedback acknowledgment: Invalid API data');
+      }
+      return response;
+    }));
   }
 
   checkReviewer(reviewer): string {

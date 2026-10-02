@@ -565,12 +565,94 @@ describe('AssessmentService', () => {
 
   describe('when testing saveFeedbackReviewed()', () => {
     it('should post correct data', () => {
-      notificationSpy.markTodoItemAsDone.and.returnValue(of(true));
-      service.saveFeedbackReviewed(11);
+      const response = { data: { updateTodoItem: { success: true } } };
+      notificationSpy.markTodoItemAsDone.and.returnValue(of(response));
+      let acknowledged;
+      service.saveFeedbackReviewed(11).subscribe(result => acknowledged = result);
+      expect(acknowledged).toEqual(response);
       expect(notificationSpy.markTodoItemAsDone.calls.count()).toBe(1);
       expect(notificationSpy.markTodoItemAsDone.calls.first().args[0]).toEqual({
         identifier: 'AssessmentSubmission-11',
       });
+    });
+
+    for (const response of [{ data: { updateTodoItem: { success: false } } }, { data: {} }]) {
+      it('rejects an unsuccessful feedback acknowledgment instead of completing the learner task: ' + JSON.stringify(response), () => {
+        notificationSpy.markTodoItemAsDone.and.returnValue(of(response));
+        const next = jasmine.createSpy('completed');
+        const error = jasmine.createSpy('failed');
+        service.saveFeedbackReviewed(901).subscribe({ next, error });
+        expect(next).not.toHaveBeenCalled();
+        expect(error).toHaveBeenCalled();
+      });
+    }
+  });
+
+  describe('moderated assessment contracts', () => {
+    let raw: any;
+    const file = { name: 'review.pdf', url: 'https://example.invalid/review.pdf', type: 'application/pdf' };
+    beforeEach(() => {
+      raw = { data: { assessment: { id: 501, name: 'Moderated work', type: 'moderated', isTeam: false,
+        pulseCheck: false, hasReviewRating: false, groups: [{ name: 'Questions', questions: [
+          { id: 101, name: 'Learner work', type: 'text', audience: ['submitter'], hasComment: true },
+          { id: 201, name: 'Expert criterion', type: 'text', audience: ['reviewer'], hasComment: false },
+          { id: 301, name: 'Shared question', type: 'text', audience: ['submitter', 'reviewer'], hasComment: true },
+          { id: 207, name: 'Expert file', type: 'file', audience: ['reviewer'], fileType: 'any', hasComment: false },
+        ] }], submissions: [{ id: 901, status: 'pending review', completed: false, locked: false,
+          submitter: { name: 'Learner', image: '' }, answers: [{ questionId: 101, answer: 'Learner response' }],
+          review: { id: 1001, status: 'in progress', reviewer: { name: 'Expert' }, answers: [
+            { questionId: 101, answer: null, comment: 'Private draft comment' },
+            { questionId: 201, answer: 'Private expert draft', comment: '' },
+            { questionId: 207, answer: null, file, comment: '' },
+          ] } }] } } };
+      apolloSpy.graphQLFetch.and.returnValue(of(raw));
+    });
+    it('keeps unpublished reviewer answers and comments out of learner data', () => {
+      service.fetchAssessment(501, 'assessment', 301, 601, 901).subscribe(value => {
+        expect(value.submission.status).toBe('pending review');
+        expect(value.review.answers).toEqual({});
+        expect(value.assessment.groups[0].questions.map(question => question.canAnswer)).toEqual([true, false, true, false]);
+      });
+    });
+    it('uses question audience for expert authoring while retaining learner answers', () => {
+      service.fetchAssessment(501, 'review', 0, 601, 901).subscribe(value => {
+        expect(value.assessment.groups[0].questions.map(question => question.canAnswer)).toEqual([false, true, true, true]);
+        expect(value.submission.answers[101].answer).toBe('Learner response');
+        expect(value.review.answers[101].comment).toBe('Private draft comment');
+      });
+    });
+    it('normalizes publication without marking feedback read', () => {
+      raw.data.assessment.submissions[0].status = 'published';
+      raw.data.assessment.submissions[0].review.status = 'done';
+      service.fetchAssessment(501, 'assessment', 301, 601, 901).subscribe(value => {
+        expect(value.submission.status).toBe('feedback available');
+        expect(value.submission.completed).toBeFalse();
+        expect(value.review.answers[201].answer).toBe('Private expert draft');
+      });
+    });
+    it('retains file metadata needed to submit a restored expert draft', () => {
+      service.fetchAssessment(501, 'review', 0, 601, 901).subscribe(value => {
+        expect(value.review.answers[207].answer).toEqual(file);
+        expect(value.review.answers[207].file).toEqual(file);
+      });
+    });
+    it('retains zero-valued learner and expert sliders after fetching saved work', () => {
+      raw.data.assessment.groups[0].questions.push(
+        { id: 104, name: 'Learner confidence', type: 'slider', audience: ['submitter'], min: 0, max: 5 },
+        { id: 204, name: 'Expert confidence', type: 'slider', audience: ['reviewer'], min: 0, max: 5 });
+      raw.data.assessment.submissions[0].answers.push({ questionId: 104, answer: 0, file: null });
+      raw.data.assessment.submissions[0].review.answers.push({ questionId: 204, answer: 0, file: null, comment: '' });
+      service.fetchAssessment(501, 'review', 0, 601, 901).subscribe(value => {
+        expect(value.submission.answers[104].answer).toBe(0);
+        expect(value.review.answers[204].answer).toBe(0);
+      });
+    });
+    it('sends review identifiers, answers, comments and file inputs through submitReview', () => {
+      apolloSpy.graphQLMutate.and.returnValue(of({ data: { submitReview: { success: true } } }));
+      const answers = [{ questionId: 101, answer: null, comment: 'Feedback' },
+        { questionId: 201, answer: 'Expert criterion', comment: '' }, { questionId: 207, answer: null, comment: '', file }];
+      service.submitReview(501, 1001, 901, answers).subscribe();
+      expect(apolloSpy.graphQLMutate.calls.mostRecent().args[1]).toEqual({ assessmentId: 501, reviewId: 1001, submissionId: 901, answers });
     });
   });
 

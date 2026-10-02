@@ -3,7 +3,7 @@ import { AssessmentService } from '@v3/services/assessment.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ReviewService } from '@v3/app/services/review.service';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 import { ReviewDesktopPage } from './review-desktop.page';
 
@@ -186,6 +186,27 @@ describe('ReviewDesktopPage', () => {
     expect(notificationsService.assessmentSubmittedToast).toHaveBeenCalledWith({ isReview: true });
     expect(component.btnDisabled$.value).toBeFalse();
     expect(component.loading).toBeFalse();
+  });
+
+  it('keeps confirmed desktop review completion when notification refresh fails', async () => {
+    spyOn(console, 'error');
+    component.currentReview = { contextId: 601 } as any;
+    component.submission = { id: 901 } as any;
+    component.review = { id: 1001 } as any;
+    component.assessment = { id: 501, pulseCheck: false } as any;
+    assessmentService.fetchAssessment.and.returnValues(of({ submission: { status: 'pending review' } }) as any,
+      of({ submission: { status: 'feedback available' }, review: { status: 'done' } }) as any);
+    assessmentService.submitReview.and.returnValue(of({ data: { submitReview: { success: true } } }) as any);
+    notificationsService.getTodoItems.and.returnValue(throwError(() => new Error('Todo refresh unavailable')));
+    const event = { autoSave: false, assessmentId: 501, answers: [{ questionId: 201, answer: 'Expert recommendation' }] };
+    await component.saveReview(event);
+    expect(assessmentService.fetchAssessment).toHaveBeenCalledTimes(2);
+    expect(notificationsService.assessmentSubmittedToast).toHaveBeenCalledWith({ isReview: true });
+    expect(notificationsService.assessmentSubmittedToast).not.toHaveBeenCalledWith({ isFail: true });
+    expect(component.loading).toBeFalse();
+    assessmentService.fetchAssessment.and.returnValue(of({ submission: { status: 'feedback available' } }) as any);
+    await component.saveReview(event);
+    expect(assessmentService.submitReview).toHaveBeenCalledTimes(1);
   });
 
   it('should set failure states when saveReview throws', async () => {

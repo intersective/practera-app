@@ -9,7 +9,7 @@ import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { of, Subscription } from 'rxjs';
+import { of, Subscription, throwError } from 'rxjs';
 import { ReviewService } from '@v3/app/services/review.service';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
@@ -105,6 +105,7 @@ describe('AssessmentMobilePage', () => {
     storageSpy = TestBed.inject(BrowserStorageService) as jasmine.SpyObj<BrowserStorageService>;
     notificationSpy = TestBed.inject(NotificationsService) as jasmine.SpyObj<NotificationsService>;
     reviewSpy = TestBed.inject(ReviewService) as jasmine.SpyObj<ReviewService>;
+    notificationSpy.getTodoItems.and.returnValue(of({}));
   }));
 
   it('should create', () => {
@@ -153,6 +154,55 @@ describe('AssessmentMobilePage', () => {
     tick(SAVE_PROGRESS_TIMEOUT);
     expect(component.btnDisabled$.getValue()).toBe(false);
     expect(component.saving).toBe(false);
+  }));
+
+  it('refreshes assignment notifications after a successful mobile review submission', fakeAsync(() => {
+    assessmentSpy.fetchAssessment.and.returnValue(of({ assessment: {} as Assessment,
+      submission: { status: 'pending review' } as Submission, review: {} as AssessmentReview }));
+    assessmentSpy.submitReview.and.returnValue(of({ data: { submitReview: { success: true } } }));
+    notificationSpy.getTodoItems.and.returnValue(of({}));
+    component.action = 'review';
+    component.assessment = { id: 501, pulseCheck: false } as Assessment;
+    component.review = { id: 1001 } as AssessmentReview;
+    component.activityId = 301;
+    component.contextId = 601;
+    component.submissionId = 901;
+    component.saveAssessment({ assessmentId: 501, contextId: 601, submissionId: 901,
+      answers: [{ questionId: 201, answer: 'Expert recommendation' }], autoSave: false });
+    tick();
+    flushMicrotasks();
+    expect(reviewSpy.getReviews).toHaveBeenCalled();
+    expect(notificationSpy.getTodoItems).toHaveBeenCalledTimes(1);
+    expect(notificationSpy.assessmentSubmittedToast).toHaveBeenCalledWith({ isReview: true });
+    expect(component.saving).toBeFalse();
+  }));
+
+  it('still completes a confirmed mobile review when notification refresh fails', fakeAsync(() => {
+    spyOn(console, 'error');
+    assessmentSpy.fetchAssessment.and.returnValues(
+      of({ submission: { status: 'pending review' } as Submission } as any),
+      of({ submission: { status: 'feedback available' } as Submission, review: { status: 'done' } } as any));
+    assessmentSpy.submitReview.and.returnValue(of({ data: { submitReview: { success: true } } }));
+    notificationSpy.getTodoItems.and.returnValue(throwError(() => new Error('Todo refresh unavailable')));
+    component.action = 'review';
+    component.assessment = { id: 501, pulseCheck: false } as Assessment;
+    component.review = { id: 1001 } as AssessmentReview;
+    component.activityId = 301;
+    component.contextId = 601;
+    component.submissionId = 901;
+    const event = { assessmentId: 501, contextId: 601, submissionId: 901,
+      answers: [{ questionId: 201, answer: 'Expert recommendation' }], autoSave: false };
+    component.saveAssessment(event);
+    tick();
+    flushMicrotasks();
+    expect(assessmentSpy.fetchAssessment).toHaveBeenCalledTimes(2);
+    expect(notificationSpy.assessmentSubmittedToast).toHaveBeenCalledWith({ isReview: true });
+    expect(notificationSpy.assessmentSubmittedToast).not.toHaveBeenCalledWith({ isFail: true });
+    expect(component.saving).toBeFalse();
+    assessmentSpy.fetchAssessment.and.returnValue(of({ submission: { status: 'feedback available' } } as any));
+    component.saveAssessment(event);
+    tick();
+    expect(assessmentSpy.submitReview).toHaveBeenCalledTimes(1);
   }));
 
   it('should call saveAssessment() when action is assessment and autoSave is false', fakeAsync(() => {
@@ -285,6 +335,29 @@ describe('AssessmentMobilePage', () => {
     component.nextTask();
     expect(activitySpy.getActivity).toHaveBeenCalledWith(1, true, jasmine.anything());
   });
+
+  it('keeps the mobile feedback task open after a failed acknowledgment and allows retry', fakeAsync(() => {
+    spyOn(console, 'error');
+    storageSpy.getUser.and.returnValue({ hasReviewRating: false });
+    component.assessment = { id: 501, name: 'Moderated work', hasReviewRating: false } as Assessment;
+    component.activityId = 301;
+    component.contextId = 601;
+    notificationSpy.getTodoItems.and.returnValue(of([]));
+    assessmentSpy.saveFeedbackReviewed.and.returnValue(throwError(() => new Error('Acknowledgment failed')));
+    component.btnDisabled$.next(true);
+    component.readFeedback(901);
+    flushMicrotasks();
+    expect(activitySpy.getActivity).not.toHaveBeenCalled();
+    expect(notificationSpy.getTodoItems).not.toHaveBeenCalled();
+    expect(notificationSpy.popUpReviewRating).not.toHaveBeenCalled();
+    expect(component.btnDisabled$.value).toBeFalse();
+    assessmentSpy.saveFeedbackReviewed.and.returnValue(of({ data: { updateTodoItem: { success: true } } }));
+    component.readFeedback(901);
+    tick(401);
+    expect(activitySpy.getActivity).toHaveBeenCalledWith(301, true, jasmine.objectContaining({ id: 501, contextId: 601 }));
+    expect(notificationSpy.getTodoItems).toHaveBeenCalledTimes(1);
+    expect(notificationSpy.popUpReviewRating).not.toHaveBeenCalled();
+  }));
 
   it('should call reviewRatingPopUp() with hasReviewRating as true', async () => {
     storageSpy.getUser.and.returnValue({ hasReviewRating: true });

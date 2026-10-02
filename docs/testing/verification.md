@@ -155,6 +155,43 @@ One fresh final reviewer examined the extension and found no important issues. S
 | Lint dependency blocker | output/evidence/advanced/final-lint.log |
 | Negative feedback proof | output/evidence/advanced/negative-feedback.log |
 | Browser reliability sequence | output/evidence/advanced/reliability.log |
-| Current per-run browser results | output/evidence/e2e-1.json through e2e-5.json |
+| Archived advanced per-run browser results | output/evidence/advanced/e2e-1.json through e2e-5.json |
 | Final summary and source stability | output/evidence/advanced/final-summary.json and verified-source-hashes.json |
 | Final server cleanup | output/evidence/advanced/final-port.log |
+
+## Moderated review extension: 2026-10-02
+
+The approved extension adds 14 independently runnable scenarios to the 35-case advanced suite. The complete mocked suite now has 49 scenarios on each of desktop Chromium, Android-profile Chromium and iPhone-profile WebKit: 147 executions per run. The [moderated review coverage matrix](moderation-coverage.md) describes the separate authenticated identities, canonical lifecycle states, strict request contracts and reproduced defects. No dependencies or public APIs changed.
+
+Verified local checks:
+
+- Node 22.23.2, local npm 11.6.2 and direct dependencies still match the lockfile. Browser and Jasmine TypeScript checks pass.
+- The request library and V3 development build pass. A restricted build subprocess was initially terminated; the authorized local execution path passed. Every counted browser invocation starts and stops its own port-4300 frontend.
+- Five focused unit suites pass 313 cases: AssessmentComponent, AssessmentService, AssessmentMobilePage, ActivityDesktopPage and ReviewDesktopPage. Twenty unit regressions were added since the advanced baseline.
+- The full unit baseline is 1624 total, 1608 passed and the same 16 known failures, with no new failure names. Remaining failures are five ProjectBriefModal cases, one Topic external-link case, one ChatPreview URL case, eight Hubspot mapping cases and one ProjectBriefPdfService case. Exact names and comparison results are preserved below.
+- Lint remains blocked by the existing missing @typescript-eslint/utils dependency. No dependency exception, extra package or silent exclusion was introduced.
+- The original 13 new cases passed 39/39 across the profiles; the extra notification-refresh failure regression then passed 3/3. All 14 are included in every counted full run.
+- The final-source sensitivity probe deliberately returned submitReview.success=true while retaining the assigned state. The Pending-completion assertion failed as intended. A finally block restored the fixture byte-for-byte, with matching source hashes.
+
+Five complete consecutive runs pass 147/147 each, 735/735 total, with zero retries, skips or flaky results. Per-run JSON confirms 49 cases per profile and exactly one successful attempt per test. All 494 application, browser-test, build and dependency source-file hashes stayed unchanged during the counted sequence. The final port-binding check confirms port 4300 is released. The earlier partial repetition was stopped after review and remains diagnostic only; the five accepted runs start from the fixed source. Prior advanced run JSON was archived under output/evidence/advanced/ before shared run paths were reused.
+
+One fresh final reviewer found one Important issue: notification refresh failure could report a confirmed review submission as failed and leave the mobile form editable. Two unit regressions and the HTTP 503 browser regression failed before the fix. One fix pass separated that ancillary error handling on desktop and mobile and refreshed the completed mobile assessment first. The focused GREEN run and all five final complete runs include the regression. No second review pass or unresolved Important finding remains.
+
+Sandbox execution remains pending at the user's request. Mocked tests prove frontend assignment/publication/acknowledgment behavior against the current contracts; they do not prove backend assignment selection or actual publication. Coordinator approval, review-rating/Pulse Check surveys, CI, physical devices, external login UI and video decoding remain outside this extension.
+
+| Moderation evidence | Location |
+| --- | --- |
+| Dependency and TypeScript checks | output/moderation/doctor.log, typecheck.log and unit-typecheck.log |
+| Focused unit regressions | output/moderation/focused-unit-green.log |
+| Full unit baseline and comparison | output/moderation/full-unit.log, unit-failures.json and unit-summary.json |
+| Development build | output/moderation/build.log |
+| Lint dependency blocker | output/moderation/lint.log |
+| Initial three-profile cases | output/moderation/profiles-final.log and output/evidence/e2e-moderation-all-final.json |
+| Final review error-path RED/GREEN | output/moderation/todo-refresh-red.log, todo-browser-red.log and todo-browser-green.log |
+| Review disposition | output/moderation/review-disposition.md |
+| Negative publication proof and restoration | output/moderation/negative-publication.log and negative-publication-summary.json |
+| Five-run browser sequence | output/moderation/reliability.log |
+| Per-run browser JSON | output/evidence/e2e-1.json through e2e-5.json |
+| Final summary and source stability | output/moderation/final-summary.json and verified-source-hashes.json |
+| Server cleanup | output/moderation/final-port.log |
+| Latest browser HTML report | output/playwright-report/index.html |

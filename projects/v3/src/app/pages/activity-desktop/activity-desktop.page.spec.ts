@@ -11,7 +11,7 @@ import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
@@ -299,6 +299,27 @@ describe('ActivityDesktopPage', () => {
       // expect(activitySpy.getActivity).toHaveBeenCalled();
       tick(1000);
       // expect(assessmentSpy.popUpReviewRating).toHaveBeenCalled(); // Removed as popUpReviewRating does not exist on AssessmentService
+    }));
+
+    it('keeps the desktop feedback task open after a failed acknowledgment and allows retry', fakeAsync(() => {
+      spyOn(console, 'error');
+      storageSpy.getUser = jasmine.createSpy().and.returnValue({ hasReviewRating: false });
+      component.activity = { id: 301, name: 'Learning activity' } as any;
+      assessmentSpy.saveFeedbackReviewed = jasmine.createSpy().and.returnValue(throwError(() => new Error('Acknowledgment failed')));
+      notificationsSpy.getTodoItems = jasmine.createSpy().and.returnValue(of([]));
+      component.btnDisabled$.next(true);
+      component.readFeedback(901, NormalisedTaskFixture);
+      flushMicrotasks();
+      expect(activitySpy.getActivity).not.toHaveBeenCalled();
+      expect(notificationsSpy.getTodoItems).not.toHaveBeenCalled();
+      expect(component.loading).toBeFalse();
+      expect(component.btnDisabled$.value).toBeFalse();
+      (assessmentSpy.saveFeedbackReviewed as jasmine.Spy).and.returnValue(of({ data: { updateTodoItem: { success: true } } }));
+      component.readFeedback(901, NormalisedTaskFixture);
+      tick(401);
+      expect(activitySpy.getActivity).toHaveBeenCalledWith(301, true, NormalisedTaskFixture);
+      expect(notificationsSpy.getTodoItems).toHaveBeenCalledTimes(1);
+      expect(component.loading).toBeFalse();
     }));
   });
 
