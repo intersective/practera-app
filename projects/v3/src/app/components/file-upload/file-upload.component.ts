@@ -10,6 +10,8 @@ import { Subject } from 'rxjs';
 import { Uppy, UppyFile } from '@uppy/core';
 import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
+import { ApolloService } from '@v3/app/services/apollo.service';
+import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
@@ -73,6 +75,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   @Input() doReview: boolean;
   @Input() viewerRole: 'learner' | 'reviewer';
   @Input() isReviewerFeedbackContext = false;
+  @Input() teamAssessment = false;
+
+  teamFiles: Array<{ id: number; name: string; url: string; type: string }> = [];
+  selectedFilestoreId: number | null = null;
+  showTeamLibrary = false;
 
   // FormControl that is passed in from parent component
   @Input() control: AbstractControl;
@@ -92,6 +99,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   constructor(
     private uppyUploaderService: UppyUploaderService,
+    private apollo: ApolloService,
+    private storage: BrowserStorageService,
   ) { }
 
   ngOnDestroy(): void {
@@ -102,6 +111,40 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     this.initiateUppy();
     this.uppyProps.note = this.noteMessage();
     this._showSavedAnswers();
+    if (this.teamAssessment && this.doAssessment) {
+      this.loadTeamFiles();
+    }
+  }
+
+  loadTeamFiles() {
+    const teamId = this.storage.getUser()?.teamId;
+    if (!teamId) return;
+    this.apollo.graphQLFetch(
+      `query teamFiles($teamId: Int!) {
+        teamFiles(teamId: $teamId) { id name url type }
+      }`,
+      { variables: { teamId } },
+    ).subscribe((res) => {
+      this.teamFiles = res?.data?.teamFiles ?? [];
+    });
+  }
+
+  chooseTeamFile(file: { id: number; name: string; url: string; type: string }) {
+    this.selectedFilestoreId = file.id;
+    this.showTeamLibrary = false;
+    this.uploadedFile = {
+      name: file.name,
+      type: file.type,
+      size: 0,
+      extension: '',
+      bucket: '',
+      path: '',
+      url: file.url,
+      directUrl: file.url,
+      cdnUrl: file.url,
+    };
+    this.innerValue = { filestoreId: file.id };
+    this.triggerSave();
   }
 
   // size notice based on fileType
@@ -220,7 +263,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       action.questionSave = {
         submissionId: this.submissionId,
         questionId: this.question.id,
-        file: this.innerValue,
+        file: this.selectedFilestoreId ? undefined : this.innerValue,
+        filestoreId: this.selectedFilestoreId ?? undefined,
       };
     }
 
@@ -316,6 +360,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     handle: string;
   }): void {
     this.uploadedFile = null as TusFileResponse;
+    this.selectedFilestoreId = null;
 
     if (this.doAssessment === true) {
       this.submission.answer = null;

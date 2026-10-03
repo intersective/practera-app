@@ -170,7 +170,15 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
         event.submissionId,
       ));
 
-      if (this.action === 'assessment' && submission.status === 'in progress') {
+      if (this.action === 'assessment' && event.signOff && !event.autoSave) {
+        const saved = await firstValueFrom(this.assessmentService.signOffTeamSubmission(
+          event.submissionId,
+          event.signOffComment || '',
+        ));
+        if (saved?.data?.signOffTeamSubmission?.success !== true || this.utils.isEmpty(saved)) {
+          throw new Error('Error signing off');
+        }
+      } else if (this.action === 'assessment' && submission.status === 'in progress') {
         const saved = await firstValueFrom(this.assessmentService.submitAssessment(
           event.submissionId,
           event.assessmentId,

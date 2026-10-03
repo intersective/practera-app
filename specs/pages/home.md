@@ -17,6 +17,7 @@ The home page is the learner's main dashboard after login. It displays the curre
 - **AC7**: Bookmarked activities are persisted and displayed with a bookmark indicator.
 - **AC8**: The page supports both mobile (card view) and desktop (list view) layouts.
 - **AC9**: Project brief modal is accessible when project briefs are configured for the experience.
+- **AC10**: My Team includes a Files section. It lists `teamFiles` for the learner's team and can register a new upload with `addTeamFile`.
 
 ## Scenarios
 

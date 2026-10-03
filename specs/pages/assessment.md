@@ -16,6 +16,8 @@ The assessment page allows learners to submit answers to assessment questions. I
 - **AC6**: Pagination is supported — learners can navigate through question pages.
 - **AC7**: Slider rating questions display a visual slider with configurable min/max values.
 - **AC8**: The page also handles the review action (action: 'review') for peer/expert reviews.
+- **AC9**: On a team assessment file question, the learner can choose an existing team file (`saveSubmissionAnswer` with `filestoreId`) or upload a new one.
+- **AC10**: When the assessment has `signOff`, the screen lists every teammate as signed off (name, comment, time) or not yet. The button says "sign off". The first sign-off submits; later teammates can still add a comment while the submission is pending review.
 
 ## Scenarios
 

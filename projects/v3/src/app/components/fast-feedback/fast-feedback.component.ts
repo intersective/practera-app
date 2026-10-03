@@ -97,17 +97,17 @@ export class FastFeedbackComponent implements OnInit, OnDestroy {
   /**
    * Determines the pulse check type based on question IDs
    * onTrack: [7, 8, 9, 10]
-   * skills: [20, 21, 22, 23, 24, 25]
+   * skills: question ids 20 and above (the design skill list)
    * both: contains questions from both sets
    * @link https://intersective.atlassian.net/browse/CORE-7981?focusedCommentId=57127
    */
   private determinePulseCheckType(): 'onTrack' | 'skills' | 'both' | 'unknown' {
     const onTrackIds = [7, 8, 9, 10];
-    const skillsIds = [20, 21, 22, 23, 24, 25];
     const questionIds = this.questions.map(q => q.id);
 
     const hasOnTrackQuestions = questionIds.some(id => onTrackIds.includes(id));
-    const hasSkillsQuestions = questionIds.some(id => skillsIds.includes(id));
+    // Design skills keep stat ids 20–25, and added skills use the next free id.
+    const hasSkillsQuestions = questionIds.some(id => id >= 20);
 
     if (hasOnTrackQuestions && hasSkillsQuestions) {
       return 'both';

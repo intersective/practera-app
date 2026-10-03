@@ -28,6 +28,7 @@ export interface SubmitActions {
     questionId: number;
     answer?: string;
     file?: FileInput;
+    filestoreId?: number;
   };
   reviewSave ?: {
     reviewId: number;

@@ -19,6 +19,7 @@ import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { AlertController, ModalController, IonModal, ViewWillEnter } from '@ionic/angular';
 import { Activity, TodoGroupData } from '@v3/app/services/activity.service';
 import { ApolloService } from '@v3/app/services/apollo.service';
+import { UppyUploaderService } from '@v3/app/components/uppy-uploader/uppy-uploader.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 import { ProjectBriefModalComponent } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 import { ProjectBrief } from '@v3/app/models/project-brief.model';
@@ -144,6 +145,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
   showProjectHub = false;
   teamId: number | null = null;
   teamName: string | null = null;
+  teamFiles: Array<{ id: number; name: string; url: string; type: string; uploadedBy: string | null }> = [];
+  teamFilesError = '';
 
   // activity search/filter
   activitySearchText = '';
@@ -169,6 +172,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
     private pulsecheckService: PulsecheckService,
     private sanitizer: DomSanitizer,
     private apolloService: ApolloService,
+    private uppyUploader: UppyUploaderService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -399,6 +403,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
     // load team todo items for My Tasks tab
     if (this.teamId) {
       this.loadTeamTodoItems(this.teamId);
+      this.loadTeamFiles();
     }
 
     // re-fetch team info from API to ensure project brief, teamName, and teamId are fresh
@@ -414,6 +419,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
         this.teamName = freshUser.teamName || null;
         if (this.teamId && !this.teamTodoGroup) {
           this.loadTeamTodoItems(this.teamId);
+        }
+        if (this.teamId) {
+          this.loadTeamFiles();
         }
         this.cdr.markForCheck();
       });
@@ -870,6 +878,63 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
    * Fetch team-assigned todo items via the teamTodoItems GraphQL query.
    * Populates teamTodoGroup for the app-todo-task component.
    */
+  loadTeamFiles(): void {
+    if (!this.teamId) return;
+    this.teamFilesError = '';
+    this.apolloService.graphQLFetch(
+      `query teamFiles($teamId: Int!) {
+        teamFiles(teamId: $teamId) { id name url type uploadedBy }
+      }`,
+      { variables: { teamId: this.teamId } },
+    ).pipe(
+      first(),
+      takeUntil(this.unsubscribe$),
+      catchError((error) => {
+        console.error('Error loading team files:', error);
+        return of({ data: { teamFiles: [] } });
+      }),
+    ).subscribe((res: any) => {
+      this.ngZone.run(() => {
+        this.teamFiles = res?.data?.teamFiles ?? [];
+        this.cdr.markForCheck();
+      });
+    });
+  }
+
+  async uploadTeamFile(): Promise<void> {
+    if (!this.teamId) return;
+    this.teamFilesError = '';
+    const modal = await this.uppyUploader.open('any');
+    const { data } = await modal.onDidDismiss();
+    if (!data?.path || !data?.bucket || !data?.name) return;
+    const extension = String(data.name).includes('.') ? String(data.name).split('.').pop() : '';
+    this.apolloService.continuousGraphQLMutate(
+      `mutation addTeamFile($teamId: Int!, $file: FileInput!) {
+        addTeamFile(teamId: $teamId, file: $file) { id name }
+      }`,
+      {
+        teamId: this.teamId,
+        file: {
+          bucket: data.bucket,
+          path: data.path,
+          name: data.name,
+          url: data.url || data.cdnUrl,
+          extension,
+          type: data.type || 'application/octet-stream',
+          size: data.size || 0,
+        },
+      },
+    ).pipe(first()).subscribe({
+      next: () => this.loadTeamFiles(),
+      error: () => {
+        this.ngZone.run(() => {
+          this.teamFilesError = 'Could not add that file to the team library.';
+          this.cdr.markForCheck();
+        });
+      },
+    });
+  }
+
   private loadTeamTodoItems(teamId: number): void {
     this.teamTodoLoading = true;
     this.apolloService.graphQLFetch(

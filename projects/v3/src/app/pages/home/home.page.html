@@ -459,6 +459,26 @@
       </div>
     }
     <app-team-roster></app-team-roster>
+    <div class="ion-padding-top">
+      <h4 class="headline-4" i18n>Files</h4>
+      @if (teamFiles.length === 0) {
+        <p class="body-2" i18n>No team files yet. Uploads here, and files added to a team assessment, show up for the whole team.</p>
+      }
+      @for (file of teamFiles; track file.id) {
+        <ion-item lines="full">
+          <ion-label>
+            <h3>{{ file.name }}</h3>
+            @if (file.uploadedBy) {
+              <p>{{ file.uploadedBy }}</p>
+            }
+          </ion-label>
+        </ion-item>
+      }
+      @if (teamFilesError) {
+        <p class="body-2" role="alert">{{ teamFilesError }}</p>
+      }
+      <ion-button fill="outline" (click)="uploadTeamFile()" i18n>Upload a file</ion-button>
+    </div>
   </div>
 </ng-template>
 

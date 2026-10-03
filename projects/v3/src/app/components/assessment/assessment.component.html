@@ -421,6 +421,7 @@
               <app-file-upload *ngSwitchCase="'file'"
                 #questionField
                 source="assessment"
+                [teamAssessment]="assessment?.isForTeam === true"
                 [question]="question"
                 [doAssessment]="doAssessment"
                 [doReview]="isPendingReview"
@@ -492,6 +493,35 @@
       proceed with next steps.</p>
   </div>
 </ng-container>
+
+@if (action === 'assessment' && assessment?.signOff) {
+  <div class="ion-padding">
+    <h3 class="headline-4" i18n>Team sign-off</h3>
+    <p class="body-2" i18n>One teammate signing off submits the assessment. Everyone else can add their name and a comment.</p>
+    @for (row of submission?.signOffs || []; track row.userId) {
+      <ion-item lines="full">
+        <ion-label>
+          <h3>{{ row.name }}</h3>
+          @if (row.signed) {
+            <p>{{ row.comment || 'Signed off' }}</p>
+          } @else {
+            <p i18n>Not yet</p>
+          }
+        </ion-label>
+      </ion-item>
+    }
+    @if (canSignOff) {
+      <ion-textarea
+        class="ion-margin-top"
+        [value]="signOffComment"
+        (ionInput)="signOffComment = $any($event).detail.value"
+        placeholder="Add a comment with your sign-off"
+        i18n-placeholder
+        [autoGrow]="true"
+      ></ion-textarea>
+    }
+  </div>
+}
 
 <ng-container *ngIf="assessment">
   <ng-container *ngIf="preventSubmission === false; else blocked">

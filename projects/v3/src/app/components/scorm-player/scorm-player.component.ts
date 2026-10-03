@@ -1,4 +1,6 @@
 import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, NgZone, ChangeDetectorRef } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { TopicService } from '@v3/app/services/topic.service';
 
 export interface ScormContent {
   contentUrl: string;   // base URL for SCORM package (e.g., https://cdn.../scorm/pkg-id/)
@@ -33,6 +35,7 @@ export class ScormPlayerComponent implements AfterViewInit, OnDestroy {
   constructor(
     private zone: NgZone,
     private cdr: ChangeDetectorRef,
+    private topicService: TopicService,
   ) {}
 
   ngAfterViewInit(): void {
@@ -51,12 +54,22 @@ export class ScormPlayerComponent implements AfterViewInit, OnDestroy {
 
     try {
       const { ScormAdapter } = await import('./scorm-adapter');
+      const activityId = this.scorm.activityId || this.scorm.contentUrl;
+      let suspendData = '';
+      try {
+        const document = await firstValueFrom(this.topicService.getXapiActivityState(activityId, 'cmi.suspend_data'));
+        const parsed = document ? JSON.parse(document) : null;
+        suspendData = typeof parsed?.value === 'string' ? parsed.value : '';
+      } catch {
+        suspendData = '';
+      }
       this.apiAdapter = new ScormAdapter({
         version: this.scorm.version,
         masteryScore: this.scorm.masteryScore ?? 80,
         allowResume: this.scorm.allowResume,
         assessmentId: this.scorm.assessmentId,
-        activityId: this.scorm.activityId || this.scorm.contentUrl,
+        activityId,
+        suspendData,
       });
 
       // Expose SCORM API on the frame window before content loads

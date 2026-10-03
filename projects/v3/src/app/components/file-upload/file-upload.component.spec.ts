@@ -14,7 +14,11 @@ describe('FileUploadComponent', () => {
       'parseTusUploadResponse',
     ]);
     uppyUploaderService.parseTusUploadResponse.and.callFake((body) => JSON.parse(body));
-    component = new FileUploadComponent(uppyUploaderService);
+    component = new FileUploadComponent(
+      uppyUploaderService,
+      { graphQLFetch: () => ({ subscribe() {} }) } as any,
+      { getUser: () => ({ teamId: 1 }) } as any,
+    );
     component.control = new FormControl('');
     component.submitActions$ = new Subject();
     component.question = {

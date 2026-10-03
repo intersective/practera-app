@@ -425,6 +425,8 @@ export class AssessmentComponent implements OnInit, OnChanges, OnDestroy {
           submissionId: number;
           questionId: number;
           answer: string;
+          file?: FileInput;
+          filestoreId?: number;
         };
         error?: any;
       }): void | Promise<void> => {
@@ -523,14 +525,18 @@ Best regards`;
     questionId: number;
     answer?: string;
     file?: FileInput;
+    filestoreId?: number;
   }): Observable<any> {
-    const answer = this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
+    const answer = questionInput.filestoreId
+      ? (questionInput.answer ?? true)
+      : this._getAnswerValueForQuestion(questionInput.questionId, questionInput.answer);
 
     return this.assessmentService.saveQuestionAnswer(
       questionInput.submissionId,
       questionInput.questionId,
       answer,
       questionInput.file,
+      questionInput.filestoreId,
     ).pipe(
       tap({
         next: (_res) => {
@@ -880,6 +886,7 @@ Best regards`;
    */
   async continueToNextTask() {
     switch (this._btnAction) {
+      case 'signoff':
       case 'submit': {
         if (this.hasUnvisitedTeam360Pages) {
           const confirmed = await this._confirmSubmitWithUnvisitedPages();
@@ -1086,6 +1093,8 @@ Best regards`;
       assessmentId: this.assessment.id,
       contextId: this.contextId,
       submissionId: this.submission.id,
+      signOff: this.canSignOff,
+      signOffComment: this.signOffComment,
     });
   }
 
@@ -1100,7 +1109,19 @@ Best regards`;
   }
 
   // the action that the button does
+  signOffComment = '';
+
+  get canSignOff(): boolean {
+    return this.action !== 'review'
+      && this.assessment?.signOff === true
+      && !!this.submission
+      && (this.submission.status === 'in progress' || this.submission.status === 'pending review');
+  }
+
   private get _btnAction() {
+    if (this.canSignOff) {
+      return 'signoff';
+    }
     if (this.doAssessment || this.isPendingReview) {
       return 'submit';
     }
@@ -1121,7 +1142,7 @@ Best regards`;
   }
 
   get showSubmitLoadingOnClick(): boolean {
-    return this._btnAction === 'submit';
+    return this._btnAction === 'submit' || this._btnAction === 'signoff';
   }
 
   // the text of the button
@@ -1132,6 +1153,8 @@ Best regards`;
           return $localize`submit review`;
         }
         return $localize`submit answers`;
+      case 'signoff':
+        return $localize`sign off`;
       case 'readFeedback':
         return $localize`mark feedback as reviewed`;
       default:

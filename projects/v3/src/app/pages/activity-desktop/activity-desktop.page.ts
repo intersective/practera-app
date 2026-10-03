@@ -510,6 +510,12 @@ export class ActivityDesktopPage {
     try {
       const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
       const type: string = data?.type;
+      if (type === 'scormSuspendData' && data.activityId && data.stateId && data.document) {
+        await firstValueFrom(
+          this.topicService.putXapiActivityState(data.activityId, data.stateId, data.document)
+        );
+        return;
+      }
       if (type !== 'scormXapiStatements' && type !== 'h5pXapiStatements') return;
       if (!Array.isArray(data.statements) || data.statements.length === 0) return;
 
@@ -558,7 +564,17 @@ export class ActivityDesktopPage {
         )
       );
 
-      if (submission?.status === 'in progress') {
+      if (event.signOff && !event.autoSave) {
+        const saved = await firstValueFrom(
+          this.assessmentService.signOffTeamSubmission(
+            event.submissionId,
+            event.signOffComment || '',
+          ),
+        );
+        if (saved?.data?.signOffTeamSubmission?.success !== true || this.utils.isEmpty(saved)) {
+          throw new Error('Error signing off');
+        }
+      } else if (submission?.status === 'in progress') {
         const saved = await firstValueFrom(
           this.assessmentService.submitAssessment(
             event.submissionId,

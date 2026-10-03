@@ -184,6 +184,30 @@ export class TopicService {
     ).pipe(map(() => undefined));
   }
 
+  putXapiActivityState(activityId: string, stateId: string, document: unknown): Observable<void> {
+    if (environment.demo) {
+      return new Observable(observer => { observer.next(undefined); observer.complete(); });
+    }
+    return this.apolloService.graphQLMutate(
+      `mutation PutXapiActivityState($activityId: String!, $stateId: String!, $document: JSON!) {
+        putXapiActivityState(activityId: $activityId, stateId: $stateId, document: $document)
+      }`,
+      { activityId, stateId, document },
+    ).pipe(map(() => undefined));
+  }
+
+  getXapiActivityState(activityId: string, stateId: string): Observable<string | null> {
+    if (environment.demo) {
+      return new Observable(observer => { observer.next(null); observer.complete(); });
+    }
+    return this.apolloService.graphQLFetch(
+      `query XapiActivityState($activityId: String!, $stateId: String!) {
+        xapiActivityState(activityId: $activityId, stateId: $stateId) { document }
+      }`,
+      { variables: { activityId, stateId } },
+    ).pipe(map((response: any) => response?.data?.xapiActivityState?.document ?? null));
+  }
+
   updateTopicProgress(id: number, state: string, attention?: TopicAttentionMetrics): Observable<any> {
     if (environment.demo) {
       // eslint-disable-next-line no-console

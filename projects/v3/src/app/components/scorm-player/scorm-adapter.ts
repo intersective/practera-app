@@ -23,6 +23,7 @@ export interface ScormAdapterOptions {
   allowResume: boolean;
   assessmentId?: number;
   activityId: string;
+  suspendData?: string;
 }
 
 export class ScormAdapter {
@@ -54,6 +55,14 @@ export class ScormAdapter {
     this.cmi['cmi.score.max'] = '100';
     this.cmi['cmi.session_time'] = 'PT0S';
     this.cmi['cmi.exit'] = '';
+    if (opts.suspendData) {
+      this.cmi['cmi.suspend_data'] = opts.suspendData;
+      this.cmi['cmi.core.suspend_data'] = opts.suspendData;
+      if (opts.allowResume) {
+        this.cmi['cmi.core.entry'] = 'resume';
+        this.cmi['cmi.entry'] = 'resume';
+      }
+    }
   }
 
   getApi12() {
@@ -112,6 +121,7 @@ export class ScormAdapter {
       window.postMessage({
         type: 'scormSuspendData',
         stateId: 'cmi.suspend_data',
+        activityId: this.opts.activityId,
         document: { value, timestamp: new Date().toISOString() },
       }, '*');
     }

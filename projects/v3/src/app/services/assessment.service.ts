@@ -38,6 +38,7 @@ export interface Assessment {
   type: string;
   description: string;
   isForTeam: boolean;
+  signOff?: boolean;
   dueDate?: string;
   isOverdue?: boolean;
   groups: Array<Group>;
@@ -66,6 +67,13 @@ export interface Submission {
   submitterImage: string;
   reviewerName: string | void;
   pendingReviewerName?: string | null;
+  signOffs?: Array<{
+    userId: number;
+    name: string | null;
+    comment: string | null;
+    signedAt: string | null;
+    signed: boolean;
+  }>;
 }
 
 export interface Answer {
@@ -131,7 +139,7 @@ export class AssessmentService {
         `query getAssessment($assessmentId: Int!, $reviewer: Boolean!, $activityId: Int, $contextId: Int!, $submissionId: Int) {
         assessment(id:$assessmentId, reviewer:$reviewer, activityId:$activityId, submissionId:$submissionId) {
           id name type
-          description dueDate isTeam
+          description dueDate isTeam signOff
           pulseCheck
           hasReviewRating
           allowResubmit
@@ -149,6 +157,7 @@ export class AssessmentService {
           }
           submissions(contextId:$contextId) {
             id status completed modified locked pendingReviewerName
+            signOffs { userId name comment signedAt signed }
             submitter {
               name image
               team {
@@ -256,6 +265,7 @@ export class AssessmentService {
       type: data.assessment.type,
       description: data.assessment.description,
       isForTeam: data.assessment.isTeam,
+      signOff: data.assessment.signOff === true,
       dueDate: data.assessment.dueDate,
       isOverdue: data.assessment.dueDate
         ? this.utils.timeComparer(data.assessment.dueDate) < 0
@@ -379,6 +389,7 @@ export class AssessmentService {
       isLocked: firstSubmission.locked,
       completed: firstSubmission.completed,
       pendingReviewerName: firstSubmission.pendingReviewerName || null,
+      signOffs: firstSubmission.signOffs || [],
       reviewerName: firstSubmission.review
         ? this.checkReviewer(firstSubmission.review.reviewer)
         : null,
@@ -578,16 +589,23 @@ export class AssessmentService {
   }
 
   // store the answer to the question
-  saveQuestionAnswer(submissionId: number, questionId: number, answer: string, file?: FileInput) {
+  saveQuestionAnswer(
+    submissionId: number,
+    questionId: number,
+    answer: string,
+    file?: FileInput,
+    filestoreId?: number,
+  ) {
     const paramsFormat =
-      "$submissionId: Int!, $questionId: Int!, $answer: Any!, $file: FileInput";
+      "$submissionId: Int!, $questionId: Int!, $answer: Any!, $file: FileInput, $filestoreId: Int";
     const params =
-      "submissionId:$submissionId, questionId:$questionId, answer:$answer, file:$file";
+      "submissionId:$submissionId, questionId:$questionId, answer:$answer, file:$file, filestoreId:$filestoreId";
     const variables = {
       submissionId,
       questionId,
       answer,
       file,
+      filestoreId: filestoreId ?? null,
     };
     return this.apolloService
       .continuousGraphQLMutate(
@@ -612,6 +630,18 @@ export class AssessmentService {
           return res;
         })
       );
+  }
+
+  signOffTeamSubmission(submissionId: number, comment: string) {
+    return this.apolloService.continuousGraphQLMutate(
+      `mutation signOffTeamSubmission($submissionId: Int!, $comment: String) {
+        signOffTeamSubmission(submissionId: $submissionId, comment: $comment) {
+          success
+          message
+        }
+      }`,
+      { submissionId, comment },
+    );
   }
 
   // store error in localStorage

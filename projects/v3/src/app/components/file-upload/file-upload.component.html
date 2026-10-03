@@ -62,6 +62,23 @@
 @if (doAssessment) {
   <div class="ion-padding">
     @if (!uploadedFile && !submission?.answer) {
+      @if (teamAssessment) {
+        <div class="ion-margin-bottom">
+          <ion-button fill="outline" size="small" (click)="showTeamLibrary = !showTeamLibrary">
+            Choose from team files
+          </ion-button>
+          @if (showTeamLibrary) {
+            @if (teamFiles.length === 0) {
+              <p class="body-2">No team files yet. Upload one below.</p>
+            }
+            @for (file of teamFiles; track file.id) {
+              <ion-item button (click)="chooseTeamFile(file)" lines="full">
+                <ion-label>{{ file.name }}</ion-label>
+              </ion-item>
+            }
+          }
+        </div>
+      }
       <div class="uppy-container">
         <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
         </uppy-dashboard>
