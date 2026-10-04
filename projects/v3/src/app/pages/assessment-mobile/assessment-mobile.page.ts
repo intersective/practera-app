@@ -57,6 +57,7 @@ export class AssessmentMobilePage implements OnInit, OnDestroy {
   }
 
   flashHighlight(): void {
+    if (!this.assessmentComponent) return;
     const questionBoxes = this.assessmentComponent.getQuestionBoxes();
     questionBoxes.filter(questionBox => {
       return questionBox.el.classList.contains('flash-highlight');

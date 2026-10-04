@@ -1,0 +1,51 @@
+<ion-content class="ion-padding">
+  <div class="approve">
+    @if (state === 'loading') {
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading hours…</p>
+    }
+
+    @if (state === 'invalid') {
+      <div class="approve__icon approve__icon--warn">
+        <ion-icon name="alert-circle" color="warning" aria-hidden="true"></ion-icon>
+      </div>
+      <h1>This link is no longer valid</h1>
+      <p role="alert">Ask the learner to send a new sign-off request.</p>
+    }
+
+    @if (state === 'done') {
+      <div class="approve__icon approve__icon--ok">
+        <ion-icon name="checkmark-circle" color="success" aria-hidden="true"></ion-icon>
+      </div>
+      <h1>Decision recorded</h1>
+      <p role="status">You can close this page.</p>
+    }
+
+    @if (state === 'ready' && sheet) {
+      <div class="approve__icon">
+        <ion-icon name="time-outline" color="primary" aria-hidden="true"></ion-icon>
+      </div>
+      <h1>{{ sheet.learnerName }}</h1>
+      <p>{{ sheet.programName }} · {{ sheet.assessmentName }}</p>
+      <p class="approve__total">{{ sheet.periodStart }} – {{ sheet.periodEnd }} · {{ hours(sheet.totalMinutes) }}</p>
+      <ion-list lines="full" class="approve__entries">
+        @for (entry of sheet.entries; track entry.entryDate + entry.minutes) {
+          <ion-item>
+            <ion-label>
+              <h3>{{ entry.entryDate }}</h3>
+              <p>{{ hours(entry.minutes) }} · {{ entry.categoryLabel }}</p>
+              @if (entry.note) { <p>{{ entry.note }}</p> }
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+      <ion-input label="Your name" labelPlacement="stacked" fill="outline" [(ngModel)]="approverName" name="approverName"></ion-input>
+      <ion-textarea label="Note" labelPlacement="stacked" fill="outline" [(ngModel)]="note" name="note"></ion-textarea>
+      @if (error) {
+        <ion-note color="danger" role="alert">{{ error }}</ion-note>
+      }
+      <ion-button expand="block" (click)="decide('approve')">Approve</ion-button>
+      <ion-button expand="block" fill="outline" (click)="decide('return')">Return</ion-button>
+    }
+  </div>
+</ion-content>

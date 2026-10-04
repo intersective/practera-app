@@ -102,6 +102,30 @@
               <app-description [content]="experience.description"></app-description>
             </div>
           }
+
+          @for (sheet of timesheets; track sheet.assessmentId) {
+            <div class="brief-section timesheet-card" role="region" [attr.aria-label]="sheet.name">
+              <div class="timesheet-card__head">
+                <h3 class="brief-details__title">{{ sheet.name }}</h3>
+                <span class="brief-details__badge">
+                  <ion-icon name="time-outline" aria-hidden="true"></ion-icon>
+                  {{ timesheetProgress(sheet) }}
+                </span>
+              </div>
+              <ion-progress-bar color="primary" [value]="timesheetRatio(sheet)" [attr.aria-label]="timesheetProgress(sheet)"></ion-progress-bar>
+              <ion-button expand="block" fill="outline" size="small" (click)="toggleTimeLog(sheet.assessmentId)">
+                <ion-icon [name]="openTimesheetId === sheet.assessmentId ? 'chevron-up-outline' : 'add-outline'" slot="start" aria-hidden="true"></ion-icon>
+                @if (openTimesheetId === sheet.assessmentId) {
+                  <span i18n>Hide log</span>
+                } @else {
+                  <span i18n>Log time</span>
+                }
+              </ion-button>
+              @if (openTimesheetId === sheet.assessmentId) {
+                <app-time-log [assessmentId]="sheet.assessmentId"></app-time-log>
+              }
+            </div>
+          }
         }
 
         <!-- Project Brief inline details -->
@@ -175,6 +199,7 @@
               fill="outline"
               size="small"
               (click)="openProjectBriefExternal()"
+              title="Go to Project Hub"
               aria-label="Go to Project Hub" i18n-aria-label>
               <ion-icon name="open-outline" slot="start" aria-hidden="true"></ion-icon>
               <span i18n>Open Project Hub</span>

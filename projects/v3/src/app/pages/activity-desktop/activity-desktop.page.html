@@ -40,7 +40,10 @@
             This assessment can only be accessed when you are in a team.
           </div>
         } @else {
-          @if (currentTask?.type === 'Assessment') {
+          @if (currentTask?.type === 'Assessment' && currentTask?.assessmentType === 'timesheet') {
+            <app-time-log [assessmentId]="currentTask.id"></app-time-log>
+          }
+          @if (currentTask?.type === 'Assessment' && currentTask?.assessmentType !== 'timesheet') {
             <app-assessment
               [task]="currentTask"
               [assessment]="assessment | async"

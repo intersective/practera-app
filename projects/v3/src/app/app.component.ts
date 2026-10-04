@@ -40,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
     'do=secure',
     'auth/secure',
     'auth/jwt',
+    'timesheet-approve',
     'assessment-mobile/review',
     'undefined',
   ];
@@ -126,7 +127,12 @@ export class AppComponent implements OnInit, OnDestroy {
       this.storage.setTabExperience(searchParams.get('experienceUuid'));
     }
 
-    if (searchParams.has("token") && !searchParams.has("do")) {
+    // Supervisor sign-off links also use ?token=, and that value is not a JWT.
+    if (
+      searchParams.has("token") &&
+      !searchParams.has("do") &&
+      !currentLocation.pathname?.includes("timesheet-approve")
+    ) {
       const queries = this.utils.urlQueryToObject(queryString);
       const token = searchParams.get("token");
       // Store the JWT in sessionStorage so it never appears in the URL, then

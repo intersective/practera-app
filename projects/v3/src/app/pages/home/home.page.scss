@@ -147,6 +147,24 @@
   border-bottom: 1px solid var(--practera-grey-25);
 }
 
+.timesheet-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  ion-progress-bar {
+    height: 6px;
+    border-radius: 99px;
+  }
+}
+
 // ── Inline Project Brief details ───────────────────────────────────────────
 
 .brief-details {

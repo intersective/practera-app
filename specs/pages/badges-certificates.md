@@ -8,10 +8,10 @@ The badges and certificates page shows all achievements earned by the learner. E
 
 ## Acceptance Criteria
 
-- **AC1**: All achievements earned by the learner are displayed.
-- **AC2**: Each achievement shows name, description, badge image, and earned date.
-- **AC3**: Achievements with certificates provide a downloadable certificate URL.
-- **AC4**: Achievements are sorted by earned date (most recent first).
+- **AC1**: All achievements earned by the learner are displayed. <!-- claim: earned-listed -->
+- **AC2**: Each achievement shows name, description, badge image, and earned date. <!-- claim: achievement-fields -->
+- **AC3**: Achievements with certificates provide a downloadable certificate URL. <!-- claim: certificate-url -->
+- **AC4**: Achievements are sorted by earned date (most recent first). <!-- claim: sorted-by-earned -->
 
 ## Scenarios
 

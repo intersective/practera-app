@@ -23,6 +23,8 @@ import { UppyUploaderService } from '@v3/app/components/uppy-uploader/uppy-uploa
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
 import { ProjectBriefModalComponent } from '@v3/app/components/project-brief-modal/project-brief-modal.component';
 import { ProjectBrief } from '@v3/app/models/project-brief.model';
+import { MyTimesheetSummary, TimesheetService } from '@v3/app/services/timesheet.service';
+import { progressLabel, progressRatio } from '@v3/app/components/time-log/timesheet-log';
 
 /**
  * Brand-derived activity gradient palette.
@@ -147,6 +149,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
   teamName: string | null = null;
   teamFiles: Array<{ id: number; name: string; url: string; type: string; uploadedBy: string | null }> = [];
   teamFilesError = '';
+  timesheets: MyTimesheetSummary[] = [];
+  openTimesheetId: number | null = null;
 
   // activity search/filter
   activitySearchText = '';
@@ -173,6 +177,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
     private sanitizer: DomSanitizer,
     private apolloService: ApolloService,
     private uppyUploader: UppyUploaderService,
+    private timesheetService: TimesheetService,
   ) {
     this.activityCount$ = homeService.activityCount$;
   }
@@ -327,6 +332,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
 
     // call updateDashboard on initial load to ensure fresh data
     this.updateDashboard();
+    this.loadTimesheets();
   }
 
   ionViewWillEnter(): void {
@@ -336,9 +342,31 @@ export class HomePage implements OnInit, OnDestroy, AfterViewChecked, ViewWillEn
     // against rapid tab switches within the v3 shell.
     if (this.hasEntered) {
       this.updateDashboard();
+      this.loadTimesheets();
       return;
     }
     this.hasEntered = true;
+  }
+
+  loadTimesheets(): void {
+    this.timesheetService.myTimesheets().pipe(takeUntil(this.unsubscribe$), catchError(() => of([]))).subscribe(rows => {
+      this.ngZone.run(() => {
+        this.timesheets = rows;
+        this.cdr.markForCheck();
+      });
+    });
+  }
+
+  toggleTimeLog(assessmentId: number): void {
+    this.openTimesheetId = this.openTimesheetId === assessmentId ? null : assessmentId;
+  }
+
+  timesheetProgress(sheet: MyTimesheetSummary): string {
+    return progressLabel(sheet.approvedMinutes, sheet.targetMinutes);
+  }
+
+  timesheetRatio(sheet: MyTimesheetSummary): number {
+    return progressRatio(sheet.approvedMinutes, sheet.targetMinutes);
   }
 
   private getActivityProgressCacheKey(): string | null {

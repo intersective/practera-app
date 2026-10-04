@@ -1,0 +1,68 @@
+.time-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+.time-log__head h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+}
+
+.time-log__head p {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--ion-color-medium);
+}
+
+.time-log__add,
+.time-log__signoff {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.time-log__stepper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.time-log__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.time-log__entries {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.time-log__toggle {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.time-log__period {
+  margin: 0;
+  color: var(--ion-color-medium);
+  font-size: 0.8rem;
+}
+
+.time-log__card {
+  margin: 0;
+  box-shadow: none;
+  border: 1px solid var(--practera-grey-25, var(--ion-color-light-shade));
+}
+
+.time-log__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}

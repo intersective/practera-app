@@ -18,6 +18,9 @@
 
 <ion-content [scrollEvents]="true"
   (ionScroll)="onScroll()">
+  @if (assessment?.type === 'timesheet' || currentTask?.assessmentType === 'timesheet') {
+    <app-time-log [assessmentId]="assessment?.id || currentTask?.id"></app-time-log>
+  } @else {
   <app-assessment
     [task]="currentTask"
     [assessment]="assessment"
@@ -33,4 +36,5 @@
     [isSinglePage]="true"
     (continue)="nextTask()"
   ></app-assessment>
+  }
 </ion-content>

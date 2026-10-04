@@ -12,6 +12,10 @@ import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';
 import { PulsecheckService } from '@v3/app/services/pulsecheck.service';
+import { TimesheetService } from '@v3/app/services/timesheet.service';
+import { ApolloService } from '@v3/app/services/apollo.service';
+import { UppyUploaderService } from '@v3/app/components/uppy-uploader/uppy-uploader.service';
+import { DomSanitizer } from '@angular/platform-browser';
 import { FallbackImageDirective } from '@v3/app/directives/fallback-image/fallback-image.directive';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
@@ -59,6 +63,7 @@ describe('HomePage', () => {
 
     const sharedServiceSpy = jasmine.createSpyObj('SharedService', {
       'refreshJWT': Promise.resolve(),
+      'getTeamInfo': of(null),
     }, {
       'team$': of(null),
     });
@@ -163,6 +168,25 @@ describe('HomePage', () => {
         {
           provide: ModalController,
           useValue: jasmine.createSpyObj('ModalController', ['create', 'dismiss'])
+        },
+        {
+          provide: TimesheetService,
+          useValue: jasmine.createSpyObj('TimesheetService', { myTimesheets: of([]) }),
+        },
+        {
+          provide: ApolloService,
+          useValue: jasmine.createSpyObj('ApolloService', {
+            graphQLFetch: of({ data: {} }),
+            graphQLMutate: of({ data: {} }),
+          }),
+        },
+        {
+          provide: UppyUploaderService,
+          useValue: {},
+        },
+        {
+          provide: DomSanitizer,
+          useValue: { bypassSecurityTrustStyle: (value: string) => value },
         },
       ],
     }).compileComponents();
@@ -393,8 +417,10 @@ describe('HomePage', () => {
     });
 
     it('should not get pulse check statuses when pulse check indicator is disabled', async () => {
-      component.pulseCheckIndicatorEnabled = false;
+      storageService.getFeature.and.callFake((key: string) => key !== 'pulseCheckIndicator');
+      homeService.getPulseCheckStatuses.calls.reset();
       await component.updateDashboard();
+      expect(component.pulseCheckIndicatorEnabled).toBe(false);
       expect(homeService.getPulseCheckStatuses).not.toHaveBeenCalled();
     });
 

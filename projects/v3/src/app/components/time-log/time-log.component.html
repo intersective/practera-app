@@ -1,0 +1,83 @@
+@if (loading && !view) {
+  <ion-progress-bar type="indeterminate" color="primary"></ion-progress-bar>
+}
+
+@if (error) {
+  <ion-note color="danger" role="alert">{{ error }}</ion-note>
+}
+@if (message) {
+  <ion-note color="success" role="status">{{ message }}</ion-note>
+}
+
+@if (view) {
+  <section class="time-log" aria-label="Time log">
+    <header class="time-log__head">
+      <h2>{{ view.name }}</h2>
+      <p>{{ heading() }}</p>
+    </header>
+
+    <form class="time-log__add" (ngSubmit)="log()">
+      <ion-input type="date" label="Date" labelPlacement="stacked" fill="outline" [(ngModel)]="entryDate" name="entryDate"></ion-input>
+      <div class="time-log__stepper">
+        <ion-input type="number" label="Hours" labelPlacement="stacked" fill="outline" min="0" max="24" [(ngModel)]="hours" name="hours"></ion-input>
+        <ion-input type="number" label="Minutes" labelPlacement="stacked" fill="outline" min="0" max="59" [(ngModel)]="minutes" name="minutes"></ion-input>
+      </div>
+      <div class="time-log__chips" role="group" aria-label="Category">
+        @for (category of view.config.categories; track category.key) {
+          <ion-chip [outline]="categoryKey !== category.key" [color]="categoryKey === category.key ? 'primary' : 'medium'" (click)="categoryKey = category.key">
+            {{ category.label }}
+          </ion-chip>
+        }
+      </div>
+      <ion-textarea label="Note" labelPlacement="stacked" fill="outline" [(ngModel)]="note" name="note" [required]="view.config.requireNote"></ion-textarea>
+      @if (view.config.requireEvidence) {
+        <app-file-upload [control]="evidenceControl" [doAssessment]="true" viewerRole="learner"></app-file-upload>
+      }
+      <ion-button type="submit" expand="block" size="small">
+        <ion-icon name="add-outline" slot="start" aria-hidden="true"></ion-icon>
+        <span i18n>Log time</span>
+      </ion-button>
+    </form>
+
+    @if (view.config.signOff === 'external' || view.config.signOff === 'either') {
+      <div class="time-log__signoff">
+        @if (view.config.signOff === 'either') {
+          <ion-item lines="none" class="time-log__toggle">
+            <ion-toggle [(ngModel)]="useExternal" name="useExternal" justify="space-between">Email a supervisor instead</ion-toggle>
+          </ion-item>
+        }
+        @if (view.config.signOff === 'external' || useExternal) {
+          <ion-input label="Supervisor name" labelPlacement="stacked" fill="outline" [(ngModel)]="externalName" name="externalName"></ion-input>
+          <ion-input type="email" label="Supervisor email" labelPlacement="stacked" fill="outline" [(ngModel)]="externalEmail" name="externalEmail"></ion-input>
+        }
+      </div>
+    }
+
+    <ion-list lines="full" class="time-log__entries">
+      @for (entry of view.entries; track entry.id) {
+        <ion-item>
+          <ion-label>
+            <h3>{{ entry.entryDate }}</h3>
+            <p>{{ hoursText(entry.minutes) }} · {{ entry.categoryLabel }}</p>
+            @if (entry.note) { <p>{{ entry.note }}</p> }
+          </ion-label>
+          <ion-badge slot="end" [color]="statusColor(entry.status)">{{ statusLabel(entry.status) }}</ion-badge>
+          @if (editable(entry.status)) {
+            <ion-button slot="end" fill="clear" size="small" color="medium" (click)="remove(entry.id)" [attr.aria-label]="'Remove ' + entry.entryDate">
+              <ion-icon name="trash-outline" slot="icon-only" aria-hidden="true"></ion-icon>
+            </ion-button>
+          }
+        </ion-item>
+      }
+    </ion-list>
+
+    @if (view.config.period !== 'none') {
+      @for (period of view.periods; track period.id) {
+        <p class="time-log__period">{{ period.periodStart }} – {{ period.periodEnd }} · {{ hoursText(period.totalMinutes) }} · {{ statusLabel(period.status) }}</p>
+      }
+    }
+    <ion-button expand="block" fill="outline" size="small" (click)="view.config.period === 'none' ? submit() : submit(entryDate)">
+      <span i18n>Submit for sign-off</span>
+    </ion-button>
+  </section>
+}

@@ -5,7 +5,9 @@
 // The CHROME_BIN env var may not propagate through some process chains (e.g.
 // docker exec via the test dashboard). Detect it here so karma-chrome-launcher
 // always has a valid binary path.
-const { existsSync } = require('fs');
+const { existsSync, mkdtempSync } = require('fs');
+const { tmpdir } = require('os');
+const { join } = require('path');
 if (!process.env.CHROME_BIN) {
   const candidates = [
     '/usr/bin/chromium',
@@ -62,7 +64,10 @@ module.exports = function (config) {
           '--no-sandbox',
           '--disable-setuid-sandbox',
           '--disable-gpu',
-          '--disable-dev-shm-usage'
+          '--disable-dev-shm-usage',
+          `--user-data-dir=${mkdtempSync(join(tmpdir(), 'karma-chrome-'))}`,
+          '--password-store=basic',
+          '--use-mock-keychain',
         ]
       }
     },

@@ -1,0 +1,36 @@
+@if (sheets.length) {
+  <section class="time-log" aria-label="Timesheets to approve">
+    <header class="time-log__head">
+      <h2>Timesheets to approve</h2>
+    </header>
+    @if (error) {
+      <ion-note color="danger" role="alert">{{ error }}</ion-note>
+    }
+    @for (sheet of sheets; track sheet.id) {
+      <ion-card class="time-log__card">
+        <ion-card-header>
+          <ion-card-title>{{ sheet.learnerName }}</ion-card-title>
+          <ion-card-subtitle>{{ sheet.assessmentName }} · {{ sheet.periodStart }} – {{ sheet.periodEnd }} · {{ hours(sheet.totalMinutes) }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list lines="full" class="time-log__entries">
+            @for (entry of sheet.entries; track entry.id) {
+              <ion-item>
+                <ion-label>
+                  <h3>{{ entry.entryDate }}</h3>
+                  <p>{{ hours(entry.minutes) }} · {{ entry.categoryLabel }}</p>
+                  @if (entry.note) { <p>{{ entry.note }}</p> }
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+          <ion-textarea label="Note" labelPlacement="stacked" fill="outline" [(ngModel)]="notes[sheet.id]" [name]="'note-' + sheet.id"></ion-textarea>
+          <div class="time-log__actions">
+            <ion-button size="small" (click)="decide(sheet.id, 'approve')">Approve</ion-button>
+            <ion-button size="small" fill="outline" (click)="decide(sheet.id, 'return')">Return</ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </section>
+}

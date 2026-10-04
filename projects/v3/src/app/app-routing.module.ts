@@ -39,6 +39,10 @@ const routes: Routes = [
     canLoad: [AuthGuard],
   },
   {
+    path: 'timesheet-approve',
+    loadChildren: () => import('./pages/timesheet-approve/timesheet-approve.module').then(m => m.TimesheetApproveModule),
+  },
+  {
     path: '',
     redirectTo: '/auth/login',
     pathMatch: 'full'

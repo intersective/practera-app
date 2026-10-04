@@ -23,6 +23,8 @@ import { FilePreviewComponent } from './file-preview/file-preview.component';
 import { ContactNumberFormComponent } from './contact-number-form/contact-number-form.component';
 import { ClickableItemComponent } from './clickable-item/clickable-item.component';
 import { AssessmentComponent } from './assessment/assessment.component';
+import { TimeLogComponent } from './time-log/time-log.component';
+import { TimesheetApprovalsComponent } from './time-log/timesheet-approvals.component';
 import { TextComponent } from './text/text.component';
 import { TeamMemberSelectorComponent } from './team-member-selector/team-member-selector.component';
 import { MultipleComponent } from './multiple/multiple.component';
@@ -91,6 +93,8 @@ const largeCircleDefaultConfig = {
     ActivityCompletePopUpComponent,
     ActivityComponent,
     AssessmentComponent,
+    TimeLogComponent,
+    TimesheetApprovalsComponent,
     AutoresizeDirective,
     BackgroundImageDirective,
     CircleProgressComponent,
@@ -141,6 +145,8 @@ const largeCircleDefaultConfig = {
     ActivityCompletePopUpComponent,
     ActivityComponent,
     AssessmentComponent,
+    TimeLogComponent,
+    TimesheetApprovalsComponent,
     AutoresizeDirective,
     BackgroundImageDirective,
     CircleProgressComponent,
