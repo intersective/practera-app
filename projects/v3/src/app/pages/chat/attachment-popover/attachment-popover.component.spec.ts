@@ -47,4 +47,26 @@ describe('AttachmentPopoverComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+  for (const [type, allowedTypes] of [
+    ['any', undefined],
+    ['image', ['image/*']],
+    ['video', ['video/*']],
+  ] as const) {
+    it(`uploads ${type} attachments under chat while keeping the picker restriction separate`, async () => {
+      const uploader = TestBed.inject(UppyUploaderService) as jasmine.SpyObj<UppyUploaderService>;
+      const selected = { name: 'attachment.png', url: 'https://files.example.test/image' };
+      uploader.open.and.returnValue(Promise.resolve({
+        onDidDismiss: () => Promise.resolve({ data: selected }),
+      } as any));
+      const popover = jasmine.createSpyObj('PopoverController', ['dismiss']);
+      (component as any).popoverController = popover;
+
+      await component.openAttachPopup(type);
+      await Promise.resolve();
+
+      expect(uploader.open.calls.mostRecent().args).toEqual(['chat', allowedTypes] as any);
+      expect(popover.dismiss).toHaveBeenCalledWith({ selectedFile: selected });
+    });
+  }
+
 });

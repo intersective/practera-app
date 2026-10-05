@@ -1,4 +1,9 @@
-import { FormControl } from '@angular/forms';
+import { CUSTOM_ELEMENTS_SCHEMA, NgZone } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormControl, FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { BrowserStorageService } from '../../services/storage.service';
 import { Subject } from 'rxjs';
 import { UppyUploaderService } from '../uppy-uploader/uppy-uploader.service';
 
@@ -14,7 +19,11 @@ describe('FileUploadComponent', () => {
       'parseTusUploadResponse',
     ]);
     uppyUploaderService.parseTusUploadResponse.and.callFake((body) => JSON.parse(body));
-    component = new FileUploadComponent(uppyUploaderService);
+    component = new FileUploadComponent(
+      uppyUploaderService,
+      new NgZone({ enableLongStackTrace: false }),
+      jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck']),
+    );
     component.control = new FormControl('');
     component.submitActions$ = new Subject();
     component.question = {
@@ -535,5 +544,206 @@ describe('FileUploadComponent', () => {
       expect(component.uploadedFile).toBeDefined();
       expect(component.uploadedFile.cdnUrl).toBe('https://cdn/rev-file.pdf');
     });
+  });
+});
+
+describe('FileUploadComponent dashboard rendering', () => {
+  let fixtures: ComponentFixture<FileUploadComponent>[];
+
+  beforeEach(async () => {
+    fixtures = [];
+    const storage = {
+      getUser: () => ({ apikey: 'test-only' }),
+      clearByName: () => undefined,
+    } as unknown as BrowserStorageService;
+    const uploader = new UppyUploaderService(null!, storage);
+
+    TestBed.configureTestingModule({
+      declarations: [FileUploadComponent],
+      imports: [CommonModule, FormsModule, IonicModule.forRoot()],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    });
+    TestBed.overrideProvider(UppyUploaderService, { useValue: uploader });
+    await TestBed.compileComponents();
+  });
+
+  afterEach(() => {
+    fixtures.forEach(fixture => fixture.destroy());
+  });
+
+  async function render(
+    mode: 'assessment' | 'review',
+    fileType: 'any' | 'image' | 'video' = 'any',
+    answer: any = null,
+  ): Promise<ComponentFixture<FileUploadComponent>> {
+    const fixture = TestBed.createComponent(FileUploadComponent);
+    fixtures.push(fixture);
+    const component = fixture.componentInstance;
+    component.source = 'assessment';
+    component.control = new FormControl('');
+    component.submitActions$ = new Subject();
+    component.question = {
+      id: 11,
+      name: 'Upload evidence',
+      description: '',
+      isRequired: false,
+      fileType,
+      audience: ['participant', 'reviewer'],
+      canAnswer: true,
+      canComment: true,
+    };
+    component.submissionId = 123;
+    component.reviewId = 456;
+    component.doAssessment = mode === 'assessment';
+    component.doReview = mode === 'review';
+    component.submissionStatus = 'in progress';
+    component.reviewStatus = 'in progress';
+    component.submission = { answer: mode === 'assessment' ? answer : null };
+    component.review = { answer: mode === 'review' ? answer : null, comment: '', file: {} };
+    fixture.changeDetectorRef.markForCheck();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    return fixture;
+  }
+
+  for (const mode of ['assessment', 'review'] as const) {
+    it(`renders a usable file picker for a new ${mode} answer`, async () => {
+      const fixture = await render(mode);
+      const picker = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+
+      expect(fixture.nativeElement.querySelector('.uppy-Dashboard-browse')).not.toBeNull();
+      expect(picker).not.toBeNull();
+    });
+
+    it(`hides the file picker when the SDK completes a ${mode} upload`, async () => {
+      const fixture = await render(mode);
+      const component = fixture.componentInstance;
+      component.onAfterResponse({}, { getBody: () => JSON.stringify({
+        bucket: 'evidence', path: '/evidence.pdf',
+        cdnUrl: 'https://cdn.example.test/evidence.pdf', directUrl: 'https://files.example.test/evidence.pdf',
+      }) });
+      const fileId = component.uppy.addFile({ name: 'evidence.pdf', type: 'application/pdf',
+        data: new Blob(['evidence'], { type: 'application/pdf' }) });
+
+      component.uppy.emit('upload-success', component.uppy.getFile(fileId), {
+        body: {}, status: 200, uploadURL: 'https://upload.example.test/evidence.pdf',
+      });
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.querySelector('input[type="file"]')).toBeNull();
+      expect(component.uppy.getPlugin('Dashboard')).toBeUndefined();
+      expect(fixture.nativeElement.querySelector('.uppy-Dashboard')).toBeNull();
+      expect(component.control.value).toEqual(mode === 'assessment' ? {
+        name: 'evidence.pdf', type: 'application/pdf', size: 8, extension: 'pdf',
+        bucket: 'evidence', path: '/evidence.pdf', url: 'https://cdn.example.test/evidence.pdf',
+      } : {
+        answer: '', comment: '', file: {
+          name: 'evidence.pdf', type: 'application/pdf', size: 8, extension: 'pdf',
+          bucket: 'evidence', path: '/evidence.pdf', url: 'https://cdn.example.test/evidence.pdf',
+        },
+      });
+    });
+
+    it(`hides the file picker for a saved ${mode} answer`, async () => {
+      const fixture = await render(mode, 'any', { name: 'saved.pdf', url: 'https://cdn.example.test/saved.pdf' });
+
+      expect(fixture.nativeElement.querySelector('input[type="file"]')).toBeNull();
+      expect(fixture.componentInstance.uppy.getPlugin('Dashboard')).toBeUndefined();
+    });
+
+    it(`mounts the file picker after removing a saved ${mode} answer`, async () => {
+      const fixture = await render(mode, 'any', { name: 'saved.pdf', url: 'https://cdn.example.test/saved.pdf' });
+
+      fixture.componentInstance.removeSubmitFile();
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.querySelector('.uppy-Dashboard-browse')).not.toBeNull();
+      expect(fixture.nativeElement.querySelector('input[type="file"]')).not.toBeNull();
+    });
+
+    it(`remounts the file picker after removing an uploaded ${mode} answer`, async () => {
+      const fixture = await render(mode);
+      const component = fixture.componentInstance;
+      component.uploadedFile = { name: 'new.pdf', type: 'application/pdf', size: 1, extension: 'pdf',
+        bucket: 'evidence', path: '/new.pdf', cdnUrl: 'https://cdn.example.test/new.pdf' } as any;
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.querySelector('input[type="file"]')).toBeNull();
+      expect(component.uppy.getPlugin('Dashboard')).toBeUndefined();
+
+      component.removeSubmitFile();
+      fixture.changeDetectorRef.markForCheck();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(fixture.nativeElement.querySelectorAll('.uppy-Dashboard')).toHaveSize(1);
+      expect(fixture.nativeElement.querySelector('input[type="file"]')).not.toBeNull();
+    });
+  }
+
+  it('releases selected files and dashboard DOM when the component is destroyed', async () => {
+    const fixture = await render('assessment');
+    const uppy = fixture.componentInstance.uppy;
+    const host = fixture.nativeElement as HTMLElement;
+    const dashboard = host.querySelector('.uppy-Dashboard');
+    uppy.addFile({ name: 'evidence.pdf', type: 'application/pdf', data: new Blob(['evidence'], { type: 'application/pdf' }) });
+    expect(uppy.getFiles()).toHaveSize(1);
+    expect(dashboard).not.toBeNull();
+
+    fixture.destroy();
+
+    expect(uppy.getFiles()).toHaveSize(0);
+    expect(uppy.getPlugin('Dashboard')).toBeUndefined();
+    expect(host.querySelector('.uppy-Dashboard')).toBeNull();
+  });
+
+  it('keeps the upload notice specific to each mounted question', async () => {
+    const image = await render('assessment', 'image');
+    const video = await render('review', 'video');
+    image.componentInstance.uploadedFile = { name: 'saved.png' } as any;
+    image.changeDetectorRef.markForCheck();
+    image.detectChanges();
+    image.componentInstance.removeSubmitFile();
+    image.changeDetectorRef.markForCheck();
+    image.detectChanges();
+    await image.whenStable();
+
+    expect(image.nativeElement.querySelector('.uppy-Dashboard-note')?.textContent).toContain('Images only');
+    expect(video.nativeElement.querySelector('.uppy-Dashboard-note')?.textContent).toContain('Videos only');
+  });
+
+  for (const restriction of [
+    { fileType: 'image' as const, accepted: 'image/png', name: 'evidence.png', rejected: 'video/mp4', accept: 'image/*' },
+    { fileType: 'video' as const, accepted: 'video/mp4', name: 'evidence.mp4', rejected: 'image/png', accept: 'video/*' },
+  ]) {
+    it(`enforces ${restriction.fileType} question restrictions at the file picker boundary`, async () => {
+      const fixture = await render('assessment', restriction.fileType);
+      const uppy = fixture.componentInstance.uppy;
+      const picker = fixture.nativeElement.querySelector('input[type="file"]') as HTMLInputElement;
+
+      expect(picker?.accept).toBe(restriction.accept);
+      const bytes = restriction.fileType === 'image'
+        ? Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aKxkAAAAASUVORK5CYII='), character => character.charCodeAt(0))
+        : new TextEncoder().encode('allowed');
+      uppy.addFile({ name: restriction.name, type: restriction.accepted,
+        data: new Blob([bytes], { type: restriction.accepted }) });
+      expect(uppy.getFiles()).toHaveSize(1);
+      expect(() => uppy.addFile({ name: 'wrong-type', type: restriction.rejected,
+        data: new Blob(['rejected'], { type: restriction.rejected }) })).toThrow();
+      expect(uppy.getFiles()).toHaveSize(1);
+    });
+  }
+
+  it('allows documents for an unrestricted question', async () => {
+    const fixture = await render('review');
+    const uppy = fixture.componentInstance.uppy;
+
+    uppy.addFile({ name: 'evidence.pdf', type: 'application/pdf', data: new Blob(['evidence'], { type: 'application/pdf' }) });
+
+    expect(uppy.getFiles()).toHaveSize(1);
   });
 });

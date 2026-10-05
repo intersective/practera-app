@@ -1,4 +1,4 @@
-import { UppyUploaderService } from './../../../components/uppy-uploader/uppy-uploader.service';
+import { UppyUploaderService, UppyUploadFileType } from './../../../components/uppy-uploader/uppy-uploader.service';
 import { Component } from '@angular/core';
 import { PopoverController } from '@ionic/angular';
 
@@ -34,9 +34,11 @@ export class AttachmentPopoverComponent{
       });
     }
 
-    async openAttachPopup(selectedType) {
+    async openAttachPopup(selectedType: UppyUploadFileType) {
       try {
-        const modal = await this.uppyUploaderService.open(selectedType);
+        const allowedFileTypes = selectedType === 'image' ? ['image/*'] :
+          selectedType === 'video' ? ['video/*'] : undefined;
+        const modal = await this.uppyUploaderService.open('chat', allowedFileTypes);
         modal.onDidDismiss().then(async (res) => {
           if (res.data) {
             this.close(res.data);

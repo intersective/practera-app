@@ -96,7 +96,7 @@ export class SupportPopupComponent implements OnInit {
     }
 
     try {
-      const modal = await this.uppyUploaderService.open('any');
+      const modal = await this.uppyUploaderService.open('static');
       const res = await modal.onDidDismiss();
       const data: UppyFileData = res.data;
       if (data) {
