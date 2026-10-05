@@ -12,7 +12,7 @@ The assessment page allows learners to submit answers to assessment questions. I
 - **AC2**: Answers are auto-saved every 10 seconds (SAVE_PROGRESS_TIMEOUT = 10000ms).
 - **AC3**: The submit button is disabled (`btnDisabled$`) until required questions are answered.
 - **AC4**: Learner is prevented from navigating away with unsaved changes (submit guard).
-- **AC5**: File upload questions support TUS-protocol uploads.
+- **AC5**: File upload questions support TUS-protocol uploads. The Uppy upload area (with its file input) is shown whenever the question has no file, including after the learner removes an attached file.
 - **AC6**: Pagination is supported — learners can navigate through question pages.
 - **AC7**: Slider rating questions display a visual slider with configurable min/max values.
 - **AC8**: The page also handles the review action (action: 'review') for peer/expert reviews.
@@ -57,3 +57,13 @@ The assessment page allows learners to submit answers to assessment questions. I
 **Expected Results:**
 - Upload progress shown.
 - On completion, file reference stored as the answer.
+
+### Scenario 5: Replace an Attached File
+**Steps:**
+1. Learner opens an in-progress assessment whose file question already has a file.
+2. Clicks Remove file.
+3. Selects a new file.
+
+**Expected Results:**
+- After removal the upload area appears with a file input.
+- The new file uploads over TUS and becomes the answer, so a required file question can be submitted.

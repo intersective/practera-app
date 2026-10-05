@@ -80,8 +80,7 @@
         </div>
       }
       <div class="uppy-container">
-        <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
-        </uppy-dashboard>
+        <div #uppyTarget></div>
       </div>
     }
     @for (error of errors; track error) {
@@ -103,8 +102,7 @@
   @if (question.canAnswer) {
     @if (!uploadedFile && !review?.answer) {
       <div class="uppy-container ion-padding" >
-        <uppy-dashboard [uppy]="uppy" [props]="uppyProps">
-        </uppy-dashboard>
+        <div #uppyTarget></div>
       </div>
     }
     @if (uploadedFile || review.answer) {

@@ -1,4 +1,6 @@
+import { ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Uppy } from '@uppy/core';
 import { Subject } from 'rxjs';
 import { UppyUploaderService } from '../uppy-uploader/uppy-uploader.service';
 
@@ -253,6 +255,41 @@ describe('FileUploadComponent', () => {
     component.sendDeleteRequestForFile({ id: 'id-1' });
 
     expect((component.uppy.removeFile as any)).toHaveBeenCalledWith('id-1');
+  });
+
+  describe('upload area mount (real Uppy)', () => {
+    let host: HTMLElement;
+
+    beforeEach(() => {
+      component.uppy = new Uppy() as any;
+      host = document.createElement('div');
+      document.body.appendChild(host);
+    });
+
+    afterEach(() => {
+      component.uppy.destroy();
+      host.remove();
+    });
+
+    it('mounts the Dashboard with a file input when the upload container appears', () => {
+      component.uppyTarget = new ElementRef(host);
+
+      expect(host.querySelector('.uppy-Dashboard')).not.toBeNull();
+      expect(host.querySelector('input[type="file"]')).not.toBeNull();
+    });
+
+    it('removes the Dashboard when the container goes away and mounts it again on the next one', () => {
+      component.uppyTarget = new ElementRef(host);
+      component.uppyTarget = undefined;
+      expect(component.uppy.getPlugin(FileUploadComponent.DASHBOARD_ID)).toBeUndefined();
+
+      const next = document.createElement('div');
+      document.body.appendChild(next);
+      component.uppyTarget = new ElementRef(next);
+
+      expect(next.querySelector('input[type="file"]')).not.toBeNull();
+      next.remove();
+    });
   });
 
   it('should destroy uppy in ngOnDestroy', () => {

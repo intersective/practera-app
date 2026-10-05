@@ -82,8 +82,9 @@ const largeCircleDefaultConfig = {
     NgCircleProgressModule.forRoot(largeCircleDefaultConfig),
   ],
   // @uppy/angular v1.1.0 was compiled for Angular <=20 and is incompatible with Angular 21's
-  // IVY standalone detection. CUSTOM_ELEMENTS_SCHEMA allows <uppy-dashboard> and
-  // <uppy-dashboard-modal> to render as custom elements via Uppy's own JavaScript.
+  // IVY standalone detection, so it is not imported. Uppy registers no custom elements: an
+  // <uppy-dashboard> tag stays empty. Mount the Dashboard plugin on a target element instead
+  // (see FileUploadComponent, UppyUploaderComponent).
   // Remove when @uppy/angular releases Angular 21 support.
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [

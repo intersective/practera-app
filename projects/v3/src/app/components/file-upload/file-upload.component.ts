@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 import { FileInput, Question, SubmitActions, TusFileResponse } from '../types/assessment';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
-import { DashboardOptions } from '@uppy/dashboard';
+import Dashboard, { DashboardOptions } from '@uppy/dashboard';
 
 type FileMetadata = { [key: string]: any };
 type FileBody = { [key: string]: any };
@@ -87,6 +87,14 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   // comment field for reviewer
   @ViewChild('commentEle') commentRef: ElementRef;
 
+  // The upload area only exists while the question has no file. <uppy-dashboard> cannot be used:
+  // @uppy/angular is not imported under Angular 21 (CUSTOM_ELEMENTS_SCHEMA leaves it an empty tag).
+  @ViewChild('uppyTarget') set uppyTarget(ref: ElementRef<HTMLElement> | undefined) {
+    this.mountDashboard(ref?.nativeElement ?? null);
+  }
+  private dashboardTarget: HTMLElement | null = null;
+  static readonly DASHBOARD_ID = 'file-upload:Dashboard';
+
   uploadedFile: TusFileResponse;
   fileTypes = '';
   tusResponse: TusUploadResponse;
@@ -105,6 +113,16 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.uppy.destroy();
+  }
+
+  private mountDashboard(target: HTMLElement | null): void {
+    if (!this.uppy || target === this.dashboardTarget) return;
+    const mounted = this.uppy.getPlugin(FileUploadComponent.DASHBOARD_ID);
+    if (mounted) this.uppy.removePlugin(mounted);
+    this.dashboardTarget = target;
+    if (target) {
+      this.uppy.use(Dashboard, { ...this.uppyProps, id: FileUploadComponent.DASHBOARD_ID, target, inline: true });
+    }
   }
 
   ngOnInit() {
