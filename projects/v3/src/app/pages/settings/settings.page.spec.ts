@@ -7,6 +7,7 @@ import { NotificationsService } from '@v3/services/notifications.service';
 import { SettingsPage } from './settings.page';
 import { ModalController } from '@ionic/angular';
 import { UppyUploaderService } from '../../components/uppy-uploader/uppy-uploader.service';
+import { ApolloService } from '@v3/services/apollo.service';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';
 
 describe('SettingsPage', () => {
@@ -112,6 +113,50 @@ describe('SettingsPage', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('keeps the uploaded avatar visible when a pre-save Settings refresh finishes late', async () => {
+    const values = new Map<string, string>();
+    const storage = new BrowserStorageService({
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => { values.set(key, value); },
+    } as Storage);
+    storageSpy.getUser.and.callFake(() => storage.getUser());
+    storageSpy.setUser.and.callFake(user => storage.setUser(user));
+    storage.setUser({ avatar: 'https://cdn.example.com/old.png', image: 'https://cdn.example.com/old.png' });
+
+    const pending = new Subject<any>();
+    const apollo = jasmine.createSpyObj<ApolloService>('ApolloService', {
+      graphQLFetch: pending,
+      graphQLMutate: of({ data: { updateUserProfile: { success: true } } }),
+    });
+    // Use the real AuthService so its cache write remains part of this race.
+    (component as any).authService = new AuthService(
+      {} as any, {} as any, storageSpy, utilsSpy, routerSpy, {} as any, apollo, {} as any,
+    );
+    uppyUploaderServiceSpy.open.and.resolveTo({
+      onDidDismiss: async () => ({ data: {
+        cdnUrl: 'https://cdn.example.com/new.png', url: 'https://tus.example.com/new',
+        name: 'new.png', extension: 'png', type: 'image/png', size: 10,
+        bucket: 'profile-images', path: '/users/new.png',
+      } }),
+    } as any);
+
+    const refresh = (component as any)._retrieveUserInfo();
+    await component.profileImage();
+    expect(component.profile.avatar).toBe('https://cdn.example.com/new.png');
+
+    pending.next({ data: { user: {
+      id: 1, uuid: 'uuid', name: 'User', firstName: 'First', lastName: 'Last',
+      avatar: 'https://cdn.example.com/old.png', image: 'https://cdn.example.com/old.png',
+      email: 'user@example.com', role: 'participant', contactNumber: '+61', userHash: 'hash',
+    } } });
+    pending.complete();
+    await refresh;
+
+    expect(component.profile.avatar).toBe('https://cdn.example.com/new.png');
+    expect(storage.getUser().avatar).toBe('https://cdn.example.com/new.png');
+    expect(storage.getUser().image).toBe('https://cdn.example.com/new.png');
   });
 
   it('should ignore openLink for unsupported keyboard key', () => {
