@@ -1,6 +1,6 @@
 # Review Page (Mobile)
 
-<!-- module: app-v3/pages/review-mobile / type: page / status: draft -->
+<!-- module: app-v3/pages/review-mobile / type: page / status: draft / feature: deliver.review.reviewer-queue -->
 
 ## Overview
 

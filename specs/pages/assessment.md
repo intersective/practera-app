@@ -1,6 +1,6 @@
 # Assessment Page (Mobile)
 
-<!-- module: app-v3/pages/assessment-mobile / type: page / status: draft -->
+<!-- module: app-v3/pages/assessment-mobile / type: page / status: draft / feature: deliver.submit.shell -->
 
 ## Overview
 

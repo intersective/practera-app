@@ -1,6 +1,6 @@
 # Events Page
 
-<!-- module: app-v3/pages/events / type: page / status: draft -->
+<!-- module: app-v3/pages/events / type: page / status: draft / feature: deliver.events.learner -->
 
 ## Overview
 

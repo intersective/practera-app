@@ -1,6 +1,6 @@
 # Practera Learner App — Architecture Index
 
-<!-- module: app-v3 / type: architecture-index / status: living -->
+<!-- module: app-v3 / type: architecture-index / status: living / feature: deliver.learner.experience-switcher -->
 
 ## Overview
 

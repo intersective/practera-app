@@ -1,6 +1,6 @@
 # Learner skill passport
 
-<!-- module: app/skills/passport / type: page / status: draft -->
+<!-- module: app/skills/passport / type: page / status: draft / feature: deliver.learner.skills-passport -->
 
 ## Overview
 

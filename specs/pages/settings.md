@@ -1,6 +1,6 @@
 # Settings Page
 
-<!-- module: app-v3/pages/settings / type: page / status: draft -->
+<!-- module: app-v3/pages/settings / type: page / status: draft / feature: deliver.learner.settings -->
 
 ## Overview
 

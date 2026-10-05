@@ -1,6 +1,6 @@
 # Timesheet approval
 
-<!-- module: app-v3/pages/timesheet-approve / type: page / status: draft -->
+<!-- module: app-v3/pages/timesheet-approve / type: page / status: draft / feature: deliver.submit.timesheet -->
 
 ## Overview
 

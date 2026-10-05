@@ -1,6 +1,6 @@
 # Check-In Page (QR Attendance)
 
-<!-- module: app-v3/pages/checkin / type: page / status: draft -->
+<!-- module: app-v3/pages/checkin / type: page / status: draft / feature: deliver.events.detail -->
 
 ## Overview
 

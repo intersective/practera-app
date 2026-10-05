@@ -1,6 +1,6 @@
 # Due Dates Page
 
-<!-- module: app-v3/pages/due-dates / type: page / status: draft -->
+<!-- module: app-v3/pages/due-dates / type: page / status: draft / feature: deliver.learner.due-dates -->
 
 ## Overview
 

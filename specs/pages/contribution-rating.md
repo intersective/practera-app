@@ -1,6 +1,6 @@
 # Contribution Rating Page
 
-<!-- module: app-v3/pages/contribution-rating / type: page / status: draft -->
+<!-- module: app-v3/pages/contribution-rating / type: page / status: draft / feature: deliver.events.detail -->
 
 ## Overview
 

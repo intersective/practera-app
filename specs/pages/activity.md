@@ -1,6 +1,6 @@
 # Activity Page (Mobile)
 
-<!-- module: app-v3/pages/activity-mobile / type: page / status: draft -->
+<!-- module: app-v3/pages/activity-mobile / type: page / status: draft / feature: deliver.learner.activity -->
 
 ## Overview
 

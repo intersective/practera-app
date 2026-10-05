@@ -1,6 +1,6 @@
 # Home Page
 
-<!-- module: app-v3/pages/home / type: page / status: draft -->
+<!-- module: app-v3/pages/home / type: page / status: draft / feature: deliver.learner.home -->
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Topic Page (Mobile)
 
-<!-- module: app-v3/pages/topic-mobile / type: page / status: draft -->
+<!-- module: app-v3/pages/topic-mobile / type: page / status: draft / feature: deliver.content.topic -->
 
 ## Overview
 

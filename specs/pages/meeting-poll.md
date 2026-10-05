@@ -1,6 +1,6 @@
 # Meeting Poll Page
 
-<!-- module: app-v3/pages/meeting-poll / type: page / status: draft -->
+<!-- module: app-v3/pages/meeting-poll / type: page / status: draft / feature: deliver.events.detail -->
 
 ## Overview
 

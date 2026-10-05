@@ -1,6 +1,6 @@
 # Auth Flows
 
-<!-- module: app-v3/auth / type: page / status: draft -->
+<!-- module: app-v3/auth / type: page / status: draft / feature: deliver.auth.app-login -->
 
 ## Overview
 

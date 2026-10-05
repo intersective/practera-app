@@ -1,6 +1,6 @@
 # Notifications Page
 
-<!-- module: app-v3/pages/notifications / type: page / status: draft -->
+<!-- module: app-v3/pages/notifications / type: page / status: draft / feature: deliver.notify.learner-feed -->
 
 ## Overview
 

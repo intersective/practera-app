@@ -1,6 +1,6 @@
 # Badges & Certificates Page
 
-<!-- module: app-v3/pages/badges-certificates / type: page / status: draft -->
+<!-- module: app-v3/pages/badges-certificates / type: page / status: draft / feature: deliver.credentials.learner-page -->
 
 ## Overview
 

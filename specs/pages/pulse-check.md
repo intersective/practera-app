@@ -1,6 +1,6 @@
 # Pulse Check
 
-<!-- module: app-v3/pages/pulse-check / type: page / status: draft -->
+<!-- module: app-v3/pages/pulse-check / type: page / status: draft / feature: deliver.pulse.check -->
 
 ## Overview
 
