@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ChatService } from '@v3/services/chat.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { ReviewService } from '@v3/services/review.service';
 import { ActivityService } from '@v3/services/activity.service';

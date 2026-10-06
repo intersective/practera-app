@@ -1,5 +1,5 @@
 import { Component, HostListener, isDevMode, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { IonTabs } from '@ionic/angular';
+import { IonTabs } from '@ionic/angular/lazy';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Review, ReviewService } from '@v3/services/review.service';
 import { BrowserStorageService } from '@v3/services/storage.service';

@@ -1,7 +1,7 @@
 import { takeUntil } from 'rxjs/operators';
 import { Component, HostListener, isDevMode, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { MenuController, ModalController } from '@ionic/angular';
+import { MenuController, ModalController } from '@ionic/angular/lazy';
 import { Review, ReviewService } from '@v3/app/services/review.service';
 import { BrowserStorageService } from '@v3/app/services/storage.service';
 import { AnimationsService } from '@v3/services/animations.service';

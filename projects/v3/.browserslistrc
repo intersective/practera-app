@@ -8,9 +8,9 @@
 # You can see what browsers were selected by your queries by running:
 #   npx browserslist
 
-# Ionic 8 minimum browser requirements
+# Ionic 9 minimum browser requirements
 Chrome >= 89
 Firefox >= 75
 Edge >= 89
-Safari >= 15
-iOS >= 15
+Safari >= 16
+iOS >= 16

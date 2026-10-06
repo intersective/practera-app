@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { Router } from '@angular/router';
 import { of, Subject, throwError } from 'rxjs';
 

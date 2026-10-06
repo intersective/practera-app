@@ -1,6 +1,6 @@
 import { UppyUploaderService, UppyUploadFileType } from './../../../components/uppy-uploader/uppy-uploader.service';
 import { Component } from '@angular/core';
-import { PopoverController } from '@ionic/angular';
+import { PopoverController } from '@ionic/angular/lazy';
 
 import { NotificationsService } from '../../../services/notifications.service';
 

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { ChatService, EditMessageParam, Message } from '@v3/services/chat.service';
 import { QuillModules } from 'ngx-quill';
 

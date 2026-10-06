@@ -15,7 +15,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { ActivityService } from '@v3/services/activity.service';
 import { EmbedVideoService } from '@v3/services/ngx-embed-video.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 
 describe('TopicComponent', () => {
   let component: TopicComponent;

@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, NgZone, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { EventService, Event } from '@v3/services/event.service';

@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { CUSTOM_ELEMENTS_SCHEMA, NgZone, provideZonelessChangeDetection } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { AnimationsService } from '../services/animations.service';

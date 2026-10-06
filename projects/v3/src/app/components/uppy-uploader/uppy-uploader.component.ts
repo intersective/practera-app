@@ -10,7 +10,7 @@ import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter, OnDestroy, ElementRef, ViewChild } from '@angular/core';
 import { Uppy, UppyFile } from '@uppy/core';
 import Dashboard from '@uppy/dashboard';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { BrowserStorageService } from '../../services/storage.service';
 
 type FileMetadata = { [key: string]: any };

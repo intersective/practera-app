@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { ChatService } from '@v3/services/chat.service';
 import { of, throwError } from 'rxjs';
 import { EditMessagePopupComponent } from './edit-message-popup.component';

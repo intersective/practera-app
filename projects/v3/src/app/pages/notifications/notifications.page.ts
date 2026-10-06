@@ -5,7 +5,7 @@ import { NotificationsService, TodoItem } from '@v3/app/services/notifications.s
 import { UtilsService } from '@v3/app/services/utils.service';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeIn } from '@v3/app/animations';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { HomeService, Milestone } from '@v3/app/services/home.service';
 
 import { Subscription } from 'rxjs';

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { IonContent, ModalController, NavParams } from '@ionic/angular';
+import { IonContent, ModalController, NavParams } from '@ionic/angular/lazy';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { UtilsService } from '@v3/services/utils.service';

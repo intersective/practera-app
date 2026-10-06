@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-import { PopoverController } from '@ionic/angular';
+import { PopoverController } from '@ionic/angular/lazy';
 import { of } from 'rxjs';
 
 import { AttachmentPopoverComponent } from './attachment-popover.component';

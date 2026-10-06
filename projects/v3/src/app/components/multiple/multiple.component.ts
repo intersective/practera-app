@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, forwardRef, ViewChild, ElementRef, OnInit, QueryList, OnDestroy, ViewChildren, AfterViewInit } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor, AbstractControl } from '@angular/forms';
-import { IonCheckbox } from '@ionic/angular';
+import { IonCheckbox } from '@ionic/angular/lazy';
 import { UtilsService } from '@v3/app/services/utils.service';
 import { from, fromEvent, merge, Subject, Subscription } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';

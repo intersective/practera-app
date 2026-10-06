@@ -1,5 +1,5 @@
 import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed } from '@angular/core/testing';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { of, throwError } from 'rxjs';
 
 import { SupportPopupComponent } from './support-popup.component';

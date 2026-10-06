@@ -7,7 +7,7 @@ import { environment } from '@v3/environments/environment';
 import { DemoService } from './demo.service';
 import { Experience } from './experience.service';
 import { SupportPopupComponent } from '../components/support-popup/support-popup.component';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 /*
 * @name api
 * @description list of api endpoint involved in this service

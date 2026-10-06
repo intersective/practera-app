@@ -1,5 +1,5 @@
 import { TestBed, fakeAsync, tick, flush } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { ModalService } from './modal.service';
 
 describe('ModalService', () => {

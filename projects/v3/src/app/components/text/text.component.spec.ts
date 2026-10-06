@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync, fakeAsync, tick } from '@angular/core/testing';
 import { TextComponent } from './text.component';
 import { FormControl, FormsModule } from '@angular/forms';
-import { IonicModule, IonTextarea } from '@ionic/angular';
+import { IonicModule, IonTextarea } from '@ionic/angular/lazy';
 import { Subject, of } from 'rxjs';
 import { DebugElement } from '@angular/core';
 import { LanguageDetectionPipe } from '@v3/app/pipes/language.pipe';
@@ -289,8 +289,8 @@ describe('TextComponent', () => {
 
   describe('when testing ngAfterViewInit()', () => {
     it('should set up auto-save subscription when answerRef is available', fakeAsync(() => {
-      // create a mock input event with a proper target value
-      const mockInputEvent = { target: { value: 'test' } };
+      // Match Ionic's typed ionInput event payload.
+      const mockInputEvent = { detail: { value: 'test' } };
 
       component.answerRef = { ionInput: of(mockInputEvent) } as any;
       spyOn(component, 'triggerSave');
@@ -299,6 +299,7 @@ describe('TextComponent', () => {
       tick(900);
 
       expect(component.subcriptions.length).toBeGreaterThan(0);
+      expect(component.triggerSave).toHaveBeenCalledTimes(1);
     }));
 
     it('should not set up subscription when answerRef is not available', () => {

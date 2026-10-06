@@ -7,7 +7,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
 import { environment } from '@v3/environments/environment';
 import { FileInput, TusFileResponse } from '../types/assessment';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 
 class OnChangedValues extends SimpleChange {
   constructor(older, latest) {

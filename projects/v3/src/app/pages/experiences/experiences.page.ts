@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, NgZone, OnDestroy, OnInit } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExperienceService, ProgramObj } from '@v3/services/experience.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { LoadingController } from '@ionic/angular';
+import { LoadingController } from '@ionic/angular/lazy';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { environment } from '@v3/environments/environment';

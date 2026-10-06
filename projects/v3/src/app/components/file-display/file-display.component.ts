@@ -9,7 +9,7 @@ import {
 import { UtilsService } from '@v3/services/utils.service';
 import { FileInput, TusFileResponse } from '../types/assessment';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 
 // backward-compatible file type that includes legacy property names
 interface DisplayableFile extends TusFileResponse {

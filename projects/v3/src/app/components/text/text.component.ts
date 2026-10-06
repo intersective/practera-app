@@ -1,6 +1,6 @@
 import { Component, Input, forwardRef, ViewChild, ElementRef, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { NG_VALUE_ACCESSOR, FormControl, AbstractControl, ControlValueAccessor } from '@angular/forms';
-import { IonTextarea } from '@ionic/angular';
+import { IonTextarea } from '@ionic/angular/lazy';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { Question } from '../types/assessment';
@@ -87,7 +87,7 @@ export class TextComponent implements ControlValueAccessor, OnInit, AfterViewIni
   ngAfterViewInit() {
     if (this.answerRef?.ionInput) {
       this.subcriptions.push(this.answerRef.ionInput.pipe(
-        map(e => (e.target as HTMLInputElement).value),
+        map(e => e.detail.value ?? ''),
         filter(text => text.length >= 0),
         debounceTime(800),
         distinctUntilChanged(),

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { ProjectBriefModalComponent } from './project-brief-modal.component';
 import { ProjectBrief } from '../../models/project-brief.model';
 import { ProjectBriefMarkdownPipe } from '../../pipes/project-brief-markdown.pipe';

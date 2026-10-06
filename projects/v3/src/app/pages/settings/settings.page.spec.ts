@@ -5,7 +5,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { of, Subject, throwError } from 'rxjs';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { SettingsPage } from './settings.page';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { UppyUploaderService } from '../../components/uppy-uploader/uppy-uploader.service';
 import { ApolloService } from '@v3/services/apollo.service';
 import { SupportPopupComponent } from '../../components/support-popup/support-popup.component';

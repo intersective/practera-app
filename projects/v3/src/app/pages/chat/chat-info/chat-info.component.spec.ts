@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ChatInfoComponent } from './chat-info.component';
 import { UtilsService } from '@v3/services/utils.service';
 import { MockRouter } from '@testingv3/mocked.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { ChatService } from '@v3/services/chat.service';
 import { of } from 'rxjs';
