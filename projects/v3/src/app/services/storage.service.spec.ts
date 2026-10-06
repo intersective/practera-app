@@ -25,6 +25,9 @@ describe('StorageService', () => {
       storageContainer.data[key] = value;
     });
 
+    storageSpy.removeItem.and.callFake((key: string) => { delete storageContainer.data[key]; });
+    storageSpy.clear.and.callFake(() => { storageContainer.data = {}; });
+
     TestBed.configureTestingModule({
       providers: [
         BrowserStorageService,
@@ -105,6 +108,52 @@ describe('StorageService', () => {
 
       service.setUser({ name: 'tester' });
       expect(storageSpy.setItem).toHaveBeenCalledWith('me', '{"name":"tester"}');
+    });
+  });
+
+  describe('user cache notifications', () => {
+    it('notifies after persisting a merged user so subscribers see the latest avatar', () => {
+      service.setUser({ name: 'tester', image: 'old-avatar' });
+      const observable = service.userChanges$;
+      const users: User[] = [];
+      const sub = observable.subscribe(() => users.push(service.getUser()));
+      service.setUser({ avatar: 'new-avatar', image: 'new-avatar' });
+      expect(users).toEqual([{ name: 'tester', avatar: 'new-avatar', image: 'new-avatar' }]);
+      sub.unsubscribe();
+    });
+
+    it('notifies for direct user writes and append as well as setUser', () => {
+      const observable = service.userChanges$;
+      const images: string[] = [];
+      const sub = observable.subscribe(() => images.push(service.getUser().image));
+      service.set('me', { image: 'first' });
+      service.append('me', { image: 'second' });
+      expect(images).toEqual(['first', 'second']);
+      sub.unsubscribe();
+    });
+
+    it('notifies after removal and clearing, without publishing changes to unrelated keys', () => {
+      service.setUser({ image: 'old-avatar' });
+      const observable = service.userChanges$;
+      const users: User[] = [];
+      const sub = observable.subscribe(() => users.push(service.getUser()));
+      service.set('config', { logo: 'logo' });
+      service.remove('config');
+      service.remove('me');
+      service.setUser({ image: 'new-avatar' });
+      service.clear();
+      expect(users).toEqual([{}, { image: 'new-avatar' }, {}]);
+      sub.unsubscribe();
+    });
+
+    it('does not notify if persistence fails', () => {
+      const observable = service.userChanges$;
+      const notification = jasmine.createSpy('notification');
+      const sub = observable.subscribe(notification);
+      storageSpy.setItem.and.throwError('storage full');
+      expect(() => service.setUser({ image: 'new-avatar' })).toThrowError('storage full');
+      expect(notification).not.toHaveBeenCalled();
+      sub.unsubscribe();
     });
   });
 

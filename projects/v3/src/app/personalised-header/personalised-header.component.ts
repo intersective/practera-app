@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
@@ -31,17 +31,28 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
     private readonly utilService: UtilsService,
     private readonly router: Router,
     private readonly notificationsService: NotificationsService,
+    private readonly ngZone: NgZone,
+    private readonly cdr: ChangeDetectorRef,
   ) {
   }
 
   ngOnInit() {
+    this.subscriptions.push(this.storageService.userChanges$.subscribe(() => {
+      this.ngZone.run(() => this.cdr.markForCheck());
+    }));
     this.subscriptions.push(this.notificationsService.notification$.subscribe(notifications => {
-      const notiCount = notifications.length;
-      this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
+      this.ngZone.run(() => {
+        const notiCount = notifications.length;
+        this.notiCount = notiCount < 100 ? notiCount : 99; // max show 99 only
+        this.cdr.markForCheck();
+      });
     }));
     this.subscriptions.push(this.utilService.getEvent('support-email-checked').subscribe(event => {
       // hide support button on mobile. because we need space in heder for other things. but we still have the settings page
+      this.ngZone.run(() => {
         this.isShowSupportBtn = event;
+        this.cdr.markForCheck();
+      });
     }));
     this.utilService.checkIsPracteraSupportEmail();
   }
@@ -80,24 +91,36 @@ export class PersonalisedHeaderComponent implements OnInit, OnDestroy {
   }
 
   async settings(): Promise<void | boolean> {
-    this.isLoadingSetting = true;
-    if (this.isMobile) {
-      return this.router.navigate(['v3', 'settings']);
+    if (this.isLoadingSetting) {
+      return;
     }
-
-    const modal = await this.modalController.create({
-      component: SettingsPage,
-      componentProps: {
-        mode: 'modal',
-      },
-      enterAnimation: this.animationService.enterAnimation,
-      leaveAnimation: this.animationService.leaveAnimation,
-      cssClass: 'right-affixed',
+    this.ngZone.run(() => {
+      this.isLoadingSetting = true;
+      this.cdr.markForCheck();
     });
 
-    return modal.present().finally(() => {
-      this.isLoadingSetting = false;
-    });
+    try {
+      if (this.isMobile) {
+        return await this.router.navigate(['v3', 'settings']);
+      }
+
+      const modal = await this.modalController.create({
+        component: SettingsPage,
+        componentProps: {
+          mode: 'modal',
+        },
+        enterAnimation: this.animationService.enterAnimation,
+        leaveAnimation: this.animationService.leaveAnimation,
+        cssClass: 'right-affixed',
+      });
+      return await modal.present();
+    } finally {
+      // Ionic/router promises do not automatically refresh a zoneless Angular view.
+      this.ngZone.run(() => {
+        this.isLoadingSetting = false;
+        this.cdr.markForCheck();
+      });
+    }
   }
 
   async openSupport() {

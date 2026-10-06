@@ -1,4 +1,5 @@
 import { Inject, Injectable, InjectionToken } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ProjectBrief } from '../models/project-brief.model';
 
 interface LastVisited {
@@ -88,6 +89,10 @@ export interface Config {
 })
 
 export class BrowserStorageService {
+  private readonly userChanges = new Subject<void>();
+  // localStorage writes do not emit browser storage events in the current window.
+  readonly userChanges$ = this.userChanges.asObservable();
+
   constructor(@Inject(BROWSER_STORAGE) public storage: Storage) { }
 
   get(key: string) {
@@ -115,7 +120,11 @@ export class BrowserStorageService {
    * @return  {any}
    */
   set(key: string, value: any) {
-    return this.storage.setItem(key, JSON.stringify(value));
+    const result = this.storage.setItem(key, JSON.stringify(value));
+    if (key === 'me') {
+      this.userChanges.next();
+    }
+    return result;
   }
 
   append(key: string, value: any) {
@@ -128,10 +137,14 @@ export class BrowserStorageService {
 
   remove(key: string) {
     this.storage.removeItem(key);
+    if (key === 'me') {
+      this.userChanges.next();
+    }
   }
 
   clear() {
     this.storage.clear();
+    this.userChanges.next();
   }
 
   getUser(): User {
