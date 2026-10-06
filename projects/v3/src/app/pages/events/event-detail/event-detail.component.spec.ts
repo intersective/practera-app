@@ -9,7 +9,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { TestUtils } from '@testingv3/utils';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { BrowserStorageService } from '@v3/services/storage.service';
 
 class Page {

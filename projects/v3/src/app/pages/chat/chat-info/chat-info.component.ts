@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { ChatService, ChatChannel, ChannelMembers } from '@v3/services/chat.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 
 @Component({
   standalone: false,

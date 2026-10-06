@@ -1,7 +1,7 @@
 import { firstValueFrom } from 'rxjs';
 import { Component, Inject, Input, OnInit, forwardRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular/lazy';
 import { ReviewRatingService, ReviewRating } from '@v3/services/review-rating.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';

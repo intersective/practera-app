@@ -8,7 +8,7 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import { ModalController, PopoverController, AngularDelegate } from '@ionic/angular';
+import { ModalController, PopoverController, AngularDelegate } from '@ionic/angular/lazy';
 import { Apollo } from 'apollo-angular';
 
 declare const require: {

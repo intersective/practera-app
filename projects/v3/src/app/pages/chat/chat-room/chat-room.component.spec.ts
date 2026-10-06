@@ -12,7 +12,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { ModalService } from '@v3/services/modal.service';
 import { MockRouter } from '@testingv3/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { IonContent, ModalController, PopoverController } from '@ionic/angular';
+import { IonContent, ModalController, PopoverController } from '@ionic/angular/lazy';
 import { TestUtils } from '@testingv3/utils';
 import { mockMembers } from '@testingv3/fixtures';
 

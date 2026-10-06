@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Subject } from 'rxjs';
 import { UppyUploaderService } from '../uppy-uploader/uppy-uploader.service';

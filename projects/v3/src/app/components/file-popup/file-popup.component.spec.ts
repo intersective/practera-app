@@ -1,5 +1,5 @@
 import { DomSanitizer } from '@angular/platform-browser';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { FilePopupComponent } from './file-popup.component';
 
 describe('FilePopupComponent', () => {

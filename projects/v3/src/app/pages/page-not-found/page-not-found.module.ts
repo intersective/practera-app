@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 
 import { ComponentsModule } from '@v3/app/components/components.module';
 import { PageNotFoundPage } from './page-not-found.page';

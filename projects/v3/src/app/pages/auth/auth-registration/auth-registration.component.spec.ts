@@ -8,7 +8,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { ExperienceService } from '@v3/services/experience.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { ModalController, IonicModule } from '@ionic/angular';
+import { ModalController, IonicModule } from '@ionic/angular/lazy';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';

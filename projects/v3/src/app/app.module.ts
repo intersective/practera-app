@@ -2,7 +2,7 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@a
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RequestInterceptor } from '@v3/services/request.interceptor';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { environment } from '@v3/environments/environment';
 import { RequestModule } from 'request';
 

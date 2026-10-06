@@ -58,7 +58,7 @@
     "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
-    "@ionic/angular": "^8.0.0",
+    "@ionic/angular": "9.0.5",
     "@ionic/angular-toolkit": "^12.3.0",
     "@types/jasmine": "~4.3.0",
     "@types/node": "^22.0.0",

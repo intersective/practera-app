@@ -2,7 +2,7 @@ import { NotificationsService } from './../../../services/notifications.service'
 import { DOCUMENT } from '@angular/common';
 import { ChangeDetectorRef, Component, Input, ViewChild, NgZone, ElementRef, Output, EventEmitter, OnInit, Inject, OnDestroy, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IonContent, ModalController, PopoverController } from '@ionic/angular';
+import { IonContent, ModalController, PopoverController } from '@ionic/angular/lazy';
 
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';

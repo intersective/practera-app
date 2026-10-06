@@ -8,7 +8,7 @@ import {
   FormControl,
   FormGroup
 } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { AuthService } from '@v3/services/auth.service';

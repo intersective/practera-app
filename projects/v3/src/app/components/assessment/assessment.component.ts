@@ -21,7 +21,7 @@ import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { ProjectBriefModalComponent } from '../project-brief-modal/project-brief-modal.component';
 import { ProjectBrief } from '../../models/project-brief.model';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per paginated view (controls pagination granularity)

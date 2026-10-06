@@ -2,7 +2,7 @@ import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, waitForAsync } f
 import { Router, ActivatedRoute } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule, LoadingController } from '@ionic/angular';
+import { IonicModule, LoadingController } from '@ionic/angular/lazy';
 import { ExperienceService } from '@v3/app/services/experience.service';
 import { NotificationsService } from '@v3/app/services/notifications.service';
 import { UnlockIndicatorService } from '@v3/app/services/unlock-indicator.service';

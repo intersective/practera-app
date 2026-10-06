@@ -12,7 +12,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
 import { Task } from '@v3/app/services/activity.service';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 import { buildTopicAttentionMetrics, TopicAttentionMetrics } from '@v3/app/models/topic-attention.model';
 import { BrowserStorageService } from '@v3/services/storage.service';

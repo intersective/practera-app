@@ -1,6 +1,6 @@
 import { TestBed, waitForAsync, ComponentFixture } from '@angular/core/testing';
 import { ChatPreviewComponent } from './chat-preview.component';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';

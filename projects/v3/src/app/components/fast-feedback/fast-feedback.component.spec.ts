@@ -5,7 +5,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModu
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { NotificationsService } from '@v3/services/notifications.service';
-import { ModalController, NavParams } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular/lazy';
 import { FastFeedbackComponent } from './fast-feedback.component';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { TestUtils } from '@testingv3/utils';

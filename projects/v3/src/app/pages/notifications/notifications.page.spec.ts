@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';

@@ -4,7 +4,7 @@ import { ActivityService, Task } from '@v3/services/activity.service';
 import { AssessmentService, Assessment, Submission, AssessmentReview } from '@v3/services/assessment.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { ActivatedRouteStub } from '@testingv3/activated-route-stub';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';

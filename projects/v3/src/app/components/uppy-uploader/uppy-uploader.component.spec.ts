@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Uppy } from '@uppy/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { NotificationsService } from '../../services/notifications.service';
 import { BrowserStorageService } from '../../services/storage.service';
 import { UppyUploaderComponent } from './uppy-uploader.component';
