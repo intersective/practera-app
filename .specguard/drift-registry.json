@@ -1,0 +1,1095 @@
+{
+  "app-v3/ai/ai-compat": {
+    "specKey": "app-v3/ai/ai-compat",
+    "specHash": "9c0a93f9160af44287bd9b5e108b7100b326ac30ebfb878276ec2887030904ea",
+    "files": {}
+  },
+  "app-v3/ai/assessment-feedback": {
+    "specKey": "app-v3/ai/assessment-feedback",
+    "specHash": "9ce963446304686e5cb7d4638eec377e0d4c054c7c097775d41ead8697d03dc3",
+    "files": {}
+  },
+  "app-v3/ai/chat-agent": {
+    "specKey": "app-v3/ai/chat-agent",
+    "specHash": "befa7fd729c58c8c27e50017fc2c6b735ad4b0d5dee4f078a002ec1e9a2e2bef",
+    "files": {}
+  },
+  "app-v3/ai/context-store": {
+    "specKey": "app-v3/ai/context-store",
+    "specHash": "491101bbf7acb45d941993429662b26b9efc139e9f19991b132cfaff0288a16a",
+    "files": {}
+  },
+  "app-v3/ai/expert-loader": {
+    "specKey": "app-v3/ai/expert-loader",
+    "specHash": "0c6a99da0b73c88cd594451699c31bfe3417971f6bb75d5bf6837530f2446b3d",
+    "files": {}
+  },
+  "app-v3/ai/feedback": {
+    "specKey": "app-v3/ai/feedback",
+    "specHash": "9da7c53ff2ff0f3c18af7cb4ec83799f5f0fa4550bff0578a213f93d06d23cbb",
+    "files": {}
+  },
+  "app-v3/ai/handler": {
+    "specKey": "app-v3/ai/handler",
+    "specHash": "9b1393101517867acb51a65a2a041aa21a6d627361d90b52a940f05366b83b0e",
+    "files": {}
+  },
+  "app-v3/ai/index": {
+    "specKey": "app-v3/ai/index",
+    "specHash": "f03690d217d42a297f14c0570c9822ba469f32ab68001b0692d59bde03e5da90",
+    "files": {}
+  },
+  "app-v3/ai/registry": {
+    "specKey": "app-v3/ai/registry",
+    "specHash": "b4f44a925e0e672f5137686eb078dd662a00a6e58323901d1c33c4ffebc66cde",
+    "files": {}
+  },
+  "app-v3/ai/translator": {
+    "specKey": "app-v3/ai/translator",
+    "specHash": "6246905ae3626146a077824b87bfe3cc17b44705d746e645c22d49e71518584e",
+    "files": {}
+  },
+  "app-v3/app-routing.module": {
+    "specKey": "app-v3/app-routing.module",
+    "specHash": "cbcd9b39628972857a633c950b6b94c58bd2509e11d9da3d0f31760b807dfb61",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/app-routing.module.ts": {
+        "hash": "ff5081767052caca57842ae9a4831cd83df9ab5e8bf9eb52b4c2e8c5a9fb78c2",
+        "lastChecked": "2026-10-06T02:58:26.972Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/app.component": {
+    "specKey": "app-v3/app.component",
+    "specHash": "89858826ef7d5299da9fbdefbca899118950797ded8dee2d982110188613b84a",
+    "files": {}
+  },
+  "app-v3/certificates/certificate": {
+    "specKey": "app-v3/certificates/certificate",
+    "specHash": "ff23bf814fca8e679a92bd558afd90676989816552ceab518eb1c947c1bb49d4",
+    "files": {}
+  },
+  "app-v3/certificates/fonts": {
+    "specKey": "app-v3/certificates/fonts",
+    "specHash": "885336c52314af6c2363ef44605b13c47babe51b12800cdba787f327e8614308",
+    "files": {}
+  },
+  "app-v3/certificates/handler": {
+    "specKey": "app-v3/certificates/handler",
+    "specHash": "979fc085a402765d474809fbbb7d7bff30c6e9206aff9a26030751ebdf84fb64",
+    "files": {}
+  },
+  "app-v3/certificates/queries": {
+    "specKey": "app-v3/certificates/queries",
+    "specHash": "d4c1a1cf91316ab2f991653a1d2b920852b86fcd7a03b1deae1897cd49c07761",
+    "files": {}
+  },
+  "app-v3/certificates/s3": {
+    "specKey": "app-v3/certificates/s3",
+    "specHash": "2efa2b9e7be570715933275aef40aec5e6b58850df28e74ee655baf10084088f",
+    "files": {}
+  },
+  "app-v3/certificates/types": {
+    "specKey": "app-v3/certificates/types",
+    "specHash": "578978dc3700c50d682921e80888f7c668ec984c8f54c624890090e216c6e49c",
+    "files": {}
+  },
+  "app-v3/comms/advisor-digest-cron": {
+    "specKey": "app-v3/comms/advisor-digest-cron",
+    "specHash": "d4479a67165f36d04e90882bf182c333b0210b587759eb6936a6ac128958d33a",
+    "files": {}
+  },
+  "app-v3/comms/advisor-digest": {
+    "specKey": "app-v3/comms/advisor-digest",
+    "specHash": "a293b7363a76c91cdd5dc0a7582aee28e21b9c1f038f33ce2cceb9892fb88475",
+    "files": {}
+  },
+  "app-v3/comms/assessment-reminders": {
+    "specKey": "app-v3/comms/assessment-reminders",
+    "specHash": "3c241da99e62b4bbc5ae5b18ea2aa8f9402da72abc054cb0d27bfeb50c732b18",
+    "files": {}
+  },
+  "app-v3/comms/event-bus": {
+    "specKey": "app-v3/comms/event-bus",
+    "specHash": "28598949a2837cf09ac07ca4fb3af7d0f5eafb04b1537b10932d3d1757475f81",
+    "files": {}
+  },
+  "app-v3/comms/handler": {
+    "specKey": "app-v3/comms/handler",
+    "specHash": "311c958734f299efa4b07983da72b566f41fad074318658e222860b632e94cd7",
+    "files": {}
+  },
+  "app-v3/comms/handlers/advisor-digest": {
+    "specKey": "app-v3/comms/handlers/advisor-digest",
+    "specHash": "25f533fd3c28dec4e35415c49585d647b11370d4779deeaa22865190bd8bc247",
+    "files": {}
+  },
+  "app-v3/comms/notification": {
+    "specKey": "app-v3/comms/notification",
+    "specHash": "2c4a5e587c8be2a14b4be76eda34c5458fedc4c71b7bb0c531deb6e84dbb62a0",
+    "files": {}
+  },
+  "app-v3/comms/pusher": {
+    "specKey": "app-v3/comms/pusher",
+    "specHash": "340d50231a02b5be1165e994033f62f955f9ed205ba7cf5e5d54579fd16c75fd",
+    "files": {}
+  },
+  "app-v3/comms/review-rating": {
+    "specKey": "app-v3/comms/review-rating",
+    "specHash": "d97c25aa4dcd68d553b71f70936cd6996ba9b1d9a479d6592f3b64e2b57a00fd",
+    "files": {}
+  },
+  "app-v3/comms/scheduled-comms": {
+    "specKey": "app-v3/comms/scheduled-comms",
+    "specHash": "29bb12c8483bb301706092156935538282aa2446c0736fc97fa5b428a0cd5aa2",
+    "files": {}
+  },
+  "app-v3/comms/soketi": {
+    "specKey": "app-v3/comms/soketi",
+    "specHash": "86ef902f766718571b26e6ac8430f5703f60174cf387dee08b60bd2883ef6844",
+    "files": {}
+  },
+  "app-v3/comms/todo": {
+    "specKey": "app-v3/comms/todo",
+    "specHash": "f43b25db45bae1e6840bad39c2c7718cb92000b5e7404771e26261ea9350bf21",
+    "files": {}
+  },
+  "app-v3/comms/unread-reminders": {
+    "specKey": "app-v3/comms/unread-reminders",
+    "specHash": "8622e65fbbc713bf76d4a1d3427b4e3d7a3a8f31ddf9de70c798cf174e415ba2",
+    "files": {}
+  },
+  "app-v3/components/achievement-pop-up/achievement-pop-up.component": {
+    "specKey": "app-v3/components/achievement-pop-up/achievement-pop-up.component",
+    "specHash": "eecddceb6bc344c7e4640f037499c20470ddca93a1bda0e5d136c19263ea524c",
+    "files": {}
+  },
+  "app-v3/components/activity/activity.component": {
+    "specKey": "app-v3/components/activity/activity.component",
+    "specHash": "61ae917460896206a6079f37413b9b7a9bdb98f9716c502f9e8bbe35fe76594e",
+    "files": {}
+  },
+  "app-v3/components/activity-complete-pop-up/activity-complete-pop-up.component": {
+    "specKey": "app-v3/components/activity-complete-pop-up/activity-complete-pop-up.component",
+    "specHash": "ae7e9e5971328b1a2ed560bb787637ed5a883b1ef39720064d906b5ac5774e62",
+    "files": {}
+  },
+  "app-v3/components/assessment/assessment.component": {
+    "specKey": "app-v3/components/assessment/assessment.component",
+    "specHash": "f3cf46ed44233bbf7b2c2e49801d9cc9ef9fdd597f446b278afe35094c8a7908",
+    "files": {}
+  },
+  "app-v3/components/badge-detail-modal/badge-detail-modal.component": {
+    "specKey": "app-v3/components/badge-detail-modal/badge-detail-modal.component",
+    "specHash": "5a0112deae997b8a3d17f7c2a91f7f30e0b71c44722eb762bde2e5b8a9b11159",
+    "files": {}
+  },
+  "app-v3/components/bottom-action-bar/bottom-action-bar.component": {
+    "specKey": "app-v3/components/bottom-action-bar/bottom-action-bar.component",
+    "specHash": "f52a97536003d8d9a7fbeddb21bd350e16bf128ed9d70f823b556751eda0aa95",
+    "files": {}
+  },
+  "app-v3/components/circle-progress/circle-progress.component": {
+    "specKey": "app-v3/components/circle-progress/circle-progress.component",
+    "specHash": "708ebcd2d415d522b7a9e79e3a0640ab8f72820ca2ffe4021ba19f0f63a52ab7",
+    "files": {}
+  },
+  "app-v3/components/contact-number-form/contact-number-form.component": {
+    "specKey": "app-v3/components/contact-number-form/contact-number-form.component",
+    "specHash": "276ea3b17ee7446e167aa8c625022445303e0314eed25180ff60463dd4cf5a46",
+    "files": {}
+  },
+  "app-v3/components/description/description.component": {
+    "specKey": "app-v3/components/description/description.component",
+    "specHash": "c18da576b238206c05a64dcbfbce571674ee64d7c386027920ed9bbca058191d",
+    "files": {}
+  },
+  "app-v3/components/fast-feedback/fast-feedback.component": {
+    "specKey": "app-v3/components/fast-feedback/fast-feedback.component",
+    "specHash": "c207fe7dcc2c179e1a8639ecde0ebee05cee4274b7fa2a9b8a629d2ac598a29f",
+    "files": {}
+  },
+  "app-v3/components/file-display/file-display.component": {
+    "specKey": "app-v3/components/file-display/file-display.component",
+    "specHash": "418bb10020426b539d40790e9d749f6b3d0b3379d96933f212c132b28167427a",
+    "files": {}
+  },
+  "app-v3/components/file-popup/file-popup.component": {
+    "specKey": "app-v3/components/file-popup/file-popup.component",
+    "specHash": "95784993beffc397da757c0b8361a9cab0e555766a1e549035f3ce953bd74105",
+    "files": {}
+  },
+  "app-v3/components/file-preview/file-preview.component": {
+    "specKey": "app-v3/components/file-preview/file-preview.component",
+    "specHash": "5b63c40882813daea196f0ce06636ff984df6231afc8297dfbfb22eb65291287",
+    "files": {}
+  },
+  "app-v3/components/file-upload/file-upload.component": {
+    "specKey": "app-v3/components/file-upload/file-upload.component",
+    "specHash": "5cf79004dde9da49930401fe94bc2634702eba89606d95082510d26babf6a034",
+    "files": {}
+  },
+  "app-v3/components/h5p-player/h5p-player.component": {
+    "specKey": "app-v3/components/h5p-player/h5p-player.component",
+    "specHash": "25b4a39533860a2c3d2c474ea09b888c9d882d2064b55dd32644078e862b9109",
+    "files": {}
+  },
+  "app-v3/components/img/img.component": {
+    "specKey": "app-v3/components/img/img.component",
+    "specHash": "1227a6580f4e926509612538ea5429f2f3da2fdc63b736787e799282ceb3ba1c",
+    "files": {}
+  },
+  "app-v3/components/list-item/list-item.component": {
+    "specKey": "app-v3/components/list-item/list-item.component",
+    "specHash": "f9ea7b853db02e617dd71b0cd3175cd39c6f555716c693d7cadd4fdb136d0f07",
+    "files": {}
+  },
+  "app-v3/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component": {
+    "specKey": "app-v3/components/lock-team-assessment-pop-up/lock-team-assessment-pop-up.component",
+    "specHash": "e54ee44d3e4a3cabb0e3931c9cd68c01f15b5fb9c8f4f3783ac12012143c743b",
+    "files": {}
+  },
+  "app-v3/components/multi-team-member-selector/multi-team-member-selector.component": {
+    "specKey": "app-v3/components/multi-team-member-selector/multi-team-member-selector.component",
+    "specHash": "0b6aa1568eb11aae91489bc348a1e8bcc3a8215be595b4b025e72acd06fbdd1d",
+    "files": {}
+  },
+  "app-v3/components/multiple/multiple.component": {
+    "specKey": "app-v3/components/multiple/multiple.component",
+    "specHash": "ac7bdef53337db12ac193fa08eaa6ee626e218cf51a28be265fb690edc19c690",
+    "files": {}
+  },
+  "app-v3/components/oneof/oneof.component": {
+    "specKey": "app-v3/components/oneof/oneof.component",
+    "specHash": "0f7883266791cde5a1b25cebaae928837e3a38438bcdbd393bc6e06eb87fd2c1",
+    "files": {}
+  },
+  "app-v3/components/pop-up/pop-up.component": {
+    "specKey": "app-v3/components/pop-up/pop-up.component",
+    "specHash": "8ff2ca39f57ae960ae4e662371cb504fa014494253c13d38f9a3a7b871a56417",
+    "files": {}
+  },
+  "app-v3/components/project-brief-modal/project-brief-modal.component": {
+    "specKey": "app-v3/components/project-brief-modal/project-brief-modal.component",
+    "specHash": "81e99ef6d082de87fdca35c2e92c588d85ff7afa8af2d2a8394fb2c6623d5210",
+    "files": {}
+  },
+  "app-v3/components/review-list/review-list.component": {
+    "specKey": "app-v3/components/review-list/review-list.component",
+    "specHash": "c6427b22aced75d7e08fe885209a0bb6cac6eb770a621d3a1957041a6b934478",
+    "files": {}
+  },
+  "app-v3/components/review-rating/review-rating.component": {
+    "specKey": "app-v3/components/review-rating/review-rating.component",
+    "specHash": "3187115db9c3729b2fae86d08bee05121fc20fca443969356f80d110b97e9bb4",
+    "files": {}
+  },
+  "app-v3/components/slider/slider.component": {
+    "specKey": "app-v3/components/slider/slider.component",
+    "specHash": "185ac01612add19c495fd45e36a9f0729e38eb192fedfc8bef386217bd984a73",
+    "files": {}
+  },
+  "app-v3/components/support-popup/support-popup.component": {
+    "specKey": "app-v3/components/support-popup/support-popup.component",
+    "specHash": "99bf47cdca1bae36283fe0b47eb7a97e2550ad3a3b8a2fc2ffd05e33f91eeee3",
+    "files": {}
+  },
+  "app-v3/components/team-member-selector/team-member-selector.component": {
+    "specKey": "app-v3/components/team-member-selector/team-member-selector.component",
+    "specHash": "202e6c03273e8a87b11982d7bbf4081f7cfe75dd38464e7b63f61f80cd5376e2",
+    "files": {}
+  },
+  "app-v3/components/team-roster/team-roster.component": {
+    "specKey": "app-v3/components/team-roster/team-roster.component",
+    "specHash": "c9b974e072a2061b28b078d3b53d939a3e381c74be82c7d6938e0636ab1483a9",
+    "files": {}
+  },
+  "app-v3/components/text/text.component": {
+    "specKey": "app-v3/components/text/text.component",
+    "specHash": "b4ec67556e04593be734321e28ceff1c91bca010d965cb6c81766463b22ba641",
+    "files": {}
+  },
+  "app-v3/components/todo-card/todo-card.component": {
+    "specKey": "app-v3/components/todo-card/todo-card.component",
+    "specHash": "1a64a46437f5d8b0395ec5f9584685711aec022ca9f35c2482b4d248ed97deb1",
+    "files": {}
+  },
+  "app-v3/components/topic/topic.component": {
+    "specKey": "app-v3/components/topic/topic.component",
+    "specHash": "b15705f82810fd9c5f717e2d1b222e5aa8f98d0e18b44a25bf8148d05ee8593a",
+    "files": {}
+  },
+  "app-v3/components/traffic-light/traffic-light.component": {
+    "specKey": "app-v3/components/traffic-light/traffic-light.component",
+    "specHash": "5777b47db49b4cebfea7847d01633b9710e5f7d84a65dff0cf011eb09a6eedae",
+    "files": {}
+  },
+  "app-v3/components/traffic-light-group/traffic-light-group.component": {
+    "specKey": "app-v3/components/traffic-light-group/traffic-light-group.component",
+    "specHash": "f288d7770b3027d44a878b46abdf88f70d099caad531c51bd64f01bcc7724cd7",
+    "files": {}
+  },
+  "app-v3/components/uppy-uploader/uppy-uploader.service": {
+    "specKey": "app-v3/components/uppy-uploader/uppy-uploader.service",
+    "specHash": "71b9a6ebcd6a44d47b5a6fc243d3cbf7608f4117ad2cf727282d67b8fd447d54",
+    "files": {}
+  },
+  "app-v3/components/video-conversion/video-conversion.component": {
+    "specKey": "app-v3/components/video-conversion/video-conversion.component",
+    "specHash": "4389336636857c7cac025979df77af047911c99919923a939e320e50d8e961c7",
+    "files": {}
+  },
+  "app-v3/directives/autoresize/autoresize.directive": {
+    "specKey": "app-v3/directives/autoresize/autoresize.directive",
+    "specHash": "ed8969822cfc3666073d8956b5bdf19e76b735ded42ca5a44d55f6338f18d4c4",
+    "files": {}
+  },
+  "app-v3/directives/background-image/background-image.directive": {
+    "specKey": "app-v3/directives/background-image/background-image.directive",
+    "specHash": "c34ee874cbbb32fbc00e472a4bb6d5ce89ab5d76b4de84e9d2bba88bc8f7a734",
+    "files": {}
+  },
+  "app-v3/directives/drag-and-drop/drag-and-drop.directive": {
+    "specKey": "app-v3/directives/drag-and-drop/drag-and-drop.directive",
+    "specHash": "211701353589eaf27d170aa170b295fe38a6115d34cdfc176053c3f78962a8c9",
+    "files": {}
+  },
+  "app-v3/directives/fallback-image/fallback-image.directive": {
+    "specKey": "app-v3/directives/fallback-image/fallback-image.directive",
+    "specHash": "680e07e70b664f2198096e7184fd2a9d3b4c3b3d5e7244166044549bd27b2d10",
+    "files": {}
+  },
+  "app-v3/directives/toggle-label/toggle-label.directive": {
+    "specKey": "app-v3/directives/toggle-label/toggle-label.directive",
+    "specHash": "e5cfbcae97f61371bd6de087cfc1f6d69925ef4c63eb3b9080b86c0afbb17bf4",
+    "files": {}
+  },
+  "app-v3/email/account-verification": {
+    "specKey": "app-v3/email/account-verification",
+    "specHash": "18e30447d40b478794d39dcab1461888f78c8af45c567de4e3c555b0bb407447",
+    "files": {}
+  },
+  "app-v3/email/achievement-awarded": {
+    "specKey": "app-v3/email/achievement-awarded",
+    "specHash": "192ca10fdc5962d34ef84d5d941c66ebe815062471a2ab1a0b5de901a6e20d3b",
+    "files": {}
+  },
+  "app-v3/email/admin-contact": {
+    "specKey": "app-v3/email/admin-contact",
+    "specHash": "884af11c19e439663d548be0d7681d664c783d5774af095f487152e39cf76ab1",
+    "files": {}
+  },
+  "app-v3/email/admin-custom-branding": {
+    "specKey": "app-v3/email/admin-custom-branding",
+    "specHash": "a106f18b8f2d985e9371a8f6e83c48436a4d5c559a4acab9945d0e928d2474ad",
+    "files": {}
+  },
+  "app-v3/email/admin-new-customer": {
+    "specKey": "app-v3/email/admin-new-customer",
+    "specHash": "8c128f57f83c8b9826d432029b46caf4f6b824772de18f08ff59c1ab826f7254",
+    "files": {}
+  },
+  "app-v3/email/admin-share": {
+    "specKey": "app-v3/email/admin-share",
+    "specHash": "85e25c62cf452dbfa1da323b9c4d25d1a49ad04638de1fed894113cc665a1d83",
+    "files": {}
+  },
+  "app-v3/email/admin-support-request": {
+    "specKey": "app-v3/email/admin-support-request",
+    "specHash": "466de9453f215b6b912c2393acc2c9a616dd687cc8fb1010f31a53179b450320",
+    "files": {}
+  },
+  "app-v3/email/advisor-digest": {
+    "specKey": "app-v3/email/advisor-digest",
+    "specHash": "436f5f0bc9acea45e1116a12b61097b7ee09f6a873adb25328101d7fa4105447",
+    "files": {}
+  },
+  "app-v3/email/assessment-reminder-in-progress": {
+    "specKey": "app-v3/email/assessment-reminder-in-progress",
+    "specHash": "7bc2e9863de1d447ac0eb16ae6fe0c8c163c3a4818d4f33465944811c81af3fa",
+    "files": {}
+  },
+  "app-v3/email/assessment-reminder-not-started": {
+    "specKey": "app-v3/email/assessment-reminder-not-started",
+    "specHash": "b4fa851e964490683f2dee676ffdddd62beaa1a6b62909831f6f98a9b08f5934",
+    "files": {}
+  },
+  "app-v3/email/assessment-submitted": {
+    "specKey": "app-v3/email/assessment-submitted",
+    "specHash": "8698e2a098910e9bd87b9a1f1c1411e17abc8564d7981ae881f1f88e20c385e0",
+    "files": {}
+  },
+  "app-v3/email/book-session": {
+    "specKey": "app-v3/email/book-session",
+    "specHash": "0a8e89c4b1c5b6d6840d3fb98098ede058330b2f6432061fdd720efce16a22a1",
+    "files": {}
+  },
+  "app-v3/email/branding": {
+    "specKey": "app-v3/email/branding",
+    "specHash": "190709dd99723a3120cfe4e365c4b1d58ba2e627e281f0c4daada05565c60994",
+    "files": {}
+  },
+  "app-v3/email/bulk-enrolment-completed": {
+    "specKey": "app-v3/email/bulk-enrolment-completed",
+    "specHash": "2912f6189931243b76dac584f0d1311b070a7f959a417f178e517fa71a0d37f1",
+    "files": {}
+  },
+  "app-v3/email/bulk-enrolment-started": {
+    "specKey": "app-v3/email/bulk-enrolment-started",
+    "specHash": "a9229d9e9d1db666dd27bc80db69944a3dda355cc970d712257e5cdbbe341cad",
+    "files": {}
+  },
+  "app-v3/email/collab-view": {
+    "specKey": "app-v3/email/collab-view",
+    "specHash": "28dca78a96ac37633c625b0f3f548e9d4488a9313d83a2b4b1b3e432136d3490",
+    "files": {}
+  },
+  "app-v3/email/compromised-password-detailed": {
+    "specKey": "app-v3/email/compromised-password-detailed",
+    "specHash": "455a9ff3952a73886456c9bbd7727b9da98b2d546752dfcf2dbde23834ef35e2",
+    "files": {}
+  },
+  "app-v3/email/compromised-password": {
+    "specKey": "app-v3/email/compromised-password",
+    "specHash": "6fa7b165236f009502da126e90bee9f433d54f9c0584225905dc3d8248ea3ab7",
+    "files": {}
+  },
+  "app-v3/email/email-change-verification": {
+    "specKey": "app-v3/email/email-change-verification",
+    "specHash": "0ef36c89a94109b39f795288a1c4e93c0aa67245f769cb1d63a8147270c171de",
+    "files": {}
+  },
+  "app-v3/email/email-history": {
+    "specKey": "app-v3/email/email-history",
+    "specHash": "1e773d08941801432e23764b5866c5309736934eabd94cf2e7a8078d8e223148",
+    "files": {}
+  },
+  "app-v3/email/email-request": {
+    "specKey": "app-v3/email/email-request",
+    "specHash": "be477d7c791716d4b3ac322a8457133f63c7163ffd41e9e63612f8e81630fc8b",
+    "files": {}
+  },
+  "app-v3/email/enrolment-reminder": {
+    "specKey": "app-v3/email/enrolment-reminder",
+    "specHash": "cdf1dd427605c83254ac89874650ffab4d521cf98ecf0ffe12a7175ad49c1ac0",
+    "files": {}
+  },
+  "app-v3/email/event-delete": {
+    "specKey": "app-v3/email/event-delete",
+    "specHash": "bd7cc9fb1ad85026aa92f99c20ff8e9cbd0d133632a1b9dbb5f555dfe36a806f",
+    "files": {}
+  },
+  "app-v3/email/event-invite": {
+    "specKey": "app-v3/email/event-invite",
+    "specHash": "d569f960320de74eb6309785eced2e5cad318c3fe01295c31eb20654bbeaed70",
+    "files": {}
+  },
+  "app-v3/email/event-reminder": {
+    "specKey": "app-v3/email/event-reminder",
+    "specHash": "1e12b61f60388d9e7cad844148bad5f91889a02fdae227ac3a1fef56adabd0ee",
+    "files": {}
+  },
+  "app-v3/email/event-update": {
+    "specKey": "app-v3/email/event-update",
+    "specHash": "c8cd1d0279395504c5c22905e1bc8a6869318a118de858f2b7f6735201dfd020",
+    "files": {}
+  },
+  "app-v3/email/event-withdraw": {
+    "specKey": "app-v3/email/event-withdraw",
+    "specHash": "c7e545ab66a0e40406f49e057790942b05464a12e14e34c386d93dd01764d645",
+    "files": {}
+  },
+  "app-v3/email/feedback-received": {
+    "specKey": "app-v3/email/feedback-received",
+    "specHash": "6cd3debcd709db29eb02f29621cffb4e2c11c72b74e1c5f42eb7f31e64d5d0f2",
+    "files": {}
+  },
+  "app-v3/email/forgot-password-no-link": {
+    "specKey": "app-v3/email/forgot-password-no-link",
+    "specHash": "a46695393b169332e8fa1f0f49fb03f26d603011cb7c327603388a869a61343a",
+    "files": {}
+  },
+  "app-v3/email/forgot-password": {
+    "specKey": "app-v3/email/forgot-password",
+    "specHash": "a4c74e59af23be1e758d1a8e50ea3c50671b31123436e02bfd4ca35568816042",
+    "files": {}
+  },
+  "app-v3/email/handler": {
+    "specKey": "app-v3/email/handler",
+    "specHash": "5bda766a285b1fac73a108a5c3f9f0db09020bed85e10bc50396fdc0bb41b430",
+    "files": {}
+  },
+  "app-v3/email/history": {
+    "specKey": "app-v3/email/history",
+    "specHash": "9f5791c56cdc63c4e1d5c99302841fd38852c2b53038369c66f543f348289c35",
+    "files": {}
+  },
+  "app-v3/email/index": {
+    "specKey": "app-v3/email/index",
+    "specHash": "11468575e10f8f77cbfee31dc060adc715c487b8a3decea835c50aa121722a21",
+    "files": {}
+  },
+  "app-v3/email/invite-registered-v3": {
+    "specKey": "app-v3/email/invite-registered-v3",
+    "specHash": "721071f81d5c9fd78ffdf9edda5db834a5bc9c88d0a29646e1f7f46345170084",
+    "files": {}
+  },
+  "app-v3/email/invite-registered": {
+    "specKey": "app-v3/email/invite-registered",
+    "specHash": "c2eaae7e54ec03b25e4ccddde5864780007a28ae745e1b996f0ce7e1a5b99f89",
+    "files": {}
+  },
+  "app-v3/email/magic-login": {
+    "specKey": "app-v3/email/magic-login",
+    "specHash": "2c5cbee0233119bfd8697fd0207ae5a3cc8511062015c7e19430b17a965c3e8c",
+    "files": {}
+  },
+  "app-v3/email/mailer": {
+    "specKey": "app-v3/email/mailer",
+    "specHash": "ba92c5814f52f224dd5a9d58e9512ad042d3df9c8daa3c3187531231fc2fc34d",
+    "files": {}
+  },
+  "app-v3/email/new-enrolment": {
+    "specKey": "app-v3/email/new-enrolment",
+    "specHash": "4b72f424d520ddfc546f6fba196fac97c2aed4f75f60884772999688dd7fc407",
+    "files": {}
+  },
+  "app-v3/email/project-brief-approval-request": {
+    "specKey": "app-v3/email/project-brief-approval-request",
+    "specHash": "e4e9d4878563ebf779eeb2af9dc3107e2d39ef77b3f0b2e07321f1adbd63320b",
+    "files": {}
+  },
+  "app-v3/email/project-brief-edit-link": {
+    "specKey": "app-v3/email/project-brief-edit-link",
+    "specHash": "4e552b4eb53a73e4060d7bd90b81f4cca26eb008513ce501692106d74954af41",
+    "files": {}
+  },
+  "app-v3/email/raw": {
+    "specKey": "app-v3/email/raw",
+    "specHash": "b4aac0837df5fff5b494e4b08a7bd9435b073181b83470e8da912bfd6f56f429",
+    "files": {}
+  },
+  "app-v3/email/registration": {
+    "specKey": "app-v3/email/registration",
+    "specHash": "a08172a0ed359b3750fb37c035aa343ed212504e450131340e0422cb0b106201",
+    "files": {}
+  },
+  "app-v3/email/report-published": {
+    "specKey": "app-v3/email/report-published",
+    "specHash": "7da1a180427f0b8814a1fe3f0861ea1a8c6bdc76a9904ac6fb24fb406ae23412",
+    "files": {}
+  },
+  "app-v3/email/review-assigned": {
+    "specKey": "app-v3/email/review-assigned",
+    "specHash": "d718b3c8106479851de3bc498dea02676d61c160d349d597759de1f7bc029858",
+    "files": {}
+  },
+  "app-v3/email/review-auto-assign-failed": {
+    "specKey": "app-v3/email/review-auto-assign-failed",
+    "specHash": "2972afb66557c870149f64a017a908d826084e1507f8875c2712b64b685bfee6",
+    "files": {}
+  },
+  "app-v3/email/review-completed-by-other": {
+    "specKey": "app-v3/email/review-completed-by-other",
+    "specHash": "919f50b245e4f264d0138628aa313ed33580580ea4d6547cb18218c52ce5aa0e",
+    "files": {}
+  },
+  "app-v3/email/review-published": {
+    "specKey": "app-v3/email/review-published",
+    "specHash": "23b68edcc874f5c2f33241c7835f50602349b9cff802e7777da6974aa1f47d0f",
+    "files": {}
+  },
+  "app-v3/email/review-rating-report": {
+    "specKey": "app-v3/email/review-rating-report",
+    "specHash": "1fd4e7d336d34964b3ab69dff3afb53eac0fe72d283e11652d289b7ca5c43add",
+    "files": {}
+  },
+  "app-v3/email/review-received": {
+    "specKey": "app-v3/email/review-received",
+    "specHash": "fb16adeca1d0a2a6f275888d423fc6f9d22d30c9c600aa67ffb300ab647679db",
+    "files": {}
+  },
+  "app-v3/email/review-reminder": {
+    "specKey": "app-v3/email/review-reminder",
+    "specHash": "45f8796c8ee65c48dd9a0f9461d63e5d5e304bd7b4a205a2bc5c3e8d491eb19b",
+    "files": {}
+  },
+  "app-v3/email/review-resubmitted": {
+    "specKey": "app-v3/email/review-resubmitted",
+    "specHash": "1cdb748c9352a608674d5255a82a75a66576dcfba37bb06360bae3f20f28f972",
+    "files": {}
+  },
+  "app-v3/email/review-resubmitting": {
+    "specKey": "app-v3/email/review-resubmitting",
+    "specHash": "2c09af147e0a2790c5329136e5c2eab3d16443cacdf82ca4be3ea7285cd30caf",
+    "files": {}
+  },
+  "app-v3/email/review-unassigned": {
+    "specKey": "app-v3/email/review-unassigned",
+    "specHash": "2802cf7857144fb367982675c8fa2135796e93a9a8a784a901c9f12e0caf5f55",
+    "files": {}
+  },
+  "app-v3/email/session-reminder": {
+    "specKey": "app-v3/email/session-reminder",
+    "specHash": "4a52e9321b9bd3bb828a831cc9081d8a73e5f92fd655b60a0140c067465ea680",
+    "files": {}
+  },
+  "app-v3/email/team-changed": {
+    "specKey": "app-v3/email/team-changed",
+    "specHash": "45304f881accf50722604757e1b063e5944fd7ad8338178a26139b3d09d9d8a1",
+    "files": {}
+  },
+  "app-v3/email/team-issue-flagged": {
+    "specKey": "app-v3/email/team-issue-flagged",
+    "specHash": "29934229857083226d01b2f83d0f8c7860f5998d18704677e35c3102b40858f3",
+    "files": {}
+  },
+  "app-v3/email/team-joined-v3": {
+    "specKey": "app-v3/email/team-joined-v3",
+    "specHash": "d65671538d09fa24e7af1400ad5d7a9cc4564ea729d7f5d8bde5fe2005ac476f",
+    "files": {}
+  },
+  "app-v3/email/team-joined": {
+    "specKey": "app-v3/email/team-joined",
+    "specHash": "ecc2d7a82e364c20d23f8c720c2784b045ab0fac6aa1affceaa7db27576b6498",
+    "files": {}
+  },
+  "app-v3/email/team-left": {
+    "specKey": "app-v3/email/team-left",
+    "specHash": "6366814e5227818e9c5578359dc2671aae12ad2506b33b4b6ef5f068a2221f57",
+    "files": {}
+  },
+  "app-v3/email/team360-report": {
+    "specKey": "app-v3/email/team360-report",
+    "specHash": "7bee225b260f98ee66644bfe01fd4a8dc3ad0e57e5a19be6456c5afd31deffaf",
+    "files": {}
+  },
+  "app-v3/email/templates/advisor-digest": {
+    "specKey": "app-v3/email/templates/advisor-digest",
+    "specHash": "1415c99630049e6dd0410908d64d0464d14f5190a3da7797a117e62140e7bc55",
+    "files": {}
+  },
+  "app-v3/email/templates/templates": {
+    "specKey": "app-v3/email/templates/templates",
+    "specHash": "cc6eceded93db954ecbc4ad24666162511753306acf78ae3b3d128d2882185c2",
+    "files": {}
+  },
+  "app-v3/email/todo-assigned": {
+    "specKey": "app-v3/email/todo-assigned",
+    "specHash": "15539e27202bcf9172db587613c7140baee02d5fecd9995240e75350113186d7",
+    "files": {}
+  },
+  "app-v3/email/unread-chat": {
+    "specKey": "app-v3/email/unread-chat",
+    "specHash": "38cd87aa43b84deda602b7f605905df00e0c03ac0c7c4c1accbed1d54f4ef3ca",
+    "files": {}
+  },
+  "app-v3/email/verification-code": {
+    "specKey": "app-v3/email/verification-code",
+    "specHash": "371de1bf6d1593dbb0cbcaa976e2ad01b191bdc0385bc4b6972b7d5edac779ad",
+    "files": {}
+  },
+  "app-v3/guards/single-page-deactivate.guard": {
+    "specKey": "app-v3/guards/single-page-deactivate.guard",
+    "specHash": "0ff5707bbce94f3a162ac09ccfeeb5cc0999a737fc69573b1fb2101b04f2f547",
+    "files": {}
+  },
+  "app-v3/models/topic-attention.model": {
+    "specKey": "app-v3/models/topic-attention.model",
+    "specHash": "e6288278efd1b0c10d998163539c33fd271bb26620b990199f8d0c7df29452f7",
+    "files": {}
+  },
+  "app-v3/ops/achievement": {
+    "specKey": "app-v3/ops/achievement",
+    "specHash": "9a25186cc3f2fe9569e473480e853c6047472a6fb198afa21d7e2d46c0d331f5",
+    "files": {}
+  },
+  "app-v3/ops/assessment": {
+    "specKey": "app-v3/ops/assessment",
+    "specHash": "8b9bf2f3ff6628abaf2c2c3306cf230de110e7bab48cec86f12538b6a6bfb493",
+    "files": {}
+  },
+  "app-v3/ops/audit-log": {
+    "specKey": "app-v3/ops/audit-log",
+    "specHash": "ea107be69c19c4f2782c5523b72131d462cba663287e1d74cbd757ca811be378",
+    "files": {}
+  },
+  "app-v3/ops/billing": {
+    "specKey": "app-v3/ops/billing",
+    "specHash": "dd13cad14fd2a4cfe2da4142b05d1c548cf1b1f6d7bf857c47a026c922a439a3",
+    "files": {}
+  },
+  "app-v3/ops/deletion": {
+    "specKey": "app-v3/ops/deletion",
+    "specHash": "f85cffe99728e72efd057f35bed8dfed5fce4dd71d82525d57d4f478f95411d1",
+    "files": {}
+  },
+  "app-v3/ops/enrolment": {
+    "specKey": "app-v3/ops/enrolment",
+    "specHash": "795ccc0f4010f1d95385cfa607d5aa00cd580b2a17c2cb8443b83cfd76bd1f10",
+    "files": {}
+  },
+  "app-v3/ops/h5p-unpack": {
+    "specKey": "app-v3/ops/h5p-unpack",
+    "specHash": "a4a90d8b120f0a13b93f2f0bcddf68321e6e1fbe498da152f8b945130b8e0c9a",
+    "files": {}
+  },
+  "app-v3/ops/handler": {
+    "specKey": "app-v3/ops/handler",
+    "specHash": "b756b8b458549222bb1ac009abfa30b44c0e645f12e582c93fa738089bd52f6a",
+    "files": {}
+  },
+  "app-v3/ops/project": {
+    "specKey": "app-v3/ops/project",
+    "specHash": "0aedb639ea163e511a4614f4210a13c03696e225463f7514cf5d3ba3806fa531",
+    "files": {}
+  },
+  "app-v3/ops/seed": {
+    "specKey": "app-v3/ops/seed",
+    "specHash": "4abd5f722fcac9c84fb8031da8ce025a61330b32e250c0c9284ad8a4051e34e7",
+    "files": {}
+  },
+  "app-v3/pages/activity-desktop/activity-desktop-routing.module": {
+    "specKey": "app-v3/pages/activity-desktop/activity-desktop-routing.module",
+    "specHash": "f7dc9b46be3caebf9a97726781e6d614986e71a111f1d332decc1a5536c0a92f",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop-routing.module.ts": {
+        "hash": "e1626450825c0640c0523c5f7003d756fbdc1c296d36100edb7cd5de6630bd82",
+        "lastChecked": "2026-10-06T02:58:27.038Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-desktop/activity-desktop.module": {
+    "specKey": "app-v3/pages/activity-desktop/activity-desktop.module",
+    "specHash": "007dc741a143bfa372116cf8e329ed6cdee99342c25f3e5c1d2d03656b330fef",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.module.ts": {
+        "hash": "12e1354e0ffc374875ec7706d6aafc87ac85170762e15c9d67d47a5c348a3782",
+        "lastChecked": "2026-10-06T02:58:27.038Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-desktop/activity-desktop.page.html": {
+    "specKey": "app-v3/pages/activity-desktop/activity-desktop.page.html",
+    "specHash": "476f0ab39bebf1923b9495c90ffcbe376f27072b8ad0ab3f89ba76c52747107d",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.page.html": {
+        "hash": "e401b21ed231349e030f5654a33654f9d6467f4507fd15644c81f7cb9bfc4867",
+        "lastChecked": "2026-10-06T02:58:27.039Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-desktop/activity-desktop.page": {
+    "specKey": "app-v3/pages/activity-desktop/activity-desktop.page",
+    "specHash": "a9d760718f2702af415626ca56c86a425c779c7fe40745e9a61399c9bb6772d9",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.page.spec.ts": {
+        "hash": "bef3cbd09c81b7fa4131ad7c43e1e6e373a0d9af9ecd5d9a4317c4b9bc3a90a4",
+        "lastChecked": "2026-10-06T02:58:27.040Z",
+        "lastVerdict": "no-drift"
+      },
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-desktop/activity-desktop.page.ts": {
+        "hash": "af93e80700e3490023735cddb52a35ae4824e1296b21da39c223989bea8cd300",
+        "lastChecked": "2026-10-06T02:58:27.041Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-mobile/activity-mobile-routing.module": {
+    "specKey": "app-v3/pages/activity-mobile/activity-mobile-routing.module",
+    "specHash": "50144eea515edca1c5352f81df7ecf3b4869ba528b39f47c08b61907f9c10c3e",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile-routing.module.ts": {
+        "hash": "3c7a079f7775ffef19d5f131db47c08a14ac5976812dab97ec0053044f121427",
+        "lastChecked": "2026-10-06T02:58:27.041Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-mobile/activity-mobile.module": {
+    "specKey": "app-v3/pages/activity-mobile/activity-mobile.module",
+    "specHash": "78439f50dab8038f0146bce7096ac8752ac1035af08c8415b9e1e809c2e0614c",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.module.ts": {
+        "hash": "185abf487aff386501ed2a2f25bfa066502d9b4b91406211e813f572ea9b5d22",
+        "lastChecked": "2026-10-06T02:58:27.042Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-mobile/activity-mobile.page.html": {
+    "specKey": "app-v3/pages/activity-mobile/activity-mobile.page.html",
+    "specHash": "d9bd3118a6cdba297f00d484d6edeb38ff6168167518b28c0c92fe5e5b62eedf",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.page.html": {
+        "hash": "1771fa43a8d821aa0133e0a1adecc66220a83fedce597f687f574b1fb7b9f24b",
+        "lastChecked": "2026-10-06T02:58:27.043Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/activity-mobile/activity-mobile.page": {
+    "specKey": "app-v3/pages/activity-mobile/activity-mobile.page",
+    "specHash": "56a60118d0d07eea6771f7794c44bf30c0761596bd70a7e7bb1fad632ac2f020",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.page.spec.ts": {
+        "hash": "8c3d91a6b0c2e97931f2a344ffc03e4109798d6da5aa334461205dea0e585200",
+        "lastChecked": "2026-10-06T02:58:27.043Z",
+        "lastVerdict": "no-drift"
+      },
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/activity-mobile/activity-mobile.page.ts": {
+        "hash": "874f592ca39f33e154c99d8a67d3786a2844cc5b98c8ec388778293b23afafd5",
+        "lastChecked": "2026-10-06T02:58:27.044Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/assessment-mobile/assessment-mobile-routing.module": {
+    "specKey": "app-v3/pages/assessment-mobile/assessment-mobile-routing.module",
+    "specHash": "d0978020576347cb7b1081096f53b64c5ff1e6d97ae7fe6b5c64d064dda9be7b",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile-routing.module.ts": {
+        "hash": "47428d31ca5497bb3b3823f12e5850371d29bf0a679b16ac3da8aba1a53b99af",
+        "lastChecked": "2026-10-06T02:58:27.044Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/assessment-mobile/assessment-mobile.module": {
+    "specKey": "app-v3/pages/assessment-mobile/assessment-mobile.module",
+    "specHash": "5b7677d76ca1c5138670d17637a1bca524851b87bc65eb72a7a266500942cb1f",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.module.ts": {
+        "hash": "a32f1e7d78ba9b3d22c12d056f9acbd3c2961c7c8c147202eae3af982877011e",
+        "lastChecked": "2026-10-06T02:58:27.045Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/assessment-mobile/assessment-mobile.page.html": {
+    "specKey": "app-v3/pages/assessment-mobile/assessment-mobile.page.html",
+    "specHash": "e87beee302a763f2e7b8887ddcafb9dabc7397404a9274da097ac6da8558c0a4",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.html": {
+        "hash": "903e3e8aba0167cc6a6b935178d917512af1a4463ecf9b03af868ad83dd98db8",
+        "lastChecked": "2026-10-06T02:58:27.045Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/assessment-mobile/assessment-mobile.page": {
+    "specKey": "app-v3/pages/assessment-mobile/assessment-mobile.page",
+    "specHash": "720612bbd8feed7201eb725f8dde2d2df747c1f281564b2b9ae8aa19b3a791f8",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.spec.ts": {
+        "hash": "8a410df8faa084fdef03d1c4c9c53120c992447d86981b6857ee0a8cd89c7640",
+        "lastChecked": "2026-10-06T02:58:27.046Z",
+        "lastVerdict": "no-drift"
+      },
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/assessment-mobile/assessment-mobile.page.ts": {
+        "hash": "887d8cd5bd51c7985cccbc1893c5eccd0a7890398193691514f789b263d16a16",
+        "lastChecked": "2026-10-06T02:58:27.046Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/auth/auth-direct-login/auth-direct-login.component.html": {
+    "specKey": "app-v3/pages/auth/auth-direct-login/auth-direct-login.component.html",
+    "specHash": "b4db613e0e9aeed3906570a5a815f64eae5ee4b001df0bc451b10658d59e1276",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.html": {
+        "hash": "d7c2d6b1fd108c5ec867d2cda6acd7115c8f3729b67b9018fbfac3777eca3455",
+        "lastChecked": "2026-10-06T02:58:27.047Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/auth/auth-direct-login/auth-direct-login.component": {
+    "specKey": "app-v3/pages/auth/auth-direct-login/auth-direct-login.component",
+    "specHash": "85eaec45829d206d7ce2db7691e1fb25c0439de9c2245df95c47e1db49db6466",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.spec.ts": {
+        "hash": "4f9346d5d2fc255177f1b9d0dfb67898d2cc013d2bb34b1a214bb526d38d0e37",
+        "lastChecked": "2026-10-06T02:58:27.048Z",
+        "lastVerdict": "no-drift"
+      },
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-direct-login/auth-direct-login.component.ts": {
+        "hash": "227291df2e278348cfaff167942d2f95fcb1b448b913dffe95d4f95695a55f86",
+        "lastChecked": "2026-10-06T02:58:27.048Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/auth/auth-forgot-password/auth-forgot-password.component.html": {
+    "specKey": "app-v3/pages/auth/auth-forgot-password/auth-forgot-password.component.html",
+    "specHash": "84eda7141764e97a5cf131916fdc852ac3115334d1635292b5a5efdaf916a938",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.html": {
+        "hash": "997746a65bd8d0c43565fc57e758a6df59224f3dc7c6a02028a906cb94be8217",
+        "lastChecked": "2026-10-06T02:58:27.049Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/auth/auth-forgot-password/auth-forgot-password.component": {
+    "specKey": "app-v3/pages/auth/auth-forgot-password/auth-forgot-password.component",
+    "specHash": "f0e6100cfa2d361f79bde3f59dbb6de3b436e37940410b99a19275a2a28f234d",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.spec.ts": {
+        "hash": "39eed6ab7130850156e47f9b1ecbf7741ec9558abf6576b36ab2d90511630e32",
+        "lastChecked": "2026-10-06T02:58:27.049Z",
+        "lastVerdict": "no-drift"
+      },
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-forgot-password/auth-forgot-password.component.ts": {
+        "hash": "b922f20fa6e1de542d6b680346088595a258bb5b9fe4549a42ce22c6a262e586",
+        "lastChecked": "2026-10-06T02:58:27.050Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/pages/auth/auth-global-login/auth-global-login.component.html": {
+    "specKey": "app-v3/pages/auth/auth-global-login/auth-global-login.component.html",
+    "specHash": "985778b8f0d1aa4ff5372822fda72d733e9288da799fb58da4734dfaaad675f9",
+    "files": {
+      "/Users/wessonnenreich/Code/practera/practera-app/projects/v3/src/app/pages/auth/auth-global-login/auth-global-login.component.html": {
+        "hash": "9a4f59bbf3613a7d8b5040f1d772479f6288fe955333e32a2161b6b60dd07b09",
+        "lastChecked": "2026-10-06T02:58:27.050Z",
+        "lastVerdict": "no-drift"
+      }
+    }
+  },
+  "app-v3/sms/handler": {
+    "specKey": "app-v3/sms/handler",
+    "specHash": "dbf826c67e99886dc0c8b763a7b7fb5a4f552b5e40c0d065aa57373a20f414e9",
+    "files": {}
+  },
+  "app-v3/sms/history": {
+    "specKey": "app-v3/sms/history",
+    "specHash": "82dfe5b2c0ff43374fe86205ba318f92cb12cab9881c11c8120df0e8846010d6",
+    "files": {}
+  },
+  "app-v3/sms/index": {
+    "specKey": "app-v3/sms/index",
+    "specHash": "8c29a2cb67e07f5ceb8b39ea08fba0b9835ee8cc4a4d1bb4e12b16f2b027edd1",
+    "files": {}
+  },
+  "app-v3/sms/sms": {
+    "specKey": "app-v3/sms/sms",
+    "specHash": "abceb0a4055999cd4a43ee4f4f3f45b77a865da46aba155b23b01a89fd96233a",
+    "files": {}
+  },
+  "app-v3/sms/templates": {
+    "specKey": "app-v3/sms/templates",
+    "specHash": "386fa5bf5970e9c1555f6e4c0f5f5e5b2ce9de1ae81f9c18cb0ee17383a52a2b",
+    "files": {}
+  },
+  "app-v3/statistics/cache": {
+    "specKey": "app-v3/statistics/cache",
+    "specHash": "cfd951b1bbca3ea795be1a488d79add4e90d1d297d5c72b2a77aaca7994e2a87",
+    "files": {}
+  },
+  "app-v3/statistics/dashboard": {
+    "specKey": "app-v3/statistics/dashboard",
+    "specHash": "64f3560c44f7f6f4e89f54c2959cd4b2b9f67d6453898b29ec5a8cdeff9ff975",
+    "files": {}
+  },
+  "app-v3/statistics/db-engage": {
+    "specKey": "app-v3/statistics/db-engage",
+    "specHash": "a7a2ccd5be025ef5fbd72f71be1ef68192b4591570cc7522d7cac4b95271d42d",
+    "files": {}
+  },
+  "app-v3/statistics/engagement": {
+    "specKey": "app-v3/statistics/engagement",
+    "specHash": "ebdc76519b7b818665e70010156334319c4f0bb331c4638bfaf970462e9bb3cb",
+    "files": {}
+  },
+  "app-v3/statistics/experience": {
+    "specKey": "app-v3/statistics/experience",
+    "specHash": "7d144020f773bc3b2865905201f034e6bdb8bbf82d77a5022bad085a13a094a3",
+    "files": {}
+  },
+  "app-v3/statistics/handler": {
+    "specKey": "app-v3/statistics/handler",
+    "specHash": "50f9b969eafdd583a5a9e062ffe056161ff0b2620416368bb6883204fd9de8c6",
+    "files": {}
+  },
+  "app-v3/statistics/utils": {
+    "specKey": "app-v3/statistics/utils",
+    "specHash": "a0ca230dbce424ace53f80becb9a99ae02ba5e9a74ba89cd266da9ae53376d0c",
+    "files": {}
+  },
+  "app-v3/templates/auth": {
+    "specKey": "app-v3/templates/auth",
+    "specHash": "62933800a92c45d1ca0101f8a75d6bca390cbd7f7e7ad78e6b29e759e3986ded",
+    "files": {}
+  },
+  "app-v3/templates/createTemplate": {
+    "specKey": "app-v3/templates/createTemplate",
+    "specHash": "500a9ddae353c18e44406f68a39a518fafe11f389c54de4e2d69c0ee2e53a200",
+    "files": {}
+  },
+  "app-v3/templates/crud": {
+    "specKey": "app-v3/templates/crud",
+    "specHash": "db85a98503d839e55e7cef0dbf9af584c40fcf0020612038c6907f64b879e67d",
+    "files": {}
+  },
+  "app-v3/templates/deleteTemplate": {
+    "specKey": "app-v3/templates/deleteTemplate",
+    "specHash": "425748b4c0fbe7bb131fda8b4ecfd10c3b4c6447a1faeb37ad5b9b87ae88a8f8",
+    "files": {}
+  },
+  "app-v3/templates/dep-setup": {
+    "specKey": "app-v3/templates/dep-setup",
+    "specHash": "ec5158c8c8010a0a251719c3ba4b7149930562fba856061a22a4bb0f1fc8873e",
+    "files": {}
+  },
+  "app-v3/templates/dynamodb": {
+    "specKey": "app-v3/templates/dynamodb",
+    "specHash": "b207f94f90a185be5e49f4f50fa3bafb5539294064ee6490ebb693e0d457cf1f",
+    "files": {}
+  },
+  "app-v3/templates/getTemplate": {
+    "specKey": "app-v3/templates/getTemplate",
+    "specHash": "46779bbc33a80b7ada9ee3706ee16fd28473da1e30042aa8f215ff5ea37fbc84",
+    "files": {}
+  },
+  "app-v3/templates/getTemplates": {
+    "specKey": "app-v3/templates/getTemplates",
+    "specHash": "2a8935ae10354f39bc22d4cfd377ba3b80a948f2eb216d492a59c35a9364ddf5",
+    "files": {}
+  },
+  "app-v3/templates/index": {
+    "specKey": "app-v3/templates/index",
+    "specHash": "30a5485f27cb50f47d75ec07f4a4c7f520bdea1b5b89d40dd8f2f19450648534",
+    "files": {}
+  },
+  "app-v3/templates/logUsage": {
+    "specKey": "app-v3/templates/logUsage",
+    "specHash": "f7478e8705f6937077cb0615b81042625e10ed1167e47fd806cf9e66a0514398",
+    "files": {}
+  },
+  "app-v3/templates/routes": {
+    "specKey": "app-v3/templates/routes",
+    "specHash": "6f51d1db2c520201bbe7572d905a645fa5706b1472e0fe23941b1cb9a7df6ffb",
+    "files": {}
+  },
+  "app-v3/templates/s3": {
+    "specKey": "app-v3/templates/s3",
+    "specHash": "4ea8855f5482db2ede2ab09d8fa4e9f6062eab9f5de2506a79ead0a01372467e",
+    "files": {}
+  },
+  "app-v3/templates/updateTemplate": {
+    "specKey": "app-v3/templates/updateTemplate",
+    "specHash": "94b17b9516c32273f36264733b17b6cd5ac5a2ac12abc1360ca87fdb6e90e514",
+    "files": {}
+  },
+  "app-v3/templates/utils": {
+    "specKey": "app-v3/templates/utils",
+    "specHash": "3aa849f8914a47806f71bbe90fa06b7313e350a96aaf134801aae71d3842fbf5",
+    "files": {}
+  }
+}

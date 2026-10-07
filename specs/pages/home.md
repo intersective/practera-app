@@ -1,6 +1,6 @@
 # Home Page
 
-<!-- module: app-v3/pages/home / type: page / status: draft / feature: deliver.learner.home -->
+<!-- module: app-v3/pages/home / type: page / status: draft / feature: deliver.learner.home, report.progress.learner-home, report.progress.learner-pulse-skills -->
 
 ## Overview
 

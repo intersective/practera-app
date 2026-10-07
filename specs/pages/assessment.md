@@ -1,6 +1,6 @@
 # Assessment Page (Mobile)
 
-<!-- module: app-v3/pages/assessment-mobile / type: page / status: draft / feature: deliver.submit.shell -->
+<!-- module: app-v3/pages/assessment-mobile / type: page / status: draft / feature: deliver.answer.file, deliver.answer.multi-team-member, deliver.answer.multiple, deliver.answer.oneof, deliver.answer.slider, deliver.answer.team-member, deliver.answer.text, deliver.submit.moderated, deliver.submit.quiz, deliver.submit.reflection, deliver.submit.resubmit, deliver.submit.shell, deliver.submit.team-signoff, deliver.submit.team360 -->
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # Chat Page
 
-<!-- module: app-v3/pages/chat / type: page / status: draft / feature: deliver.chat.learner -->
+<!-- module: app-v3/pages/chat / type: page / status: draft / feature: deliver.chat.file-attachments, deliver.chat.learner, deliver.chat.reactions, deliver.chat.threads, deliver.teams.learner-roster -->
 
 ## Overview
 

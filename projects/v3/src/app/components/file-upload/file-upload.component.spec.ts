@@ -172,6 +172,23 @@ describe('FileUploadComponent', () => {
       submissionId: 123,
       questionId: 11,
       file: { path: '/uploads/a' },
+      filestoreId: undefined,
+    });
+  });
+
+  it('should save a library file by filestoreId and not send the file object in triggerSave', () => {
+    component.doAssessment = true;
+    component.innerValue = { filestoreId: 37 };
+    component.selectedFilestoreId = 37;
+    const submitNextSpy = spyOn(component.submitActions$, 'next');
+
+    component.triggerSave();
+
+    expect((submitNextSpy.calls.mostRecent().args[0] as any).questionSave).toEqual({
+      submissionId: 123,
+      questionId: 11,
+      file: undefined,
+      filestoreId: 37,
     });
   });
 

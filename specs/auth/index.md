@@ -1,6 +1,6 @@
 # Auth Flows
 
-<!-- module: app-v3/auth / type: page / status: draft / feature: deliver.auth.app-login -->
+<!-- module: app-v3/auth / type: page / status: draft / feature: deliver.auth.app-direct-login, deliver.auth.app-global-login, deliver.auth.app-login, deliver.auth.app-logout, deliver.auth.app-password-reset, deliver.auth.app-registration, deliver.auth.terms -->
 
 ## Overview
 
