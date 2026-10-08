@@ -71,7 +71,7 @@
 }
 
 .action-button {
-  margin: 0 8px; // Reduce side margins
+  margin: 0 8px 0 48px; // Keep Submit away from Next
   --padding-start: 16px;
   --padding-end: 16px;
   min-width: 120px; // Ensure minimum button width

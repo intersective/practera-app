@@ -888,14 +888,13 @@ Best regards`;
     switch (this._btnAction) {
       case 'signoff':
       case 'submit': {
+        const confirmed = window.confirm('Submit now? You can ask a coordinator to reopen it if you need to change an answer.');
+        if (!confirmed) return;
         if (this.hasUnvisitedTeam360Pages) {
-          const confirmed = await this._confirmSubmitWithUnvisitedPages();
-          if (!confirmed) {
-            return;
-          }
-        } else {
-          this._doSubmit();
+          const pagesOk = await this._confirmSubmitWithUnvisitedPages();
+          if (!pagesOk) return;
         }
+        this._doSubmit();
         return;
       }
       case 'readFeedback':

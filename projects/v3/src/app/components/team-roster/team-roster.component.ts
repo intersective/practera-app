@@ -40,9 +40,6 @@ export class TeamRosterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const teamId = this.storage.getUser()?.teamId;
     this.hasTeam = typeof teamId === 'number';
-    if (!this.hasTeam) {
-      return;
-    }
     this.loadTeamMembers();
   }
 
@@ -82,6 +79,7 @@ export class TeamRosterComponent implements OnInit, OnDestroy {
         next: (response: TeamMembersResponse) => {
           this.ngZone.run(() => {
             this.members = response?.data?.myTeamMembers || [];
+            this.hasTeam = this.hasTeam || this.members.length > 0;
             this.loading = false;
             this.cdr.markForCheck();
           });
