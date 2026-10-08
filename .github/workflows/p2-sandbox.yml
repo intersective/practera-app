@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: p2-sandbox
     permissions: write-all
-    timeout-minutes: 15
+    timeout-minutes: 30
 
 
 ################################################
@@ -207,6 +207,9 @@ jobs:
           node_modules/.bin/ng build request --configuration=${{ env.BUILD_CONFIG }}
           node_modules/.bin/ng build v3 --configuration=${{ env.BUILD_CONFIG }}
           npm run generate-version-v3
+          CSP_NONCE="$(openssl rand -hex 16)"
+          printf '%s' "$CSP_NONCE" > .csp-nonce
+          node scripts/inject-csp-nonce.cjs dist/v3 "$CSP_NONCE"
 
 
 ##########################################################
@@ -215,6 +218,7 @@ jobs:
       - name: AWS S3 Sync operation
         run: |
           mv serverless-appv3.yml serverless.yml
+          node scripts/apply-sandbox-csp.cjs serverless.yml infrastructure/csp/p2-sandbox-app.csp "$(cat .csp-nonce)"
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless-appv3-lambda-edge.yml
           aws s3 cp serverless.yml s3://$CFNS3BucketName/$STACK_NAME/$REGION/$ROOTSTACK/sls-templates/serverless.yml
 
@@ -291,32 +295,15 @@ jobs:
           role-to-assume: arn:aws:iam::${{ steps.AWS_ORG.outputs.P2SANDBOX }}:role/github-restricted-role-to-assume
           region: ${{ env.REGION }}
 
-###############################################################
-#  SERVERLESS DEPLOYMENT
-##############################################################
-      - name: Serverless deployment
-        run: |
-          echo "Serverless Deploying appv3"
-          node_modules/.bin/serverless deploy
-          rm serverless.yml .env
-        env:
-          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
-          FILESS3BUCKETEXIST: true
-          S3VERSIONING: true
-          NONCURRENTVERSION_EXPIREINDAYS: 30
-
-
-
 ##########################################################
 #  AWS S3 SYNC OPERATIONS
+#  Publish HTML that already carries the CSP nonce before the
+#  response-headers policy starts requiring that nonce.
 ##########################################################
       - name: AWS S3 Sync Operations
         run: |
           APP_V2_S3=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3S3Bucket-$ENV\`].Value" --no-paginate --output text)
           aws s3 sync dist/v3/ s3://$APP_V2_S3 --delete
-
-
 
 ##########################################################
 #  AWS CDN CACHE INVALIDATION
@@ -324,7 +311,25 @@ jobs:
       - name: AWS Cloudfront Cache invalidation
         run: |
           APP_V2_CDN=$(aws cloudformation list-exports --query "Exports[?Name==\`$STACK_NAME-AppV3CloudFrontDistributionID-$ENV\`].Value" --no-paginate --output text)
-          for i in $APP_V2_CDN;do aws cloudfront create-invalidation --distribution-id $i --paths "/*";done
+          for i in $APP_V2_CDN; do
+            INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id "$i" --paths "/*" --query 'Invalidation.Id' --output text)
+            aws cloudfront wait invalidation-completed --distribution-id "$i" --id "$INVALIDATION_ID"
+          done
+
+###############################################################
+#  SERVERLESS DEPLOYMENT
+##############################################################
+      - name: Serverless deployment
+        run: |
+          echo "Serverless Deploying appv3"
+          node_modules/.bin/serverless deploy
+          rm -f serverless.yml .env .csp-nonce
+        env:
+          AppV3S3Bucket: app.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKET: files.${{ env.PUBLICZONENAME }}
+          FILESS3BUCKETEXIST: true
+          S3VERSIONING: true
+          NONCURRENTVERSION_EXPIREINDAYS: 30
 
 
 

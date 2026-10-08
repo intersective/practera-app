@@ -26,6 +26,7 @@
     "deploy": "ng build --base-href '/practera-app-v2/' && git commit -am 'Build to Github Page' && git subtree push --prefix www origin gh-pages",
     "postdeploy": "npm run generate-version",
     "test": "ng test v3 --no-watch",
+    "test:csp": "node scripts/assert-app-csp.cjs",
     "check": "npm run lint && npm run test",
     "lint": "ng lint v3",
     "lint-fix": "ng lint --fix",

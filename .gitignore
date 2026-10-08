@@ -33,3 +33,4 @@ output/
 .specguard/.env
 .specguard/evidence/
 .specguard/reports/
+.csp-nonce
