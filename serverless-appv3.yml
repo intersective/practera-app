@@ -159,7 +159,9 @@ resources:
               IncludeSubdomains: true
               Override: true
               Preload: true
-            ContentSecurityPolicy: 
+            ContentSecurityPolicy:
+              # p2-sandbox deploy replaces this value from infrastructure/csp/p2-sandbox-app.csp.
+              # This default stays in place for every other environment that copies this template.
               ContentSecurityPolicy: "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self' https://*.practera.com; script-src 'self' 'unsafe-inline' https://acsbapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.practera.com wss://*.pusher.com wss://socket.p2-sandbox.practera.com https://*.amazonaws.com; img-src 'self' data: blob: https:"
               Override: true
             ContentTypeOptions: 
