@@ -201,6 +201,7 @@ export class SettingsPage implements OnInit, OnDestroy {
         const profileUrl = file.cdnUrl || file.url;
         const response = await firstValueFrom(this.authService.updateUserProfile({
           url: profileUrl,
+          directUrl: file.directUrl,
           name: file.name,
           extension: file.extension,
           type: file.type,

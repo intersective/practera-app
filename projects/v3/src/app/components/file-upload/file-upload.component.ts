@@ -290,6 +290,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
       bucket: this.uploadedFile.bucket,
       path: this.uploadedFile.path,
       url: this.uploadedFile.cdnUrl,
+      directUrl: this.uploadedFile.directUrl,
     };
 
     return fileInput;

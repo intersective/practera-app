@@ -40,6 +40,7 @@ interface ProfileAvatar {
   path: string;
   name: string;
   url: string;
+  directUrl: string;
   extension: string;
   type: string;
   size: number;
