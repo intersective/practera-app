@@ -164,9 +164,6 @@ resources:
               # This default stays in place for every other environment that copies this template.
               ContentSecurityPolicy: "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self' https://*.practera.com; script-src 'self' 'unsafe-inline' https://acsbapp.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.practera.com wss://*.pusher.com wss://socket.p2-sandbox.practera.com https://*.amazonaws.com; img-src 'self' data: blob: https:"
               Override: true
-            ContentSecurityPolicyReportOnly:
-              ContentSecurityPolicy: "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self' https://*.practera.com; script-src 'self' https://acsbapp.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.practera.com wss://*.pusher.com wss://socket.p2-sandbox.practera.com https://*.amazonaws.com; img-src 'self' data: blob: https://*.practera.com https://*.practera.app"
-              Override: true
             ContentTypeOptions: 
               Override: true
             ReferrerPolicy: 
@@ -197,6 +194,10 @@ resources:
                 Header: "Cross-Origin-Opener-Policy"
                 Override: true
                 Value: "same-origin-allow-popups"
+              -
+                Header: "Content-Security-Policy-Report-Only"
+                Override: true
+                Value: "default-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self' https://*.practera.com; script-src 'self' https://acsbapp.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.practera.com wss://*.pusher.com wss://socket.p2-sandbox.practera.com https://*.amazonaws.com; img-src 'self' data: blob: https://*.practera.com https://*.practera.app"
 
 # Security Header Response CFN END
 
