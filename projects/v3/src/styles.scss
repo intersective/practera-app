@@ -107,12 +107,23 @@
 }
 
 .header-border {
-  border-bottom: 1px solid var(--practera-grey-25);
+  border-bottom: 1px solid var(--hairline);
 }
 
 ion-button {
-  text-transform: capitalize;
-  --border-radius: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  --border-radius: var(--radius-md);
+}
+
+ion-button:not([fill='clear']):not([fill='outline']) {
+  --box-shadow: var(--shadow-xs);
+  transition: box-shadow var(--dur) var(--ease);
+
+  &:hover {
+    --box-shadow: var(--shadow-sm);
+  }
 }
 
 // used for desktop view
@@ -133,19 +144,22 @@ ion-button {
 }
 
 ion-chip.label {
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 2px 10px;
   margin: 4px 0 10px 0;
   height: 22px;
   text-transform: capitalize;
   --color: white;
   font-size: 12px;
-  font-weight: 700 !important;
+  font-weight: 600 !important;
+  // Solid fills stay as the fallback where color-mix is unavailable.
   &.danger {
     --background: var(--ion-color-danger) !important;
   }
   &.warning {
     background: var(--ion-color-warning) !important;
+    --background: var(--ion-color-warning) !important;
+    --color: #1D2129 !important;
   }
   &.success {
     --background: var(--ion-color-success) !important;
@@ -155,14 +169,45 @@ ion-chip.label {
   }
   &.yellow {
     --background: var(--practera-yellow-100) !important;
-    --color: black !important;
+    --color: #1D2129 !important;
   }
   &.orange {
     --background: var(--practera-orange-100) !important;
+    --color: #1D2129 !important;
   }
   ion-label {
     font-size: 12px;
-    font-weight: 700 !important;
+    font-weight: 600 !important;
+  }
+}
+
+@supports (color: color-mix(in srgb, white, black)) {
+  ion-chip.label {
+    &.danger {
+      --background: color-mix(in srgb, var(--ion-color-danger) 14%, white) !important;
+      --color: #8E000C !important;
+    }
+    &.warning {
+      background: color-mix(in srgb, var(--ion-color-warning) 28%, white) !important;
+      --background: color-mix(in srgb, var(--ion-color-warning) 28%, white) !important;
+      --color: #6B4E00 !important;
+    }
+    &.success {
+      --background: color-mix(in srgb, var(--ion-color-success) 16%, white) !important;
+      --color: #0D5C0E !important;
+    }
+    &.dark-blue {
+      --background: color-mix(in srgb, var(--practera-dark-blue-100) 12%, white) !important;
+      --color: var(--practera-dark-blue-100) !important;
+    }
+    &.yellow {
+      --background: color-mix(in srgb, var(--practera-yellow-100) 32%, white) !important;
+      --color: #5C4300 !important;
+    }
+    &.orange {
+      --background: color-mix(in srgb, var(--practera-orange-100) 18%, white) !important;
+      --color: #8A3E0E !important;
+    }
   }
 }
 
@@ -577,4 +622,46 @@ quill-editor .ql-toolbar.ql-snow {
 // trigger out of the local UI and hide it if the vendor script fails to load.
 body:not(.accessibility-widget-enabled) app-personalised-header .accessibility-btn {
   display: none;
+}
+
+/******************
+  Facelift — shared Ionic surfaces
+******************/
+ion-item {
+  --border-color: var(--hairline);
+  transition: background-color var(--dur) var(--ease);
+}
+
+ion-header ion-toolbar {
+  --min-height: 56px;
+  --padding-start: 4px;
+  --padding-end: 8px;
+  --border-width: 0;
+  --background: var(--surface-raised);
+}
+
+ion-header ion-buttons {
+  align-items: center;
+}
+
+ion-modal,
+ion-popover {
+  --border-radius: var(--radius-lg);
+  --box-shadow: var(--shadow-md);
+}
+
+ion-searchbar {
+  --border-radius: var(--radius-md);
+  --box-shadow: none;
+}
+
+ion-input,
+ion-textarea,
+ion-select {
+  --border-radius: var(--radius-md);
+}
+
+ion-card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }

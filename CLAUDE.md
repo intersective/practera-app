@@ -7,16 +7,16 @@ This is **App V2** - the main Practera learner application built with Angular an
 ## Technology Stack
 
 - **Framework**: Angular 21
-- **UI Framework**: Ionic 8 (`@ionic/angular` + `@ionic/core`)
+- **UI Framework**: Ionic 9 (`@ionic/angular/lazy` + `@ionic/core`)
 - **Language**: TypeScript
 - **Build System**: esbuild (via `@angular-devkit/build-angular:application`) + Vite dev server
 - **State Management**: Services + RxJS
 - **Styling**: SCSS
 - **Deployment**: S3 + CloudFront (via Lambda@Edge)
 
-### Angular 21 / Ionic 8 Notes
+### Angular 21 / Ionic 9 Notes
 
-The app uses the **NgModule** approach (`IonicModule.forRoot()`) which is still supported in Ionic 8 but not the recommended modern style. Ionic 8 + Angular 21 recommends standalone components with `provideIonicAngular()`. Migration to standalone is tracked as technical debt.
+The app uses the **NgModule** approach (`IonicModule.forRoot()` from `@ionic/angular/lazy`) which is still supported in Ionic 9 but not the recommended modern style. Ionic 9 + Angular 21 recommends standalone components with `provideIonicAngular()`. Migration to standalone is tracked as technical debt. Import Ionic controllers from `@ionic/angular/lazy`.
 
 Angular 21 uses an esbuild-based application builder with a Vite dev server (replacing the old webpack builder). This affects Ionic's Stencil lazy loader: Vite tries to pre-bundle `@ionic/core` and `@ionic/angular` but cannot statically analyze Stencil's dynamic chunk imports, causing missing files in the dep cache. The workaround is `prebundle.exclude` in `angular.json`'s `serve.options` — this is already configured and must not be removed:
 

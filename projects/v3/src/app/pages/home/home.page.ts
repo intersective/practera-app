@@ -16,7 +16,7 @@ import { UtilsService } from '@v3/services/utils.service';
 import { Observable, Subject, of } from 'rxjs';
 import { distinctUntilChanged, filter, first, takeUntil, catchError } from 'rxjs/operators';
 import { FastFeedbackService } from '@v3/app/services/fast-feedback.service';
-import { AlertController, ModalController, IonModal, ViewWillEnter } from '@ionic/angular';
+import { AlertController, ModalController, IonModal, ViewWillEnter } from '@ionic/angular/lazy';
 import { Activity, TodoGroupData } from '@v3/app/services/activity.service';
 import { ApolloService } from '@v3/app/services/apollo.service';
 import { UppyUploaderService } from '@v3/app/components/uppy-uploader/uppy-uploader.service';

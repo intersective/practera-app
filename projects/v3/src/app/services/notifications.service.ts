@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular/lazy';
 import { AlertOptions, ToastOptions, ModalOptions, LoadingOptions } from '@ionic/core';
 import { PopUpComponent } from '../components/pop-up/pop-up.component';
 import { AchievementPopUpComponent } from '../components/achievement-pop-up/achievement-pop-up.component';

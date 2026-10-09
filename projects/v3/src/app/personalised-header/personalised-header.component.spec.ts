@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { of, Subject } from 'rxjs';
 import { AnimationsService } from '../services/animations.service';
@@ -60,7 +60,9 @@ describe('PersonalisedHeaderComponent', () => {
         {
           provide: NotificationsService,
           useValue: {
-            notification$: new Subject()
+            notification$: new Subject(),
+            systemNotices$: new Subject(),
+            notificationsCount: 0,
           },
         },
       ],

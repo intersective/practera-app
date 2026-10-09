@@ -53,7 +53,7 @@
     "@ffmpeg/core": "^0.12.10",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
-    "@ionic/angular": "^8.0.0",
+    "@ionic/angular": "9.0.7",
     "@ionic/angular-toolkit": "^12.3.0",
     "@uppy/angular": "^1.1.0",
     "@uppy/core": "^5.2.0",
@@ -119,6 +119,7 @@
     "typescript": "~5.9.3"
   },
   "overrides": {
-    "tar": "^7.5.13"
+    "tar": "^7.5.22",
+    "esbuild": "0.28.2"
   }
 }

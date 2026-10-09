@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { UppyUploaderService } from './uppy-uploader.service';
 import { BrowserStorageService } from '../../services/storage.service';
 import { Uppy, UppyFile } from '@uppy/core';

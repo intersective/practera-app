@@ -262,6 +262,7 @@ describe('AssessmentService', () => {
         type: assessment.type,
         description: assessment.description,
         isForTeam: assessment.isTeam,
+        signOff: assessment.signOff === true,
         dueDate: assessment.dueDate,
         isOverdue: assessment.dueDate ? utils.timeComparer(assessment.dueDate) < 0 : false,
         pulseCheck: assessment.pulseCheck,
@@ -400,6 +401,8 @@ describe('AssessmentService', () => {
         modified: submission.modified,
         isLocked: submission.locked,
         completed: submission.completed,
+        pendingReviewerName: submission.pendingReviewerName || null,
+        signOffs: submission.signOffs || [],
         reviewerName: submission.review.reviewer.name,
         answers: {
           1: {

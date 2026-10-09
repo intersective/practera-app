@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActivityService } from '@v3/services/activity.service';
 import { TopicService } from '@v3/services/topic.service';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 
 import { TopicMobilePage } from './topic-mobile.page';
 import { BehaviorSubject, of, Subject } from 'rxjs';

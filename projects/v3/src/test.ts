@@ -8,8 +8,17 @@ import {
   BrowserDynamicTestingModule,
   platformBrowserDynamicTesting
 } from '@angular/platform-browser-dynamic/testing';
-import { ModalController, PopoverController, AngularDelegate } from '@ionic/angular';
+import { ModalController, PopoverController, AngularDelegate } from '@ionic/angular/lazy';
 import { Apollo } from 'apollo-angular';
+
+// Headless Chrome waits on a real confirm/alert and drops the Karma connection.
+window.confirm = (message?: string) => {
+  console.log('CONFIRM:', message);
+  return true;
+};
+window.alert = (message?: string) => {
+  console.log('ALERT:', message);
+};
 
 declare const require: {
   context(path: string, deep?: boolean, filter?: RegExp): {

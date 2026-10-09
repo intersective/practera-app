@@ -20,9 +20,8 @@ ion-menu.collapsed {
 
     .hint {
       position: absolute;
-      // Top-right corner of the icon circle — not mid-height
-      right: -5px;
-      top: -5px;
+      right: -4px;
+      top: -4px;
       border-radius: 100%;
       font-size: 0.65em;
       min-width: 16px;
@@ -32,6 +31,11 @@ ion-menu.collapsed {
       align-items: center;
       justify-content: center;
       line-height: 1;
+      --background: var(--practera-notification);
+      background: var(--practera-notification);
+      color: #fff;
+      box-shadow: 0 0 0 2px var(--surface-raised);
+      z-index: 2;
 
       .icon-inner {
         height: 36px;
@@ -71,15 +75,23 @@ ion-menu.collapsed {
 
     .menu-item {
       --padding-start: 0px;
+      --min-height: 40px;
+      width: 40px;
+      height: 40px;
+      margin: 6px auto;
+      --border-radius: 12px;
 
       &.selected {
         --padding-start: 0px;
-        border-left: 3px solid;
-        border-left-color: var(--ion-color-primary);
+        --background: var(--brand-soft);
+        box-shadow: inset 0 0 0 1.5px var(--ion-color-primary);
       }
 
       a.menu-link {
         justify-content: center;
+        min-height: 40px;
+        height: 40px;
+        padding: 0;
 
         ion-label {
           display: none;
@@ -102,7 +114,11 @@ ion-menu.collapsed {
     }
 
     .institute-logo-container {
-      padding: 2em 0.3em;
+      height: 56px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       &.hidden {
         visibility: hidden;
       }
@@ -111,8 +127,7 @@ ion-menu.collapsed {
 }
 
 ion-menu {
-  border-right: 1px solid;
-  border-right-color: var(--practera-grey-25);
+  border-right: 1px solid var(--hairline);
 
   .badge-wrapper {
     display: flex;
@@ -185,7 +200,10 @@ ion-item-divider {
 
 .menu-item {
   --padding-start: 0px;
-  --min-height: 48px;
+  --min-height: 44px;
+  --border-radius: var(--radius-md);
+  --background: transparent;
+  margin: 2px 10px;
 
   // Prevent ion-item from intercepting clicks when it contains a menu-link
   &:has(a.menu-link) {
@@ -220,21 +238,26 @@ ion-item-divider {
   }
 
   ion-icon {
-    color: var(--ion-color-primary);
-    font-size: 24px;
+    color: var(--text-muted);
+    font-size: 22px;
   }
 
   &.selected {
     --padding-start: 0px;
-    border-left: 3px solid;
-    border-left-color: var(--ion-color-primary);
+    --background: var(--brand-soft);
+    box-shadow: inset 3px 0 0 var(--ion-color-primary);
 
     a.menu-link {
       padding-left: 17px;
     }
 
     ion-icon {
-      color: var(--ion-color-primary);
+      color: var(--brand-ink);
+    }
+
+    ion-label {
+      color: var(--brand-ink) !important;
+      font-weight: 600 !important;
     }
   }
 }

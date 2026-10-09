@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { EventsPage } from './events.page';

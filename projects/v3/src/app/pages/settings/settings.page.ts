@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { NotificationsService } from '@v3/services/notifications.service';
 import { Subject, firstValueFrom } from 'rxjs';
-import { AlertOptions, ModalController } from '@ionic/angular';
+import { AlertOptions, ModalController } from '@ionic/angular/lazy';
 import { RequestService } from 'request';
 
 import { environment } from '@v3/environments/environment';

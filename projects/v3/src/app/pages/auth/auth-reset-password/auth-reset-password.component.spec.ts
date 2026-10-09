@@ -12,7 +12,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { BrowserStorageServiceMock } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { TestUtils } from '@testingv3/utils';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 
 describe('AuthResetPasswordComponent', () => {
   let component: AuthResetPasswordComponent;

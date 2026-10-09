@@ -19,29 +19,34 @@
 
 ion-item {
   cursor: pointer;
+  --border-radius: var(--radius-md);
+  margin: 2px 8px;
+  transition: background-color var(--dur) var(--ease);
   &.hasCallToActionBtn {
     cursor: unset;
   }
   &:hover, &:focus {
-    --background: var(--practera-light-grey-25);
+    --background: var(--brand-softer);
   }
 }
 
 .active {
-  --background: var(--practera-light-grey-25);
+  --background: var(--brand-soft);
 }
 ion-avatar {
   --border-radius: 8px;
 }
 .item-subtitle-1, .item-subtitle-2 {
   margin: 4px 0 0;
+  color: var(--text-muted) !important;
 }
 
 .leading-icon {
-  border-radius: 6px;
-  padding: 8px 8px;
-  color: white;
-  background: var(--ion-color-primary);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  font-size: 20px;
+  color: var(--brand-ink);
+  background: var(--brand-soft);
 }
 
 .notification-icon {
@@ -120,7 +125,7 @@ ion-avatar {
 
 // make activity title stand out
 .lastVisited {
-  --background: var(--practera-light-grey-25);
+  --background: var(--brand-softer);
   div.body-2 {
     font-style: italic !important;
   }

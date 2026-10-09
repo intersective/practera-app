@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit, forwardRef } from '@angular/core';
 import { supportQuestionList  } from './support-questions';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { HubspotService, HubspotFormParams } from '@v3/services/hubspot.service';
 import { UppyUploaderService, UppyFileData } from '../uppy-uploader/uppy-uploader.service';
 import { UtilsService } from '@v3/services/utils.service';

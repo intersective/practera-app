@@ -7,9 +7,11 @@ ion-avatar {
 
 .buttons {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
-  padding: 11px;
+  gap: 4px;
+  height: 56px;
+  padding: 0 4px 0 0;
 
   .global-progress-bar {
     position: fixed;
@@ -35,30 +37,51 @@ ion-avatar {
   }
 
   .avatar-btn {
-    height: 100%;
+    width: 36px;
+    height: 36px;
+    margin: 0 0 0 4px;
+    --padding-start: 0;
+    --padding-end: 0;
+    --background: transparent;
+    --box-shadow: none;
+
+    .ion-margin-horizontal {
+      margin: 0;
+    }
+
     &.no-hover-effect {
       --background-hover: none;
     }
   }
   .accessibility-btn,
   .notify-btn {
-    height: 34px;
-    width: 34px;
-    margin: 0px 12px 0px 0px;
-    --padding-top: 1px;
-    --padding-end: 1px;
-    --padding-bottom: 1px;
-    --padding-start: 1px;
+    height: 36px;
+    width: 36px;
+    margin: 0;
+    --padding-top: 0;
+    --padding-end: 0;
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --border-radius: 50%;
+    --background: transparent;
+    --background-hover: var(--surface-canvas);
+    --box-shadow: none;
+
+    ion-icon {
+      font-size: 22px;
+    }
   }
 
   .notify-btn {
     .hint {
-      background-color: red;
+      --background: var(--practera-notification);
+      background-color: var(--practera-notification);
+      color: #fff;
+      box-shadow: 0 0 0 2px var(--surface-raised);
       position: absolute;
       right: -1.5px;
       border-radius: 100%;
       padding: 2px 4px;
-      /* overflow: visible; */
       font-size: 0.7em;
       display: flex;
       align-items: center;
@@ -68,14 +91,20 @@ ion-avatar {
     font-size: 32px;
   }
   .support-btn {
-    height: 26px;
-    margin: 0px 12px 0px 0px;
-    --color: var(--practera-dark-blue-100);
-    --background: var(--practera-orange-50);
+    height: 36px;
+    margin: 0 4px 0 0;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --color: var(--brand-ink);
+    --background: var(--brand-soft);
+    --background-hover: var(--brand-softer);
+    --box-shadow: none;
     font-size: 12px !important;
+    font-weight: 600;
     --border-radius: 22px;
     &.mobile {
       --background: transparent;
+      --background-hover: var(--brand-softer);
       --padding-start: 0 !important;
       --padding-end: 0 !important;
     }

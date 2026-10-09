@@ -344,13 +344,13 @@ describe('ChatService', () => {
         channelUuid: '10'
       }).subscribe();
       expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);
-      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
-        {
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual({
+        input: jasmine.objectContaining({
           message: 'test message',
           channelUuid: '10',
           fileObj: undefined
-        }
-      ));
+        }),
+      });
     });
 
     it('postAttachmentMessage() should call with correct data', () => {
@@ -406,13 +406,13 @@ describe('ChatService', () => {
         }
       );
       expect(apolloSpy.graphQLMutate.calls.count()).toBe(1);
-      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual(jasmine.objectContaining(
-        {
+      expect(apolloSpy.graphQLMutate.calls.first().args[1]).toEqual({
+        input: jasmine.objectContaining({
           message: 'test message',
           channelUuid: '10',
           fileObj: attachmentMessageParam.file
-        }
-      ));
+        }),
+      });
     });
   });
 

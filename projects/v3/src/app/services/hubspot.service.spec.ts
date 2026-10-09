@@ -4,7 +4,7 @@ import { HubspotService } from './hubspot.service';
 import { RequestService } from 'request';
 import { UtilsService } from '@v3/services/utils.service';
 import { BrowserStorageService } from '@v3/services/storage.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { DemoService } from './demo.service';
 
 describe('HubspotService', () => {

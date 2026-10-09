@@ -1,4 +1,4 @@
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { NotificationsService } from '../../services/notifications.service';
 import { BrowserStorageService } from '../../services/storage.service';
 import { UppyUploaderComponent } from './uppy-uploader.component';

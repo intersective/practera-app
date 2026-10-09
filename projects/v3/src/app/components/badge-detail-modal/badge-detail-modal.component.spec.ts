@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, tick, waitForAsync } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { ModalController, AlertController, LoadingController } from '@ionic/angular';
+import { ModalController, AlertController, LoadingController } from '@ionic/angular/lazy';
 import { of } from 'rxjs';
 
 import { BadgeDetailModalComponent } from './badge-detail-modal.component';

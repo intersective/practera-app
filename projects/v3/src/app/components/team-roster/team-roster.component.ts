@@ -40,7 +40,9 @@ export class TeamRosterComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const teamId = this.storage.getUser()?.teamId;
     this.hasTeam = typeof teamId === 'number';
-    this.loadTeamMembers();
+    if (this.hasTeam) {
+      this.loadTeamMembers();
+    }
   }
 
   ngOnDestroy(): void {

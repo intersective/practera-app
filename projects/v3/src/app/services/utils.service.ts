@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common';
 
 import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular/lazy';
 import dayjs from 'dayjs';
 import { Colors, BrowserStorageService } from './storage.service';
 import convert from 'color-convert';

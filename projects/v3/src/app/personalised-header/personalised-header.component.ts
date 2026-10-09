@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { SettingsPage } from '@v3/app/pages/settings/settings.page';
 import { AnimationsService } from '@v3/services/animations.service';
 import { Subscription } from 'rxjs';

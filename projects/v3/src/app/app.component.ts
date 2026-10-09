@@ -6,7 +6,7 @@ import {
   OnDestroy,
 } from "@angular/core";
 import { NavigationEnd, NavigationStart, Router } from "@angular/router";
-import { Platform } from "@ionic/angular";
+import { Platform } from "@ionic/angular/lazy";
 import { SharedService } from "@v3/services/shared.service";
 import { environment } from "@v3/environments/environment";
 import { BrowserStorageService } from "@v3/services/storage.service";

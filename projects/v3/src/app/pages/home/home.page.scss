@@ -38,7 +38,7 @@
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
-    border-right: 1px solid var(--practera-grey-25);
+    border-right: 1px solid var(--hairline);
     // no longer needs sticky — it is its own scroll container
   }
 
@@ -54,8 +54,10 @@
 
 .hero-card {
   position: relative;
-  width: 100%;
+  width: auto;
+  margin: 12px 12px 0;
   min-height: 180px;
+  border-radius: var(--radius-lg);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -144,7 +146,7 @@
 
 .brief-section {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--practera-grey-25);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .timesheet-card {
@@ -227,19 +229,26 @@
 // ── Home right (tabs + panel) ──────────────────────────────────────────────
 
 .home-segment {
-  --background: var(--ion-color-light);
-  padding: 10px 10px 0;
-  border-radius: 0;
+  --background: var(--surface-canvas);
+  margin: 12px 12px 0;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
   position: sticky;
-  top: 0;
+  top: 8px;
   z-index: 10;
-  border-bottom: 1px solid var(--practera-grey-25);
 
   ion-segment-button {
     min-width: 0;
     --padding-start: 8px;
     --padding-end: 8px;
+    --border-radius: 999px;
+    --indicator-color: var(--surface-raised);
+    --indicator-box-shadow: var(--shadow-sm);
+    --color: var(--text-muted);
+    --color-checked: var(--text-strong);
     font-size: 0.8rem;
+    font-weight: 600;
 
     ion-label {
       white-space: nowrap;
@@ -258,9 +267,11 @@ ion-segment-button.ion-focused {
 // ── Milestone names ────────────────────────────────────────────────────────
 
 .milestone-name {
-  --color: var(--ion-color-primary);
-  --background: var(--ion-color-primary-tint);
-  border-radius: 8px;
+  --color: var(--brand-ink);
+  --background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-xs);
+  border-radius: var(--radius-md);
   margin: 12px 8px 0;
   overflow: hidden;
 
@@ -339,15 +350,62 @@ ion-segment-button.ion-focused {
 // ── My Team panel ──────────────────────────────────────────────────────────
 
 .team-panel {
-  padding: 8px 0;
+  padding: 8px 20px 28px;
+
+  > .ion-padding-top {
+    margin-top: 4px;
+    padding: 18px 18px 16px;
+    background: var(--surface-raised);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xs);
+
+    h4 {
+      margin: 0 0 6px;
+      color: var(--text-strong);
+    }
+
+    p {
+      margin: 0 0 14px;
+      max-width: 52ch;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    ion-item {
+      --background: var(--surface-canvas);
+      --border-color: transparent;
+      margin: 0 0 8px;
+      border-radius: var(--radius-md);
+    }
+
+    ion-button {
+      --background: var(--brand-soft);
+      --background-hover: var(--brand-softer);
+      --border-color: transparent;
+      --color: var(--brand-ink);
+      --border-radius: 999px;
+      --box-shadow: none;
+      height: 36px;
+      font-weight: 600;
+      margin: 0;
+
+      &::part(native) {
+        background: var(--brand-soft);
+        border-color: transparent;
+        color: var(--brand-ink);
+        border-radius: 999px;
+      }
+    }
+  }
 }
 
 .team-name-heading {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 14px 16px 10px;
-  color: var(--ion-color-primary);
+  padding: 14px 0 10px;
+  color: var(--brand-ink);
 
   ion-icon {
     font-size: 1.1rem;
@@ -363,6 +421,19 @@ ion-segment-button.ion-focused {
 
 .badges-header-btn {
   position: relative;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --border-radius: 50%;
+  --background: transparent;
+  --background-hover: var(--surface-canvas);
+  --box-shadow: none;
+
+  ion-icon {
+    font-size: 22px;
+  }
 
   .badges-count {
     position: absolute;
@@ -441,10 +512,11 @@ ion-segment-button.ion-focused {
 
 .ontrack-content-container {
   margin: 0 8px;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline);
   padding: 24px 20px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
 
   &:hover {
     transform: translateY(-2px);
@@ -535,10 +607,11 @@ ion-segment-button.ion-focused {
 .skill-card {
   margin: 0;
   height: 100%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease);
 
   &:hover {
     transform: translateY(-2px);
@@ -697,6 +770,15 @@ ion-segment-button.ion-focused {
 @media (min-width: 1024px) {
   .hero-title {
     font-size: 1.55rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ontrack-content-container:hover,
+  .skill-card:hover,
+  .traffic-light-enhanced ::ng-deep .traffic-light-group .traffic-light-labels:hover,
+  .traffic-light-enhanced ::ng-deep .traffic-light-group .traffic-light-dot:hover {
+    transform: none;
   }
 }
 

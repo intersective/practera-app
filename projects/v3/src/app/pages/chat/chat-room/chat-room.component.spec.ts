@@ -12,7 +12,7 @@ import { PusherService } from '@v3/services/pusher.service';
 import { ModalService } from '@v3/services/modal.service';
 import { MockRouter } from '@testingv3/mocked.service';
 import { Router, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { IonContent, ModalController, PopoverController } from '@ionic/angular';
+import { IonContent, ModalController, PopoverController } from '@ionic/angular/lazy';
 import { TestUtils } from '@testingv3/utils';
 import { mockMembers } from '@testingv3/fixtures';
 
@@ -295,7 +295,9 @@ describe('ChatRoomComponent', () => {
         channelUuid: pusherData.channelUuid,
         senderUuid: '8bee29d0-bf45',
         sentAt: undefined,
-        scheduled: undefined
+        scheduled: undefined,
+        chatLogId: undefined,
+        reactions: []
       });
     }));
   });
@@ -347,7 +349,9 @@ describe('ChatRoomComponent', () => {
         senderRole: saveMessageRes.senderRole,
         senderAvatar: saveMessageRes.senderAvatar,
         sentAt: undefined,
-        preview: undefined
+        preview: undefined,
+        chatLogId: undefined,
+        reactions: []
       });
     });
 

@@ -17,6 +17,9 @@ describe('TaxonomyService', () => {
       ],
     });
 
+    // test.ts installs an empty Apollo override before this hook. Replace it
+    // with the spy this spec configures, otherwise query() returns undefined.
+    TestBed.overrideProvider(Apollo, { useValue: apolloSpy });
     service = TestBed.inject(TaxonomyService);
   });
 

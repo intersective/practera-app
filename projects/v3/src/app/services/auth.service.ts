@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { QueryEncoder, RequestService } from 'request';
 import { HttpParams } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject, defer } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -149,6 +149,7 @@ interface AuthQuery {
 export class AuthService {
   private authCache$: BehaviorSubject<any> = new BehaviorSubject(null);
   private authCache: any;
+  private profileAvatarRevision = 0;
   private authObservable$: Observable<AuthEndpoint>;
   private lastKnownApikey: string | null = null;
 
@@ -669,41 +670,53 @@ export class AuthService {
       });
       return of(this.demo.myInfo as any);
     }
-    return this.apolloService.graphQLFetch(
-      `query user {
-        user {
-          id
-          uuid
-          name
-          firstName
-          lastName
-          avatar
-          email
-          image
-          role
-          contactNumber
-          userHash
-        }
-      }`
-    ).pipe(map(response => {
-      if (response?.data?.user) {
-        const thisUser = response.data.user;
+    // Apollo starts the request on subscription; capture the revision at the same time.
+    return defer(() => {
+      const avatarRevision = this.profileAvatarRevision;
+      return this.apolloService.graphQLFetch(
+        `query user {
+          user {
+            id
+            uuid
+            name
+            firstName
+            lastName
+            avatar
+            email
+            image
+            role
+            contactNumber
+            userHash
+          }
+        }`,
+        // A post-save read must not share an older in-flight request.
+        { context: { queryDeduplication: false } }
+      ).pipe(map(response => {
+        if (response?.data?.user) {
+          let thisUser = response.data.user;
+          if (avatarRevision !== this.profileAvatarRevision) {
+            // This read started before an avatar save. Preserve the latest cached image.
+            const currentUser = this.storage.getUser();
+            thisUser = { ...thisUser, avatar: currentUser.avatar, image: currentUser.image };
+          }
 
-        this.storage.setUser({
-          uuid: thisUser.uuid,
-          name: thisUser.name,
-          firstName: thisUser.firstName,
-          lastName: thisUser.lastName,
-          avatar: thisUser.avatar,
-          email: thisUser.email,
-          image: thisUser.image,
-          role: thisUser.role,
-          contactNumber: thisUser.contactNumber,
-          userHash: thisUser.userHash
-        });
-      }
-      return response;
-    }));
+          this.storage.setUser({
+            uuid: thisUser.uuid,
+            name: thisUser.name,
+            firstName: thisUser.firstName,
+            lastName: thisUser.lastName,
+            avatar: thisUser.avatar,
+            email: thisUser.email,
+            image: thisUser.image,
+            role: thisUser.role,
+            contactNumber: thisUser.contactNumber,
+            userHash: thisUser.userHash
+          });
+          return { ...response, data: { ...response.data, user: thisUser } };
+        }
+        return response;
+      }));
+    });
   }
 
   /**
@@ -724,6 +737,11 @@ export class AuthService {
       }
     `, {
       avatar
-    });
+    }).pipe(map(response => {
+      if (response?.data?.updateUserProfile?.success === true) {
+        this.profileAvatarRevision++;
+      }
+      return response;
+    }));
   }
 }

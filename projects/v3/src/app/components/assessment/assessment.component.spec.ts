@@ -17,7 +17,7 @@ import { BehaviorSubject, of, Subject } from 'rxjs';
 import { MockRouter } from '@testingv3/mocked.service';
 import { TestUtils } from '@testingv3/utils';
 import { ApolloService } from '@v3/app/services/apollo.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 
 /**
  * mock value accessor directive to satisfy formControlName bindings
@@ -3106,7 +3106,10 @@ describe('AssessmentComponent', () => {
         scrollToTop: (duration?: number) => Promise<void>;
       };
       const scrollToTopSpy = jasmine.createSpy('scrollToTop').and.resolveTo();
-      scrollContainer.scrollToTop = scrollToTopSpy;
+      Object.defineProperty(scrollContainer, 'scrollToTop', {
+        configurable: true,
+        value: scrollToTopSpy,
+      });
       scrollContainer.appendChild(fixture.nativeElement);
 
       component.goToPage(2);
@@ -3411,6 +3414,12 @@ describe('AssessmentComponent', () => {
     });
 
     describe('semantic member sections and trailing groups', () => {
+      beforeEach(() => {
+        // The unit-test environment turns assessment pagination off. These cases
+        // exercise the page map, so pagination has to be on for this block.
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      });
+
       it('keeps multiple leading non-peer pages accessible before the first peer page', () => {
         component.task = { assessmentType: 'team360' } as any;
         const general = textGroup(10);
@@ -3938,6 +3947,10 @@ describe('AssessmentComponent', () => {
     });
 
     describe('setSubmissionDisabled() team 360 enforcement', () => {
+      beforeEach(() => {
+        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
+      });
+
       it('keeps button disabled when the first peer page is visited but its selector is unanswered', () => {
         component.task = { assessmentType: 'team360' } as any;
         const g0 = textGroup(10), g1 = selectorGroup(20), g2 = selectorGroup(100), g3 = selectorGroup(101);
@@ -4077,7 +4090,6 @@ describe('AssessmentComponent', () => {
       it('deduplication: 4 groups same member → visiting 1 page enables submit', () => {
         // actual live-data bug: 4 non-self groups all showing learner 004. should need only 1 page
         // visit, not 4.
-        spyOnProperty(component, 'isPaginationEnabled').and.returnValue(true);
         component.task = { assessmentType: 'team360' } as any;
         const sameMember = (id: number) => ({
           name: `Group ${id}`,

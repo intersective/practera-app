@@ -4,14 +4,19 @@
   width: 100%;
   display: block;
   justify-content: center;
-  border-top: 1px solid var(--ion-color-light-shade);
-  background: var(--ion-color-light);
-  color: var(--ion-color-dark);
+  border-top: none;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 -8px 24px rgba(16, 24, 40, 0.06);
+  color: var(--text-strong);
   padding: 8px 0;
 
   ion-button {
     min-width: 200px;
     flex: 0 1 auto;
+    --border-radius: var(--radius-md);
+    --box-shadow: var(--shadow-sm);
 
     // restore padding that was removed by global button reset
     --padding-top: 13px;

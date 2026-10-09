@@ -152,13 +152,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "12kb",
+                  "maximumError": "20kb"
                 }
               ],
               "fileReplacements": [
@@ -219,7 +219,7 @@
             "proxyConfig": "proxy.conf.json",
             "allowedHosts": [".practera.local", "localhost"],
             "prebundle": {
-              "exclude": ["@ionic/angular", "@ionic/core", "@ionic/core/loader", "@stencil/core", "ngx-quill", "quill", "quill-magic-url", "@uppy/angular", "@uppy/core", "@uppy/dashboard", "@uppy/tus"]
+              "exclude": ["@ionic/angular", "@ionic/angular/lazy", "@ionic/core", "@ionic/core/loader", "@stencil/core", "ngx-quill", "quill", "quill-magic-url", "@uppy/angular", "@uppy/core", "@uppy/dashboard", "@uppy/tus"]
             }
           }
         },

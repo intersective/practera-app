@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { of } from 'rxjs';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/app/services/notifications.service';

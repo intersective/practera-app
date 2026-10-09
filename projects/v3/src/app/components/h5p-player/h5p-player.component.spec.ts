@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, fakeAsync, flushMicrotasks, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { H5pPlayerComponent } from './h5p-player.component';
 
 describe('H5pPlayerComponent', () => {
@@ -48,6 +48,7 @@ describe('H5pPlayerComponent', () => {
     expect((completedSpy.calls.mostRecent().args[0] as CustomEvent).detail).toEqual({
       taskId: 42,
       contextId: 7,
+      score: null,
     });
 
     window.removeEventListener('h5pTaskCompleted', completedSpy);

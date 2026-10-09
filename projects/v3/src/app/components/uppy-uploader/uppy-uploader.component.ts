@@ -9,7 +9,7 @@ import { environment } from '@v3/environments/environment';
 import { NotificationsService } from './../../services/notifications.service';
 import { Component, OnInit, Input, Output, EventEmitter, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Uppy, UppyFile, UppyOptions, } from '@uppy/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { BrowserStorageService } from '../../services/storage.service';
 import Dashboard from '@uppy/dashboard';
 

@@ -167,7 +167,8 @@ describe('SharedService', () => {
         timelineId: undefined,
       });
       const result = await service.onPageLoad();
-      expect(httpSpy.get).toHaveBeenCalled();
+      // Local and test builds use the development IP fixture and do not call ipapi.
+      expect(httpSpy.get).not.toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
 
@@ -180,7 +181,7 @@ describe('SharedService', () => {
         activityCardImage: 'abc'
       });
       const result = await service.onPageLoad();
-      expect(httpSpy.get).toHaveBeenCalled();
+      expect(httpSpy.get).not.toHaveBeenCalled();
       expect(utilsSpy.changeThemeColor).toHaveBeenCalled();
       expect(utilsSpy.changeCardBackgroundImage).toHaveBeenCalled();
     });

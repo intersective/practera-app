@@ -2,7 +2,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { PopUpComponent } from './pop-up.component';
 import { Observable, of, pipe } from 'rxjs';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { Router } from '@angular/router';
 
 describe('PopUpComponent', () => {

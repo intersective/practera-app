@@ -12,7 +12,7 @@ import { NotificationsService } from '@v3/app/services/notifications.service';
 import { BehaviorSubject, exhaustMap, filter, finalize, Subject, Subscription, takeUntil } from 'rxjs';
 import { Task } from '@v3/app/services/activity.service';
 import { ComponentCleanupService } from '@v3/app/services/component-cleanup.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { FilePopupComponent } from '../file-popup/file-popup.component';
 import { buildTopicAttentionMetrics, TopicAttentionMetrics } from '@v3/app/models/topic-attention.model';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -424,15 +424,14 @@ export class TopicComponent implements OnInit, OnChanges, AfterViewChecked, OnDe
         return true;
       }
     }
-    const unsupportedExtensions = [
-      // audio formats
-      '.mp3', '.wav', '.ogg', '.aac', '.flac', '.wma', '.m4a',
-      // video formats (handled separately or opened externally)
-      '.mp4', '.webm', '.avi', '.mov', '.wmv', '.mkv', '.flv', '.m4v',
+    const previewExtensions = [
+      '.pdf', '.txt', '.csv',
+      '.png', '.jpg', '.jpeg', '.gif', '.webp',
+      '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx',
     ];
     const urlLower = (file.url || '').toLowerCase();
     const nameLower = (file.name || '').toLowerCase();
-    return !unsupportedExtensions.some(ext => urlLower.endsWith(ext) || nameLower.endsWith(ext));
+    return previewExtensions.some(ext => urlLower.endsWith(ext) || nameLower.endsWith(ext));
   }
 
   /**

@@ -81,6 +81,7 @@ export class BrowserStorageServiceMock extends SpyObject {
   singlePageAccess;
   setReferrer;
   setCountry;
+  getTabExperience;
 
   constructor() {
     super(BrowserStorageService);
@@ -106,6 +107,7 @@ export class BrowserStorageServiceMock extends SpyObject {
     });
     this.singlePageAccess = this.spy('singlePageAccess');
     this.setReferrer = this.spy('setReferrer').and.returnValue(true);
+    this.getTabExperience = this.spy('getTabExperience').and.returnValue(null);
   }
 
   getProviders(): Array<any> {

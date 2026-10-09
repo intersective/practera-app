@@ -1,6 +1,9 @@
+import { NgZone } from '@angular/core';
+import { Apollo } from 'apollo-angular';
+import { ApolloLink, Observable as ApolloObservable } from '@apollo/client/core';
 import { AuthService } from './auth.service';
 import { fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { firstValueFrom, of, Subject, throwError } from 'rxjs';
 import { RequestService } from 'request';
 import { Router } from '@angular/router';
 import { BrowserStorageService } from '@v3/services/storage.service';
@@ -67,6 +70,7 @@ describe('AuthService', () => {
             'set', 'getConfig',
             'setConfig', 'get',
             'clear', 'remove',
+            'getTabExperience',
           ]),
         },
         {
@@ -121,6 +125,147 @@ describe('AuthService', () => {
       { avatar }
     );
     expect(apolloSpy.graphQLFetch).not.toHaveBeenCalled();
+  });
+
+  describe('avatar refresh after an upload', () => {
+    let storage: BrowserStorageService;
+    let apollo: jasmine.SpyObj<ApolloService>;
+    const avatar = {
+      bucket: 'profile-images', path: '/users/new.png', name: 'new.png',
+      url: 'https://cdn.example.com/new.png', extension: 'png', type: 'image/png', size: 10,
+    };
+    const profileResponse = (url: string) => ({
+      data: { user: {
+        id: 1, uuid: 'uuid', name: 'Updated name', firstName: 'First', lastName: 'Last',
+        avatar: url, image: url, email: 'user@example.com', role: 'participant',
+        contactNumber: '+61', userHash: 'hash',
+      } },
+    });
+
+    beforeEach(() => {
+      // Keep storage merging/serialization real; only replace the browser's persistence boundary.
+      const values = new Map<string, string>();
+      storage = new BrowserStorageService({
+        getItem: (key: string) => values.get(key) ?? null,
+        setItem: (key: string, value: string) => { values.set(key, value); },
+      } as Storage);
+      storageSpy.setUser.and.callFake(user => storage.setUser(user));
+      storageSpy.getUser.and.callFake(() => storage.getUser());
+      storage.setUser({ avatar: 'https://cdn.example.com/old.png', image: 'https://cdn.example.com/old.png' });
+      apollo = TestBed.inject(ApolloService) as jasmine.SpyObj<ApolloService>;
+      apollo.graphQLMutate.and.returnValue(of({ data: { updateUserProfile: { success: true } } }));
+    });
+
+    const saveAvatar = async () => {
+      await firstValueFrom(service.updateUserProfile(avatar));
+      // Settings caches the display URL after the mutation succeeds.
+      storage.setUser({ avatar: avatar.url, image: avatar.url });
+    };
+
+    it('keeps a saved avatar when an earlier profile read returns late', async () => {
+      const pending = new Subject<any>();
+      apollo.graphQLFetch.and.returnValue(pending);
+      const read = firstValueFrom(service.getMyInfo());
+      await saveAvatar();
+      const response = profileResponse('https://cdn.example.com/old.png');
+      pending.next(response);
+      pending.complete();
+
+      const result = await read;
+      expect(storage.getUser().avatar).toBe('https://cdn.example.com/new.png');
+      expect(storage.getUser().image).toBe('https://cdn.example.com/new.png');
+      expect(storage.getUser().name).toBe('Updated name');
+      expect(result.data.user.image).toBe('https://cdn.example.com/new.png');
+      expect((result.data.user as any).avatar).toBe('https://cdn.example.com/new.png');
+      expect(response.data.user.avatar).toBe('https://cdn.example.com/old.png');
+    });
+
+    it('accepts a fresh signed URL without letting earlier reads replace it', async () => {
+      const earlier = new Subject<any>();
+      const fresh = new Subject<any>();
+      apollo.graphQLFetch.and.returnValues(earlier, earlier, fresh);
+      const firstRead = firstValueFrom(service.getMyInfo());
+      const secondRead = firstValueFrom(service.getMyInfo());
+      await saveAvatar();
+      const freshRead = firstValueFrom(service.getMyInfo());
+      fresh.next(profileResponse('https://cdn.example.com/new.png?Signature=renewed'));
+      fresh.complete();
+      await freshRead;
+      earlier.next(profileResponse('https://cdn.example.com/old.png'));
+      earlier.complete();
+      await Promise.all([firstRead, secondRead]);
+
+      expect(storage.getUser().avatar).toBe('https://cdn.example.com/new.png?Signature=renewed');
+      expect(storage.getUser().image).toBe('https://cdn.example.com/new.png?Signature=renewed');
+    });
+
+    it('does not reuse a pre-save Apollo request for a post-save profile refresh', async () => {
+      const pending: Array<{ next: (value: any) => void; complete: () => void }> = [];
+      const link = new ApolloLink(operation => new ApolloObservable(observer => {
+        if (operation.operationName === 'updateUserProfile') {
+          observer.next({ data: { updateUserProfile: { success: true } } });
+          observer.complete();
+        } else {
+          pending.push(observer);
+        }
+      }));
+      // Keep Apollo's actual query deduplication and the app's context forwarding real.
+      const client = new Apollo(new NgZone({}));
+      const graphql = new ApolloService(client, { create: () => link } as any, requestSpy);
+      const auth = new AuthService(
+        TestBed.inject(DemoService), requestSpy, storage, utilsSpy, routerSpy, pusherSpy,
+        graphql, TestBed.inject(UnlockIndicatorService),
+      );
+      try {
+        const earlierRead = firstValueFrom(auth.getMyInfo());
+        await firstValueFrom(auth.updateUserProfile(avatar));
+        storage.setUser({ avatar: avatar.url, image: avatar.url });
+        const freshRead = firstValueFrom(auth.getMyInfo());
+
+        pending[0].next(profileResponse('https://cdn.example.com/old.png'));
+        pending[0].complete();
+        // With deduplication disabled this is a separate post-save response.
+        if (pending[1]) {
+          pending[1].next(profileResponse('https://cdn.example.com/new.png?Signature=renewed'));
+          pending[1].complete();
+        }
+        const [, result] = await Promise.all([earlierRead, freshRead]);
+
+        expect(storage.getUser().avatar).toBe('https://cdn.example.com/new.png?Signature=renewed');
+        expect(storage.getUser().image).toBe('https://cdn.example.com/new.png?Signature=renewed');
+        expect(result.data.user.image).toBe('https://cdn.example.com/new.png?Signature=renewed');
+      } finally {
+        graphql.getClient().stop();
+      }
+    });
+
+    it('accepts a profile request subscribed after a save even if created earlier', async () => {
+      apollo.graphQLFetch.and.returnValue(of(profileResponse('https://cdn.example.com/new.png?Signature=fresh')));
+      const read = service.getMyInfo();
+      await saveAvatar();
+      await firstValueFrom(read);
+
+      expect(storage.getUser().avatar).toBe('https://cdn.example.com/new.png?Signature=fresh');
+    });
+
+    for (const failure of ['rejected', 'network error']) {
+      it(`still accepts an in-flight profile read when the save has a ${failure}`, async () => {
+        const pending = new Subject<any>();
+        apollo.graphQLFetch.and.returnValue(pending);
+        apollo.graphQLMutate.and.returnValue(failure === 'rejected'
+          ? of({ data: { updateUserProfile: { success: false } } })
+          : throwError(() => new Error('Network unavailable')));
+        const read = firstValueFrom(service.getMyInfo());
+        try {
+          await firstValueFrom(service.updateUserProfile(avatar));
+        } catch { /* A failed save must not invalidate the pending read. */ }
+        pending.next(profileResponse('https://cdn.example.com/old.png?Signature=renewed'));
+        pending.complete();
+        await read;
+
+        expect(storage.getUser().avatar).toBe('https://cdn.example.com/old.png?Signature=renewed');
+      });
+    }
   });
 
   it('when testing directLogin(), it should pass the correct data to API', () => {

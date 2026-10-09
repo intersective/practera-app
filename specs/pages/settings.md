@@ -9,6 +9,7 @@ The settings page allows learners to update their profile information, manage no
 ## Acceptance Criteria
 
 - **AC1**: Learner can view and update their profile (name, avatar).
+- **AC5**: A profile read that started before an avatar save finishes must not put the previous photo back. The photo just saved stays visible.
 - **AC2**: Notification preferences can be configured.
 - **AC3**: A contact support option is accessible.
 - **AC4**: Terms and conditions are viewable.

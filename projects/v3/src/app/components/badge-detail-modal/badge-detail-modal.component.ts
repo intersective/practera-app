@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController, AlertController, LoadingController } from '@ionic/angular';
+import { ModalController, AlertController, LoadingController } from '@ionic/angular/lazy';
 import { Achievement, AchievementService } from '@v3/app/services/achievement.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { HttpClient } from '@angular/common/http';

@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { UtilsService } from '@v3/services/utils.service';
 import { ReviewRatingComponent } from './review-rating.component';
 import { ReviewRatingService } from '@v3/services/review-rating.service';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { FastFeedbackService } from '@v3/services/fast-feedback.service';
 import { TestUtils } from '@testingv3/utils';
 import { NotificationsService } from '@v3/services/notifications.service';

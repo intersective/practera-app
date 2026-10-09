@@ -12,7 +12,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { Review } from '@v3/app/services/review.service';
-import { SegmentChangeEventDetail, SegmentValue } from '@ionic/angular';
+import { SegmentChangeEventDetail, SegmentValue } from '@ionic/angular/lazy';
 
 @Component({
   standalone: false,

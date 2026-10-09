@@ -11,7 +11,7 @@
 
   /** primary **/
   --ion-color-primary: #2bbfd4;
-  --ion-color-primary-rgb: rgb(var(--ion-color-primary));
+  --ion-color-primary-rgb: 43, 191, 212;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255,255,255;
   --ion-color-primary-shade: #2bbfd4;
@@ -290,4 +290,43 @@
   /** Review Page **/
   --practera-review-border-color: #008296;
 
+  /**
+   * Facelift tokens. Brand washes follow --ion-color-primary, which
+   * UtilsService.setColor() overwrites per institution at runtime.
+   * The tint/rgba values are the fallback for browsers without color-mix
+   * (Chrome < 111, Safari < 16.2). .browserslistrc still includes those.
+   */
+  --brand-soft: var(--ion-color-primary-tint);
+  --brand-softer: var(--ion-color-primary-tint);
+  --brand-ring: rgba(var(--ion-color-primary-rgb), 0.35);
+  /* Text/icons on white or a brand wash. Strong fallback keeps AA when color-mix is missing. */
+  --brand-ink: var(--text-strong);
+
+  --surface-canvas: #F7F8FA;
+  --surface-raised: #ffffff;
+  --hairline: rgba(16, 24, 40, 0.08);
+  --text-strong: #1D2129;
+  --text-body: #3A3F4B;
+  --text-muted: #5F6573;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.12), 0 2px 6px rgba(16, 24, 40, 0.06);
+
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur: 160ms;
+
+}
+
+@supports (color: color-mix(in srgb, white, black)) {
+  :root {
+    --brand-soft: color-mix(in srgb, var(--ion-color-primary) 10%, white);
+    --brand-softer: color-mix(in srgb, var(--ion-color-primary) 5%, white);
+    --brand-ring: color-mix(in srgb, var(--ion-color-primary) 35%, transparent);
+    --brand-ink: color-mix(in srgb, var(--ion-color-primary) 35%, #1D2129);
+  }
 }

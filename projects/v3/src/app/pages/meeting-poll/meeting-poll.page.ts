@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ModalController, AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { ModalController, AlertController, LoadingController, ToastController } from '@ionic/angular/lazy';
 import { MeetingPollService, MeetingPoll, MeetingPollSlot } from '@v3/services/meeting-poll.service';
 import { UtilsService } from '@v3/services/utils.service';
 

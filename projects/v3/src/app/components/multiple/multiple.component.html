@@ -6,8 +6,22 @@
         [ngClass]="{'item-bottom-border': !(choice.explanation && choice.explanation.changingThisBreaksApplicationSecurity && isSubmissionChoiceSelected(choice.id))}">
         <ion-label class="ion-text-wrap body-2 gray-3"
           [class.reviewer-feedback-choice]="isReviewerOnlyChoiceFeedback">
-          <div [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
-            [ngClass]="{'explanation': submission?.answer?.includes(choice.id) || review?.answer?.includes(choice.id)}"
+          @if (!isReviewerOnlyChoiceFeedback && !isReviewerFeedbackContext) {
+            @if (isSubmissionChoiceSelected(choice.id)) {
+              <ion-chip class="label orange">
+                @if (viewerRole === 'learner') {
+                  <span i18n>Your Answer</span>
+                } @else {
+                  <span i18n>Learner's Answer</span>
+                }
+              </ion-chip>
+            }
+            @if (isReviewChoiceSelected(choice.id)) {
+              <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
+            }
+          }
+          <div class="answer-content" [class.reviewer-feedback-choice-text]="isReviewerOnlyChoiceFeedback"
+            [ngClass]="{'explanation': isSubmissionChoiceSelected(choice.id) || isReviewChoiceSelected(choice.id)}"
             [innerHTML]="choice.name | detectLanguage"></div>
           @if (isReviewerOnlyChoiceFeedback) {
             @if (isReviewChoiceSelected(choice.id)) {
@@ -21,13 +35,6 @@
                 <span class="reviewer-choice-status-text" aria-hidden="true" i18n>Not selected</span>
                 <span class="for-accessibility" i18n>Not selected by reviewer</span>
               </span>
-            }
-          } @else {
-            @if (submission?.answer?.includes(choice.id)) {
-              <ion-chip class="label orange" i18n>Learner's Answer</ion-chip>
-            }
-            @if (review?.answer?.includes(choice.id)) {
-              <ion-chip class="label yellow black" i18n>Reviewer's Answer</ion-chip>
             }
           }
         </ion-label>

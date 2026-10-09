@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { ModalController, AlertController, ToastController, LoadingController } from '@ionic/angular/lazy';
 import { TestUtils } from '@testingv3/utils';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import { RequestService } from 'request';

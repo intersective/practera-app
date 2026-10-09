@@ -149,7 +149,7 @@ describe('FileDisplayComponent', () => {
 
       const imageEle: HTMLElement = fixture.nativeElement.querySelector('app-img');
       const videoEle: HTMLElement = fixture.nativeElement.querySelector('video');
-      const listItemEle: HTMLElement = fixture.nativeElement.querySelector('app-list-item');
+      const listItemEle: HTMLElement = fixture.nativeElement.querySelector('ion-item.file-row');
       expect(imageEle).toBeFalsy();
       expect(videoEle).toBeFalsy();
       expect(listItemEle).toBeTruthy();

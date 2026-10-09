@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { ProjectBriefModalComponent } from './project-brief-modal.component';
 import { ProjectBrief } from '../../models/project-brief.model';
 import { ProjectBriefMarkdownPipe } from '../../pipes/project-brief-markdown.pipe';
@@ -165,13 +165,13 @@ describe('ProjectBriefModalComponent', () => {
       expect(fixture.nativeElement.textContent).toContain('Social enterprise');
       expect(Array.from(fixture.nativeElement.querySelectorAll('.accordion-header'))
         .map((element: Element) => element.textContent?.trim())).toEqual([
-        'Project Overview',
+        'Overview',
         'Scope of Work',
         'Organisational Context',
         'Problem Statement',
         'Focus Area',
         'Project Outcomes',
-        'Industry',
+        'Sector',
         'Project Type',
         'Duration',
         'Location',
@@ -226,7 +226,7 @@ describe('ProjectBriefModalComponent', () => {
     });
 
     it('should use the primary brand color for section header icons', () => {
-      const icons: NodeListOf<Element> = fixture.nativeElement.querySelectorAll('.brief-accordion ion-item[slot="header"] ion-icon');
+      const icons: NodeListOf<Element> = fixture.nativeElement.querySelectorAll('.brief-accordion ion-item[slot="header"] > ion-icon');
       expect(icons.length).toBe(13);
       icons.forEach((icon) => {
         expect(icon.getAttribute('color')).toBe('primary');

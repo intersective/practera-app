@@ -1,8 +1,9 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { FilePreviewComponent } from './file-preview.component';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController } from '@ionic/angular/lazy';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { UtilsService } from '@v3/services/utils.service';
 import {
   HttpTestingController,
   HttpClientTestingModule
@@ -64,13 +65,14 @@ describe('FilePreviewComponent', () => {
 
   describe('download()', () => {
     it('should open and download from a URL', () => {
-      spyOn(window, 'open');
+      const utils = TestBed.inject(UtilsService);
+      spyOn(utils, 'downloadFile');
       component.file = {
         url: TEST_URL
       };
 
       component.download();
-      expect(window.open).toHaveBeenCalledWith(TEST_URL, '_system');
+      expect(utils.downloadFile).toHaveBeenCalledWith(TEST_URL, undefined);
     });
   });
 

@@ -7,7 +7,11 @@
 }
 
 .border-left {
-  border-left: 1px solid var(--practera-grey-25);
+  border-left: 1px solid var(--hairline);
+}
+
+ion-row > ion-col:first-child {
+  background: var(--surface-canvas);
 }
 
 ion-content {

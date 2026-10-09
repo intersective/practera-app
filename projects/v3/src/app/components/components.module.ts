@@ -2,7 +2,7 @@ import { TrafficLightComponent } from './traffic-light/traffic-light.component';
 import { AvatarComponent } from './avatar/avatar.component';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DescriptionComponent } from './description/description.component';
 import { ListItemComponent } from './list-item/list-item.component';

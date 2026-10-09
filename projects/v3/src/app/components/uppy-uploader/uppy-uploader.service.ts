@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { Injectable } from '@angular/core';
 import { UploadResult, Uppy, UppyFile, UppyOptions } from '@uppy/core';
 import Tus from '@uppy/tus';
@@ -18,17 +18,8 @@ export interface UppyUploaderResponse {
   size: number;
 }
 
-export type UppyUploadSource =
-  | 'chat'
-  | 'profile'
-  | 'user-profile'
-  | 'assessment'
-  | 'media-manager'
-  | 'static'
-  | 'any'
-  | 'video'
-  | 'document'
-  | 'image';
+const UPLOAD_SOURCES = ['chat', 'user-profile', 'assessment', 'media-manager', 'static', 'project-hub'] as const;
+export type UppyUploadSource = typeof UPLOAD_SOURCES[number] | 'profile' | 'any' | 'video' | 'document' | 'image';
 
 export interface TusUploadResponse {
   path: string;
@@ -146,7 +137,12 @@ export class UppyUploaderService {
       console.error('Uppy configuration is missing or incomplete.');
     }
 
+    if (!(UPLOAD_SOURCES as readonly string[]).includes(source)) {
+      throw new Error('Unsupported upload source.');
+    }
+
     const restrictions = { ...environment.uppyConfig.restrictions, ...options };
+    const requestFiles = new WeakMap<object, UppyFile<FileMetadata, FileBody>>();
 
     const uppyOptions: UppyOptions<FileMetadata, FileBody> = {
       debug: true,
@@ -173,16 +169,42 @@ export class UppyUploaderService {
       onSuccess: (upload) => {
         console.log("Upload complete:", upload);
       },
+      onBeforeRequest: (req, file) => {
+        requestFiles.set(req, file);
+      },
       onAfterResponse: (req, res) => {
-        if (req.getMethod() === 'PATCH') {
-          // Handle response data extraction here if needed
-          console.log('onAfterResponse::', res.getBody());
-          events.onAfterResponse(req, res);
+        // Let tus-js-client handle HTTP errors; error bodies are not upload metadata.
+        if (res.getStatus() < 200 || res.getStatus() >= 300) {
+          return;
+        }
+
+        const method = req.getMethod();
+        if (method === 'HEAD') {
+          const offset = res.getHeader('Upload-Offset');
+          const length = res.getHeader('Upload-Length');
+          if (offset !== null && length !== null && /^\d+$/.test(offset) && /^\d+$/.test(length) && Number(offset) === Number(length)) {
+            const result = res.getHeader('Upload-Result');
+            events?.onAfterResponse(req, {
+              getBody: () => result || '',
+            });
+          }
+          return;
+        }
+
+        if (method === 'POST' || method === 'PATCH') {
+          const file = requestFiles.get(req);
+          const offset = res.getHeader('Upload-Offset');
+          const completed = (method === 'POST' && file?.size === 0) ||
+            (offset !== null && Number(offset) === file?.size);
+          if (completed) {
+            console.log('onAfterResponse::', res.getBody());
+            events?.onAfterResponse(req, res);
+          }
         }
       },
     });
 
-    this.initializeEventHandlers(uppy, events.onUploadSuccess);
+    this.initializeEventHandlers(uppy, events?.onUploadSuccess);
 
     return uppy;
   }

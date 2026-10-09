@@ -7,7 +7,7 @@ import { BrowserStorageService } from '@v3/services/storage.service';
 import { UtilsService } from '@v3/services/utils.service';
 import { DemoService } from './demo.service';
 import { ApolloService } from './apollo.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController } from '@ionic/angular/lazy';
 
 // helper to build a valid pulse check API response
 function makePulseCheckResponse(questions: any[] = [], meta: any = null) {

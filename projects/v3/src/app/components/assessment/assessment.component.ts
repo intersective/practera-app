@@ -21,7 +21,7 @@ import { FileInput, Question, SubmitActions } from '../types/assessment';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { ProjectBriefModalComponent } from '../project-brief-modal/project-brief-modal.component';
 import { ProjectBrief } from '../../models/project-brief.model';
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular/lazy';
 
 const MIN_SCROLLING_PAGES = 10; // minimum number of pages to show pagination scrolling
 const MAX_QUESTIONS_PER_PAGE = 10; // maximum number of questions to display per paginated view (controls pagination granularity)
@@ -1684,8 +1684,11 @@ Best regards`;
   }
 
   get team360RequiredMemberSectionsComplete(): boolean {
-    return this.team360MemberSections
-      .slice(0, this.team360RequiredMemberCount)
+    const sections = this.questionsForm
+      ? this.team360MemberSections.filter(section => this._memberSectionIsOnForm(section.group))
+      : this.team360MemberSections;
+    return sections
+      .slice(0, Math.min(1, sections.length))
       .every(section => this._isTeam360MemberSectionComplete(section));
   }
 
@@ -1718,6 +1721,14 @@ Best regards`;
     ) ?? [];
 
     return selectors.length > 0 && selectors.every(question => this._hasQuestionAnswer(question));
+  }
+
+  private _memberSectionIsOnForm(group: Group): boolean {
+    if (!this.questionsForm) return true;
+    const selectors = group.questions?.filter(question =>
+      this._isTeam360SelectorQuestion(question) && (question.teamMembers?.length ?? 0) > 0
+    ) ?? [];
+    return selectors.some(question => !!this.questionsForm.controls[`q-${question.id}`]);
   }
 
   private _isTeam360MemberGroup(group: Group): boolean {

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { CommonModule } from '@angular/common';
 import { PersonalisedHeaderComponent } from './personalised-header.component';
 import { SettingsPageModule } from '../pages/settings/settings.module';

@@ -10,16 +10,18 @@ font style css class exmple
 **/
 
 :root {
+  --ion-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-weight-thin: 100;
   --font-weight-light: 300;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
+  --font-weight-semibold: 600;
   --font-weight-bold: 700;
   --font-weight-black: 900;
 }
 
 .normal {
-  font-family: Roboto !important;
+  font-family: var(--ion-font-family) !important;
   font-style: normal !important;
   font-weight: bold !important;
 }
@@ -27,23 +29,27 @@ font style css class exmple
 $font-styles: (
   headline-1: (
     font-size: 34px,
-    line-height: 48px,
-    font-weight: var(--font-weight-bold)
+    line-height: 42px,
+    font-weight: var(--font-weight-bold),
+    letter-spacing: -0.01em
   ),
   headline-2: (
     font-size: 24px,
-    line-height: 29px,
-    font-weight: var(--font-weight-bold)
+    line-height: 32px,
+    font-weight: var(--font-weight-semibold),
+    letter-spacing: -0.01em
   ),
   headline-3: (
     font-size: 20px,
-    line-height: 24px,
-    font-weight: var(--font-weight-bold)
+    line-height: 28px,
+    font-weight: var(--font-weight-semibold),
+    letter-spacing: -0.01em
   ),
   headline-4: (
     font-size: 14px,
     line-height: 20px,
-    font-weight: var(--font-weight-bold)
+    font-weight: var(--font-weight-semibold),
+    letter-spacing: -0.01em
   ),
   subtitle-1: (
     font-size: 14px,
@@ -62,12 +68,12 @@ $font-styles: (
   ),
   body-1: (
     font-size: 16px,
-    line-height: 22px,
+    line-height: 25px,
     font-weight: var(--font-weight-regular)
   ),
   body-2: (
     font-size: 14px,
-    line-height: 20px,
+    line-height: 22px,
     font-weight: var(--font-weight-regular)
   ),
   body-3: (
@@ -93,6 +99,10 @@ $font-styles: (
   font-size: map.get($value, font-size) !important;
   line-height: map.get($value, line-height) !important;
   font-weight: map.get($value, font-weight) !important;
+
+  @if map.has-key($value, letter-spacing) {
+    letter-spacing: map.get($value, letter-spacing);
+  }
 }
 
 @each $class-name, $value in $font-styles {

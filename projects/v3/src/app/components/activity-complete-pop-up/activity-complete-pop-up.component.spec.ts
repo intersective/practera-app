@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivityCompletePopUpComponent } from './activity-complete-pop-up.component';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { Router } from '@angular/router';
 import { MockRouter } from '@testingv3/mocked.service';
 import { UtilsService } from '@v3/services/utils.service';

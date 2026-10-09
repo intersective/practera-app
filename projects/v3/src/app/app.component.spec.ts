@@ -2,7 +2,7 @@ import { NgZone } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular/lazy';
 import { TestUtils } from '@testingv3/utils';
 import { of } from 'rxjs';
 import { AppComponent } from './app.component';
