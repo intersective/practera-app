@@ -41,7 +41,7 @@ export const environment = {
   defaultCountryModel: 'AUS',
   intercom: false,
   goMobile: false,
-  projecthub: 'http://localhost:3000/',
+  projecthub: 'https://hub.practera.local/',
   helpline: 'help@practera.com',
   featureToggles: {
     assessmentPagination: true,
